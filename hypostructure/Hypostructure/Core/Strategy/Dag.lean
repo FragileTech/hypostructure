@@ -996,6 +996,7 @@ routes and while constructing the proof-carrying capability flow. -/
 
 private inductive CapabilityKey where
   | obstructionPacking (index : Nat)
+  | exactFiniteLocalCode
   | finiteBarrierSummary
   | normalizedSupportLedger (index : Nat)
   | boundaryAccountingLedger
@@ -1044,11 +1045,13 @@ private def StrategyKey.requirements
     (data : StrategyData.{uAmbient, uBranch, uData} P T) :
     (key : StrategyKey) → key.ResolvedIn data → List CapabilityKey
   | .obstructionPackingClosure _, _ => [.minimalContext]
+  | .finiteBarrierEnumeration _, _ => [.exactFiniteLocalCode]
   | .finiteDensityBudget _, _ =>
-      [.obstructionPacking 0, .finiteBarrierSummary]
+      [.obstructionPacking 0, .finiteBarrierSummary, .nearCubicSpine 0]
   | .supportComplementNormalization index, resolved =>
       [.obstructionPacking
-        (data.supportComplementNormalizations[index]'resolved).fst]
+        (data.supportComplementNormalizations[index]'resolved).fst,
+        .finiteDensityCap]
   | .boundaryDemandAccounting index, resolved =>
       [.normalizedSupportLedger
         (data.boundaryDemandAccountings[index]'resolved).fst]
@@ -1121,6 +1124,7 @@ private def StrategyKey.productions
     (data : StrategyData.{uAmbient, uBranch, uData} P T) :
     (key : StrategyKey) → key.ResolvedIn data → List CapabilityKey
   | .obstructionPackingClosure index, _ => [.obstructionPacking index]
+  | .exactFiniteLocalAlgebra _, _ => [.exactFiniteLocalCode]
   | .finiteBarrierEnumeration _, _ => [.finiteBarrierSummary]
   | .supportComplementNormalization index, _ => [.normalizedSupportLedger index]
   | .boundaryDemandAccounting _, _ => [.boundaryAccountingLedger]
@@ -2482,6 +2486,28 @@ private noncomputable def exactFiniteLocalAlgebraRecipe
     certify := fun _ _ => none
   }
 
+private noncomputable def exactFiniteLocalCodeQuery
+    (registration : Core.Strategy.ExactFiniteLocalAlgebra.Registration.{
+      max uAmbient uBranch, uData, uData, uData}
+      (Strategy.ProblemInput P))
+    {Stage : Type (max uAmbient uBranch uData)}
+    [HasResidual Stage (Strategy.ProblemInput P)] :
+    let recipe := exactFiniteLocalAlgebraRecipe (T := T) registration
+      (Stage := Stage)
+    Query (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify)
+      (fun _ => List Bool) := by
+  let profile := Core.Strategy.ExactFiniteLocalAlgebra.Profile.ofRegistration
+    (Previous := Stage) registration
+  let recipe := exactFiniteLocalAlgebraRecipe (T := T) registration
+    (Stage := Stage)
+  let Live := HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify
+  let latest : Query Live
+      (fun live => Sigma (recipe.contract.Payload live.previous)) :=
+    (Query.latest (Previous := Stage)
+      (Added := fun stage => Sigma (recipe.contract.Payload stage))).comap
+      (fun live : Live => live.toLedger)
+  exact latest.map fun _ payload => profile.codeOfExecution payload.snd
+
 /-- Sealed lowering of the residual-owned finite barrier enumeration.
 Core filters the complete candidate schedule and runs CT16 on the literal
 incoming stage; no stored count or application outcome enters execution. -/
@@ -2491,6 +2517,7 @@ private noncomputable def finiteBarrierEnumerationRecipe
         max uAmbient uBranch, uData} (Strategy.ProblemInput P))
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
+    (sourceCode : Query Stage fun _ => List Bool)
     (current : Query Stage fun _ => Strategy.ProblemInput P) :
     Recipe P T Stage :=
   let profile :
@@ -2498,7 +2525,7 @@ private noncomputable def finiteBarrierEnumerationRecipe
         max (max uAmbient uBranch) uData,
         max uAmbient uBranch, uData}
         Stage (Strategy.ProblemInput P) :=
-    { registration := registration, current := current }
+    { registration := registration, sourceCode := sourceCode, current := current }
   {
     contract := profile.execution.toContract
     certify := fun _ _ => none
@@ -2516,6 +2543,7 @@ private def CapabilityKey.Result
     {P : Core.Problem.{uAmbient, uBranch}} {T : Core.Target P}
     (data : StrategyData.{uAmbient, uBranch, uData} P T) : CapabilityKey → Type
   | .obstructionPacking _ => Unit
+  | .exactFiniteLocalCode => List Bool
   | .finiteBarrierSummary =>
       Core.Strategy.FiniteBarrierEnumeration.Summary
   | .normalizedSupportLedger _ =>
@@ -2582,6 +2610,7 @@ private structure NormalizedSupportCapability
     (fun stage =>
       data.supportComplementNormalizations[index].snd.AmbientItem
         (current.read stage))
+  densityCap : Core.Strategy.FiniteDensityBudget.CapLedger Stage
 
 /-- Provenance-bearing CT14 capability.  It retains the normalized support
 consumed by the local-supply execution, so CT15 receives the very same input
@@ -2676,8 +2705,8 @@ private structure CapabilityStore
   which as data says nothing about how its three aggregation columns are
   related.  Two facts about it are owned by the node that produced it and by no
   one else -- that Core derived it by `ofRows`, so `binaryRateFloor` is a
-  genuine `log₂` of its own columns, and that its flat column is nonvanishing,
-  out of the registration's `flatCount_pos` obligation.  They travel here in the
+  genuine `log₂` of its own columns, and that its flat column is nonvanishing
+  by the producer's closed admissibility test.  They travel here in the
   producer's own query-only record, exactly as the surviving density cap travels
   in `FiniteDensityBudget.CapLedger`. -/
   barrierRate :
@@ -4115,7 +4144,8 @@ private def CapabilityStore.comap
   normalizedSupportExact := fun index member =>
     let capability := store.normalizedSupportExact index member
     { exact := capability.exact.comap project
-        (fun stage => (residual_eq stage).symm) }
+        (fun stage => (residual_eq stage).symm)
+      densityCap := capability.densityCap.comap project }
   localSupplyExact := fun index member =>
     let capability := store.localSupplyExact index member
     { normalized := capability.normalized.comap project
@@ -4202,7 +4232,10 @@ private def CapabilityStore.preserveLive
     { exact := capability.exact.comap
         (fun live : HaltingProgram.LiveExtension T Stage
           recipe.contract recipe.certify => live.toLedger.previous)
-        (fun _ => rfl) }
+        (fun _ => rfl)
+      densityCap := capability.densityCap.comap
+        (fun live : HaltingProgram.LiveExtension T Stage
+          recipe.contract recipe.certify => live.toLedger.previous) }
   localSupplyExact := fun index member =>
     let capability := store.localSupplyExact index member
     { normalized := capability.normalized.comap
@@ -4503,8 +4536,7 @@ only this node can prove about it:
 that the record is Core's own `ofRows` aggregation of the rows it generated
 (`summaryOfExecution_derived`), and that the generated flat column -- the
 denominator of the flatness ratio `log₂(W/F)` -- is nonvanishing
-(`summaryOfExecution_flatProduct_pos`, out of the registration's `flatCount_pos`
-obligation).
+(`output_flatProduct_pos`, from the sealed proof payload).
 
 Both are read from the identical `latest` query the summary itself is read
 from, so a downstream consumer receives facts about the very value it compares,
@@ -4515,10 +4547,11 @@ private noncomputable def finiteBarrierRateLedger
         max uAmbient uBranch, uData} (Strategy.ProblemInput P))
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
+    (sourceCode : Query Stage fun _ => List Bool)
     (current : Query Stage fun _ => Strategy.ProblemInput P) :
     let recipe :=
       finiteBarrierEnumerationRecipe (T := T) registration (Stage := Stage)
-        current
+        sourceCode current
     Core.Strategy.FiniteBarrierEnumeration.RateLedger
       (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify) := by
   let profile :
@@ -4526,10 +4559,10 @@ private noncomputable def finiteBarrierRateLedger
         max (max uAmbient uBranch) uData,
         max uAmbient uBranch, uData}
         Stage (Strategy.ProblemInput P) :=
-    { registration := registration, current := current }
+    { registration := registration, sourceCode := sourceCode, current := current }
   let recipe :=
     finiteBarrierEnumerationRecipe (T := T) registration (Stage := Stage)
-      current
+      sourceCode current
   let Live :=
     HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify
   let latest : Query Live
@@ -4539,11 +4572,15 @@ private noncomputable def finiteBarrierRateLedger
       (fun live : Live => live.toLedger)
   exact
     { summary := latest.map fun _ payload =>
-        profile.summaryOfExecution payload.snd
+        profile.summaryOfOutput _ payload.snd
+      sourceRows := latest.map fun _ payload =>
+        profile.rows payload.snd.1.stage.previous
+      exact := latest.dependentMap fun _ payload =>
+        profile.output_exact _ payload.snd
       derived := latest.dependentMap fun _ payload =>
-        profile.summaryOfExecution_derived payload.snd
+        profile.output_derived _ payload.snd
       flatPositive := latest.dependentMap fun _ payload =>
-        profile.summaryOfExecution_flatProduct_pos payload.snd }
+        profile.output_flatProduct_pos _ payload.snd }
 
 private noncomputable def finiteDensityBudgetSplit
     (registration :
@@ -4553,12 +4590,16 @@ private noncomputable def finiteDensityBudgetSplit
     [HasResidual Stage (Strategy.ProblemInput P)]
     (packingCount : Query Stage fun _ => Nat)
     (barrierRate :
-      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage) :
+      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
+    (nearCubic : Query Stage fun stage =>
+      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
     Strategy.Dichotomy.{uStage, uStage, uStage} Stage :=
   let profile :
       Core.Strategy.FiniteDensityBudget.Profile Stage :=
     Core.Strategy.FiniteDensityBudget.Profile.ofRegistration
       packingCount barrierRate registration
+      degreeSurplusLoad degreeSurplusThreshold nearCubic
   profile.dichotomy
 
 private theorem finiteDensityBudgetSplit_leftPayload_eq
@@ -4569,11 +4610,16 @@ private theorem finiteDensityBudgetSplit_leftPayload_eq
     [HasResidual Stage (Strategy.ProblemInput P)]
     (packingCount : Query Stage fun _ => Nat)
     (barrierRate :
-      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage) :
-    (finiteDensityBudgetSplit registration packingCount barrierRate).LeftPayload =
+      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
+    (nearCubic : Query Stage fun stage =>
+      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
+    (finiteDensityBudgetSplit registration packingCount barrierRate
+      degreeSurplusLoad degreeSurplusThreshold nearCubic).LeftPayload =
       (let profile :=
         Core.Strategy.FiniteDensityBudget.Profile.ofRegistration
-          packingCount barrierRate registration;
+          packingCount barrierRate registration
+          degreeSurplusLoad degreeSurplusThreshold nearCubic;
         profile.OverflowResidual) := rfl
 
 private theorem finiteDensityBudgetSplit_leftBranchStage_eq
@@ -4584,14 +4630,19 @@ private theorem finiteDensityBudgetSplit_leftBranchStage_eq
     [HasResidual Stage (Strategy.ProblemInput P)]
     (packingCount : Query Stage fun _ => Nat)
     (barrierRate :
-      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage) :
+      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
+    (nearCubic : Query Stage fun stage =>
+      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
     Ledger.Extension Stage
         (finiteDensityBudgetSplit registration
-          packingCount barrierRate).LeftPayload =
+          packingCount barrierRate
+          degreeSurplusLoad degreeSurplusThreshold nearCubic).LeftPayload =
       Ledger.Extension Stage
         (let profile :=
           Core.Strategy.FiniteDensityBudget.Profile.ofRegistration
-            packingCount barrierRate registration;
+            packingCount barrierRate registration
+            degreeSurplusLoad degreeSurplusThreshold nearCubic;
           profile.OverflowResidual) := by
   rw [finiteDensityBudgetSplit_leftPayload_eq]
 
@@ -4603,11 +4654,16 @@ private theorem finiteDensityBudgetSplit_rightPayload_eq
     [HasResidual Stage (Strategy.ProblemInput P)]
     (packingCount : Query Stage fun _ => Nat)
     (barrierRate :
-      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage) :
-    (finiteDensityBudgetSplit registration packingCount barrierRate).RightPayload =
+      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
+    (nearCubic : Query Stage fun stage =>
+      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
+    (finiteDensityBudgetSplit registration packingCount barrierRate
+      degreeSurplusLoad degreeSurplusThreshold nearCubic).RightPayload =
       (let profile :=
         Core.Strategy.FiniteDensityBudget.Profile.ofRegistration
-          packingCount barrierRate registration;
+          packingCount barrierRate registration
+          degreeSurplusLoad degreeSurplusThreshold nearCubic;
         profile.CapResidual) := rfl
 
 private theorem finiteDensityBudgetSplit_rightBranchStage_eq
@@ -4618,14 +4674,19 @@ private theorem finiteDensityBudgetSplit_rightBranchStage_eq
     [HasResidual Stage (Strategy.ProblemInput P)]
     (packingCount : Query Stage fun _ => Nat)
     (barrierRate :
-      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage) :
+      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
+    (nearCubic : Query Stage fun stage =>
+      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
     Ledger.Extension Stage
         (finiteDensityBudgetSplit registration
-          packingCount barrierRate).RightPayload =
+          packingCount barrierRate
+          degreeSurplusLoad degreeSurplusThreshold nearCubic).RightPayload =
       Ledger.Extension Stage
         (let profile :=
           Core.Strategy.FiniteDensityBudget.Profile.ofRegistration
-            packingCount barrierRate registration;
+            packingCount barrierRate registration
+            degreeSurplusLoad degreeSurplusThreshold nearCubic;
           profile.CapResidual) := by
   rw [finiteDensityBudgetSplit_rightPayload_eq]
 
@@ -4638,13 +4699,18 @@ private noncomputable def finiteDensityBudgetSplit_classifiedTerminalTypeCheck
     (packingCount : Query Stage fun _ => Nat)
     (barrierRate :
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
+    (nearCubic : Query Stage fun stage =>
+      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage)
     (stage : Stage) :
     (let profile :=
       Core.Strategy.FiniteDensityBudget.Profile.ofRegistration
-        packingCount barrierRate registration;
+        packingCount barrierRate registration
+        degreeSurplusLoad degreeSurplusThreshold nearCubic;
       Sum (profile.OverflowResidual stage) (profile.CapResidual stage)) :=
   (finiteDensityBudgetSplit registration
-    packingCount barrierRate).classify stage
+    packingCount barrierRate
+    degreeSurplusLoad degreeSurplusThreshold nearCubic).classify stage
 
 private noncomputable def finiteDensityBudgetRecipe
     (registration :
@@ -4654,10 +4720,14 @@ private noncomputable def finiteDensityBudgetRecipe
     [HasResidual Stage (Strategy.ProblemInput P)]
     (packingCount : Query Stage fun _ => Nat)
     (barrierRate :
-      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage) :
+      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
+    (nearCubic : Query Stage fun stage =>
+      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
     Recipe P T Stage :=
   let split :=
     finiteDensityBudgetSplit registration packingCount barrierRate
+      degreeSurplusLoad degreeSurplusThreshold nearCubic
   let contract : Contract.{uStage, 0, uStage} Stage :=
     Strategy.dichotomyContract.{uStage, uStage, uStage} split
   { contract
@@ -5061,14 +5131,29 @@ private noncomputable def resolveBinary
   | .inr (.inr (.inr (.inr (.inl index)))) => by
       have required :
           CapabilityKey.obstructionPacking 0 ∈ available ∧
-            CapabilityKey.finiteBarrierSummary ∈ available := by
+            CapabilityKey.finiteBarrierSummary ∈ available ∧
+            CapabilityKey.nearCubicSpine 0 ∈ available := by
         simpa [StrategyKey.requirementsMet, StrategyKey.requirements,
           BinaryStrategyRef.key] using valid
+      let nearCubicIndex : Fin data.scaleThresholdDichotomies.length :=
+        ⟨0, capabilities.nearCubicIndexValid 0 required.2.2⟩
+      let degreeSurplusLoad : Query Stage fun _ => Nat :=
+        Query.ofFunction fun stage =>
+          data.scaleThresholdDichotomies[nearCubicIndex].load
+            (capabilities.activeInput.read stage)
+      let degreeSurplusThreshold : Query Stage fun _ => Nat :=
+        Query.ofFunction fun stage =>
+          (data.scaleThresholdDichotomies[nearCubicIndex].table
+            (capabilities.activeInput.read stage)).threshold
+            (data.scaleThresholdDichotomies[nearCubicIndex].size
+              (capabilities.activeInput.read stage))
       let profile :=
         Core.Strategy.FiniteDensityBudget.Profile.ofRegistration
           (capabilities.packingCountQuery 0 required.1)
-          (capabilities.barrierRate required.2)
+          (capabilities.barrierRate required.2.1)
           (data.finiteDensityBudgets[index])
+          degreeSurplusLoad degreeSurplusThreshold
+          (capabilities.nearCubicSpine nearCubicIndex required.2.2)
       exact {
         split := profile.dichotomy
         leftDirect := none
@@ -5875,10 +5960,44 @@ private noncomputable def normalizedSupportExactLedger
       (exactAt live).output.snd.terminal = .activeLedger :=
     (exactActiveAt live).2
   exact {
+    Block := fun live =>
+      packingSemantics.Occurrence (current.read live.previous)
     LocalPiece := fun live =>
       profile.core.LocalPiece live.previous (exactAt live).output.fst
     Failure := fun live =>
       profile.core.Failure live.previous (exactAt live).output.fst
+    summary := Query.ofFunction fun live =>
+      profile.summaryOfExact (exactAt live)
+    partitionExact := Query.ofFunction fun live =>
+      profile.summaryOfExact_selectedCount_add_complementCount_eq_ambientCount
+        (exactAt live)
+    selectedUniform := Query.ofFunction fun live =>
+      Core.Strategy.SupportComplementNormalization.Profile.selectedCount_eq_coverCard_mul_packingCount
+        registration current packingQuery (exactAt live)
+    complementExact := Query.ofFunction fun live =>
+      Core.Strategy.SupportComplementNormalization.Profile.coverCard_mul_packingCount_add_complementCount_eq_ambientCount
+        registration current packingQuery (exactAt live)
+    ambient := Query.ofFunction fun live =>
+      registration.ambientSupport (current.read live.previous)
+    selected := Query.ofFunction fun live =>
+      profile.partition.selectedAtPrevious live.previous
+        (exactAt live).output.fst.fst.fst
+    blocks := Query.ofFunction fun live => by
+      let packing := packingQuery.read live.previous
+      letI := (packingSemantics.occurrences
+        (current.read live.previous)).decEq
+      exact Core.Finite.Enumeration.ofNodupList
+        packing.selected packing.selected_nodup
+    cover := fun live block => registration.cover
+      (current.read live.previous) block
+    coverNodup := Query.ofFunction fun live block =>
+      registration.coverNodup (current.read live.previous) block
+    coverCardExact := Query.ofFunction fun live block => by
+      change (registration.cover (current.read live.previous) block).length =
+        profile.coverCard.read
+          (exactAt live).output.fst.fst.fst.stage.previous
+      rw [(exactAt live).output.fst.fst.fst.previous_eq]
+      exact registration.cover_card (current.read live.previous) block
     complement := Query.ofFunction fun live =>
       profile.partition.complementAtPrevious live.previous
         (exactAt live).output.fst.fst.fst
@@ -5939,6 +6058,9 @@ private noncomputable def boundaryAccountingLedgerQuery
       (fun live : Live => live.toLedger)
   exact latest.map fun _ payload => profile.summaryOfRouted payload.snd
 
+/-- Producer-owned theorem ledger for the same literal boundary execution.
+The compiler constructs it from the contract payload and the exact CT9
+partition query; applications cannot supply or replace any of its facts. -/
 /-- The single CT14 local-supply bound over the exact accounting ledger. -/
 private noncomputable def localSupplyLowerBoundRecipe
     {AmbientItem : Strategy.ProblemInput P →
@@ -6339,31 +6461,58 @@ private noncomputable def resolveVertex
             (obstructionPackingQuery (T := T) semantics current targetToRoot)
       }
   | .exactFiniteLocalAlgebra index, resolved =>
-      fun _ => preservingVertex data capabilities
-        (exactFiniteLocalAlgebraRecipe
-          (data.exactFiniteLocalAlgebras[index]'resolved))
-  | .finiteBarrierEnumeration index, resolved =>
       fun _ =>
+      let registration := data.exactFiniteLocalAlgebras[index]'resolved
+      let recipe := exactFiniteLocalAlgebraRecipe (T := T) registration
+      {
+        recipe
+        capabilities :=
+          (capabilities.preserveLive recipe).cons .exactFiniteLocalCode
+            (exactFiniteLocalCodeQuery (T := T) registration)
+            (by intro _ equality; cases equality)
+            (by intro equality; cases equality)
+            (by intro equality; cases equality)
+      }
+  | .finiteBarrierEnumeration index, resolved =>
+      fun valid =>
+      have required : CapabilityKey.exactFiniteLocalCode ∈ input := by
+        simpa [StrategyKey.requirementsMet, StrategyKey.requirements] using valid
       let registration := data.finiteBarrierEnumerations[index]'resolved
+      let sourceCode := capabilities.query .exactFiniteLocalCode required
       let recipe := finiteBarrierEnumerationRecipe (T := T) registration
-        capabilities.activeInput
+        sourceCode capabilities.activeInput
       {
         recipe
         capabilities :=
           (capabilities.preserveLive recipe).consBarrierRate
             (finiteBarrierRateLedger (T := T) registration
-              capabilities.activeInput)
+              sourceCode capabilities.activeInput)
       }
   | .finiteDensityBudget index, resolved =>
       fun valid =>
       have required :
           CapabilityKey.obstructionPacking 0 ∈ input ∧
-            CapabilityKey.finiteBarrierSummary ∈ input := by
+            CapabilityKey.finiteBarrierSummary ∈ input ∧
+            CapabilityKey.nearCubicSpine 0 ∈ input := by
         simpa [StrategyKey.requirementsMet, StrategyKey.requirements] using valid
+      let nearCubicIndex : Fin data.scaleThresholdDichotomies.length :=
+        ⟨0, capabilities.nearCubicIndexValid 0 required.2.2⟩
+      let degreeSurplusLoad : Query Stage fun _ => Nat :=
+        Query.ofFunction fun stage =>
+          data.scaleThresholdDichotomies[nearCubicIndex].load
+            (capabilities.activeInput.read stage)
+      let degreeSurplusThreshold : Query Stage fun _ => Nat :=
+        Query.ofFunction fun stage =>
+          (data.scaleThresholdDichotomies[nearCubicIndex].table
+            (capabilities.activeInput.read stage)).threshold
+            (data.scaleThresholdDichotomies[nearCubicIndex].size
+              (capabilities.activeInput.read stage))
       let recipe := finiteDensityBudgetRecipe
         (T := T) (data.finiteDensityBudgets[index]'resolved)
         (capabilities.packingCountQuery 0 required.1)
-        (capabilities.barrierRate required.2)
+        (capabilities.barrierRate required.2.1)
+        degreeSurplusLoad degreeSurplusThreshold
+        (capabilities.nearCubicSpine nearCubicIndex required.2.2)
       preservingVertex data capabilities recipe
   | .finiteStateCapacity index, resolved =>
       fun valid =>
@@ -6659,10 +6808,12 @@ private noncomputable def resolveVertex
       have valid' : StrategyKey.requirementsMet data
           (.supportComplementNormalization index) producerIndex.isLt input = true := by
         simpa only using valid
-      have required : CapabilityKey.obstructionPacking packingIndex ∈ input := by
+      have required :
+          CapabilityKey.obstructionPacking packingIndex ∈ input ∧
+            CapabilityKey.finiteDensityCap ∈ input := by
         simpa [StrategyKey.requirementsMet, StrategyKey.requirements,
           packed, packingIndex] using valid'
-      let packedQuery := capabilities.packingQuery packingIndex required
+      let packedQuery := capabilities.packingQuery packingIndex required.1
       let packing := packedQuery.map
         fun _ value => value.packing
       let current := capabilities.activeInput
@@ -6678,7 +6829,10 @@ private noncomputable def resolveVertex
             (normalizedSupportLedgerQuery (T := T) registration current packing
               targetToRoot)
             { exact := normalizedSupportExactLedger (T := T) registration
-                current packing targetToRoot }
+                current packing targetToRoot
+              densityCap := (capabilities.capLedger required.2).comap
+                (fun live : HaltingProgram.LiveExtension T Stage
+                  recipe.contract recipe.certify => live.toLedger.previous) }
       }
   | .boundaryDemandAccounting index, resolved =>
       fun valid =>
@@ -6688,23 +6842,22 @@ private noncomputable def resolveVertex
           CapabilityKey.normalizedSupportLedger supportIndex ∈ input := by
         simpa [StrategyKey.requirementsMet, StrategyKey.requirements] using valid
       let registration := packed.snd
-      let support :=
-        capabilities.query (.normalizedSupportLedger supportIndex) required
       let supportCapability :=
         capabilities.normalizedSupportExact supportIndex required
+      let support := supportCapability.exact.summary
       let recipe :=
         boundaryDemandAccountingRecipe (T := T) registration
           capabilities.activeInput support
       {
         recipe
         capabilities :=
-          (capabilities.preserveLive recipe).cons
-            .boundaryAccountingLedger
-            (boundaryAccountingLedgerQuery (T := T) registration
-              capabilities.activeInput support)
-            (by intro packingIndex equality; cases equality)
-            (by intro equality; cases equality)
-            (by intro equality; cases equality)
+          { (capabilities.preserveLive recipe).cons
+              .boundaryAccountingLedger
+              (boundaryAccountingLedgerQuery (T := T) registration
+                capabilities.activeInput support)
+              (by intro packingIndex equality; cases equality)
+              (by intro equality; cases equality)
+              (by intro equality; cases equality) with }
       }
   | .localSupplyLowerBound index, resolved =>
       fun valid =>

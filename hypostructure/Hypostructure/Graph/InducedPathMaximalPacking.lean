@@ -39,6 +39,17 @@ def support (object : FiniteObject.{u}) (order : Nat)
   letI : DecidableEq object.Vertex := object.vertices.decEq
   exact (Finset.univ : Finset (Fin order)).image window
 
+@[simp] theorem support_card (object : FiniteObject.{u}) (order : Nat)
+    (window : Window object order) :
+    (support object order window).card = order := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  unfold support
+  calc
+    (Finset.image (window : Fin order → object.Vertex) Finset.univ).card =
+        (Finset.univ : Finset (Fin order)).card :=
+      Finset.card_image_of_injective _ window.injective
+    _ = order := by simp
+
 def admissibleWindows (object : FiniteObject.{u}) (order : Nat)
     (windows : Finset (Window object order)) : Prop :=
   ∀ ⦃left right : Window object order⦄,

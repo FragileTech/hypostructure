@@ -125,22 +125,9 @@ def enumerationRegistration (Residual : Type*) :
     0 < pair.1.1 ∧ 0 < pair.2.1 ∧ pair.1.1 + pair.2.1 ≤ 14
   acceptedDecidable := fun _ _ => inferInstance
   labelCount := fun _ => labelCount
-  profile := fun _ => semanticProfile
-  leftLength := fun _ index => index.1.1.1
-  rightLength := fun _ index => index.1.2.1
-  -- The registered accepted subfamily is the `91` ordered barriers of
-  -- `app:curv-code`, and the generated certificate's audited flat column is
-  -- nonzero on every one of them.  This is read off `p13MultiScaleFlatCounts_audit`
-  -- at the same index the count itself is read from; no numeral is restated.
-  flatCount_pos := by
-    rintro _ ⟨⟨left, right⟩, positiveLeft, positiveRight, inRange⟩
-    have audit := p13MultiScaleFlatCounts_audit left right
-    rw [if_pos ⟨positiveLeft, positiveRight, inRange⟩] at audit
-    show 0 < Certificate.profile.flatCount left.1 right.1
-    rw [← audit]
-    clear audit
-    revert positiveLeft positiveRight inRange
-    fin_cases left <;> fin_cases right <;> decide
+  relationPosition := fun _ relation => relation
+  leftLength := fun _ index => index.1.1
+  rightLength := fun _ index => index.2.1
 
 def flatProduct : Nat :=
   Hypostructure.Core.Finite.CertifiedTableAggregation.flatProduct certifiedTable

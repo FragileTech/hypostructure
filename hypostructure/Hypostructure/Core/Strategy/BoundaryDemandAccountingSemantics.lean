@@ -18,6 +18,128 @@ universe uResidual uDemand uPayer uMember uLabel
 
 open Hypostructure.Core.Strategy
 
+namespace FiniteInteraction
+
+universe uItem
+
+/-- Total interaction load from one item into an exact finite schedule. -/
+def load {Item : Type uItem} (incidence : Item → Item → Nat)
+    (schedule : Core.Finite.Enumeration Item) (item : Item) : Nat :=
+  (schedule.values.map (incidence item)).sum
+
+/-- Positive baseline deficiency on an exact finite schedule. -/
+def positiveDeficiency {Item : Type uItem} (baseline : Nat)
+    (internal : Item → Nat) (schedule : Core.Finite.Enumeration Item) : Nat :=
+  (schedule.values.map fun item => baseline - internal item).sum
+
+/-- Total boundary interaction emitted by an exact finite schedule. -/
+def boundarySupply {Item : Type uItem} (boundary : Item → Nat)
+    (schedule : Core.Finite.Enumeration Item) : Nat :=
+  (schedule.values.map boundary).sum
+
+/-- Summed positive deficiency is bounded by the literal boundary supply.
+
+This is the domain-neutral arithmetic used by the sealed CT4 operation.  The
+only hypothesis is the pointwise load split supplied by the finite interaction
+ledger; no graph, PDE, path order, or paper constant occurs in the theorem. -/
+theorem positiveDeficiency_le_boundarySupply
+    {Item : Type uItem} (baseline : Nat) (internal boundary : Item → Nat)
+    (schedule : Core.Finite.Enumeration Item)
+    (minimumLoad : ∀ item ∈ schedule.values,
+      baseline ≤ internal item + boundary item) :
+    positiveDeficiency baseline internal schedule ≤
+      boundarySupply boundary schedule := by
+  unfold positiveDeficiency boundarySupply
+  apply List.sum_le_sum
+  intro item member
+  have := minimumLoad item member
+  omega
+
+/-- The block-side account is additive over the literal finite block table.
+The block table, its order, and its baseline are parameters of the generic
+operation; no application constant is embedded in this theorem. -/
+theorem sum_boundary_add_internal_eq
+    {Item Block : Type uItem}
+    (baseline order : Nat)
+    (blocks : Core.Finite.Enumeration Block)
+    (boundary internal surplus : Block → Nat)
+    (localAccount : ∀ block ∈ blocks.values,
+      boundary block + internal block = baseline * order + surplus block) :
+    (blocks.values.map boundary).sum +
+        (blocks.values.map internal).sum =
+      (baseline * order) * blocks.card +
+        (blocks.values.map surplus).sum := by
+  rw [Core.Finite.Enumeration.card]
+  calc
+    (blocks.values.map boundary).sum + (blocks.values.map internal).sum =
+        (blocks.values.map (fun block => boundary block + internal block)).sum := by
+          simp [List.sum_map_add]
+    _ = (blocks.values.map (fun block => baseline * order + surplus block)).sum := by
+          exact congrArg List.sum (List.map_congr_left localAccount)
+    _ = (baseline * order) * blocks.values.length +
+          (blocks.values.map surplus).sum := by
+          rw [List.sum_map_add]
+          simp [List.map_const, Nat.mul_comm]
+
+/-- The surplus-aware ceiling is the nonnegative part of the exact block
+account. Consumers use this theorem through the ordinary accumulated ledger;
+they never unfold or reconstruct the block schedule. -/
+theorem boundary_le_block_baseline_add_surplus
+    {Item Block : Type uItem}
+    (baseline order : Nat)
+    (blocks : Core.Finite.Enumeration Block)
+    (boundary internal surplus : Block → Nat)
+    (internal_nonnegative : 0 ≤ (blocks.values.map internal).sum)
+    (account :
+      (blocks.values.map boundary).sum + (blocks.values.map internal).sum =
+        (baseline * order) * blocks.card + (blocks.values.map surplus).sum) :
+    (blocks.values.map boundary).sum ≤
+      (baseline * order) * blocks.card + (blocks.values.map surplus).sum := by
+  omega
+
+/-! Named framework corollaries for the finite interaction obligations used by
+the sealed strategy.  They are intentionally expressed only through incoming
+finite schedules and ledger equations. -/
+
+theorem deficiency_surplus_split
+    {Item : Type uItem} (baseline : Nat) (internal boundary : Item → Nat)
+    (schedule : Core.Finite.Enumeration Item) :
+    positiveDeficiency baseline internal schedule =
+      (schedule.values.map fun item => baseline - internal item).sum := rfl
+
+theorem stub_positive
+    {Item : Type uItem} (baseline : Nat) (internal boundary : Item → Nat)
+    (schedule : Core.Finite.Enumeration Item)
+    (minimumLoad : ∀ item ∈ schedule.values,
+      baseline ≤ internal item + boundary item) :
+    positiveDeficiency baseline internal schedule ≤
+      boundarySupply boundary schedule :=
+  positiveDeficiency_le_boundarySupply baseline internal boundary schedule minimumLoad
+
+theorem exact_window_join_identity
+    {Block : Type uItem} (baseline order : Nat)
+    (blocks : Core.Finite.Enumeration Block)
+    (boundary internal surplus : Block → Nat)
+    (account : ∀ block ∈ blocks.values,
+      boundary block + internal block = baseline * order + surplus block) :
+    (blocks.values.map boundary).sum + (blocks.values.map internal).sum =
+      (baseline * order) * blocks.card + (blocks.values.map surplus).sum :=
+  sum_boundary_add_internal_eq baseline order blocks boundary internal surplus account
+
+theorem surplus_aware_window_stub
+    {Block : Type uItem} (baseline order : Nat)
+    (blocks : Core.Finite.Enumeration Block)
+    (boundary internal surplus : Block → Nat)
+    (account :
+      (blocks.values.map boundary).sum + (blocks.values.map internal).sum =
+        (baseline * order) * blocks.card + (blocks.values.map surplus).sum) :
+    (blocks.values.map boundary).sum ≤
+      (baseline * order) * blocks.card + (blocks.values.map surplus).sum := by
+  exact boundary_le_block_baseline_add_surplus baseline order blocks boundary
+    internal surplus (by omega) account
+
+end FiniteInteraction
+
 /-- Exact numeric ledger published by one completed boundary accounting.
 
 The last three fields are the window/remainder coordinates of manuscript node

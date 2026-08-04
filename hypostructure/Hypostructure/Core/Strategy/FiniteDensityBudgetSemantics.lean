@@ -46,6 +46,12 @@ structure CapLedger (Stage : Type uStage) where
     (barrierSummary.read stage).safeProduct ^ packingCount.read stage ≤
       (barrierSummary.read stage).flatProduct ^ packingCount.read stage *
         ambientCapacity.read stage
+  /-- The exact entropy-form cap derived from the retained CT14 comparison.
+  This is published as a query so downstream Strategies can consume the
+  density fact without unfolding the predecessor or replaying CT14. -/
+  entropyCap : Query Stage fun stage =>
+    2 ^ ((barrierSummary.read stage).binaryRateFloor *
+      packingCount.read stage) ≤ ambientCapacity.read stage
   /-- The represented ambient state space is nonempty.  This is the density
   registration's own `ambientCapacity_pos`, forwarded rather than reproved --
   for the graph presentation it is `skeletonBudget_pos`, the statement that the
@@ -60,10 +66,21 @@ structure CapLedger (Stage : Type uStage) where
   barrierDerived : Query Stage fun stage =>
     FiniteBarrierEnumeration.Summary.Derived (barrierSummary.read stage)
   /-- The compared barrier `Summary`'s flat column -- the denominator of the
-  flatness ratio `log₂(W/F)` -- is nonvanishing.  Also produced at the barrier
-  node, out of its registration's `flatCount_pos` obligation. -/
+  flatness ratio `log₂(W/F)` -- is nonvanishing, as proved and published by the
+  sealed barrier strategy. -/
   barrierFlatPositive : Query Stage fun stage =>
     0 < (barrierSummary.read stage).flatProduct
+  /-- **`def:near-cubic-spine`, retained on this node's own ledger.**  The
+  node-`[19]` `scaleThresholdDichotomy`'s at-or-below branch load, carried
+  forward rather than re-derived: `degreeSurplusLoad` is that branch's own
+  `load` at the active object and `degreeSurplusThreshold` its own `table`
+  value, both already fixed at the branch that produced this node. -/
+  degreeSurplusLoad : Query Stage fun _ => Nat
+  degreeSurplusThreshold : Query Stage fun _ => Nat
+  /-- The node-`[19]` at-or-below comparison itself, i.e. `def:near-cubic-spine`
+  read off the retained branch payload -- never re-derived, never assumed. -/
+  nearCubic : Query Stage fun stage =>
+    degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage
 
 namespace CapLedger
 
@@ -73,9 +90,13 @@ def comap (ledger : CapLedger Stage) (project : NewStage → Stage) :
   barrierSummary := ledger.barrierSummary.comap project
   ambientCapacity := ledger.ambientCapacity.comap project
   cap := ledger.cap.comap project
+  entropyCap := ledger.entropyCap.comap project
   ambientCapacity_pos := ledger.ambientCapacity_pos.comap project
   barrierDerived := ledger.barrierDerived.comap project
   barrierFlatPositive := ledger.barrierFlatPositive.comap project
+  degreeSurplusLoad := ledger.degreeSurplusLoad.comap project
+  degreeSurplusThreshold := ledger.degreeSurplusThreshold.comap project
+  nearCubic := ledger.nearCubic.comap project
 
 def preserve {Added : Stage → Type uNew} (ledger : CapLedger Stage) :
     CapLedger (Ledger.Extension Stage Added) :=

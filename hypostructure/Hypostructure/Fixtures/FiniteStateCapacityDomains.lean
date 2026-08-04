@@ -102,6 +102,10 @@ noncomputable def normalizationRegistration {Residual : Type uResidual}
   ambientSupport := fun _ =>
     Core.Finite.Enumeration.singleton (ULift.up ())
   cover := fun _ _ => [ULift.up ()]
+  coverNodup := by simp
+  coverSupported := by simp
+  coverCard := fun _ => 1
+  cover_card := by simp
   conflict_iff_shared_item := by
     intro residual left right
     simp [packingSemantics]
@@ -155,12 +159,9 @@ noncomputable def barrierRegistration {Residual : Type uResidual} :
   accepted := fun _ _ => True
   acceptedDecidable := fun _ _ => isTrue trivial
   labelCount := fun _ => 1
-  profile := fun _ => {
-    row := fun _ _ => BitVec.allOnes 1
-  }
+  relationPosition := fun _ relation => relation
   leftLength := fun _ _ => 0
   rightLength := fun _ _ => 0
-  flatCount_pos := by intro _ _; decide
 
 noncomputable def rankRegistration {Residual : Type uResidual} :
     Core.Strategy.TargetRelativeRankDichotomy.Registration Residual

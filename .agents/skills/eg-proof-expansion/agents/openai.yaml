@@ -1,0 +1,4 @@
+interface:
+  display_name: "EG Proof Expansion"
+  short_description: "Expand EG nodes through framework-native Lean"
+  default_prompt: "Use $eg-proof-expansion to make the requested EG StrategyDag node fully paper- and framework-compliant."

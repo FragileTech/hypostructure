@@ -149,6 +149,10 @@ private noncomputable def normalization :
   AmbientItem := fun _ => Unit
   ambientSupport := fun _ => singleton
   cover := fun _ _ => [()]
+  coverNodup := by simp
+  coverSupported := by simp
+  coverCard := fun _ => 1
+  cover_card := by simp
   conflict_iff_shared_item := by
     intro residual left right
     simp [packing]

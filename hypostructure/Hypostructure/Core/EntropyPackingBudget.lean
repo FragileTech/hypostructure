@@ -21,23 +21,6 @@ therefore has no numeric table parameter to fill, and the integral floor that
 executable strategies consume stays `Summary.binaryRateFloor`.
 -/
 
-namespace Hypostructure.Core.Strategy.FiniteBarrierEnumeration.Summary
-
-/-- The exact finite-table window rate.  Both products are fields of the
-single derived `Summary`, so no exponent or product is repeated here, and the
-integral floor that executable strategies consume stays `binaryRateFloor` of
-the very same summary. -/
-noncomputable def windowRate (summary : Summary) : ℝ :=
-  Real.logb 2 ((summary.safeProduct : ℝ) / (summary.flatProduct : ℝ))
-
-@[simp] theorem ofRows_windowRate (rows : List (Nat × Nat)) :
-    (ofRows rows).windowRate =
-      Real.logb 2 (((rows.map Prod.fst).prod : ℝ) /
-        ((rows.map Prod.snd).prod : ℝ)) :=
-  rfl
-
-end Hypostructure.Core.Strategy.FiniteBarrierEnumeration.Summary
-
 namespace Hypostructure.Core.EntropyPackingBudget
 
 /-- Problem-owned coefficients consumed by the entropy/rank budget

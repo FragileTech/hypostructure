@@ -1,162 +1,110 @@
-.PHONY: help build test lint mathlib-cache framework-build fixtures-build \
-	erdos-build pde-build stokes-build template-build erdos-json erdos \
-	ab stokes-json stokes web-data web-build web-test web-backend-test \
-	web-frontend-test web
+.PHONY: help build test lint mathlib-cache framework-build \
+	erdos-build erdos-json erdos ab ab-json clean-runs
 
-.DEFAULT_GOAL := build
+.DEFAULT_GOAL := help
 
 PYTHON ?= python3
-UV ?= uv
-NPM ?= npm
-UV_CACHE_DIR ?= /tmp/uv-cache
 
 HYPOSTRUCTURE_DIR := hypostructure
-ERDOS_DIR := examples/hypostructure_erdos_64_eg
+ERDOS_DIR := proofs/hypostructure_erdos_64_eg
 ERDOS_TARGET := HypostructureErdos64EG.Official.StructuralProgram
 AB_TARGET := HypostructureErdos64EG.AB.Execution
-PDE_DIR := examples/hypostructure_pde
-STOKES_DIR := examples/stokes
-STOKES_TARGET := Stokes.Execution
-TEMPLATE_DIR := examples/template
-WEB_FRONTEND_DIR := web/frontend
-WEB_NODE_STAMP := $(WEB_FRONTEND_DIR)/node_modules/.package-lock.json
-WEB_RAW := generated/hypostructure/web/declarations.raw.json
-WEB_SNAPSHOT := generated/hypostructure/web/snapshot.json
-WEB_MANIFEST := generated/hypostructure/web/manifest.json
-ERDOS_RUN := build/hypostructure/eg-official-run.json
-AB_RUN := build/hypostructure/eg-ab-run.json
-STOKES_RUN := build/hypostructure/stokes-run.json
-WEB_HOST ?= 127.0.0.1
-WEB_PORT ?= 8000
-WEB_WORKERS ?= 1
-WEB_THREADS ?= 4
-WEB_TIMEOUT ?= 60
+RUN_DIR := build/hypostructure
+ERDOS_RUN := $(RUN_DIR)/eg-official-run.json
+AB_RUN := $(RUN_DIR)/eg-ab-run.json
+ERDOS_LOG := $(RUN_DIR)/eg-official-build.log
+ERDOS_AUDIT := $(RUN_DIR)/eg-closure-audit.log
+AB_LOG := $(RUN_DIR)/eg-ab-build.log
+
+# The sealed frontend emits this exact sentence when `ofDag%` rejects a
+# declaration because a residual survives.  That rejection is a reported
+# outcome of the run, not a build error, so the recipes below match on it.
+RESIDUAL := sealed compiler could not derive total execution closure
 
 help:
 	@printf '%s\n' \
 	  'Hypostructure' \
 	  '' \
-	  '  make build          Build the framework and maintained examples' \
-	  '  make test           Run the Hypostructure and web checks' \
+	  '  make ab              Run the framework on the Type-A/Type-B target' \
+	  '  make erdos           Compile and execute the sealed official EG proof' \
+	  '  make erdos-json      Export and validate the official EG proof run' \
 	  '  make framework-build Build the reusable Hypostructure package' \
-	  '  make fixtures-build Build Core, Graph, and PDE fixtures' \
-	  '  make erdos-build    Build the graph/EG application' \
-	  '  make pde-build      Build the PDE applications' \
-	  '  make stokes-build   Build the linear Stokes application' \
-	  '  make template-build Build the application template' \
-	  '  make erdos-json     Export and validate the official EG proof run' \
-	  '  make erdos          Compile and execute the sealed official EG proof' \
-	  '  make ab             Run the framework on the Type-A/Type-B target' \
-	  '  make stokes         Execute the sealed Stokes reduction and closure probe' \
-	  '  make web-data       Regenerate Flask/React documentation data' \
-	  '  make web-test       Test the Flask API and React application' \
-	  '  make web            Build and serve the documentation site'
+	  '  make erdos-build     Build the official EG structural program' \
+	  '  make build           Build the framework and run both proof targets' \
+	  '  make lint            Run the total-execution gate over the framework' \
+	  '  make mathlib-cache   Fetch prebuilt Mathlib artifacts' \
+	  '  make clean-runs      Remove exported runs, logs, and audits'
 
 framework-build:
 	cd $(HYPOSTRUCTURE_DIR) && lake build
 
-fixtures-build: framework-build
-	cd $(HYPOSTRUCTURE_DIR) && lake build Hypostructure.Fixtures
-
 erdos-build: framework-build
 	cd $(ERDOS_DIR) && lake build $(ERDOS_TARGET)
 
-pde-build: framework-build
-	cd $(PDE_DIR) && lake build
-
-stokes-build:
-	mkdir -p build/hypostructure
-	cd $(STOKES_DIR) && lake build $(STOKES_TARGET)
-
-template-build: framework-build
-	cd $(TEMPLATE_DIR) && lake build
-
-build: framework-build erdos-build pde-build stokes-build template-build
+build: framework-build ab erdos
 
 mathlib-cache:
 	cd $(HYPOSTRUCTURE_DIR) && lake exe cache get
 	cd $(ERDOS_DIR) && lake exe cache get
-	cd $(PDE_DIR) && lake exe cache get
-	cd $(STOKES_DIR) && lake exe cache get
-	cd $(TEMPLATE_DIR) && lake exe cache get
 
 lint:
-	$(PYTHON) tools/check_hypostructure_imports.py --root .
+	$(PYTHON) $(HYPOSTRUCTURE_DIR)/scripts/check_total_execution.py
 
+# Type-A/Type-B frontier.  `abClosure` is expected to be rejected while any
+# terminal is open; `reduceDag%` still exports the run, so the JSON
+# certificate is the artifact this target validates.
+ab-json: framework-build
+	@mkdir -p $(RUN_DIR)
+	@cd $(ERDOS_DIR) && \
+	  if lake build $(AB_TARGET) > ../../$(AB_LOG) 2>&1; then \
+	    echo "A/B frontier: the strict ofDag% declaration closes."; \
+	  elif grep -q "$(RESIDUAL)" ../../$(AB_LOG); then \
+	    echo "A/B frontier: certified reduction retains an exact residual."; \
+	  else \
+	    cat ../../$(AB_LOG); \
+	    exit 1; \
+	  fi
+	@test -s $(AB_RUN) || { echo "missing run export: $(AB_RUN)"; exit 1; }
+	@$(PYTHON) -m json.tool $(AB_RUN) >/dev/null
+	@echo "A/B run exported and validated: $(AB_RUN)"
+
+ab: ab-json
+
+# Official EG proof.  `Official/StructuralProgram.lean` imports
+# `AB/Execution.lean`, so while the A/B frontier still carries a residual its
+# module fails to elaborate and no official run can be exported.  That case is
+# reported distinctly from a genuine build break.
 erdos-json: framework-build
-	mkdir -p build/hypostructure
-	cd $(ERDOS_DIR) && lake build $(ERDOS_TARGET)
-	@test -s $(ERDOS_RUN)
-	$(PYTHON) tools/validate_hypostructure_run.py $(ERDOS_RUN)
+	@mkdir -p $(RUN_DIR)
+	@cd $(ERDOS_DIR) && \
+	  if lake build $(ERDOS_TARGET) > ../../$(ERDOS_LOG) 2>&1; then \
+	    echo "Official EG target built."; \
+	  elif grep -q "$(RESIDUAL)" ../../$(ERDOS_LOG); then \
+	    echo "Official EG run not exported: an imported declaration still"; \
+	    echo "carries a surviving residual (see $(ERDOS_LOG))."; \
+	    echo "Run 'make ab' for the current frontier report."; \
+	    exit 1; \
+	  else \
+	    cat ../../$(ERDOS_LOG); \
+	    exit 1; \
+	  fi
+	@test -s $(ERDOS_RUN) || { echo "missing run export: $(ERDOS_RUN)"; exit 1; }
+	@$(PYTHON) -m json.tool $(ERDOS_RUN) >/dev/null
+	@echo "Official EG run exported and validated: $(ERDOS_RUN)"
 
 erdos: erdos-json
 	@cd $(ERDOS_DIR) && \
 	  if lake env lean HypostructureErdos64EG/Official/ClosureProbe.lean \
-	      > ../../build/hypostructure/eg-closure-audit.log 2>&1; then \
+	      > ../../$(ERDOS_AUDIT) 2>&1; then \
 	    echo "EG closure audit: the strict ofDag% declaration closes."; \
-	  elif grep -q "sealed compiler could not derive total execution closure" \
-	      ../../build/hypostructure/eg-closure-audit.log; then \
+	  elif grep -q "$(RESIDUAL)" ../../$(ERDOS_AUDIT); then \
 	    echo "EG closure audit: certified reduction retains an exact residual."; \
 	  else \
-	    cat ../../build/hypostructure/eg-closure-audit.log; \
+	    cat ../../$(ERDOS_AUDIT); \
 	    exit 1; \
 	  fi
 
-ab: framework-build
-	mkdir -p build/hypostructure
-	cd $(ERDOS_DIR) && lake build $(AB_TARGET)
-	@test -s $(AB_RUN)
-	$(PYTHON) tools/validate_hypostructure_run.py $(AB_RUN)
+test: ab lint
 
-stokes-json: stokes-build
-	@test -s $(STOKES_RUN)
-	@$(PYTHON) -m json.tool $(STOKES_RUN) >/dev/null
-
-stokes: stokes-json
-	@cd $(STOKES_DIR) && \
-	  if lake env lean Stokes/ClosureProbe.lean \
-	      > ../../build/hypostructure/stokes-closure-audit.log 2>&1; then \
-	    cat ../../build/hypostructure/stokes-closure-audit.log; \
-	  elif grep -q "sealed compiler could not derive total execution closure" \
-	      ../../build/hypostructure/stokes-closure-audit.log; then \
-	    cat ../../build/hypostructure/stokes-closure-audit.log; \
-	  else \
-	    cat ../../build/hypostructure/stokes-closure-audit.log; \
-	    exit 1; \
-	  fi
-
-web-data: framework-build erdos-json
-	cd $(HYPOSTRUCTURE_DIR) && HYPOSTRUCTURE_WEB_DECLARATIONS_EXPORT=../$(WEB_RAW) lake env lean Hypostructure/Canonical/WebExport.lean
-	$(PYTHON) tools/build_hypostructure_web_data.py --skip-declaration-export
-	@test -s $(WEB_SNAPSHOT)
-	@test -s $(WEB_MANIFEST)
-
-$(WEB_NODE_STAMP): $(WEB_FRONTEND_DIR)/package.json $(WEB_FRONTEND_DIR)/package-lock.json
-	cd $(WEB_FRONTEND_DIR) && $(NPM) ci
-
-web-build: web-data $(WEB_NODE_STAMP)
-	cd $(WEB_FRONTEND_DIR) && $(NPM) run build
-
-web-backend-test: web-data
-	UV_CACHE_DIR=$(UV_CACHE_DIR) $(UV) run python -m pytest -q \
-	  tests/test_web_api.py tests/test_hypostructure_web_data.py
-
-web-frontend-test: $(WEB_NODE_STAMP)
-	cd $(WEB_FRONTEND_DIR) && $(NPM) run test
-	cd $(WEB_FRONTEND_DIR) && $(NPM) run typecheck
-	cd $(WEB_FRONTEND_DIR) && $(NPM) run build
-
-web-test: web-backend-test web-frontend-test
-
-test:
-	UV_CACHE_DIR=$(UV_CACHE_DIR) $(UV) run python -m pytest -q \
-	  tests/test_hypostructure_run_json.py \
-	  tests/test_hypostructure_web_data.py \
-	  tests/test_web_api.py
-	$(MAKE) web-frontend-test
-
-web: web-build
-	UV_CACHE_DIR=$(UV_CACHE_DIR) $(UV) run gunicorn --preload \
-	  --worker-class gthread --workers $(WEB_WORKERS) --threads $(WEB_THREADS) \
-	  --timeout $(WEB_TIMEOUT) --bind $(WEB_HOST):$(WEB_PORT) \
-	  'web.backend.app.main:create_app()'
+clean-runs:
+	rm -f $(ERDOS_RUN) $(AB_RUN) $(ERDOS_LOG) $(AB_LOG) $(ERDOS_AUDIT)

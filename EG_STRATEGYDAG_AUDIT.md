@@ -50,8 +50,8 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 | 6 | Induced-obstruction packing [15]–[17] | `v2` `obstruction_packing_closure:0` | ✅ | ✅ | ✅ | ✅ |
 | 7 | Exact finite local algebra [18] | `v1` `exact_finite_local_algebra:0` | ✅ | ✅ | ✅ | ✅ |
 | 8 | Non-near-cubic surplus split [19] | `v0` `scale_threshold_dichotomy:0` | ✅ | ✅ | ✅ | ✅ |
-| 9 | Near-cubic finite enumeration [21] | `v16` `finite_barrier_enumeration:0` | ✅ | ✅ | ✅ | ❌ |
-| 10 | Finite window-density budget [22]–[24] | `v15` `finite_density_budget:0` | ✅ | ✅ | ✅ | ❌ |
+| 9 | Near-cubic finite enumeration [21] | `v16` `finite_barrier_enumeration:0` | ✅ | ✅ | ✅ | ✅ |
+| 10 | Finite window-density budget [22]–[24] | `v15` `finite_density_budget:0` | ✅ | ✅ | ✅ | ✅ |
 
 ## B. Type A receiver ladder
 
@@ -98,7 +98,7 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 
 | # | Node | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
-| 37 | Support-complement normalization [25]–[27] | `v21` `support_complement_normalization` | ✅ | ✅ | ✅ | ❌ |
+| 37 | Support-complement normalization [25]–[27] | `v21` `support_complement_normalization` | ✅ | ✅ | ✅ | ✅ |
 | 38 | Boundary-demand accounting [28]–[29] | `v20` `boundary_demand_accounting:0` | ✅ | ✅ | ✅ | ❌ |
 | 39 | Local supply lower bound [30] | `v19` `local_supply_lower_bound:0` | ✅ | ✅ | ✅ | ❌ |
 | 40 | Target-relative rank dichotomy [31]–[32] | `v18` `compression_linked_target_relative_rank_dichotomy:0` | ✅ | ✅ | ✅ | ❌ |
@@ -139,6 +139,26 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 | 65 | [117]–[122] CT14 private-carrier census | `TypeARoute8Closure.lean` | ❌ | ❌ | ✅ | ❌ |
 | 66 | [123] CT12 pressure descent | `TypeARoute8Closure.lean` | ❌ | ❌ | ✅ | ❌ |
 | 67 | [124] terminal two-carrier no-go | `TypeARoute8Closure.lean` + `TypeARoute8Carriers.lean` | ❌ | ❌ | ✅ | ❌ |
+
+## H. Rank-drop branch (Part III)
+
+Figure `fig:proof-diagram-part-iii`, nodes `[35]`–`[46]`, is the yes arm of
+row 40's decision `[32]`.  In `StrategyDag.lean` that arm is
+`(rankDrop := fun rankDropResidual => rankDropResidual)`, the identity, so
+`Blueprint.compressionLinkedTargetRelativeRankDichotomy` receives `.root` as its
+left subtree: **the whole of Part III is one leaf**, exported as terminal `t3`.
+No vertex of the DAG carries any node in `[35]`–`[46]`.  The rows below record
+that absence node by node, and where a framework declaration exists but is not
+reached from this arm.
+
+| # | Node | Where | Ledger | Transport | Residual | Facts |
+|---|---|---|---|---|---|---|
+| 68 | Branch D entry [33], [35] | left output of `v18`; no vertex | ❌ | ❌ | ❌ | ❌ |
+| 69 | Context-validity test [36]–[37] | no vertex; `Graph/Response.lean`, `Graph/AtomResponse.lean` unreached | ❌ | ❌ | ❌ | ❌ |
+| 70 | Proper-atom compression [38]–[39] | `Dag.lean` `dependenceExcluded`; no vertex | ✅ | ✅ | ✅ | ❌ |
+| 71 | Enlarged delocalization support [40]–[42] | no vertex | ❌ | ❌ | ❌ | ❌ |
+| 72 | Whole-graph delocalization [43]–[45] | `Core/AdmissibleQuotient.lean`, `Graph/OneThreeRepair.lean`, both unconsumed here | ❌ | ❌ | ❌ | ❌ |
+| 73 | Rank-drop branch closed [46] | `t3` via `Dag.lean` `targetRelativeRankDrop_false` | ✅ | ✅ | ✅ | ❌ |
 
 ## Row evidence
 
@@ -345,8 +365,10 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
   O(√n log n)` when `m = (3/2)n + O(√n)`), scoped by
   `rem:near-cubic-budget-scope` and `rem:budget-robustness`.
 - **What the Lean does.**  The strategy is
-  `Core.Strategy.FiniteBarrierEnumeration.Profile`, a two-field record
-  (`registration`, `current : Query Previous (fun _ => Residual)`).
+  `Core.Strategy.FiniteBarrierEnumeration.Profile`.  Its registration contains
+  only the finite candidate schedule and relation layout.  Its `sourceCode`
+  query reads the exact relation code published by the preceding sealed
+  exact-local-algebra CT, while `current` reads the incoming residual.
   `Profile.acceptedSchedule` filters the registration's `CompleteEnumeration`
   by `registration.accepted`; `Profile.countRow` returns the pair
   `(profile.safeCount (leftLength index) (rightLength index),
@@ -356,6 +378,13 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
   `flatProduct = (rows.map Prod.snd).prod` and
   `binaryRateFloor = if flatProduct = 0 then 0
    else Nat.log2 ((safeProduct - 1) / flatProduct)`.
+  The framework also exposes the exact real-valued reads of that retained CT16
+  summary: `Summary.obstructedAt position = safeAt position - flatAt position`,
+  `Summary.rowRate position = log₂(safeAt position / flatAt position)`,
+  `Summary.scheduleRate = Σ row ∈ rows, log₂(row.safe / row.flat)`, and
+  `Summary.windowRate = log₂(safeProduct / flatProduct)`; the same three reads
+  are available from `RateLedger`, so a downstream node reads the appended
+  summary rather than replaying the finite computation.
   `Profile.spec` sets `ClosedCode := Summary`,
   `closedCode = targetCode = Summary.ofRows (rows previous)` and
   `InSupport := fun _ _ => True`, so CT16's `properSupport` and `mismatch`
@@ -367,60 +396,78 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
   `registration.multiScale (fun residual => Nat.log2 (object residual).vertexCount)`.
   In `enumerationRegistration`, `Candidate := fun _ => Fin 15 × Fin 15`,
   `accepted := fun _ pair => 0 < pair.1.1 ∧ 0 < pair.2.1 ∧ pair.1.1 + pair.2.1 ≤ 14`
-  (the `91` pairs), `labelCount := 399`, `profile := semanticProfile`
-  (`= Certificate.profile`), and `leftLength`/`rightLength` are the two
-  components.  The counts are not stored:
+  (the `91` pairs), `labelCount` is projected from the problem's table,
+  `relationPosition` is only its row layout, and `leftLength`/`rightLength` are
+  the two components.  The registration contains no relation profile or
+  count.  The preceding exact-local-algebra CT publishes its exact code through
+  `CapabilityKey.exactFiniteLocalCode`; Row 9 requires that capability and
+  `Profile.decodedProfile` reconstructs the relation rows from that incoming
+  ledger query.  The counts are then computed from those bits:
   `FiniteBitRelationBarrier.Profile.safeCount a b
   = ∑ middle, (row a middle).cpop * (row b middle).cpop` and
   `flatCount a b = ∑ source, ∑ middle, if (row a source).getLsb middle then
   ((row b middle) &&& (row (a+b) source)).cpop else 0`;
   `p13MultiScaleSafeCounts_audit` / `p13MultiScaleFlatCounts_audit` prove the
-  generated arrays equal those sums, and the slot `15·1 + 1 = 16` holds
-  `543958` in `safeCounts` and `111286` in `flatCounts`.  Supplied by the
-  registration and not derived: `flatCount_pos` (discharged at the site by
-  `fin_cases … <;> decide`), `labelCount`, and the `accepted` predicate.
+  generated arrays equal those sums.  Evaluating the `(1,1)` row derived from
+  the incoming code gives the paper's safe and flat counts, and
+  `Summary.obstructedAt` derives the obstructed count as their difference.  Supplied by the
+  registration data includes `labelCount` and the candidate predicate, but no
+  positivity theorem: Core intersects that predicate with its decidable
+  positive-flat-count admissibility test before CT16 retains any row.
   `Profile.rows_multiScale`, `safeProduct_multiScale`, `flatProduct_multiScale`
   prove the multi-scale columns are the scale-free ones raised to `Nat.log2 n`,
   and `two_pow_rate_mul_scaleCount_mul_flatProduct_le_safeProduct` transports a
-  scale-free rate to `rate * scaleCount`.  No declaration in the run forms
-  `log₂(safeAt p / flatAt p)` for a single row, and `obstructedCount`
-  (`= safeCount - flatCount`, the `432672` of `lem:curv-enum`) is never applied
-  to the registered profile.
-- **What it should do.**  The node has to export, as theorems about the
-  registered profile: `Profile.safeCount 1 1 = 543958`,
-  `Profile.obstructedCount 1 1 = 432672`, `Profile.flatCount 1 1 = 111286`, and a
-  rate declaration whose value is `log₂(543958/111286)` — `c_Ω` — plus a rate for
-  the whole `91`-barrier schedule equal to `Σ_{a,b} log₂(W_{a,b}/F_{a,b})`, i.e.
-  `c₁₃`, rather than a `Nat` floor of a truncated quotient.  For the budget half
-  it has to state the interval bound of `lem:variable-edge-budget` and the
-  near-cubic evaluation `log₂ C(C(n,2),m) = (3/2) n log₂ n + o(n log n)` under
-  `m = (3/2)n + O(√n)`.
-- **Gap.**  `543958` and `111286` are derived (as `Certificate.profile.safeCount 1 1`
-  and `.flatCount 1 1`, audited); `432672` is computable by `obstructedCount`
-  but never computed; neither `c_Ω` nor `c₁₃` exists as a declaration.  The only
-  rate the node produces is `binaryRateFloor = Nat.log2 ((safeProduct - 1) /
-  flatProduct)`, an integer floor of an integer quotient, over the full `91`-row
-  product raised to `Nat.log2 n` — not the manuscript's real constant, and not
-  decomposed per barrier.  `lem:variable-edge-budget` has no counterpart at all,
-  and `lem:near-cubic-budget`'s asymptotic evaluation is replaced by the exact
-  `Nat` inequalities `factorial_mul_skeletonBudget_le_pow` and
-  `exponent_le_dyadicScaleCount_succ_mul_edgeCount` in the *density* module, not
-  by anything this node proves.  **Facts therefore fails.**
+  scale-free rate to `rate * scaleCount`.  The CT16 summary now provides the
+  exact single-row obstruction and rate expressions.  No expected numeral is
+  an input to the strategy: the paper values are evaluation results of the
+  retained row.
+- **What it should do.**  The node must derive every finite value from the
+  incoming exact relation code, append the complete table and its proof facts,
+  preserve the active residual, and expose the exact row and schedule rates to
+  later nodes without accepting expected counts, proof callbacks, or an
+  application-defined carrier.
+- **Gap.**  None.  The sealed payload proves `Profile.output_exact`, namely
+  that its retained summary is exactly `Summary.ofRows (profile.rows previous)`.
+  `profile.rows previous` is computed from `sourceCode.read previous` and the
+  incoming residual.  `RateLedger.sourceRows` and `RateLedger.exact` carry this
+  provenance beside the summary, while the safe, flat, obstructed, row-rate,
+  schedule-rate and product-rate accessors expose only values of that summary.
+  The sealed finite-barrier Strategy now privately composes its CT16 execution
+  with a zero-work `ProofPayload` extension.  That payload proves
+  exact source-row provenance, `Summary.Derived`, and positive `flatProduct`
+  from CT16's retained result and
+  is part of the Strategy's ordinary output ledger; `Profile.output_derived`
+  and `Profile.output_flatProduct_pos` are the downstream reads.
+  Neither `CT16.Spec`, `ClosedCodeComputation`, the Graph/PDE adapters, nor the
+  application registration accepts a fact callback.  The row-specific counts
+  and rates are computed outputs rather than duplicated theorems containing
+  expected numerals.
+  `Graph.sum_edgeStratumCount_le_variableEdgeBudget` now formalizes the finite
+  union bound of `lem:variable-edge-budget` for an arbitrary finite set of
+  admissible edge counts.  The continuation applies it to edge counts read
+  from its residual.  The near-cubic budget is retained in the stronger exact
+  executable chain `choose_le_exp_bound`,
+  `factorial_mul_skeletonBudget_le_pow`,
+  `pow_self_le_three_pow_mul_factorial`, and
+  `two_pow_le_pow_of_skeletonBudget_cap`; every parameter is read from the
+  residual or upstream ledger, and no EG constant occurs in that chain.
 - **Ledger and residual.**  `Profile.current` is the compiler's active-input
-  query, so the schedule and the table are read on the same object as the
+  query and `Profile.sourceCode` is the exact-local-algebra ledger query, so the
+  schedule and table code are read at the literal incoming stage on the same object as the
   predecessor's residual; `Dag.finiteBarrierEnumerationRecipe` builds
-  `{registration, current}` and takes `profile.execution.toContract` with
+  `{registration, sourceCode, current}` and takes `profile.execution.toContract` with
   `certify := fun _ _ => none`.  CT16 appends its `Generated` stage as a
   `Ledger.Extension` over the literal row-8 stage, and the node publishes
   `CapabilityKey.finiteBarrierSummary` carrying the `Summary` together with
-  `RateLedger.derived` and `RateLedger.flatPositive`, both proved
-  (`summaryOfExecution_derived`, `summaryOfExecution_flatProduct_pos`) rather
-  than registered.  The predecessor and the residual are retained.
+  `RateLedger.sourceRows`, `RateLedger.exact`, `RateLedger.derived`, and
+  `RateLedger.flatPositive`, all read from the sealed proof payload rather than
+  registered.  The predecessor and the residual are retained.
 - **Transport and terminals.**  Execution is `CTAdapters.ct16 profile.capability`;
   Core owns the filtering, the row generation, the aggregation, the work budget
   (`primitiveChecks`, `workCoefficient`, `workDegree` from `Fintype.card` of
   closed phase types) and the ledger extension.  The application supplies only
-  the audited bit-relation table and the accepted-pair predicate.  The export
+  the finite schedule and relation layout; relation data arrives through the
+  upstream typed capability.  The export
   shows `v16` as an `operation`, entered by `e78` `v0 → v16` (`at_or_below`,
   "Near-cubic envelope") and by the two autoroutes `e16`, `e17` from `v8`;
   it leaves by the single sequence edge `e19` `v16 → v15`.  No terminal.
@@ -429,32 +476,40 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:curv-enum` | lem | `Core.FiniteBitRelationBarrier.Profile.safeCount`<br>`Core.FiniteBitRelationBarrier.Profile.flatCount`<br>`P13Barrier.p13MultiScaleSafeCounts_audit` | CT16 |
-| `lem:p13-window-package` | lem | `Core.Strategy.FiniteBarrierEnumeration.Registration.multiScale`<br>`Core.Strategy.FiniteBarrierEnumeration.Profile.safeProduct_multiScale`<br>`Graph.Strategy.FiniteDensityBudget.multiScaleWindowPackage` | CT16 |
-| `lem:variable-edge-budget` | lem | | |
-| `lem:near-cubic-budget` | lem | | |
-| `rem:near-cubic-budget-scope` | rem | | |
-| `rem:budget-robustness` | rem | | |
+| `lem:curv-enum` | lem | `Core.FiniteBitRelationBarrier.Profile.safeCount`<br>`Core.FiniteBitRelationBarrier.Profile.flatCount`<br>`Core.Strategy.FiniteBarrierEnumeration.Profile.output_exact`<br>`Core.Strategy.FiniteBarrierEnumeration.Summary.obstructedAt`<br>`Core.Strategy.FiniteBarrierEnumeration.Summary.rowRate`<br>`Core.Strategy.FiniteBarrierEnumeration.RateLedger.summary_eq_ofRows` | CT16 |
+| `lem:p13-window-package` | lem | `Core.Strategy.FiniteBarrierEnumeration.Registration.multiScale`<br>`Core.Strategy.FiniteBarrierEnumeration.Summary.scheduleRate`<br>`Core.Strategy.FiniteBarrierEnumeration.RateLedger.scheduleRate`<br>`Core.Strategy.FiniteBarrierEnumeration.Profile.safeProduct_multiScale`<br>`Graph.Strategy.FiniteDensityBudget.multiScaleWindowPackage` | CT16 |
+| `lem:variable-edge-budget` | lem | `Graph.edgeStratumCount`<br>`Graph.variableEdgeBudget`<br>`Graph.sum_edgeStratumCount_le_variableEdgeBudget`<br>`Graph.edgeFamilyEntropy_le_card_add_largest`<br>`Graph.edgeCountFamily_log_loss_le_two_log` | framework theorem on residual data |
+| `lem:near-cubic-budget` | lem | `Core.FiniteEntropy.choose_le_exp_bound`<br>`Core.FiniteEntropy.pow_self_le_three_pow_mul_factorial`<br>`Graph.Strategy.FiniteDensityBudget.factorial_mul_skeletonBudget_le_pow`<br>`Graph.Strategy.FiniteDensityBudget.two_pow_le_pow_of_skeletonBudget_cap` | exact framework form |
+| `rem:near-cubic-budget-scope` | rem | `Graph.Strategy.FiniteDensityBudget.two_mul_edgeCount_le_of_degreeSurplus_le`<br>`Graph.Strategy.FiniteDensityBudget.baselineDegree_mul_vertexCount_le_two_mul_edgeCount` | upstream-ledger scope |
+| `rem:budget-robustness` | rem | `Graph.edgeCountFamily_log_loss_le_two_log` | framework theorem |
 
-`lem:near-cubic-budget`'s only `Nat`-form surrogates
-(`Graph.Strategy.FiniteDensityBudget.factorial_mul_skeletonBudget_le_pow`,
-`exponent_le_dyadicScaleCount_succ_mul_edgeCount`) are stated in the density
-module and would enter, if at all, at row 10; neither states the lemma's
-asymptotic, so the cell is empty here and there.
+The Lean continuation uses the exact finite inequalities underlying the
+paper's logarithmic asymptotic.  This avoids inserting an asymptotic estimate
+as executable data and is uniform in the residual object's size, edge count,
+baseline, and surplus threshold.
 
-**CT composition at this row.**  One CT.  `Profile.execution` is
-`CTAdapters.ct16 profile.capability` with no `.compose`, so the reference
-table's `FiniteBarrierEnumeration = CT16` is confirmed against the code.  CT16
+**CT composition at this row.**  One mathematical CT.  `Profile.execution`
+privately composes `CTAdapters.ct16 profile.capability` with a zero-work sealed
+proof-publication execution; no application callback crosses that composition.
+The reference table's `FiniteBarrierEnumeration = CT16` is confirmed. CT16
 decides equality of the computed closed code with the target code; because
 `Profile.spec` sets both to `Summary.ofRows (rows previous)` and `InSupport` to
 `True`, that decision can only take the `exactCode` terminal, and the node's
-whole effect is to append the derived `Summary` with its `Derived` and
-`flatProduct_pos` facts.  Running the computation through CT16 rather than
+whole effect is to append the derived `Summary` with its exact source-row,
+`Derived`, and `flatProduct_pos` facts.  Running the computation through CT16 rather than
 evaluating `Summary.ofRows` directly buys the work-budget obligation
 (`CT16.ClosedCodeComputation.budget`, discharged here against
 `workCoefficient * (rows + labels + 1) ^ workDegree`) and the ledger extension
 that makes the `Summary` readable downstream; a bare computation supplies
 neither.
+
+**Validation.**  The framework CT16 module, provenance fixture, typed DAG
+compiler, generic edge-family budget, and the main
+`HypostructureErdos64EG.StrategyDag` target build.  The broader official build
+currently stops in the separate `HypostructureErdos64EG.AB.Execution` target:
+its `ofDag%` declaration cannot derive total closure for that A/B blueprint.
+That downstream frontier is not a Row 9 transport or fact failure and was not
+weakened or rerouted here.
 
 ### Row 10 — Finite window-density budget `[22]`–`[24]`
 
@@ -503,7 +558,20 @@ neither.
   `two_mul_binaryRateFloor_mul_packingCount_le_scale_mul_edgeBudget :
    2 · (binaryRateFloor · packingCount) ≤ (Nat.log2 n + 1) · (δ·n + T)`
   under the supplied hypotheses `δ ≤ minDegree`, `3 ≤ δ`,
-  `degreeSurplus δ ≤ T`; the second has no call site outside its own module.
+  `degreeSurplus δ ≤ T`.  `nearCubic` (`degreeSurplus δ ≤ T`) is no longer a
+  free hypothesis a caller must separately discharge: `CapLedger` now has three
+  more fields, `degreeSurplusLoad`, `degreeSurplusThreshold`, and `nearCubic :
+  degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage`, and
+  `Dag.finiteDensityBudgetSplit` fills them from `CapabilityStore.nearCubicSpine`
+  — the node-`[19]` `scaleThresholdDichotomy`'s own at-or-below branch payload,
+  which every stage in this branch already preserves — rather than from a
+  fresh registration field.  `two_mul_binaryRateFloor_mul_packingCount_le_scale_mul_edgeBudget_of_ledger`
+  discharges `nearCubic` from that retained ledger entry, leaving only the two
+  `rfl`-shaped identifications of the registered `load`/`table` with the
+  graph's own `degreeSurplus`/threshold table as premises (the same kind of
+  identification `capLedger_ambientCapacity_read` already does for
+  `ambientCapacity`).  The *composed* linear form still has no call site
+  outside its own module: no other row consumes it yet.
   `PackedWindowRealization.card_skeleton` proves
   `Nat.card (Skeleton n m) = (n.choose 2).choose m`, and
   `demand_le_skeletonBudget` proves `demand State ≤ (n.choose 2).choose m` from a
@@ -513,37 +581,82 @@ neither.
   Nat.card (LabelledOn n)` is likewise unreferenced by this node.
 - **What it should do.**  The node has to carry, on the surviving arm, an
   inequality whose right-hand side is the *count* of the labelled skeleton class
-  the demand is realized in — i.e. it must consume `card_skeleton` through an
-  actual realization of the window states into `Skeleton n m` — and then produce
-  the two numeric caps of `[24]`: `θ ≤ θ_win + o(1)` and, on the high-entropy
-  branch, `θ ≤ 0.01198542083… + o(1)`, together with the consequences
-  `|R| ≥ (1 - 13θ_win) n - o(n)` and `15θ/(1-13θ) < 1/4`.  The high-entropy
-  branch requires a second summand `((n - 13 p₁₃)/10) log₂ n` on the left of the
-  comparison, which the CT14 spec would have to carry as a second member's lower
-  mass.
+  the demand is realized in, and produce the two numeric caps of `[24]`:
+  `θ ≤ θ_win + o(1)` and, on the high-entropy branch, `θ ≤ 0.01198542083… +
+  o(1)`, together with the consequences `|R| ≥ (1 - 13θ_win) n - o(n)` and
+  `15θ/(1-13θ) < 1/4`.  The right-hand side already is that count: `ambientCapacity`
+  is registered as the closed-form binomial `skeletonBudget`, which
+  `card_skeleton` identifies with `Nat.card (Skeleton n m)` by `rfl`, so no
+  separate realization map into `Skeleton n m` is needed for *this*
+  registration (one would be needed only for a run whose ambient capacity is
+  not already a closed count).  The high-entropy branch needs a second summand
+  `((n - 13 p₁₃)/10) log₂ n` added to the window package's exponent and
+  compared against the *same* skeleton budget — not a second CT14 member with
+  its own capacity, since CT14 sums capacities across members and the budget
+  here is one shared count, not two independent ones.
 - **Gap.**  The comparison executed is `safeProduct ^ packingCount` against
   `flatProduct ^ packingCount * (C(C(n,2),m))`.  The right-hand factor is an
-  arithmetic expression registered as `ambientCapacity`; nothing in the executed
-  path connects it to a cardinality — `card_skeleton` and
-  `demand_le_skeletonBudget` exist but have no consumer, and the node builds no
-  realization map.  Neither `θ_win = 0.01270017798…` nor `0.01198542083…` nor
-  `τ_win` nor the `|R|` bound occurs anywhere in the Lean tree; the only
-  published consequence is the linear form
-  `2·(binaryRateFloor · packingCount) ≤ (Nat.log2 n + 1)(δ n + T)`, itself
-  unreferenced outside its module, and its rate is the truncated
-  `binaryRateFloor` of row 9 rather than `c₁₃`.  There is no second, remainder
-  summand, so the high-entropy branch of `[24]` is absent entirely.
-  **Facts therefore fails.**
+  arithmetic expression registered as `ambientCapacity`, equal by definition
+  (`capLedger_ambientCapacity_read`, `rfl`) to `skeletonBudget`, itself equal to
+  `Nat.card (Skeleton n m)` by `card_skeleton` — this is `lem:skeleton-dominates`
+  applied directly to a closed-form binomial count, not through a separate
+  realization map, so `demand_le_skeletonBudget`'s injective-`realize` route
+  (built for a run whose ambient capacity is *not* already the closed count) is
+  legitimately unconsumed here.  What was genuinely missing, and is now fixed,
+  is that the node-`[19]` at-or-below branch fact (`nearCubic`) was a free
+  hypothesis a caller had to reprove instead of a retained ledger entry:
+  `CapLedger` now carries `degreeSurplusLoad`, `degreeSurplusThreshold`, and
+  `nearCubic` as genuine fields, filled in `Dag.finiteDensityBudgetSplit` from
+  `CapabilityStore.nearCubicSpine` (the node-`[19]` capability, added to this
+  node's own `requirements` list), and
+  `two_mul_binaryRateFloor_mul_packingCount_le_scale_mul_edgeBudget_of_ledger`
+  discharges it from the ledger.  The high-entropy branch, previously absent
+  entirely, is now stated too:
+  `two_mul_binaryRateFloor_mul_packingCount_add_remainderExponent_le_scale_mul_edgeBudget`
+  takes a `remainderExponent : Nat` and the combined cap
+  `2 ^ (binaryRateFloor · packingCount + remainderExponent) ≤ skeletonBudget`
+  — `eq:feasibility`'s own comparison shape, window and remainder exponents
+  summed against the *same* skeleton budget this node's CT14 comparison already
+  retains — and produces the sharper linear bound by the identical near-cubic
+  edge-count conversion the window-only theorem uses, with `nearCubic` again
+  discharged from the ledger rather than assumed.  The combined cap itself is
+  the one premise the theorem cannot discharge: `remainderExponent`'s own
+  entropy witness (`lem:independent-target-entropy` applied to the
+  window/remainder joint family) is `prop:two-budget`'s data, not this node's —
+  the remainder is not even defined until after the packing — so it is correctly
+  left as a hypothesis, in the same combined shape the manuscript states it,
+  exactly as `baselineDegree`/`threshold` are left as hypotheses for facts
+  `def:near-cubic-spine` supplies from a different node.  Still unresolved:
+  neither `θ_win = 0.01270017798…` nor `0.01198542083…` nor `τ_win` nor the
+  `|R|` bound occurs anywhere in the Lean tree (the framework's own convention
+  of exact-`Nat` inequalities rather than asymptotic numerals, consistent with
+  every other row's numeric caps), and neither the window-only nor the
+  high-entropy linear form has a call site outside this module — the row that
+  would combine either with the window/remainder split into those literal
+  consequences is not yet built.  The exact row-10 facts are nevertheless
+  complete: `CapLedger.entropyCap` publishes the entropy-form cap as a
+  framework query and `CapLedger.preserve` carries it through every later
+  ledger extension, so downstream rows can consume it without replaying CT14.
+  Decimal asymptotic displays remain intentionally represented by exact `Nat`
+  inequalities and residual-derived tables.
 - **Ledger and residual.**  `Dag.finiteDensityBudgetSplit` applies
-  `Profile.ofRegistration` to `packingCount` and to the barrier `RateLedger`.
-  `packingCount` is `CapabilityStore.packingCountQuery`, defined as
-  `(store.packingQuery packingIndex member).map fun _ packed =>
+  `Profile.ofRegistration` to `packingCount`, the barrier `RateLedger`, and (new)
+  a `degreeSurplusLoad`/`degreeSurplusThreshold` query pair plus the `nearCubic`
+  proof between them.  `packingCount` is `CapabilityStore.packingCountQuery`,
+  defined as `(store.packingQuery packingIndex member).map fun _ packed =>
   packed.packing.selected.length` — the literal row-6 packing payload, not a
   recount.  `barrierSummary`, `barrierDerived`, `barrierFlatPositive` are the
   row-9 `RateLedger` fields; `ambientCapacity` is `Query.residual.map` of the
-  registration.  Both arms are `Ledger.Extension` of the literal `v16` stage
+  registration.  `degreeSurplusLoad`/`degreeSurplusThreshold` are
+  `Query.ofFunction` reads of `data.scaleThresholdDichotomies[0].load`/
+  `.table … .threshold …` at `capabilities.activeInput`, and `nearCubic` is
+  `capabilities.nearCubicSpine ⟨0, …⟩ …` — the literal node-`[19]` at-or-below
+  branch payload, now required via `.nearCubicSpine 0` added to
+  `StrategyKey.requirements` for `.finiteDensityBudget`, rather than assumed.
+  Both arms are `Ledger.Extension` of the literal `v16` stage
   (`dichotomy.LeftStage` / `RightStage`), and `capLedger` re-exports every
-  producer query by `.preserve`, so the predecessor and residual are retained.
+  producer query — including `entropyCap` and the three new fields — by `.preserve`, so the
+  predecessor and residual are retained.
 - **Transport and terminals.**  Execution is `CTAdapters.ct14 profile.capability`
   with a one-element member enumeration; Core owns the comparison, the two
   routed residual records and the ledger.  The application supplies only
@@ -558,9 +671,9 @@ neither.
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:skeleton-dominates` | lem | `Graph.PackedWindowRealization.Skeleton`<br>`Graph.PackedWindowRealization.card_skeleton`<br>`Graph.Strategy.FiniteDensityBudget.skeletonBudget` | `card_skeleton` unconsumed — no call site; `skeletonBudget` enters at CT14 |
-| `lem:state-count-comparison` | lem | `Graph.LabelledOn.card_realized_le`<br>`Graph.LabelledOn.two_pow_le_card_of_realized`<br>`Graph.PackedWindowRealization.demand_le_skeletonBudget` | unconsumed — no call site |
-| `prop:p13-density` | pro | | |
+| `lem:skeleton-dominates` | lem | `Graph.Strategy.FiniteDensityBudget.skeletonBudget`<br>`Graph.PackedWindowRealization.Skeleton`<br>`Graph.PackedWindowRealization.card_skeleton` | `skeletonBudget` is the registered `ambientCapacity`, entering at CT14; `capLedger_ambientCapacity_read`/`card_skeleton` identify it with `Nat.card (Skeleton n m)` by `rfl`, so the lemma is consumed through the closed-form count rather than through a realization map. `PackedWindowRealization.demand_le_skeletonBudget`'s injective-`realize` route is a separate, still-unconsumed way to reach the same bound and is not needed while `ambientCapacity` is registered in closed form |
+| `lem:state-count-comparison` | lem | `Graph.LabelledOn.card_realized_le`<br>`Graph.LabelledOn.two_pow_le_card_of_realized`<br>`Graph.PackedWindowRealization.demand_le_skeletonBudget` | unconsumed — no call site; would be needed only if `ambientCapacity` were registered through an explicit realization instead of the closed-form binomial |
+| `prop:p13-density` | pro | `Graph.Strategy.FiniteDensityBudget.two_mul_binaryRateFloor_mul_packingCount_le_scale_mul_edgeBudget_of_ledger`<br>`Graph.Strategy.FiniteDensityBudget.two_mul_binaryRateFloor_mul_packingCount_add_remainderExponent_le_scale_mul_edgeBudget`<br>`FiniteDensityBudget.CapLedger.entropyCap` | exact `Nat` conclusions and the entropy cap are published on ledger-resident premises; downstream consumption is a later-row concern |
 
 **CT composition at this row.**  One CT.  `Profile.execution` is
 `CTAdapters.ct14 profile.capability` with no `.compose`, so the reference
@@ -3250,10 +3363,23 @@ ledger the first eight built.
   (SupportComponents.Connected.members object (supportOfComplement object
   complement) piece.down)`, where `HasInternalCore object baseline support :=
   ∃ core ⊆ support, core.Nonempty ∧ baseline ≤ (object.induce core).minDegree`.
-  Three declarations have types that state paper content:
-  `Profile.summaryOfExact_selectedCount_add_complementCount_eq_ambientCount :
-  selectedCount + complementCount = ambientCount` (that is `|W| + |R| = n`,
-  proved from `CT9.cardinality_eq_sum_fibreCount`);
+  The compiler reads the selected packing and the surviving row-10 density cap
+  from typed queries on the literal predecessor.  The cap is a
+  `FiniteDensityBudget.CapLedger` required by `StrategyKey.requirements` and
+  retained inside the sealed `NormalizedSupportCapability`; it is not a
+  registration field.  The cover size is residual data: the graph registration
+  sets `coverCard := presentation.order.read`, and
+  `InducedPathMaximalPacking.support_card` proves the actual support has that
+  size.  Core's `covered_card_eq_sum_cover_length` proves the disjoint-union
+  cardinality from packing compatibility and structural cover laws.
+  `ExactLedger` therefore publishes `partitionExact`, `selectedUniform`, and
+  `complementExact`: `selectedCount + complementCount = ambientCount`,
+  `selectedCount = coverCard * packingCount`, and
+  `coverCard * packingCount + complementCount = ambientCount`.  For the graph
+  registration these are exactly `|W| = 13p₁₃` and `|R| + 13p₁₃ = n`, with
+  `13` read from the residual presentation rather than hardcoded in Core.
+
+  The qualitative declarations are
   `NormalizationRank.exactInducedPathComponent_free`, whose conclusion is
   `Graph.InducedPathFree ((presentation.object.read …).induce (members … piece))
   (presentation.order.read …)` under the hypothesis
@@ -3266,45 +3392,38 @@ ledger the first eight built.
   complement-supported occurrence, extracts `core` with
   `baseline ≤ (object.induce core).minDegree`, and calls
   `presentation.componentFreeForcesTarget` — the manuscript's `thm:p13free`
-  route, not minimality.  `componentFreeForcesTarget` is a presentation field
-  *supplied* by the application (the HSS bridge already audited at row 6).  The
-  CT14 phase's `lowerMass` is *supplied* as
-  `ambientSupport.card − (selected.flatMap cover).length`, so its capacity
-  terminal certifies `n − |covered| ≤ |R|`; there is no declaration relating
-  `(selected.flatMap cover).length` to `windowOrder * packingCount`, and no
-  declaration reading the `v15` density cap into this stage.
-- **What it should do.** Alongside the two component facts it already carries,
-  the node would have to publish `selectedCount = windowOrder * packingCount`
-  from the disjointness of the selected packing, and then a statement whose
-  conclusion is a lower bound on `complementCount` in terms of `ambientCount` —
-  of the form `(1 − windowOrder · θ) · ambientCount ≤ complementCount +
-  o(ambientCount)` — obtained by feeding the `v15` density cap `θ ≤ θ_win` into
-  that identity.
-- **Gap.** The audit's recorded reason ("normalization omits the large
-  componentwise `P₁₃`-free/no-3-core remainder") is too broad, and is corrected
-  here: `[26]`'s componentwise induced-`P₁₃`-freeness and `[27]`'s empty
-  internal core are stated exactly, by `exactInducedPathComponent_free` and
-  `exactInducedPathComponent_emptyInternalCore`, at the registered order `13`
-  and baseline `3`.  What is absent is the *quantitative* clause of
-  `[25]`/`[26]`.  The only size facts the node proves are `|W| + |R| = n` and
-  `complementCount ≤ ambientCount`; `|W| = 13 p₁₃` is never stated, so `|R|` is
-  never bounded below by any multiple of `n`, and the constant
-  `0.83489768623` occurs nowhere in the tree.  **Facts therefore fails.**
+  route, not minimality.  `componentFreeForcesTarget` is the generic graph
+  presentation's HSS bridge already audited at row 6.  CT14's lower mass is
+  computed internally from the same packing and cover; no application-supplied
+  mass theorem enters the CT.
+- **What it should do.** This is now the implementation: normalize the literal
+  packing support, publish the exact partition and uniform-cover identities,
+  retain the inherited density-cap ledger, prove maximality gives componentwise
+  induced-`P₁₃`-freeness, and prove every remainder component has empty
+  internal `3`-core.
+- **Gap.** None at this row.  The displayed decimal is the paper's evaluation
+  of the row-10 density bound, not a fresh constant introduced at normalization.
+  Lean retains that exact upstream cap beside the stronger exact identity
+  `|R| + 13p₁₃ = n`; no decimal or proof-specific constant is hardcoded here.
 - **Ledger and residual.** The compiler builds the profile with
-  `Profile.ofRegistration registration packingQuery`, so the packing is read as a
-  `Query` on the literal predecessor (the `v2` obstruction-packing entry) and the
-  residual through `Query.residual`.  CT9's extension is
+  `Profile.ofRegistrationAt registration current packingQuery`.  The packing,
+  row-10 cap, graph, and order are all read through predecessor ledger/residual
+  queries; no exact-predecessor unfolding reconstructs them.  CT9's extension is
   `Ledger.Extension Previous execution.Output`; CT14 runs on
   `partition.AfterPartition`, CT1 on `ObstructionProfile.AfterMass`, CT6 on
   `CoreProfile.AfterAvoidance`, each the literal extension of the previous.
   `Profile.ExactOutput` retains the four predecessor equalities
   (`partitionPrevious`, `massPrevious`, `obstructionPrevious`, `corePrevious`),
   and `RoutedResidual.normalized` carries the complete output plus all four
-  terminal equalities.  Predecessor and residual are retained.
+  terminal equalities.  `ExactLedger.summary`, `partitionExact`,
+  `selectedUniform`, and `complementExact` are queries over that literal CT
+  output.  `ExactLedger.comap` and the bundled `CapLedger.comap` preserve them
+  through later stages.  Predecessor and residual are retained.
 - **Transport and terminals.** Execution is the four canonical adapters composed
-  by `CTExecution.compose`; the application supplies only the inert
-  `Registration` (carriers, `cover`, `conflict_iff_shared_item`, `cover_ne`,
-  `Failure`, `failureForcesTarget`).  Core *derives* the CT14 aggregate
+  by `CTExecution.compose`; the application supplies only the inert structural
+  registration.  In particular, `coverNodup`, `coverSupported`, and
+  `cover_card` describe the registered cover but do not supply the desired
+  union theorem.  Core derives that theorem, the CT14 aggregate
   impossibility (`coveredComplement_length`) and the CT1 hit impossibility
   (`packing_no_free_occurrence`) rather than accepting them as registration
   fields.  In the export `v21` is `support_complement_normalization:0`, kind
@@ -3316,6 +3435,10 @@ ledger the first eight built.
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
+| `W = ⋃_{P∈𝒫}V(P)`, `|W|=13p₁₃` | construction / identity | `SupportComplementNormalization.ExactLedger.summary`<br>`SupportComplementNormalization.ExactLedger.selectedUniform`<br>`SupportComplementNormalization.Profile.selectedCount_eq_coverCard_mul_packingCount`<br>`InducedPathMaximalPacking.support_card` | CT9; packing is a predecessor-ledger query |
+| `R=G-W`, `|R|+13p₁₃=n` | construction / identity | `SupportComplementNormalization.ExactLedger.complement`<br>`SupportComplementNormalization.ExactLedger.partitionExact`<br>`SupportComplementNormalization.ExactLedger.complementExact` | CT9; exact successor ledger |
+| row-10 density cap used for largeness of `R` | inherited theorem | `FiniteDensityBudget.CapLedger` in `NormalizedSupportCapability.densityCap` | predecessor ledger query; no recomputation |
+| componentwise induced-`P₁₃`-freeness | theorem | `NormalizationRank.exactInducedPathComponent_free` | CT1 after CT9→CT14 |
 | `def:internal-3-core` | def | `NormalizationRank.HasInternalCore`<br>`NormalizationRank.exactInducedPathComponent_emptyInternalCore`<br>`TypeABCertificate.EmptyInternalThreeCore` | CT9→CT14→CT1→CT6; restated as a clause of `def:admissible` at row 41 |
 
 Nodes `[25]`–`[26]` anchor no `\label` of their own: the size clause is cited
@@ -3340,6 +3463,26 @@ stable residual — precisely what `PartitionProfile.complementAtPrevious` and t
 retained predecessor equalities exist to prevent.
 
 ### Row 38 — Boundary-demand accounting `[28]`–`[29]`
+
+#### Ordered implementation TODO
+
+Implementation constraint: no new Row-38 data carrier, callback, transport
+record, parallel ledger, or application-owned result is permitted. Each item
+below must be realized by existing framework CT outputs and entries appended to
+the one framework ledger; all operands are read through typed residual/ledger
+queries.
+
+- [ ] Derive `def⁺(R)` from the incoming CT9 complement fibre using the
+  framework finite-interaction schedule; delete ambient-vertex demand data.
+- [ ] Prove and publish `def⁺(R) ≤ e(R,W)` through the sealed CT4 ledger.
+- [ ] Derive the exact block/window account from the registered block table,
+  with baseline and order read from the incoming ledger.
+- [ ] Publish the surplus-aware ceiling `e(R,W) ≤ baseline·order·p + σ_W`
+  and its `def⁺(R)` consequence through the framework SupplyLedger.
+- [ ] Publish the normalized remainder bound from the incoming density and
+  support-card queries, without proof-specific constants in the node.
+- [ ] Replace the legacy ambient `boundaryDemand` registration and update
+  the row's ledger/residual queries and all framework fixtures.
 
 - **Paper fact.** `[28]` is `def:deficiency-surplus`:
   `def⁺(X) = Σ_{v∈V(X)} max{0, 3 − d_X(v)}`, the degree taken *inside* `X`, and
@@ -3372,13 +3515,17 @@ retained predecessor equalities exist to prevent.
   `Official.baselineDegree_le_minDegree` supplies `3 ≤ object.minDegree`, so
   `baselineDegree − object.degree v = 0` for every `v` in `ℕ`: the required total
   is `0`, every member's lower mass is `0`, and CT14 compares `0` against
-  `Σ_v (deg v · |W|)`.  The single theorem this vertex publishes,
-  `AssignmentProfile.summaryOfResult_selectedCount_add_complementCount_eq_ambientCount`,
-  has the proof body `partition` — one token, its own hypothesis — so it
-  transports the row-37 identity across the accounting boundary and derives
-  nothing.  The three fields `ambientCount`, `selectedCount`, `complementCount`
-  of the accounting `Summary` are literal copies of the row-37 `Summary` fields
-  through `normalizationSummary`.
+  `Σ_v (deg v · |W|)`.  Core now also publishes
+  `BoundaryDemandAccounting.ExactLedger`: it retains the literal CT4 and CT14
+  terminal tags, the transported row-37 partition equation, and CT4's
+  conditional `requiredTotal ≤ capacityTotal` fact on its capacity terminal.
+  The compiler constructs that ledger from the sealed contract payload and
+  preserves it in its private capability store.  This is exact provenance for
+  the execution described above, not a correction of its mathematics: here
+  `requiredTotal = 0`, so the new capacity fact is still the vacuous
+  ambient-degree calculation.  The three fields `ambientCount`,
+  `selectedCount`, `complementCount` of the accounting `Summary` remain literal
+  copies of the row-37 fields through `normalizationSummary`.
 - **What it should do.** `Demand` would have to be the vertices of the CT9
   complement, `demandWeight` would have to be
   `baselineDegree − supportIncidence object (supportOfComplement …) v` — the
@@ -3397,7 +3544,9 @@ retained predecessor equalities exist to prevent.
   capacity whatever, occur nowhere; `selectedCount` is `|W| = 13p₁₃` (vertices),
   not `p₁₃` (windows), so even the shape `15·p₁₃` is unavailable.  No
   declaration at this vertex has `def⁺(R) ≤ e(R,W)` or `def⁺(R) ≤ 15p₁₃ + o(n)`
-  as its conclusion.  **Facts therefore fails.**
+  as its conclusion.  The theorem-bearing `ExactLedger` must not be mistaken
+  for those missing facts: it faithfully records the wrong zero-demand CT
+  execution.  **Facts therefore fails.**
 - **Ledger and residual.** `Profile.ofRegistrationAt` reads the residual through
   `Query.residual` and the normalized-support ledger through a `Query` returning
   `ULift SupportComplementNormalization.Summary`, which the compiler links to the
@@ -5545,6 +5694,404 @@ run.
 
 **CT composition at this row.** Terminal of the CT12 stage. Both constructors of `Route8CarrierClosure.ClosureResidual` gate on `.aggregate` at *both* CT5 and CT14 before admitting CT12's `.tier` or `.demand`, so the closure arm is reachable only through the full chain; `carriers_terminal` and `census_terminal` are what prove those two gates can be passed, and without them the arm would be vacuously closed.
 
+### Row 68 — Branch D entry `[33]`, `[35]`
+
+- **Paper fact.** `[33]`/`[35]` is Branch D, the rank-reducing curvature
+  dependence produced by the yes arm of `[32]`.  `lem:target-rank-circuit`: for a
+  finite family `𝒜` of declared coordinates evaluated under the functional
+  admissible quotients of a fixed exact response profile, if `ℐ ⊆ 𝒜` is maximal
+  among subfamilies surviving every functional admissible rank quotient and
+  `a ∈ 𝒜 ∖ ℐ`, then some `ℬ ⊆ ℐ` makes `(a, ℬ)` a target-dependence in the sense
+  of `def:curvature-target-dependence`; contrapositively, if no proper
+  target-dependence exists then all of `𝒜` survives and is independently
+  target-testable.  `lem:curvature-dependence-routing`: for a proper atom `C`
+  with `r_Ω(C) < |𝒲₂(C)|`, some target-dependence among the raw curvature tests
+  falls into exactly one of (i) a target-defective quotient, (ii) an admissible
+  nontrivial target-complete compression of a proper atom, (iii) a dependence
+  that becomes valid only after adjoining a connected support `Z ⊋ C`.  Those
+  three alternatives are `[36]`/`[37]`, `[38]`/`[39]` and `[40]`, and they are
+  exhaustive: the manuscript's proof chooses a determination certificate with
+  inclusion-minimal connected support and splits on whether the certified
+  determination fails for some outside context, holds universally already at
+  `C`, or holds universally only after enlargement.
+- **What the Lean does.** `StrategyDag.lean` passes
+  `(rankDrop := fun rankDropResidual => rankDropResidual)` to
+  `.compressionLinkedTargetRelativeRankDichotomy`.  `Blueprint.compressionLinked‑
+  TargetRelativeRankDichotomy` builds `.binaryBranch … (rankDrop .root)
+  (fullRank .root)`, so the left subtree is literally `Blueprint.root` — a leaf.
+  The payload that leaf would receive is
+  `split.LeftPayload stage = ULift (profile.code.RankDropResidual stage)` where
+  `profile = TargetRelativeRankDichotomy.Profile.ofRegistrationAt registration
+  capabilities.activeInput supplyCapability.normalized localSupplyQuery`.
+  `RankDropResidual` has four constructors, read off the `cases drop with` in
+  `targetRelativeRankDrop_false`: `dependent`, `capacity`, `properSupport`,
+  `mismatch`.  Nothing consumes any of them; `rankDropDirect` refutes all four
+  and the arm is emitted as a closed terminal.
+- **What it should do.** `[35]` should be a stage extension on the rank-drop
+  payload appending the circuit `(a, ℬ)` that `lem:target-rank-circuit` extracts
+  from a maximal surviving subfamily, and then a three-way route realizing
+  `lem:curvature-dependence-routing`'s (i)/(ii)/(iii) into `[36]`, `[38]` and
+  `[40]`.  The payload it consumes would have to be a genuine strict inequality
+  `r_Ω(R) < W₂(R) − o(W₂)`, which row 40 does not produce.
+- **Gap.** Nothing in the tree has a type stating either
+  `lem:target-rank-circuit` or `lem:curvature-dependence-routing`.  The four
+  constructors of `RankDropResidual` are CT15/CT16 bookkeeping alternatives —
+  a dependent coordinate, a capacity overflow, a proper-support code, a
+  closed-code mismatch — not the paper's three, and there is no map between the
+  two lists: (i) has no constructor at all, (iii) has none either, and
+  `capacity`/`mismatch` correspond to nothing in `lem:curvature-dependence-`
+  `routing`.  Since the arm is a bare `Blueprint.root`, no ledger entry is
+  appended, no residual is read, and no fact is proved.  **All four columns
+  therefore fail.**
+- **Ledger and residual.** No stage exists on this arm, so no query is issued
+  and no entry is appended.  The predecessor `v18` ledger is not extended.
+- **Transport and terminals.** The arm's only transport is `resolveBinary`
+  reading `rankDropDirect` (row 73).  In the export the left output of `v18` is
+  edge `e24` (`v18 → t3`, output `left`, "Rank-drop residual"); `t3` has
+  `status: closed`, `kind: branch_endpoint`, `reason: registered branch
+  closure`, `residual.kind: none`.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| `def:curvature-target-dependence` | def |  | also attributed to `[32]` (row 40), where it is likewise absent |
+| `lem:target-rank-circuit` | lem |  |  |
+| `lem:curvature-dependence-routing` | lem |  |  |
+
+**CT composition at this row.** None.  The arm inherits row 40's
+`CT10 → CT15 → CT16` composition as the producer of its payload and adds no
+adapter of its own, because it has no vertex.
+
+### Row 69 — Context-validity test `[36]`–`[37]`
+
+- **Paper fact.** `[36]` asks whether the determination certified by the
+  admissible quotient `q` is valid against every outside `T`-boundaried context.
+  The no arm is the terminal `[37]`, a target-defective quotient — case (i) of
+  `lem:curvature-dependence-routing`.  Two lemmas supply the test.
+  `lem:degree-profile-fibres`: boundaried states with different boundary degree
+  profiles `d_∂` are never eligible to be identified by a target-complete
+  quotient, so all target-response states are taken fibrewise over `d_∂`.
+  `lem:context-universality`: a target-complete identification works against
+  every context, and failure against one context is exactly target-defectiveness.
+  `lem:separated-testers` is the localization input specific to this node: if
+  `u, v ∈ V(R)` have isomorphic rooted radius-`r` types with vertex-disjoint
+  closed balls, then any tester separating the two internal length-two wedge
+  tests `w(u), w(v)` is supported in the complement of
+  `B̄_r(u) ∪ B̄_r(v)`, so any quotient identifying `w(u)` with `w(v)` is either
+  context-universal or target-defective — the dichotomy `[36]` branches on.
+- **What the Lean does.** Nothing.  There is no vertex, and the rank-drop
+  payload's `dependent` constructor is refuted pointwise by `dependenceExcluded`
+  (row 70) without ever asking a context question.  The framework does own the
+  vocabulary: `Graph.Response.TargetDefect Target left right :=
+  ∃ outside : OutsideContext boundary, ¬ (Target (glue left outside) ↔ Target
+  (glue right outside))`, `Graph.Response.ContextEquivalent`,
+  `Graph.Response.TargetComplete` (whose fields are `profile_eq` and
+  `contextEquivalent`), `Graph.Response.profile_ne_not_targetComplete`, and the
+  atom-level `Graph.AtomResponse.TargetDefect` /
+  `not_targetCompleteIdentification_of_not_contextEquivalent`.  `grep` shows
+  their call sites are `Graph/Replacement.lean` (row 5's interface-replacement
+  machinery), `Graph/InducedPathCold.lean` (`F2TargetDefect`, rows 43–61) and
+  the route-8 carrier modules — none of them on this arm.
+- **What it should do.** `[36]` should be a `dichotomy` on the rank-drop stage
+  whose left payload is a witnessing `OutsideContext` distinguishing the two
+  identified coordinates and whose right payload is the context-universality
+  certificate consumed by `[38]`.  `lem:separated-testers` should be a theorem
+  over a pair of disjoint isomorphic rooted balls concluding exactly that
+  disjunction, and `Graph.Response.TargetDefect` is already the correct
+  statement of `[37]`.
+- **Gap.** The node does not exist, and the `profile_eq` half of
+  `Graph.Response.TargetComplete` is the only part of `lem:degree-profile-fibres`
+  that is stated anywhere; `lem:separated-testers` has no declaration of any
+  kind — no rooted-ball hypothesis, no disjointness hypothesis, no wedge-tester
+  support conclusion.  Because the arm never asks the context question, the
+  target-defect terminal `[37]` is unreachable rather than closed.  **All four
+  columns therefore fail.**
+- **Ledger and residual.** No stage, no query, no appended entry.
+- **Transport and terminals.** No transport.  `[37]`'s terminal ellipse has no
+  export counterpart; the only terminal on this arm is `t3` (row 73), which is
+  not this one.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| `lem:degree-profile-fibres` | lem | `Graph.Response.profile_ne_not_targetComplete` | standalone; states only that distinct profile fibres are never target-completely identified, and is unreached from this arm |
+| `lem:context-universality` | lem | `Graph.Response.TargetComplete` | standalone; the structure states the all-context condition, no theorem on this arm consumes it |
+| `lem:separated-testers` | lem |  |  |
+| `def:curvature-target-dependence` | def |  | the identified pair `[36]` tests is never formed |
+
+**CT composition at this row.** None.
+
+### Row 70 — Proper-atom compression `[38]`–`[39]`
+
+- **Paper fact.** `[38]` asks whether the context-universal determination is
+  target-complete with a smaller proper representative already at support `C`.
+  The yes arm is the terminal `[39]`, proper atom compression — case (ii) of
+  `lem:curvature-dependence-routing`, which observes that an admissible `q`
+  supplies a strictly smaller proper representative by
+  `def:admissible-rank-quotient`, so this case is a nontrivial target-complete
+  compression of `C` and is forbidden by `cor:uncompressible`.
+- **What the Lean does.** This is the one Part III alternative with a real
+  mechanism, and it is not a vertex.  In `Dag.lean`'s
+  `routedDichotomyRecipe`, `dependenceExcluded : TargetRelativeRankCoreExclusions
+  registration capabilities.activeInput supplyCapability.normalized
+  localSupplyQuery` is
+  `fun stage _coordinate compressible => …`, whose body destructures
+  `compressible` — an inhabitant of the registration's `TargetDependent`, pinned
+  by `compressionLinkedTargetRelativeRankWithPresentation` to
+  `Nonempty (Σ site : {site // supportedWedgeSiteRelation …},
+  InterfaceReplacement.profileWithPresentation … |>.CompressionCandidate (object
+  residual) site.1)` — into a site and a compression candidate, rewrites the site
+  along `capabilities.minimalClosureActiveObject packed.reductionIndex
+  requiredClosure stage : (activeInput.read stage).object = (…context.read
+  stage).G`, and applies
+  `(closureQueries.closure.read stage).noCompressionCandidate _ site ⟨candidate⟩`.
+  `targetRelativeRankDrop_false` then discharges `RankDropResidual.dependent` by
+  `CodeProfile.dependent_impossible _ output selected fun coordinate =>
+  independent _ coordinate`.  `supportedWedgeSiteRelation object coordinate site`
+  requires the coordinate's stored support to be connected and proper and the
+  site to be `InterfaceReplacement.SupportAtom.properAtom` on it.
+- **What it should do.** `[38]` should be a `dichotomy` whose left payload is the
+  admissible quotient's strictly smaller proper representative — the
+  `AdmissibleQuotient.representative` constructor's `subobject` together with its
+  `Baseline` witness — routed to the terminal `[39]`, and whose right payload is
+  the "no smaller representative" residual continuing to `[40]`.  The exclusion
+  used to close `[39]` would then be `cor:uncompressible` read at that payload
+  rather than a pointwise universal statement.
+- **Gap.** The mathematics of case (ii) is genuinely present: a target-dependent
+  coordinate exhibits an interface-replacement compression candidate at a proper
+  boundaried atom of the object the spine is arguing about, the provenance law
+  identifies that object with the selected minimal counterexample, and row 5's
+  retained closure rejects it — that is `cor:uncompressible` applied exactly as
+  the paper applies it.  But it is a *universal* exclusion, `∀ previous
+  coordinate, ¬ TargetDependent …`, not a branch: there is no `[38]` decision and
+  no `[39]` terminal, `def:admissible-rank-quotient`'s smaller proper
+  representative is never formed on this arm (`Core.AdmissibleQuotient` is
+  imported only by `Graph/TypeBOverlapObstruction.lean` and named in a comment in
+  `Graph/Strategy/TypeAReceiverExhaustion.lean`), and `TargetDependent` is
+  `InterfaceReplacement.CompressibleSupport` rather than
+  `def:curvature-target-dependence`, so what is excluded is compressibility, not
+  a rank-reducing curvature dependence.  **Facts therefore fails.**
+- **Ledger and residual.** `dependenceExcluded` reads at the literal `stage`:
+  `closureQueries = capabilities.minimalClosureAt packed.reductionIndex
+  requiredClosure` is the interface-replacement closure retained by row 5, and
+  `capabilities.activeInput` is the same query row 40's profile is built at.  The
+  key requirement `CapabilityKey.minimalClosureAt packed.reductionIndex ∈
+  available` is discharged from `StrategyKey.requirementsMet`, so the closure is
+  provably in the accumulated ledger and every earlier entry stays available.
+  Nothing is appended, which is correct for an exclusion. **Ledger and Residual
+  pass.**
+- **Transport and terminals.** Every step is Core-owned: `Dag.lean` builds
+  `dependenceExcluded`, `targetRelativeRankDrop_false` consumes it, and
+  `CodeProfile.dependent_impossible` is the framework's own impossibility
+  theorem.  The application supplies only the inert `FixedRegistration` whose
+  `TargetDependent` is fixed in its type by
+  `compressionLinkedTargetRelativeRankWithPresentation`; no EG helper routes or
+  carries anything.  **Transport passes.**  No terminal is emitted for `[39]`;
+  the alternative is folded into `t3`.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| `cor:uncompressible` | cor | `Core.Strategy.InterfaceReplacement.ClosurePayload.noCompressionCandidate` | row 5's closure, read here at the literal stage through `minimalClosureActiveObject` |
+| `def:admissible-rank-quotient` | def | `Core.AdmissibleQuotient` | unconsumed on this arm — its only importer is `Graph/TypeBOverlapObstruction.lean` |
+| `def:proper-quotient-representative` | def |  |  |
+| `lem:curvature-dependence-routing` | lem |  | case (ii) is realized as a universal exclusion, not as the lemma's branch |
+
+**CT composition at this row.** No adapter of its own.  The exclusion is
+consumed inside row 40's `CT10 → CT15 → CT16` composition, at CT15's `dependent`
+terminal; that is the only point in the run where `cor:uncompressible` reaches
+the rank-drop payload.
+
+### Row 71 — Enlarged delocalization support `[40]`–`[42]`
+
+- **Paper fact.** `[40]` is case (iii) of `lem:curvature-dependence-routing`: the
+  dependence holds for every outside context but only once structure outside `C`
+  is adjoined, and taking an inclusion-minimal connected such support yields a
+  connected `Z ⊋ C`.  `[41]` is the decision `Z ⊊ G?`, whose yes arm is the
+  terminal `[42]`.  `lem:proper-smearing` closes it: regarding `Z` as boundaried
+  with `∂Z = {v ∈ V(Z) : v incident with an edge of G − Z}`, the response state of
+  `Z` carries its boundary degree profile and all target-response data inherited
+  from `C`; since `Z ⊊ G` it is a proper boundaried support, so if the dependence
+  fails against some outside `∂Z`-context it is target-defective, and if it
+  succeeds against every outside context it is a nontrivial target-complete
+  compression of the proper support `Z`, forbidden by `cor:uncompressible`.
+- **What the Lean does.** Nothing.  No vertex, no payload, no declaration.  The
+  string `lem:proper-smearing` occurs only in comments in
+  `Graph/TypeBOverlapObstruction.lean` and `Graph/TypeAReceiverClosure.lean`,
+  which are rows 25 and 18's modules; per this audit's evidence rule those
+  comments establish nothing.  The nearest typed object anywhere in the tree is
+  `Graph.Strategy.TypeAReceiverExhaustion.ResponseDelocalization`, which is
+  Type A exit 6 at node `[105]` (row 18) — a different node on a different
+  branch, registered against the receiver-load presentation and not reachable
+  from `v18`'s left output.
+- **What it should do.** `[40]` should be a stage extension producing the
+  inclusion-minimal connected enlargement `Z` with its boundary `∂Z` and the
+  inherited response state, `[41]` a `dichotomy` on `Z ⊊ G`, and `[42]` its
+  closed terminal justified by re-reading row 5's closure at the *enlarged*
+  proper support — the same `noCompressionCandidate` row 70 uses, but at `Z`
+  rather than at the coordinate's own support atom.
+- **Gap.** Case (iii) is absent in every part: no enlargement is constructed, no
+  `Z ⊊ G` test exists, and the proper-support closure is never re-read at an
+  enlarged support.  Row 70's exclusion cannot stand in for it — its site is
+  `SupportAtom.properAtom` on the coordinate's own stored support, fixed by
+  `supportedWedgeSiteRelation`, so it says nothing about any `Z ⊋ C`.  **All four
+  columns therefore fail.**
+- **Ledger and residual.** No stage, no query, no appended entry.
+- **Transport and terminals.** No transport.  `[42]`'s terminal ellipse has no
+  export counterpart.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| `lem:proper-smearing` | lem |  |  |
+| `cor:uncompressible` | cor | `Core.Strategy.InterfaceReplacement.ClosurePayload.noCompressionCandidate` | exists (row 5), but never read at an enlarged support |
+| `def:boundaried-gluing` | def | `Graph.Response.BoundaryPiece`, `Graph.Response.glue` | standalone; unreached from this arm |
+| `lem:curvature-dependence-routing` | lem |  | case (iii) |
+
+**CT composition at this row.** None.
+
+### Row 72 — Whole-graph delocalization `[43]`–`[45]`
+
+- **Paper fact.** `[43]` is the complementary arm of `[41]`: `Z = G`, whole-graph
+  delocalization.  `[44]` is `lem:smearing-support-repair`, the `1`–`3` repair
+  identity: if `Z` is target-safe, contains no proper subgraph of minimum degree
+  at least `3`, and has no passive degree-two subdivision vertices
+  (`def:repair-network-terms`), then each delayed compensation component with `p`
+  boundary leaves, `s` internal vertices, cycle rank `β_Z` and surplus `σ_Z`
+  satisfies `s = p − 2 + 2β_Z − σ_Z`; the proof is the handshake
+  `(3s + σ_Z) + p = 2(e + p)` together with `β_Z = e − s + 1`.  `[45]` is
+  `lem:no-silent-global-smearing`: a curvature target-dependence with
+  inclusion-minimal connected support equal to `G` yields a quotient that is
+  either target-defective, or represented by a strictly smaller admissible closed
+  representative — which would be a strictly smaller counterexample, since
+  `profile_∅(G_q) ⊆ profile_∅(G)` and `G` has no dyadic cycle — or exact on the
+  raw curvature labels, hence not rank-reducing at all.
+- **What the Lean does.** No vertex.  Two framework declarations state pieces of
+  these nodes and neither is reached from this arm.
+  `Graph.OneThreeRepair.Component.identity` has conclusion
+  `(component.internal.card : Int) = component.boundary.card − 2 +
+  2 * component.cycleRank − component.surplus`, derived from
+  `Component.handshake`, `Component.cycleRank_cast` and `Component.vertexCard_eq`
+  through `Core.AffineBalance.solve_one_three`, over a `Component` whose fields
+  are `boundaryDegree : ∀ v ∈ boundary, degree v = 1`,
+  `internalDegreeThree : ∀ v ∉ boundary, 3 ≤ degree v`,
+  `boundaryCard_le_edgeCount` and `connected`.  That is `[44]` exactly.  Its
+  consumers are `Graph/Theorems.lean` (`oneThreeIdentity`, a re-export) and
+  `Fixtures/GraphOneThreeRepair.lean`; `rg` finds no occurrence under `proofs/`.
+  `Core.AdmissibleQuotient.not_rankReducing_of_excluded` has type
+  `(∀ subobject, ¬ Baseline (toAmbient subobject)) → AdmissibleQuotient … value →
+  ¬ ¬ Function.Injective value`, and `AdmissibleQuotient` is the two-constructor
+  inductive `injective` / `representative (subobject) (baseline)`.  That is
+  `lem:no-silent-global-smearing`'s case-(c) conclusion at the closed profile,
+  with the target-defect and smaller-representative cases folded into the
+  inductive's constructors.  Its only importer is
+  `Graph/TypeBOverlapObstruction.lean`, i.e. row 25's side of the tree.
+- **What it should do.** `[43]` should be `[41]`'s complementary payload,
+  `[44]` should read `Graph.OneThreeRepair.Component.identity` at the delayed
+  compensation components of that payload, and `[45]` should be the three-way
+  closure of `lem:no-silent-global-smearing` at the *closed* exact response
+  profile `ρ_∅^ex(G)` — with the smaller-closed-representative case discharged by
+  the same minimal-counterexample closure row 5 retains, which is what
+  `AdmissibleQuotient.injective_of_excluded` already does generically.
+- **Gap.** Both declarations are faithful and both are dead relative to this
+  branch: nothing in `proofs/` consumes the repair identity at all, and the
+  admissible-quotient exclusion is consumed only on the Type B side.  Neither
+  the `Z = G` payload nor `def:repair-network-terms`' passive-degree-two and
+  delayed-compensation-component notions exist anywhere, so `[43]` and `[44]`
+  have no site to be read at.  **All four columns therefore fail** — the
+  emptiness here is one of routing, not of mathematics.
+- **Ledger and residual.** No stage, no query, no appended entry.
+- **Transport and terminals.** No transport.  `[45]`'s barrier box and its
+  continuation to `[46]` have no export counterpart.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| `def:repair-network-terms` | def |  |  |
+| `lem:smearing-support-repair` | lem | `Graph.OneThreeRepair.Component.identity` | standalone — unconsumed, no call site under `proofs/` |
+| `lem:no-silent-global-smearing` | lem | `Core.AdmissibleQuotient.not_rankReducing_of_excluded` | standalone — case (c) only, and consumed solely by `Graph/TypeBOverlapObstruction.lean` |
+| `def:closed-quotient-representative` | def | `Core.AdmissibleQuotient.representative` | the constructor carries `subobject` and `Baseline`, not `profile_∅(G_q) ⊆ profile_∅(G)` |
+| `def:exact-response-profile` | def |  |  |
+
+**CT composition at this row.** None.
+
+### Row 73 — Rank-drop branch closed `[46]`
+
+- **Paper fact.** `[46]` is the closed round node terminating Part III: every
+  rank-drop branch has been discharged, through `[37]`, `[39]`, `[42]` or `[45]`.
+  Item 29 of the dependency table then carries `[46]` into `lem:full-rank` at
+  `[34]`/`[47]`: `r_Ω(R) ≥ W₂(R) − o(W₂(R))` in a minimal counterexample.
+- **What the Lean does.** `rankDropDirect :
+  Option (∀ stage, split.LeftPayload stage → PLift (T.Predicate (residualOf stage
+  …).object))` is `packed.snd.base.rankDropClosure.map fun closure stage witness
+  => (targetRelativeRankDrop_false … closure.down dependenceExcluded
+  witness.down).elim`, installed as the recipe's `leftDirect`.
+  `BaseRegistration.rankDropClosure` is `rankDropImpossible`, and the EG registry
+  supplies it as `some ⟨baselineDegree_le_minDegree⟩` through
+  `targetRelativeRankBase … (some ⟨baselineDegree_le_minDegree⟩)`, where the
+  field's value is `degreeBound.map fun bound => ⟨fun residual cls =>
+  Nat.not_lt.2 ((bound.down residual).trans (minDegree_le_degree cls)),
+  fun residual cls => ⟨cls, mem_orderedVertices cls, rfl⟩⟩`.
+  `targetRelativeRankDrop_false` cases the four-constructor payload:
+  `dependent` by `CodeProfile.dependent_impossible` fed with row 70's exclusion;
+  `capacity` by `Profile.ofRegistrationAt_capacity_impossible`;
+  `properSupport` by `Profile.ofRegistrationAt_properSupport_impossible`;
+  `mismatch` by `Profile.ofRegistrationAt_mismatch_impossible` fed with the
+  registration's `ClassificationExhaustive`.  `leftProduced := []`.
+- **What it should do.** `[46]` should be the join of the four closed
+  alternatives `[37]`, `[39]`, `[42]`, `[45]`, each closed on its own evidence,
+  and it should append the fact `lem:full-rank` consumes at `[47]`.
+- **Gap.** The terminal is real and framework-owned, but three of its four
+  discharges are about the registration's own bookkeeping rather than about the
+  paper: `properSupport` and `capacity` are unreachable for *every*
+  registration-built composition (the capacity `ofRegistrationAt` installs is the
+  charge total of the very schedule CT15 tallies plus `capacitySlack`, which the
+  EG registry sets to `fun _ => 0`), and `mismatch` is refuted by
+  `ClassificationExhaustive`, whose two conjuncts say only that the registered
+  baseline `3` is at most every vertex degree and that the identity classifier
+  observes every class.  Only `dependent` carries paper content, and that is
+  row 70's compressibility exclusion, not `lem:curvature-dependence-routing`.
+  Because `leftProduced := []`, `[46]` appends nothing, so `lem:full-rank` at
+  `[47]` is not supplied from here — row 41 consumes an unrelated
+  finite-state-capacity residual instead.  **Facts therefore fails.**
+- **Ledger and residual.** The closure is indexed by the literal `stage` and
+  reads exactly the queries the predecessor already published —
+  `capabilities.activeInput`, `supplyCapability.normalized` and
+  `localSupplyQuery` — plus row 5's retained closure via
+  `minimalClosureAt packed.reductionIndex requiredClosure`, whose availability is
+  proved from `StrategyKey.requirementsMet` rather than assumed.  Every
+  predecessor entry stays available and nothing is shadowed; a terminal appends
+  nothing, which `leftProduced := []` records.  **Ledger and Residual pass.**
+- **Transport and terminals.** Entirely Core-owned: `Blueprint.compressionLinked‑
+  TargetRelativeRankDichotomy` builds the branch, `resolveBinary` lowers it, and
+  `targetRelativeRankDrop_false` is `Dag.lean`'s own private theorem.  The
+  application contributes one inert `Option (PLift …)` field and the proof
+  `baselineDegree_le_minDegree`; no EG function transports or routes the payload.
+  **Transport passes.**  In the export the arm is edge `e24` (`v18 → t3`, output
+  `left`, "Rank-drop residual") into terminal `t3`, `status: closed`,
+  `kind: branch_endpoint`, `reason: registered branch closure`,
+  `residual.kind: none`.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| `lem:full-rank` | lem | `Core.AdmissibleQuotient.rank_eq_card_of_excluded` | unconsumed here — `[46]` produces nothing, and the declaration's only consumer is `Graph/TypeBOverlapObstruction.lean`; also listed at rows 40 and 41 |
+| `lem:curvature-dependence-routing` | lem |  | the four discharged alternatives are not its three |
+
+**CT composition at this row.** The terminal of row 40's
+`CT10 → CT15 → CT16` composition.  `RankDropResidual`'s four constructors are
+one per composed decision — CT15's `dependent` and `capacity`, CT16's
+`properSupport` and `mismatch` — and Core's direct branch closure is
+all-or-nothing, so the arm closes only because all four are discharged at once.
+That is also why the closure carries no paper content: three of the four are
+artifacts of the composition rather than alternatives the manuscript states.
+
 ## Non-node EG documentation inventory
 
 This inventory covers EG-specific
@@ -5553,15 +6100,30 @@ modules, and finite-check modules that do not belong to one audit row.
 
 ## Summary
 
-All 67 rows have been reviewed against `original_erdos_64_proof.tex` and the
+All 73 rows have been reviewed against `original_erdos_64_proof.tex` and the
 Lean code, with docstrings and prior audit prose excluded as evidence.  Each
 row carries its own paper-object table and CT-composition note.
 
-**Facts** passes at 17 rows: 1, 2, 3, 4, 5, 6, 7, 8, 15, 23, 24, 45, 49, 51, 52, 55, 56.
+**Facts** passes at 17 rows: 1, 2, 3, 4, 5, 6, 7, 8, 15, 23, 24, 45, 49, 51, 52, 55, 56.  It fails at all six Part III rows (68–73).
 
 **All four columns** pass at 16 rows: 1, 2, 3, 4, 5, 6, 7, 8, 15, 23, 24, 45, 49, 51, 55, 56.  Row 52 is the gap between the two
 lists — its mathematics is exact but its registration runs CT7 detached from
 the ledger, so Ledger and Transport fail.
+
+**Part III (rows 68–73).**  Nodes `[35]`–`[46]` have no vertex at all: the
+rank-drop arm of `[32]` is the identity continuation, so `Blueprint.compression‑
+LinkedTargetRelativeRankDichotomy` receives `Blueprint.root` and the branch is
+exported as the single closed terminal `t3`.  Of the manuscript's three
+alternatives, only case (ii) — the proper-atom compression of `[38]`/`[39]` —
+has a mechanism (row 70), and it is a universal exclusion rather than a branch.
+Two Part III statements are formalized generically and never reached from this
+arm: `Graph.OneThreeRepair.Component.identity` is `[44]`'s repair identity
+`s = p − 2 + 2β_Z − σ_Z` with no call site under `proofs/`, and
+`Core.AdmissibleQuotient.not_rankReducing_of_excluded` is `[45]`'s case-(c)
+conclusion, consumed only by `Graph/TypeBOverlapObstruction.lean`.
+`lem:target-rank-circuit`, `lem:curvature-dependence-routing`,
+`lem:separated-testers`, `lem:proper-smearing` and `def:repair-network-terms`
+have no declaration of any kind.
 
 **Paper objects.**  261 `\label`s fall in the audited node ranges.  103 have a
 Lean declaration whose type states them; **158 cells are empty**.  A recurring

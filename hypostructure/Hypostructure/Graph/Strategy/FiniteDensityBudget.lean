@@ -528,10 +528,14 @@ abbrev skeletonDensityProfile
     (object : Residual → Graph.FiniteObject.{v})
     (packingCount : Query Previous fun _ => Nat)
     (barrierRate :
-      Core.Strategy.FiniteBarrierEnumeration.RateLedger Previous) :
+      Core.Strategy.FiniteBarrierEnumeration.RateLedger Previous)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Previous fun _ => Nat)
+    (nearCubic : Query Previous fun previous =>
+      degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous) :
     Core.Strategy.FiniteDensityBudget.Profile Previous :=
   Core.Strategy.FiniteDensityBudget.Profile.ofRegistration packingCount
     barrierRate (labelledSkeletonRegistration object)
+    degreeSurplusLoad degreeSurplusThreshold nearCubic
 
 /-- The retained cap ledger reads the registered ambient capacity back
 verbatim: it is the labelled skeleton budget of the residual object.
@@ -544,11 +548,15 @@ theorem capLedger_ambientCapacity_read
     (packingCount : Query Previous fun _ => Nat)
     (barrierRate :
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Previous)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Previous fun _ => Nat)
+    (nearCubic : Query Previous fun previous =>
+      degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous)
     (stage :
-      (skeletonDensityProfile object packingCount
-        barrierRate).dichotomy.RightStage) :
-    (skeletonDensityProfile object packingCount
-        barrierRate).capLedger.ambientCapacity.read stage =
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold nearCubic).dichotomy.RightStage) :
+    (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubic).capLedger.ambientCapacity.read stage =
       skeletonBudget (object (residualOf stage)) := rfl
 
 /-- **`prop:p13-density`'s middle step, with no premise left.**
@@ -572,17 +580,22 @@ theorem two_pow_binaryRateFloor_mul_packingCount_le_skeletonBudget
     (packingCount : Query Previous fun _ => Nat)
     (barrierRate :
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Previous)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Previous fun _ => Nat)
+    (nearCubic : Query Previous fun previous =>
+      degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous)
     (stage :
-      (skeletonDensityProfile object packingCount
-        barrierRate).dichotomy.RightStage) :
-    2 ^ (((skeletonDensityProfile object packingCount
-              barrierRate).capLedger.barrierSummary.read
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold nearCubic).dichotomy.RightStage) :
+    2 ^ (((skeletonDensityProfile object packingCount barrierRate
+              degreeSurplusLoad degreeSurplusThreshold nearCubic).capLedger.barrierSummary.read
             stage).binaryRateFloor *
-          (skeletonDensityProfile object packingCount
-            barrierRate).capLedger.packingCount.read stage) ≤
+          (skeletonDensityProfile object packingCount barrierRate
+            degreeSurplusLoad degreeSurplusThreshold
+            nearCubic).capLedger.packingCount.read stage) ≤
       skeletonBudget (object (residualOf stage)) :=
-  (skeletonDensityProfile object packingCount
-      barrierRate).capLedger.two_pow_binaryRateFloor_mul_packingCount_le_ambientCapacity
+  (skeletonDensityProfile object packingCount barrierRate
+      degreeSurplusLoad degreeSurplusThreshold
+      nearCubic).capLedger.two_pow_binaryRateFloor_mul_packingCount_le_ambientCapacity
     stage
 
 /-- **`prop:p13-density`, composed on the stage the cap branch carries.**
@@ -605,27 +618,34 @@ theorem two_mul_binaryRateFloor_mul_packingCount_le_scale_mul_edgeBudget
     (packingCount : Query Previous fun _ => Nat)
     (barrierRate :
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Previous)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Previous fun _ => Nat)
+    (nearCubicLedger : Query Previous fun previous =>
+      degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous)
     (stage :
-      (skeletonDensityProfile object packingCount
-        barrierRate).dichotomy.RightStage)
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubicLedger).dichotomy.RightStage)
     (baselineDegree threshold : Nat)
     (minimumDegree :
       baselineDegree ≤ (object (residualOf stage)).minDegree)
     (baseline : 3 ≤ baselineDegree)
     (nearCubic :
       (object (residualOf stage)).degreeSurplus baselineDegree ≤ threshold) :
-    2 * (((skeletonDensityProfile object packingCount
-              barrierRate).capLedger.barrierSummary.read
+    2 * (((skeletonDensityProfile object packingCount barrierRate
+              degreeSurplusLoad degreeSurplusThreshold
+              nearCubicLedger).capLedger.barrierSummary.read
             stage).binaryRateFloor *
-          (skeletonDensityProfile object packingCount
-            barrierRate).capLedger.packingCount.read stage) ≤
+          (skeletonDensityProfile object packingCount barrierRate
+            degreeSurplusLoad degreeSurplusThreshold
+            nearCubicLedger).capLedger.packingCount.read stage) ≤
       (dyadicScaleCount (object (residualOf stage)) + 1) *
         (baselineDegree * (object (residualOf stage)).vertexCount +
           threshold) :=
   two_mul_exponent_le_scale_mul_edgeBudget (object (residualOf stage)) _
     baselineDegree threshold
     (two_pow_binaryRateFloor_mul_packingCount_le_skeletonBudget object
-      packingCount barrierRate stage)
+      packingCount barrierRate degreeSurplusLoad degreeSurplusThreshold
+      nearCubicLedger stage)
     (baselineDegree_mul_vertexCount_le_two_mul_edgeCount
       (object (residualOf stage))
       { degree := baselineDegree
@@ -633,6 +653,150 @@ theorem two_mul_binaryRateFloor_mul_packingCount_le_scale_mul_edgeBudget
           le_trans minimumDegree
             ((object (residualOf stage)).minDegree_le_degree vertex) })
     baseline nearCubic
+
+/-- **`prop:p13-density`'s window-only conclusion, with no premise left
+except the registration's own minimum-degree baseline.**
+
+`two_mul_binaryRateFloor_mul_packingCount_le_scale_mul_edgeBudget` still takes
+the node-`[19]` surplus bound `nearCubic` as an explicit hypothesis.  It no
+longer has to: `CapLedger.nearCubic` is that same branch fact, already
+retained on this node's own ledger by the compiler (`Dag.finiteDensityBudgetSplit`
+reads it off `CapabilityStore.nearCubicSpine`, the node-`[19]` capability every
+stage in this branch preserves).  The only work left for a consumer is the two
+`rfl`-shaped identifications of the registered `load`/`table` with the graph's
+own `degreeSurplus`/threshold table -- exactly the translation
+`Graph.NearCubicSpine.nearCubicSpine_of_atOrBelow` performs for a *direct*
+reader of the node-`[19]` residual, done here instead against the retained
+ledger entry so a reader several extensions below the producing node still
+gets it. -/
+theorem two_mul_binaryRateFloor_mul_packingCount_le_scale_mul_edgeBudget_of_ledger
+    (object : Residual → Graph.FiniteObject.{v})
+    (packingCount : Query Previous fun _ => Nat)
+    (barrierRate :
+      Core.Strategy.FiniteBarrierEnumeration.RateLedger Previous)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Previous fun _ => Nat)
+    (nearCubicLedger : Query Previous fun previous =>
+      degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous)
+    (stage :
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubicLedger).dichotomy.RightStage)
+    (baselineDegree threshold : Nat)
+    (minimumDegree :
+      baselineDegree ≤ (object (residualOf stage)).minDegree)
+    (baseline : 3 ≤ baselineDegree)
+    (loadEq :
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubicLedger).capLedger.degreeSurplusLoad.read stage =
+        (object (residualOf stage)).degreeSurplus baselineDegree)
+    (thresholdEq :
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubicLedger).capLedger.degreeSurplusThreshold.read stage = threshold) :
+    2 * (((skeletonDensityProfile object packingCount barrierRate
+              degreeSurplusLoad degreeSurplusThreshold
+              nearCubicLedger).capLedger.barrierSummary.read
+            stage).binaryRateFloor *
+          (skeletonDensityProfile object packingCount barrierRate
+            degreeSurplusLoad degreeSurplusThreshold
+            nearCubicLedger).capLedger.packingCount.read stage) ≤
+      (dyadicScaleCount (object (residualOf stage)) + 1) *
+        (baselineDegree * (object (residualOf stage)).vertexCount +
+          threshold) :=
+  two_mul_binaryRateFloor_mul_packingCount_le_scale_mul_edgeBudget object
+    packingCount barrierRate degreeSurplusLoad degreeSurplusThreshold
+    nearCubicLedger stage baselineDegree threshold minimumDegree baseline
+    (loadEq ▸ thresholdEq ▸
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubicLedger).capLedger.nearCubic.read stage)
+
+/-- **`prop:p13-density`'s high-entropy conclusion (`eq:feasibility`), the
+sharper cap `θ ≤ 0.01198542083… + o(1)`, in exact `Nat` form.**
+
+In the high-entropy branch of `prop:two-budget`, the `P₁₃`-free remainder
+contributes at least `((n - 13 p₁₃)/10) log₂ n` additional independently
+target-testable bits -- the manuscript's own hypothesis for that branch, not
+data of this node: the remainder is not even defined until after the packing,
+and the witness that its coordinates are independently target-testable is a
+later node's (`lem:independent-target-entropy` applied a second time, to the
+window/remainder joint family this time, exactly as it is applied to the
+window family alone for the window-only conclusion).  Writing that
+contribution's own exact-`Nat` exponent as `remainderExponent`, the
+manuscript's `eq:feasibility` adds it to the window package's own exponent and
+compares the *sum* against the very same labelled skeleton budget this node's
+CT14 comparison already retains:
+
+  `2 ^ (binaryRateFloor · packingCount + remainderExponent) ≤ skeletonBudget`.
+
+That combined cap is the one premise this theorem cannot discharge from its
+own ledger and takes as a hypothesis, in exactly the combined-comparison shape
+the manuscript states it (not a weaker per-source form: the window-only cap
+alone is not enough to conclude it, since it says nothing about
+`remainderExponent`).  Every other step is `two_mul_exponent_le_scale_mul_edgeBudget`
+run at that sum exponent -- the identical near-cubic edge-count conversion the
+window-only conclusion uses, with no new algebra and no numeral. -/
+theorem two_mul_binaryRateFloor_mul_packingCount_add_remainderExponent_le_scale_mul_edgeBudget
+    (object : Residual → Graph.FiniteObject.{v})
+    (packingCount : Query Previous fun _ => Nat)
+    (barrierRate :
+      Core.Strategy.FiniteBarrierEnumeration.RateLedger Previous)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Previous fun _ => Nat)
+    (nearCubicLedger : Query Previous fun previous =>
+      degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous)
+    (stage :
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubicLedger).dichotomy.RightStage)
+    (baselineDegree threshold : Nat)
+    (minimumDegree :
+      baselineDegree ≤ (object (residualOf stage)).minDegree)
+    (baseline : 3 ≤ baselineDegree)
+    (loadEq :
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubicLedger).capLedger.degreeSurplusLoad.read stage =
+        (object (residualOf stage)).degreeSurplus baselineDegree)
+    (thresholdEq :
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubicLedger).capLedger.degreeSurplusThreshold.read stage = threshold)
+    (remainderExponent : Nat)
+    (combinedCap :
+      2 ^ ((((skeletonDensityProfile object packingCount barrierRate
+                  degreeSurplusLoad degreeSurplusThreshold
+                  nearCubicLedger).capLedger.barrierSummary.read
+                stage).binaryRateFloor *
+              (skeletonDensityProfile object packingCount barrierRate
+                degreeSurplusLoad degreeSurplusThreshold
+                nearCubicLedger).capLedger.packingCount.read stage) +
+            remainderExponent) ≤
+        skeletonBudget (object (residualOf stage))) :
+    2 * ((((skeletonDensityProfile object packingCount barrierRate
+                degreeSurplusLoad degreeSurplusThreshold
+                nearCubicLedger).capLedger.barrierSummary.read
+              stage).binaryRateFloor *
+            (skeletonDensityProfile object packingCount barrierRate
+              degreeSurplusLoad degreeSurplusThreshold
+              nearCubicLedger).capLedger.packingCount.read stage) +
+          remainderExponent) ≤
+      (dyadicScaleCount (object (residualOf stage)) + 1) *
+        (baselineDegree * (object (residualOf stage)).vertexCount +
+          threshold) :=
+  two_mul_exponent_le_scale_mul_edgeBudget (object (residualOf stage)) _
+    baselineDegree threshold combinedCap
+    (baselineDegree_mul_vertexCount_le_two_mul_edgeCount
+      (object (residualOf stage))
+      { degree := baselineDegree
+        lower := fun vertex =>
+          le_trans minimumDegree
+            ((object (residualOf stage)).minDegree_le_degree vertex) })
+    baseline
+    (loadEq ▸ thresholdEq ▸
+      (skeletonDensityProfile object packingCount barrierRate
+        degreeSurplusLoad degreeSurplusThreshold
+        nearCubicLedger).capLedger.nearCubic.read stage)
 
 end RetainedCap
 

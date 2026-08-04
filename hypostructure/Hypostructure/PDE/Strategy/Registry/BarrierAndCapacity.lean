@@ -110,21 +110,10 @@ noncomputable def barrierEnumeration :
   acceptedDecidable := fun input stage =>
     Nat.decLe stage.rank (system.stageReached input).rank
   labelCount := fun _ => stageCount
-  profile := fun _ => refinementProfile
-  leftLength := fun _ candidate => candidate.1.rank
+  relationPosition := fun _ relation => relation
+  leftLength := fun _ candidate => candidate.rank
   rightLength := fun input candidate =>
-    (system.stageReached input).rank - candidate.1.rank
-  /- The refinement rows are generated from the stage index alone, so every
-  barrier of this schedule carries the same flat count as the empty-leg one,
-  and that one is nonzero because a stage refines itself. -/
-  flatCount_pos := by
-    intro _ candidate
-    have lengthFree : ∀ left right : Nat,
-        refinementProfile.flatCount left right =
-          refinementProfile.flatCount 0 0 :=
-      fun _ _ => rfl
-    rw [lengthFree]
-    decide
+    (system.stageReached input).rank - candidate.rank
 
 /-! ## Finite-state capacity
 

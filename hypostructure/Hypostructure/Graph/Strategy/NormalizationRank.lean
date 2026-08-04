@@ -211,6 +211,21 @@ noncomputable def inducedPathSupportComplementRegistration
     ambientSupport := fun residual =>
       liftedVertices (presentation.object.read residual)
     cover := cover
+    coverNodup := by
+      intro residual occurrence
+      exact (Finset.nodup_toList _).map fun _ _ equal =>
+        ULift.up_injective equal
+    coverSupported := by
+      intro residual occurrence item member
+      rcases List.mem_map.mp member with ⟨vertex, _, rfl⟩
+      exact List.mem_map.mpr
+        ⟨vertex,
+          (presentation.object.read residual).mem_orderedVertices vertex, rfl⟩
+    coverCard := fun residual => presentation.order.read residual
+    cover_card := by
+      intro residual occurrence
+      rw [List.length_map, Finset.length_toList,
+        Graph.InducedPathMaximalPacking.support_card]
     conflict_iff_shared_item := conflict_iff_shared_item
     cover_ne := cover_ne
     LocalPiece := fun residual exactComplement =>
@@ -1102,50 +1117,6 @@ noncomputable def boundaryDemand
   memberLabel := fun _ member => member
   labelDecidableEq := fun residual => (vertices (object residual)).decEq
 
-/-- High-degree payers that actually receive at least one demand in CT4's
-literal assignment table. -/
-noncomputable def assignedCentersOfBoundaryAccounting
-    {Residual : Type u} {Previous : Type (max u v)}
-    [Core.Residual.HasResidual Previous Residual]
-    (object : Residual → Graph.FiniteObject.{v})
-    (baselineDegree : Residual → Nat)
-    (normalizedSupport : Core.Residual.Query Previous fun _ =>
-      ULift.{v} Core.Strategy.SupportComplementNormalization.Summary)
-    {previous : Previous}
-    (exact :
-      (Core.Strategy.BoundaryDemandAccounting.Profile.ofRegistration
-        (boundaryDemand object baselineDegree) normalizedSupport).ExactOutput
-          previous) :
-    Finset (object (residualOf previous)).Vertex := by
-  let profile :=
-    Core.Strategy.BoundaryDemandAccounting.Profile.ofRegistration
-      (boundaryDemand object baselineDegree) normalizedSupport
-  let assignment :=
-    Core.Strategy.BoundaryDemandAccounting.Profile.ExactOutput.assignmentState
-      (profile := profile) exact
-  let payers := profile.assignment.assignmentCapability.payersAt previous
-  letI : DecidableEq (object (residualOf previous)).Vertex := payers.decEq
-  exact payers.toFinset.filter fun payer =>
-    CT4.fibre assignment payer ≠ []
-
-/-- Exact baseline-relative surplus carried by the assigned CT4 centers. -/
-noncomputable def assignedSurplusOfBoundaryAccounting
-    {Residual : Type u} {Previous : Type (max u v)}
-    [Core.Residual.HasResidual Previous Residual]
-    (object : Residual → Graph.FiniteObject.{v})
-    (baselineDegree : Residual → Nat)
-    (normalizedSupport : Core.Residual.Query Previous fun _ =>
-      ULift.{v} Core.Strategy.SupportComplementNormalization.Summary)
-    {previous : Previous}
-    (exact :
-      (Core.Strategy.BoundaryDemandAccounting.Profile.ofRegistration
-        (boundaryDemand object baselineDegree) normalizedSupport).ExactOutput
-          previous) : Nat :=
-  (assignedCentersOfBoundaryAccounting object baselineDegree
-    normalizedSupport exact).sum fun center =>
-      object (residualOf previous) |>.degree center -
-        baselineDegree (residualOf previous)
-
 /-- Incidences of a vertex that stay inside a declared support. -/
 noncomputable def supportIncidence
     (object : Graph.FiniteObject.{v}) (support : Finset object.Vertex)
@@ -1204,6 +1175,24 @@ theorem supportIncidence_deficiency_le_boundaryIncidence
     minimumDegree.trans (object.minDegree_le_degree vertex)
   have split := supportIncidence_add_boundaryIncidence object support vertex
   omega
+
+/-! Framework-owned row-38 aggregate facts.  These are stated over the exact
+support schedule supplied by the caller; they do not inspect an ambient
+vertex enumeration or manufacture a remainder carrier. -/
+theorem positiveDeficiency_sum_le_boundaryIncidence_sum
+    (object : Graph.FiniteObject.{v}) (baseline : Nat)
+    (minimumDegree : baseline ≤ object.minDegree)
+    (support : Finset object.Vertex)
+    (vertices : List object.Vertex)
+    (vertices_mem : ∀ vertex ∈ vertices, vertex ∈ support) :
+    (vertices.map (fun vertex =>
+      baseline - supportIncidence object support vertex)).sum ≤
+      (vertices.map (fun vertex =>
+        boundaryIncidence object support vertex)).sum := by
+  apply List.sum_le_sum
+  intro vertex member
+  exact supportIncidence_deficiency_le_boundaryIncidence object baseline
+    minimumDegree support vertex
 
 noncomputable def localSupply
     {Residual : Type u}

@@ -185,6 +185,10 @@ noncomputable def windowNormalization :
   AmbientItem := fun _ => PUnit
   ambientSupport := fun _ => Core.Finite.Enumeration.singleton PUnit.unit
   cover := fun _ _ => [PUnit.unit]
+  coverNodup := by simp
+  coverSupported := by simp
+  coverCard := fun _ => 1
+  cover_card := by simp
   conflict_iff_shared_item := by
     intro _input _left _right
     have shared : ∃ item : PUnit, item ∈ [PUnit.unit] ∧ item ∈ [PUnit.unit] :=

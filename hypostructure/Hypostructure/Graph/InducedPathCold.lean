@@ -201,6 +201,96 @@ def externalStubCount {object : FiniteObject.{u}}
     {order : Nat} (window : Window object order) : Nat :=
   ∑ position : Fin order, (externalNeighbors window position).card
 
+noncomputable def internalStubCount {object : FiniteObject.{u}}
+    {order : Nat} (window : Window object order) : Nat :=
+  ∑ position : Fin order, (internalNeighbors window position).card
+
+/-- Domain-independent degree-sum identity for an induced-path block.  Both
+the path order and the baseline are parameters; no window constant is stored. -/
+theorem externalStubCount_add_internalStubCount_eq
+    {object : FiniteObject.{u}} {order baseline : Nat}
+    (window : Window object order)
+    (minimumDegree : baseline ≤ object.minDegree) :
+    externalStubCount window + internalStubCount window =
+      baseline * order +
+        InducedPathWindowLedger.singleWindowSurplus baseline window := by
+  have degreeLower : ∀ position : Fin order,
+      baseline ≤ object.degree (window position) := fun position =>
+    minimumDegree.trans (object.minDegree_le_degree (window position))
+  calc
+    externalStubCount window + internalStubCount window =
+        ∑ position : Fin order,
+          ((externalNeighbors window position).card +
+            (internalNeighbors window position).card) := by
+          simp [externalStubCount, internalStubCount, Finset.sum_add_distrib]
+    _ = ∑ position : Fin order, object.degree (window position) := by
+          apply Finset.sum_congr rfl
+          intro position _
+          exact externalNeighbors_card_add_internalNeighbors_card window position
+    _ = ∑ position : Fin order,
+          (baseline + (object.degree (window position) - baseline)) := by
+          apply Finset.sum_congr rfl
+          intro position _
+          have lower := degreeLower position
+          omega
+    _ = baseline * order +
+        InducedPathWindowLedger.singleWindowSurplus baseline window := by
+          rw [Finset.sum_add_distrib,
+            InducedPathWindowLedger.singleWindowSurplus_eq_sum]
+          simp [Nat.mul_comm]
+
+/-- Exact additive external-incidence account for an induced-path block.
+
+The internal incidence identity is an input theorem about the block family,
+not a numeric constant.  In a strategy it is read from the registered exact
+finite block table.  Keeping the conclusion additive avoids truncated
+subtraction and exposes the coefficient derived from `baseline` and `order`. -/
+theorem externalStubCount_add_twice_pred_eq
+    {object : FiniteObject.{u}} {order baseline : Nat}
+    (window : Window object order)
+    (minimumDegree : baseline ≤ object.minDegree)
+    (internalExact : internalStubCount window = 2 * (order - 1)) :
+    externalStubCount window + 2 * (order - 1) =
+      baseline * order +
+        InducedPathWindowLedger.singleWindowSurplus baseline window := by
+  rw [← internalExact]
+  exact externalStubCount_add_internalStubCount_eq window minimumDegree
+
+/-- Sum the exact additive account over an arbitrary duplicate-free block
+schedule.  Every quantity is evaluated from that schedule; no path order,
+baseline, block count, or external-stub coefficient is stored here. -/
+theorem sum_externalStubCount_add_internalBaseline_eq
+    {object : FiniteObject.{u}} {order baseline : Nat}
+    (windows : Core.Finite.Enumeration (Window object order))
+    (minimumDegree : baseline ≤ object.minDegree)
+    (internalExact : ∀ window ∈ windows.values,
+      internalStubCount window = 2 * (order - 1)) :
+    (windows.values.map externalStubCount).sum +
+        (2 * (order - 1)) * windows.card =
+      (baseline * order) * windows.card +
+        (windows.values.map
+          (InducedPathWindowLedger.singleWindowSurplus baseline)).sum := by
+  rw [Core.Finite.Enumeration.card]
+  calc
+    (windows.values.map externalStubCount).sum +
+          (2 * (order - 1)) * windows.values.length =
+        (windows.values.map fun window =>
+          externalStubCount window + 2 * (order - 1)).sum := by
+            simp [List.sum_map_add, Nat.mul_comm]
+    _ = (windows.values.map fun window =>
+          baseline * order +
+            InducedPathWindowLedger.singleWindowSurplus baseline window).sum := by
+            exact congrArg List.sum (List.map_congr_left fun window member =>
+              externalStubCount_add_twice_pred_eq window minimumDegree
+                (internalExact window member))
+    _ = (baseline * order) * windows.values.length +
+          (windows.values.map
+            (InducedPathWindowLedger.singleWindowSurplus baseline)).sum := by
+            rw [List.sum_map_add]
+            change (List.map (Function.const _ (baseline * order))
+              windows.values).sum + _ = _
+            simp [List.map_const, Nat.mul_comm]
+
 theorem externalStubCount_p13_of_cubic
     {object : FiniteObject.{u}} (window : Window object 13)
     (cubic : ∀ position : Fin 13, object.degree (window position) = 3) :

@@ -25,6 +25,8 @@ field is computed by Core from the literal four-CT output; the record is the
 typed capability consumed by later Strategies. -/
 structure Summary where
   ambientCount : Nat
+  packingCount : Nat
+  coverCard : Nat
   selectedCount : Nat
   complementCount : Nat
   lowerMass : Nat
@@ -52,6 +54,16 @@ structure Registration (Residual : Type uResidual)
   when they share one, which is the conflict relation Core packs against. -/
   cover : (residual : Residual) → packing.Occurrence residual →
     List (AmbientItem residual)
+  coverNodup : ∀ (residual : Residual)
+    (occurrence : packing.Occurrence residual),
+      (cover residual occurrence).Nodup
+  coverSupported : ∀ (residual : Residual)
+    (occurrence : packing.Occurrence residual),
+      cover residual occurrence ⊆ (ambientSupport residual).values
+  coverCard : Residual → Nat
+  cover_card : ∀ (residual : Residual)
+    (occurrence : packing.Occurrence residual),
+      (cover residual occurrence).length = coverCard residual
   conflict_iff_shared_item : ∀ (residual : Residual)
     (left right : packing.Occurrence residual),
       packing.conflict residual left right ↔

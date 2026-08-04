@@ -1,6 +1,7 @@
 import Hypostructure.Core.FiniteBitRelationBarrier
 import Hypostructure.Core.Finite.Enumeration
 import Hypostructure.Core.Residual.Query
+import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Residual-indexed finite barrier presentation
@@ -26,29 +27,9 @@ structure Registration (Residual : Type uResidual) where
   acceptedDecidable : (residual : Residual) →
     (candidate : Candidate residual) → Decidable (accepted residual candidate)
   labelCount : Residual → Nat
-  profile : (residual : Residual) →
-    Core.FiniteBitRelationBarrier.Profile (labelCount residual)
-  leftLength : (residual : Residual) →
-    {candidate : Candidate residual // accepted residual candidate} → Nat
-  rightLength : (residual : Residual) →
-    {candidate : Candidate residual // accepted residual candidate} → Nat
-  /-- **Every scheduled barrier admits at least one composed-flat triple.**
-
-  `flatCount` is the denominator of the flatness cost `γ_{a,b} = log₂(W/F)`
-  the manuscript reads off this table, so a barrier whose flat column vanished
-  would have no rate at all -- and, multiplicatively, would zero the whole
-  package's `flatProduct`, leaving every downstream ratio undefined.  The
-  registered *accepted* subfamily is exactly the subfamily on which the
-  presentation claims a finite rate, so positivity of the flat column there is
-  a property of the presented table and is registered beside it, in the same
-  shape as `FiniteDensityBudget.Registration.ambientCapacity_pos`.
-
-  It is stated on the derived `flatCount` of the registered profile, never on a
-  stored numeral: a registration cannot satisfy it by declaring a count. -/
-  flatCount_pos : ∀ (residual : Residual)
-    (index : {candidate : Candidate residual // accepted residual candidate}),
-    0 < (profile residual).flatCount (leftLength residual index)
-      (rightLength residual index)
+  relationPosition : Residual → Nat → Nat
+  leftLength : (residual : Residual) → Candidate residual → Nat
+  rightLength : (residual : Residual) → Candidate residual → Nat
 
 namespace Registration
 
@@ -88,13 +69,11 @@ def multiScale (registration : Registration.{uResidual, uCandidate} Residual)
   acceptedDecidable := fun residual candidate =>
     registration.acceptedDecidable residual candidate.2
   labelCount := registration.labelCount
-  profile := registration.profile
+  relationPosition := registration.relationPosition
   leftLength := fun residual index =>
-    registration.leftLength residual ⟨index.1.2, index.2⟩
+    registration.leftLength residual index.2
   rightLength := fun residual index =>
-    registration.rightLength residual ⟨index.1.2, index.2⟩
-  flatCount_pos := fun residual index =>
-    registration.flatCount_pos residual ⟨index.1.2, index.2⟩
+    registration.rightLength residual index.2
 
 @[simp] theorem multiScale_labelCount
     (registration : Registration.{uResidual, uCandidate} Residual)
@@ -157,6 +136,29 @@ def safeAt (summary : Summary) (position : Nat) : Nat :=
 def flatAt (summary : Summary) (position : Nat) : Nat :=
   (summary.rowAt position).2
 
+/-- The composition-obstructed count of one retained barrier row.  It is
+computed solely from the safe and flat entries CT16 appended to `rows`. -/
+def obstructedAt (summary : Summary) (position : Nat) : Nat :=
+  summary.safeAt position - summary.flatAt position
+
+/-- The exact base-two cost of one retained barrier row.  This reads the
+generated safe and flat columns from the CT16 summary; it never reconstructs
+the schedule or accepts a caller-supplied count. -/
+noncomputable def rowRate (summary : Summary) (position : Nat) : ℝ :=
+  Real.logb 2 ((summary.safeAt position : ℝ) / (summary.flatAt position : ℝ))
+
+/-- The exact finite-table rate in its schedule form: one logarithmic cost for
+each generated barrier row, summed in the retained schedule order. -/
+noncomputable def scheduleRate (summary : Summary) : ℝ :=
+  (summary.rows.map fun row =>
+    Real.logb 2 ((row.1 : ℝ) / (row.2 : ℝ))).sum
+
+/-- The same finite-table rate read from the aggregate columns.  This form is
+useful for multiplicative capacity comparisons; `scheduleRate` is the
+per-barrier accounting form. -/
+noncomputable def windowRate (summary : Summary) : ℝ :=
+  Real.logb 2 ((summary.safeProduct : ℝ) / (summary.flatProduct : ℝ))
+
 @[simp] theorem rowAt_of_lt (summary : Summary) {position : Nat}
     (inRange : position < summary.rows.length) :
     summary.rowAt position = summary.rows[position] := by
@@ -173,6 +175,28 @@ def flatAt (summary : Summary) (position : Nat) : Nat :=
 
 @[simp] theorem ofRows_flatProduct (rows : List (Nat × Nat)) :
     (ofRows rows).flatProduct = (rows.map Prod.snd).prod := rfl
+
+@[simp] theorem ofRows_rowRate (rows : List (Nat × Nat)) (position : Nat) :
+    (ofRows rows).rowRate position =
+      Real.logb 2 (((rows.getD position (1, 1)).1 : ℝ) /
+        ((rows.getD position (1, 1)).2 : ℝ)) :=
+  rfl
+
+@[simp] theorem ofRows_obstructedAt (rows : List (Nat × Nat)) (position : Nat) :
+    (ofRows rows).obstructedAt position =
+      (rows.getD position (1, 1)).1 - (rows.getD position (1, 1)).2 :=
+  rfl
+
+@[simp] theorem ofRows_scheduleRate (rows : List (Nat × Nat)) :
+    (ofRows rows).scheduleRate =
+      (rows.map fun row => Real.logb 2 ((row.1 : ℝ) / (row.2 : ℝ))).sum :=
+  rfl
+
+@[simp] theorem ofRows_windowRate (rows : List (Nat × Nat)) :
+    (ofRows rows).windowRate =
+      Real.logb 2 (((rows.map Prod.fst).prod : ℝ) /
+        ((rows.map Prod.snd).prod : ℝ)) :=
+  rfl
 
 @[simp] theorem ofRows_binaryRateFloor (rows : List (Nat × Nat)) :
     (ofRows rows).binaryRateFloor =
@@ -306,9 +330,8 @@ true rate by strictly less than one bit:
   `safeProduct ≤ 2 ^ (binaryRateFloor + 1) · flatProduct`.
 
 The successor is not slack that could be removed.  Floor and ceiling coincide
-only when `safeProduct / flatProduct` is an exact power of two, and the
-registered `P₁₃` window table's ratio is `2 ^ 118.10858…`, so the two rates are
-genuinely distinct and must not be conflated: `two_pow_binaryRateFloor_mul_flatProduct_le`
+only when `safeProduct / flatProduct` is an exact power of two, so the two rates
+must not be conflated: `two_pow_binaryRateFloor_mul_flatProduct_le`
 is what a *demand* may be paid with, and this is what a *supply* may be charged
 with. -/
 theorem safeProduct_le_two_pow_succ_binaryRateFloor_mul_flatProduct
@@ -339,7 +362,7 @@ That is enough to *read* the aggregation columns and nothing else: as data, a
 `Summary` does not know that its `binaryRateFloor` was computed from its own
 columns, nor that its flat column is nonzero.  Both facts are owned by the node
 that produced it -- `Derived` because Core produced it by `ofRows`, flat
-positivity because the registration carries `flatCount_pos` -- so they travel in
+positivity because Core retains only rows passing its closed admissibility test -- so they travel in
 a dedicated query-only ledger record, exactly as the surviving density cap
 travels in `FiniteDensityBudget.CapLedger`.
 
@@ -350,6 +373,9 @@ about that query's value. -/
 /-- **Query-only view of the exact derived barrier table.** -/
 structure RateLedger (Stage : Type uStage) where
   summary : Core.Residual.Query Stage (fun _ => Summary)
+  sourceRows : Core.Residual.Query Stage (fun _ => List (Nat × Nat))
+  exact : Core.Residual.Query Stage fun stage =>
+    summary.read stage = Summary.ofRows (sourceRows.read stage)
   /-- The retained summary is the one Core derived from its own generated
   rows, so its `binaryRateFloor` is a genuine `log₂` of its own columns. -/
   derived : Core.Residual.Query Stage fun stage =>
@@ -367,6 +393,8 @@ open Core.Residual
 def comap (ledger : RateLedger Stage) (project : NewStage → Stage) :
     RateLedger NewStage where
   summary := ledger.summary.comap project
+  sourceRows := ledger.sourceRows.comap project
+  exact := ledger.exact.comap project
   derived := ledger.derived.comap project
   flatPositive := ledger.flatPositive.comap project
 
@@ -377,6 +405,38 @@ def preserve {Added : Stage → Type uNew} (ledger : RateLedger Stage) :
 def preserveProp {Added : Stage → Prop} (ledger : RateLedger Stage) :
     RateLedger (Ledger.Extension Stage Added) :=
   ledger.comap Ledger.Extension.previous
+
+/-- Read the safe count of a retained barrier row from the CT16 ledger. -/
+def safeAt (ledger : RateLedger Stage) (stage : Stage) (position : Nat) : Nat :=
+  (ledger.summary.read stage).safeAt position
+
+theorem summary_eq_ofRows (ledger : RateLedger Stage) (stage : Stage) :
+    ledger.summary.read stage = Summary.ofRows (ledger.sourceRows.read stage) :=
+  ledger.exact.read stage
+
+/-- Read the flat count of a retained barrier row from the CT16 ledger. -/
+def flatAt (ledger : RateLedger Stage) (stage : Stage) (position : Nat) : Nat :=
+  (ledger.summary.read stage).flatAt position
+
+/-- Read the composition-obstructed count of a retained barrier row from the
+CT16 ledger. -/
+def obstructedAt (ledger : RateLedger Stage) (stage : Stage)
+    (position : Nat) : Nat :=
+  (ledger.summary.read stage).obstructedAt position
+
+/-- Read one exact barrier cost from the CT16-produced summary. -/
+noncomputable def rowRate (ledger : RateLedger Stage) (stage : Stage)
+    (position : Nat) : ℝ :=
+  (ledger.summary.read stage).rowRate position
+
+/-- Read the exact sum of all generated barrier costs from the CT16 ledger. -/
+noncomputable def scheduleRate (ledger : RateLedger Stage) (stage : Stage) : ℝ :=
+  (ledger.summary.read stage).scheduleRate
+
+/-- Read the aggregate-product presentation of the same table rate from the
+CT16 ledger. -/
+noncomputable def windowRate (ledger : RateLedger Stage) (stage : Stage) : ℝ :=
+  (ledger.summary.read stage).windowRate
 
 /-- **The registered table's rate floor, read off the ledger.** -/
 theorem two_pow_binaryRateFloor_mul_flatProduct_le
@@ -390,9 +450,8 @@ theorem two_pow_binaryRateFloor_mul_flatProduct_le
     (ledger.flatPositive.read stage) improves
 
 /-- **The registered table's rate ceiling, read off the ledger.**  The exponent
-is `binaryRateFloor + 1`, and the successor is essential: for the registered
-`P₁₃` window table the ratio is `2 ^ 118.10858…`, so floor and ceiling differ.
-The two rates are kept apart here and never identified. -/
+is `binaryRateFloor + 1`; the exact rate and its natural-number floor are kept
+apart and never identified. -/
 theorem safeProduct_le_two_pow_succ_binaryRateFloor_mul_flatProduct
     (ledger : RateLedger Stage) (stage : Stage) :
     (ledger.summary.read stage).safeProduct ≤

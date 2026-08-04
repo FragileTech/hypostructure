@@ -511,10 +511,55 @@ def summaryOfRouted {previous : Previous} :
   | .capacityResidual exact _ _ =>
       profile.assignment.summaryOfResult exact.output.fst
 
+/-- The inherited CT9 partition equation for the summary on every route. -/
+theorem summaryOfRouted_partition {previous : Previous}
+    (routed : profile.RoutedResidual previous)
+    (partition :
+      let summary := profile.assignment.normalizationSummary previous
+        (profile.assignment.normalizedSupport.read previous)
+      summary.selectedCount + summary.complementCount = summary.ambientCount) :
+    (profile.summaryOfRouted routed).selectedCount +
+        (profile.summaryOfRouted routed).complementCount =
+      (profile.summaryOfRouted routed).ambientCount := by
+  cases routed with
+  | missingPayer exact selected
+  | overloadedFibre exact selected
+  | assignmentCertificate exact selected
+  | aggregateCertificate exact assignmentSelected selected
+  | capacityResidual exact assignmentSelected selected =>
+      exact profile.assignment.summaryOfResult_selectedCount_add_complementCount_eq_ambientCount
+        exact.output.fst (exact.assignmentPrevious.symm ▸ partition)
+
+/-- CT4's capacity terminal publishes its exact aggregate inequality on every
+outer route; no schedule is rerun to obtain it. -/
+theorem summaryOfRouted_required_le_capacity {previous : Previous}
+    (routed : profile.RoutedResidual previous)
+    (selected : routed.exactOutput.output.fst.terminal = .capacity) :
+    (profile.summaryOfRouted routed).requiredTotal ≤
+      (profile.summaryOfRouted routed).capacityTotal := by
+  cases routed with
+  | missingPayer exact routeSelected
+  | overloadedFibre exact routeSelected
+  | assignmentCertificate exact routeSelected
+  | aggregateCertificate exact routeSelected aggregateSelected
+  | capacityResidual exact routeSelected aggregateSelected =>
+      have outcome : CT4.Outcome profile.assignment.assignmentCapability
+          exact.output.fst.stage.previous .capacity := by
+        rw [← selected]
+        exact exact.output.fst.outcome
+      cases outcome with
+      | capacity total bounded residual =>
+          exact residual
+
 end Profile
 
-/-- Build the dependent CT4 → CT14 profile from one inert registration and the
-exact normalized-support ledger query supplied by the compiler. -/
+/-- Query-only facts published by a completed CT4 → CT14 operation.
+
+The record contains no executable function and no presentation data.  Its
+terminal fields and inequalities are projections of the literal CT outputs
+which Core appended at the producer stage.  Consequently a later Strategy can
+inspect the accounting result without rerunning either CT or reconstructing a
+schedule from the stable residual. -/
 def Profile.ofRegistrationAt
     {Previous : Type u} {Residual : Type uResidual}
     [HasResidual Previous Residual]

@@ -41,20 +41,36 @@ structure Profile (Previous : Type u) where
   registration could fill. -/
   barrierDerived : Query Previous fun previous =>
     FiniteBarrierEnumeration.Summary.Derived (barrierSummary.read previous)
-  /-- The compared `Summary`'s flat column is nonvanishing.  Also produced at
-  the barrier node, out of its registration's `flatCount_pos` obligation. -/
+  /-- The compared `Summary`'s flat column is nonvanishing, as proved and
+  published inside the sealed barrier strategy. -/
   barrierFlatPositive : Query Previous fun previous =>
     0 < (barrierSummary.read previous).flatProduct
+  /-- **`def:near-cubic-spine`, the node-`[19]` at-or-below branch load and
+  table value this node was entered under.**  Not a registration field: Core
+  reads it off the literal `scaleThresholdDichotomy` branch payload that
+  routed into this node, exactly as `barrierSummary` is read off the barrier
+  node's own payload. -/
+  degreeSurplusLoad : Query Previous fun _ => Nat
+  degreeSurplusThreshold : Query Previous fun _ => Nat
+  /-- The node-`[19]` at-or-below comparison itself. -/
+  nearCubic : Query Previous fun previous =>
+    degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous
 
 /-- Lift the sole inert residual observable while retaining the
 producer-owned ledger queries verbatim.  The barrier facts arrive together with
 the `Summary` they are about, as the barrier node's own
-`FiniteBarrierEnumeration.RateLedger`, so no consumer restates them. -/
+`FiniteBarrierEnumeration.RateLedger`, so no consumer restates them.  The
+near-cubic-spine facts arrive the same way, as the node-`[19]` branch's own
+retained load/table/comparison -- not chosen or re-derived here. -/
 def Profile.ofRegistration
     {Residual : Type u} [HasResidual Previous Residual]
     (packingCount : Query Previous fun _ => Nat)
     (barrierRate : FiniteBarrierEnumeration.RateLedger Previous)
-    (registration : Registration Residual) : Profile Previous where
+    (registration : Registration Residual)
+    (degreeSurplusLoad degreeSurplusThreshold : Query Previous fun _ => Nat)
+    (nearCubic : Query Previous fun previous =>
+      degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous) :
+    Profile Previous where
   packingCount := packingCount
   barrierSummary := barrierRate.summary
   ambientCapacity :=
@@ -64,6 +80,9 @@ def Profile.ofRegistration
     registration.ambientCapacity_pos (residualOf previous)
   barrierDerived := barrierRate.derived
   barrierFlatPositive := barrierRate.flatPositive
+  degreeSurplusLoad := degreeSurplusLoad
+  degreeSurplusThreshold := degreeSurplusThreshold
+  nearCubic := nearCubic
 
 namespace Profile
 
@@ -337,9 +356,25 @@ noncomputable def capLedger (profile : Profile Previous) :
     ambientCapacity := profile.ambientCapacity.preserve
     cap := Query.ofFunction fun stage =>
       (selected.read stage).stateDemand_le_representedCapacity
+    entropyCap := Query.ofFunction fun stage => by
+      change 2 ^ ((profile.barrierSummary.read stage.previous).binaryRateFloor *
+        profile.packingCount.read stage.previous) ≤
+        profile.ambientCapacity.read stage.previous
+      rcases (profile.barrierDerived.read stage.previous).two_pow_binaryRateFloor_mul_flatProduct_le_or_eq_zero with
+        rateFloor | rateZero
+      · simpa using
+          (selected.read stage).two_pow_rate_mul_packingCount_le_ambientCapacity
+            (profile := profile) rateFloor
+            (profile.barrierFlatPositive.read stage.previous)
+      · have h := profile.ambientCapacity_pos.read stage.previous
+        simp only [rateZero, Nat.zero_mul, pow_zero]
+        omega
     ambientCapacity_pos := profile.ambientCapacity_pos.preserve
     barrierDerived := profile.barrierDerived.preserve
-    barrierFlatPositive := profile.barrierFlatPositive.preserve }
+    barrierFlatPositive := profile.barrierFlatPositive.preserve
+    degreeSurplusLoad := profile.degreeSurplusLoad.preserve
+    degreeSurplusThreshold := profile.degreeSurplusThreshold.preserve
+    nearCubic := profile.nearCubic.preserve }
 
 end Profile
 

@@ -22,6 +22,7 @@ universe uPrevious uResidual uCandidate
 structure Profile (Previous : Type uPrevious) (Residual : Type uResidual)
     [HasResidual Previous Residual] where
   registration : Registration.{uResidual, uCandidate} Residual
+  sourceCode : Query Previous (fun _ => List Bool)
   /-- The object whose curvature table is enumerated.  It defaults to the
   incoming residual; a compiler that has already rebased onto a selected
   minimal counterexample passes that query instead, so the accepted schedule
@@ -35,54 +36,68 @@ variable [HasResidual Previous Residual]
 variable (profile : Profile.{uPrevious, uResidual, uCandidate}
   Previous Residual)
 
+def decodedProfile (previous : Previous) :
+    Core.FiniteBitRelationBarrier.Profile
+      (profile.registration.labelCount (profile.current.read previous)) where
+  row := fun relation source =>
+    BitVec.ofFnLE fun target =>
+      profile.sourceCode.read previous |>.getD
+        (profile.registration.relationPosition
+            (profile.current.read previous) relation *
+            profile.registration.labelCount (profile.current.read previous) ^ 2 +
+          source.1 *
+            profile.registration.labelCount (profile.current.read previous) +
+          target.1)
+        false
+
 abbrev Candidate (previous : Previous) :=
   profile.registration.Candidate (profile.current.read previous)
 
+def candidateFlatCount (previous : Previous)
+    (candidate : profile.Candidate previous) : Nat :=
+  let residual := profile.current.read previous
+  (profile.decodedProfile previous).flatCount
+    (profile.registration.leftLength residual candidate)
+    (profile.registration.rightLength residual candidate)
+
+def admissible (previous : Previous) (candidate : profile.Candidate previous) : Prop :=
+  profile.registration.accepted (profile.current.read previous) candidate ∧
+    0 < profile.candidateFlatCount previous candidate
+
+def admissibleDecidable (previous : Previous)
+    (candidate : profile.Candidate previous) :
+    Decidable (profile.admissible previous candidate) :=
+  @instDecidableAnd _ _
+    (profile.registration.acceptedDecidable
+      (profile.current.read previous) candidate)
+    (Nat.decLt 0 (profile.candidateFlatCount previous candidate))
+
 abbrev Accepted (previous : Previous) :=
-  {candidate : profile.Candidate previous //
-    profile.registration.accepted (profile.current.read previous) candidate}
+  {candidate : profile.Candidate previous // profile.admissible previous candidate}
 
 def acceptedSchedule (previous : Previous) :
     Core.Finite.CompleteEnumeration (profile.Accepted previous) :=
   (profile.registration.candidates (profile.current.read previous)).subtype
-    (profile.registration.accepted (profile.current.read previous))
-    (profile.registration.acceptedDecidable (profile.current.read previous))
+    (profile.admissible previous) (profile.admissibleDecidable previous)
 
 def countRow (previous : Previous) (index : profile.Accepted previous) :
     Nat × Nat :=
   let residual := profile.current.read previous
-  let table := profile.registration.profile residual
-  (table.safeCount (profile.registration.leftLength residual index)
-      (profile.registration.rightLength residual index),
-    table.flatCount (profile.registration.leftLength residual index)
-      (profile.registration.rightLength residual index))
+  let table := profile.decodedProfile previous
+  (table.safeCount (profile.registration.leftLength residual index.1)
+      (profile.registration.rightLength residual index.1),
+    table.flatCount (profile.registration.leftLength residual index.1)
+      (profile.registration.rightLength residual index.1))
 
 def rows (previous : Previous) : List (Nat × Nat) :=
   (profile.acceptedSchedule previous).values.map (profile.countRow previous)
 
-/-! ### Positivity of the generated flat column
-
-The flatness cost the manuscript reads off this table is the *ratio*
-`γ_{a,b} = log₂(W_{a,b} / F_{a,b})`, so `F` -- the generated flat column -- is a
-denominator.  Consumers used to take its positivity as a bare hypothesis; it is
-a fact about the registered presentation, and this is where the registration's
-`flatCount_pos` obligation becomes the derived summary's positivity. -/
-
-/-- **Every generated flat entry is positive.**  Read straight off the
-registration's obligation at the exact accepted index the row was generated
-from; no count is recomputed. -/
 theorem countRow_snd_pos (previous : Previous)
     (index : profile.Accepted previous) :
-    0 < (profile.countRow previous index).2 :=
-  profile.registration.flatCount_pos (profile.current.read previous) index
+    0 < (profile.countRow previous index).2 := by
+  have positive := index.2.2
+  simpa only [countRow, candidateFlatCount] using positive
 
-/-- **`0 < flatProduct` of the derived summary.**
-
-`flatProduct` is the product of the generated flat column over the accepted
-schedule, and every factor is positive by the registration's `flatCount_pos`.
-Nothing about the table is recomputed and no numeral appears: the schedule is
-the one `acceptedSchedule` filtered and the entries are the ones `countRow`
-generated. -/
 theorem flatProduct_pos (previous : Previous) :
     0 < (Summary.ofRows (profile.rows previous)).flatProduct := by
   rw [Summary.ofRows_flatProduct, rows, List.map_map]
@@ -144,14 +159,16 @@ section MultiScale
 variable (registration : Registration.{uResidual, uCandidate} Residual)
 variable (scaleCount : Residual → Nat)
 variable (current : Query Previous fun _ => Residual)
+variable (sourceCode : Query Previous fun _ => List Bool)
 
 /-- The scale-free profile of a registration. -/
 abbrev scaleFree : Profile.{uPrevious, uResidual, uCandidate} Previous Residual :=
-  { registration := registration, current := current }
+  { registration := registration, sourceCode := sourceCode, current := current }
 
 /-- The same registration declared at `scaleCount` separated scales. -/
 abbrev multiScale : Profile.{uPrevious, uResidual, uCandidate} Previous Residual :=
-  { registration := registration.multiScale scaleCount, current := current }
+  { registration := registration.multiScale scaleCount,
+    sourceCode := sourceCode, current := current }
 
 /-- The generated count rows of a multi-scale package are the scale-free
 count rows repeated once per scale.  Every scale carries the same barriers on
@@ -159,11 +176,11 @@ the same label carrier, so the two leg lengths — and hence the derived safe
 and flat counts — of a barrier do not vary with the scale. -/
 theorem rows_multiScale (previous : Previous) :
     (multiScale (Previous := Previous) registration scaleCount
-        current).rows previous
+        current sourceCode).rows previous
       = (Core.Finite.Enumeration.ofFinEnum
             (inferInstance : FinEnum (Fin (scaleCount (current.read previous))))
           ).values.flatMap
-          (fun _ => (scaleFree (Previous := Previous) registration current).rows
+          (fun _ => (scaleFree (Previous := Previous) registration current sourceCode).rows
             previous) := by
   simp only [rows, acceptedSchedule, Registration.multiScale,
     Core.Finite.CompleteEnumeration.product,
@@ -173,11 +190,13 @@ theorem rows_multiScale (previous : Previous) :
     (left := (Core.Finite.Enumeration.ofFinEnum
       (inferInstance : FinEnum (Fin (scaleCount (current.read previous))))))
     (right := (registration.candidates (current.read previous)).toEnumeration)
-    (predicate := registration.accepted (current.read previous))
+    (predicate := (scaleFree (Previous := Previous) registration current sourceCode).admissible
+      previous)
     (decidePredicate :=
-      registration.acceptedDecidable (current.read previous))
+      (scaleFree (Previous := Previous) registration current sourceCode).admissibleDecidable
+        previous)
     (column := (multiScale (Previous := Previous) registration
-      scaleCount current).countRow previous)) ?_
+      scaleCount current sourceCode).countRow previous)) ?_
   exact List.flatMap_congr fun _ _ => rfl
 
 omit [HasResidual Previous Residual] in
@@ -197,9 +216,9 @@ count.**  This is the residual-dependence of the barrier rate: with
 numeral. -/
 theorem safeProduct_multiScale (previous : Previous) :
     (Summary.ofRows ((multiScale (Previous := Previous) registration
-        scaleCount current).rows previous)).safeProduct
+        scaleCount current sourceCode).rows previous)).safeProduct
       = (Summary.ofRows ((scaleFree (Previous := Previous)
-          registration current).rows previous)).safeProduct ^
+          registration current sourceCode).rows previous)).safeProduct ^
         scaleCount (current.read previous) := by
   rw [Summary.ofRows_safeProduct, Summary.ofRows_safeProduct,
     rows_multiScale, List.map_flatMap, prod_flatMap_const,
@@ -210,9 +229,9 @@ count, so the derived *ratio* — the entropy rate — is exactly `scaleCount`
 times the scale-free rate. -/
 theorem flatProduct_multiScale (previous : Previous) :
     (Summary.ofRows ((multiScale (Previous := Previous) registration
-        scaleCount current).rows previous)).flatProduct
+        scaleCount current sourceCode).rows previous)).flatProduct
       = (Summary.ofRows ((scaleFree (Previous := Previous)
-          registration current).rows previous)).flatProduct ^
+          registration current sourceCode).rows previous)).flatProduct ^
         scaleCount (current.read previous) := by
   rw [Summary.ofRows_flatProduct, Summary.ofRows_flatProduct,
     rows_multiScale, List.map_flatMap, prod_flatMap_const,
@@ -233,14 +252,14 @@ theorem two_pow_rate_mul_scaleCount_mul_flatProduct_le_safeProduct
     (previous : Previous) {rate : Nat}
     (scaleFreeRate :
       2 ^ rate * (Summary.ofRows ((scaleFree (Previous := Previous)
-          registration current).rows previous)).flatProduct ≤
+          registration current sourceCode).rows previous)).flatProduct ≤
         (Summary.ofRows ((scaleFree (Previous := Previous)
-          registration current).rows previous)).safeProduct) :
+          registration current sourceCode).rows previous)).safeProduct) :
     2 ^ (rate * scaleCount (current.read previous)) *
         (Summary.ofRows ((multiScale (Previous := Previous) registration
-          scaleCount current).rows previous)).flatProduct ≤
+          scaleCount current sourceCode).rows previous)).flatProduct ≤
       (Summary.ofRows ((multiScale (Previous := Previous) registration
-        scaleCount current).rows previous)).safeProduct := by
+        scaleCount current sourceCode).rows previous)).safeProduct := by
   rw [safeProduct_multiScale, flatProduct_multiScale, pow_mul, ← mul_pow]
   exact Nat.pow_le_pow_left scaleFreeRate _
 
@@ -336,14 +355,14 @@ def inputSize (previous : Previous) : Nat :=
   (profile.acceptedSchedule previous).card +
     profile.registration.labelCount (profile.current.read previous)
 
-def spec : CT16.Spec Previous where
+private def spec : CT16.Spec Previous where
   Coordinate := profile.Accepted
   InSupport := fun _ _ => True
   ClosedCode := fun _ => Summary
   closedCode := fun previous => Summary.ofRows (profile.rows previous)
   targetCode := fun previous => Summary.ofRows (profile.rows previous)
 
-def computation : CT16.ClosedCodeComputation profile.spec where
+private def computation : CT16.ClosedCodeComputation profile.spec where
   run := fun previous =>
     ⟨Summary.ofRows (profile.rows previous), profile.primitiveChecks previous⟩
   correct := fun _ => rfl
@@ -401,11 +420,11 @@ def computation : CT16.ClosedCodeComputation profile.spec where
   }
   checks_eq := fun _ => rfl
 
-def equalityDecision : CT16.CodeEqualityDecision profile.spec :=
+private def equalityDecision : CT16.CodeEqualityDecision profile.spec :=
   CT16.CodeEqualityDecision.unitCost profile.inputSize
     (fun _ => inferInstanceAs (DecidableEq Summary))
 
-def capability : CT16.Capability profile.spec where
+private def capability : CT16.Capability profile.spec where
   coordinates :=
     Query.ofFunction fun previous =>
       (profile.acceptedSchedule previous).toEnumeration
@@ -413,8 +432,8 @@ def capability : CT16.Capability profile.spec where
   codeComputation := profile.computation
   equalityDecision := profile.equalityDecision
 
-/-- The sealed Strategy is exactly one canonical CT16 execution. -/
-noncomputable def execution : Core.Strategy.CTExecution Previous :=
+/-- The private CT16 computation used by the sealed finite-barrier Strategy. -/
+private noncomputable def ct16Execution : Core.Strategy.CTExecution Previous :=
   CTAdapters.ct16 profile.capability
 
 /-- Recover the literal summary stored in one generated CT16 ledger entry. -/
@@ -434,7 +453,7 @@ has total support and definitionally identical closed and target codes, so
 the proper-support and mismatch constructors are impossible.  This projection
 does not rerun the table computation: it reads `ClosedCodeState.code` from
 the retained execution result. -/
-def summaryOfExecution
+private def summaryOfExecution
     (result : CT16.ExecutionResult profile.spec profile.capability) :
     Summary :=
   profile.summaryOfGenerated result.stage.previous result.stage.added
@@ -448,7 +467,7 @@ and that field carries its own semantic equality with `Spec.closedCode`
 *happen* to agree with the aggregation of the generated rows: it is that
 aggregation, proved, with the two impossible terminals eliminated exactly as in
 `summaryOfGenerated`. -/
-theorem summaryOfGenerated_eq (previous : Previous)
+private theorem summaryOfGenerated_eq (previous : Previous)
     (generated : CT16.Generated profile.spec profile.capability previous) :
     profile.summaryOfGenerated previous generated =
       Summary.ofRows (profile.rows previous) := by
@@ -461,7 +480,7 @@ theorem summaryOfGenerated_eq (previous : Previous)
   | .mismatch, .mismatch residual =>
       exact False.elim (residual.notEqual residual.state.exact)
 
-theorem summaryOfExecution_eq
+private theorem summaryOfExecution_eq
     (result : CT16.ExecutionResult profile.spec profile.capability) :
     profile.summaryOfExecution result =
       Summary.ofRows (profile.rows result.stage.previous) :=
@@ -471,7 +490,7 @@ theorem summaryOfExecution_eq
 needs in order to read `binaryRateFloor` as a genuine `log₂` of the retained
 aggregation columns, and it is a theorem about the execution, not a field a
 registration could supply. -/
-theorem summaryOfExecution_derived
+private theorem summaryOfExecution_derived
     (result : CT16.ExecutionResult profile.spec profile.capability) :
     Summary.Derived (profile.summaryOfExecution result) := by
   rw [profile.summaryOfExecution_eq result]
@@ -481,11 +500,74 @@ theorem summaryOfExecution_derived
 transported along `summaryOfExecution_eq`, so the density comparison's
 denominator is nonvanishing on the retained ledger entry rather than by
 hypothesis. -/
-theorem summaryOfExecution_flatProduct_pos
+private theorem summaryOfExecution_flatProduct_pos
     (result : CT16.ExecutionResult profile.spec profile.capability) :
     0 < (profile.summaryOfExecution result).flatProduct := by
   rw [profile.summaryOfExecution_eq result]
   exact profile.flatProduct_pos result.stage.previous
+
+/-! ### Strategy-owned fact publication
+
+The application-facing registration cannot supply this payload.  It is proved
+here from the retained CT16 result and appended by the sealed Strategy through
+Core's dependent execution composition. -/
+
+private abbrev AfterCT :=
+  Ledger.Extension Previous profile.ct16Execution.Output
+
+private def PublishedFacts (stage : profile.AfterCT) : Prop :=
+  let result := stage.added
+  profile.summaryOfExecution result =
+      Summary.ofRows (profile.rows result.stage.previous) ∧
+    Summary.Derived (profile.summaryOfExecution result) ∧
+    0 < (profile.summaryOfExecution result).flatProduct
+
+private noncomputable def factExecution :
+    Core.Strategy.CTExecution profile.AfterCT where
+  Terminal := Core.Strategy.CompletedTerminal
+  Output := fun stage => Core.Strategy.ProofPayload (profile.PublishedFacts stage)
+  run := fun stage => Core.Strategy.proofPayload
+    ⟨profile.summaryOfExecution_eq stage.added,
+      profile.summaryOfExecution_derived stage.added,
+      profile.summaryOfExecution_flatProduct_pos stage.added⟩
+  terminal := fun _ _ => .completed
+  checks := fun _ => 0
+  work := fun _ => 0
+
+/-- The sealed Strategy runs CT16 and then appends only the facts proved by the
+Strategy about CT16's retained result. -/
+noncomputable def execution : Core.Strategy.CTExecution Previous :=
+  profile.ct16Execution.compose profile.factExecution
+
+/-- Read the retained CT16 summary from one sealed Strategy output. -/
+def summaryOfOutput (previous : Previous)
+    (output : profile.execution.Output previous) : Summary :=
+  profile.summaryOfExecution output.1
+
+/-- Read the Strategy-proved derivation fact from its appended proof payload. -/
+theorem output_derived (previous : Previous)
+    (output : profile.execution.Output previous) :
+    Summary.Derived (profile.summaryOfOutput previous output) :=
+  output.2.down.2.1
+
+theorem output_exact (previous : Previous)
+    (output : profile.execution.Output previous) :
+    profile.summaryOfOutput previous output =
+      Summary.ofRows (profile.rows output.1.stage.previous) := by
+  simpa [summaryOfOutput] using output.2.down.1
+
+theorem run_exact (previous : Previous) :
+    profile.summaryOfOutput previous (profile.execution.run previous) =
+      Summary.ofRows (profile.rows previous) := by
+  have predecessor :
+      (profile.execution.run previous).1.stage.previous = previous := rfl
+  exact (profile.output_exact previous (profile.execution.run previous)).trans
+    (congrArg Summary.ofRows (congrArg profile.rows predecessor))
+
+theorem output_flatProduct_pos (previous : Previous)
+    (output : profile.execution.Output previous) :
+    0 < (profile.summaryOfOutput previous output).flatProduct :=
+  output.2.down.2.2
 
 end Profile
 
