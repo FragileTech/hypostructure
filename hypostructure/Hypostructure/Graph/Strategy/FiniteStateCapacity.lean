@@ -209,12 +209,10 @@ structure Registration (Residual : Type uResidual)
   no statement is restated and no obligation is added: a presentation that
   leaves this `none` keeps its non-capacity output live exactly as before.
 
-  Every conjunct is a schedule fact.  There is no entropy conjunct on either
-  side: `prop:two-budget` closes this branch by routing every one of its
-  branches into the large-budget net-charge analysis, so the forced/flat
-  realization is never owed.  The whole presentation, this field included, is
-  built by `labelledSkeletonRegistration`; a registry supplies data, never a
-  proof. -/
+  The finite-state presentation does not itself close the non-capacity arm.
+  That arm is a live residual and must be routed by the surrounding strategy;
+  in particular, singleton schedules do not establish the paper's entropy or
+  net-charge conclusions. -/
   nonCapacityImpossible :
     Option (PLift
       ((∀ (residual : Residual) (target : Target residual (object residual))
@@ -575,27 +573,7 @@ noncomputable def labelledSkeletonRegistration
     simpa [labelledSkeletonJointProfile, LabelledSkeleton, Nat.card_ulift]
       using mono
   jointDesiredExponent_exact := by intro; simp
-  nonCapacityImpossible :=
-    some (PLift.up
-      ⟨fun _ _ _ => trivial,
-        fun _ _ _ _ => Nat.zero_le _,
-        (by
-          intro _ _ _ _
-          simp [singletonUnit, Core.Finite.Enumeration.singleton,
-            Core.Finite.Enumeration.ofNodupList]),
-        (by
-          intro _ _ _ _ _ _ _ _
-          simp only [ne_eq, ULift.up.injEq]
-          omega),
-        (by
-          intro _ _ _ _ _
-          simp),
-        (by
-          intro _ _ _ _ _
-          simp),
-        (by
-          intro _ _ _ _ _
-          simp)⟩)
+  nonCapacityImpossible := none
 
 /-- The former spelling of `labelledSkeletonRegistration`, retained verbatim
 because the registered presentation that consumes it lives outside this

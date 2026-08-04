@@ -131,6 +131,8 @@ macro_rules
                     (rankDrop := fun rankDropResidual => rankDropResidual)
                     (fullRank := fun fullRankResidual =>
                       fullRankResidual.finiteStateCapacity
+                        (nonCapacity := fun branch =>
+                          branch.finiteStateNetChargeContinuation)
                         (capacity := fun capacity =>
                           capacity.finiteStateNetChargeContinuation
                             (typeA := fun branch =>

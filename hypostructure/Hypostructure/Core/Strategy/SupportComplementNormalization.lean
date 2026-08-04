@@ -62,6 +62,13 @@ structure ExactLedger (Stage : Type uStage)
     ∀ block, (cover stage block).length = (summary.read stage).coverCard
   complement : Query Stage fun stage =>
     Core.Finite.Enumeration (AmbientItem stage)
+  /-- CT9's literal false-label characterization, retained with the
+  normalized-support ledger so downstream nodes can identify the remainder
+  without rebuilding the packing or the partition. -/
+  complementMembership : (stage : Stage) → ∀ item,
+    item ∈ (complement.read stage).values ↔
+      item ∈ (ambient.read stage).values ∧
+        item ∉ (selected.read stage).values
   localPieces : Query Stage fun stage =>
     Core.Finite.Enumeration (LocalPiece stage)
   active : Query Stage fun stage =>
@@ -99,6 +106,8 @@ def comap {NewStage : Type uNew} [HasResidual NewStage Residual]
   coverNodup := ledger.coverNodup.comap project
   coverCardExact := ledger.coverCardExact.comap project
   complement := ledger.complement.comap project
+  complementMembership := fun stage item =>
+    ledger.complementMembership (project stage) item
   localPieces := ledger.localPieces.comap project
   active := ledger.active.comap project
   sourceResidual := ledger.sourceResidual.comap project
@@ -139,6 +148,17 @@ def comapTo {NewStage : Type uNew} [HasResidual NewStage Residual]
     exact ledger.coverCardExact.read (project stage) block
   complement := Query.ofFunction fun stage =>
     ambient_eq stage ▸ ledger.complement.read (project stage)
+  complementMembership := fun stage item => by
+    have castMem {α β : Type uAmbient} (e : α = β) (x : β)
+        (s : Core.Finite.Enumeration α) :
+        x ∈ (e ▸ s).values ↔ cast e.symm x ∈ s.values := by
+      cases e
+      rfl
+    let oldItem := cast (ambient_eq stage).symm item
+    have h := ledger.complementMembership (project stage) oldItem
+    simp only [Query.read_ofFunction]
+    rw [castMem, castMem, castMem]
+    exact h
   localPieces := ledger.localPieces.comap project
   active := ledger.active.comap project
   sourceResidual := ledger.sourceResidual.comap project

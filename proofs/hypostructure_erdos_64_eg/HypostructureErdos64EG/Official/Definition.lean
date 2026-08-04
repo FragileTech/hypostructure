@@ -363,9 +363,11 @@ noncomputable def localSupplyLowerBound :
     Core.Strategy.LocalSupplyLowerBound.Registration
       (Core.Strategy.ProblemInput problem)
       (fun input => ULift input.object.Vertex) :=
-  Graph.Strategy.NormalizationRank.localSupply
+  Graph.Strategy.NormalizationRank.componentLocalSupply
     (fun input : Core.Strategy.ProblemInput problem => input.object)
     (fun _ => erdosReceiverLoadProfile.baselineDegree)
+    (fun _ => by
+      simp [erdosReceiverLoadProfile])
 
 /-- The standing minimum-degree hypothesis of the registered problem, read off
 the residual it is carried on.  `ProblemInput.baseline` is `problem.Baseline`,
@@ -444,7 +446,7 @@ private noncomputable def compressionLinkedTargetRelativeRankDichotomy :
             (fun input : Core.Strategy.ProblemInput problem => input.object)
             (fun _ => erdosReceiverLoadProfile.baselineDegree)
             (fun _ => 0)
-            (some ⟨baselineDegree_le_minDegree⟩)
+            none
         fixed :=
           Graph.Strategy.NormalizationRank.compressionLinkedTargetRelativeRankWithPresentation
             Baseline BranchState erdosBaselineInvariant
@@ -453,7 +455,7 @@ private noncomputable def compressionLinkedTargetRelativeRankDichotomy :
             (fun input : Core.Strategy.ProblemInput problem => input.object)
             (fun _ => erdosReceiverLoadProfile.baselineDegree)
             (fun _ => 0)
-            (some ⟨baselineDegree_le_minDegree⟩) } }
+            none } }
 
 /-- Residual-owned finite-state presentation for the full-rank continuation.
 

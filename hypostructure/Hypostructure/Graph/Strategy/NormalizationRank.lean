@@ -1194,6 +1194,36 @@ theorem positiveDeficiency_sum_le_boundaryIncidence_sum
   exact supportIncidence_deficiency_le_boundaryIncidence object baseline
     minimumDegree support vertex
 
+local instance vertexDecidableEq (object : Graph.FiniteObject.{v}) :
+    DecidableEq object.Vertex := object.vertices.decEq
+
+/-! The paper's `def⁺(R)` on the exact CT9 remainder schedule.  The schedule
+is supplied by the predecessor ledger; no ambient-vertex demand schedule is
+introduced or reconstructed here. -/
+noncomputable def positiveDeficiencyOnExactRemainder
+    (object : Graph.FiniteObject.{v}) (baseline : Nat)
+    (remainder : Core.Finite.Enumeration object.Vertex) : Nat :=
+  letI := object.vertices.decEq
+  Core.Strategy.BoundaryDemandAccounting.FiniteInteraction.positiveDeficiency
+    baseline (fun vertex =>
+      supportIncidence object (remainder.values.toFinset) vertex) remainder
+
+theorem positiveDeficiencyOnExactRemainder_le_boundary
+    (object : Graph.FiniteObject.{v}) (baseline : Nat)
+    (minimumDegree : baseline ≤ object.minDegree)
+    (remainder : Core.Finite.Enumeration object.Vertex) :
+    positiveDeficiencyOnExactRemainder object baseline remainder ≤
+      (remainder.values.map (fun vertex =>
+        boundaryIncidence object
+          (@List.toFinset object.Vertex object.vertices.decEq remainder.values)
+          vertex)).sum := by
+  letI := object.vertices.decEq
+  unfold positiveDeficiencyOnExactRemainder
+  apply List.sum_le_sum
+  intro vertex member
+  exact supportIncidence_deficiency_le_boundaryIncidence object baseline
+    minimumDegree remainder.values.toFinset vertex
+
 noncomputable def localSupply
     {Residual : Type u}
     (object : Residual → Graph.FiniteObject.{v})
@@ -1225,6 +1255,66 @@ noncomputable def localSupply
       supportIncidence_add_boundaryIncidence (object residual)
         (supportOfComplement (object residual) complement) centre
     omega
+
+/-! Row [30] uses the same incoming complement ledger and accounts by its
+literal CT6 components.  Components are represented by their member Finsets,
+so the registration remains residual-indexed while the schedule remains a
+dependent view of the incoming complement. -/
+
+noncomputable def componentLocalSupply
+    {Residual : Type u}
+    (object : Residual → Graph.FiniteObject.{v})
+    (baselineDegree : Residual → Nat)
+    (baselineGe : ∀ residual, 3 ≤ baselineDegree residual) :
+    Core.Strategy.LocalSupplyLowerBound.Registration.{u, max u v, v, v}
+      Residual (fun residual => ULift.{u} (object residual).Vertex) where
+  Member := fun residual => Finset (object residual).Vertex
+  Label := fun residual => Finset (object residual).Vertex
+  members := fun residual complement => by
+    classical
+    let support := supportOfComplement (object residual) complement
+    let components :=
+      _root_.Hypostructure.Graph.Strategy.componentSchedule
+        (object residual) support
+    exact Core.Finite.Enumeration.ofNodupList
+      (components.values.map (fun component =>
+        Graph.SupportComponents.Connected.members
+          (object residual) support component)) (by
+        refine List.Nodup.map_on (f := fun component =>
+          Graph.SupportComponents.Connected.members
+            (object residual) support component) ?_ components.nodup
+        intro left leftMem right rightMem equal
+        by_contra different
+        have leftNonempty :=
+          Graph.SupportComponents.Connected.member_nonempty
+            (object residual) support (componentMem := leftMem)
+        rcases leftNonempty with ⟨vertex, vertexMem⟩
+        have rightMem' : vertex ∈
+            Graph.SupportComponents.Connected.members
+              (object residual) support right := by
+          simpa [equal] using vertexMem
+        exact (Finset.disjoint_left.mp
+          (Graph.SupportComponents.Connected.disjoint_members
+            (object residual) support different)) vertexMem rightMem')
+  requiredMass := fun residual _ component =>
+    baselineDegree residual * component.card
+  observedSupply := fun residual _ component =>
+    ((object residual).induce component).wedgeCount
+  defectCorrection := fun residual _ component =>
+    2 * (((object residual).induce component).deficiencyAt
+      (baselineDegree residual))
+  surplus := fun residual _ component => by
+    classical
+    exact (component.toList.map fun vertex =>
+      (object residual).degree vertex - baselineDegree residual).sum
+  label := fun _ _ component => component
+  labelDecidableEq := fun residual => Classical.decEq _
+  pointwise := by
+    intro residual complement component
+    simpa only [Graph.FiniteObject.vertexCount_induce] using
+      (Graph.FiniteObject.baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt
+        ((object residual).induce component) (baselineDegree residual)
+        (baselineGe residual))
 
 theorem localSupply_defectCorrection_eq
     {Residual : Type u}

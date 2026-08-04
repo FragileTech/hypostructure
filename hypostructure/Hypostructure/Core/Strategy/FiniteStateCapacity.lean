@@ -1110,6 +1110,25 @@ def capacityContinuationQuery (profile : Profile Previous Residual) :
   profile.capacityResidualQuery.map fun _ residual =>
     residual.continuation
 
+/-! The large-budget continuation is also the paper's destination for the
+low-entropy/non-capacity arm.  Its seven inherited quantities are therefore
+available before the FSC classification; only the selected finite-capacity
+branch receives the stronger cap carried by `capacityContinuationQuery`. -/
+
+noncomputable def inheritedContinuationLedger
+    (profile : Profile Previous Residual) :
+    FiniteStateNetChargeContinuation.CapacityLedger Previous :=
+  { localSupply := Query.ofFunction fun previous =>
+      profile.localSupplyAt previous
+    forcedPower := profile.forcedPower
+    flatPower := profile.flatPower
+    realizedStateCount := profile.realizedStateCount
+    ambientOrder := profile.ambientOrder
+    remainderCard := profile.remainderCard
+    statePowerExponent := profile.statePowerExponent
+    scaledDeficiency := Query.ofFunction fun previous =>
+      (profile.scaledDeficiencyCap previous).finiteCap }
+
 /-- Query-only interface to the exact selected capacity ledger entry. -/
 noncomputable def continuationLedger
     (profile : Profile Previous Residual) :

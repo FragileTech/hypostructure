@@ -59,7 +59,7 @@ theorem positiveDeficiency_le_boundarySupply
 The block table, its order, and its baseline are parameters of the generic
 operation; no application constant is embedded in this theorem. -/
 theorem sum_boundary_add_internal_eq
-    {Item Block : Type uItem}
+    {Block : Type uItem}
     (baseline order : Nat)
     (blocks : Core.Finite.Enumeration Block)
     (boundary internal surplus : Block → Nat)
@@ -85,11 +85,10 @@ theorem sum_boundary_add_internal_eq
 account. Consumers use this theorem through the ordinary accumulated ledger;
 they never unfold or reconstruct the block schedule. -/
 theorem boundary_le_block_baseline_add_surplus
-    {Item Block : Type uItem}
+    {Block : Type uItem}
     (baseline order : Nat)
     (blocks : Core.Finite.Enumeration Block)
     (boundary internal surplus : Block → Nat)
-    (internal_nonnegative : 0 ≤ (blocks.values.map internal).sum)
     (account :
       (blocks.values.map boundary).sum + (blocks.values.map internal).sum =
         (baseline * order) * blocks.card + (blocks.values.map surplus).sum) :
@@ -136,9 +135,109 @@ theorem surplus_aware_window_stub
     (blocks.values.map boundary).sum ≤
       (baseline * order) * blocks.card + (blocks.values.map surplus).sum := by
   exact boundary_le_block_baseline_add_surplus baseline order blocks boundary
-    internal surplus (by omega) account
+    internal surplus account
 
 end FiniteInteraction
+
+/-- The exact supply account published at a boundary-demand node.  All
+quantities are finite sums over the predecessor-owned item and block
+schedules.  In particular `blockCount` is the number of blocks, not the size
+of their union. -/
+structure SupplyLedger where
+  positiveDeficiency : Nat
+  boundarySupply : Nat
+  blockBoundarySupply : Nat
+  blockInternal : Nat
+  blockSurplus : Nat
+  blockCount : Nat
+  baseline : Nat
+  order : Nat
+  stubRate : Nat
+  deficiency_le_boundary : positiveDeficiency ≤ boundarySupply
+  exactBlockAccount :
+    blockBoundarySupply + blockInternal =
+      (baseline * order) * blockCount + blockSurplus
+  boundary_le_ceiling :
+    boundarySupply ≤ stubRate * blockCount + blockSurplus
+  deficiency_le_ceiling :
+    positiveDeficiency ≤
+      stubRate * blockCount + blockSurplus
+
+/-- Construct the theorem ledger from the two literal finite schedules and
+their primitive interaction laws.  This operation performs no routing and
+accepts no advertised conclusion: each published inequality is derived here
+from the pointwise load split and the exact additive block account. -/
+def SupplyLedger.ofFiniteInteraction
+    {Item : Type uDemand} {Block : Type uPayer}
+    (baseline order : Nat)
+    (items : Core.Finite.Enumeration Item)
+    (blocks : Core.Finite.Enumeration Block)
+    (internal boundary : Item → Nat)
+    (blockBoundary blockInternal blockSurplus : Block → Nat)
+    (minimumLoad : ∀ item ∈ items.values,
+      baseline ≤ internal item + boundary item)
+    (boundaryCovered :
+      FiniteInteraction.boundarySupply boundary items ≤
+        (blocks.values.map blockBoundary).sum)
+    (blockAccount : ∀ block ∈ blocks.values,
+      blockBoundary block + blockInternal block =
+        baseline * order + blockSurplus block)
+    (blockInternalExact : ∀ block ∈ blocks.values,
+      blockInternal block = 2 * (order - 1))
+    (stubRate : Nat)
+    (stubRateExact : stubRate + 2 * (order - 1) = baseline * order) :
+    SupplyLedger := by
+  let deficiency :=
+    FiniteInteraction.positiveDeficiency baseline internal items
+  let supply := FiniteInteraction.boundarySupply boundary items
+  let blockSupply := (blocks.values.map blockBoundary).sum
+  let internalTotal := (blocks.values.map blockInternal).sum
+  let surplusTotal := (blocks.values.map blockSurplus).sum
+  have lower : deficiency ≤ supply :=
+    FiniteInteraction.positiveDeficiency_le_boundarySupply
+      baseline internal boundary items minimumLoad
+  have account0 := FiniteInteraction.sum_boundary_add_internal_eq
+    baseline order blocks blockBoundary blockInternal blockSurplus blockAccount
+  have account : blockSupply + internalTotal =
+      (baseline * order) * blocks.card + surplusTotal := by
+    dsimp [blockSupply, internalTotal, surplusTotal]
+    exact account0
+  have internalTotalExact :
+      internalTotal = (2 * (order - 1)) * blocks.card := by
+    rw [Core.Finite.Enumeration.card]
+    dsimp [internalTotal]
+    calc
+      (blocks.values.map blockInternal).sum =
+          (blocks.values.map fun _ => 2 * (order - 1)).sum := by
+            exact congrArg List.sum
+              (List.map_congr_left blockInternalExact)
+      _ = (2 * (order - 1)) * blocks.values.length := by
+            simp [Nat.mul_comm]
+  have rateMul :
+      stubRate * blocks.card +
+          (2 * (order - 1)) * blocks.card =
+        (baseline * order) * blocks.card := by
+    calc
+      stubRate * blocks.card + (2 * (order - 1)) * blocks.card =
+          (stubRate + 2 * (order - 1)) * blocks.card := by
+            rw [Nat.add_mul]
+      _ = (baseline * order) * blocks.card := by rw [stubRateExact]
+  have upper : supply ≤
+      stubRate * blocks.card + surplusTotal := by omega
+  exact
+    { positiveDeficiency := deficiency
+      boundarySupply := supply
+      blockBoundarySupply := blockSupply
+      blockInternal := internalTotal
+      blockSurplus := surplusTotal
+      blockCount := blocks.card
+      baseline := baseline
+      order := order
+      stubRate := stubRate
+      deficiency_le_boundary := lower
+      exactBlockAccount := account
+      boundary_le_ceiling := upper
+      deficiency_le_ceiling := lower.trans upper }
 
 /-- Exact numeric ledger published by one completed boundary accounting.
 

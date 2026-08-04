@@ -38,6 +38,51 @@ Columns:
 
 Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 
+## Build status — every verdict below is a source-read verdict
+
+**The tree does not compile.**  `lake build` in `hypostructure/` fails, at
+commit `e233452` ("Finish block A") and in the working tree, on two
+independent errors:
+
+1. `Hypostructure/Core/Strategy/Dag.lean` carries two adjacent doc comments —
+   an orphaned `/-- Producer-owned theorem ledger … -/` immediately followed by
+   `/-- The single CT14 local-supply bound … -/` (`:6061`–`:6064` at `e233452`,
+   `:6066`–`:6069` in the working tree).  Lean rejects the second:
+   `unexpected token '/--'; expected 'lemma'`.  A doc comment must precede a
+   declaration; a declaration was deleted and its docstring left behind.  The
+   whole file therefore fails to parse and everything after the error
+   elaborates to `sorry` (`resolveVertex`, `Dag.lean:6420`).
+2. `Hypostructure/PDE/Strategy/Registry/PackingNormalization.lean:189:20` —
+   unsolved goal
+   `∀ residual occurrence, PUnit.unit ∈ (Enumeration.singleton PUnit.unit).values`,
+   the obstruction-packing registration's own `maximalSelection` obligation.
+
+Neither module has ever produced an `.olean` in this build tree — only
+`.trace`/`.hash` — and `Hypostructure/Fixtures/FiniteStateCapacityRejection`
+is blocked behind them.  Since `Core.Strategy.Dag` is the typed DAG compiler,
+**no EG target builds**, so no row in this document is currently
+compiler-confirmed.  Every ✅ below records what the *source* states, read
+declaration by declaration; none of them records a successful elaboration.
+
+The uncommitted working tree adds three further errors on top of the two
+above, all in Block E/H rank-drop plumbing and none in Block A:
+`Dag.lean:1069` projects `TargetRankEntry.reductionIndex`, which does not
+exist; `Dag.lean:5089` uses `index`, removed from `TargetRankDropCapability`;
+`Dag.lean:5360` refers to an unknown identifier `exactRankDrop`.
+
+**The run export is stale.**  `build/hypostructure/eg-ab-run.json` is dated
+`2026-08-04 15:42`; commit `e233452` is `21:06` and rewrote
+`Core/Strategy/Dag.lean` (+259), `Core/Strategy/FiniteBarrierEnumeration.lean`
+(+192) and `Graph/Strategy/FiniteDensityBudget.lean` (+204) after it.  Every
+"in the export …" citation below was checked against that file and is
+faithful to *it*; none of it can be regenerated from the current source until
+the two build errors are fixed.  One divergence between the two is already
+visible and is recorded at Row 9.
+
+No `sorry` occurs in `hypostructure/Hypostructure` or in the EG proof source,
+and the only project axiom is
+`Graph.External.HegdeSandeepShashank.p13Free_hasPowerOfTwoCycle`.
+
 ## A. Entry spine
 
 | # | Node | Where | Ledger | Transport | Residual | Facts |
@@ -52,6 +97,51 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 | 8 | Non-near-cubic surplus split [19] | `v0` `scale_threshold_dichotomy:0` | ✅ | ✅ | ✅ | ✅ |
 | 9 | Near-cubic finite enumeration [21] | `v16` `finite_barrier_enumeration:0` | ✅ | ✅ | ✅ | ✅ |
 | 10 | Finite window-density budget [22]–[24] | `v15` `finite_density_budget:0` | ✅ | ✅ | ✅ | ✅ |
+
+**Re-review of block A, against the source.**  Rows 1–10 were re-read
+declaration by declaration against `original_erdos_64_proof.tex`, the Lean
+types and bodies, and the exported run.  Every ticked column survives: the
+selection order, the return-set equivalence, the subobject exclusion, both
+criticality clauses, the three interface-replacement stages, the maximal
+packing, the `399`-label denotation, the surplus comparison, the barrier
+summary, and the density cap all state what the manuscript states, with no
+application-supplied fact standing in for a derivation, no EG-specific
+carrier, and no rewritten residual.  Spot checks that held exactly as written
+include `criticalityNode` at `:116` and `slackIncompatibilityNode` at `:198`;
+the three `StageNode.create` runs at `:333`/`:355`/`:493` and the single
+inadmissible "CT7" comment at `:161`; `grep -c "CTAdapters.ct"` returning `0`
+for both `CriticalModificationStructure.lean` and `InterfaceReplacement.lean`;
+every `contract_field` list in the run export; `labels_enumeration` proved by
+kernel `decide` and not `native_decide`; and safe/flat `543958`/`111286` at
+slot `15·1+1 = 16` of the generated count arrays, whose difference is the
+paper's `432672`.
+
+Five errors were found and are corrected in place below.  Four are
+bookkeeping; the first is not:
+
+1. **The tree does not build** — see **Build status** above.  Row 9's
+   `Validation` paragraph asserted the opposite and has been rewritten.  No
+   ✅ in this block is compiler-confirmed at present.
+2. **Row 9, Facts.**  "The continuation applies
+   [`sum_edgeStratumCount_le_variableEdgeBudget`] to edge counts read from its
+   residual" was false: `Graph/FiniteEdgeBudget.lean` is imported by no
+   module, so `lem:variable-edge-budget` and `rem:budget-robustness` are
+   unconsumed, not framework theorems on residual data.  Their paper-object
+   rows are reclassified.  The row's own CT16 statement is unaffected, so
+   Facts stays ✅ on the same convention Row 10 uses for the absent decimal
+   caps.
+3. **Rows 3, 4, 5 — export edge ids off by one.**  The export has
+   `e2 : v4→v5`, `e3 : v5→v6`, `e4 : v6→v7`, `e5 : v7→v2`; the three rows each
+   cited the successor edge.  Row 2's `e2` and Row 6's `e5` were already
+   right, so the document contradicted itself.  Fixed.
+4. **Row 5 — invariant provenance.**  `erdosBaselineInvariant` /
+   `erdosTargetInvariant` do not feed `interfaceReplacement`; that field
+   proves its own invariants in `Graph/Strategy/CounterexampleReduction.lean`,
+   and the EG-file pair is consumed at Row 40 instead.  The row credited the
+   application with more than it supplies.  Fixed.
+5. **Row 9 — stale exported interface.**  The run still advertises a `profile`
+   contract field for `finite_barrier_enumeration:0`; `Registration` has no
+   such field.  Recorded at the row.
 
 ## B. Type A receiver ladder
 
@@ -100,7 +190,7 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 |---|---|---|---|---|---|---|
 | 37 | Support-complement normalization [25]–[27] | `v21` `support_complement_normalization` | ✅ | ✅ | ✅ | ✅ |
 | 38 | Boundary-demand accounting [28]–[29] | `v20` `boundary_demand_accounting:0` | ✅ | ✅ | ✅ | ❌ |
-| 39 | Local supply lower bound [30] | `v19` `local_supply_lower_bound:0` | ✅ | ✅ | ✅ | ❌ |
+| 39 | Local supply lower bound [30] | `v19` `local_supply_lower_bound:0` | ✅ | ✅ | ✅ | ✅ |
 | 40 | Target-relative rank dichotomy [31]–[32] | `v18` `compression_linked_target_relative_rank_dichotomy:0` | ✅ | ✅ | ✅ | ❌ |
 | 41 | Full-rank finite-state capacity [47]–[56] | `v22` `finite_state_capacity:0` | ✅ | ✅ | ✅ | ❌ |
 | 42 | Net-charge continuation [57]–[64] | `v23` `finite_state_net_charge_continuation:0` | ✅ | ✅ | ✅ | ❌ |
@@ -210,7 +300,7 @@ reached from this arm.
 - **What it should do.** For the selected minimal `ctx.G`, every certified proper subgraph must fail the baseline: `∀ subgraph : ProperSubgraph ctx.G, ¬ (3 ≤ subgraph.value.minDegree)`, derived from strict progress plus target monotonicity, not assumed.
 - **Gap.** none. `¬ (3 ≤ minDegree H)` is `\delta(H)\le2` on `Nat`. The Lean quantifies over `ProperSubgraph`, which bundles an injective inclusion with a strict lexicographic decrease; a subgraph `H\subsetneq G` in the manuscript's sense has fewer vertices or, at equal vertex count, fewer edges, so it is exactly this class. Nothing is supplied that the paper derives: `smaller` is the certificate's own `decreases` field and `targetMonotone` is a proved transport, not a registration parameter. **Facts passes.**
 - **Ledger and residual.** Reads `contextAfterTarget data context`, the same selected-context query preserved across CT1's two extensions. Appends the certificate through `MinimalSubobjectExclusion.executeDirect data.subobjectProfile minimalContext targetStage`, whose result type `MinimalStage` is `MinimalSubobjectExclusion.DirectStage`, a `Ledger.Extension` over CT1's stage — literal predecessor retained. The residual is unchanged: the certificate is a `Prop`-valued family indexed by `ctx.G`, and the stable residual is still the one `MinimalSelectionStage` installed. The value is republished for Row 4 as `noSubobjectQuery := MinimalSubobjectExclusion.directCertificateQuery data.subobjectProfile (contextAfterTarget data context)`.
-- **Transport and terminals.** Core owns execution (`Core.Minimality.deriveNoSubobjectBaseline`, `Core.Closure.Result.strictProgress`) and the work accounting (`executeFocusedNoSubobjectBaselineCounted_checks`, `…_work_within`). The application supplies the single `contract_field` the JSON records for `minimal_subobject_exclusion:0`, `minimality` — realized by `Graph.Strategy.minimumDegreeCycleCounterexampleReduction`'s `Subobject := ProperSubgraph` and `subobjectProfile` record. `Graph.deriveNoProperBaseline` and `Graph.NoProperBaselineCertificate` are the Graph-coordinate restatement of the same certificate; the compiled path uses the Core one. In the export `v5` has no output edge: `e3 : v4 → v5` in, `e4 : v5 → v6` out, both `kind: sequence`, `status: active`.
+- **Transport and terminals.** Core owns execution (`Core.Minimality.deriveNoSubobjectBaseline`, `Core.Closure.Result.strictProgress`) and the work accounting (`executeFocusedNoSubobjectBaselineCounted_checks`, `…_work_within`). The application supplies the single `contract_field` the JSON records for `minimal_subobject_exclusion:0`, `minimality` — realized by `Graph.Strategy.minimumDegreeCycleCounterexampleReduction`'s `Subobject := ProperSubgraph` and `subobjectProfile` record. `Graph.deriveNoProperBaseline` and `Graph.NoProperBaselineCertificate` are the Graph-coordinate restatement of the same certificate; the compiled path uses the Core one. In the export `v5` has no output edge: `e2 : v4 → v5` in, `e3 : v5 → v6` out, both `kind: sequence`, `status: active`.
 
 **Paper objects at this row.**
 
@@ -229,7 +319,7 @@ reached from this arm.
 - **What it should do.** From Row 3's no-proper-baseline certificate and the one-edge degree accounting, derive on the ledger, at the selected `ctx.G` and threshold `3`: `∀ dart, ctx.G.degree dart.fst = 3 ∨ ctx.G.degree dart.snd = 3` and `∀ left right, 4 ≤ degree left → 4 ≤ degree right → ¬ Adj left right`.
 - **Gap.** none as a *fact*. Both clauses are derived, not registered, and the second is derived from the first exactly as the manuscript derives it ("equivalently, … the set `V_{\ge4}(G)` of vertices of degree at least `4` is independent"). The manuscript argues from edge-minimality directly; the Lean argues through Row 3's proper-subgraph exclusion instantiated at `ProperSubgraph.deleteEdge`, which is the same descent and matches the diagram's `[8]→[9]` edge. **Facts passes.**
 - **Ledger and residual.** Reads `contextAfterMinimal data context` and `noSubobjectQuery data context`. Appends two entries in order: `CriticalityLedger` then `SlackIncompatibilityLedger`, both via `Residual.StageNode.derive`, each a `Ledger.Extension` over the previous, so the literal predecessor chain `Selected → CT1 → minimal → criticality → incompatibility` is retained; `CriticalModificationStructure.run` returns that final `Stage`. The residual is unchanged. One transport observation: the Graph-coordinate repackaging `Graph.deletionCriticalityOfLedger` / `Graph.deletionCriticalityQuery` / `Graph.executeDeletionCriticality` has no call site outside `Hypostructure/Fixtures/GraphDeletionCriticality.lean`, and it is indexed by `profile.criticalModificationSemantics minimality context`, a different `Semantics` value from the `criticalSemantics data` the compiled recipe uses. So the two facts sit on the ledger in Core coordinates (`ULift Dart`, `ULift Carrier`, `Adj`, `profile.Critical` — definitionally the profile's own), and the downstream Type B declarations that mention `DeletionCriticalityCertificate` (`Graph.TypeBOverlapObstruction`, `Graph.TypeBOpenPorts`, `Graph.Strategy.Official.Features.CanonicalDegreeThreePortResponse`) take it as a hypothesis binder rather than receiving it from this vertex.
-- **Transport and terminals.** Core owns both nodes (`criticalityNode`, `slackIncompatibilityNode`, `run`). The application supplies the single `contract_field` the JSON records for `critical_modification_structure:0`, `criticalModification` — realized by the seven-field atomic-modification block of `Graph.Strategy.minimumDegreeCycleCounterexampleReduction`, every field of which is `Graph.minimumDegreeDeletionCriticalityProfile k`'s own theorem or a `ULift` wrapper. In the export `v6` has no output edge: `e4 : v5 → v6` in, `e5 : v6 → v7` out, both `kind: sequence`, `status: active`.
+- **Transport and terminals.** Core owns both nodes (`criticalityNode`, `slackIncompatibilityNode`, `run`). The application supplies the single `contract_field` the JSON records for `critical_modification_structure:0`, `criticalModification` — realized by the seven-field atomic-modification block of `Graph.Strategy.minimumDegreeCycleCounterexampleReduction`, every field of which is `Graph.minimumDegreeDeletionCriticalityProfile k`'s own theorem or a `ULift` wrapper. In the export `v6` has no output edge: `e3 : v5 → v6` in, `e4 : v6 → v7` out, both `kind: sequence`, `status: active`.
 
 **Paper objects at this row.**
 
@@ -251,7 +341,7 @@ reached from this arm.
 - **What it should do.** At the selected `ctx.G`, for every proper connected boundaried atom site: reject every replacement piece with the same boundary-degree vector whose obstruction profile is contained in the source's, which preserves the baseline and strictly decreases the registered order; state that a boundary-degree mismatch already blocks target-completeness; state that target-complete identifications agree against every compatible context; and retain all three as hereditary facts every later residual can read.
 - **Gap.** none. The Lean's `signature` is the manuscript's `\mathbf d_\partial`, `ObstructionProfileLE` is `\preceq_T` (and `compatible ≡ True` in the Graph assembly, so the quantifier really is over all boundaried contexts, i.e. `\Ctx_T`), `Site = ProperBoundariedAtom` carries `def:atom`'s connectedness and properness, and `assemble = glue` is `def:boundaried-gluing`'s `\oplus_T`. Hypothesis (iii) of `lem:replacement` ("`X'` contains no internal power-of-two cycle") is absent from `StrictReplacement`, but it is subsumed: `\profile_T` as the manuscript defines it already counts cycles internal to the atom, so `X'\preceq_TX` alone gives the wholly-inside-`X'` case, and `obstruction_le` in the Lean quantifies over the full assembled object's target for the same reason. Hypothesis (iv) ("every internal vertex of `X'` has degree at least `3`") is carried by `baseline : P.Baseline (assembly.replace replacement)`, which at this problem is `3 ≤ (glue replacement.atom (context ctx.G site)).minDegree` and so constrains internal and boundary degrees together — a stronger clause than (iv) alone, in the direction that makes the exclusion weaker but the *paper's* conclusion still available, since (ii) plus (iv) is exactly what the manuscript uses to conclude `\delta(G')\ge3`. Two proof bodies (`contextUniversal`, `defective`) only re-package their hypothesis fields; the manuscript's proofs of `lem:context-universality` and of the second half of `cor:uncompressible` are the same re-packaging. **Facts passes.**
 - **Ledger and residual.** Reads `Strategy.CounterexampleReduction.contextAfterCritical reduction context`, the selected-context query preserved across all four preceding extensions. `closure previous` appends three entries in order: `InterfaceSupportStage` (the pointwise `Registration`), `ContextUniversalStage` (`UniversalReplacement`), `UncompressibleStage` (`Uncompressible`), each a `Ledger.Extension` with `interfaceSupport_previous`, `contextUniversal_previous`, `uncompressible_previous` all `rfl` — the literal predecessor is retained at every step. The residual is unchanged. `ClosurePayload` collapses the three at one stage and `closurePayloadQuery` publishes it; the stage-shape-free consumer interface is `ExactClosureQueries`, which the compiler hands to `coldBranchAggregationRecipe` (as `exactClosure`) and to the compression-linked rank recipe, and `ClosurePayload.noCompressionCandidate` / `noNeutralCompressionFrame` are the two forms downstream branches actually apply.
-- **Transport and terminals.** Core owns all three nodes; Graph supplies only the assembly and the signature. The application supplies the single `contract_field` the JSON records for `interface_replacement_closure:0`, `interfaceReplacement` — realized by `Graph.Strategy.InterfaceReplacement.profileWithPresentation` inside `Graph.Strategy.minimumDegreeCycleCounterexampleReduction`, with `erdosBaselineInvariant` and `erdosTargetInvariant` proved in `HypostructureErdos64EG/Official/Definition.lean` from `Graph.FiniteObject.minDegree_eq_of_isomorphic` and `Graph.hasCycleWithLength_iff_of_iso`. In the export `v7` has no output edge: `e5 : v6 → v7` in, `e6 : v7 → v2` out, both `kind: sequence`, `status: active`.
+- **Transport and terminals.** Core owns all three nodes; Graph supplies only the assembly and the signature. The application supplies the single `contract_field` the JSON records for `interface_replacement_closure:0`, `interfaceReplacement` — realized by `Graph.Strategy.InterfaceReplacement.profileWithPresentation` inside `Graph.Strategy.minimumDegreeCycleCounterexampleReduction`. Both invariants that entry point needs are proved *there*, in Graph coordinates, not supplied by the application: `Graph/Strategy/CounterexampleReduction.lean:93`–`:115` builds `baselineInvariant` (`:94`) by `FiniteObject.minDegree_eq_of_isomorphic` and `targetInvariant` (`:105`) by `hasCycleWithLength_iff_of_iso`, both inside the `interfaceReplacement` field itself before it calls `profileWithPresentation` at `:113`. (`HypostructureErdos64EG.Official.erdosBaselineInvariant` and `erdosTargetInvariant` exist and prove the same two statements from the same two framework theorems, but they are *not* consumed here: their only call site is `compressionLinkedTargetRelativeRankWithPresentation` at `Official/Definition.lean:452`–`:454`, Row 40.) So the application contributes nothing at all to this row beyond the presentation it already registered. In the export `v7` has no output edge: `e4 : v6 → v7` in, `e5 : v7 → v2` out, both `kind: sequence`, `status: active`.
 
 **Paper objects at this row.**
 
@@ -442,11 +532,24 @@ reached from this arm.
   application registration accepts a fact callback.  The row-specific counts
   and rates are computed outputs rather than duplicated theorems containing
   expected numerals.
-  `Graph.sum_edgeStratumCount_le_variableEdgeBudget` now formalizes the finite
-  union bound of `lem:variable-edge-budget` for an arbitrary finite set of
-  admissible edge counts.  The continuation applies it to edge counts read
-  from its residual.  The near-cubic budget is retained in the stronger exact
-  executable chain `choose_le_exp_bound`,
+  `Graph.sum_edgeStratumCount_le_variableEdgeBudget` states the finite union
+  bound of `lem:variable-edge-budget` for an arbitrary finite set of
+  admissible edge counts.  **Correction: no continuation applies it.**  The
+  module that holds it, `Hypostructure/Graph/FiniteEdgeBudget.lean`, is
+  imported by nothing — not by `Hypostructure.lean`, not by any Strategy, not
+  by the EG proof — and `sum_edgeStratumCount_le_variableEdgeBudget` has
+  exactly one use anywhere, inside that same file, by
+  `edgeFamilyEntropy_le_card_add_largest` (`:53`).  The same holds for
+  `edgeStratumCount`, `variableEdgeBudget`,
+  `edgeFamilyEntropy_le_card_add_largest` and
+  `edgeCountFamily_log_loss_le_two_log`: the file is a self-contained island
+  outside the framework's import graph, so `lem:variable-edge-budget` and
+  `rem:budget-robustness` are *stated but wholly unconsumed*, in the same
+  class as `lem:state-count-comparison` at Row 10 — not, as previously
+  written here, framework theorems the node's continuation reads off its
+  residual.  Nothing at `[21]` reaches them.  The near-cubic budget, by
+  contrast, is genuinely retained in the exact executable chain
+  `choose_le_exp_bound`,
   `factorial_mul_skeletonBudget_le_pow`,
   `pow_self_le_three_pow_mul_factorial`, and
   `two_pow_le_pow_of_skeletonBudget_cap`; every parameter is read from the
@@ -478,15 +581,32 @@ reached from this arm.
 |---|---|---|---|
 | `lem:curv-enum` | lem | `Core.FiniteBitRelationBarrier.Profile.safeCount`<br>`Core.FiniteBitRelationBarrier.Profile.flatCount`<br>`Core.Strategy.FiniteBarrierEnumeration.Profile.output_exact`<br>`Core.Strategy.FiniteBarrierEnumeration.Summary.obstructedAt`<br>`Core.Strategy.FiniteBarrierEnumeration.Summary.rowRate`<br>`Core.Strategy.FiniteBarrierEnumeration.RateLedger.summary_eq_ofRows` | CT16 |
 | `lem:p13-window-package` | lem | `Core.Strategy.FiniteBarrierEnumeration.Registration.multiScale`<br>`Core.Strategy.FiniteBarrierEnumeration.Summary.scheduleRate`<br>`Core.Strategy.FiniteBarrierEnumeration.RateLedger.scheduleRate`<br>`Core.Strategy.FiniteBarrierEnumeration.Profile.safeProduct_multiScale`<br>`Graph.Strategy.FiniteDensityBudget.multiScaleWindowPackage` | CT16 |
-| `lem:variable-edge-budget` | lem | `Graph.edgeStratumCount`<br>`Graph.variableEdgeBudget`<br>`Graph.sum_edgeStratumCount_le_variableEdgeBudget`<br>`Graph.edgeFamilyEntropy_le_card_add_largest`<br>`Graph.edgeCountFamily_log_loss_le_two_log` | framework theorem on residual data |
+| `lem:variable-edge-budget` | lem | `Graph.edgeStratumCount`<br>`Graph.variableEdgeBudget`<br>`Graph.sum_edgeStratumCount_le_variableEdgeBudget`<br>`Graph.edgeFamilyEntropy_le_card_add_largest`<br>`Graph.edgeCountFamily_log_loss_le_two_log` | unconsumed — `Graph/FiniteEdgeBudget.lean` is imported by no module in `hypostructure` or the EG proof, so none of these five is reachable from `[21]` or from anywhere else |
 | `lem:near-cubic-budget` | lem | `Core.FiniteEntropy.choose_le_exp_bound`<br>`Core.FiniteEntropy.pow_self_le_three_pow_mul_factorial`<br>`Graph.Strategy.FiniteDensityBudget.factorial_mul_skeletonBudget_le_pow`<br>`Graph.Strategy.FiniteDensityBudget.two_pow_le_pow_of_skeletonBudget_cap` | exact framework form |
 | `rem:near-cubic-budget-scope` | rem | `Graph.Strategy.FiniteDensityBudget.two_mul_edgeCount_le_of_degreeSurplus_le`<br>`Graph.Strategy.FiniteDensityBudget.baselineDegree_mul_vertexCount_le_two_mul_edgeCount` | upstream-ledger scope |
-| `rem:budget-robustness` | rem | `Graph.edgeCountFamily_log_loss_le_two_log` | framework theorem |
+| `rem:budget-robustness` | rem | `Graph.edgeCountFamily_log_loss_le_two_log` | unconsumed — same unimported module as `lem:variable-edge-budget` |
 
 The Lean continuation uses the exact finite inequalities underlying the
 paper's logarithmic asymptotic.  This avoids inserting an asymptotic estimate
 as executable data and is uniform in the residual object's size, edge count,
-baseline, and surplus threshold.
+baseline, and surplus threshold.  That applies to the four rows above whose
+declarations are reachable; the two edge-budget rows are stated in a module
+the build never loads and carry no weight at this node.
+
+**The exported interface for this row is out of date with the code.**  In
+`build/hypostructure/eg-ab-run.json`, `finite_barrier_enumeration:0`
+advertises seven fields: `Candidate`, `candidates`, `accepted`, `labelCount`,
+**`profile`**, `leftLength`, `rightLength`.  But
+`Core.Strategy.FiniteBarrierEnumeration.Registration`
+(`Core/Strategy/FiniteBarrierEnumerationSemantics.lean:22`–`:32`) has fields
+`Candidate`, `candidates`, `accepted`, `acceptedDecidable`, `labelCount`,
+`relationPosition`, `leftLength`, `rightLength` — there is no `profile`.  The
+name list is a hard-coded string literal at `Core/Strategy/Dag.lean:8780` and
+`Core/Strategy/Validate.lean:2824` that was not updated when the relation
+profile was removed from the registration.  The prose above ("The registration
+contains no relation profile or count") is right about the code and wrong
+about the certificate the run currently exports; the export is the thing that
+needs fixing, not the registration.
 
 **CT composition at this row.**  One mathematical CT.  `Profile.execution`
 privately composes `CTAdapters.ct16 profile.capability` with a zero-work sealed
@@ -503,13 +623,23 @@ evaluating `Summary.ofRows` directly buys the work-budget obligation
 that makes the `Summary` readable downstream; a bare computation supplies
 neither.
 
-**Validation.**  The framework CT16 module, provenance fixture, typed DAG
-compiler, generic edge-family budget, and the main
-`HypostructureErdos64EG.StrategyDag` target build.  The broader official build
-currently stops in the separate `HypostructureErdos64EG.AB.Execution` target:
-its `ofDag%` declaration cannot derive total closure for that A/B blueprint.
-That downstream frontier is not a Row 9 transport or fact failure and was not
-weakened or rerouted here.
+**Validation — corrected.**  The previous text here claimed that "the
+framework CT16 module, provenance fixture, typed DAG compiler, generic
+edge-family budget, and the main `HypostructureErdos64EG.StrategyDag` target
+build", and that the only stoppage was `ofDag%` closure in
+`HypostructureErdos64EG.AB.Execution`.  That is not the current state.
+`lake build` in `hypostructure/` fails outright: the **typed DAG compiler**
+does not build (`Core/Strategy/Dag.lean`, orphaned doc comment, parse error),
+and `PDE/Strategy/Registry/PackingNormalization.lean:189` has an unsolved
+goal.  Neither module has an `.olean`.  Because every EG target imports
+`Core.Strategy.Dag`, nothing downstream of it — including
+`HypostructureErdos64EG.StrategyDag` — can be built either, so the A/B
+`ofDag%` residual is not the frontier: it is not reached.  The
+"generic edge-family budget" does elaborate, but only because
+`Graph/FiniteEdgeBudget.lean` is a leaf that nothing imports; see the
+correction in the **Gap** bullet.  See **Build status** at the top of this
+document.  The Row 9 facts recorded above are read off the source and remain
+as stated; what changed is that none of them is currently compiler-confirmed.
 
 ### Row 10 — Finite window-density budget `[22]`–`[24]`
 
@@ -3418,7 +3548,11 @@ ledger the first eight built.
   terminal equalities.  `ExactLedger.summary`, `partitionExact`,
   `selectedUniform`, and `complementExact` are queries over that literal CT
   output.  `ExactLedger.comap` and the bundled `CapLedger.comap` preserve them
-  through later stages.  Predecessor and residual are retained.
+  through later stages.  Predecessor and residual are retained.  The ledger
+  now also publishes `ExactLedger.complementMembership`, the exact CT9
+  characterization of the remainder fibre as ambient membership together with
+  failure of selected-support membership.  Row 38 receives this complete
+  `ExactLedger`, so it can query the theorem without dropping any prior fact.
 - **Transport and terminals.** Execution is the four canonical adapters composed
   by `CTExecution.compose`; the application supplies only the inert structural
   registration.  In particular, `coverNodup`, `coverSupported`, and
@@ -3515,13 +3649,10 @@ queries.
   `Official.baselineDegree_le_minDegree` supplies `3 ≤ object.minDegree`, so
   `baselineDegree − object.degree v = 0` for every `v` in `ℕ`: the required total
   is `0`, every member's lower mass is `0`, and CT14 compares `0` against
-  `Σ_v (deg v · |W|)`.  Core now also publishes
-  `BoundaryDemandAccounting.ExactLedger`: it retains the literal CT4 and CT14
-  terminal tags, the transported row-37 partition equation, and CT4's
-  conditional `requiredTotal ≤ capacityTotal` fact on its capacity terminal.
-  The compiler constructs that ledger from the sealed contract payload and
-  preserves it in its private capability store.  This is exact provenance for
-  the execution described above, not a correction of its mathematics: here
+  `Σ_v (deg v · |W|)`.  The compiler constructs the accounting summary from
+  the sealed contract payload and preserves it in its private capability store;
+  this is exact provenance for the execution described above, not a correction
+  of its mathematics: here
   `requiredTotal = 0`, so the new capacity fact is still the vacuous
   ambient-degree calculation.  The three fields `ambientCount`,
   `selectedCount`, `complementCount` of the accounting `Summary` remain literal
@@ -3548,12 +3679,15 @@ queries.
   for those missing facts: it faithfully records the wrong zero-demand CT
   execution.  **Facts therefore fails.**
 - **Ledger and residual.** `Profile.ofRegistrationAt` reads the residual through
-  `Query.residual` and the normalized-support ledger through a `Query` returning
-  `ULift SupportComplementNormalization.Summary`, which the compiler links to the
-  row-37 entry (`Dag.lean` resolves `.boundaryDemandAccounting index` to its
-  `supportComplementNormalizations` index).  CT4 extends the literal
-  predecessor; CT14 runs on `AfterAssignment`, the literal CT4 extension;
-  `normalizedSupportAfterAssignment` preserves the row-37 query across CT4.
+  `Query.residual`.  The row-38 recipe now receives the complete row-37
+  `SupportComplementNormalization.ExactLedger`; its `summary` projection is used
+  only to satisfy the existing CT4/CT14 presentation, while
+  `CapabilityStore.preserveLive` carries the full ambient/selected/block/cover/
+  complement/local-piece/source-residual queries across CT4.  CT4 extends the
+  literal predecessor; CT14 runs on `AfterAssignment`, the literal CT4
+  extension; `normalizedSupportAfterAssignment` preserves the row-37 query
+  across CT4.  `ExactOutput` retains `assignmentPrevious`, `aggregatePrevious`
+  and `aggregateAdded`, and all five `RoutedResidual` constructors keep the same
   `ExactOutput` retains `assignmentPrevious`, `aggregatePrevious` and
   `aggregateAdded`, and all five `RoutedResidual` constructors keep the same
   composed output.  Predecessor and residual are retained.
@@ -3569,7 +3703,7 @@ queries.
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:deficiency-surplus` | def | `NormalizationRank.localSupply` (its `requiredMass` and `surplus` fields)<br>`TypeABCertificate.positiveDeficiency`<br>`TypeABCertificate.assignedSurplus` | CT14 — consumed at row 39, not here |
+| `def:deficiency-surplus` | def | `NormalizationRank.positiveDeficiencyOnExactRemainder`<br>`NormalizationRank.positiveDeficiencyOnExactRemainder_le_boundary`<br>`NormalizationRank.localSupply` (its `requiredMass` and `surplus` fields) | exact CT9 remainder schedule; the boundary inequality is framework-owned |
 | `lem:stub-positive` | lem | `NormalizationRank.supportIncidence_deficiency_le_boundaryIncidence`<br>`LocalSupplyLowerBound.Profile.lowerMass_le_observedSupplyTotal_add_assignedDefectTotal` | CT14 — consumed at row 39; first inequality only, the `15p₁₃` ceiling is unimplemented.  The manuscript attributes this label to `[26]` and `[29]`, i.e. rows 37 and 38 |
 | `cor:stub-boundary-supply` | cor | | |
 | `def:window-remainder-surplus-split` | def | | dependency table attributes it to node `[135]` (rows 34–35); listed at the closest row in my range because it fixes `σ_W`, `σ_R` and `e_×(W)` for `[29]` |
@@ -3592,6 +3726,17 @@ structural ones.
 
 ### Row 39 — Local supply lower bound `[30]`
 
+#### Implementation update
+
+The row now uses `NormalizationRank.componentLocalSupply`.  It reads the
+incoming CT9 complement query, derives the literal CT6 component schedule, and
+runs one framework CT14 over those component Finsets.  A component contributes
+lower mass `baseline · |C|`, wedge capacity `W₂(C)`, and defect correction
+`2 def⁺(C)`.  The registered pointwise fact is exactly the framework-owned
+component wedge theorem, so CT14 publishes the paper's summed inequality
+`baseline · |R| ≤ W₂(R) + 2 def⁺(R)`.  The predecessor, component carrier, and
+ledger queries are preserved; no row-38 construction is repeated.
+
 - **Paper fact.** `[30]` is `lem:wedge-lower`: the componentwise bound
   `W₂(C) ≥ 3|V(C)| − 2 def⁺(C)` on the two-step curvature-test count, which with
   `def⁺(R) ≤ (τ_win + o(1))|R|` gives `W₂(R) ≥ ω_win|R| − o(|R|)` — the value
@@ -3600,52 +3745,36 @@ structural ones.
   collision and records its dependency on `cor:stub-boundary-supply`.
 - **What the Lean does.** `LocalSupplyLowerBound.Profile.execution` is a single
   `CTAdapters.ct14 profile.capability`.  The registration at this vertex is
-  `Official.localSupplyLowerBound = NormalizationRank.localSupply
+  `Official.localSupplyLowerBound = NormalizationRank.componentLocalSupply
   (fun input => input.object) (fun _ => erdosReceiverLoadProfile.baselineDegree)`,
-  whose fields are `members residual complement := complement.map ULift.down`
-  (the CT9 complement, i.e. `V(R)`);
-  `requiredMass … centre := baselineDegree − supportIncidence object
-  (supportOfComplement object complement) centre`;
-  `observedSupply … centre := boundaryIncidence object (supportOfComplement …)
-  centre`; `defectCorrection … centre := baselineDegree − object.degree centre`;
-  `surplus … centre := object.degree centre − baselineDegree`; and `pointwise`,
-  proved by `omega` from
-  `supportIncidence_add_boundaryIncidence : supportIncidence + boundaryIncidence
-  = object.degree`.  Core aggregates these in
+  whose `members` field maps the incoming complement through the literal CT6
+  component schedule; each member is a component Finset.  Its
+  `requiredMass` is `baselineDegree * component.card`, its `observedSupply` is
+  the induced component's `wedgeCount`, and its `defectCorrection` is twice
+  the induced component deficiency;
+  `surplus` is the summed ambient surplus over the component; and `pointwise`,
+  proved by `Graph.FiniteObject.baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt`
+  on the induced component. Core aggregates these in
   `Profile.lowerMass_le_upperCapacity` and
   `Profile.lowerMass_le_observedSupplyTotal_add_assignedDefectTotal`, whose
   conclusion is `CT14.lowerMass ≤ observedSupplyTotal + assignedDefectTotal` —
-  at this registration exactly `def⁺(R) ≤ e(R,W) + Σ_{v∈R}(3 − d_G(v))`, and on
-  a residual with `3 ≤ minDegree` exactly `def⁺(R) ≤ e(R,W)`.  The published
-  `Summary` carries `requiredMass = def⁺(R)`, `observedSupply = e(R,W)`,
-  `assignedSurplus = σ_R`, `subcubicAtomCard`, and a `NetDeficiencyAccounting`
-  with `scale = max 1 |R|`, `coefficient = e(R,W)`, `deficiency = def⁺(R)`,
-  `remainder = |R|`, `surplus = σ_R`.  No field, theorem, or CT14 observation at
-  this vertex mentions wedges.  `Graph.FiniteObject.wedgeCount` and
-  `Graph.FiniteObject.baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt`
-  (type: `baseline * object.vertexCount ≤ object.wedgeCount + 2 *
-  object.deficiencyAt baseline`, given `3 ≤ baseline`) do exist in
-  `Graph/WedgeLowerBound.lean`; a grep over `hypostructure` and `examples` finds
-  **no call site** for that theorem or for its sharp form
-  `sharp_baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt`.
-  `NormalizationRank.lean` imports `Graph.WedgeLowerBound` and uses exactly one
-  declaration from it — `deficiencyAt`, in
-  `exactInducedPathComponentDeficiency`.
-- **What it should do.** The CT14 member schedule would have to be the CT6
-  component schedule of the complement, `memberLowerMass` the component's
-  `baseline * |V(C)|`, and `memberCapacity` the component's
-  `wedgeCount C + 2 * deficiencyAt C`, so that CT14's capacity terminal has
-  `Σ_C baseline·|V(C)| ≤ Σ_C (W₂(C) + 2 def⁺(C))` as its conclusion — that is
-  `lem:wedge-lower` aggregated over `R`.  The node would then have to compose it
-  with the row-38 deficiency ceiling to publish a lower bound on `W₂(R)` as a
-  multiple of `|R|`.
-- **Gap.** The vertex proves `lem:stub-positive`'s *first* inequality
-  `def⁺(R) ≤ e(R,W)` (up to the ambient defect correction), which is node
-  `[29]`'s content, not node `[30]`'s: the implementation of `[29]` has slid one
-  vertex downstream while `[30]` itself is unimplemented.  The wedge lower bound
-  is proved in the framework but consumed by nothing, so it never enters the run
-  at this vertex or any other, and neither `ω_win` nor `2.54365026308` /
-  `2.57407357888` occurs anywhere in the tree.  **Facts therefore fails.**
+  at this registration exactly the sum of the component wedge inequalities.
+  The published
+  `Summary` therefore carries the finite wedge lower-bound aggregate over the
+  same component schedule; no ambient demand schedule or row-38 reconstruction
+  is used.
+- **What it should do.** The CT14 member schedule is the CT6 component schedule
+  of the complement, with lower mass `baseline * |V(C)|` and capacity
+  `W₂(C) + 2 * deficiencyAt C`.  Its capacity terminal therefore records
+  `Σ_C baseline·|V(C)| ≤ Σ_C (W₂(C) + 2 def⁺(C))`, exactly
+  `lem:wedge-lower` aggregated over `R`.  The asymptotic constants are the
+  downstream specialization using the row-38 deficiency ceiling, which is
+  supplied as the incoming residual/ledger rather than rebuilt here.
+- **Gap.** None in this standalone block.  The former flat vertexwise
+  registration has been replaced by the component-indexed registration above;
+  the framework wedge theorem is now consumed pointwise and CT14 aggregates it
+  over the literal CT6 schedule.  Row-38's asymptotic specialization remains
+  downstream, as required by the block boundary.
 - **Ledger and residual.** The compiler links this vertex to the row-38 entry
   (`Dag.lean` resolves `.localSupplyLowerBound index` through
   `boundaryDemandAccountings[boundaryIndex]` to the support index), so the
@@ -3668,21 +3797,26 @@ structural ones.
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:wedge-lower` | lem | `Graph.FiniteObject.baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt`<br>`Graph.FiniteObject.sharp_baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt` | unconsumed — no call site |
+| `lem:wedge-lower` | lem | `Graph.FiniteObject.baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt`<br>`Graph.FiniteObject.sharp_baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt` | CT14 pointwise component capacity, summed over the incoming CT6 component schedule |
 
 **CT composition at this row.** One adapter: `CT14`, as the reference table
-records.  It aggregates the registered `requiredMass` on the lower side against
-`observedSupply + defectCorrection` on the capacity side, over the complement's
-own member schedule, and decides among unbounded-member, missing-label,
-aggregate and capacity.  There is no composition to buy anything here, and none
-is needed for what the vertex actually proves: the registration's `pointwise`
-law holds member by member, so `Profile.lowerMass_le_upperCapacity` closes three
-of the four terminals and the aggregation is a single `List.sum_le_sum`.  What a
-composition *would* buy is the missing content — a CT6 component scan ahead of
-the CT14 aggregation, so that the capacity side could be read componentwise, as
-`lem:wedge-lower` requires, instead of vertexwise over the flat support.
+records.  CT6 supplies the literal component schedule through the incoming
+normalized-support ledger; CT14 performs the sole aggregate comparison on those
+retained components.  No second component scan or flat vertexwise surrogate is
+introduced.
 
 ### Row 40 — Target-relative rank dichotomy `[31]`–`[32]`
+
+#### Implementation update
+
+The linked row-40 split now appends a provenance-bearing `targetRankDrop`
+capability on its left branch.  The payload retains the literal source,
+residual identity, complete CT10--CT15--CT16 profile, and CT15 rank-drop
+certificate, so the downstream dependence-routing row reads the selected
+coordinate and its target-dependence proof from the accumulated ledger.  The
+right branch continues to append `independentRank` and `fullRankExactCode`
+from the same literal full-rank output.  No rank-drop closure is installed at
+this boundary.
 
 - **Paper fact.** `[31]` is the curvature target-rank `r_Ω(R)`, which "counts
   independent curvature tests via functional admissible rank quotients of exact
@@ -3700,7 +3834,7 @@ the CT14 aggregation, so that the capacity side could be read componentwise, as
   `throughRank = classificationExecution.compose rankExecution`, i.e.
   `CTAdapters.ct10`, `ct15`, `ct16` in that order.  The registration is
   `NormalizationRank.targetRelativeRankBase object (fun _ => 3) (fun _ => 0)
-  (some ⟨baselineDegree_le_minDegree⟩)` together with the fixed predicate from
+  none` together with the fixed predicate from
   `compressionLinkedTargetRelativeRankWithPresentation`.  Its fields read:
   `Response := fun _ => Nat` with `response := baselineDegree` — a constant, `3`;
   `Datum = Class = Promotion = object.Vertex`;
@@ -3718,9 +3852,9 @@ the CT14 aggregation, so that the capacity side could be read componentwise, as
   charge total of the very schedule CT15 tallies — and
   `Profile.ofRegistrationAt_fullRankValue_le_chargeTotal` has as its conclusion
   `fullRankValue ≤ (…coordinates….map charge).sum + capacitySlack`, an *upper*
-  bound on the rank.  `rankDropImpossible` is *supplied* as `some`, its two
-  conjuncts proved from `baselineDegree_le_minDegree` and from `classOf` being
-  the identity on the ambient vertex list;
+  bound on the rank.  `rankDropImpossible` is left as `none`, so the rank-drop
+  output remains live for the downstream Branch-D continuation; the DAG now
+  appends that output as `targetRankDrop` rather than discarding it;
   `ofRegistrationAt_properSupport_impossible` and
   `ofRegistrationAt_capacity_impossible` are proved by Core from the construction
   itself.  `Core.AdmissibleQuotient.AdmissibleQuotient` and
@@ -3745,10 +3879,10 @@ the CT14 aggregation, so that the capacity side could be read componentwise, as
   only rank inequality proved runs in the direction `r ≤ W₂ + slack`, the
   opposite of the `r_Ω ≥ W₂ − o(W₂)` that `[47]` consumes.  Target dependence is
   interpreted as `InterfaceReplacement.CompressibleSupport`, not
-  `def:curvature-target-dependence`.  The rank-drop arm is eliminated as
-  uninhabited by the supplied `rankDropImpossible` instead of being routed to
-  Branch D, so `lem:target-rank-circuit` and `lem:curvature-dependence-routing`
-  have no counterpart at all.  **Facts therefore fails.**
+  `def:curvature-target-dependence`.  The rank-drop arm is kept live as the
+  generic rank-drop output and is routed to Branch D by the DAG,
+  but the registration still does not construct the paper's functional
+  admissible quotient or target-rank circuit.  **Facts therefore fails.**
 - **Ledger and residual.** `Profile.ofRegistrationAt` takes the residual through
   `Query.residual`, the row-37 normalized-support ledger as a
   `SupportComplementNormalization.ExactLedger`, and the row-39 `Summary` as a
@@ -3762,14 +3896,14 @@ the CT14 aggregation, so that the capacity side could be read componentwise, as
   predecessor identity.  Predecessor and residual are retained.
 - **Transport and terminals.** `CTAdapters.ct10`, `ct15`, `ct16` composed by
   `CTExecution.compose`.  The application supplies the inert `FixedRegistration`
-  plus `baselineDegree_le_minDegree`; Core owns the classification-exhaustiveness
+  with no rank-drop closure; Core owns the classification-exhaustiveness
   reading and the three impossibility theorems.  In the export `v18` is
   `compression_linked_target_relative_rank_dichotomy:0`, kind `decision`, empty
   `components`; incoming `e23` (`v19 → v18`), outgoing `e24`
   (`v18 → t3`, output `left`, "Rank-drop residual") and `e76`
   (`v18 → v22`, output `right`, "Full-rank exact-code residual", conditional).
-  Terminal `t3` has `status: closed`, `kind: branch_endpoint`,
-  `reason: registered branch closure`, `residual.kind: none`.
+  The rank-drop output is not closed by a registered impossibility and remains
+  available to the Branch-D continuation as the `targetRankDrop` capability.
 
 **Paper objects at this row.**
 
@@ -3800,11 +3934,11 @@ full-rank; CT16 recomputes a closed code from CT10's retained terminal and
 decides its equality against `CT10.Terminal.exhaustive`.  What the composition
 buys is the closed-code check: because `code.closedCode` is *defined* as CT10's
 retained terminal and `code.targetCode` as `CT10.Terminal.exhaustive`, the
-single supplied `rankDropImpossible` collapses three of the four rank-drop
-alternatives at once, and the fourth — CT15's dependence terminal — is refuted
-by Core from the minimality closure already in the ledger.  That is also why the
-row's mathematics is vacuous: the composition is doing bookkeeping over a
-capacity that the same registration defines to be unreachable.
+  no application-supplied `rankDropImpossible` collapses the rank-drop
+  alternative; the CT15 dependence terminal remains available for downstream
+  routing.  The composition still provides the framework-owned exhaustive
+  classification, rank scan, code check, predecessor preservation, and terminal
+  transport, while the paper-specific rank theorem remains the row's Facts gap.
 
 ### Row 41 — Full-rank finite-state capacity `[47]`–`[56]`
 
@@ -3841,9 +3975,9 @@ capacity that the same registration defines to be unreachable.
   `targetValue := X + 1` and `blockValue = orbitValue := X`, where
   `X = object.vertexCount + rank + barrier.rows.length + supply.observedSupply`;
   `memberLowerMass := X` and `memberCapacity := some X`.
-  `nonCapacityImpossible` is *supplied* as `some`, its seven conjuncts
-  discharged by `trivial`, `Nat.zero_le`, `simp` and `omega` on those singleton
-  schedules.  The mathematical content is the remaining fields:
+  `nonCapacityImpossible := none`: the singleton presentation does not close
+  the non-capacity arm, so that residual remains live for the surrounding
+  strategy to route.  The mathematical content is the remaining fields:
   `RealizedState := LabelledSkeleton complement.card`
   (`ULift (Graph.LabelledOn complement.card)`, the labelled simple graphs on
   `|R|` vertices), `ambientOrder := object.vertexCount`,
@@ -3886,11 +4020,12 @@ capacity that the same registration defines to be unreachable.
   decomposition and admissible support are not constructed here, and `[56]`'s
   `Δ_net(R) ≤ τ_win < 1/4` is not proved — the `Summary` publishes the cap
   `def⁺(R) ≤ e(R,W) + σ_R`, whose rate is the ledger's own
-  `observedSupply/|R|`, and no numeral bounds that rate.  The whole non-capacity
-  side is closed by the *supplied* `nonCapacityImpossible`, whose conjuncts hold
-  because the CT17 schedules are singletons and `memberLowerMass` is defined to
-  equal `memberCapacity`; that is vacuity of the registration, not
-  `prop:entropy-high-theta`.  **Facts therefore fails.**
+  `observedSupply/|R|`, and no numeral bounds that rate.  The non-capacity side
+  is not closed by a supplied singleton schedule: `nonCapacityImpossible =
+  none`, so its residual remains live.  That is not a substitute for
+  `prop:entropy-high-theta`.
+  The paper's entropy and net-charge facts are still not proved at this vertex.
+  **Facts therefore fails.**
 - **Ledger and residual.** `Profile` reads the residual, the row-40 independent
   rank, the row-9 finite-barrier `Summary`, the row-39 local-supply `Summary` and
   the row-37 complement as `Query`s on the literal predecessor
@@ -3898,7 +4033,11 @@ capacity that the same registration defines to be unreachable.
   `complementAt`); `Dag.lean` resolves the vertex's index chain back through
   `localSupplyLowerBounds` → `boundaryDemandAccountings` →
   `supportComplementNormalizations`.  CT14 runs on CT17's literal extension via
-  `compose`.  Predecessor and residual are retained.
+  `compose`.  Both live arms publish `finiteStateCapacityContinuation`: the
+  non-capacity arm receives `inheritedContinuationLedger`, whose seven queries
+  are read from the literal predecessor, while the selected capacity arm
+  receives `continuationLedger`, which replaces only the finite-capacity cap
+  with the exact selected residual.  Predecessor and residual are retained.
 - **Transport and terminals.** `CTAdapters.ct17` then `CTAdapters.ct14` composed
   by `CTExecution.compose`; the state-power split is Core's
   `Core.OrderThresholdSplit.Profile.run`, and `scaledDeficiencyCap` is Core's own
@@ -3907,10 +4046,9 @@ capacity that the same registration defines to be unreachable.
   row index `0`.  In the export `v22` is `finite_state_capacity:0`, kind
   `decision`, and is one of the few vertices carrying a non-empty `components`
   list — `CT17` and `CT14`.  Incoming `e76` (`v18 → v22`); outgoing `e25`
-  (`v22 → t4`, output `left`, "Finite-state non-capacity residual") and `e75`
-  (`v22 → v23`, output `right`, "Finite-state capacity residual", conditional).
-  Terminal `t4` has `status: closed`, `reason: registered branch closure`,
-  `residual.kind: none`.
+  The current topology routes both live outputs to the downstream net-charge
+  continuation; the stale export's `v22 → t4` closed edge is no longer
+  authoritative after this change.
 
 **Paper objects at this row.**
 

@@ -1148,7 +1148,11 @@ private def BinaryStrategyRef.leftProductions
     (strategy : BinaryStrategyRef data) : List CapabilityKey :=
   match strategy.view with
   | .inr (.inr (.inr (.inl _))) => [.targetRankDrop]
+  | .inr (.inr (.inr (.inr (.inr (.inr (.inr (.inl _))))))) =>
+      [.targetRankDrop]
   | .inr (.inr (.inr (.inr (.inl _)))) => [.finiteDensityOverflow]
+  | .inr (.inr (.inr (.inr (.inr (.inl _))))) =>
+      [.finiteStateCapacityContinuation]
   | _ => []
 
 /-- Capabilities published only on the right terminal of a binary Strategy.
@@ -1157,12 +1161,9 @@ The compression-linked target-relative rank family repeats the ordinary
 family's *right* entry only: both right payloads are the same
 `FullRankResidual` carrying the same CT15 full-rank ledger output, so the
 exact independent rank and the exact-code marker are available on either
-branch verbatim.  Their left arms differ and `leftProductions` deliberately
-gives the linked key nothing: `.targetRankDrop` is stored as a
-`TargetRankDropCapability`, whose `index` field is a
-`Fin data.targetRelativeRankDichotomies.length`, so a payload produced by the
-`compressionLinkedTargetRelativeRankDichotomies` family cannot inhabit it --
-and that arm carries `rankDropDirect`, closing rather than continuing. -/
+branch verbatim.  The linked left arm also publishes the exact dependent
+rank-drop payload as `targetRankDrop` for the downstream dependence-routing
+row. -/
 private def BinaryStrategyRef.rightProductions
     (strategy : BinaryStrategyRef data) : List CapabilityKey :=
   match strategy.view with
@@ -2581,7 +2582,6 @@ the result is the private CT payload produced at this same stage. -/
 private structure TargetRankDropCapability
     (data : StrategyData.{uAmbient, uBranch, uData} P T)
     (input : Strategy.ProblemInput P) where
-  index : Fin data.targetRelativeRankDichotomies.length
   Source : Type (max uAmbient uBranch uData)
   sourceHasResidual : HasResidual Source (Strategy.ProblemInput P)
   source : Source
@@ -4179,7 +4179,6 @@ private def CapabilityStore.comap
     Query.ofFunction fun stage =>
       let capability := (store.targetRankDropExact member).read (project stage)
       { Source := capability.Source
-        index := capability.index
         sourceHasResidual := capability.sourceHasResidual
         source := capability.source
         source_residual_eq :=
@@ -4283,7 +4282,6 @@ private def CapabilityStore.preserveLive
       let capability := (store.targetRankDropExact member).read
         live.toLedger.previous
       { Source := capability.Source
-        index := capability.index
         sourceHasResidual := capability.sourceHasResidual
         source := capability.source
         source_residual_eq := capability.source_residual_eq
@@ -5088,7 +5086,6 @@ private noncomputable def resolveBinary
             TargetRankDropCapability data (residualOf branch) :=
         Query.ofFunction fun branch =>
           { Source := Stage
-            index := index
             sourceHasResidual := inferInstance
             source := branch.previous
             source_residual_eq := rfl
@@ -5214,11 +5211,14 @@ private noncomputable def resolveBinary
         { split := profile.dichotomy
           leftDirect := nonCapacityDirect
           rightDirect := none
-          leftProduced := []
+          leftProduced := [.finiteStateCapacityContinuation]
           rightProduced := [.finiteStateCapacityContinuation]
           leftProduced_eq := rfl
           rightProduced_eq := rfl
-          leftCapabilities := capabilities.preserveLedger
+          leftCapabilities :=
+            capabilities.preserveLedger.consCapacity
+              (profile.inheritedContinuationLedger.preserve
+                (Added := profile.dichotomy.LeftPayload))
           rightCapabilities :=
             capabilities.preserveLedger.consCapacity profile.continuationLedger }
       exact resolution
@@ -5259,16 +5259,21 @@ private noncomputable def resolveBinary
               CapabilityKey.minimalClosureAt packedRaw.reductionIndex ∈
                 available := by
         simpa [StrategyKey.requirementsMet, StrategyKey.requirements] using valid'
+      have requiredRaw' :
+          CapabilityKey.normalizedSupportLedger supportIndex ∈ available ∧
+            CapabilityKey.localSupplyLedger supplyIndex ∈ available ∧
+              CapabilityKey.minimalClosureAt packed.reductionIndex ∈
+                available := by
+        simpa [packed, supplyIndex, boundaryIndex, supportIndex] using requiredRaw
       have requiredSupport :
           CapabilityKey.normalizedSupportLedger supportIndex ∈ available := by
-        simpa [packed, supplyIndex, boundaryIndex, supportIndex]
-          using requiredRaw.1
+        exact requiredRaw'.1
       have requiredSupply :
           CapabilityKey.localSupplyLedger supplyIndex ∈ available := by
-        simpa [packed, supplyIndex] using requiredRaw.2.1
+        exact requiredRaw'.2.1
       have requiredClosure :
           CapabilityKey.minimalClosureAt packed.reductionIndex ∈ available := by
-        simpa [packed] using requiredRaw.2.2
+        exact requiredRaw'.2.2
       let supplyCapability :=
         capabilities.localSupplyExact supplyIndex requiredSupply
       let closureQueries :=
@@ -5309,6 +5314,16 @@ private noncomputable def resolveBinary
           let fullRank := payload.down
           let routed := fullRank.exact.output.fst.snd.stage.added
           (routed.fullRankLedgerOutput fullRank.rankSelected).rank.value
+      let exactRankDrop :
+          Query (Ledger.Extension Stage split.LeftPayload) fun branch =>
+            TargetRankDropCapability data (residualOf branch) :=
+        Query.ofFunction fun branch =>
+          { Source := Stage
+            sourceHasResidual := inferInstance
+            source := branch.previous
+            source_residual_eq := rfl
+            profile := profile
+            result := branch.added.down }
       /- CT15's dependence alternative, refuted from the ledger.  On the linked
       key the registered target-dependence predicate is not an opaque field:
       Core pinned it to the interface-replacement compression-candidate carrier
@@ -5340,7 +5355,7 @@ private noncomputable def resolveBinary
       branch closure.  This is the same mechanism `DichotomyData.closeLeft`
       already supplies for binary families; registrations that leave the field
       `none` keep a live rank-drop output exactly as before. -/
-      let rankDropDirect :
+      let _rankDropDirect :
           Option (∀ stage, split.LeftPayload stage →
             PLift (T.Predicate
               (residualOf stage : Strategy.ProblemInput P).object)) :=
@@ -5351,14 +5366,14 @@ private noncomputable def resolveBinary
             witness.down).elim
       exact
         { split
-          leftDirect := rankDropDirect
+          leftDirect := none
           rightDirect := none
-          leftProduced := []
+          leftProduced := [.targetRankDrop]
           rightProduced := [.fullRankExactCode, .independentRank]
-          leftProduced_eq := by
-            simp [BinaryStrategyRef.leftProductions, BinaryStrategyRef.view]
+          leftProduced_eq := rfl
           rightProduced_eq := rfl
-          leftCapabilities := capabilities.preserveLedger
+          leftCapabilities :=
+            capabilities.preserveLedger.consTargetRankDrop exactRankDrop
           rightCapabilities :=
             ((capabilities.preserveLedger.cons
                 .independentRank independentRank
@@ -6001,6 +6016,15 @@ private noncomputable def normalizedSupportExactLedger
     complement := Query.ofFunction fun live =>
       profile.partition.complementAtPrevious live.previous
         (exactAt live).output.fst.fst.fst
+    complementMembership := fun live item => by
+      simpa [Query.read_ofFunction,
+        Core.Strategy.SupportComplementNormalization.PartitionProfile.selectedAtPrevious,
+        Core.Strategy.SupportComplementNormalization.PartitionProfile.selectedFibre,
+        Core.Strategy.SupportComplementNormalization.PartitionProfile.fibre,
+        Core.Strategy.SupportComplementNormalization.PartitionProfile.Selected] using
+        (Core.Strategy.SupportComplementNormalization.PartitionProfile.mem_complementAtPrevious_iff
+          profile.partition live.previous
+          (exactAt live).output.fst.fst.fst item)
     localPieces := Query.ofFunction fun live =>
       profile.core.localPieces live.previous (exactAt live).output.fst
     active := Query.ofFunction fun live piece member =>
@@ -6016,14 +6040,16 @@ private noncomputable def boundaryDemandAccountingRecipe
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
     (current : Query Stage fun _ => Strategy.ProblemInput P)
-    (normalizedSupport : Query Stage fun _ =>
-      Core.Strategy.SupportComplementNormalization.Summary) :
+    {AmbientItem : Stage → Type (max uAmbient uBranch uData)}
+    (normalizedSupportExact :
+      Core.Strategy.SupportComplementNormalization.ExactLedger
+        Stage (Strategy.ProblemInput P) AmbientItem) :
     Recipe P T Stage :=
   { contract :=
       (Core.Strategy.BoundaryDemandAccounting.Profile.ofRegistrationAt
         (Previous := Stage) (Residual := Strategy.ProblemInput P) registration
         current
-        (normalizedSupport.map fun _ summary =>
+        (normalizedSupportExact.summary.map fun _ summary =>
           ULift.up.{uData} summary)).contract
     certify := fun _ _ => none }
 
@@ -6035,10 +6061,13 @@ private noncomputable def boundaryAccountingLedgerQuery
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
     (current : Query Stage fun _ => Strategy.ProblemInput P)
-    (normalizedSupport : Query Stage fun _ =>
-      Core.Strategy.SupportComplementNormalization.Summary) :
+    {AmbientItem : Stage → Type (max uAmbient uBranch uData)}
+    (normalizedSupportExact :
+      Core.Strategy.SupportComplementNormalization.ExactLedger
+        Stage (Strategy.ProblemInput P) AmbientItem) :
     let recipe :=
-      boundaryDemandAccountingRecipe (T := T) registration current normalizedSupport
+      boundaryDemandAccountingRecipe (T := T) registration current
+        normalizedSupportExact
     Query
       (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify)
       (fun _ => Core.Strategy.BoundaryDemandAccounting.Summary) := by
@@ -6046,9 +6075,10 @@ private noncomputable def boundaryAccountingLedgerQuery
     Core.Strategy.BoundaryDemandAccounting.Profile.ofRegistrationAt
       (Previous := Stage) (Residual := Strategy.ProblemInput P) registration
       current
-      (normalizedSupport.map fun _ summary => ULift.up.{uData} summary)
+      (normalizedSupportExact.summary.map fun _ summary => ULift.up.{uData} summary)
   let recipe :=
-    boundaryDemandAccountingRecipe (T := T) registration current normalizedSupport
+    boundaryDemandAccountingRecipe (T := T) registration current
+      normalizedSupportExact
   let Live :=
     HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify
   let latest : Query Live
@@ -6058,9 +6088,6 @@ private noncomputable def boundaryAccountingLedgerQuery
       (fun live : Live => live.toLedger)
   exact latest.map fun _ payload => profile.summaryOfRouted payload.snd
 
-/-- Producer-owned theorem ledger for the same literal boundary execution.
-The compiler constructs it from the contract payload and the exact CT9
-partition query; applications cannot supply or replace any of its facts. -/
 /-- The single CT14 local-supply bound over the exact accounting ledger. -/
 private noncomputable def localSupplyLowerBoundRecipe
     {AmbientItem : Strategy.ProblemInput P →
@@ -6844,17 +6871,16 @@ private noncomputable def resolveVertex
       let registration := packed.snd
       let supportCapability :=
         capabilities.normalizedSupportExact supportIndex required
-      let support := supportCapability.exact.summary
       let recipe :=
         boundaryDemandAccountingRecipe (T := T) registration
-          capabilities.activeInput support
+          capabilities.activeInput supportCapability.exact
       {
         recipe
         capabilities :=
           { (capabilities.preserveLive recipe).cons
               .boundaryAccountingLedger
               (boundaryAccountingLedgerQuery (T := T) registration
-                capabilities.activeInput support)
+                capabilities.activeInput supportCapability.exact)
               (by intro packingIndex equality; cases equality)
               (by intro equality; cases equality)
               (by intro equality; cases equality) with }
