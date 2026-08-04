@@ -1,0 +1,12 @@
+namespace PositiveMathematicalOption
+
+-- Ordinary partial lookup in mathematical data remains legal.
+def firstPositive? : List Nat → Option Nat
+  | [] => none
+  | value :: rest => if 0 < value then some value else firstPositive? rest
+
+-- A wildcard on a mathematical function is not a dispatcher fallback.
+def compatiblePair? : Nat × Nat → Option Nat
+  | (left, right) => if left = right then some left else none
+
+end PositiveMathematicalOption

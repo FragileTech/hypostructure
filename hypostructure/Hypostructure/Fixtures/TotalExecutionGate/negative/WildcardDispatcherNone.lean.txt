@@ -1,0 +1,7 @@
+namespace NegativeWildcardDispatcherNone
+
+def dispatch : Ref → State → Option Output
+  | .known, .ready => some .continue
+  | _, _ => none
+
+end NegativeWildcardDispatcherNone

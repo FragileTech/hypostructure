@@ -1,0 +1,951 @@
+\subsection{Statement of the Result}
+
+For \(z_0=(x_0,t_0)\in\R^3\times\R\) and \(R>0\), set
+\[
+  Q_R(z_0)=B_R(x_0)\times(t_0-R^2,t_0).
+\]
+When the center is clear we write \(Q_R\).  We consider the local
+incompressible Stokes system
+\begin{equation}\label{stokes:eq:local}
+  \partial_t u-\Delta u+\nabla p=f,\qquad \divergence u=0
+\end{equation}
+in distributions on \(Q_R(z_0)\).  The pressure is normalized only modulo
+addition of a distribution depending only on time.
+
+\begin{definition}[Local harmonic kernel]\label{stokes:def:harmonic-kernel}
+For a ball \(B\Subset\R^3\), set
+\[
+  \calH(B)=
+  \{h\in L^2(B;\R^3):\ \divergence h=0,\ \curl h=0\text{ in }B\}.
+\]
+Equivalently, since \(B\) is simply connected, elements of \(\calH(B)\) are
+gradients of harmonic potentials, up to the usual distributional
+identification.  Let \(\proj_{\calH(B)}\) be the \(L^2(B)\)-orthogonal
+projection onto this closed subspace.  A local Stokes solution is
+harmonic-kernel normalized on \(B\times I\) if
+\[
+  \proj_{\calH(B)}u(t)=0
+  \quad\text{for a.e. }t\in I.
+\]
+The field \(\proj_{\calH(B)}u\) is the harmonic-kernel, or parasitic,
+component of \(u\) on \(B\times I\).  The harmonic-kernel component is smooth
+on \(B\times I\) if it belongs to
+\(C^\infty(I;C^\infty(B'))\) for every \(B'\Subset B\).
+\end{definition}
+
+\begin{lemma}[Properties of the local harmonic projection]\label{stokes:lem:projection-state}
+For every ball \(B\), the space \(\calH(B)\) is a closed subspace of
+\(L^2(B;\R^3)\).  Hence \(\proj_{\calH(B)}\) is a bounded linear operator on
+\(L^2(B;\R^3)\).  If \(u\in L^2(B\times I)\), then
+\[
+  t\mapsto \proj_{\calH(B)}u(t)
+\]
+is strongly measurable and belongs to \(L^2(I;L^2(B))\).  Moreover
+\[
+  \curl (I-\proj_{\calH(B)})u=\curl u,\qquad
+  \divergence (I-\proj_{\calH(B)})u=\divergence u
+\]
+in distributions on \(B\times I\).
+\end{lemma}
+
+\begin{proof}
+Let \(h_n\in\calH(B)\) and \(h_n\to h\) in \(L^2(B)\).  Since divergence and
+curl are continuous from \(L^2(B)\) to \(H^{-1}(B)\), the limits
+\(\divergence h=0\) and \(\curl h=0\) hold distributionally.  Thus
+\(\calH(B)\) is closed, and the Hilbert projection theorem gives the bounded
+orthogonal projection.  Strong measurability and the \(L^2\) bound follow from
+bounded linearity.  Finally, \(\proj_{\calH(B)}u(t)\) has zero divergence and
+zero curl for a.e. \(t\), so subtracting it does not change either local
+distributional quantity.
+\end{proof}
+
+\begin{lemma}[Local harmonic-kernel normalization]\label{stokes:lem:harmonic-kernel-normalization}
+Let \(B_\rho\times I_\rho\Subset Q_R(z_0)\), and let
+\((u,p,f)\) solve \eqref{stokes:eq:local} in distributions there, with
+\(u\in L^2(B_\rho\times I_\rho)\).  Set
+\[
+  h(t)=\proj_{\calH(B_\rho)}u(t).
+\]
+Then there is a distribution \(\Phi\in L^2(I_\rho;H^1(B_\rho))\), harmonic in
+space for a.e. \(t\) and unique after imposing zero spatial mean, such that
+\[
+  \nabla_x\Phi=h.
+\]
+The locally normalized representative
+\[
+  u^\perp=u-h,\qquad p^\perp=p+\partial_t\Phi
+\]
+satisfies
+\[
+  \partial_tu^\perp-\Delta u^\perp+\nabla p^\perp=f,\qquad
+  \divergence u^\perp=0
+\]
+in distributions on \(B_\rho\times I_\rho\), and
+\[
+  \proj_{\calH(B_\rho)}u^\perp(t)=0
+  \quad\text{for a.e. }t\in I_\rho.
+\]
+Moreover \(\curl u^\perp=\curl u\), and the local pressure equation
+\(\Delta p^\perp=\divergence f\) is unchanged.
+\end{lemma}
+
+\begin{proof}
+For a.e. \(t\), \(h(t)\in\calH(B_\rho)\).  Since \(B_\rho\) is a ball, every
+element of \(\calH(B_\rho)\) is the gradient of an \(H^1\) harmonic potential,
+unique modulo constants.  Choosing the representative with zero spatial mean
+defines a bounded linear lifting
+\[
+  \calH(B_\rho)\ni h\longmapsto \Phi_h\in H^1(B_\rho)/\R
+\]
+by Poincare's inequality.  Applying this lifting to \(h(t)\) gives
+\(\Phi\in L^2(I_\rho;H^1(B_\rho))\), with \(\nabla\Phi=h\) and
+\(\Delta\Phi=0\) in distributions.
+
+The divergence and curl identities follow from
+\Cref{stokes:lem:projection-state}.  Since \(h=\nabla\Phi\) and
+\(\Delta\Phi=0\), distributional differentiation gives
+\[
+  \partial_t(u-h)-\Delta(u-h)+\nabla(p+\partial_t\Phi)
+  =
+  \partial_tu-\Delta u+\nabla p=f,
+\]
+because \(\partial_t\nabla\Phi=\nabla\partial_t\Phi\) and
+\(\Delta\nabla\Phi=\nabla\Delta\Phi=0\).  Orthogonality gives
+\[
+  \proj_{\calH(B_\rho)}(u-h)
+  =
+  \proj_{\calH(B_\rho)}u-h=0
+\]
+for a.e. \(t\).  Finally, taking divergence of the normalized Stokes equation
+and using \(\divergence u^\perp=0\) gives
+\(\Delta p^\perp=\divergence f\), the same local pressure equation.
+\end{proof}
+
+\begin{remark}[Why normalization is necessary]\label{stokes:rem:parasitic-counterexample}
+The regularity statement for a raw representative without a normalization
+hypothesis is false.  If \(a\in L^2_{\loc}(I)\) is not smooth
+and \(a'(t)\) denotes its distributional derivative, then
+\[
+  u(x,t)=a(t)e_1,\qquad p(x,t)=-a'(t)x_1,\qquad f=0
+\]
+solves \(\partial_tu-\Delta u+\nabla p=0\), \(\divergence u=0\), in
+distributions on every cylinder.  Here \(\curl u=0\), so all vorticity
+estimates hold, but \(u\) is not smooth in time.  This is the harmonic-gradient,
+or parasitic, velocity mode: it is curl-free and divergence-free, and its time
+dependence is absorbed by the pressure term \(\nabla p = -a'(t)e_1\).  Local
+normalization removes this mode; for a fixed raw representative, smoothness is
+a separate compatibility question for its harmonic-kernel component.
+\end{remark}
+
+\begin{theorem}[Local Stokes interior regularity]\label{stokes:thm:interior-regularity}
+Let \((u,p)\) solve \eqref{stokes:eq:local} in distributions on \(Q_R(z_0)\),
+with
+\[
+  u\in L^2_{\loc}(Q_R),\qquad p\in \mathcal D'(Q_R),\qquad
+  f\in C^\infty(Q_R).
+\]
+Let \(B_r(y)\times I_r\Subset B_\rho(y)\times I_\rho\Subset Q_R(z_0)\), and
+write
+\[
+  u^\perp=(I-\proj_{\calH(B_\rho)})u
+\]
+on \(B_\rho\times I_\rho\).  Then \(u^\perp\) is smooth on
+\(B_r\times I_r\).  More precisely, for every \(j,k\ge0\) there are an integer
+\(N_{j,k}\) and a constant \(C_{j,k,r,\rho,I_r,I_\rho}\), depending only on the
+nested cylinders and derivative orders, such that
+\begin{equation}\label{stokes:eq:main-local-estimate}
+  \|\partial_t^j\nabla^k u^\perp\|_{L^2(B_r\times I_r)}
+  \le C_{j,k,r,\rho,I_r,I_\rho}\left(
+      \|u\|_{L^2(B_\rho\times I_\rho)}
+      +\sum_{\ell+|\alpha|\le N_{j,k}}
+       \|\partial_t^\ell\nabla^\alpha f\|_{L^2(B_\rho\times I_\rho)}
+    \right).
+\end{equation}
+If, in addition, the harmonic-kernel component
+\(\proj_{\calH(B_\rho)}u\) is smooth on \(B_r\times I_r\), then
+\[
+  u\in C^\infty(B_r\times I_r),\qquad
+  \nabla p\in C^\infty(B_r\times I_r).
+\]
+In particular, full smoothness holds when the solution is harmonic-kernel
+normalized on \(B_\rho\times I_\rho\).
+\end{theorem}
+
+\begin{theorem}[Global regularity assembled from local estimates]\label{stokes:thm:global-from-local}
+Let \(\mathcal U\subset\R^3\times\R\) be open, and let \((u,p,f)\) solve
+\eqref{stokes:eq:local} in distributions on \(\mathcal U\), with
+\[
+  u\in L^2_{\loc}(\mathcal U),\qquad p\in\mathcal D'(\mathcal U),\qquad
+  f\in C^\infty(\mathcal U).
+\]
+Assume that for every \(z\in\mathcal U\) there is a nested cylinder
+\[
+  z\in B_r\times I_r\Subset B_\rho\times I_\rho\Subset\mathcal U
+\]
+on which the harmonic-kernel component
+\(\proj_{\calH(B_\rho)}u\) is smooth on \(B_r\times I_r\), or the
+representative under consideration is already harmonic-kernel normalized there.
+Then
+\[
+  u\in C^\infty(\mathcal U),\qquad \nabla p\in C^\infty(\mathcal U).
+\]
+The proof uses only the local estimates of \Cref{stokes:thm:interior-regularity}
+on the cylinders in this cover.
+\end{theorem}
+
+\begin{proof}
+For each \(z\in\mathcal U\), apply
+\Cref{stokes:thm:interior-regularity} on the cylinder supplied by the
+hypothesis.  This gives a neighborhood of \(z\) on which \(u\) and \(\nabla p\)
+are smooth.  Since smoothness is local, these neighborhoods cover
+\(\mathcal U\), and the conclusion follows.  If one wants a compact-set
+estimate, cover a compact \(K\Subset\mathcal U\) by finitely many such
+cylinders and take the maximum of the corresponding local constants.  No
+estimate ever uses data outside its selected larger cylinder.
+\end{proof}
+
+\begin{theorem}[Global regularity for the normalized representative]\label{stokes:thm:global-normalized-representative}
+Let \((u,p,f)\) solve \eqref{stokes:eq:local} in distributions on
+\(\mathcal U\), with
+\[
+  u\in L^2_{\loc}(\mathcal U),\qquad p\in\mathcal D'(\mathcal U),\qquad
+  f\in C^\infty(\mathcal U).
+\]
+For every \(z\in\mathcal U\),
+choose nested cylinders
+\[
+  z\in B_r\times I_r\Subset B_\rho\times I_\rho\Subset\mathcal U
+\]
+and form the normalized representative \((u^\perp,p^\perp)\) on the larger
+cylinder by \Cref{stokes:lem:harmonic-kernel-normalization}.  Then
+\[
+  u^\perp\in C^\infty(B_r\times I_r),\qquad
+  \nabla p^\perp\in C^\infty(B_r\times I_r).
+\]
+If, in addition, the original harmonic-kernel component
+\(\proj_{\calH(B_\rho)}u\) is smooth on the smaller cylinders in such a cover,
+or the representative under consideration is already harmonic-kernel normalized
+there, then the original representative satisfies
+\[
+  u\in C^\infty(\mathcal U),\qquad \nabla p\in C^\infty(\mathcal U).
+\]
+On each compact \(K\Subset\mathcal U\), all estimates are obtained from
+finitely many such local cylinders.
+\end{theorem}
+
+\begin{proof}
+The normalized representative satisfies the same local Stokes system with
+smooth force \(f\), is divergence-free, and has zero harmonic-kernel component
+on \(B_\rho\times I_\rho\) by
+\Cref{stokes:lem:harmonic-kernel-normalization}.  Applying
+\Cref{stokes:thm:interior-regularity} on the nested cylinders gives smoothness
+of \(u^\perp\) and \(\nabla p^\perp\) on \(B_r\times I_r\).  If the original
+kernel component is smooth or zero on the same smaller cylinder, then
+\[
+  u=u^\perp+\proj_{\calH(B_\rho)}u
+\]
+is smooth there.  The pressure relation \(p^\perp=p+\partial_t\Phi\) gives
+\[
+  \nabla p=\nabla p^\perp-\partial_t\proj_{\calH(B_\rho)}u
+\]
+on the smaller cylinder, hence \(\nabla p\) is smooth whenever the original
+kernel component is smooth or zero.  A finite subcover of each compact
+\(K\Subset\mathcal U\) gives compact-set estimates and uses no data outside
+the selected larger cylinders.
+\end{proof}
+
+\begin{remark}
+Global Stokes regularity is assembled pointwise from local estimates: no global
+heat kernel, whole-space Leray projection, or boundary condition at infinity
+is used.
+\end{remark}
+
+\begin{remark}[Local Calder\'on--Zygmund pressure decomposition]\label{stokes:rem:pressure-normalization-validation}
+Taking curl in the Stokes equation removes pressure from the vorticity argument,
+and velocity can be recovered from the local pair
+\(\divergence u=0\), \(\curl u=\omega\)
+modulo the explicitly identified harmonic-kernel component.  Pressure is handled
+separately: one chooses a local representative, splits it into a localized
+Calder\'on--Zygmund part and a harmonic pressure remainder, and shows the
+harmonic remainder is precisely the term carrying any parasitic time dependence.
+In the Stokes case, the source \(\Delta p=\divergence f\) is linear, so the
+Calder\'on--Zygmund part closes directly; the only pressure term requiring
+separate attention is the harmonic component, which is absorbed by the
+harmonic-kernel normalization.  After the velocity is smoothed, the pressure
+gradient is recovered by the formula \(\nabla p=f-\partial_tu+\Delta u\).
+\end{remark}
+
+\begin{remark}
+The smoothness assumption on \(f\) is chosen to keep the statement clean.  The
+same proof gives the standard Sobolev or parabolic H\"older interior estimates
+when \(f\) is placed in those local classes.
+\end{remark}
+
+\subsection{Candidate Singularities and Proof Steps}
+
+In this subsection we record the proof steps underlying
+\Cref{stokes:thm:interior-regularity} in a form that makes explicit which
+local argument closes which term.  This organization makes the harmonic-kernel
+compatibility condition visible at each step.
+
+\begin{proposition}[Ordered regularity alternatives]\label{stokes:prop:finite-state-stratification}
+Let \((u,p,f)\) solve \eqref{stokes:eq:local} on \(Q_R(z_0)\) with
+\(u\in L^2_{\loc}(Q_R)\) and \(f\in C^\infty(Q_R)\).  Let
+\(z_*\in Q_{R/4}(z_0)\).  The following cases are exhaustive and mutually
+exclusive, and each closes by a local argument:
+\begin{enumerate}
+  \item The representative under consideration is already smooth near \(z_*$.
+  \item The vorticity \(\omega=\curl u\) is the active variable; it satisfies
+  the local heat equation \((\partial_t-\Delta)\omega=\curl f\) and is smooth
+  on smaller cylinders.
+  \item After vorticity smoothing, the remaining curl-free component of the
+  velocity field lies in the local harmonic-kernel class; it is smooth in space
+  by elliptic regularity.
+  \item The harmonic-kernel component is handled by local normalization; for a
+  raw representative, the additional condition is that this component be zero or
+  smooth on the smaller cylinder.
+  \item The Calder\'on--Zygmund pressure argument controls the non-harmonic part
+  of the pressure locally; its harmonic part is a spatial-harmonic distribution
+  in time, which is absorbed by the harmonic-kernel normalization.
+  \item Once the normalized representative is smooth, smoothness of the pressure
+  gradient follows from the Stokes equation itself.
+\end{enumerate}
+All steps use only data on nested cylinders, and the argument at each step uses
+no data outside the selected larger cylinder.
+\end{proposition}
+
+\begin{proof}
+If the representative is already smooth near \(z_*$, the proof is complete.
+Otherwise, \(u\in L^2_{\loc}\) gives
+\(\omega=\curl u\in H^{-1}_{\loc}\), so the curl equation is a legitimate
+local consequence of the Stokes system.  Vorticity smoothing controls the
+non-harmonic spatial part of \(u\).  If the curl contribution vanishes on a
+time slice, the identity
+\[
+  -\Delta u=\curl\curl u-\nabla\divergence u
+\]
+places that component in the harmonic-kernel class, which is locally smooth by
+elliptic regularity in space.  If the solution is not already harmonic-kernel
+normalized, \Cref{stokes:lem:harmonic-kernel-normalization} normalizes the local
+representative and produces a Stokes solution with zero harmonic-kernel
+component.  The example in \Cref{stokes:rem:parasitic-counterexample} shows
+that raw full regularity requires the removed kernel to be separately zero or
+smooth.  After the velocity is recovered, the Stokes equation determines only
+\(\nabla p\), so the final step is the pressure normalization \(p\sim p+a(t)\).
+These cases exhaust all terms in \eqref{stokes:eq:local}: curl removes pressure
+from the vorticity argument, Calder\'on--Zygmund estimates control the
+localized non-harmonic pressure, div-curl recovers velocity, and the equation
+recovers the final pressure gradient.
+\end{proof}
+
+\begin{proposition}[Reduction to the vorticity equation]\label{stokes:prop:activity-gate}
+Let \((u,p,f)\) solve \eqref{stokes:eq:local} on \(Q_R(z_0)\), with
+\(u\in L^2_{\loc}(Q_R)\) and \(f\in C^\infty(Q_R)\), and let
+\(z_*\in Q_{R/4}(z_0)\).  Either \(u\) is smooth near \(z_*\), or
+\(\omega=\curl u\) satisfies the local heat equation
+\[
+  (\partial_t-\Delta)\omega=\curl f
+\]
+on some cylinder \(Q_\rho\) with \(z_*\in Q_\rho\Subset Q_R\).
+\end{proposition}
+
+\begin{proof}
+If \(u\) is smooth near \(z_*\), there is nothing to prove.  Otherwise,
+\(u\in L^2_{\loc}(Q_R)\) gives
+\(\omega=\curl u\in H^{-1}_{\loc}(Q_R)\).  Taking curl in the Stokes equation
+is a local distributional operation and requires no data outside \(Q_R\).
+This gives the stated local heat equation on any cylinder
+\(Q_\rho\Subset Q_R\) containing \(z_*\).
+\end{proof}
+
+\subsection{Vorticity Smoothing}
+
+\begin{lemma}[Vorticity equation]\label{stokes:lem:vorticity-equation}
+Let \((u,p,f)\) solve \eqref{stokes:eq:local} in distributions on \(Q_R\).  Then
+\(\omega=\curl u\) satisfies
+\begin{equation}\label{stokes:eq:vorticity}
+  (\partial_t-\Delta)\omega=\curl f
+\end{equation}
+in distributions on \(Q_R\).
+\end{lemma}
+
+\begin{proof}
+Apply \(\curl\) to \eqref{stokes:eq:local}.  Constant-coefficient
+differentiation commutes with \(\partial_t\) and \(\Delta\), and
+\(\curl\nabla p=0\).  The result is \eqref{stokes:eq:vorticity}.
+\end{proof}
+
+\begin{lemma}[Interior heat smoothing]\label{stokes:lem:local-heat-smoothing}
+Let \(w\in H^{-1}_{\loc}(Q_R)\) solve
+\[
+  (\partial_t-\Delta)w=g
+\]
+in distributions on \(Q_R\), with \(g\in C^\infty(Q_R)\).  If
+\(0<r<\rho<R\), then \(w\in C^\infty(Q_r)\).  For every \(j,k\ge0\),
+\begin{equation}\label{stokes:eq:local-heat-estimate}
+  \|\partial_t^j\nabla^k w\|_{L^2(Q_r)}
+  \le C_{j,k,r,\rho}
+  \left(
+    \|w\|_{H^{-1}(Q_\rho)}
+    +\sum_{\ell+|\alpha|\le M_{j,k}}
+      \|\partial_t^\ell\nabla^\alpha g\|_{L^2(Q_\rho)}
+  \right).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Choose nested cylinders
+\[
+  Q_r\Subset Q_{\sigma_0}\Subset Q_{\sigma_1}\Subset Q_\rho.
+\]
+We use the standard local parametrix form of heat hypoellipticity.  In
+anisotropic Sobolev notation, where one time derivative has parabolic order
+two, the estimate says the following.  For cutoffs
+\(\chi_0,\chi_1\in C_c^\infty(Q_{\sigma_1})\), with \(\chi_0\equiv1\) on
+\(Q_{\sigma_0}\) and \(\chi_1\equiv1\) on \(\supp\chi_0\), and for every
+integer \(s\ge -1\),
+\begin{equation}\label{stokes:eq:heat-parametrix}
+  \|\chi_0 w\|_{H^{s+2,s/2+1}_{\mathrm{par}}(Q_{\sigma_1})}
+  \le C_{s,\chi_0,\chi_1}
+  \left(
+    \|\chi_1(\partial_t-\Delta)w\|_{H^{s,s/2}_{\mathrm{par}}(Q_{\sigma_1})}
+    +\|\chi_1w\|_{H^{-1}(Q_{\sigma_1})}
+  \right).
+\end{equation}
+This estimate is local: it is obtained by applying a compactly supported
+constant-coefficient parametrix for \(\partial_t-\Delta\) to \(\chi_0w\).
+The commutator \([\partial_t-\Delta,\chi_0]w\) is supported in
+\(\{\chi_1=1\}\setminus Q_{\sigma_0}\).  At the first step it is measured in a
+negative Sobolev norm controlled by \(\|\chi_1w\|_{H^{-1}}\); after each
+bootstrap step the same estimate is applied on a smaller intermediate
+cylinder, so the commutator only uses regularity already gained on the
+previous cylinder.  No value of \(w\) outside \(Q_{\sigma_1}\) enters.
+
+Apply \eqref{stokes:eq:heat-parametrix} first with \(s=-1\) and
+\((\partial_t-\Delta)w=g\).  Since \(g\) is smooth, this raises the Sobolev
+regularity of \(w\) on \(Q_{\sigma_0}\).  Repeating the argument on a finite
+chain of nested cylinders gives, for every parabolic order \(N\),
+\[
+  \|w\|_{H^{N,N/2}_{\mathrm{par}}(Q_r)}
+  \le C_{N,r,\rho}
+  \left(
+    \|w\|_{H^{-1}(Q_\rho)}
+    +\sum_{\ell+|\alpha|\le M_N}
+      \|\partial_t^\ell\nabla^\alpha g\|_{L^2(Q_\rho)}
+  \right).
+\]
+Choosing \(N\) large enough to dominate the parabolic order \(2j+k\) and then
+using local parabolic Sobolev embedding gives
+\eqref{stokes:eq:local-heat-estimate} and smoothness.
+\end{proof}
+
+\begin{corollary}[Vorticity smoothing]\label{stokes:cor:vorticity-smoothing}
+Under the hypotheses of \Cref{stokes:thm:interior-regularity},
+\(\omega=\curl u\) is smooth on every compactly contained subcylinder
+\(Q'\Subset Q_R\).  Its derivatives satisfy local estimates on nested
+cylinders \(Q'\Subset Q''\Subset Q_R\) in terms of local norms of \(u\) and
+local derivatives of \(f\) on \(Q''\).
+\end{corollary}
+
+\begin{proof}
+Since \(u\in L^2_{\loc}\), \(\omega=\curl u\in H^{-1}_{\loc}\).  Apply
+\Cref{stokes:lem:vorticity-equation,stokes:lem:local-heat-smoothing} with
+\(g=\curl f\).
+\end{proof}
+
+\subsection{Local Pressure Normalization and Calder\'on--Zygmund Decomposition}
+
+\begin{lemma}[Local pressure equation]\label{stokes:lem:pressure-equation}
+Let \((u,p,f)\) solve \eqref{stokes:eq:local} in distributions on \(Q_R\).
+Then
+\begin{equation}\label{stokes:eq:pressure-poisson}
+  \Delta p=\divergence f
+\end{equation}
+in distributions on \(Q_R\).
+\end{lemma}
+
+\begin{proof}
+Apply divergence to the Stokes equation.  Since \(\divergence u=0\),
+\[
+  \partial_t\divergence u-\Delta\divergence u+\Delta p=\divergence f
+\]
+reduces to \eqref{stokes:eq:pressure-poisson}.
+\end{proof}
+
+\begin{lemma}[Localized Calder\'on--Zygmund pressure decomposition]\label{stokes:lem:local-CZ-pressure}
+Let \(B_r\times I_r\Subset B_\sigma\times I_\sigma\Subset
+B_\rho\times I_\rho\Subset Q_R\), and let \((u,p,f)\) solve
+\eqref{stokes:eq:local}.  Choose \(\chi\in C_c^\infty(B_\rho)\) with
+\(\chi\equiv1\) on \(B_\sigma\).  Let \(N\) be the Newtonian potential with
+\(\Delta N=\delta_0\).  On \(B_\sigma\times I_\sigma\) there is a
+distributional decomposition, unique up to a function of time,
+\[
+  p=p_{\mathrm{CZ}}+p_{\mathrm{har}}+a(t),
+\]
+where
+\[
+  p_{\mathrm{CZ}}(t)=N*\divergence(\chi f(t))
+\]
+and
+\[
+  \Delta_x p_{\mathrm{har}}=0
+  \quad\text{in }\mathcal D'(B_\sigma\times I_\sigma).
+\]
+Equivalently, \(p_{\mathrm{har}}\) is a distribution in time with values in
+spatial harmonic distributions on \(B_\sigma\).  The term \(a(t)\) denotes the
+remaining distribution that is constant in space.
+For every \(j,k\ge0\),
+\begin{equation}\label{stokes:eq:CZ-pressure-estimate}
+  \|\partial_t^j\nabla^{k+1}p_{\mathrm{CZ}}\|_{L^2(B_r\times I_r)}
+  \le
+  C_{j,k,r,\sigma,\rho,I_r,I_\rho}
+  \sum_{\ell+|\alpha|\le j+k}
+  \|\partial_t^\ell\nabla^\alpha f\|_{L^2(B_\rho\times I_\rho)}.
+\end{equation}
+Thus the non-harmonic pressure gradient is locally smooth and quantitatively
+controlled by the selected cylinder data only.
+\end{lemma}
+
+\begin{proof}
+The identity \eqref{stokes:eq:pressure-poisson} gives
+\[
+  \Delta(p-p_{\mathrm{CZ}})
+  =
+  \divergence f-\divergence(\chi f)
+  =
+  \divergence((1-\chi)f).
+\]
+The right side vanishes on \(B_\sigma\times I_\sigma\), because \(\chi=1\)
+there.  Hence \(p_{\mathrm{har}}=p-p_{\mathrm{CZ}}\), modulo a distribution
+depending only on time, is harmonic in \(x\) on \(B_\sigma\times I_\sigma\).
+The time-only distribution is harmless for all later statements, which use
+\(\nabla p\).
+
+For the estimate, write
+\[
+  \nabla p_{\mathrm{CZ}}
+  =
+  \nabla\nabla N *(\chi f),
+\]
+componentwise, with the sign fixed by the convention \(\Delta N=\delta_0\).
+The kernels \(\partial_i\partial_jN\) are Calder\'on--Zygmund kernels.  The
+\(L^2\) Calder\'on--Zygmund bound applied to the compactly supported field
+\(\chi f\), followed by the Leibniz rule for derivatives falling on \(\chi\)
+and \(f\), gives
+\eqref{stokes:eq:CZ-pressure-estimate}.  The cutoff is fixed inside
+\(B_\rho\), so the estimate consumes no exterior pressure value, no boundary
+condition, and no whole-space pressure reconstruction.
+\end{proof}
+
+\begin{proposition}[Pressure decomposition and harmonic remainder]\label{stokes:prop:pressure-state}
+On every nested cylinder, the pressure gradient splits as
+\[
+  \nabla p
+  =
+  \nabla p_{\mathrm{CZ}}+\nabla p_{\mathrm{har}}.
+\]
+The Calder\'on--Zygmund part \(\nabla p_{\mathrm{CZ}}\) is smooth and
+quantitatively controlled by \Cref{stokes:lem:local-CZ-pressure}.  The harmonic
+pressure gradient \(\nabla p_{\mathrm{har}}\) lies in the same local
+harmonic-gradient class as the parasitic velocity mode of
+\Cref{stokes:def:harmonic-kernel}: it can carry nonsmooth time dependence.
+Harmonic-kernel normalization absorbs this harmonic pressure term; for a raw
+representative, smoothness of the harmonic-kernel component is the extra
+condition needed to conclude smoothness of \(\nabla p\).
+\end{proposition}
+
+\begin{proof}
+The decomposition is \Cref{stokes:lem:local-CZ-pressure}.  Since
+\(\nabla p_{\mathrm{har}}\) is divergence-free and curl-free in the spatial
+variables, it lies in the same local harmonic-gradient class that appears in
+\Cref{stokes:def:harmonic-kernel}.  The example in
+\Cref{stokes:rem:parasitic-counterexample} shows that this term can carry
+nonsmooth time dependence.  Hence it must be identified and handled through the
+harmonic-kernel normalization, not treated as automatically smooth.
+\end{proof}
+
+\subsection{Velocity Recovery}
+
+\begin{lemma}[Local div-curl estimate]\label{stokes:lem:local-div-curl}
+Let \(B_r\Subset B_\rho\subset\R^3\).  Suppose \(v\in L^2(B_\rho)\),
+\(\divergence v=0\) in \(B_\rho\), and \(\curl v\) is smooth in \(B_\rho\).
+Then \(v\) is smooth in \(B_r\).  For every \(m\ge0\),
+\begin{equation}\label{stokes:eq:div-curl-estimate}
+  \|\nabla^{m+1}v\|_{L^2(B_r)}
+  \le C_{m,r,\rho}\left(
+    \|v\|_{L^2(B_\rho)}
+    +\sum_{|\alpha|\le m}\|\nabla^\alpha\curl v\|_{L^2(B_\rho)}
+  \right).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The vector identity
+\[
+  -\Delta v=\curl\curl v-\nabla\divergence v
+\]
+gives \(-\Delta v=\curl\curl v\) in \(B_\rho\).  Interior elliptic estimates
+for the vector Poisson equation on \(B_r\Subset B_\rho\) imply
+\eqref{stokes:eq:div-curl-estimate}.  Iteration and Sobolev embedding give
+smoothness.  If \(\curl v=0\), this says simply that \(v\) is harmonic and
+therefore smooth; this is the local harmonic-kernel case.
+\end{proof}
+
+\begin{lemma}[Local quotient div-curl isomorphism]\label{stokes:lem:quotient-div-curl}
+Let \(B_r\Subset B_\rho\) be concentric balls.  There is a local linear
+recovery operator, defined on the range of curls of divergence-free
+\(L^2(B_\rho)\) fields,
+\[
+  \mathcal T_{B_\rho}\omega=v,
+\]
+characterized by
+\[
+  \divergence v=0,\qquad \curl v=\omega,\qquad
+  v\perp\calH(B_\rho)\text{ in }L^2(B_\rho).
+\]
+If \(u\in L^2(B_\rho)\), \(\divergence u=0\), and
+\(\omega=\curl u\), then
+\[
+  \mathcal T_{B_\rho}\omega=(I-\proj_{\calH(B_\rho)})u.
+\]
+For smooth divergence-free curl data, the same operator is equivalently the
+orthogonal Hodge representative of the local div-curl system below.
+For every \(m\ge0\),
+\begin{equation}\label{stokes:eq:quotient-div-curl}
+  \|\nabla^{m+1}\mathcal T_{B_\rho}\omega\|_{L^2(B_r)}
+  \le C_{m,r,\rho}
+  \left(
+    \|\mathcal T_{B_\rho}\omega\|_{L^2(B_\rho)}
+    +\sum_{|\alpha|\le m}\|\nabla^\alpha\omega\|_{L^2(B_\rho)}
+  \right).
+\end{equation}
+The constants depend only on the nested balls and derivative order.
+\end{lemma}
+
+\begin{proof}
+Existence for \(\omega=\curl u\) is obtained by setting
+\[
+  v=(I-\proj_{\calH(B_\rho)})u.
+\]
+\Cref{stokes:lem:projection-state} gives \(\divergence v=0\) and
+\(\curl v=\omega\), and the definition of the projection gives
+\(v\perp\calH(B_\rho)\).  Conversely, if \(v_1\) and \(v_2\) satisfy the three
+displayed conditions, then \(v_1-v_2\in\calH(B_\rho)\) and
+\(v_1-v_2\perp\calH(B_\rho)\), hence \(v_1=v_2\).  Thus the quotient
+representative is uniquely determined by the local curl data.
+
+For smooth divergence-free \(\omega\), the standard local Hodge construction on
+the ball gives the same orthogonal representative; equivalently, solve the
+div-curl system modulo \(\calH(B_\rho)\).  Interior estimates are insensitive
+to the boundary realization of this representative.  The estimate is
+\Cref{stokes:lem:local-div-curl} applied to the representative.  The quotient
+condition is essential: without \(v\perp\calH(B_\rho)\), the curl data would
+not determine the velocity.
+\end{proof}
+
+\begin{lemma}[Sobolev continuity of quotient recovery]\label{stokes:lem:quotient-continuity}
+Let \(B_r\Subset B_\rho\) be concentric balls.  For every \(m\ge0\), the
+quotient recovery map \(\mathcal T_{B_\rho}\) from
+\Cref{stokes:lem:quotient-div-curl} is continuous from compatible curl data in
+\(H^m(B_\rho)\) to \(H^{m+1}(B_r)\).  Through the smooth Hodge extension, the
+same continuity holds for smooth divergence-free curl data.  More precisely, if
+\(\omega=\curl u\) for some divergence-free \(u\in L^2(B_\rho)\), then
+\[
+  \|\mathcal T_{B_\rho}\omega\|_{H^{m+1}(B_r)}
+  \le C_{m,r,\rho}
+  \left(
+    \|\mathcal T_{B_\rho}\omega\|_{L^2(B_\rho)}
+    +\|\omega\|_{H^m(B_\rho)}
+  \right).
+\]
+Consequently, for any distribution \(W\) in time with values in compatible
+curl data, distributional time differentiation commutes with
+\(\mathcal T_{B_\rho}\):
+\[
+  \partial_t\mathcal T_{B_\rho}W
+  =
+  \mathcal T_{B_\rho}(\partial_t W)
+\]
+as distributions on smaller cylinders whenever both sides are tested on
+\(B_r\Subset B_\rho\).
+\end{lemma}
+
+\begin{proof}
+The displayed Sobolev estimate is the sum of
+\Cref{stokes:eq:quotient-div-curl} for orders \(0,\ldots,m\), plus the
+\(L^2\) term.  Thus \(\mathcal T_{B_\rho}\) is a fixed continuous linear map
+between the indicated local Sobolev spaces on its compatible-data domain, and
+the same interior estimate applies to the smooth Hodge representative of smooth
+divergence-free curl data.
+Continuity and time-independence imply commutation with distributional time
+derivatives: for every temporal test function \(\eta\) and spatial test
+functional \(\Phi\) supported in \(B_r\),
+\[
+  \langle \partial_t\mathcal T_{B_\rho}W,\eta\Phi\rangle
+  =
+  -\langle \mathcal T_{B_\rho}W,\eta'\Phi\rangle
+  =
+  -\langle W,\eta'(\mathcal T_{B_\rho})^*\Phi\rangle
+  =
+  \langle \mathcal T_{B_\rho}(\partial_t W),\eta\Phi\rangle.
+\]
+This proves the distributional commutation statement.
+\end{proof}
+
+\begin{lemma}[Time-parametrized quotient recovery]\label{stokes:lem:time-param-quotient}
+Let \(B_r\times I_r\Subset B_\rho\times I_\rho\).  Suppose
+\[
+  u\in L^2(B_\rho\times I_\rho),\qquad
+  \divergence u=0,\qquad
+  \omega=\curl u\in C^\infty(B_\rho\times I_\rho).
+\]
+Then \(u^\perp=(I-\proj_{\calH(B_\rho)})u\) is smooth on
+\(B_r\times I_r\).  For all \(j,k\ge0\),
+\begin{equation}\label{stokes:eq:time-quotient}
+  \|\partial_t^j\nabla^k u^\perp\|_{L^2(B_r\times I_r)}
+  \le C_{j,k,r,\rho,I_r,I_\rho}
+  \left(
+    \|u^\perp\|_{L^2(B_\rho\times I_\rho)}
+    +\sum_{\ell\le j,\ |\alpha|\le k+j}
+      \|\partial_t^\ell\nabla^\alpha\omega\|_{L^2(B_\rho\times I_\rho)}
+  \right).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+For a.e. \(t\in I_\rho\),
+\[
+  u^\perp(t)=\mathcal T_{B_\rho}\omega(t)
+\]
+by \Cref{stokes:lem:quotient-div-curl}.  The operator
+\(\mathcal T_{B_\rho}\) is linear, time-independent, and locally Sobolev
+continuous by \Cref{stokes:lem:quotient-continuity}.  Hence distributional
+time differentiation commutes with \(\mathcal T_{B_\rho}\):
+\[
+  \partial_t^j u^\perp
+  =
+  \mathcal T_{B_\rho}(\partial_t^j\omega)
+\]
+on \(B_r\times I_r\), for every \(j\) for which the right side is defined.
+Here the right side is interpreted through the smooth divergence-free Hodge
+extension of \(\mathcal T_{B_\rho}\).  Applying
+\Cref{stokes:lem:quotient-div-curl} to
+\(\partial_t^j u^\perp\) on each time slice and integrating over
+\(I_\rho\), then shrinking to \(I_r\), gives
+\eqref{stokes:eq:time-quotient}.  Since all derivatives of \(\omega\) are
+smooth and locally square-integrable on compact cylinders, parabolic Sobolev
+embedding gives \(u^\perp\in C^\infty(B_r\times I_r)\).
+\end{proof}
+
+\begin{lemma}[Quotient velocity recovery]\label{stokes:lem:velocity-recovery}
+Let \(B_r\times I_r\Subset B_\rho\times I_\rho\Subset Q_R\), and set
+\[
+  u^\perp=(I-\proj_{\calH(B_\rho)})u.
+\]
+Under the hypotheses of \Cref{stokes:thm:interior-regularity}, \(u^\perp\) is
+smooth in \(B_r\times I_r\), and for every \(j,k\ge0\),
+\begin{equation}\label{stokes:eq:velocity-recovery}
+  \|\partial_t^j\nabla^k u^\perp\|_{L^2(B_r\times I_r)}
+  \le C_{j,k,r,\rho,I_r,I_\rho}\left(
+    \|u\|_{L^2(B_\rho\times I_\rho)}
+    +\sum_{\ell+|\alpha|\le N_{j,k}}
+      \|\partial_t^\ell\nabla^\alpha f\|_{L^2(B_\rho\times I_\rho)}
+  \right).
+\end{equation}
+If \(\proj_{\calH(B_\rho)}u\) is smooth on \(B_r\times I_r\), then \(u\) is
+smooth there as well.
+\end{lemma}
+
+\begin{proof}
+\Cref{stokes:cor:vorticity-smoothing} gives smoothness of
+\(\omega=\curl u\) on a cylinder between
+\(B_r\times I_r\) and \(B_\rho\times I_\rho\), with bounds in terms of
+\(\|u\|_{L^2}\) and local derivatives of \(f\) on the larger cylinder.  Then
+\Cref{stokes:lem:time-param-quotient} recovers all space and time derivatives
+of
+\[
+  u^\perp=(I-\proj_{\calH(B_\rho)})u
+\]
+from that local vorticity data.  Combining the two estimates gives
+\eqref{stokes:eq:velocity-recovery}.  If the harmonic-kernel component is
+smooth, then \(u=u^\perp+\proj_{\calH(B_\rho)}u\) is smooth.  The argument
+uses only the local \(L^2(B_\rho)\) quotient projection to separate the
+harmonic-kernel component; no whole-space projection or nonlocal pressure
+reconstruction is needed.
+\end{proof}
+
+\subsection{Pressure Closure}
+
+\begin{lemma}[Harmonic pressure compatibility]\label{stokes:lem:harmonic-pressure-compatibility}
+Let \(B_r\times I_r\Subset B_\sigma\times I_\sigma\Subset
+B_\rho\times I_\rho\Subset Q_R\), and use the pressure decomposition of
+\Cref{stokes:lem:local-CZ-pressure}.  Suppose that \(u^\perp\) is smooth on
+\(B_\sigma\times I_\sigma\) and that the harmonic-kernel component
+\(\proj_{\calH(B_\rho)}u\) is smooth there as well.  Then
+\(\nabla p_{\mathrm{har}}\) is smooth on \(B_r\times I_r\).
+\end{lemma}
+
+\begin{proof}
+The two velocity hypotheses imply \(u=u^\perp+\proj_{\calH(B_\rho)}u\) is
+smooth on \(B_\sigma\times I_\sigma\).  The Stokes equation gives, in
+distributions,
+\[
+  \nabla p=f-\partial_tu+\Delta u,
+\]
+so \(\nabla p\) is smooth on \(B_\sigma\times I_\sigma\).  By
+\Cref{stokes:lem:local-CZ-pressure}, \(\nabla p_{\mathrm{CZ}}\) is smooth on
+\(B_r\times I_r\).  Therefore
+\[
+  \nabla p_{\mathrm{har}}=\nabla p-\nabla p_{\mathrm{CZ}}
+\]
+is smooth on \(B_r\times I_r\).  The possible additive time-only representative has
+zero spatial gradient and does not affect the conclusion.
+\end{proof}
+
+\begin{lemma}[Pressure gradient closure]\label{stokes:lem:pressure-normalization}
+Under the hypotheses of \Cref{stokes:thm:interior-regularity}, assume on
+\(B_\rho\times I_\rho\Subset Q_R\) that the harmonic-kernel component
+\(\proj_{\calH(B_\rho)}u\) is smooth on \(B_r\times I_r\Subset
+B_\rho\times I_\rho\).  Then, for any pressure representative in the local
+normalization class,
+\[
+  \nabla p=f-\partial_tu+\Delta u
+\]
+is smooth in \(B_r\times I_r\).
+\end{lemma}
+
+\begin{proof}
+\Cref{stokes:lem:velocity-recovery} gives smoothness of \(u^\perp\), and the
+extra hypothesis gives smoothness of the harmonic-kernel component.  Hence
+\(u\) is smooth on \(B_r\times I_r\), and \(f\) is smooth by hypothesis.
+The Calder\'on--Zygmund decomposition of
+\Cref{stokes:lem:local-CZ-pressure,stokes:prop:pressure-state} has already
+identified the smooth local CZ part and the harmonic pressure component.
+On every smaller compact subcylinder,
+\Cref{stokes:lem:harmonic-pressure-compatibility} gives smoothness of the
+harmonic pressure gradient once both the quotient velocity and the
+harmonic-kernel component are smooth.  Equivalently, the displayed identity is
+exactly \eqref{stokes:eq:local} and directly gives the same smooth
+gradient on \(B_r\times I_r\).  The scalar pressure is determined only up to a
+function of time, but the gradient is invariant under pressure normalization and
+locally smooth.
+\end{proof}
+
+\begin{proposition}[Parasitic mode closure by normalization]\label{stokes:prop:parasitic-row-closure}
+Let \(B_r\times I_r\Subset B_\rho\times I_\rho\Subset Q_R\), and let
+\((u,p,f)\) satisfy the hypotheses of
+\Cref{stokes:thm:interior-regularity}.  Set
+\[
+  h=\proj_{\calH(B_\rho)}u.
+\]
+Then the harmonic-kernel component \(h\) is handled as follows:
+\begin{enumerate}
+  \item The normalized representative
+  \[
+    (u^\perp,p^\perp)
+  \]
+  constructed in \Cref{stokes:lem:harmonic-kernel-normalization} satisfies
+  \(\proj_{\calH(B_\rho)}u^\perp=0\), and therefore \(u^\perp\) and
+  \(\nabla p^\perp\) are smooth on \(B_r\times I_r\).
+  \item If one also wants regularity of the original raw representative, then
+  the extra compatibility condition is exactly that \(h\) vanish or be smooth
+  on \(B_r\times I_r\).  Under that condition,
+  \[
+    u\in C^\infty(B_r\times I_r),\qquad
+    \nabla p\in C^\infty(B_r\times I_r).
+  \]
+  \item If \(h\) is not normalized away and no smoothness input for \(h\) is
+  available, full regularity of that raw representative is not a valid
+  conclusion from the local Stokes hypotheses alone; the valid conclusion is
+  regularity of the normalized representative.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The first item follows from
+\Cref{stokes:lem:harmonic-kernel-normalization}: the normalized representative
+solves the same Stokes system and has zero projected harmonic-kernel component.
+\Cref{stokes:lem:velocity-recovery} gives smoothness of \(u^\perp\), and
+\Cref{stokes:lem:pressure-normalization} gives smoothness of \(\nabla p^\perp\)
+because the projected kernel of the normalized representative is zero.  For the
+second item,
+\[
+  u=u^\perp+h
+\]
+is smooth on \(B_r\times I_r\).  Since
+\[
+  p^\perp=p+\partial_t\Phi,\qquad \nabla\Phi=h,
+\]
+we have
+\[
+  \nabla p=\nabla p^\perp-\partial_t h,
+\]
+which is smooth if \(h\) is smooth.  The third item is the counterexample in
+\Cref{stokes:rem:parasitic-counterexample}: a nonsmooth time-dependent
+harmonic-gradient velocity has zero vorticity and is absorbed by the pressure.
+Thus local normalization is the step that closes the argument for the normalized
+representative, while smoothness of \(h\) is the extra condition needed for the
+original raw representative.
+\end{proof}
+
+\begin{proposition}[Regularity of the normalized representative]\label{stokes:prop:no-residual-stokes}
+Let \((u,p,f)\) solve \eqref{stokes:eq:local} on \(Q_R\) with
+\(u\in L^2_{\loc}(Q_R)\) and \(f\in C^\infty(Q_R)\), and suppose the
+representative under consideration is harmonic-kernel normalized on each
+nested intermediate cylinder.  Then \(u\) is smooth on every compactly
+contained subcylinder \(Q'\Subset Q_R\).
+\end{proposition}
+
+\begin{proof}
+Every candidate singular point of the normalized representative leads to the
+vorticity argument of \Cref{stokes:prop:activity-gate} and the ordered
+alternatives of \Cref{stokes:prop:finite-state-stratification}.  By
+\Cref{stokes:cor:vorticity-smoothing}, \(\omega=\curl u\) is smooth on smaller
+cylinders.  \Cref{stokes:lem:velocity-recovery} then gives smoothness of the
+quotient representative \(u^\perp\).  Since the harmonic-kernel component has
+been normalized away, \(u^\perp=u\) and the solution is smooth near every
+candidate singular point.
+\end{proof}
+
+\begin{proposition}[Absence of interior singular points]\label{stokes:prop:no-singular-branch}
+Let \((u,p,f)\) satisfy the hypotheses of
+\Cref{stokes:thm:interior-regularity}.  Then \(u\) has no candidate singular
+points for the locally normalized representative.  The same holds for the raw
+representative when its harmonic-kernel component is zero or smooth on the
+relevant nested cylinder.
+\end{proposition}
+
+\begin{proof}
+Suppose \(z_*\in Q_{R/4}\) is a candidate singular point for the normalized
+representative.  By \Cref{stokes:prop:activity-gate}, either the normalized
+solution is already regular near \(z_*\), or \(\omega=\curl u\) satisfies the
+local heat equation.  In the latter case,
+\Cref{stokes:cor:vorticity-smoothing} smooths the vorticity, and
+\Cref{stokes:lem:local-CZ-pressure,stokes:prop:pressure-state} decompose the
+pressure into a smooth Calder\'on--Zygmund part and a harmonic part.
+\Cref{stokes:lem:velocity-recovery} recovers smoothness of \(u^\perp\) near
+\(z_*\).  \Cref{stokes:prop:parasitic-row-closure} then gives smoothness of
+the normalized representative and its pressure gradient near \(z_*\),
+contradicting the assumption.  When the harmonic-kernel component is zero or
+smooth, the same proposition transfers the conclusion to the raw representative.
+\end{proof}
+
+\begin{proof}[Proof of \Cref{stokes:thm:interior-regularity}]
+Fix \(B_r\times I_r\Subset B_\rho\times I_\rho\Subset Q_R\).  The estimate
+\eqref{stokes:eq:main-local-estimate} is
+\Cref{stokes:lem:velocity-recovery}, whose proof combines the local heat
+smoothing of \(\omega=\curl u\) with the time-parametrized quotient div-curl
+map.  Thus \(u^\perp=(I-\proj_{\calH(B_\rho)})u\) is smooth on
+\(B_r\times I_r\), and the estimate uses only data on the selected larger
+cylinder.
+
+If the harmonic-kernel component \(h=\proj_{\calH(B_\rho)}u\) is smooth on
+\(B_r\times I_r\), then \(u=u^\perp+h\) is smooth there.  The Stokes equation
+then gives
+\[
+  \nabla p=f-\partial_tu+\Delta u
+\]
+as a smooth vector field on the same smaller cylinder.  In the normalized case
+\(h=0\), this gives full smoothness of the normalized representative and its
+pressure gradient directly.
+\end{proof}

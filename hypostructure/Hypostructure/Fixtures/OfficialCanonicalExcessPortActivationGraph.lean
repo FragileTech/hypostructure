@@ -1,0 +1,11 @@
+import Hypostructure.Graph.Strategy.Official.Features.CanonicalExcessPortActivation
+
+namespace Hypostructure.Fixtures.OfficialCanonicalExcessPortActivationGraph
+
+open Hypostructure.Graph
+open Hypostructure.Graph.Strategy.Official.Features
+
+#print axioms
+  CanonicalExcessPortActivation.activations_length
+
+end Hypostructure.Fixtures.OfficialCanonicalExcessPortActivationGraph

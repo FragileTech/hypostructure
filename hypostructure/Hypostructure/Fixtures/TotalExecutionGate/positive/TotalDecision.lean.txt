@@ -1,0 +1,15 @@
+namespace PositiveTotalDecision
+
+inductive Terminal
+  | close
+  | residual
+
+inductive Decision
+  | closeTarget
+  | continueWith (terminal : Terminal)
+
+-- Intended migration shape: an applicable invocation always has a decision.
+def dispatch (_ready : True) : Decision :=
+  .continueWith .residual
+
+end PositiveTotalDecision

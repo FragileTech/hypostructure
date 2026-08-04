@@ -1,0 +1,8 @@
+namespace NegativeFailureTerminals
+
+inductive Failure where
+  | unsupported
+  | incompatibleJoin
+  | fuelExhausted
+
+end NegativeFailureTerminals

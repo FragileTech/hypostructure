@@ -1,0 +1,6 @@
+namespace NegativeFailedResult
+
+def execute : Result Target State :=
+  Result.failed Failure.fuelExhausted
+
+end NegativeFailedResult

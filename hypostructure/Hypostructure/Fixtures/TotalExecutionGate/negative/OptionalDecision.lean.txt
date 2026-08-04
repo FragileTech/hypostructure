@@ -1,0 +1,7 @@
+namespace NegativeOptionalDecision
+
+def dispatch (ref state arity : Nat) :
+    Option (Decision Target State arity) :=
+  none
+
+end NegativeOptionalDecision

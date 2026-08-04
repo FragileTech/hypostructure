@@ -1,0 +1,5 @@
+jsonschema>=4.22,<5
+pytest>=8,<10
+Flask>=3.1,<4
+pydantic>=2.11,<3
+gunicorn>=23,<24
