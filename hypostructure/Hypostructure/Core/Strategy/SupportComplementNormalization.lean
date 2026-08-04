@@ -397,6 +397,51 @@ theorem mem_complementAtPrevious_iff (previous : Previous)
     (profile.complementFibre.read (Ledger.extend previous result))
     Property sourceCharacterization item
 
+/-- Membership in the transported exact selected fibre is CT9's own true-label
+characterization at the retained predecessor. -/
+theorem mem_selectedAtPrevious_iff (previous : Previous)
+    (result : profile.execution.Output previous)
+    (item : profile.AmbientItem previous) :
+    item ∈ (profile.selectedAtPrevious previous result).values ↔
+      profile.Selected previous
+        (profile.selectedPacking.read previous) item := by
+  let Property : (predecessor : Previous) →
+      profile.AmbientItem predecessor → Prop :=
+    fun predecessor candidate =>
+      profile.Selected predecessor
+        (profile.selectedPacking.read predecessor) candidate
+  have fibreCharacterization (predecessor : Previous)
+      (sourceItem : profile.AmbientItem predecessor) :
+      sourceItem ∈
+          (CT9.fibre profile.capability predecessor true) ↔
+        Property predecessor sourceItem := by
+    simp only [CT9.fibre, CT9.Capability.itemsAt,
+      PartitionProfile.capability, PartitionProfile.spec,
+      PartitionProfile.inputs, Property]
+    constructor
+    · intro member
+      exact (List.mem_filter.mp member).2
+    · intro selected
+      exact List.mem_filter.mpr ⟨by
+        exact (profile.ambientSupport.read predecessor).mem_toList.mp
+          (by simpa using selected), by simpa [selected]⟩
+  have sourceCharacterization
+      (sourceItem : profile.AmbientItem result.stage.previous) :
+      sourceItem ∈
+          (profile.selectedFibre.read
+            (Ledger.extend previous result)).values ↔
+        Property result.stage.previous sourceItem := by
+    change sourceItem ∈
+        (profile.generatedPartition.read
+          (Ledger.extend previous result)).fibres true ↔ _
+    rw [(profile.generatedPartition.read
+      (Ledger.extend previous result)).fibres_exact true]
+    exact fibreCharacterization result.stage.previous sourceItem
+  exact mem_castEnumeration_iff profile
+    result.stage.previous previous result.previous_eq
+    (profile.selectedFibre.read (Ledger.extend previous result))
+    Property sourceCharacterization item
+
 /-- The retained complementary fibre is exactly CT9's own generated fibre for
 the unselected label.  Nothing is re-enumerated: the identity is CT9's
 `Partition.fibres_exact`. -/
