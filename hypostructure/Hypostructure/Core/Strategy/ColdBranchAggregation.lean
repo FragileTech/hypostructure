@@ -1007,12 +1007,6 @@ def inheritedBarrierSummaryQuery {previous : Previous} :
       (fun _ => Core.Strategy.FiniteBarrierEnumeration.Summary) :=
   profile.preserveIncoming profile.barrierSummary
 
-/-- Preserve the complete predecessor-owned density-overflow ledger.  Its
-three queries continue to point at the literal incoming stage. -/
-def inheritedOverflowLedger {previous : Previous} :
-    OverflowLedger (profile.CorridorStateStage previous) :=
-  profile.overflow.preserve
-
 /-- Read the inherited minimal-context closure capability through the same
 ledger extension.  Its index remains the actual predecessor stage. -/
 def inheritedClosureQuery {previous : Previous} :
@@ -1038,16 +1032,6 @@ def inheritedClosureQuery {previous : Previous} :
 @[simp] theorem inheritedBarrierSummaryQuery_read_run (previous : Previous) :
     profile.inheritedBarrierSummaryQuery (profile.classifiedStage previous) =
       profile.barrierSummary previous := rfl
-
-@[simp] theorem inheritedOverflowLowerMass_read_run (previous : Previous) :
-    profile.inheritedOverflowLedger.lowerMass
-        (profile.classifiedStage previous) =
-      profile.overflow.lowerMass previous := rfl
-
-@[simp] theorem inheritedOverflowCapacity_read_run (previous : Previous) :
-    profile.inheritedOverflowLedger.capacity
-        (profile.classifiedStage previous) =
-      profile.overflow.capacity previous := rfl
 
 @[simp] theorem inheritedClosureQuery_read_run (previous : Previous) :
     profile.inheritedClosureQuery (profile.classifiedStage previous) =

@@ -250,7 +250,20 @@ structure UniversalReplacement
     ∀ (site : profile.assembly.Site ctx.G),
       ¬ Nonempty (profile.Compression ctx site)
 
-private theorem strictReplacementImpossible
+/-- **`lem:replacement`.**  A strict replacement at any site of a minimal
+counterexample is impossible.
+
+The proof is the manuscript's: the replaced object satisfies the baseline and
+is strictly smaller, so minimality gives it the target; the one-way obstruction
+inclusion carries that target back through the shared context to the source
+atom; and target-invariance of the reconstruction contradicts the selected
+object's avoidance.
+
+Everything it consumes is in `ctx` -- `target_of_smaller` and `avoids`, the two
+components of the selection.  There is no registration, payload, or closure
+record in the statement, so a consumer holding only the selection fact of the
+canonical ledger can apply it directly. -/
+theorem strictReplacementImpossible
     (ctx : Core.MinimalCounterexampleContext P T.Predicate progress)
     (site : profile.assembly.Site ctx.G) :
     ¬ Nonempty (profile.StrictReplacement ctx site) := by

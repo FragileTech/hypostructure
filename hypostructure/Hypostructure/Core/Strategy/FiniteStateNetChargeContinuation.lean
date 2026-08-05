@@ -576,19 +576,6 @@ def classifiedStageQuery :
     | .inl residual => residual.stage
     | .inr residual => residual.stage
 
-/-- Every inherited capacity query remains available on both node-[63] and
-node-[64] outputs through the standard residual projection. -/
-def classifiedCapacityLedger : CapacityLedger (profile.ClassifiedOutput previous) :=
-  profile.capacity62.comap profile.classifiedStageQuery
-
-/-- The retained density-cap ledger, likewise available on both open frontier
-outputs.  Its three scalar queries are the packing cardinality, the barrier
-`Summary` and the represented ambient capacity the surviving alternative was
-compared at. -/
-def classifiedDensityLedger :
-    FiniteDensityBudget.CapLedger (profile.ClassifiedOutput previous) :=
-  profile.density62.comap profile.classifiedStageQuery
-
 def classifiedDecision62Query :
     Query (profile.ClassifiedOutput previous)
       (fun output => profile.Decision62

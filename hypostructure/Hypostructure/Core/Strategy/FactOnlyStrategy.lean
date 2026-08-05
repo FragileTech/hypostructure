@@ -30,7 +30,7 @@ variable [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
 
 /-- A Strategy that preserves the residual and commits exactly the facts it
 derives from its declared prerequisites. -/
-noncomputable def factOnly
+@[reducible] noncomputable def factOnly
     (id : Lean.Name) (manifest : FactManifest Residual)
     (derive : (inputs : FactInputs manifest) →
       Core.Residual.FactKeys.Values inputs.current manifest.Produces)

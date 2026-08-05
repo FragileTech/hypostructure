@@ -741,32 +741,21 @@ theorem compressionCandidateOfCompressibleSupportWithPresentation
       baseline := baseline
       smaller := smaller }⟩⟩
 
-/-- The inherited interface-replacement ledger rejects every proper-support
-replacement satisfying the paper's one-way obstruction inclusion. -/
-theorem not_replacementSupport
-    (Baseline : FiniteObject.{u} → Prop)
-    (BranchState : FiniteObject.{u} → Type v)
-    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
-    (T : Core.Target (problem Baseline BranchState))
-    (targetInvariant : Core.TargetInvariant
-      (isomorphismEquivalence Baseline BranchState baselineInvariant) T.Predicate)
-    (ctx : Core.MinimalCounterexampleContext
-      (problem Baseline BranchState) T.Predicate
-      (lexicographicProgress Baseline BranchState))
-    (closure : Core.Strategy.InterfaceReplacement.ClosurePayload
-      (profile Baseline BranchState baselineInvariant targetInvariant) ctx)
-    (support : Finset ctx.G.Vertex) :
-    ¬ ReplacementSupport Baseline T.Predicate ctx.G support := by
-  intro replacementSupport
-  rcases strictReplacementOfReplacementSupport Baseline BranchState
-      baselineInvariant T targetInvariant ctx support replacementSupport with
-    ⟨⟨site, replacement⟩⟩
-  exact closure.noStrictReplacement
-    (profile Baseline BranchState baselineInvariant targetInvariant) site
-    ⟨replacement⟩
+/-! ## `lem:replacement` and `cor:uncompressible` at a selected minimal object
 
-/-- Presentation-carrying form of the exact one-way replacement exclusion. -/
-theorem not_replacementSupportWithPresentation
+Both exclusions below take the selected `MinimalCounterexampleContext` and
+nothing else.  The manuscript derives them from minimality alone, and so do
+these: `Core.Strategy.InterfaceReplacement.strictReplacementImpossible` reads
+only `ctx.avoids` and `ctx.target_of_smaller`, the two components of the
+selection.  A row therefore proves them from the selection *fact* of the
+canonical ledger, with no closure record, registration, or payload standing
+between the fact and its consequence.
+-/
+
+/-- **`lem:replacement`.**  A selected minimal counterexample admits no
+proper-support replacement satisfying the paper's one-way obstruction
+inclusion. -/
+theorem not_replacementSupport
     (Baseline : FiniteObject.{u} → Prop)
     (BranchState : FiniteObject.{u} → Type v)
     (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
@@ -782,45 +771,23 @@ theorem not_replacementSupportWithPresentation
       (CanonicalProgress.progress
         (P := problemWithPresentation
           Baseline BranchState Presentation presentation)))
-    (closure : Core.Strategy.InterfaceReplacement.ClosurePayload
-      (profileWithPresentation Baseline BranchState baselineInvariant
-        Presentation presentation targetInvariant) ctx)
     (support : Finset ctx.G.Vertex) :
     ¬ ReplacementSupport Baseline T.Predicate ctx.G support := by
   intro replacementSupport
   rcases strictReplacementOfReplacementSupportWithPresentation Baseline
       BranchState baselineInvariant Presentation presentation T targetInvariant
       ctx support replacementSupport with ⟨⟨site, replacement⟩⟩
-  exact closure.noStrictReplacement
+  exact Core.Strategy.InterfaceReplacement.Profile.strictReplacementImpossible
     (profileWithPresentation Baseline BranchState baselineInvariant
-      Presentation presentation targetInvariant) site ⟨replacement⟩
+      Presentation presentation targetInvariant) ctx site ⟨replacement⟩
 
-/-- The inherited interface-replacement ledger rejects an exact
-target-complete proper-support compression. -/
+/-- **`cor:uncompressible`.**  No proper atom of a selected minimal
+counterexample admits a nontrivial target-complete compression.
+
+A target-complete compression satisfies the weaker one-way hypothesis of
+`lem:replacement` (`replacementSupportOfCompressibleSupport`), which the
+previous theorem has already excluded. -/
 theorem not_compressibleSupport
-    (Baseline : FiniteObject.{u} → Prop)
-    (BranchState : FiniteObject.{u} → Type v)
-    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
-    (T : Core.Target (problem Baseline BranchState))
-    (targetInvariant : Core.TargetInvariant
-      (isomorphismEquivalence Baseline BranchState baselineInvariant) T.Predicate)
-    (ctx : Core.MinimalCounterexampleContext
-      (problem Baseline BranchState) T.Predicate
-      (lexicographicProgress Baseline BranchState))
-    (closure : Core.Strategy.InterfaceReplacement.ClosurePayload
-      (profile Baseline BranchState baselineInvariant targetInvariant) ctx)
-    (support : Finset ctx.G.Vertex) :
-    ¬ CompressibleSupport Baseline T.Predicate ctx.G support := by
-  intro compressible
-  exact not_replacementSupport Baseline BranchState baselineInvariant T
-    targetInvariant ctx closure support
-    (replacementSupportOfCompressibleSupport Baseline T.Predicate ctx.G
-      support compressible)
-
-/-- The presentation-carrying closure payload rejects a `CompressibleSupport`
-by converting it to the corresponding candidate and applying the stored
-no-compression theorem. -/
-theorem not_compressibleSupportWithPresentation
     (Baseline : FiniteObject.{u} → Prop)
     (BranchState : FiniteObject.{u} → Type v)
     (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
@@ -836,15 +803,11 @@ theorem not_compressibleSupportWithPresentation
       (CanonicalProgress.progress
         (P := problemWithPresentation
           Baseline BranchState Presentation presentation)))
-    (closure : Core.Strategy.InterfaceReplacement.ClosurePayload
-      (profileWithPresentation Baseline BranchState baselineInvariant
-        Presentation presentation targetInvariant) ctx)
     (support : Finset ctx.G.Vertex) :
-    ¬ CompressibleSupport Baseline T.Predicate ctx.G support := by
-  intro compressible
-  exact not_replacementSupportWithPresentation Baseline BranchState
-    baselineInvariant Presentation presentation T targetInvariant ctx closure
-    support (replacementSupportOfCompressibleSupport Baseline T.Predicate
-      ctx.G support compressible)
+    ¬ CompressibleSupport Baseline T.Predicate ctx.G support := fun compressible =>
+  not_replacementSupport Baseline BranchState baselineInvariant Presentation
+    presentation T targetInvariant ctx support
+    (replacementSupportOfCompressibleSupport Baseline T.Predicate ctx.G support
+      compressible)
 
 end Hypostructure.Graph.Strategy.InterfaceReplacement

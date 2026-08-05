@@ -3,6 +3,12 @@ import Hypostructure.Core.Strategy.MinimalCounterexampleScope
 import Hypostructure.Graph.RootedReturn
 import Hypostructure.Graph.Minimality
 import Hypostructure.Graph.DeletionCriticality
+import Hypostructure.Graph.MinimumDegreeCycleTarget
+import Hypostructure.Graph.FiniteEdgeBudget
+import Hypostructure.Graph.SkeletonBudget
+import Hypostructure.Graph.WindowPacking
+import Hypostructure.Graph.WindowCurvatureCode
+import Hypostructure.Graph.Strategy.InterfaceReplacement
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -26,21 +32,57 @@ open Hypostructure.Core.Strategy
 
 universe u v
 
+/-- **The registered data of a minimum-degree cycle spine.**
+
+Every number the spine ever compares comes from this record, and a row is
+forbidden to write one.  A problem supplies the record from its own
+presentation; the manuscript's `3`, `13`, `399`, and window rate are its
+values, not the framework's.
+
+The one numeral that does appear below is the `3` of `three_le_threshold`, and
+it is not a presentation constant: it is `⌈e⌉` from Stirling's bound
+(`Core.FiniteEntropy.pow_self_le_three_pow_mul_factorial`), the constant that
+makes the skeleton budget's `m !` pay for the density cap.  A presentation
+whose baseline is below it does not reach node `[22]`. -/
+structure Data where
+  /-- The registered minimum-degree baseline `δ`. -/
+  threshold : Nat
+  /-- Stirling's `⌈e⌉` against the registered baseline; see the note above. -/
+  three_le_threshold : 3 ≤ threshold
+  /-- The accepted cycle lengths the counterexample must avoid. -/
+  LengthOK : Nat → Prop
+  /-- The order of the induced obstruction window.  For `thm:p13free` this is
+  the induced-path order; nothing here knows its value. -/
+  windowOrder : Nat
+  windowOrder_pos : 0 < windowOrder
+  /-- The cited external closure law.  An object meeting the baseline with no
+  induced window of the registered order has an accepted cycle.  This is the
+  only place a result outside the manuscript enters the spine, and it enters at
+  the manuscript's own interface. -/
+  freeForcesTarget : ∀ object : Graph.FiniteObject.{u},
+    Graph.MinimumDegreeAtLeast threshold object →
+    Graph.InducedPathFree object windowOrder →
+    Graph.HasCycleWithLength LengthOK object
+  /-- The registered scale threshold `C_sp·⌈√n⌉`, as a function of the order. -/
+  surplusThreshold : Nat → Nat
+  /-- The registered per-window barrier rate of the finite enumeration. -/
+  windowRate : Nat
+
 /-- The problem this spine argues about: a minimum-degree baseline at the
 registered threshold, with the problem's own presentation attached. -/
 abbrev problem (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation) (threshold : Nat) :
+    (Presentation : Type) (presentation : Presentation) (data : Data.{u}) :
     Core.Problem.{u + 1, v} :=
-  Graph.problemWithPresentation (Graph.MinimumDegreeAtLeast threshold)
+  Graph.problemWithPresentation (Graph.MinimumDegreeAtLeast data.threshold)
     BranchState Presentation presentation
 
 /-- The registered progress order: vertex count, then edge count. -/
 abbrev progress (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation) (threshold : Nat) :
+    (Presentation : Type) (presentation : Presentation) (data : Data.{u}) :
     Core.Progress.{u + 1, v, 0}
-      (problem BranchState Presentation presentation threshold) :=
+      (problem BranchState Presentation presentation data) :=
   (Graph.CanonicalProgress.progress
-    (P := problem BranchState Presentation presentation threshold))
+    (P := problem BranchState Presentation presentation data))
 
 /-- The semantic facts the entry spine proves.
 
@@ -62,40 +104,108 @@ inductive Key where
   /-- Node `[10]`: vertices strictly above the threshold are pairwise
   nonadjacent. -/
   | slackIndependent
+  /-- Nodes `[11]`--`[14]`: no proper atom admits a nontrivial target-complete
+  compression (`cor:uncompressible`). -/
+  | uncompressible
+  /-- Nodes `[15]`--`[17]`: the object carries a maximal vertex-disjoint family
+  of induced windows, and the family is nonempty. -/
+  | maximalPacking
+  /-- Node `[18]`: the local label algebra of the registered window order is
+  exactly enumerated and its curvature relation is decided (`lem:labels`). -/
+  | localAlgebra
+  /-- Node `[19]`, above arm: the degree surplus exceeds the registered scale
+  threshold. -/
+  | surplusAbove
+  /-- Node `[19]`, at-or-below arm: `def:near-cubic-spine` in exact finite
+  form. -/
+  | surplusAtOrBelow
+  /-- Node `[21]`, cap arm: the packing's entropy demand fits inside the
+  labelled skeleton budget, which is itself stable under a variable edge
+  count. -/
+  | barrierCap
+  /-- Node `[21]`, overflow arm: the demand exceeds the budget. -/
+  | barrierOverflow
+  /-- Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing
+  in the object's own dyadic scale. -/
+  | densityCap
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
 
 Every spine fact is a statement about the selected graph, never about the
 branch state carried beside it.  Making that explicit is what lets a fact
-transport along a refinement by a rewrite: refinement is object equality. -/
+transport along a refinement by a rewrite: refinement is object equality.
+
+`localAlgebra` is the one clause that does not mention the object: the window
+algebra is a property of the registered order, and saying so is what makes it
+transport for free. -/
 def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation)
-    (threshold : Nat) (LengthOK : Nat → Prop) :
+    (Presentation : Type) (presentation : Presentation) (data : Data.{u}) :
     Key → Graph.FiniteObject.{u} → Prop
   | .selection, object =>
-      (¬ Graph.HasCycleWithLength LengthOK object ∧
+      (¬ Graph.HasCycleWithLength data.LengthOK object ∧
         ∀ smaller : Graph.FiniteObject.{u},
-          (progress BranchState Presentation presentation threshold).Smaller
+          (progress BranchState Presentation presentation data).Smaller
             smaller object →
-          Graph.MinimumDegreeAtLeast threshold smaller →
-          Graph.HasCycleWithLength LengthOK smaller)
+          Graph.MinimumDegreeAtLeast data.threshold smaller →
+          Graph.HasCycleWithLength data.LengthOK smaller)
   | .returnAvoidance, object =>
       (∀ dart : object.graph.Dart,
         Disjoint (Graph.returnLengthSet object dart)
-          (Graph.shiftedAcceptedSet LengthOK))
+          (Graph.shiftedAcceptedSet data.LengthOK))
   | .noProperBaseline, object =>
       (∀ subgraph : Graph.ProperSubgraph object,
-        ¬ Graph.MinimumDegreeAtLeast threshold subgraph.value)
+        ¬ Graph.MinimumDegreeAtLeast data.threshold subgraph.value)
   | .tightEndpoint, object =>
       (∀ dart : object.graph.Dart,
-        object.degree dart.fst = threshold ∨
-          object.degree dart.snd = threshold)
+        object.degree dart.fst = data.threshold ∨
+          object.degree dart.snd = data.threshold)
   | .slackIndependent, object =>
       (∀ left right : object.Vertex,
-        threshold < object.degree left →
-        threshold < object.degree right →
+        data.threshold < object.degree left →
+        data.threshold < object.degree right →
         ¬ object.graph.Adj left right)
+  | .uncompressible, object =>
+      (∀ support : Finset object.Vertex,
+        ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object support)
+  | .maximalPacking, object =>
+      (0 < object.windowPackingNumber data.windowOrder ∧
+        ∃ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing ∧
+            packing.card = object.windowPackingNumber data.windowOrder ∧
+            ∀ support : Finset object.Vertex,
+              object.InducesWindow data.windowOrder support →
+              ∃ member ∈ packing, ¬ Disjoint support member)
+  | .localAlgebra, _object =>
+      ((Graph.WindowCurvature.legalCodeList data.windowOrder).length =
+          (Graph.WindowCurvature.Labels data.windowOrder).card ∧
+        ∀ source middle target : Graph.WindowCurvature.Label data.windowOrder,
+          Graph.WindowCurvature.curvatureTwo source middle target = true ↔
+            Graph.WindowCurvature.Safe 1 source middle ∧
+              Graph.WindowCurvature.Safe 1 middle target ∧
+              ¬ Graph.WindowCurvature.Safe 2 source target)
+  | .surplusAbove, object =>
+      (data.surplusThreshold object.vertexCount <
+        object.degreeSurplus data.threshold)
+  | .surplusAtOrBelow, object =>
+      (object.degreeSurplus data.threshold ≤
+        data.surplusThreshold object.vertexCount)
+  | .barrierCap, object =>
+      (2 ^ (data.windowRate * object.windowPackingNumber data.windowOrder) ≤
+          Graph.skeletonBudget object ∧
+        ∀ family : Finset Nat, object.edgeCount ∈ family →
+          Graph.skeletonBudget object ≤
+            Graph.variableEdgeBudget object.vertexCount family)
+  | .barrierOverflow, object =>
+      (Graph.skeletonBudget object <
+        2 ^ (data.windowRate * object.windowPackingNumber data.windowOrder))
+  | .densityCap, object =>
+      (2 * (data.windowRate * object.windowPackingNumber data.windowOrder) ≤
+        (Graph.dyadicScaleCount object + 1) *
+          (data.threshold * object.vertexCount +
+            data.surplusThreshold object.vertexCount))
 
 /-- Audit names.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -105,17 +215,23 @@ def name : Key → Lean.Name
   | .noProperBaseline => `Hypostructure.Graph.Strategy.Spine.noProperBaseline
   | .tightEndpoint => `Hypostructure.Graph.Strategy.Spine.tightEndpoint
   | .slackIndependent => `Hypostructure.Graph.Strategy.Spine.slackIndependent
+  | .uncompressible => `Hypostructure.Graph.Strategy.Spine.uncompressible
+  | .maximalPacking => `Hypostructure.Graph.Strategy.Spine.maximalPacking
+  | .localAlgebra => `Hypostructure.Graph.Strategy.Spine.localAlgebra
+  | .surplusAbove => `Hypostructure.Graph.Strategy.Spine.surplusAbove
+  | .surplusAtOrBelow => `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow
+  | .barrierCap => `Hypostructure.Graph.Strategy.Spine.barrierCap
+  | .barrierOverflow => `Hypostructure.Graph.Strategy.Spine.barrierOverflow
+  | .densityCap => `Hypostructure.Graph.Strategy.Spine.densityCap
 
 /-- The value schema at a residual: the object-level statement, read at the
 residual's own object. -/
 def Value (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation)
-    (threshold : Nat) (LengthOK : Nat → Prop)
+    (Presentation : Type) (presentation : Presentation) (data : Data.{u})
     (k : Key)
     (input : Core.Strategy.ProblemInput
-      (problem BranchState Presentation presentation threshold)) : Type :=
-  PLift (Holds BranchState Presentation presentation threshold LengthOK k
-    input.object)
+      (problem BranchState Presentation presentation data)) : Type :=
+  PLift (Holds BranchState Presentation presentation data k input.object)
 
 theorem name_injective : Function.Injective name := by
   intro left right same
@@ -124,16 +240,15 @@ theorem name_injective : Function.Injective name := by
 /-- The spine's closed fact vocabulary.  Every value depends on the residual
 only through its object, so transport along a refinement is a rewrite. -/
 def vocabulary (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation)
-    (threshold : Nat) (LengthOK : Nat → Prop) :
+    (Presentation : Type) (presentation : Presentation) (data : Data.{u}) :
     FactVocabulary.{u + 1, v, 0, 0}
-      (problem BranchState Presentation presentation threshold) where
+      (problem BranchState Presentation presentation data) where
   Key := Key
   keyDecidableEq := inferInstance
   name := name
   name_injective := name_injective
   name_ne_closure := by intro key; cases key <;> decide
-  Value := Value BranchState Presentation presentation threshold LengthOK
+  Value := Value BranchState Presentation presentation data
   -- Every spine fact is `PLift` of a proposition, so its value type has at
   -- most one inhabitant: the fact is the statement, and the graph it speaks
   -- about is the residual's.
@@ -143,25 +258,22 @@ def vocabulary (BranchState : Graph.FiniteObject.{u} → Type v)
     ⟨by rw [show _new.object = _old.object from refinement]; exact value.down⟩
 
 /-- The spine's sole `FactSystem`.  It is a definition rather than an
-instance because the accepted length predicate is a parameter of the spine,
-not of the problem; a caller installs it with `letI` for the run it is
-compiling. -/
+instance because the registered `Data` is a parameter of the spine, not of the
+problem; a caller installs it with `letI` for the run it is compiling. -/
 noncomputable def factSystem
     (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation)
-    (threshold : Nat) (LengthOK : Nat → Prop) :
+    (Presentation : Type) (presentation : Presentation) (data : Data.{u}) :
     FactSystem
       (Core.Strategy.ProblemInput
-        (problem BranchState Presentation presentation threshold)) :=
+        (problem BranchState Presentation presentation data)) :=
   problemInputFactSystem
-    (vocabulary BranchState Presentation presentation threshold LengthOK)
+    (vocabulary BranchState Presentation presentation data)
 
 /-- The exact semantic keys, as callers name them. -/
 abbrev key (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation)
-    (threshold : Nat) (LengthOK : Nat → Prop) (k : Key) :
-    @FactKey _ _
-      (factSystem BranchState Presentation presentation threshold LengthOK) :=
+    (Presentation : Type) (presentation : Presentation) (data : Data.{u})
+    (k : Key) :
+    @FactKey _ _ (factSystem BranchState Presentation presentation data) :=
   FactVocabulary.WithClosure.fact k
 
 end Hypostructure.Graph.Strategy.Spine

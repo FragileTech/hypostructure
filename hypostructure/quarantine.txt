@@ -73,3 +73,9 @@ Hypostructure.PDE.Strategy.CounterexampleLocalization
 Hypostructure.PDE.Strategy.LocalClosureAlgebra
 Hypostructure.PDE.Strategy.Official.SealedDag
 Hypostructure.PDE.Strategy.Official.TotalExecutionBoundary
+Hypostructure.Core.Strategy.FiniteBottleneckClassification
+Hypostructure.Core.Strategy.FiniteDensityBudget
+Hypostructure.Graph.InducedPathWindowLedger
+Hypostructure.Graph.Strategy.Official.Features.SupportIncidenceLedger
+Hypostructure.Core.Strategy.CounterexampleReduction
+Hypostructure.Core.Strategy.CriticalModificationStructure

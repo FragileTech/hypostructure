@@ -67,6 +67,7 @@ import Hypostructure.Core.Strategy.FactOnlyStrategy
 import Hypostructure.Core.Strategy.MinimalCounterexampleScope
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Strategy.SpineRows
+import Hypostructure.Graph.Strategy.SpineRun
 import Hypostructure.Core.Strategy.FactManifest
 import Hypostructure.Fixtures.ExactLedger
 import Hypostructure.Fixtures.ExactExecution
@@ -92,7 +93,6 @@ import Hypostructure.Core.Strategy.BaselineDemandAccounting
 import Hypostructure.Core.Strategy.CanonicalPairResponseAccounting
 import Hypostructure.Core.Strategy.CanonicalCapacityTokenAccounting
 import Hypostructure.Core.Strategy.CoupledHomogeneousFibrePressure
-import Hypostructure.Core.Strategy.FiniteBottleneckClassification
 import Hypostructure.Core.EntropyPackingBudget
 import Hypostructure.Graph.Strategy.ColdBranchPreludeAggregation
 import Hypostructure.Core.NormalForm.ClassClosure
@@ -126,6 +126,7 @@ import Hypostructure.Routes.Accumulated
 import Hypostructure.Graph.Object
 import Hypostructure.Graph.Problem
 import Hypostructure.Graph.Finite
+import Hypostructure.Graph.FiniteEdgeBudget
 import Hypostructure.Graph.SupportComponents
 import Hypostructure.Graph.Strategy
 import Hypostructure.Graph.SupportCharge
@@ -137,7 +138,6 @@ import Hypostructure.Graph.Induced
 import Hypostructure.Graph.InducedPath
 import Hypostructure.Graph.InducedPathMaximalPacking
 import Hypostructure.Graph.PackedWindowRealization
-import Hypostructure.Graph.InducedPathWindowLedger
 import Hypostructure.Graph.External.HegdeSandeepShashank
 import Hypostructure.Graph.Deletion
 import Hypostructure.Graph.Progress
@@ -172,6 +172,7 @@ import Hypostructure.Graph.CT15
 import Hypostructure.Graph.CT16
 import Hypostructure.Graph.CT17
 import Hypostructure.Graph.RootedReturn
+import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.SameTokenBlockerRoles
 import Hypostructure.Graph.ReceiverLoad
 import Hypostructure.Graph.ReceiverExhaustion
@@ -209,15 +210,12 @@ import Hypostructure.Graph.CutParity
 -- checked.  See `quarantine.txt`.
 
 import Hypostructure.Core.Contract
-import Hypostructure.Core.Strategy.CounterexampleReduction
 import Hypostructure.Core.Strategy.FiniteBarrierEnumeration
-import Hypostructure.Core.Strategy.FiniteDensityBudget
 import Hypostructure.Core.Strategy.FiniteStateCapacityTheorems
 import Hypostructure.Core.Strategy.MinimalSubobjectExclusion
 import Hypostructure.Core.Strategy.Route8CarrierClosure
 import Hypostructure.Core.Strategy.TargetAlgebraReduction
 import Hypostructure.Core.Strategy.Validate
-import Hypostructure.Graph.Strategy.Official.Features.SupportIncidenceLedger
 import Hypostructure.Graph.WedgeLowerBound
 
 -- Rescued from the SequentialExtensionLedger quarantine boundary.

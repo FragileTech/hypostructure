@@ -344,39 +344,6 @@ structure CanonicalRouting {object : FiniteObject.{u}}
   application-owned finite trace order. -/
   canonical : Prop
 
-structure VisibleLoadLedger {object : FiniteObject.{u}}
-    {support : Support object} {profile : LoadCapacityProfile}
-    (routing : CanonicalRouting support profile) where
-  port : support.ReceiverVertex profile →
-    Finset (CompletionPort support profile)
-  visible : support.FullVertex profile → Prop
-  visible_decidable : ∀ vertex, Decidable (visible vertex)
-  visible_correct : Prop
-  silent_correct : Prop
-
-namespace VisibleLoadLedger
-
-variable {object : FiniteObject.{u}}
-variable {support : Support object}
-variable {profile : LoadCapacityProfile}
-variable {routing : CanonicalRouting support profile}
-
-noncomputable def visibleLoad
-    (ledger : VisibleLoadLedger routing)
-  (receiver : support.ReceiverVertex profile) : Nat := by
-  classical
-  exact (support.fullVertices profile |>.filter (fun full =>
-    routing.route full = receiver ∧ ledger.visible full)).card
-
-noncomputable def silentLoad
-    (ledger : VisibleLoadLedger routing)
-  (receiver : support.ReceiverVertex profile) : Nat := by
-  classical
-  exact (support.fullVertices profile |>.filter (fun full =>
-    routing.route full = receiver ∧ ¬ ledger.visible full)).card
-
-end VisibleLoadLedger
-
 structure RoutedLoad {object : FiniteObject.{u}}
     (profile : LoadCapacityProfile) (support : Support object) where
   /-- The canonical trace endpoint assigned to every full-load vertex. -/
