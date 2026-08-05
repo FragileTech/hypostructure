@@ -31,6 +31,18 @@ QUARANTINE = REPO / "hypostructure" / "quarantine.txt"
 # The one file allowed to declare the canonical ledger's API.
 CANONICAL = LIB / "Core" / "Residual" / "ExactLedger.lean"
 
+# The modules that constitute the single official API surface.  Only these may
+# name a ledger at all; everywhere else, a ledger-named declaration is a second
+# API no matter which form it takes.
+CANONICAL_API = {
+    CANONICAL,
+    LIB / "Core" / "Strategy" / "FactManifest.lean",
+    LIB / "Core" / "Strategy" / "ExactExecution.lean",
+    LIB / "Core" / "Strategy" / "ProblemResidual.lean",
+    LIB / "Core" / "Strategy" / "MinimalCounterexampleScope.lean",
+    LIB / "Core" / "Strategy" / "FactOnlyStrategy.lean",
+}
+
 # Modules whose new-API port is complete; everything reachable from the root
 # outside PDE is checked.
 CHECKED_PREFIXES = ("Hypostructure.Core.", "Hypostructure.Graph.",
@@ -48,15 +60,18 @@ NONCANONICAL_LEDGER = re.compile(
     r"[A-Za-z0-9_']*Ledger\b"
 )
 
-# Only a `structure` or `inductive` declares a carrier.  A `def` named
-# `...Ledger` is an accessor into one and disappears with it, so flagging those
-# would report the same violation twice.
+# Every declaration form, not just the carriers.  An accessor named
+# `...Ledger` is a second ledger API even when the record it reads lives
+# elsewhere, so `def`/`abbrev` are checked exactly like `structure`.
+#
 # Capture every declared name and let `NONCANONICAL_LEDGER` judge it; matching
 # the suffix here instead would miss a bare `structure Ledger`.
 DECLARES_LEDGER = re.compile(
     r"(?m)^\s*(?:private\s+|protected\s+|noncomputable\s+)*"
-    r"(?:structure|inductive)\s+([A-Za-z_][A-Za-z0-9_']*)\b"
+    r"(structure|inductive|abbrev|def)\s+([A-Za-z_][A-Za-z0-9_']*)\b"
 )
+
+CARRIER_FORMS = {"structure", "inductive"}
 
 
 def module_name(path: pathlib.Path) -> str:
@@ -111,14 +126,24 @@ def main() -> int:
                         f"into the canonical ledger namespace"
                     )
 
+        if path in CANONICAL_API:
+            continue
+
         for match in DECLARES_LEDGER.finditer(text):
-            name = match.group(1)
-            if NONCANONICAL_LEDGER.search(name):
-                number = text[: match.start()].count("\n") + 1
-                failures.append(
-                    f"{path.relative_to(REPO)}:{number}: parallel data carrier "
-                    f"`{name}` -- facts belong in Core.Residual.ExactLedger"
-                )
+            form, name = match.group(1), match.group(2)
+            if not NONCANONICAL_LEDGER.search(name):
+                continue
+            number = text[: match.start()].count("\n") + 1
+            kind = (
+                "parallel data carrier"
+                if form in CARRIER_FORMS
+                else "second ledger API"
+            )
+            failures.append(
+                f"{path.relative_to(REPO)}:{number}: {kind} `{name}` -- the only "
+                f"ledger is Core.Residual.ExactLedger and the only accessors are "
+                f"the ones it exposes"
+            )
 
     if failures:
         print("canonical-ledger gate: FAIL")
