@@ -27,11 +27,16 @@ universe u
 
 namespace FiniteObject
 
-/-- A support carries an induced window of the given order when its induced
-subgraph contains an induced path on that many vertices. -/
+/-- A support carries an induced window of the given order when it has exactly
+that many vertices and induces a path on them.
+
+The cardinality clause is the manuscript's own: `𝒫` is a family of induced
+*copies* of the window, so `|V(P)|` is the window order.  Without it a support
+could carry a window while being arbitrarily larger, and the packing's internal
+degree mass -- which `[28]`--`[29]` spends -- would not be determined. -/
 def InducesWindow (object : FiniteObject.{u}) (order : Nat)
     (support : Finset object.Vertex) : Prop :=
-  HasInducedPath (object.induce support) order
+  HasInducedPath (object.induce support) order ∧ support.card = order
 
 /-- A window support is nonempty once the registered order is.
 
@@ -40,7 +45,7 @@ induced subgraph's, and the path on a positive number of vertices has one. -/
 theorem nonempty_of_inducesWindow (object : FiniteObject.{u}) {order : Nat}
     (positive : 0 < order) {support : Finset object.Vertex}
     (window : object.InducesWindow order support) : support.Nonempty := by
-  obtain ⟨embedding⟩ := window
+  obtain ⟨⟨embedding⟩, _⟩ := window
   exact ⟨(embedding ⟨0, positive⟩).1, (embedding ⟨0, positive⟩).2⟩
 
 /-- A vertex-disjoint family of induced windows. -/
@@ -172,13 +177,16 @@ theorem inducedPathFree_of_forall_not_inducesWindow (object : FiniteObject.{u})
   rintro ⟨embedding⟩
   letI : FinEnum object.Vertex := object.vertices
   classical
-  refine empty (Finset.univ.image fun index : Fin order => embedding index) ?_
-  refine ⟨⟨⟨fun index => ⟨embedding index, ?_⟩, ?_⟩, ?_⟩⟩
-  · exact Finset.mem_image.mpr ⟨index, Finset.mem_univ index, rfl⟩
-  · intro left right same
-    exact embedding.injective (congrArg Subtype.val same)
-  · intro left right
-    exact embedding.map_adj_iff
+  refine empty (Finset.univ.image fun index : Fin order => embedding index)
+    ⟨?_, ?_⟩
+  · refine ⟨⟨⟨fun index => ⟨embedding index, ?_⟩, ?_⟩, ?_⟩⟩
+    · exact Finset.mem_image.mpr ⟨index, Finset.mem_univ index, rfl⟩
+    · intro left right same
+      exact embedding.injective (congrArg Subtype.val same)
+    · intro left right
+      exact embedding.map_adj_iff
+  · rw [Finset.card_image_of_injective _ embedding.injective, Finset.card_univ,
+      Fintype.card_fin]
 
 end FiniteObject
 

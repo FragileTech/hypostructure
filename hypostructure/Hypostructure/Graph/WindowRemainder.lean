@@ -108,17 +108,22 @@ theorem inducedPathFree_induce_of_forall
   classical
   rintro ⟨embedding⟩
   letI : FinEnum object.Vertex := object.vertices
+  have inject : Function.Injective
+      fun index : Fin order => (embedding index).1 := by
+    intro left right same
+    exact embedding.injective (Subtype.ext same)
   refine empty (Finset.univ.image fun index : Fin order => (embedding index).1)
-    (fun vertex member => ?_) ?_
+    (fun vertex member => ?_) ⟨?_, ?_⟩
   · obtain ⟨index, _, rfl⟩ := Finset.mem_image.mp member
     exact (embedding index).2
   · refine ⟨⟨⟨fun index => ⟨(embedding index).1, ?_⟩, ?_⟩, ?_⟩⟩
     · exact Finset.mem_image.mpr ⟨index, Finset.mem_univ index, rfl⟩
     · intro left right same
-      exact embedding.injective
-        (Subtype.ext (congrArg Subtype.val same : _ = _))
+      exact inject (congrArg Subtype.val same : _ = _)
     · intro left right
       exact embedding.map_adj_iff
+  · rw [Finset.card_image_of_injective _ inject, Finset.card_univ,
+      Fintype.card_fin]
 
 /-- **`sec:remainder`, second assertion (`def:internal-3-core` is empty).**
 
@@ -147,6 +152,24 @@ theorem not_baseline_induce_of_subset_remainderSupport
       (object.inducedPathFree_induce_of_forall fun inner contained =>
         object.not_inducesWindow_of_subset_remainderSupport maximal
           (contained.trans inside))))
+
+/-- `|W| = order · p`: the packed windows are pairwise disjoint and each has
+exactly the window order many vertices, so the covered support is the packing
+size times the order.  This is the manuscript's `|W| = 13p₁₃`, with neither
+numeral written. -/
+theorem windowSupport_card_eq (object : FiniteObject.{u}) {order : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    (valid : object.IsWindowPacking order packing) :
+    (windowSupport packing).card = order * packing.card := by
+  letI : FinEnum object.Vertex := object.vertices
+  classical
+  rw [windowSupport, Finset.card_biUnion]
+  · have each : ∀ member ∈ packing, (id member).card = order :=
+      fun member present => (valid.1 member present).2
+    rw [Finset.sum_congr rfl each, Finset.sum_const, smul_eq_mul,
+      Nat.mul_comm]
+  · intro left leftMember right rightMember distinct
+    exact valid.2 left leftMember right rightMember distinct
 
 end FiniteObject
 

@@ -149,6 +149,59 @@ theorem boundaryIncidence_le_of_internal_mass (object : FiniteObject.{u})
       baseline]
   exact Nat.sub_le_sub_left mass _
 
+/-! ## The two sides of one incidence count -/
+
+/-- A vertex's neighbours split between a support and its complement. -/
+theorem internalDegree_add_internalDegree_compl (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (vertex : object.Vertex) :
+    object.internalDegree support vertex +
+        object.internalDegree
+          (by letI : FinEnum object.Vertex := object.vertices
+              classical
+              exact Finset.univ \ support) vertex =
+      object.degree vertex := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  classical
+  have rewrite :
+      object.graph.neighborFinset vertex ∩ (Finset.univ \ support) =
+        object.graph.neighborFinset vertex \ support := by
+    ext other; simp
+  have split :
+      (object.graph.neighborFinset vertex ∩ support).card +
+          (object.graph.neighborFinset vertex ∩ (Finset.univ \ support)).card =
+        (object.graph.neighborFinset vertex).card := by
+    rw [rewrite, Nat.add_comm, Finset.card_sdiff_add_card_inter]
+  simpa [internalDegree, FiniteObject.degree] using split
+
+/-- **The boundary incidence is symmetric.**  Counting the incidences that
+leave a support from inside it, and counting them from outside, give the same
+number: both are the number of adjacent ordered pairs across the cut.
+
+This is what lets `def⁺(R) ≤ e(R,W)`, proved on the remainder side, chain with
+the capacity bound, proved on the window side. -/
+theorem sum_internalDegree_comm (object : FiniteObject.{u})
+    (left right : Finset object.Vertex) :
+    ∑ vertex ∈ left, object.internalDegree right vertex =
+      ∑ vertex ∈ right, object.internalDegree left vertex := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  classical
+  have expand : ∀ (source target : Finset object.Vertex),
+      ∑ vertex ∈ source, object.internalDegree target vertex =
+        ∑ vertex ∈ source, ∑ other ∈ target,
+          (if object.graph.Adj vertex other then 1 else 0) := by
+    intro source target
+    refine Finset.sum_congr rfl fun vertex _ => ?_
+    rw [internalDegree, Finset.inter_comm,
+      ← Finset.filter_mem_eq_inter, Finset.card_filter]
+    exact Finset.sum_congr rfl fun other _ => by
+      simp [SimpleGraph.mem_neighborFinset]
+  rw [expand, expand, Finset.sum_comm]
+  exact Finset.sum_congr rfl fun vertex _ =>
+    Finset.sum_congr rfl fun other _ => by
+      simp [SimpleGraph.adj_comm]
+
 end FiniteObject
 
 end Hypostructure.Graph
