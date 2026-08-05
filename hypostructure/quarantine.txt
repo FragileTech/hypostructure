@@ -79,3 +79,8 @@ Hypostructure.Graph.InducedPathWindowLedger
 Hypostructure.Graph.Strategy.Official.Features.SupportIncidenceLedger
 Hypostructure.Core.Strategy.CounterexampleReduction
 Hypostructure.Core.Strategy.CriticalModificationStructure
+Hypostructure.CT3.ResidualRoute
+Hypostructure.Core.Finite.ScheduleEventRoute
+Hypostructure.Graph.CT3
+Hypostructure.Graph.Strategy
+Hypostructure.Routes.Accumulated

@@ -29,7 +29,6 @@ import Hypostructure.Core.Finite.CertifiedTableBounds
 import Hypostructure.Core.Finite.Flatten
 import Hypostructure.Core.Finite.ScheduleEvents
 import Hypostructure.Core.Finite.ColdCorridor
-import Hypostructure.Core.Finite.ScheduleEventRoute
 import Hypostructure.Core.Finite.ScaleRoute
 import Hypostructure.Core.Finite.SelectedSchedule
 import Hypostructure.Core.FiniteTriangle
@@ -105,7 +104,6 @@ import Hypostructure.CT3.RunSchedule
 import Hypostructure.CT3.Schedule
 import Hypostructure.CT3.SameInterface
 import Hypostructure.CT3.ScheduleWitness
-import Hypostructure.CT3.ResidualRoute
 import Hypostructure.CT4.Automation
 import Hypostructure.CT5.Automation
 import Hypostructure.CT6.Automation
@@ -122,13 +120,11 @@ import Hypostructure.CT16.Automation
 import Hypostructure.CT17.Automation
 import Hypostructure.CTAdapters
 import Hypostructure.Routes.Registry
-import Hypostructure.Routes.Accumulated
 import Hypostructure.Graph.Object
 import Hypostructure.Graph.Problem
 import Hypostructure.Graph.Finite
 import Hypostructure.Graph.FiniteEdgeBudget
 import Hypostructure.Graph.SupportComponents
-import Hypostructure.Graph.Strategy
 import Hypostructure.Graph.SupportCharge
 import Hypostructure.Graph.Budget
 import Hypostructure.Graph.NegativeSupport
@@ -156,7 +152,6 @@ import Hypostructure.Graph.Response
 import Hypostructure.Graph.TargetClosure
 import Hypostructure.Graph.CT1
 import Hypostructure.Graph.CT2
-import Hypostructure.Graph.CT3
 import Hypostructure.Graph.CT4
 import Hypostructure.Graph.CT5
 import Hypostructure.Graph.CT6
@@ -221,3 +216,17 @@ import Hypostructure.Graph.WedgeLowerBound
 -- Rescued from the SequentialExtensionLedger quarantine boundary.
 import Hypostructure.Graph.FinitePathSelection
 import Hypostructure.Graph.Strategy.InterfaceReplacement
+
+-- Rescued from the Core.Routing stage-deletion boundary: legal modules that
+-- were reachable only through a quarantined one.
+import Hypostructure.Core.RoutingFocus
+import Hypostructure.Core.Strategy.HomogeneousBottleneck
+import Hypostructure.Core.Strategy.LocalizedCompressionClosure
+import Hypostructure.Graph.Strategy.AtomContextObstructionDichotomy
+import Hypostructure.Graph.Strategy.CounterexampleLocalization
+import Hypostructure.Graph.Strategy.FiniteStateCapacity
+import Hypostructure.Graph.Strategy.InducedPathPresentation
+import Hypostructure.Graph.Strategy.MinimumDegreeBaseline
+import Hypostructure.Graph.Strategy.ObstructionPackingClosure
+import Hypostructure.Graph.Strategy.SurplusAccounting
+import Hypostructure.Graph.Strategy.TypeBFanClosure

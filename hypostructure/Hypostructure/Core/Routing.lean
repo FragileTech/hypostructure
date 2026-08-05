@@ -10,7 +10,6 @@ No successor or branch result is accepted from application code.
 
 namespace Hypostructure.Core.Routing
 
-open Hypostructure.Core.Residual
 
 universe uSource uInput uOutcome uTrace uSeed uBlocked uResidual
 
@@ -136,65 +135,6 @@ structure Result {edge : Edge} {Source : Type uSource}
         Execution.Result transition.profile.Target source
           (transition.profile.targetInput source seed)
     | .disabled _ => PUnit
-
-/-- One route is one extension of the literal complete incoming stage. -/
-abbrev Stage {edge : Edge} {Source : Type uSource}
-    (transition : Transition.{uSource, uInput, uOutcome, uTrace, uSeed, uBlocked}
-      edge Source) :=
-  Residual.Ledger.Extension Source (Result transition)
-
-/-- Execute semantic discovery and, on the enabled outcome, invoke the public
-target executor internally. -/
-def advance {edge : Edge} {Source : Type uSource}
-    (transition : Transition.{uSource, uInput, uOutcome, uTrace, uSeed, uBlocked}
-      edge Source)
-    (source : Source) : Stage transition :=
-  match equation : transition.profile.discover source with
-  | .enabled seed =>
-      let executed := Execution.run transition.profile.executor source
-        (transition.profile.targetInput source seed)
-      Residual.Ledger.extend source <| .mk
-        (Provenance.record edge) (.enabled seed) equation.symm
-        executed.added.result
-  | .disabled blocked =>
-      Residual.Ledger.extend source <| .mk
-        (Provenance.record edge) (.disabled blocked) equation.symm PUnit.unit
-
-@[simp] theorem advance_previous {edge : Edge} {Source : Type uSource}
-    (transition : Transition.{uSource, uInput, uOutcome, uTrace, uSeed, uBlocked}
-      edge Source)
-    (source : Source) : (advance transition source).previous = source := by
-  unfold advance
-  split <;> rfl
-
-/-- The stored discovery is exactly the registered semantic discovery. -/
-theorem advance_canonical {edge : Edge} {Source : Type uSource}
-    (transition : Transition.{uSource, uInput, uOutcome, uTrace, uSeed, uBlocked}
-      edge Source)
-    (source : Source) :
-    (advance transition source).added.discovery =
-      transition.profile.discover (advance transition source).previous :=
-  (advance transition source).added.canonical
-
-/-- The runtime provenance record is the edge carried by the result type. -/
-theorem advance_provenance {edge : Edge} {Source : Type uSource}
-    (transition : Transition.{uSource, uInput, uOutcome, uTrace, uSeed, uBlocked}
-      edge Source)
-    (source : Source) :
-    (advance transition source).added.provenance.recorded = edge :=
-  (advance transition source).added.provenance.exact_edge
-
-/-- Routing over an accumulated stage preserves its stable residual. -/
-@[simp] theorem advance_residual {edge : Edge} {Source : Type uSource}
-    {ResidualType : Type uResidual}
-    [Residual.HasResidual Source ResidualType]
-    (transition : Transition.{uSource, uInput, uOutcome, uTrace, uSeed, uBlocked}
-      edge Source)
-    (source : Source) :
-    Residual.residualOf (advance transition source) =
-      Residual.residualOf source := by
-  unfold advance
-  split <;> rfl
 
 /-- Proof object used by acyclic route schedules and obstruction reduction. -/
 structure StrictRankDecrease (sourceRank targetRank : Nat) : Prop where
