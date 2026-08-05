@@ -603,10 +603,13 @@ off the residual rather than from a fact. -/
     (distinct : remainderNormalized ≠ boundaryDemand)
     (encode : (input : Input BranchState Presentation presentation data) →
       (∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
         input.object.positiveDeficiency
-            (input.object.remainderSupport packing) data.threshold ≤
-          input.object.boundaryIncidence
-            (input.object.remainderSupport packing)) →
+              (input.object.remainderSupport packing) data.threshold +
+            2 * (data.windowOrder - 1) * packing.card ≤
+          data.threshold * (data.windowOrder * packing.card) +
+            input.object.ambientSurplus
+              (Graph.FiniteObject.windowSupport packing) data.threshold) →
       boundaryDemand.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.boundaryDemand
@@ -614,9 +617,8 @@ off the residual rather than from a fact. -/
     (fun inputs =>
       let object := inputs.current.object
       .cons (key := boundaryDemand)
-        (encode inputs.current fun packing =>
-          object.positiveDeficiency_le_boundaryIncidence
-            (object.remainderSupport packing) data.threshold
+        (encode inputs.current fun packing valid =>
+          object.positiveDeficiency_add_internal_mass_le valid
             (fun vertex => le_trans inputs.current.baseline
               (object.minDegree_le_degree vertex)))
         .nil)

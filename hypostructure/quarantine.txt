@@ -316,3 +316,8 @@ Hypostructure.Core.ClosedLedger.Quotient
 Hypostructure.Core.Strategy.Official.Features.DeletionFanAccounting
 Hypostructure.Graph.Strategy.Official.Features.DeletionFanIncidence
 Hypostructure.Graph.TypeBOpenPorts
+Hypostructure.Core.Strategy.BoundaryDemandAccountingSemantics
+Hypostructure.Core.Strategy.FiniteStateCapacitySemantics
+Hypostructure.Core.Strategy.LocalSupplyLowerBoundSemantics
+Hypostructure.Core.Strategy.SupportComplementNormalizationSemantics
+Hypostructure.Graph.Strategy.FiniteStateCapacity

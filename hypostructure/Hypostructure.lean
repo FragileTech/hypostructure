@@ -111,4 +111,5 @@ import Hypostructure.Graph.Strategy.InterfaceReplacement
 
 -- Rescued from the Core.Routing stage-deletion boundary: legal modules that
 -- were reachable only through a quarantined one.
-import Hypostructure.Graph.Strategy.FiniteStateCapacity
+import Hypostructure.Core.DependentOwnerGlueCapacity
+import Hypostructure.Core.Strategy.ObstructionPackingSemantics

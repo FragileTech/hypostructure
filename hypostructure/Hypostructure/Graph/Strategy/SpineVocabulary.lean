@@ -9,6 +9,7 @@ import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.WindowPacking
 import Hypostructure.Graph.WindowRemainder
 import Hypostructure.Graph.BoundaryDemand
+import Hypostructure.Graph.WindowInternalMass
 import Hypostructure.Graph.WindowCurvatureCode
 import Hypostructure.Graph.Strategy.InterfaceReplacement
 
@@ -228,13 +229,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             ¬ Graph.MinimumDegreeAtLeast data.threshold
               (object.induce support))
   | .boundaryDemand, object =>
-      -- `def⁺(R) ≤ e(R,W)`: every deficiency inside the remainder is paid for
-      -- by an incidence that leaves it.  No near-cubic hypothesis, and the
-      -- statement holds at every packing, so none has to travel here.
+      -- `lem:surplus-aware-window-stub`, subtraction-free:
+      --   `def⁺(R) + 2(order−1)·p ≤ δ·order·p + σ_W`,
+      -- i.e. `def⁺(R) ≤ e(R,W) ≤ (δ·order − 2(order−1))·p + σ_W`, which at the
+      -- registered presentation is `def⁺(R) ≤ 15p₁₃ + σ_W`.  No near-cubic
+      -- hypothesis, and the statement holds at every packing, so none travels.
       (∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
         object.positiveDeficiency (object.remainderSupport packing)
-            data.threshold ≤
-          object.boundaryIncidence (object.remainderSupport packing))
+              data.threshold +
+            2 * (data.windowOrder - 1) * packing.card ≤
+          data.threshold * (data.windowOrder * packing.card) +
+            object.ambientSurplus (Graph.FiniteObject.windowSupport packing)
+              data.threshold)
 
 /-- Audit names.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
