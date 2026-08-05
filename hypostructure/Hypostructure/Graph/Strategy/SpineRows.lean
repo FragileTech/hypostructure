@@ -581,4 +581,44 @@ the derivation consumes. -/
                 data.freeForcesTarget avoids maximal inside⟩))
         .nil)
 
+/-! ## Nodes `[28]`--`[29]`: boundary-demand accounting
+
+`def:deficiency-surplus` measures external degree demand by positive
+deficiency, and `lem:surplus-aware-window-stub`'s first display bounds it by
+the boundary incidences:
+
+  `def⁺(R) ≤ e(R,W)`.
+
+The manuscript's argument, verbatim: on the standing baseline every remainder
+vertex already has ambient degree at least `δ`, so it is deficient *inside* `R`
+only because some of its incidences leave.  Writing `d_G(v) = d_R(v) + e_v`
+gives `max{0, δ − d_R(v)} ≤ e_v` pointwise; summing over `R` gives the claim.
+
+No near-cubic hypothesis is used -- the manuscript is explicit that this half
+needs none -- so the row consumes only the standing baseline, which it reads
+off the residual rather than from a fact. -/
+@[reducible] noncomputable def boundaryDemandRow
+    (remainderNormalized boundaryDemand :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : remainderNormalized ≠ boundaryDemand)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ packing : Finset (Finset input.object.Vertex),
+        input.object.positiveDeficiency
+            (input.object.remainderSupport packing) data.threshold ≤
+          input.object.boundaryIncidence
+            (input.object.remainderSupport packing)) →
+      boundaryDemand.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.boundaryDemand
+    (rowManifest remainderNormalized boundaryDemand distinct)
+    (fun inputs =>
+      let object := inputs.current.object
+      .cons (key := boundaryDemand)
+        (encode inputs.current fun packing =>
+          object.positiveDeficiency_le_boundaryIncidence
+            (object.remainderSupport packing) data.threshold
+            (fun vertex => le_trans inputs.current.baseline
+              (object.minDegree_le_degree vertex)))
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

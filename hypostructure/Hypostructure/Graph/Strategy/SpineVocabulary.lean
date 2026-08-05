@@ -8,6 +8,7 @@ import Hypostructure.Graph.FiniteEdgeBudget
 import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.WindowPacking
 import Hypostructure.Graph.WindowRemainder
+import Hypostructure.Graph.BoundaryDemand
 import Hypostructure.Graph.WindowCurvatureCode
 import Hypostructure.Graph.Strategy.InterfaceReplacement
 
@@ -132,6 +133,9 @@ inductive Key where
   /-- Nodes `[25]`--`[27]`: the remainder of a maximal packing carries no
   window and no subgraph meeting the baseline (`sec:remainder`). -/
   | remainderNormalized
+  /-- Nodes `[28]`--`[29]`: the remainder's positive deficiency is supplied by
+  its boundary incidences (`lem:surplus-aware-window-stub`). -/
+  | boundaryDemand
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -223,6 +227,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           ¬ object.InducesWindow data.windowOrder support ∧
             ¬ Graph.MinimumDegreeAtLeast data.threshold
               (object.induce support))
+  | .boundaryDemand, object =>
+      -- `def⁺(R) ≤ e(R,W)`: every deficiency inside the remainder is paid for
+      -- by an incidence that leaves it.  No near-cubic hypothesis, and the
+      -- statement holds at every packing, so none has to travel here.
+      (∀ packing : Finset (Finset object.Vertex),
+        object.positiveDeficiency (object.remainderSupport packing)
+            data.threshold ≤
+          object.boundaryIncidence (object.remainderSupport packing))
 
 /-- Audit names.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -242,6 +254,7 @@ def name : Key → Lean.Name
   | .densityCap => `Hypostructure.Graph.Strategy.Spine.densityCap
   | .remainderNormalized =>
       `Hypostructure.Graph.Strategy.Spine.remainderNormalized
+  | .boundaryDemand => `Hypostructure.Graph.Strategy.Spine.boundaryDemand
 
 /-- The value schema at a residual: the object-level statement, read at the
 residual's own object. -/

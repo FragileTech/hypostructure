@@ -133,11 +133,17 @@ variable (targetInvariant : Core.TargetInvariant
     (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
 
+/-- Nodes `[28]`--`[29]`. -/
+@[reducible] noncomputable def boundaryDemand :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  boundaryDemandRow (K .remainderNormalized) (K .boundaryDemand) (by simp)
+    (fun _input value => ⟨value⟩)
+
 end Rows
 
 /-- The key index of a ledger that has completed the block. -/
 abbrev completedKeys : FactKeys (Input BranchState Presentation presentation data) :=
-  [K .remainderNormalized, K .densityCap, K .barrierCap, K .surplusAtOrBelow, K .localAlgebra,
+  [K .boundaryDemand, K .remainderNormalized, K .densityCap, K .barrierCap, K .surplusAtOrBelow, K .localAlgebra,
     K .maximalPacking, K .uncompressible, K .tightEndpoint,
     K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
     K .selection]
@@ -225,9 +231,13 @@ noncomputable def run
       | .left capHistory =>
           -- Nodes `[22]`--`[24]`: spend the retained cap.
           -- Nodes `[25]`--`[27]`: normalize the packed-window remainder.
+          -- Nodes `[25]`--`[29]`: normalize the remainder, then account for
+          -- its boundary demand.
           exact .complete
-            ((remainderNormalization (data := data)).run
-              ((densityBudget (data := data)).run capHistory (by simp))
+            ((boundaryDemand (data := data)).run
+              ((remainderNormalization (data := data)).run
+                ((densityBudget (data := data)).run capHistory (by simp))
+                (by simp))
               (by simp))
 
 /-! ## What the run leaves behind -/
@@ -243,7 +253,8 @@ theorem complete_audit_facts
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected completedKeys) :
     (ExactLedger.audit history).facts =
-      [`Hypostructure.Graph.Strategy.Spine.remainderNormalized,
+      [`Hypostructure.Graph.Strategy.Spine.boundaryDemand,
+        `Hypostructure.Graph.Strategy.Spine.remainderNormalized,
         `Hypostructure.Graph.Strategy.Spine.densityCap,
         `Hypostructure.Graph.Strategy.Spine.barrierCap,
         `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow,
