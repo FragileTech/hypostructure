@@ -38,22 +38,19 @@ instance : FactSystem Residual where
     | .nonnegative, residual => PLift (0 ≤ residual.value)
     | .selfEqual, residual => PLift (residual.value = residual.value)
     | .contradiction, _ => ClosureEvidence
+  value_subsingleton := by
+    intro key residual
+    cases key <;>
+      exact ⟨fun left right => by
+        first
+          | exact left.contradiction.elim
+          | (cases left; cases right; rfl)⟩
   transport := by
     intro key new old refinement value
     cases key with
     | nonnegative => exact ⟨Nat.zero_le _⟩
     | selfEqual => exact ⟨rfl⟩
     | contradiction => exact value
-  transport_refl := by
-    intro key residual value
-    cases key with
-    | nonnegative | selfEqual => exact Subsingleton.elim _ _
-    | contradiction => exact False.elim value.contradiction
-  transport_trans := by
-    intro key new middle old newMiddle middleOld value
-    cases key with
-    | nonnegative | selfEqual => exact Subsingleton.elim _ _
-    | contradiction => exact False.elim value.contradiction
   closureKey := .contradiction
   closure_name := rfl
   closureValue _ evidence := evidence

@@ -63,19 +63,15 @@ structure FactVocabulary (P : Core.Problem.{uAmbient, uBranch}) where
   /-- No vocabulary key may impersonate the reserved closure name. -/
   name_ne_closure : ∀ key, name key ≠ Core.Residual.closureFactName
   Value : Key → Strategy.ProblemInput P → Sort (uValue + 1)
-  /-- Every fact stays applicable on a descendant residual. -/
+  /-- A fact value carries no data; see `FactSystem.value_subsingleton`.  A
+  vocabulary states what its facts *mean*, and the residual carries what they
+  are about. -/
+  value_subsingleton : ∀ (key : Key) (input : Strategy.ProblemInput P),
+    Subsingleton (Value key input)
+  /-- Every fact stays applicable on a descendant residual.  Functoriality is
+  free from `value_subsingleton`, so it is not asked for here. -/
   transport : {key : Key} → {new old : Strategy.ProblemInput P} →
     new.object = old.object → Value key old → Value key new
-  /-- Transport is functorial, so a fact carried along a chain of refinements
-  is the fact carried along their composite.  Only the vocabulary author can
-  prove this: a value may be data rather than a proposition. -/
-  transport_refl : ∀ (key : Key) (input : Strategy.ProblemInput P)
-    (value : Value key input), transport rfl value = value
-  transport_trans : ∀ (key : Key) {new middle old : Strategy.ProblemInput P}
-    (new_middle : new.object = middle.object)
-    (middle_old : middle.object = old.object) (value : Value key old),
-    transport (new_middle.trans middle_old) value =
-      transport new_middle (transport middle_old value)
 
 namespace FactVocabulary
 
@@ -121,21 +117,17 @@ problem's vocabulary. -/
   Value
     | .fact key, input => vocabulary.Value key input
     | .closed, _ => ULift.{uValue, 0} ClosureEvidence
+  value_subsingleton := by
+    intro key input
+    cases key with
+    | fact key => exact vocabulary.value_subsingleton key input
+    -- `ClosureEvidence` carries a proof of `False`, so it is empty.
+    | closed => exact ⟨fun value => (value.down.contradiction).elim⟩
   transport := by
     intro key new old refinement value
     cases key with
     | fact key => exact vocabulary.transport refinement value
     | closed => exact value
-  transport_refl := by
-    intro key input value
-    cases key with
-    | fact key => exact vocabulary.transport_refl key input value
-    | closed => rfl
-  transport_trans := by
-    intro key _ _ _ new_middle middle_old value
-    cases key with
-    | fact key => exact vocabulary.transport_trans key new_middle middle_old value
-    | closed => rfl
   closureKey := .closed
   closure_name := rfl
   closureValue _ evidence := ULift.up evidence

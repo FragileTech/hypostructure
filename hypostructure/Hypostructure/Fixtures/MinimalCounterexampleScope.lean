@@ -48,13 +48,11 @@ abbrev vocabulary : FactVocabulary.{0, 0, 0, 0} problem where
   name_ne_closure := by intro key; cases key; decide
   Value := fun _ input =>
     PLift (input.object ≠ 0 ∧ ∀ smaller, smaller < input.object → smaller = 0)
+  value_subsingleton := fun _ _ => ⟨fun left right => by
+    cases left; cases right; rfl⟩
   transport := by
     intro _ new old refinement value
     exact ⟨refinement ▸ value.down⟩
-  transport_refl := by
-    intro _ _ _; exact Subsingleton.elim _ _
-  transport_trans := by
-    intro _ _ _ _ _ _ _; exact Subsingleton.elim _ _
 
 noncomputable instance : FactSystem (Core.Strategy.ProblemInput problem) :=
   problemInputFactSystem vocabulary

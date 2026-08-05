@@ -41,13 +41,26 @@ SEALED_TOPOLOGY_PREFIXES = (
     "Hypostructure.Core.Strategy.Dag.AfterCriticalModificationStructure",
 )
 
+# Any identifier ending in `Ledger` other than the canonical
+# `Core.Residual.ExactLedger`.  The exemption is matched against the *whole*
+# dotted path, so a namespaced shadow such as
+# `SupportComplementNormalization.ExactLedger` is still a parallel carrier and
+# is still rejected; only the bare name and its canonical qualifications are
+# allowed through.
+NONCANONICAL_LEDGER = re.compile(
+    r"(?<![\w.])"
+    r"(?!(?:Hypostructure\.)?(?:Core\.Residual\.)?ExactLedger\b)"
+    r"(?:[A-Za-z_][A-Za-z0-9_']*\.)*"
+    r"[A-Za-z0-9_']*Ledger\b"
+)
+
 FORBIDDEN_TYPE_PATTERNS = (
     re.compile(r"(?:^|\.)Core\.Residual\.Ledger(?:\.|\b)"),
     re.compile(r"(?:^|\.)Core\.Residual\.Query(?:\.|\b)"),
     re.compile(r"\bHasResidual\b"),
     re.compile(r"\bCapabilityStore\b"),
     re.compile(r"\bCapabilityFlow\b"),
-    re.compile(r"\b(?:Ledger|(?!ExactLedger\b)[A-Z][A-Za-z0-9_]*Ledger)\b"),
+    NONCANONICAL_LEDGER,
 )
 
 FORBIDDEN_PROOF_SOURCE = {
@@ -56,9 +69,7 @@ FORBIDDEN_PROOF_SOURCE = {
     "legacy residual instance": re.compile(r"\bHasResidual\b"),
     "parallel capability store": re.compile(r"\bCapabilityStore\b"),
     "parallel capability flow": re.compile(r"\bCapabilityFlow\b"),
-    "noncanonical ledger type": re.compile(
-        r"\b(?:Ledger|(?!ExactLedger\b)[A-Z][A-Za-z0-9_]*Ledger)\b"
-    ),
+    "noncanonical ledger type": NONCANONICAL_LEDGER,
     "direct ledger append": re.compile(r"\bExactLedger\.append\b"),
     "direct one-fact publication": re.compile(r"\bExactLedger\.publishFact\b"),
     "history reset": re.compile(r"\bExactLedger\.root\b"),

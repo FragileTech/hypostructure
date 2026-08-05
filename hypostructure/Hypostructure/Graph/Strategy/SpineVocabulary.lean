@@ -134,12 +134,13 @@ def vocabulary (BranchState : Graph.FiniteObject.{u} → Type v)
   name_injective := name_injective
   name_ne_closure := by intro key; cases key <;> decide
   Value := Value BranchState Presentation presentation threshold LengthOK
+  -- Every spine fact is `PLift` of a proposition, so its value type has at
+  -- most one inhabitant: the fact is the statement, and the graph it speaks
+  -- about is the residual's.
+  value_subsingleton := fun _ _ => ⟨fun left right => by
+    cases left; cases right; rfl⟩
   transport := fun {_key} {_new _old} refinement value =>
     ⟨by rw [show _new.object = _old.object from refinement]; exact value.down⟩
-  transport_refl := by
-    intro _ _ value; cases value; rfl
-  transport_trans := by
-    intro _ _ _ _ _ _ value; cases value; rfl
 
 /-- The spine's sole `FactSystem`.  It is a definition rather than an
 instance because the accepted length predicate is a parameter of the spine,

@@ -27,13 +27,9 @@ instance : FactSystem Residual where
   name | .contradiction => closureFactName
   name_injective := by intro left right same; cases left; cases right; rfl
   Value | .contradiction, _ => ClosureEvidence
+  value_subsingleton := fun _ _ =>
+    ⟨fun left _ => left.contradiction.elim⟩
   transport := by intro key new old refinement value; exact value
-  transport_refl := by
-    intro key residual value
-    exact False.elim value.contradiction
-  transport_trans := by
-    intro key new middle old newMiddle middleOld value
-    exact False.elim value.contradiction
   closureKey := .contradiction
   closure_name := rfl
   closureValue _ evidence := evidence

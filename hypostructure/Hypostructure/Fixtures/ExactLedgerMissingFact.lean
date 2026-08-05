@@ -31,19 +31,16 @@ instance : FactSystem Residual where
   Value
     | .missing, _ => Unit
     | .contradiction, _ => ClosureEvidence
+  value_subsingleton := by
+    intro key residual
+    cases key <;>
+      exact ⟨fun left right => by
+        first
+          | exact left.contradiction.elim
+          | (cases left; cases right; rfl)⟩
   transport := by
     intro key new old refinement value
     cases key <;> exact value
-  transport_refl := by
-    intro key residual value
-    cases key with
-    | missing => rfl
-    | contradiction => exact False.elim value.contradiction
-  transport_trans := by
-    intro key new middle old newMiddle middleOld value
-    cases key with
-    | missing => rfl
-    | contradiction => exact False.elim value.contradiction
   closureKey := .contradiction
   closure_name := rfl
   closureValue _ evidence := evidence

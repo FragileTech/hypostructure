@@ -17,7 +17,7 @@ of producer, row, and predecessor depth.
 
 namespace Hypostructure.Core.Residual
 
-universe uResidual uSubject uKey uValue
+universe uResidual uSubject uKey uValue w
 
 /-! ## Framework authority
 
@@ -94,17 +94,22 @@ class FactSystem
   name : Key -> Lean.Name
   name_injective : Function.Injective name
   Value : Key -> Residual -> Sort (uValue + 1)
+  /-- **A fact value carries no data.**  Every value type has at most one
+  inhabitant, so holding a fact tells a consumer that the statement is
+  established and nothing else: there is no component to read back, and no
+  choice a producer could encode into one.  Anything a step learns must
+  therefore live in the residual, where `Refines` and `subject_eq` govern how
+  it may change.
+
+  This is what makes the canonical ledger the single source of truth rather
+  than merely the intended one.  A record with an `origin`, a `payload`, a
+  `Summary`, or any other component is not a subsingleton, so it cannot be
+  installed as a fact vocabulary at all -- the parallel carrier fails to
+  elaborate instead of quietly coexisting with the ledger. -/
+  value_subsingleton : (key : Key) -> (residual : Residual) ->
+    Subsingleton (Value key residual)
   transport : {key : Key} -> {new old : Residual} ->
     RefinementSystem.Refines new old -> Value key old -> Value key new
-  transport_refl : (key : Key) -> (residual : Residual) ->
-    (value : Value key residual) ->
-    transport (RefinementSystem.refl residual) value = value
-  transport_trans : (key : Key) -> {new middle old : Residual} ->
-    (new_middle : RefinementSystem.Refines new middle) ->
-    (middle_old : RefinementSystem.Refines middle old) ->
-    (value : Value key old) ->
-    transport (RefinementSystem.trans new_middle middle_old) value =
-      transport new_middle (transport middle_old value)
   closureKey : Key
   closure_name : name closureKey = closureFactName
   closureValue : (residual : Residual) ->
@@ -118,6 +123,14 @@ instance
     [system : FactSystem.{uResidual, uSubject, uKey, uValue} Residual] :
     DecidableEq system.Key :=
   system.keyDecidableEq
+
+instance factValueSubsingleton
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [system : FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    (key : system.Key) (residual : Residual) :
+    Subsingleton (system.Value key residual) :=
+  system.value_subsingleton key residual
 
 /-- A semantic fact key from the domain's sole fact vocabulary. -/
 abbrev FactKey
@@ -152,6 +165,53 @@ def transport
   system.transport refinement value
 
 end FactKey
+
+/-! ### The transport laws
+
+Transport is a function between subsingletons, so its unit and composition
+laws hold for every domain and no vocabulary is asked to prove them.  They are
+stated here because the ledger's rebase and audit arguments cite them by
+name. -/
+
+theorem FactSystem.transport_refl
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    (key : FactKey Residual) (residual : Residual) (value : key.At residual) :
+    FactKey.transport (RefinementSystem.refl residual) value = value :=
+  Subsingleton.elim _ _
+
+theorem FactSystem.transport_trans
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    (key : FactKey Residual) {new middle old : Residual}
+    (new_middle : RefinementSystem.Refines new middle)
+    (middle_old : RefinementSystem.Refines middle old)
+    (value : key.At old) :
+    FactKey.transport (RefinementSystem.trans new_middle middle_old) value =
+      FactKey.transport new_middle (FactKey.transport middle_old value) :=
+  Subsingleton.elim _ _
+
+/-- **No fact is a side channel.**  Every reading of a fact value is constant
+in that value, so nothing a consumer computes from a fact depends on *which*
+proof it was handed -- only on the key and the residual, both of which are
+already public.  A producer therefore cannot smuggle a packing, a summary, a
+chosen witness, or any other datum to a downstream row by attaching it to a
+fact; the only thing that flows is the residual, and the only way it flows is
+`Refines`.
+
+This is the formal content of "the canonical ledger is the single source of
+truth", and it holds in every domain by construction. -/
+theorem FactKey.no_data_channel
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    {Observation : Sort w} {key : FactKey Residual} {residual : Residual}
+    (read : key.At residual -> Observation)
+    (left right : key.At residual) :
+    read left = read right :=
+  congrArg read (Subsingleton.elim left right)
 
 /-! ## Exact heterogeneous fact bundles -/
 
