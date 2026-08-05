@@ -171,6 +171,31 @@ theorem windowSupport_card_eq (object : FiniteObject.{u}) {order : Nat}
   · intro left leftMember right rightMember distinct
     exact valid.2 left leftMember right rightMember distinct
 
+/-- `|R| + |W| = n`: the remainder is the complement of the covered support, so
+the two counts exhaust the object.  This is the manuscript's
+`|R| = n − 13p₁₃`, written without subtraction. -/
+theorem remainderSupport_card_add_windowSupport_card (object : FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex)) :
+    (object.remainderSupport packing).card + (windowSupport packing).card =
+      object.vertexCount := by
+  letI : FinEnum object.Vertex := object.vertices
+  classical
+  have universal : (Finset.univ : Finset object.Vertex).card =
+      object.vertexCount := by
+    simp [FiniteObject.vertexCount, Finset.card_univ, FinEnum.card_eq_fintypeCard]
+  rw [remainderSupport, ← universal]
+  exact Finset.card_sdiff_add_card_eq_card (Finset.subset_univ _)
+
+/-- `|R| + order·p = n` at a packing: the two counts above, composed.  This is
+the form nodes `[55]`--`[56]` compare the packing density against. -/
+theorem remainderSupport_card_add_eq (object : FiniteObject.{u}) {order : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    (valid : object.IsWindowPacking order packing) :
+    (object.remainderSupport packing).card + order * packing.card =
+      object.vertexCount := by
+  rw [← object.windowSupport_card_eq valid]
+  exact object.remainderSupport_card_add_windowSupport_card packing
+
 end FiniteObject
 
 end Hypostructure.Graph

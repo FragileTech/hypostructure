@@ -1,133 +1,74 @@
 import Mathlib.Data.Nat.Choose.Basic
-import Hypostructure.Core.Finite.Enumeration
-import Hypostructure.Graph.Finite
+import Hypostructure.Graph.BoundaryDemand
 
 /-!
-# Wedge lower bound
+# The wedge lower bound
 
-Paper `lem:wedge-lower`'s core per-graph identity, proved directly (no
-dependency on the paper's asymptotic near-cubic-spine hypotheses, which only
-specialize this exact fact for the cubic baseline): for any registered
-baseline degree `k` (a problem's own registered threshold -- an explicit
-argument to every theorem below, never a literal baked into this file) with
-`k >= 3`, the number of length-two wedges (paths through a common centre,
-`C(d(v),2)` summed over vertices -- fixed by what a length-two wedge *is*,
-a choice of 2 neighbours, independent of any problem's baseline) plus twice
-the total deficiency below `k`, per vertex, is always at least `2k - 3`
-(the pointwise form); summed over the whole object this gives `W_2 + 2 def
-+ 3|V| >= 2k|V|` (`sharp_baseline_mul_vertexCount_le_...` below).
+`lem:wedge-lower`.  For a region `X` of a finite object, the number of internal
+length-two wedges is
 
-This is the SHARP form, not merely a sufficient one: `sharp_pointwise` below
-proves equality is achieved at `d = 2` and `d = 3` for *every* baseline
-`k >= 3`, not only at `k = 3`.  (An earlier version of this file only
-proved the weaker `k <= C(d,2) + 2*(k-d)`, which is true for every
-`k >= 3` but whose slack grows without bound as `k` grows -- e.g. at
-`k = 7` the tightest case gives `7 <= 11`, slack `4` -- and so does not
-capture the same sharp fact the paper's cubic argument relies on.  The
-`2k - 3` form here is tight at every valid baseline, matching what a
-different problem registering a larger baseline would actually need to
-reuse this fact for anything requiring sharpness, not just truth.)
+  `W₂(X) = Σ_{v∈X} C(d_X(v), 2)`,
 
-The `k >= 3` hypothesis itself is not an application-specific constant
-copied from the paper: `baseline_two_insufficient` and
-`baseline_one_insufficient` below *prove*, from this file's own
-definitions, that even the weak (non-sharp) bound is false at `k = 1` and
-`k = 2`, so `3` is derived here as the precise threshold the statement
-needs. -/
+a wedge being a choice of two distinct neighbours of a common centre *inside*
+`X`.  The lemma bounds it from below by the region's own size against the
+registered baseline:
+
+  `W₂(X) ≥ δ·|X| − 2·def⁺(X)`,
+
+stated here subtraction-free as `δ·|X| ≤ W₂(X) + 2·def⁺(X)`.
+
+The manuscript proves it by the degree count.  With `n_i` the number of
+vertices of internal degree `i`,
+
+  `W₂(X) − (δ|X| − 2def⁺(X)) = 3n₀ + n₁ + Σ_{i≥3}(C(i,2) − 3)n_i ≥ 0`
+
+at the manuscript's own baseline.  Every term of that identity is one vertex's
+contribution, so the argument is pointwise and the sum is the whole of it:
+`baseline_le_choose_two_add_two_mul_deficit` below is the per-vertex clause,
+with slack `3`, `1`, `0` at internal degrees `0`, `1`, `2` and `C(d,2) − 3`
+above them — the manuscript's four cases exactly.
+
+The baseline is a parameter, and `3` is not written as a value of it: the two
+insufficiency theorems below *prove*, from this file's own definitions, that the
+per-vertex clause fails at baseline `1` and at baseline `2`, so `3 ≤ δ` is
+derived here as the precise threshold the count needs rather than copied from a
+manuscript.  A spine registering a baseline already carries that hypothesis for
+an unrelated reason (Stirling's `⌈e⌉` in the skeleton budget); this file needs
+it a second time, and independently.
+
+Nothing here mentions components.  The manuscript states the bound for a
+component `C` of the remainder and then sums over components, using that
+`d_C = d_R` inside a component; the count below holds at *every* region, so
+both of its displayed inequalities — the componentwise one and its sum over
+`R` — are instances of one theorem, and no component decomposition has to be
+built to connect them.
+-/
 
 namespace Hypostructure.Graph
 
+open scoped BigOperators
+
+universe u
+
 namespace FiniteObject
 
-/-- Per-vertex deficiency below a registered baseline `k`, `(k - d(v))`
-truncated at zero (`Nat` subtraction), summed over the whole object -- the
-paper's atom deficiency `def(C)` at baseline `k`. -/
-def deficiencyAt (object : FiniteObject) (baseline : Nat) : Nat :=
-  (object.orderedVertices.map fun vertex => baseline - object.degree vertex).sum
+/-- **`W₂(X)`.**  The internal length-two wedges of a region: `C(d_X(v), 2)`
+summed over the region, where `d_X` counts only neighbours inside `X`. -/
+noncomputable def internalWedgeCount (object : FiniteObject.{u})
+    (support : Finset object.Vertex) : Nat :=
+  ∑ vertex ∈ support, (object.internalDegree support vertex).choose 2
 
-/-- Count of length-two wedges, `C(d(v),2)` summed over the whole object --
-`W_2(C) = sum_i C(i,2) n_i`, independent of any baseline. -/
-def wedgeCount (object : FiniteObject) : Nat :=
-  (object.orderedVertices.map fun vertex => (object.degree vertex).choose 2).sum
-
-/-- The literal unordered pairs of neighbours at one centre.  This is the
-finite Graph carrier whose cardinality is the corresponding summand in
-`wedgeCount`; it is derived solely from the incoming finite graph. -/
-noncomputable def wedgePairs (object : FiniteObject)
-    (centre : object.Vertex) : Finset (Finset object.Vertex) := by
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  exact (object.orderedNeighbors centre).toFinset.powersetCard 2
-
-/-- A raw length-two wedge is its centre together with one unordered pair of
-distinct neighbours.  No target response or rank outcome is stored here. -/
-abbrev WedgeCoordinate (object : FiniteObject) :=
-  Σ centre : object.Vertex,
-    { pair : Finset object.Vertex // pair ∈ object.wedgePairs centre }
-
-/-- Exact finite family of raw wedges of the incoming graph. -/
-noncomputable def wedgeFinset (object : FiniteObject) :
-    Finset object.WedgeCoordinate := by
-  classical
-  exact object.vertexFinset.sigma fun centre =>
-    (object.wedgePairs centre).attach
-
-/-- Deterministic exact CT member schedule for the raw wedge family. -/
-noncomputable def wedgeSchedule (object : FiniteObject) :
-    Core.Finite.Enumeration object.WedgeCoordinate := by
-  classical
-  exact Core.Finite.Enumeration.ofNodupList object.wedgeFinset.toList
-    object.wedgeFinset.nodup_toList
-
-/-- The exact carrier schedule agrees with the pre-existing numerical wedge
-observable, so retaining the schedule does not change the mathematics. -/
-theorem wedgeSchedule_card (object : FiniteObject) :
-    object.wedgeSchedule.card = object.wedgeCount := by
-  classical
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  calc
-    object.wedgeSchedule.card = object.wedgeFinset.card := by
-      change object.wedgeFinset.toList.length = object.wedgeFinset.card
-      exact object.wedgeFinset.length_toList
-    _ = ∑ centre ∈ object.vertexFinset,
-        (object.degree centre).choose 2 := by
-      rw [wedgeFinset, Finset.card_sigma]
-      apply Finset.sum_congr rfl
-      intro centre _centre_mem
-      rw [Finset.card_attach, wedgePairs, Finset.card_powersetCard]
-      congr 1
-      exact (List.toFinset_card_of_nodup
-        (object.orderedNeighbors_nodup centre)).trans
-          (object.orderedNeighbors_length centre)
-    _ = object.wedgeCount := by
-      rw [wedgeCount, ← List.sum_toFinset _ object.orderedVertices_nodup]
-      congr 1
-      ext vertex
-      simp [FiniteObject.vertexFinset]
-
-/-- `2 * d.choose 2 = d * (d - 1)` for every `d`, including `d = 0` (`Nat`
-subtraction truncates `0 - 1` to `0` on both sides). -/
+/-- `2·C(d,2) = d(d−1)` for every `d`, including `d = 0` (`Nat` subtraction
+truncates `0 − 1` to `0` on both sides). -/
 private theorem two_mul_choose_two (d : Nat) :
     2 * d.choose 2 = d * (d - 1) := by
   rw [Nat.choose_two_right, mul_comm]
   exact Nat.div_mul_cancel d.even_mul_pred_self.two_dvd
 
-/-- The threshold `baseline >= 3` is necessary, not merely sufficient: at
-`baseline = 1`, a single vertex of degree exactly `1` (zero deficiency,
-matching the baseline) has wedge count `0`, strictly below `1`. -/
-theorem baseline_one_insufficient :
-    ¬ (1 ≤ (1 : Nat).choose 2 + 2 * (1 - 1)) := by decide
-
-/-- Likewise at `baseline = 2`: a single vertex of degree exactly `2` (zero
-deficiency) has wedge count `C(2,2) = 1`, strictly below `2`. -/
-theorem baseline_two_insufficient :
-    ¬ (2 ≤ (2 : Nat).choose 2 + 2 * (2 - 2)) := by decide
-
-/-- Baseline-independent pointwise fact underlying the sharp bound: twice a
-vertex's own degree is absorbed by its own wedge count plus three units of
-slack, with equality at `d = 2` and `d = 3` (this is the exact source of
-the sharpness at every baseline -- the `2k - 3` bound below is this same
-fact merely relocated by a fixed shift, not a different, baseline-dependent
-computation). -/
+/-- The baseline-free core of the count: a vertex's own wedge contribution
+covers twice its degree up to three units of slack, with equality at `d = 2`
+and `d = 3`.  This is the manuscript's `3n₀ + n₁ + Σ_{i≥3}(C(i,2) − 3)n_i`
+read one vertex at a time. -/
 private theorem two_mul_le_choose_two_add_three (d : Nat) :
     2 * d ≤ d.choose 2 + 3 := by
   match d with
@@ -141,73 +82,67 @@ private theorem two_mul_le_choose_two_add_three (d : Nat) :
     rw [hsub] at h2
     nlinarith
 
-/-- Sharp pointwise form of the paper's proof, for an arbitrary registered
-baseline `k >= 3`: at any degree `d`, `2k - 3` (not merely `k`) is absorbed
-by a unit vertex's own wedge count plus twice its own deficiency below `k`.
-Split on whether `d` meets the baseline: at or above it, the deficiency
-vanishes and `d.choose 2` alone already covers `2k-3` (using `k >= 3`
-exactly where `k.choose 2 + 3 >= 2k` needs it, via
-`two_mul_le_choose_two_add_three` applied at `d = k` and monotonicity for
-`d > k`); below it, `two_mul_le_choose_two_add_three` applied at `d`
-directly supplies the bound, using the doubled deficiency to make up the
-remaining `2*(k-d)` gap between `2d` and `2k`. -/
-theorem sharp_pointwise
-    (baseline d : Nat) (baseline_ge : 3 ≤ baseline) :
-    2 * baseline ≤ d.choose 2 + 2 * (baseline - d) + 3 := by
-  rcases Nat.lt_or_ge d baseline with hlt | hle
-  · have h := two_mul_le_choose_two_add_three d
-    omega
-  · have hzero : baseline - d = 0 := by omega
-    rw [hzero, mul_zero]
-    have hmono : baseline.choose 2 ≤ d.choose 2 := Nat.choose_le_choose 2 hle
-    have hbase := two_mul_le_choose_two_add_three baseline
-    omega
+/-- The threshold `3 ≤ δ` is necessary, not merely sufficient: at `δ = 1` a
+vertex of internal degree exactly `1` is not deficient and contributes no
+wedge, so the per-vertex clause reads `1 ≤ 0`. -/
+theorem baseline_one_insufficient :
+    ¬ (1 ≤ (1 : Nat).choose 2 + 2 * (1 - 1)) := by decide
 
-/-- The weaker (non-sharp, but simpler to state) bound `baseline <= ...`
-used to be this file's only claim.  It is now a direct corollary of the
-sharp form (using `baseline_ge` to absorb the extra `baseline - 3 >= 0`
-slack), kept for callers that only need the plain lower bound. -/
+/-- Likewise at `δ = 2`: a vertex of internal degree exactly `2` is not
+deficient and contributes `C(2,2) = 1`, so the clause reads `2 ≤ 1`. -/
+theorem baseline_two_insufficient :
+    ¬ (2 ≤ (2 : Nat).choose 2 + 2 * (2 - 2)) := by decide
+
+/-- **The per-vertex clause of `lem:wedge-lower`** at a registered baseline
+`δ ≥ 3`: one vertex's own wedge contribution, together with twice its own
+deficiency below `δ`, always covers `δ`.
+
+Below the baseline the doubled deficiency makes up the gap between `2d` and
+`2δ`; at or above it the deficiency vanishes and `C(d,2)` alone suffices,
+which is where `3 ≤ δ` is spent. -/
 theorem baseline_le_choose_two_add_two_mul_deficit
     (baseline d : Nat) (baseline_ge : 3 ≤ baseline) :
     baseline ≤ d.choose 2 + 2 * (baseline - d) := by
-  have h := sharp_pointwise baseline d baseline_ge
-  omega
-
-/-- Paper `lem:wedge-lower`'s core per-object identity at a registered
-baseline `k >= 3`, in its sharp `2k - 3` form: the wedge count plus twice
-the `k`-deficiency, plus `3` per vertex, is at least `2k` times the vertex
-count. -/
-theorem sharp_baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt
-    (object : FiniteObject) (baseline : Nat) (baseline_ge : 3 ≤ baseline) :
-    2 * baseline * object.vertexCount ≤
-      object.wedgeCount + 2 * object.deficiencyAt baseline +
-        3 * object.vertexCount := by
-  rw [vertexCount_eq_orderedVertices_length, wedgeCount, deficiencyAt]
-  generalize object.orderedVertices = l
-  induction l with
-  | nil => simp
-  | cons head tail ih =>
-    simp only [List.map_cons, List.sum_cons, List.length_cons, Nat.mul_add,
-      Nat.mul_one]
-    have h := sharp_pointwise baseline (object.degree head) baseline_ge
+  rcases Nat.lt_or_ge d baseline with below | above
+  · have h := two_mul_le_choose_two_add_three d
+    omega
+  · have vanishes : baseline - d = 0 := by omega
+    rw [vanishes, mul_zero]
+    have monotone : baseline.choose 2 ≤ d.choose 2 := Nat.choose_le_choose 2 above
+    have h := two_mul_le_choose_two_add_three baseline
     omega
 
-/-- Non-sharp corollary of the sharp identity, stated to match the paper's
-own `W_2(C) >= k|V(C)| - 2 def(C)` phrasing (subtraction-free, since this
-form needs no side condition on which side is larger). -/
-theorem baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt
-    (object : FiniteObject) (baseline : Nat) (baseline_ge : 3 ≤ baseline) :
-    baseline * object.vertexCount ≤
-      object.wedgeCount + 2 * object.deficiencyAt baseline := by
-  have h := sharp_baseline_mul_vertexCount_le_wedgeCount_add_two_mul_deficiencyAt
-    object baseline baseline_ge
-  have key : baseline * object.vertexCount + 3 * object.vertexCount ≤
-      2 * baseline * object.vertexCount := by
-    have hle : baseline + 3 ≤ 2 * baseline := by omega
-    calc baseline * object.vertexCount + 3 * object.vertexCount
-        = (baseline + 3) * object.vertexCount := by ring
-      _ ≤ (2 * baseline) * object.vertexCount := Nat.mul_le_mul_right _ hle
-  omega
+/-- **`lem:wedge-lower`, subtraction-free.**
+
+  `δ·|X| ≤ W₂(X) + 2·def⁺(X)`
+
+at every region `X` of the object, for every registered baseline `δ ≥ 3`.
+This is the manuscript's `W₂(X) ≥ δ|X| − 2def⁺(X)` with the truncation moved
+to the side where it cannot silently absorb a failure.
+
+The proof is the manuscript's: sum the per-vertex clause over the region.  Both
+of the lemma's displayed inequalities are instances — the componentwise one at
+a component of the remainder, and its sum over `R` at the remainder itself. -/
+theorem baseline_mul_card_le_internalWedgeCount_add_two_mul_positiveDeficiency
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (baseline : Nat) (baseline_ge : 3 ≤ baseline) :
+    baseline * support.card ≤
+      object.internalWedgeCount support +
+        2 * object.positiveDeficiency support baseline := by
+  classical
+  calc baseline * support.card
+      = ∑ _vertex ∈ support, baseline := by
+        rw [Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+    _ ≤ ∑ vertex ∈ support,
+          ((object.internalDegree support vertex).choose 2 +
+            2 * (baseline - object.internalDegree support vertex)) :=
+        Finset.sum_le_sum fun vertex _ =>
+          baseline_le_choose_two_add_two_mul_deficit baseline
+            (object.internalDegree support vertex) baseline_ge
+    _ = object.internalWedgeCount support +
+          2 * object.positiveDeficiency support baseline := by
+        rw [Finset.sum_add_distrib, internalWedgeCount, positiveDeficiency,
+          Finset.mul_sum]
 
 end FiniteObject
 

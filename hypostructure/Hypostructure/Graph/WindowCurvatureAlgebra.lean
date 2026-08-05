@@ -1,6 +1,5 @@
 import Mathlib.Data.Nat.Dist
 import Hypostructure.Core.DyadicLength
-import Hypostructure.Graph.External.HegdeSandeepShashank
 
 /-!
 # The `P₁₃` curvature algebra
@@ -27,11 +26,11 @@ Everything below is that text and nothing else.  In particular:
 * the *forbidden differences* are never written down as a set.  They are the
   differences `d` for which the closing cycle length `s + 2 + d` is accepted by
   the registered dyadic target `Core.DyadicLength.PowerOfTwoLength`.  The
-  manuscript's own `{2, 6}` at `s = 0` is recovered as the theorem
-  `forbiddenGaps_zero` at the registered induced-path order, not assumed;
-* the path order is a parameter.  The registered `13` enters only through
-  `Graph.External.HegdeSandeepShashank.inducedPathOrder` at the specialization
-  lemmas, never as a literal in a definition.
+  manuscript's own `{2, 6}` at `s = 0` is a theorem *at a registered order*,
+  and is proved by the problem that registers one, not assumed here;
+* the path order is a parameter throughout.  No order is registered in this
+  file, and no problem's order appears in it.  A problem supplies its own
+  window order and derives the specializations it needs.
 
 ## Relation to what is already in the framework
 
@@ -51,8 +50,6 @@ Retrieved, never restated:
 * the accepted cycle lengths -- `Core.DyadicLength.PowerOfTwoLength` at
   `Core/DyadicLength.lean:21` and `powerOfTwoLength_iff` at
   `Core/DyadicLength.lean:40`;
-* the registered path order -- `Graph.External.HegdeSandeepShashank.inducedPathOrder`
-  at `Graph/External/HegdeSandeepShashank.lean:18`;
 * the order-`13`-fixed copy of this very algebra --
   `Graph.TypeBMarkedFan.gap`, `IsLegal`, `SafeAtDistance`, `WedgeSafe` at
   `Graph/TypeBMarkedFan.lean:72,122,175,180`, identified with this one below.
@@ -225,73 +222,5 @@ theorem curvatureTwo_eq_true_iff {order : Nat}
     curvatureTwo source middle target = true ↔
       Safe 1 source middle ∧ Safe 1 middle target ∧ ¬ Safe 2 source target := by
   simp [curvatureTwo, and_assoc]
-
-/-! ## The registered induced-path order
-
-Below this line the order is the one the external theorem is registered at.
-It is read, never written. -/
-
-/-- The order of the induced windows the spine packs: the induced-path order of
-the registered external theorem.
-
-*Provenance.* Consumes `Graph.External.HegdeSandeepShashank.inducedPathOrder`
-at `Graph/External/HegdeSandeepShashank.lean:18`.
--/
-abbrev windowOrder : Nat := External.HegdeSandeepShashank.inducedPathOrder
-
-/-- **The manuscript's own forbidden differences, derived.**  At outside length
-zero and the registered window order, the differences whose closing cycle is
-accepted are exactly `2` and `6` -- `(j - i) + 2 ∈ {4, 8}` -- which is the
-sentence the manuscript proves before it defines `Labels`.  Nothing here is
-listed in a definition; the numerals appear only in this conclusion.
-
-*Provenance.* Consumes `Core.DyadicLength.powerOfTwoLengthDecidable` at
-`Core/DyadicLength.lean:25` and `windowOrder`; the same two numerals appear as
-`Graph.TypeBMarkedFan.isDyadic_attachmentCycleLength_iff` at
-`Graph/TypeBMarkedFan.lean:127`, which this derives rather than repeats.
--/
-theorem forbiddenGaps_zero : forbiddenGaps windowOrder 0 = {2, 6} := by
-  decide
-
-/-- The forbidden differences at outside length one: `(j - i) + 3 ∈ {4, 8}`.
-
-*Provenance.* Consumes `Core.DyadicLength.powerOfTwoLengthDecidable` at
-`Core/DyadicLength.lean:25` and `windowOrder`.
--/
-theorem forbiddenGaps_one : forbiddenGaps windowOrder 1 = {1, 5} := by
-  decide
-
-/-- The forbidden differences at outside length two, i.e. the wedge gaps
-`{0, 4, 12}` of `Graph.TypeBMarkedFan.isDyadic_wedgeCycle_iff`.
-
-*Provenance.* Consumes `Core.DyadicLength.powerOfTwoLengthDecidable` at
-`Core/DyadicLength.lean:25`; the same three numerals appear as
-`Graph.TypeBMarkedFan.isDyadic_wedgeCycle_iff` at
-`Graph/TypeBMarkedFan.lean:185`.
--/
-theorem forbiddenGaps_two : forbiddenGaps windowOrder 2 = {0, 4, 12} := by
-  decide
-
-/-- Legality in the manuscript's stated form: `|i - j| ∉ {2, 6}`.
-
-*Provenance.* Consumes `forbiddenGaps_zero` above; follows
-`Graph.TypeBMarkedFan.isLegal_iff_attachment_not_dyadic` at
-`Graph/TypeBMarkedFan.lean:137`.
--/
-theorem legal_iff_dist {label : Label windowOrder} :
-    Legal label ↔ label.Nonempty ∧
-      ∀ i ∈ label, ∀ j ∈ label,
-        Nat.dist i.1 j.1 ≠ 2 ∧ Nat.dist i.1 j.1 ≠ 6 := by
-  rw [Legal, safe_iff_notMem_forbiddenGaps, forbiddenGaps_zero]
-  constructor
-  · rintro ⟨nonempty, safe⟩
-    refine ⟨nonempty, fun i memI j memJ => ⟨fun equal => ?_, fun equal => ?_⟩⟩
-    · exact safe i memI j memJ (by simp [equal])
-    · exact safe i memI j memJ (by simp [equal])
-  · rintro ⟨nonempty, distinct⟩
-    refine ⟨nonempty, fun i memI j memJ member => ?_⟩
-    obtain ⟨left, right⟩ := distinct i memI j memJ
-    simp only [Finset.mem_insert, Finset.mem_singleton] at member
-    exact member.elim left right
 
 end Hypostructure.Graph.WindowCurvature

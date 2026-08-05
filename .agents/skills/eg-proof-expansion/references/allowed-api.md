@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **255**.
+Compiled declarations: **334**.
 
-Category counts: **Canonical execution** 29, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 94, **Canonical manifest** 32, **Canonical residual domain** 17, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 7, **Minimum-degree cycle spine vocabulary** 19, **Sealed topology** 46.
+Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 39, **Minimum-degree cycle spine vocabulary** 105.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -153,6 +153,17 @@ Type
 
 ```lean
 Core.Residual.AutomaticClosureReason
+```
+
+#### `Hypostructure.Core.Residual.AutomaticClosureReason.impossibleFact`
+
+- Category: Canonical ledger
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Residual/ExactLedger.lean`
+- Compiled type:
+
+```lean
+Name → Core.Residual.AutomaticClosureReason
 ```
 
 #### `Hypostructure.Core.Residual.AutomaticClosureReason.incompatibleFacts`
@@ -481,6 +492,19 @@ Core.Residual.CommitRecord → List Name
 {Residual : Type uResidual} →
   [inst : Core.Residual.RefinementSystem Residual] →
     [system : Core.Residual.FactSystem Residual] → Core.Residual.FactKey Residual → Name
+```
+
+#### `Hypostructure.Core.Residual.FactKey.no_data_channel`
+
+- Category: Canonical ledger
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Residual/ExactLedger.lean`
+- Compiled type:
+
+```lean
+∀ {Residual : Type uResidual} [inst : Core.Residual.RefinementSystem Residual]
+  [inst_1 : Core.Residual.FactSystem Residual] {Observation : Sort w} {key : Core.Residual.FactKey Residual}
+  {residual : Residual} (read : key.At residual → Observation) (left right : key.At residual), read left = read right
 ```
 
 #### `Hypostructure.Core.Residual.FactKey.transport`
@@ -916,20 +940,15 @@ Core.Residual.CommitRecord → List Name
         (name : Key → Name) →
           Function.Injective name →
             (Value : Key → Residual → Type uValue) →
-              (transport :
-                  {key : Key} →
+              (∀ (key : Key) (residual : Residual), Subsingleton (Value key residual)) →
+                ({key : Key} →
                     {new old : Residual} →
                       Core.Residual.RefinementSystem.Refines new old → Value key old → Value key new) →
-                (∀ (key : Key) (residual : Residual) (value : Value key residual), transport ⋯ value = value) →
-                  (∀ (key : Key) {new middle old : Residual}
-                      (new_middle : Core.Residual.RefinementSystem.Refines new middle)
-                      (middle_old : Core.Residual.RefinementSystem.Refines middle old) (value : Value key old),
-                      transport ⋯ value = transport new_middle (transport middle_old value)) →
-                    (closureKey : Key) →
-                      name closureKey = Core.Residual.closureFactName →
-                        ((residual : Residual) → Core.Residual.ClosureEvidence → Value closureKey residual) →
-                          ((residual : Residual) → Value closureKey residual → Core.Residual.ClosureEvidence) →
-                            Core.Residual.FactSystem Residual
+                  (closureKey : Key) →
+                    name closureKey = Core.Residual.closureFactName →
+                      ((residual : Residual) → Core.Residual.ClosureEvidence → Value closureKey residual) →
+                        ((residual : Residual) → Value closureKey residual → Core.Residual.ClosureEvidence) →
+                          Core.Residual.FactSystem Residual
 ```
 
 #### `Hypostructure.Core.Residual.FactSystem.name`
@@ -982,9 +1001,9 @@ Core.Residual.CommitRecord → List Name
 - Compiled type:
 
 ```lean
-∀ {Residual : Type uResidual} {inst : Core.Residual.RefinementSystem Residual}
-  [self : Core.Residual.FactSystem Residual] (key : Core.Residual.FactSystem.Key Residual) (residual : Residual)
-  (value : Core.Residual.FactSystem.Value key residual), Core.Residual.FactSystem.transport ⋯ value = value
+∀ {Residual : Type uResidual} [inst : Core.Residual.RefinementSystem Residual]
+  [inst_1 : Core.Residual.FactSystem Residual] (key : Core.Residual.FactKey Residual) (residual : Residual)
+  (value : key.At residual), Core.Residual.FactKey.transport ⋯ value = value
 ```
 
 #### `Hypostructure.Core.Residual.FactSystem.transport_trans`
@@ -995,12 +1014,25 @@ Core.Residual.CommitRecord → List Name
 - Compiled type:
 
 ```lean
-∀ {Residual : Type uResidual} {inst : Core.Residual.RefinementSystem Residual}
-  [self : Core.Residual.FactSystem Residual] (key : Core.Residual.FactSystem.Key Residual) {new middle old : Residual}
+∀ {Residual : Type uResidual} [inst : Core.Residual.RefinementSystem Residual]
+  [inst_1 : Core.Residual.FactSystem Residual] (key : Core.Residual.FactKey Residual) {new middle old : Residual}
   (new_middle : Core.Residual.RefinementSystem.Refines new middle)
-  (middle_old : Core.Residual.RefinementSystem.Refines middle old) (value : Core.Residual.FactSystem.Value key old),
-  Core.Residual.FactSystem.transport ⋯ value =
-    Core.Residual.FactSystem.transport new_middle (Core.Residual.FactSystem.transport middle_old value)
+  (middle_old : Core.Residual.RefinementSystem.Refines middle old) (value : key.At old),
+  Core.Residual.FactKey.transport ⋯ value =
+    Core.Residual.FactKey.transport new_middle (Core.Residual.FactKey.transport middle_old value)
+```
+
+#### `Hypostructure.Core.Residual.FactSystem.value_subsingleton`
+
+- Category: Canonical ledger
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Residual/ExactLedger.lean`
+- Compiled type:
+
+```lean
+∀ {Residual : Type uResidual} {inst : Core.Residual.RefinementSystem Residual}
+  [self : Core.Residual.FactSystem Residual] (key : Core.Residual.FactSystem.Key Residual) (residual : Residual),
+  Subsingleton (Core.Residual.FactSystem.Value key residual)
 ```
 
 #### `Hypostructure.Core.Residual.RefinementSystem`
@@ -1125,6 +1157,19 @@ Type uResidual → Type (max uResidual (uSubject + 1))
 
 ```lean
 Name
+```
+
+#### `Hypostructure.Core.Residual.factValueSubsingleton`
+
+- Category: Canonical ledger
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Residual/ExactLedger.lean`
+- Compiled type:
+
+```lean
+∀ {Residual : Type uResidual} [inst : Core.Residual.RefinementSystem Residual]
+  [system : Core.Residual.FactSystem Residual] (key : Core.Residual.FactSystem.Key Residual) (residual : Residual),
+  Subsingleton (Core.Residual.FactSystem.Value key residual)
 ```
 
 #### `Hypostructure.Core.Residual.instDecidableEqAuditSnapshot`
@@ -1557,888 +1602,6 @@ Type
 
 ```lean
 Type
-```
-
-### `Hypostructure.Core.Strategy.Dag`
-
-#### `Hypostructure.Core.Strategy.Dag.AfterCriticalModificationStructure`
-
-- Category: Sealed topology
-- Kind: `inductive`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} → Core.StrategyData P T → Core.Strategy.Dag.RouteMode → Type (max (max uAmbient uBranch) uData)
-```
-
-#### `Hypostructure.Core.Strategy.Dag.AfterCriticalModificationStructure.interfaceReplacementClosure`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.AfterCriticalModificationStructure data mode →
-          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.AfterMinimalCounterexampleSelection`
-
-- Category: Sealed topology
-- Kind: `inductive`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} → Core.StrategyData P T → Core.Strategy.Dag.RouteMode → Type (max (max uAmbient uBranch) uData)
-```
-
-#### `Hypostructure.Core.Strategy.Dag.AfterMinimalCounterexampleSelection.targetAlgebraReduction`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.AfterMinimalCounterexampleSelection data mode →
-          optParam String "" → optParam String "" → Core.Strategy.Dag.AfterTargetAlgebraReduction data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.AfterMinimalSubobjectExclusion`
-
-- Category: Sealed topology
-- Kind: `inductive`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} → Core.StrategyData P T → Core.Strategy.Dag.RouteMode → Type (max (max uAmbient uBranch) uData)
-```
-
-#### `Hypostructure.Core.Strategy.Dag.AfterMinimalSubobjectExclusion.criticalModificationStructure`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.AfterMinimalSubobjectExclusion data mode →
-          optParam String "" → optParam String "" → Core.Strategy.Dag.AfterCriticalModificationStructure data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.AfterTargetAlgebraReduction`
-
-- Category: Sealed topology
-- Kind: `inductive`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} → Core.StrategyData P T → Core.Strategy.Dag.RouteMode → Type (max (max uAmbient uBranch) uData)
-```
-
-#### `Hypostructure.Core.Strategy.Dag.AfterTargetAlgebraReduction.minimalSubobjectExclusion`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.AfterTargetAlgebraReduction data mode →
-          optParam String "" → optParam String "" → Core.Strategy.Dag.AfterMinimalSubobjectExclusion data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint`
-
-- Category: Sealed topology
-- Kind: `inductive`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} → Core.StrategyData P T → Core.Strategy.Dag.RouteMode → Type (max uAmbient uBranch uData)
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.atomContextObstructionDichotomy`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.atomContextObstructionDichotomies.length] →
-            optParam (Fin data.atomContextObstructionDichotomies.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.atomContextObstructionDichotomies.length) →
-              (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                  branch) →
-                (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                    branch) →
-                  optParam String "" →
-                    optParam String "" →
-                      optParam String "" →
-                        optParam String "" →
-                          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.autoroute`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      Core.Strategy.Dag.Blueprint data Core.Strategy.Dag.RouteMode.authoring →
-        optParam String "" →
-          optParam String "" →
-            optParam (List String) [] → Core.Strategy.Dag.Blueprint data Core.Strategy.Dag.RouteMode.authoring
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.baselineDemandAccounting`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.baselineDemandAccountings.length] →
-            optParam (Fin data.baselineDemandAccountings.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.baselineDemandAccountings.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.boundaryDemandAccounting`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.boundaryDemandAccountings.length] →
-            optParam (Fin data.boundaryDemandAccountings.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.boundaryDemandAccountings.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.canonicalCapacityTokenAccounting`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.canonicalCapacityTokenAccountings.length] →
-            optParam (Fin data.canonicalCapacityTokenAccountings.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.canonicalCapacityTokenAccountings.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.canonicalPairResponseAccounting`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.canonicalPairResponseAccountings.length] →
-            optParam (Fin data.canonicalPairResponseAccountings.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.canonicalPairResponseAccountings.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.closedCode`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.closedCodes.length] →
-            optParam (Fin data.closedCodes.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.closedCodes.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.coldBranchAggregation`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.coldBranchAggregations.length] →
-            optParam (Fin data.coldBranchAggregations.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.coldBranchAggregations.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.compressionLinkedTargetRelativeRankDichotomy`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.compressionLinkedTargetRelativeRankDichotomies.length] →
-            optParam (Fin data.compressionLinkedTargetRelativeRankDichotomies.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝
-                  data.compressionLinkedTargetRelativeRankDichotomies.length) →
-              (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                  branch) →
-                (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                    branch) →
-                  optParam String "" →
-                    optParam String "" →
-                      optParam String "" →
-                        optParam String "" →
-                          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.counterexampleLocalization`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.counterexampleLocalizations.length] →
-            optParam (Fin data.counterexampleLocalizations.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.counterexampleLocalizations.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.coupledHomogeneousFibrePressure`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.coupledHomogeneousFibrePressures.length] →
-            optParam (Fin data.coupledHomogeneousFibrePressures.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.coupledHomogeneousFibrePressures.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.dichotomy`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.dichotomies.length] →
-            optParam (Fin data.dichotomies.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.dichotomies.length) →
-              optParam (Core.Strategy.Dag.Blueprint data mode) Core.Strategy.Dag.Blueprint.root →
-                optParam (Core.Strategy.Dag.Blueprint data mode) Core.Strategy.Dag.Blueprint.root →
-                  optParam String "" →
-                    optParam String "" →
-                      optParam String "" →
-                        optParam String "" →
-                          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.exactFiniteLocalAlgebra`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.exactFiniteLocalAlgebras.length] →
-            optParam (Fin data.exactFiniteLocalAlgebras.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.exactFiniteLocalAlgebras.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.finiteBarrierEnumeration`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.finiteBarrierEnumerations.length] →
-            optParam (Fin data.finiteBarrierEnumerations.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.finiteBarrierEnumerations.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.finiteBottleneckClassification`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.finiteBottleneckClassifications.length] →
-            optParam (Fin data.finiteBottleneckClassifications.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.finiteBottleneckClassifications.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.finiteDensityBudget`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.finiteDensityBudgets.length] →
-            optParam (Fin data.finiteDensityBudgets.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.finiteDensityBudgets.length) →
-              (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                  branch) →
-                (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                    branch) →
-                  optParam String "" →
-                    optParam String "" →
-                      optParam String "" →
-                        optParam String "" →
-                          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.finiteScheduleCapacity`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.finiteScheduleCapacities.length] →
-            optParam (Fin data.finiteScheduleCapacities.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.finiteScheduleCapacities.length) →
-              (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                  branch) →
-                (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                    branch) →
-                  optParam String "" →
-                    optParam String "" →
-                      optParam String "" →
-                        optParam String "" →
-                          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.finiteStateCapacity`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.finiteStateCapacities.length] →
-            optParam (Fin data.finiteStateCapacities.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.finiteStateCapacities.length) →
-              (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                  branch) →
-                (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                    branch) →
-                  optParam String "" →
-                    optParam String "" →
-                      optParam String "" →
-                        optParam String "" →
-                          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.finiteStateNetChargeContinuation`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-              branch) →
-            (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                branch) →
-              optParam String "" →
-                optParam String "" →
-                  optParam String "" →
-                    optParam String "" → optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.homogeneousBottleneck`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.homogeneousBottlenecks.length] →
-            optParam (Fin data.homogeneousBottlenecks.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.homogeneousBottlenecks.length) →
-              optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) id →
-                optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) id →
-                  optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) id →
-                    optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.label`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode → String → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.localSupplyLowerBound`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.localSupplyLowerBounds.length] →
-            optParam (Fin data.localSupplyLowerBounds.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.localSupplyLowerBounds.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.minimalCounterexampleSelection`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.counterexampleReductions.length] →
-            optParam (Fin data.counterexampleReductions.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.counterexampleReductions.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.AfterMinimalCounterexampleSelection data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.note`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode → String → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.obstructionPackingClosure`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.obstructionPackingClosures.length] →
-            optParam (Fin data.obstructionPackingClosures.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.obstructionPackingClosures.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.orderedSurplusActivation`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.orderedSurplusActivations.length] →
-            optParam (Fin data.orderedSurplusActivations.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.orderedSurplusActivations.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.orderedWitnessScan`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.scans.length] →
-            optParam (Fin data.scans.length) (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.scans.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.proofTrace`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} → Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.ProofTrace
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.rankBudget`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.rankBudgets.length] →
-            optParam (Fin data.rankBudgets.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.rankBudgets.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.responseClassifier`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.responses.length] →
-            optParam (Fin data.responses.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.responses.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.root`
-
-- Category: Sealed topology
-- Kind: `constructor`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} → {mode : Core.Strategy.Dag.RouteMode} → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.route8CarrierClosure`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.route8CarrierClosures.length] →
-            optParam (Fin data.route8CarrierClosures.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.route8CarrierClosures.length) →
-              (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                  branch) →
-                (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                    branch) →
-                  optParam String "" →
-                    optParam String "" →
-                      optParam String "" →
-                        optParam String "" →
-                          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.scaleThresholdDichotomy`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.scaleThresholdDichotomies.length] →
-            optParam (Fin data.scaleThresholdDichotomies.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.scaleThresholdDichotomies.length) →
-              (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                  branch) →
-                (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                    branch) →
-                  optParam String "" →
-                    optParam String "" →
-                      optParam String "" →
-                        optParam String "" →
-                          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.supportComplementNormalization`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.supportComplementNormalizations.length] →
-            optParam (Fin data.supportComplementNormalizations.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.supportComplementNormalizations.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.supportLocalization`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.localizations.length] →
-            optParam (Fin data.localizations.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.localizations.length) →
-              optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.targetOrAvoid`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
-```
-
-#### `Hypostructure.Core.Strategy.Dag.Blueprint.targetRelativeRankDichotomy`
-
-- Category: Sealed topology
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/Dag.lean`
-- Compiled type:
-
-```lean
-{P : Core.Problem} →
-  {T : Core.Target P} →
-    {data : Core.StrategyData P T} →
-      {mode : Core.Strategy.Dag.RouteMode} →
-        Core.Strategy.Dag.Blueprint data mode →
-          [inst : NeZero data.targetRelativeRankDichotomies.length] →
-            optParam (Fin data.targetRelativeRankDichotomies.length)
-                (Hypostructure.Core.Strategy.Dag.firstFamilyIndex✝ data.targetRelativeRankDichotomies.length) →
-              (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                  branch) →
-                (optParam (Core.Strategy.Dag.Blueprint data mode → Core.Strategy.Dag.Blueprint data mode) fun branch =>
-                    branch) →
-                  optParam String "" →
-                    optParam String "" →
-                      optParam String "" →
-                        optParam String "" →
-                          optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
 ```
 
 ### `Hypostructure.Core.Strategy.FactOnlyStrategy`
@@ -2952,16 +2115,11 @@ Core.Problem → Type (max (max (max uAmbient uBranch) (uKey + 1)) (uValue + 1))
         Function.Injective name →
           (∀ (key : Key), name key ≠ Core.Residual.closureFactName) →
             (Value : Key → Core.Strategy.ProblemInput P → Type uValue) →
-              (transport :
-                  {key : Key} →
+              (∀ (key : Key) (input : Core.Strategy.ProblemInput P), Subsingleton (Value key input)) →
+                ({key : Key} →
                     {new old : Core.Strategy.ProblemInput P} →
                       new.object = old.object → Value key old → Value key new) →
-                (∀ (key : Key) (input : Core.Strategy.ProblemInput P) (value : Value key input),
-                    transport ⋯ value = value) →
-                  (∀ (key : Key) {new middle old : Core.Strategy.ProblemInput P}
-                      (new_middle : new.object = middle.object) (middle_old : middle.object = old.object)
-                      (value : Value key old), transport ⋯ value = transport new_middle (transport middle_old value)) →
-                    Core.Strategy.FactVocabulary P
+                  Core.Strategy.FactVocabulary P
 ```
 
 #### `Hypostructure.Core.Strategy.FactVocabulary.name`
@@ -3012,7 +2170,7 @@ Core.Problem → Type (max (max (max uAmbient uBranch) (uKey + 1)) (uValue + 1))
       {new old : Core.Strategy.ProblemInput P} → new.object = old.object → self.Value key old → self.Value key new
 ```
 
-#### `Hypostructure.Core.Strategy.FactVocabulary.transport_refl`
+#### `Hypostructure.Core.Strategy.FactVocabulary.value_subsingleton`
 
 - Category: Canonical residual domain
 - Kind: `theorem`
@@ -3020,25 +2178,50 @@ Core.Problem → Type (max (max (max uAmbient uBranch) (uKey + 1)) (uValue + 1))
 - Compiled type:
 
 ```lean
-∀ {P : Core.Problem} (self : Core.Strategy.FactVocabulary P) (key : self.Key) (input : Core.Strategy.ProblemInput P)
-  (value : self.Value key input), self.transport ⋯ value = value
-```
-
-#### `Hypostructure.Core.Strategy.FactVocabulary.transport_trans`
-
-- Category: Canonical residual domain
-- Kind: `theorem`
-- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
-- Compiled type:
-
-```lean
-∀ {P : Core.Problem} (self : Core.Strategy.FactVocabulary P) (key : self.Key)
-  {new middle old : Core.Strategy.ProblemInput P} (new_middle : new.object = middle.object)
-  (middle_old : middle.object = old.object) (value : self.Value key old),
-  self.transport ⋯ value = self.transport new_middle (self.transport middle_old value)
+∀ {P : Core.Problem} (self : Core.Strategy.FactVocabulary P) (key : self.Key) (input : Core.Strategy.ProblemInput P),
+  Subsingleton (self.Value key input)
 ```
 
 ### `Hypostructure.Core.Strategy.ExactExecution`
+
+#### `Hypostructure.Core.Strategy.Impossible`
+
+- Category: Canonical execution
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/ExactExecution.lean`
+- Compiled type:
+
+```lean
+(Residual : Type uResidual) →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] → Core.Residual.FactKey Residual → Prop
+```
+
+#### `Hypostructure.Core.Strategy.Impossible.contradiction`
+
+- Category: Canonical execution
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Strategy/ExactExecution.lean`
+- Compiled type:
+
+```lean
+∀ {Residual : Type uResidual} {inst : Core.Residual.RefinementSystem Residual}
+  {inst_1 : Core.Residual.FactSystem Residual} {key : Core.Residual.FactKey Residual}
+  [self : Core.Strategy.Impossible Residual key] (residual : Residual) (a : key.At residual), False
+```
+
+#### `Hypostructure.Core.Strategy.Impossible.mk`
+
+- Category: Canonical execution
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Strategy/ExactExecution.lean`
+- Compiled type:
+
+```lean
+∀ {Residual : Type uResidual} [inst : Core.Residual.RefinementSystem Residual]
+  [inst_1 : Core.Residual.FactSystem Residual] {key : Core.Residual.FactKey Residual},
+  (∀ (residual : Residual) (a : key.At residual), False) → Core.Strategy.Impossible Residual key
+```
 
 #### `Hypostructure.Core.Strategy.Incompatible`
 
@@ -3384,6 +2567,27 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
                 Core.Strategy.EmptinessResult previous
 ```
 
+#### `Hypostructure.Core.Strategy.closeImpossible`
+
+- Category: Canonical execution
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ExactExecution.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      {current : Residual} →
+        {known : Core.Residual.FactKeys Residual} →
+          Core.Residual.ExactLedger Residual current known →
+            (key : Core.Residual.FactKey Residual) →
+              [Core.Residual.FactKeys.Has key known] →
+                [Core.Strategy.Impossible Residual key] →
+                  autoParam (Core.Residual.FactSystem.closureKey ∉ known) Core.Strategy.closeImpossible._auto_1 →
+                    Core.Residual.ExactLedger Residual current (Core.Residual.FactSystem.closureKey :: known)
+```
+
 #### `Hypostructure.Core.Strategy.closeIncompatible`
 
 - Category: Canonical execution
@@ -3504,6 +2708,351 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
+#### `Hypostructure.Graph.Strategy.Spine.Data`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `inductive`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Type 1
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.LengthOK`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.coldSignature`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.ColdCorridor.DeclaredSignature
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.coldSignature_windowOrder`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data), self.coldSignature.windowOrder = self.windowOrder
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.curvatureCost`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.dischargeScale`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.dischargeScale_pos`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data), 0 < self.dischargeScale
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.entropyDenominator`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.entropyDenominator_pos`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data), 0 < self.entropyDenominator
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.freeForcesTarget`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data) (object : Graph.FiniteObject),
+  Graph.MinimumDegreeAtLeast self.threshold object →
+    Graph.InducedPathFree object self.windowOrder → Graph.HasCycleWithLength self.LengthOK object
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.largeOrderExponent`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.largeOrderExponent_pos`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data), 0 < self.largeOrderExponent
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.largeOrder_dominates_surplus`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data),
+  4 *
+        (((self.dischargeScale * (self.threshold * self.windowOrder - 2 * (self.windowOrder - 1)) + self.windowOrder) *
+              (self.largeOrderExponent + 1) +
+            2 * self.windowRate * self.largeOrderExponent * self.dischargeScale) *
+          self.surplusScale) *
+      (((self.dischargeScale * (self.threshold * self.windowOrder - 2 * (self.windowOrder - 1)) + self.windowOrder) *
+            (self.largeOrderExponent + 1) +
+          2 * self.windowRate * self.largeOrderExponent * self.dischargeScale) *
+        self.surplusScale) ≤
+    2 ^ self.largeOrderExponent
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.mk`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(threshold : ℕ) →
+  3 ≤ threshold →
+    (LengthOK : ℕ → Prop) →
+      (windowOrder : ℕ) →
+        0 < windowOrder →
+          (∀ (object : Graph.FiniteObject),
+              Graph.MinimumDegreeAtLeast threshold object →
+                Graph.InducedPathFree object windowOrder → Graph.HasCycleWithLength LengthOK object) →
+            (surplusScale windowRate : ℕ) →
+              (ℕ → ℕ) →
+                ℕ →
+                  (entropyDenominator : ℕ) →
+                    0 < entropyDenominator →
+                      (dischargeScale : ℕ) →
+                        0 < dischargeScale →
+                          (largeOrderExponent : ℕ) →
+                            0 < largeOrderExponent →
+                              (dischargeScale * (threshold * windowOrder - 2 * (windowOrder - 1)) + windowOrder) *
+                                      (largeOrderExponent + 1) *
+                                    threshold <
+                                  2 * windowRate * largeOrderExponent →
+                                4 *
+                                        (((dischargeScale * (threshold * windowOrder - 2 * (windowOrder - 1)) +
+                                                windowOrder) *
+                                              (largeOrderExponent + 1) +
+                                            2 * windowRate * largeOrderExponent * dischargeScale) *
+                                          surplusScale) *
+                                      (((dischargeScale * (threshold * windowOrder - 2 * (windowOrder - 1)) +
+                                              windowOrder) *
+                                            (largeOrderExponent + 1) +
+                                          2 * windowRate * largeOrderExponent * dischargeScale) *
+                                        surplusScale) ≤
+                                    2 ^ largeOrderExponent →
+                                  (coldSignature : Graph.ColdCorridor.DeclaredSignature) →
+                                    coldSignature.windowOrder = windowOrder → Graph.Strategy.Spine.Data
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.netChargeCoefficient`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.netChargeRate`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data),
+  (self.dischargeScale * (self.threshold * self.windowOrder - 2 * (self.windowOrder - 1)) + self.windowOrder) *
+        (self.largeOrderExponent + 1) *
+      self.threshold <
+    2 * self.windowRate * self.largeOrderExponent
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.rankDefect`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.surplusScale`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.surplusThreshold`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.surplusThreshold_sublinear`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (data : Graph.Strategy.Spine.Data) (size : ℕ),
+  2 ^ data.largeOrderExponent ≤ size →
+    (data.netChargeCoefficient * (data.largeOrderExponent + 1) +
+          2 * data.windowRate * data.largeOrderExponent * data.dischargeScale) *
+        data.surplusThreshold size <
+      (2 * data.windowRate * data.largeOrderExponent -
+          data.netChargeCoefficient * (data.largeOrderExponent + 1) * data.threshold) *
+        size
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.three_le_threshold`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data), 3 ≤ self.threshold
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.threshold`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.windowOrder`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.windowOrder_pos`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data), 0 < self.windowOrder
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.windowRate`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.DeterminationCertificate`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(data : Graph.Strategy.Spine.Data) →
+  (object : Graph.FiniteObject) →
+    (packing : Finset (Finset object.Vertex)) → Graph.Strategy.Spine.remainderQuotient data object packing → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Holds`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3513,7 +3062,24 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
 
 ```lean
 (Graph.FiniteObject → Type v) →
-  (Presentation : Type) → Presentation → ℕ → (ℕ → Prop) → Graph.Strategy.Spine.Key → Graph.FiniteObject → Prop
+  (Presentation : Type) →
+    Presentation → Graph.Strategy.Spine.Data → Graph.Strategy.Spine.Key → Graph.FiniteObject → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Identified`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+{data : Graph.Strategy.Spine.Data} →
+  {object : Graph.FiniteObject} →
+    {packing : Finset (Finset object.Vertex)} →
+      (quotient : Graph.Strategy.Spine.remainderQuotient data object packing) →
+        Graph.BoundaryPiece (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object quotient.support) →
+          Graph.BoundaryPiece (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object quotient.support) → Prop
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows`
@@ -3526,7 +3092,7 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
 - Compiled type:
 
 ```lean
-(Graph.FiniteObject → Type v) → (Presentation : Type) → Presentation → ℕ → Type (max (u + 1) v)
+(Graph.FiniteObject → Type v) → (Presentation : Type) → Presentation → Graph.Strategy.Spine.Data → Type (max (u + 1) v)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -3540,6 +3106,380 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
 
 ```lean
 Type
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.atomCompression`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.barrierCap`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.barrierOverflow`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.boundaryDemand`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.branchDependence`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldCorridorState`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldFailureCompression`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldFailureCycle`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldFailureDefect`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldFailureHandoff`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldFailureRouting`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldSameInterfaceTable`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.contextDefect`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.contextUniversal`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.curvatureDemandFloor`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.curvatureFullRank`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.curvatureRankDrop`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.curvatureTargetRank`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.delocalizedSupport`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.densityCap`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.entropyCapActive`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.entropyPackageDemand`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.forcedCurvatureCost`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.globalBarrier`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.globalDelocalization`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.largeBudgetResidual`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.largeOrderResidual`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.localAlgebra`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.maximalPacking`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.negativeSupport`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.netChargeLocalization`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.netChargeNegative`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.netChargeNonNegative`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.netDeficiencyCap`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.noProperBaseline`
@@ -3575,6 +3515,61 @@ Graph.Strategy.Spine.Key
 ∀ (x : Graph.Strategy.Spine.Key), Graph.Strategy.Spine.Key.ofNat x.ctorIdx = x
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.properDelocalization`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.remainderEntropyHigh`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.remainderEntropyLow`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.remainderNormalized`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.repairIdentity`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.returnAvoidance`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3608,6 +3603,50 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.smallOrderResidual`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.stubSupply`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.surplusAbove`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.surplusAtOrBelow`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.tightEndpoint`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3630,6 +3669,74 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key → ℕ
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeALowSurplus`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeBHighSurplus`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.uncompressible`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.wedgeSupply`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.windowJoinPressure`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.TargetCompleteAt`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(data : Graph.Strategy.Spine.Data) →
+  {object : Graph.FiniteObject} →
+    {packing : Finset (Finset object.Vertex)} → Graph.Strategy.Spine.remainderQuotient data object packing → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Value`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3641,14 +3748,199 @@ Graph.Strategy.Spine.Key → ℕ
 (BranchState : Graph.FiniteObject → Type v) →
   (Presentation : Type) →
     (presentation : Presentation) →
-      (threshold : ℕ) →
-        (ℕ → Prop) →
-          Graph.Strategy.Spine.Key →
-            Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold) →
-              Type
+      (data : Graph.Strategy.Spine.Data) →
+        Graph.Strategy.Spine.Key →
+          Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation data) → Type
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.atomCompressionDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (branchDependence contextUniversal atomCompression delocalizedSupport :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  [Core.Residual.FactKeys.Has branchDependence known] →
+                    [Core.Residual.FactKeys.Has contextUniversal known] →
+                      (∀ (a : contextUniversal.At current) (packing : Finset (Finset current.object.Vertex)),
+                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
+                            ∀ (quotient : Graph.Strategy.Spine.remainderQuotient data current.object packing),
+                              Graph.Strategy.Spine.TargetCompleteAt data quotient) →
+                        (∀ (a : branchDependence.At current),
+                            ∃ packing,
+                              Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                                ∃ quotient,
+                                  Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
+                                    ∀ smaller ⊂ quotient.support,
+                                      ∀ (narrower : Graph.Strategy.Spine.remainderQuotient data current.object packing),
+                                        narrower.support = smaller →
+                                          ¬Graph.Strategy.Spine.DeterminationCertificate data current.object packing
+                                              narrower) →
+                          ((∃ packing,
+                                Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                                  ∃ quotient,
+                                    Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
+                                      Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
+                                        quotient.support ⊆ Graph.FiniteObject.remainderSupport current.object packing) →
+                              atomCompression.At current) →
+                            ((∃ packing,
+                                  Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                                    ∃ quotient,
+                                      Graph.Strategy.Spine.DeterminationCertificate data current.object packing
+                                          quotient ∧
+                                        Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
+                                          ¬quotient.support ⊆
+                                                Graph.FiniteObject.remainderSupport current.object packing ∧
+                                            Graph.FiniteObject.remainderSupport current.object packing ⊂
+                                              Graph.Strategy.Spine.delocalizationSupport data current.object packing
+                                                quotient) →
+                                delocalizedSupport.At current) →
+                              atomCompression ∉ known →
+                                delocalizedSupport ∉ known →
+                                  Core.Strategy.Decision atomCompression delocalizedSupport previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.barrierEnumerationDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (barrierCap barrierOverflow :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  ((2 ^
+                            (data.windowRate * Graph.dyadicScaleCount current.object *
+                              Graph.FiniteObject.windowPackingNumber current.object data.windowOrder) ≤
+                          Graph.skeletonBudget current.object ∧
+                        ∀ (family : Finset ℕ),
+                          Graph.FiniteObject.edgeCount current.object ∈ family →
+                            Graph.skeletonBudget current.object ≤
+                              Graph.variableEdgeBudget (Graph.FiniteObject.vertexCount current.object) family) →
+                      barrierCap.At current) →
+                    (Graph.skeletonBudget current.object <
+                          2 ^
+                            (data.windowRate * Graph.dyadicScaleCount current.object *
+                              Graph.FiniteObject.windowPackingNumber current.object data.windowOrder) →
+                        barrierOverflow.At current) →
+                      barrierCap ∉ known →
+                        barrierOverflow ∉ known → Core.Strategy.Decision barrierCap barrierOverflow previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.boundaryDemandRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (remainderNormalized surplusAtOrBelow boundaryDemand stubSupply :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            remainderNormalized ≠ surplusAtOrBelow →
+              boundaryDemand ≠ remainderNormalized →
+                stubSupply ≠ remainderNormalized →
+                  boundaryDemand ≠ stubSupply →
+                    (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                        (a : surplusAtOrBelow.At input),
+                        Graph.FiniteObject.degreeSurplus input.object data.threshold ≤
+                          data.surplusThreshold (Graph.FiniteObject.vertexCount input.object)) →
+                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                          (∀ (packing : Finset (Finset input.object.Vertex)),
+                              Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                                Graph.FiniteObject.positiveDeficiency input.object
+                                      (Graph.FiniteObject.remainderSupport input.object packing) data.threshold ≤
+                                    Graph.FiniteObject.boundaryIncidence input.object
+                                      (Graph.FiniteObject.remainderSupport input.object packing) ∧
+                                  Graph.FiniteObject.boundaryIncidence input.object
+                                        (Graph.FiniteObject.remainderSupport input.object packing) +
+                                      2 * (data.windowOrder - 1) * packing.card ≤
+                                    data.threshold * (data.windowOrder * packing.card) +
+                                      Graph.FiniteObject.ambientSurplus input.object
+                                        (Graph.FiniteObject.windowSupport packing) data.threshold) →
+                            boundaryDemand.At input) →
+                        ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                            (∀ (packing : Finset (Finset input.object.Vertex)),
+                                Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                                  Graph.FiniteObject.positiveDeficiency input.object
+                                        (Graph.FiniteObject.remainderSupport input.object packing) data.threshold +
+                                      2 * (data.windowOrder - 1) * packing.card ≤
+                                    data.threshold * (data.windowOrder * packing.card) +
+                                      data.surplusThreshold (Graph.FiniteObject.vertexCount input.object)) →
+                              stubSupply.At input) →
+                          Core.Strategy.AtomicStrategy
+                            (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.branchDependenceRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (curvatureRankDrop branchDependence :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            curvatureRankDrop ≠ branchDependence →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : curvatureRankDrop.At input),
+                  ∃ packing,
+                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                      Graph.Strategy.Spine.remainderCurvatureTargetRank data input.object packing <
+                          Graph.Strategy.Spine.remainderWedgeSupply input.object packing -
+                            data.rankDefect (Graph.Strategy.Spine.remainderWedgeSupply input.object packing) ∧
+                        ∃ test determiners,
+                          Core.TargetRank.Dependence
+                            (Graph.Strategy.Spine.remainderQuotientSystem data input.object packing) test determiners) →
+                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                    (∃ packing,
+                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                          ∃ quotient,
+                            Graph.Strategy.Spine.DeterminationCertificate data input.object packing quotient ∧
+                              ∀ smaller ⊂ quotient.support,
+                                ∀ (narrower : Graph.Strategy.Spine.remainderQuotient data input.object packing),
+                                  narrower.support = smaller →
+                                    ¬Graph.Strategy.Spine.DeterminationCertificate data input.object packing narrower) →
+                      branchDependence.At input) →
+                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
 
 #### `Hypostructure.Graph.Strategy.Spine.contextOfSelection`
 
@@ -3661,21 +3953,20 @@ Graph.Strategy.Spine.Key → ℕ
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {threshold : ℕ} →
-        {LengthOK : ℕ → Prop} →
-          (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
-            ¬Graph.HasCycleWithLength LengthOK input.object →
-              (∀ (smaller : Graph.FiniteObject),
-                  (Graph.Strategy.Spine.progress BranchState Presentation presentation threshold).Smaller smaller
-                      input.object →
-                    Graph.MinimumDegreeAtLeast threshold smaller → Graph.HasCycleWithLength LengthOK smaller) →
-                Core.MinimalCounterexampleContext
-                  (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold)
-                  (Graph.HasCycleWithLength LengthOK)
-                  (Graph.Strategy.Spine.progress BranchState Presentation presentation threshold)
+      {data : Graph.Strategy.Spine.Data} →
+        (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+          ¬Graph.HasCycleWithLength data.LengthOK input.object →
+            (∀ (smaller : Graph.FiniteObject),
+                (Graph.Strategy.Spine.progress BranchState Presentation presentation data).Smaller smaller
+                    input.object →
+                  Graph.MinimumDegreeAtLeast data.threshold smaller → Graph.HasCycleWithLength data.LengthOK smaller) →
+              Core.MinimalCounterexampleContext
+                (Graph.Strategy.Spine.problem BranchState Presentation presentation data)
+                (Graph.HasCycleWithLength data.LengthOK)
+                (Graph.Strategy.Spine.progress BranchState Presentation presentation data)
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.criticalityManifest`
+#### `Hypostructure.Graph.Strategy.Spine.contextValidityDichotomy`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
@@ -3686,15 +3977,118 @@ Graph.Strategy.Spine.Key → ℕ
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {threshold : ℕ} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
-          (required tight slack :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
-            tight ≠ required →
-              slack ≠ required →
-                tight ≠ slack →
-                  Core.Strategy.FactManifest
-                    (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (contextDefect contextUniversal :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  ((∃ packing,
+                        Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                          ∃ quotient left right,
+                            Graph.Strategy.Spine.Identified quotient left right ∧
+                              (left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
+                                Graph.Response.TargetDefect (Graph.HasCycleWithLength data.LengthOK) left right)) →
+                      contextDefect.At current) →
+                    ((∀ (packing : Finset (Finset current.object.Vertex)),
+                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
+                            ∀ (quotient : Graph.Strategy.Spine.remainderQuotient data current.object packing),
+                              Graph.Strategy.Spine.TargetCompleteAt data quotient) →
+                        contextUniversal.At current) →
+                      contextDefect ∉ known →
+                        contextUniversal ∉ known → Core.Strategy.Decision contextDefect contextUniversal previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.curvatureRankDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (curvatureTargetRank curvatureRankDrop curvatureFullRank :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  [Core.Residual.FactKeys.Has curvatureTargetRank known] →
+                    (∀ (a : curvatureTargetRank.At current) (packing : Finset (Finset current.object.Vertex)),
+                        Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
+                          ∃ independent ⊆ Graph.Strategy.Spine.remainderCurvatureTests current.object packing,
+                            (Graph.Strategy.Spine.remainderQuotientSystem data current.object packing).Survives
+                                ↑independent ∧
+                              independent.card =
+                                  Graph.Strategy.Spine.remainderCurvatureTargetRank data current.object packing ∧
+                                ∀ test ∈ Graph.Strategy.Spine.remainderCurvatureTests current.object packing,
+                                  test ∉ independent →
+                                    ∃ determiners ⊆ ↑independent,
+                                      Core.TargetRank.Dependence
+                                        (Graph.Strategy.Spine.remainderQuotientSystem data current.object packing) test
+                                        determiners) →
+                      ((∃ packing,
+                            Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                              Graph.Strategy.Spine.remainderCurvatureTargetRank data current.object packing <
+                                  Graph.Strategy.Spine.remainderWedgeSupply current.object packing -
+                                    data.rankDefect (Graph.Strategy.Spine.remainderWedgeSupply current.object packing) ∧
+                                ∃ test determiners,
+                                  Core.TargetRank.Dependence
+                                    (Graph.Strategy.Spine.remainderQuotientSystem data current.object packing) test
+                                    determiners) →
+                          curvatureRankDrop.At current) →
+                        ((∀ (packing : Finset (Finset current.object.Vertex)),
+                              Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
+                                Graph.Strategy.Spine.remainderWedgeSupply current.object packing -
+                                    data.rankDefect (Graph.Strategy.Spine.remainderWedgeSupply current.object packing) ≤
+                                  Graph.Strategy.Spine.remainderCurvatureTargetRank data current.object packing) →
+                            curvatureFullRank.At current) →
+                          curvatureRankDrop ∉ known →
+                            curvatureFullRank ∉ known →
+                              Core.Strategy.Decision curvatureRankDrop curvatureFullRank previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.curvatureTargetRankRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (curvatureDemandFloor curvatureTargetRank :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            curvatureDemandFloor ≠ curvatureTargetRank →
+              ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                  (∀ (packing : Finset (Finset input.object.Vertex)),
+                      Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                        ∃ independent ⊆ Graph.Strategy.Spine.remainderCurvatureTests input.object packing,
+                          (Graph.Strategy.Spine.remainderQuotientSystem data input.object packing).Survives
+                              ↑independent ∧
+                            independent.card =
+                                Graph.Strategy.Spine.remainderCurvatureTargetRank data input.object packing ∧
+                              ∀ test ∈ Graph.Strategy.Spine.remainderCurvatureTests input.object packing,
+                                test ∉ independent →
+                                  ∃ determiners ⊆ ↑independent,
+                                    Core.TargetRank.Dependence
+                                      (Graph.Strategy.Spine.remainderQuotientSystem data input.object packing) test
+                                      determiners) →
+                    curvatureTargetRank.At input) →
+                Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.deletionCriticalityRow`
@@ -3708,29 +4102,214 @@ Graph.Strategy.Spine.Key → ℕ
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {threshold : ℕ} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
           (noProperBaseline tightEndpoint slackIndependent :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
             tightEndpoint ≠ noProperBaseline →
               slackIndependent ≠ noProperBaseline →
                 tightEndpoint ≠ slackIndependent →
-                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                       (a : noProperBaseline.At input) (subgraph : Graph.ProperSubgraph input.object),
-                      ¬Graph.MinimumDegreeAtLeast threshold subgraph.value) →
-                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
+                      ¬Graph.MinimumDegreeAtLeast data.threshold subgraph.value) →
+                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
                         (∀ (dart : input.object.graph.Dart),
-                            Graph.FiniteObject.degree input.object dart.toProd.1 = threshold ∨
-                              Graph.FiniteObject.degree input.object dart.toProd.2 = threshold) →
+                            Graph.FiniteObject.degree input.object dart.toProd.1 = data.threshold ∨
+                              Graph.FiniteObject.degree input.object dart.toProd.2 = data.threshold) →
                           tightEndpoint.At input) →
-                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
+                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
                           (∀ (left right : input.object.Vertex),
-                              threshold < Graph.FiniteObject.degree input.object left →
-                                threshold < Graph.FiniteObject.degree input.object right →
+                              data.threshold < Graph.FiniteObject.degree input.object left →
+                                data.threshold < Graph.FiniteObject.degree input.object right →
                                   ¬input.object.graph.Adj left right) →
                             slackIndependent.At input) →
                         Core.Strategy.AtomicStrategy
-                          (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+                          (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.delocalizationScopeDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (delocalizedSupport properDelocalization globalDelocalization :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  [Core.Residual.FactKeys.Has delocalizedSupport known] →
+                    (∀ (a : delocalizedSupport.At current),
+                        ∃ packing,
+                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                            ∃ quotient,
+                              Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
+                                Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
+                                  ¬quotient.support ⊆ Graph.FiniteObject.remainderSupport current.object packing ∧
+                                    Graph.FiniteObject.remainderSupport current.object packing ⊂
+                                      Graph.Strategy.Spine.delocalizationSupport data current.object packing quotient) →
+                      ((∃ packing,
+                            Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                              ∃ quotient,
+                                Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
+                                  Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
+                                    ¬quotient.support ⊆ Graph.FiniteObject.remainderSupport current.object packing ∧
+                                      ∃ vertex,
+                                        vertex ∉
+                                          Graph.Strategy.Spine.delocalizationSupport data current.object packing
+                                            quotient) →
+                          properDelocalization.At current) →
+                        ((∃ packing,
+                              Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                                ∃ quotient,
+                                  Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
+                                    Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
+                                      ¬quotient.support ⊆ Graph.FiniteObject.remainderSupport current.object packing ∧
+                                        ∀ (vertex : current.object.Vertex),
+                                          vertex ∈
+                                            Graph.Strategy.Spine.delocalizationSupport data current.object packing
+                                              quotient) →
+                            globalDelocalization.At current) →
+                          properDelocalization ∉ known →
+                            globalDelocalization ∉ known →
+                              Core.Strategy.Decision properDelocalization globalDelocalization previous
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.delocalizationSupport`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(data : Graph.Strategy.Spine.Data) →
+  (object : Graph.FiniteObject) →
+    (packing : Finset (Finset object.Vertex)) →
+      Graph.Strategy.Spine.remainderQuotient data object packing → Finset object.Vertex
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.densityBudgetRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (barrierCap surplusAtOrBelow densityCap :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            barrierCap ≠ surplusAtOrBelow →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : barrierCap.At input),
+                  2 ^
+                      (data.windowRate * Graph.dyadicScaleCount input.object *
+                        Graph.FiniteObject.windowPackingNumber input.object data.windowOrder) ≤
+                    Graph.skeletonBudget input.object) →
+                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    (a : surplusAtOrBelow.At input),
+                    Graph.FiniteObject.degreeSurplus input.object data.threshold ≤
+                      data.surplusThreshold (Graph.FiniteObject.vertexCount input.object)) →
+                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                      2 *
+                            (data.windowRate * Graph.dyadicScaleCount input.object *
+                              Graph.FiniteObject.windowPackingNumber input.object data.windowOrder) ≤
+                          (Graph.dyadicScaleCount input.object + 1) *
+                            (data.threshold * Graph.FiniteObject.vertexCount input.object +
+                              data.surplusThreshold (Graph.FiniteObject.vertexCount input.object)) →
+                        densityCap.At input) →
+                    Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.entropyCapDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (entropyCapActive largeBudgetResidual :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  ((∀ (packing : Finset (Finset current.object.Vertex)),
+                        Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
+                          Graph.skeletonBudget current.object <
+                            Graph.Strategy.Spine.jointPackageDemand data current.object packing) →
+                      entropyCapActive.At current) →
+                    ((∃ packing,
+                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                            Graph.Strategy.Spine.jointPackageDemand data current.object packing ≤
+                              Graph.skeletonBudget current.object) →
+                        largeBudgetResidual.At current) →
+                      entropyCapActive ∉ known →
+                        largeBudgetResidual ∉ known →
+                          Core.Strategy.Decision entropyCapActive largeBudgetResidual previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.entropyPackageRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (remainderEntropyHigh entropyPackageDemand :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            remainderEntropyHigh ≠ entropyPackageDemand →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : remainderEntropyHigh.At input) (packing : Finset (Finset input.object.Vertex)),
+                  Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                    Graph.AtLeastEntropyRate (Graph.FiniteObject.vertexCount input.object) data.entropyDenominator
+                      data.windowOrder data.threshold (Graph.FiniteObject.remainderSupport input.object packing).card) →
+                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                    (∀ (packing : Finset (Finset input.object.Vertex)),
+                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                          (2 ^ (data.windowRate * Graph.dyadicScaleCount input.object * packing.card)) ^
+                                  data.entropyDenominator *
+                                Graph.FiniteObject.vertexCount input.object ^
+                                  (Graph.FiniteObject.remainderSupport input.object packing).card *
+                              (2 ^
+                                  (data.curvatureCost *
+                                    Graph.Strategy.Spine.remainderCurvatureTargetRank data input.object packing)) ^
+                                data.entropyDenominator ≤
+                            Graph.Strategy.Spine.jointPackageDemand data input.object packing ^
+                              data.entropyDenominator) →
+                      entropyPackageDemand.At input) →
+                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -3746,11 +4325,117 @@ Graph.Strategy.Spine.Key → ℕ
 (BranchState : Graph.FiniteObject → Type v) →
   (Presentation : Type) →
     (presentation : Presentation) →
-      (threshold : ℕ) →
-        (ℕ → Prop) →
-          Core.Residual.FactSystem
-            (Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold))
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Residual.FactSystem
+          (Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation data))
 ```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCostRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (curvatureDemandFloor curvatureFullRank forcedCurvatureCost :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            curvatureDemandFloor ≠ curvatureFullRank →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : curvatureDemandFloor.At input) (packing : Finset (Finset input.object.Vertex)),
+                  Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                    data.threshold * (Graph.FiniteObject.remainderSupport input.object packing).card +
+                        2 * (2 * (data.windowOrder - 1) * packing.card) ≤
+                      Graph.FiniteObject.internalWedgeCount input.object
+                          (Graph.FiniteObject.remainderSupport input.object packing) +
+                        2 *
+                          (data.threshold * (data.windowOrder * packing.card) +
+                            Graph.FiniteObject.ambientSurplus input.object (Graph.FiniteObject.windowSupport packing)
+                              data.threshold)) →
+                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    (a : curvatureFullRank.At input) (packing : Finset (Finset input.object.Vertex)),
+                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                      Graph.Strategy.Spine.remainderWedgeSupply input.object packing -
+                          data.rankDefect (Graph.Strategy.Spine.remainderWedgeSupply input.object packing) ≤
+                        Graph.Strategy.Spine.remainderCurvatureTargetRank data input.object packing) →
+                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                      (∀ (packing : Finset (Finset input.object.Vertex)),
+                          Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                            data.curvatureCost *
+                                (data.threshold * (Graph.FiniteObject.remainderSupport input.object packing).card +
+                                  2 * (2 * (data.windowOrder - 1) * packing.card)) ≤
+                              data.curvatureCost *
+                                  (Graph.Strategy.Spine.remainderCurvatureTargetRank data input.object packing +
+                                    data.rankDefect (Graph.Strategy.Spine.remainderWedgeSupply input.object packing)) +
+                                data.curvatureCost *
+                                  (2 *
+                                    (data.threshold * (data.windowOrder * packing.card) +
+                                      Graph.FiniteObject.ambientSurplus input.object
+                                        (Graph.FiniteObject.windowSupport packing) data.threshold))) →
+                        forcedCurvatureCost.At input) →
+                    Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.globalBarrierRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (globalDelocalization repairIdentity globalBarrier :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            repairIdentity ≠ globalDelocalization →
+              globalBarrier ≠ globalDelocalization →
+                repairIdentity ≠ globalBarrier →
+                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                      (a : globalDelocalization.At input),
+                      ∃ packing,
+                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                          ∃ quotient,
+                            Graph.Strategy.Spine.DeterminationCertificate data input.object packing quotient ∧
+                              Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
+                                ¬quotient.support ⊆ Graph.FiniteObject.remainderSupport input.object packing ∧
+                                  ∀ (vertex : input.object.Vertex),
+                                    vertex ∈
+                                      Graph.Strategy.Spine.delocalizationSupport data input.object packing quotient) →
+                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                        (∀ (component : Graph.OneThreeRepair.Component),
+                            ↑component.internal.card =
+                              ↑component.boundary.card - 2 + 2 * ↑component.cycleRank - ↑component.surplus) →
+                          repairIdentity.At input) →
+                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                          (∃ packing,
+                              Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                                ∃ quotient,
+                                  Graph.Strategy.Spine.DeterminationCertificate data input.object packing quotient ∧
+                                    (Graph.Strategy.InterfaceReplacement.ReplacementSupport
+                                        (Graph.MinimumDegreeAtLeast data.threshold)
+                                        (Graph.HasCycleWithLength data.LengthOK) input.object quotient.support ∨
+                                      ∃ representative,
+                                        representative.LexicographicallySmaller input.object ∧
+                                          Graph.MinimumDegreeAtLeast data.threshold representative ∧
+                                            (Graph.HasCycleWithLength data.LengthOK representative →
+                                              Graph.HasCycleWithLength data.LengthOK input.object))) →
+                            globalBarrier.At input) →
+                        Core.Strategy.AtomicStrategy
+                          (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
 #### `Hypostructure.Graph.Strategy.Spine.instDecidableEqKey`
 
@@ -3761,6 +4446,58 @@ Graph.Strategy.Spine.Key → ℕ
 
 ```lean
 DecidableEq Graph.Strategy.Spine.Key
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.interfaceReplacementRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (T : Core.Target (Graph.Strategy.Spine.problem BranchState Presentation presentation data)) →
+            Core.TargetInvariant
+                (Graph.isomorphismEquivalenceWithPresentation (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+                  Presentation presentation ⋯)
+                T.Predicate →
+              (selection uncompressible :
+                  Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                selection ≠ uncompressible →
+                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                      (a : selection.At input), ¬T.Predicate input.object) →
+                    (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                        (a : selection.At input) (smaller : Graph.FiniteObject),
+                        (Graph.Strategy.Spine.progress BranchState Presentation presentation data).Smaller smaller
+                            input.object →
+                          Graph.MinimumDegreeAtLeast data.threshold smaller → T.Predicate smaller) →
+                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                          (∀ (support : Finset input.object.Vertex),
+                              ¬Graph.Strategy.InterfaceReplacement.CompressibleSupport
+                                  (Graph.MinimumDegreeAtLeast data.threshold) T.Predicate input.object support) →
+                            uncompressible.At input) →
+                        Core.Strategy.AtomicStrategy
+                          (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.jointPackageDemand`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex) → ℕ
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.key`
@@ -3774,13 +4511,41 @@ DecidableEq Graph.Strategy.Spine.Key
 (BranchState : Graph.FiniteObject → Type v) →
   (Presentation : Type) →
     (presentation : Presentation) →
-      (threshold : ℕ) →
-        (LengthOK : ℕ → Prop) →
-          Graph.Strategy.Spine.Key →
-            Core.Residual.FactKey
-              (Core.Strategy.ProblemInput
-                (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold))
+      (data : Graph.Strategy.Spine.Data) →
+        Graph.Strategy.Spine.Key →
+          Core.Residual.FactKey
+            (Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation data))
 ```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.localAlgebraRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (localAlgebra :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                ((Graph.WindowCurvature.legalCodeList data.windowOrder).length =
+                      (Graph.WindowCurvature.Labels data.windowOrder).card ∧
+                    ∀ (source middle target : Graph.WindowCurvature.Label data.windowOrder),
+                      Graph.WindowCurvature.curvatureTwo source middle target = true ↔
+                        Graph.WindowCurvature.Safe 1 source middle ∧
+                          Graph.WindowCurvature.Safe 1 middle target ∧ ¬Graph.WindowCurvature.Safe 2 source target) →
+                  localAlgebra.At input) →
+              Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
 #### `Hypostructure.Graph.Strategy.Spine.name`
 
@@ -3806,6 +4571,171 @@ Function.Injective Graph.Strategy.Spine.name
 
 ### `Hypostructure.Graph.Strategy.SpineRows`
 
+#### `Hypostructure.Graph.Strategy.Spine.negativeSupportRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (netChargeNegative netChargeLocalization negativeSupport :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            netChargeNegative ≠ netChargeLocalization →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : netChargeNegative.At input),
+                  ∃ packing,
+                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                      Graph.FiniteObject.NegativeNetCharge input.object
+                        (Graph.FiniteObject.remainderSupport input.object packing) data.threshold data.dischargeScale) →
+                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    (a : netChargeLocalization.At input) (packing : Finset (Finset input.object.Vertex)),
+                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                      Graph.FiniteObject.NegativeNetCharge input.object
+                          (Graph.FiniteObject.remainderSupport input.object packing) data.threshold
+                          data.dischargeScale →
+                        ∃ piece ⊆ Graph.FiniteObject.remainderSupport input.object packing,
+                          Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
+                            Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold
+                              data.dischargeScale) →
+                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                      (∃ packing,
+                          Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                            ∃ piece ⊆ Graph.FiniteObject.remainderSupport input.object packing,
+                              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
+                                Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold
+                                  data.dischargeScale) →
+                        negativeSupport.At input) →
+                    Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.netChargeDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (netChargeNonNegative netChargeNegative :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  ((∀ (packing : Finset (Finset current.object.Vertex)),
+                        Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
+                          Graph.FiniteObject.NonNegativeNetCharge current.object
+                            (Graph.FiniteObject.remainderSupport current.object packing) data.threshold
+                            data.dischargeScale) →
+                      netChargeNonNegative.At current) →
+                    ((∃ packing,
+                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                            Graph.FiniteObject.NegativeNetCharge current.object
+                              (Graph.FiniteObject.remainderSupport current.object packing) data.threshold
+                              data.dischargeScale) →
+                        netChargeNegative.At current) →
+                      netChargeNonNegative ∉ known →
+                        netChargeNegative ∉ known →
+                          Core.Strategy.Decision netChargeNonNegative netChargeNegative previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.netChargeLocalizationRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (netChargeLocalization :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                (∀ (packing : Finset (Finset input.object.Vertex)),
+                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                      Graph.FiniteObject.NegativeNetCharge input.object
+                          (Graph.FiniteObject.remainderSupport input.object packing) data.threshold
+                          data.dischargeScale →
+                        ∃ piece ⊆ Graph.FiniteObject.remainderSupport input.object packing,
+                          Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
+                            Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold
+                              data.dischargeScale) →
+                  netChargeLocalization.At input) →
+              Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.netDeficiencyCapRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (maximalPacking stubSupply densityCap largeOrderResidual netDeficiencyCap :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            maximalPacking ≠ stubSupply →
+              maximalPacking ≠ densityCap →
+                maximalPacking ≠ largeOrderResidual →
+                  stubSupply ≠ densityCap →
+                    stubSupply ≠ largeOrderResidual →
+                      densityCap ≠ largeOrderResidual →
+                        (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                            (a : maximalPacking.At input),
+                            ∃ packing,
+                              Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                                packing.card = Graph.FiniteObject.windowPackingNumber input.object data.windowOrder) →
+                          (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                              (a : stubSupply.At input) (packing : Finset (Finset input.object.Vertex)),
+                              Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                                Graph.FiniteObject.positiveDeficiency input.object
+                                      (Graph.FiniteObject.remainderSupport input.object packing) data.threshold +
+                                    2 * (data.windowOrder - 1) * packing.card ≤
+                                  data.threshold * (data.windowOrder * packing.card) +
+                                    data.surplusThreshold (Graph.FiniteObject.vertexCount input.object)) →
+                            (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                                (a : densityCap.At input),
+                                2 *
+                                    (data.windowRate * Graph.dyadicScaleCount input.object *
+                                      Graph.FiniteObject.windowPackingNumber input.object data.windowOrder) ≤
+                                  (Graph.dyadicScaleCount input.object + 1) *
+                                    (data.threshold * Graph.FiniteObject.vertexCount input.object +
+                                      data.surplusThreshold (Graph.FiniteObject.vertexCount input.object))) →
+                              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                                  (a : largeOrderResidual.At input),
+                                  2 ^ data.largeOrderExponent ≤ Graph.FiniteObject.vertexCount input.object) →
+                                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                                    (∃ packing,
+                                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                                          Graph.FiniteObject.NegativeNetCharge input.object
+                                            (Graph.FiniteObject.remainderSupport input.object packing) data.threshold
+                                            data.dischargeScale) →
+                                      netDeficiencyCap.At input) →
+                                  Core.Strategy.AtomicStrategy
+                                    (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.noProperBaselineRow`
 
 - Category: Minimum-degree cycle spine rows
@@ -3817,25 +4747,197 @@ Function.Injective Graph.Strategy.Spine.name
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {threshold : ℕ} →
-        {LengthOK : ℕ → Prop} →
-          [inst :
-              Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
-            (selection noProperBaseline :
-                Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
-              selection ≠ noProperBaseline →
-                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
-                    (a : selection.At input), ¬Graph.HasCycleWithLength LengthOK input.object) →
-                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
-                      (a : selection.At input) (smaller : Graph.FiniteObject),
-                      smaller.LexicographicallySmaller input.object →
-                        Graph.MinimumDegreeAtLeast threshold smaller → Graph.HasCycleWithLength LengthOK smaller) →
-                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
-                        (∀ (subgraph : Graph.ProperSubgraph input.object),
-                            ¬Graph.MinimumDegreeAtLeast threshold subgraph.value) →
-                          noProperBaseline.At input) →
-                      Core.Strategy.AtomicStrategy
-                        (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (selection noProperBaseline :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            selection ≠ noProperBaseline →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
+                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    (a : selection.At input) (smaller : Graph.FiniteObject),
+                    smaller.LexicographicallySmaller input.object →
+                      Graph.MinimumDegreeAtLeast data.threshold smaller →
+                        Graph.HasCycleWithLength data.LengthOK smaller) →
+                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                      (∀ (subgraph : Graph.ProperSubgraph input.object),
+                          ¬Graph.MinimumDegreeAtLeast data.threshold subgraph.value) →
+                        noProperBaseline.At input) →
+                    Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.not_branchDCertificate`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data}
+  [Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)]
+  (object : Graph.FiniteObject),
+  Graph.MinimumDegreeAtLeast data.threshold object →
+    ∀ (state : BranchState object),
+      ¬Graph.HasCycleWithLength data.LengthOK object →
+        (∀ (smaller : Graph.FiniteObject),
+            (Graph.Strategy.Spine.progress BranchState Presentation presentation data).Smaller smaller object →
+              Graph.MinimumDegreeAtLeast data.threshold smaller → Graph.HasCycleWithLength data.LengthOK smaller) →
+          (∃ packing,
+              object.IsWindowPacking data.windowOrder packing ∧
+                ∃ quotient, Graph.Strategy.Spine.DeterminationCertificate data object packing quotient) →
+            False
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.not_contextDefect`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+∀ {data : Graph.Strategy.Spine.Data} (object : Graph.FiniteObject),
+  (∃ packing,
+      object.IsWindowPacking data.windowOrder packing ∧
+        ∃ quotient left right,
+          Graph.Strategy.Spine.Identified quotient left right ∧
+            (left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
+              Graph.Response.TargetDefect (Graph.HasCycleWithLength data.LengthOK) left right)) →
+    False
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.not_determinationCertificate`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data}
+  [Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)]
+  {object : Graph.FiniteObject},
+  Graph.MinimumDegreeAtLeast data.threshold object →
+    ∀ (state : BranchState object),
+      ¬Graph.HasCycleWithLength data.LengthOK object →
+        (∀ (smaller : Graph.FiniteObject),
+            (Graph.Strategy.Spine.progress BranchState Presentation presentation data).Smaller smaller object →
+              Graph.MinimumDegreeAtLeast data.threshold smaller → Graph.HasCycleWithLength data.LengthOK smaller) →
+          ∀ {packing : Finset (Finset object.Vertex)}
+            {quotient : Graph.Strategy.Spine.remainderQuotient data object packing},
+            Graph.Strategy.Spine.DeterminationCertificate data object packing quotient → False
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.not_globalBarrierReading`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data}
+  [Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)]
+  {object : Graph.FiniteObject},
+  Graph.MinimumDegreeAtLeast data.threshold object →
+    ∀ (state : BranchState object),
+      ¬Graph.HasCycleWithLength data.LengthOK object →
+        (∀ (smaller : Graph.FiniteObject),
+            (Graph.Strategy.Spine.progress BranchState Presentation presentation data).Smaller smaller object →
+              Graph.MinimumDegreeAtLeast data.threshold smaller → Graph.HasCycleWithLength data.LengthOK smaller) →
+          ∀ {support : Finset object.Vertex},
+            (Graph.Strategy.InterfaceReplacement.ReplacementSupport (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) object support ∨
+                ∃ representative,
+                  representative.LexicographicallySmaller object ∧
+                    Graph.MinimumDegreeAtLeast data.threshold representative ∧
+                      (Graph.HasCycleWithLength data.LengthOK representative →
+                        Graph.HasCycleWithLength data.LengthOK object)) →
+              False
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.obstructionPackingRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (selection maximalPacking :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            selection ≠ maximalPacking →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
+                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                    (0 < Graph.FiniteObject.windowPackingNumber input.object data.windowOrder ∧
+                        ∃ packing,
+                          Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                            packing.card = Graph.FiniteObject.windowPackingNumber input.object data.windowOrder ∧
+                              ∀ (support : Finset input.object.Vertex),
+                                Graph.FiniteObject.InducesWindow input.object data.windowOrder support →
+                                  ∃ member ∈ packing, ¬Disjoint support member) →
+                      maximalPacking.At input) →
+                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.orderThresholdDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (largeOrderResidual smallOrderResidual :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  (2 ^ data.largeOrderExponent ≤ Graph.FiniteObject.vertexCount current.object →
+                      largeOrderResidual.At current) →
+                    (Graph.FiniteObject.vertexCount current.object < 2 ^ data.largeOrderExponent →
+                        smallOrderResidual.At current) →
+                      largeOrderResidual ∉ known →
+                        smallOrderResidual ∉ known →
+                          Core.Strategy.Decision largeOrderResidual smallOrderResidual previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.pairManifest`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (required first second :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            first ≠ required →
+              second ≠ required →
+                first ≠ second →
+                  Core.Strategy.FactManifest (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -3848,7 +4950,7 @@ Function.Injective Graph.Strategy.Spine.name
 - Compiled type:
 
 ```lean
-(Graph.FiniteObject → Type v) → (Presentation : Type) → Presentation → ℕ → Core.Problem
+(Graph.FiniteObject → Type v) → (Presentation : Type) → Presentation → Graph.Strategy.Spine.Data → Core.Problem
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.progress`
@@ -3862,7 +4964,179 @@ Function.Injective Graph.Strategy.Spine.name
 (BranchState : Graph.FiniteObject → Type v) →
   (Presentation : Type) →
     (presentation : Presentation) →
-      (threshold : ℕ) → Core.Progress (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold)
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Progress (Graph.Strategy.Spine.problem BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderCurvatureTargetRank`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex) → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderCurvatureTests`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(object : Graph.FiniteObject) →
+  (packing : Finset (Finset object.Vertex)) → Finset (object.InternalWedge (object.remainderSupport packing))
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderEntropyDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (remainderEntropyHigh remainderEntropyLow :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  ((∀ (packing : Finset (Finset current.object.Vertex)),
+                        Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
+                          Graph.AtLeastEntropyRate (Graph.FiniteObject.vertexCount current.object)
+                            data.entropyDenominator data.windowOrder data.threshold
+                            (Graph.FiniteObject.remainderSupport current.object packing).card) →
+                      remainderEntropyHigh.At current) →
+                    ((∃ packing,
+                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                            Graph.BelowEntropyRate (Graph.FiniteObject.vertexCount current.object)
+                              data.entropyDenominator data.windowOrder data.threshold
+                              (Graph.FiniteObject.remainderSupport current.object packing).card) →
+                        remainderEntropyLow.At current) →
+                      remainderEntropyHigh ∉ known →
+                        remainderEntropyLow ∉ known →
+                          Core.Strategy.Decision remainderEntropyHigh remainderEntropyLow previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderNormalizationRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (selection remainderNormalized :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            selection ≠ remainderNormalized →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
+                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                    (∀ (packing : Finset (Finset input.object.Vertex)),
+                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                          (∀ (window : Finset input.object.Vertex),
+                              Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
+                                ∃ member ∈ packing, ¬Disjoint window member) →
+                            ∀ support ⊆ Graph.FiniteObject.remainderSupport input.object packing,
+                              ¬Graph.FiniteObject.InducesWindow input.object data.windowOrder support ∧
+                                ¬Graph.MinimumDegreeAtLeast data.threshold
+                                    (Graph.FiniteObject.induce input.object support)) →
+                      remainderNormalized.At input) →
+                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderQuotient`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex) → Type (u + 2)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderQuotientSystem`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data →
+  (object : Graph.FiniteObject) →
+    (packing : Finset (Finset object.Vertex)) →
+      Core.TargetRank.QuotientSystem (object.InternalWedge (object.remainderSupport packing))
+        (Graph.Strategy.Spine.remainderCurvatureTests object packing)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderStates`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex) → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderSupport_ssubset_delocalizationSupport`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (data : Graph.Strategy.Spine.Data) {object : Graph.FiniteObject} {packing : Finset (Finset object.Vertex)}
+  (quotient : Graph.Strategy.Spine.remainderQuotient data object packing),
+  ¬quotient.support ⊆ object.remainderSupport packing →
+    object.remainderSupport packing ⊂ Graph.Strategy.Spine.delocalizationSupport data object packing quotient
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderSupport_subset_delocalizationSupport`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (data : Graph.Strategy.Spine.Data) {object : Graph.FiniteObject} {packing : Finset (Finset object.Vertex)}
+  (quotient : Graph.Strategy.Spine.remainderQuotient data object packing),
+  object.remainderSupport packing ⊆ Graph.Strategy.Spine.delocalizationSupport data object packing quotient
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.remainderWedgeSupply`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(object : Graph.FiniteObject) → Finset (Finset object.Vertex) → ℕ
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows`
@@ -3878,21 +5152,18 @@ Function.Injective Graph.Strategy.Spine.name
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {threshold : ℕ} →
-        {LengthOK : ℕ → Prop} →
-          [inst :
-              Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
-            (selection returnAvoidance :
-                Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
-              selection ≠ returnAvoidance →
-                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
-                    (a : selection.At input), ¬Graph.HasCycleWithLength LengthOK input.object) →
-                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
-                      (∀ (dart : input.object.graph.Dart),
-                          Disjoint (Graph.returnLengthSet input.object dart) (Graph.shiftedAcceptedSet LengthOK)) →
-                        returnAvoidance.At input) →
-                    Core.Strategy.AtomicStrategy
-                      (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (selection returnAvoidance :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            selection ≠ returnAvoidance →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
+                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                    (∀ (dart : input.object.graph.Dart),
+                        Disjoint (Graph.returnLengthSet input.object dart) (Graph.shiftedAcceptedSet data.LengthOK)) →
+                      returnAvoidance.At input) →
+                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.rowManifest`
@@ -3906,12 +5177,107 @@ Function.Injective Graph.Strategy.Spine.name
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {threshold : ℕ} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
           (required produced :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
             required ≠ produced →
-              Core.Strategy.FactManifest (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+              Core.Strategy.FactManifest (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.sourceFreeManifest`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+            Core.Strategy.FactManifest (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.surplusDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (surplusAbove surplusAtOrBelow :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  (data.surplusThreshold (Graph.FiniteObject.vertexCount current.object) <
+                        Graph.FiniteObject.degreeSurplus current.object data.threshold →
+                      surplusAbove.At current) →
+                    (Graph.FiniteObject.degreeSurplus current.object data.threshold ≤
+                          data.surplusThreshold (Graph.FiniteObject.vertexCount current.object) →
+                        surplusAtOrBelow.At current) →
+                      surplusAbove ∉ known →
+                        surplusAtOrBelow ∉ known → Core.Strategy.Decision surplusAbove surplusAtOrBelow previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.typeSplitDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (negativeSupport typeALowSurplus typeBHighSurplus :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  [Core.Residual.FactKeys.Has negativeSupport known] →
+                    (∀ (a : negativeSupport.At current),
+                        ∃ packing,
+                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                            ∃ piece ⊆ Graph.FiniteObject.remainderSupport current.object packing,
+                              Graph.SupportComponents.Connected.ConnectedOn current.object piece ∧
+                                Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
+                                  data.dischargeScale) →
+                      ((∃ packing,
+                            Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                              ∃ piece ⊆ Graph.FiniteObject.remainderSupport current.object packing,
+                                Graph.SupportComponents.Connected.ConnectedOn current.object piece ∧
+                                  Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
+                                      data.dischargeScale ∧
+                                    Graph.FiniteObject.ambientSurplus current.object piece data.threshold = 0) →
+                          typeALowSurplus.At current) →
+                        ((∃ packing,
+                              Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                                ∃ piece ⊆ Graph.FiniteObject.remainderSupport current.object packing,
+                                  Graph.SupportComponents.Connected.ConnectedOn current.object piece ∧
+                                    Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
+                                        data.dischargeScale ∧
+                                      0 < Graph.FiniteObject.ambientSurplus current.object piece data.threshold) →
+                            typeBHighSurplus.At current) →
+                          typeALowSurplus ∉ known →
+                            typeBHighSurplus ∉ known → Core.Strategy.Decision typeALowSurplus typeBHighSurplus previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -3927,8 +5293,111 @@ Function.Injective Graph.Strategy.Spine.name
 (BranchState : Graph.FiniteObject → Type v) →
   (Presentation : Type) →
     (presentation : Presentation) →
-      (threshold : ℕ) →
-        (ℕ → Prop) →
-          Core.Strategy.FactVocabulary (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold)
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.FactVocabulary (Graph.Strategy.Spine.problem BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.wedgeSupplyRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (boundaryDemand wedgeSupply curvatureDemandFloor :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            wedgeSupply ≠ boundaryDemand →
+              curvatureDemandFloor ≠ boundaryDemand →
+                wedgeSupply ≠ curvatureDemandFloor →
+                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                      (a : boundaryDemand.At input) (packing : Finset (Finset input.object.Vertex)),
+                      Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                        Graph.FiniteObject.positiveDeficiency input.object
+                              (Graph.FiniteObject.remainderSupport input.object packing) data.threshold +
+                            2 * (data.windowOrder - 1) * packing.card ≤
+                          data.threshold * (data.windowOrder * packing.card) +
+                            Graph.FiniteObject.ambientSurplus input.object (Graph.FiniteObject.windowSupport packing)
+                              data.threshold) →
+                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                        (∀ (packing : Finset (Finset input.object.Vertex)),
+                            Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                              ∀ support ⊆ Graph.FiniteObject.remainderSupport input.object packing,
+                                data.threshold * support.card ≤
+                                  Graph.FiniteObject.internalWedgeCount input.object support +
+                                    2 * Graph.FiniteObject.positiveDeficiency input.object support data.threshold) →
+                          wedgeSupply.At input) →
+                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                          (∀ (packing : Finset (Finset input.object.Vertex)),
+                              Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                                data.threshold * (Graph.FiniteObject.remainderSupport input.object packing).card +
+                                    2 * (2 * (data.windowOrder - 1) * packing.card) ≤
+                                  Graph.FiniteObject.internalWedgeCount input.object
+                                      (Graph.FiniteObject.remainderSupport input.object packing) +
+                                    2 *
+                                      (data.threshold * (data.windowOrder * packing.card) +
+                                        Graph.FiniteObject.ambientSurplus input.object
+                                          (Graph.FiniteObject.windowSupport packing) data.threshold)) →
+                            curvatureDemandFloor.At input) →
+                        Core.Strategy.AtomicStrategy
+                          (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.windowJoinPressureRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (netChargeNonNegative boundaryDemand windowJoinPressure :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            netChargeNonNegative ≠ boundaryDemand →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : netChargeNonNegative.At input) (packing : Finset (Finset input.object.Vertex)),
+                  Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                    Graph.FiniteObject.NonNegativeNetCharge input.object
+                      (Graph.FiniteObject.remainderSupport input.object packing) data.threshold data.dischargeScale) →
+                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    (a : boundaryDemand.At input) (packing : Finset (Finset input.object.Vertex)),
+                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                      Graph.FiniteObject.positiveDeficiency input.object
+                            (Graph.FiniteObject.remainderSupport input.object packing) data.threshold ≤
+                          Graph.FiniteObject.boundaryIncidence input.object
+                            (Graph.FiniteObject.remainderSupport input.object packing) ∧
+                        Graph.FiniteObject.boundaryIncidence input.object
+                              (Graph.FiniteObject.remainderSupport input.object packing) +
+                            2 * (data.windowOrder - 1) * packing.card ≤
+                          data.threshold * (data.windowOrder * packing.card) +
+                            Graph.FiniteObject.ambientSurplus input.object (Graph.FiniteObject.windowSupport packing)
+                              data.threshold) →
+                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                      (∀ (packing : Finset (Finset input.object.Vertex)),
+                          Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
+                            Graph.FiniteObject.vertexCount input.object +
+                                  data.dischargeScale *
+                                    Graph.FiniteObject.ambientSurplus input.object
+                                      (Graph.FiniteObject.remainderSupport input.object packing) data.threshold +
+                                data.dischargeScale * (2 * (data.windowOrder - 1) * packing.card) ≤
+                              data.dischargeScale * (data.threshold * (data.windowOrder * packing.card)) +
+                                  data.dischargeScale *
+                                    Graph.FiniteObject.ambientSurplus input.object
+                                      (Graph.FiniteObject.windowSupport packing) data.threshold +
+                                data.windowOrder * packing.card) →
+                        windowJoinPressure.At input) →
+                    Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 <!-- END GENERATED API -->

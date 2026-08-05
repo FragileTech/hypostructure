@@ -1,5 +1,6 @@
 import Hypostructure.Core.FiniteEntropy
 import Hypostructure.Graph.Finite
+import Hypostructure.Graph.FiniteEdgeBudget
 
 /-!
 # The labelled skeleton budget
@@ -30,6 +31,27 @@ its edge set, a subset of the `C(n,2)` unordered pairs, so the class with `m`
 edges has exactly `C(C(n,2), m)` members. -/
 def skeletonBudget (object : Graph.FiniteObject.{v}) : Nat :=
   (object.vertexCount.choose 2).choose object.edgeCount
+
+/-- The skeleton budget *is* the object's own exact edge stratum.  Stating the
+identification rather than leaving it to definitional unfolding is what lets a
+node quote the edge-budget module's theorems about `edgeStratumCount` directly
+on `skeletonBudget`. -/
+theorem skeletonBudget_eq_edgeStratumCount (object : Graph.FiniteObject.{v}) :
+    skeletonBudget object =
+      edgeStratumCount object.vertexCount object.edgeCount :=
+  rfl
+
+/-- **`rem:budget-robustness`.**  The retained skeleton budget survives when the
+object's edge count is only known to lie in an admissible family: the exact
+stratum is one of the family's, so the family's own union bound dominates it.
+Every node that carries a cap against `skeletonBudget` can carry this beside it
+without reproving anything. -/
+theorem skeletonBudget_le_variableEdgeBudget
+    (object : Graph.FiniteObject.{v}) {edgeCounts : Finset Nat}
+    (member : object.edgeCount ∈ edgeCounts) :
+    skeletonBudget object ≤
+      variableEdgeBudget object.vertexCount edgeCounts :=
+  edgeStratumCount_le_variableEdgeBudget object.vertexCount member
 
 /-- The skeleton budget is positive: the residual object's own edge count is
 one of the admissible edge counts on its own vertex set, so the class it

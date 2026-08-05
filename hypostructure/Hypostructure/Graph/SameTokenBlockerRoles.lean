@@ -121,4 +121,30 @@ theorem card_tokenSubtype_eq_sum_classFibres :
     (t := (Finset.univ : Finset TokenClass)) (fun _ _ => Finset.mem_univ _)]
   rfl
 
+/-! ## The uniform homogeneous token cap
+
+`Q_st` is `Fintype.card Role` above.  The cap it scales is
+`def:homogeneous-token-charge`'s `Cap_hom(L) = Q_st (L-1)(2L-3)`: the uniform
+token load allowed when no role-homogeneous same-token `L`-matching and no
+role-homogeneous same-token `L`-star occurs at that token.  The coefficients
+`(L-1)(2L-3)` are the matching-or-star lemma's statement, and `L` is the
+caller's own geometric pattern bound; no number is written here. -/
+
+/-- `Q_st`: the size of the role alphabet. -/
+def sameTokenRoleBound : Nat := Fintype.card Role
+
+/-- `Cap_hom(L) = Q_st (L-1)(2L-3)`. -/
+def homogeneousCapCharge (patternBound : Nat) : Nat :=
+  sameTokenRoleBound * ((patternBound - 1) * (2 * patternBound - 3))
+
+/-- The geometric pattern bound at a registered baseline degree. -/
+def geometricPatternBound (baselineDegree : Nat) : Nat := baselineDegree + 1
+
+/-- `M_0 = Cap_hom(L_geom)` in ordered-incidence units: the bounded census
+reads each blocked pair once from each of its two endpoints, so both sides of
+the comparison are doubled and the comparison is unchanged.  The factor `2` is
+the arity of an unordered pair, a unit conversion rather than a threshold. -/
+def homogeneousTokenCap (baselineDegree : Nat) : Nat :=
+  2 * homogeneousCapCharge (geometricPatternBound baselineDegree)
+
 end Hypostructure.Graph.SameTokenBlockerRoles

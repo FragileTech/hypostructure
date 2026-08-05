@@ -1,27 +1,46 @@
-import HypostructureErdos64EG.Official.Definition
+import HypostructureErdos64EG.Problem
 
 /-!
-# Erdős--Gyárfás strategy DAG
+# Erdős--Gyárfás strategy DAG -- **awaiting re-rooting on the entry spine**
 
-This module defines the executable DAG topology shared by the official and
-A/B declarations. Paper correspondence and audit results are recorded in
-`EG_STRATEGYDAG_AUDIT.md`; metadata here describes only code-level structure.
+The authored topology that used to live here was the legacy `Blueprint` chain.
+Its first ten nodes were Block A, and every later row was a continuation passed
+*into* one of them, so the legacy Block A was the skeleton the whole DAG hung
+from.
+
+Block A now has exactly one implementation: `Graph.Strategy.Spine`, run by
+`Graph.Strategy.Spine.run` against the data this problem registers in
+`Problem.lean`.  The legacy registration layer that fed the old topology --
+`Official/Definition.lean`, `Official/Problem.lean`, `AB/`, and
+`Presentation.lean` -- has been deleted, so the old topology no longer
+elaborates and is preserved below as commented reference only.
+
+Re-rooting this module on `Spine.run` and re-attaching rows 11 onwards to
+`Spine.Result` is the next step; it is deliberately not done here.  Nothing in
+the reference below is compiled, and none of it is evidence about the current
+proof.
 -/
 
 namespace HypostructureErdos64EG
+
+/-! ## Reference: the retired legacy topology
+
+Everything from here to the end of the module is the authored `Blueprint` DAG
+as it stood before Block A was ported.  It is kept verbatim as the porting
+reference for rows 11 onwards.
 
 open Hypostructure
 open Hypostructure.Core.Strategy.Dag
 
 syntax "erdosOfficialBlueprint%" term:max term:max term:max term:max term:max term:max term:max term:max term:max term:max term:max term:max term:max term:max term:max term:max term:max term:max : term
 
-/-- The one authored EG topology.  Both the official frontier declaration and
+/ -- The one authored EG topology.  Both the official frontier declaration and
 the A/B sanity declaration elaborate this same syntax against their own
-target-indexed capability registry, preventing the two DAGs from drifting. -/
+target-indexed capability registry, preventing the two DAGs from drifting. - /
 macro_rules
   | `(erdosOfficialBlueprint% $fanSafeScan $certSplit $b2Split $fanMass $degreeFour $hybridEntry $bridgeDeficit $directCycleSplit $typeASaturated $typeAVisible $typeAExitOne $typeAExitTwo $typeAExitThree $typeAExitFour $typeAExitFive $typeAExitSix $typeAExitSeven $typeARoute8) => `(
-    /- Manuscript `[1]`--`[4]`: initialize the proof and select the canonical
-    minimal target-avoiding counterexample. -/
+    / - Manuscript `[1]`--`[4]`: initialize the proof and select the canonical
+    minimal target-avoiding counterexample. - /
     Blueprint.root
       |>.minimalCounterexampleSelection
         (name := "Minimal counterexample")
@@ -136,10 +155,10 @@ macro_rules
                         (capacity := fun capacity =>
                           capacity.finiteStateNetChargeContinuation
                             (typeA := fun branch =>
-                              /- Manuscript Figure 8, nodes [86]-[109].  Nodes
+                              / - Manuscript Figure 8, nodes [86]-[109].  Nodes
                               [86] and [90] carry no vertex: [86] restates the
                               node-[63] residual's own no-surplus payload and
-                              [90] restates the [89] no-branch payload. -/
+                              [90] restates the [89] no-branch payload. - /
                               branch.dichotomy $typeASaturated
                                 (name := "Saturated receiver")
                                 (note := "")
@@ -156,7 +175,7 @@ macro_rules
                                     (rightName := "Visible-first excess")
                                     (rightNote := "")
                                     (right :=
-                                      /- Manuscript edge (silent)--(e4) of
+                                      / - Manuscript edge (silent)--(e4) of
                                       Figure 8: the silent branch realizes only
                                       exits (4)-(8), so it enters the chain at
                                       node [101].  Core's autoroute joins only
@@ -164,7 +183,7 @@ macro_rules
                                       capability-compatible destination on the
                                       Type B side, so the exit-(4)--(7) chain is
                                       written out again here.  The vertices are
-                                      duplicated; the registrations are not. -/
+                                      duplicated; the registrations are not. - /
                                       Blueprint.root.dichotomy $typeAExitFour
                                         (name := "Exit 4: target-defective quotient")
                                         (note := "")
@@ -423,5 +442,7 @@ noncomputable def strategyDag : Program Official.definition.data :=
     ⟨11, by simp [Official.definition]⟩   -- typeAExitSix      dichotomies 11   [105]
     ⟨12, by simp [Official.definition]⟩   -- typeAExitSeven    dichotomies 12   [107]
     ⟨0, by simp [Official.definition]⟩)   -- typeARoute8      route8Closures 0 [111]-[124]
+
+-/
 
 end HypostructureErdos64EG

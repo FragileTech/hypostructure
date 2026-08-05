@@ -1,12 +1,13 @@
-import Hypostructure.Graph.WindowCurvatureCode
+import HypostructureErdos64EG.WindowAlgebra
 
 /-!
 # The source model the P13 barrier table is audited against
 
-The model is the framework's, at the registered window order.  Nothing in this
+The model is the framework's order-generic curvature algebra, applied at this
+problem's registered window order in `WindowAlgebra.lean`.  Nothing in this
 module defines a label, a legality test, a forbidden-difference schedule or a
 relation: every name below is the corresponding declaration of
-`Hypostructure.Graph.WindowCurvature`, whose meaning is already a theorem
+`HypostructureErdos64EG.WindowAlgebra`, whose meaning is already a theorem
 there.
 
 * `labelCode` is `windowLabelCode`.  It is total without a default value, and
@@ -14,7 +15,7 @@ there.
   `Labels` (`windowLabel_injective`, `windowLabel_surjective`,
   `windowLabel_image`).  So the `Fin 399` the generated certificate is indexed
   by is the legal-label carrier of `lem:labels`, counted by
-  `WindowCurvature.labels_card`, and not a stipulated size;
+  `WindowAlgebra.labels_card`, and not a stipulated size;
 * `semanticRelation` is `windowRelation`, and `windowRelation_eq_safe` says it
   is the manuscript's `C_s` on the labels its indices name;
 * the forbidden differences are never listed here: `windowGapSchedule` asks the
@@ -27,6 +28,7 @@ The generated rows are audited against these names in `Audit00`--`Audit14`;
 namespace HypostructureErdos64EG.FiniteChecks.P13Barrier
 
 open Hypostructure.Graph.WindowCurvature
+open HypostructureErdos64EG.WindowAlgebra
 
 /-- The packed attachment label of the registered window order. -/
 abbrev LabelCode := BitVec windowOrder

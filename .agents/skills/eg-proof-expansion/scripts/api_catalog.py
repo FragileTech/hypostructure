@@ -100,14 +100,26 @@ FORBIDDEN_DAG_DECLARATION = re.compile(
 
 ALLOWED_DAG_DECLARATIONS = {"strategyDag"}
 
+# The closed presentation surface of `Problem.lean`.  Each entry is either the
+# problem/target registration itself or a registered datum that genuinely
+# cannot be derived from the incoming residual: a presentation parameter, a
+# threshold the argument chooses, or the record of them the framework's entry
+# spine reads.  No theorem, strategy, executor, or ledger operation may be
+# added here -- those belong to the framework.
 ALLOWED_PROBLEM_DECLARATIONS = {
     "erdosReceiverLoadProfile",
     "Baseline",
     "BranchState",
     "problem",
-    "officialStatement",
+    "OfficialStatement",
     "Target",
     "target",
+    # Registered constants of the presentation.
+    "surplusScaleCoefficient",
+    "surplusScaleThreshold",
+    "nodeThirtyTwoRankAllowance",
+    # The registered data record the entry spine reads.
+    "spineData",
 }
 
 PROOF_BOUNDARY_FILES = (

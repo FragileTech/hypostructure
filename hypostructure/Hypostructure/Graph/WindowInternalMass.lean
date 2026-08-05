@@ -219,30 +219,30 @@ theorem boundaryIncidence_remainderSupport_eq (object : FiniteObject.{u})
   rw [fromRemainder, fromWindow]
   exact object.sum_internalDegree_comm _ _
 
-/-- **`lem:surplus-aware-window-stub`.**
+/-- **`lem:surplus-aware-window-stub`, capacity half:**
 
-`def⁺(R) + 2(order − 1)·p ≤ δ·order·p + σ_W`, the subtraction-free form of
+`e(R,W) + 2(order − 1)·p ≤ δ·order·p + σ_W`,
 
-  `def⁺(R) ≤ e(R,W) ≤ (δ·order − 2(order − 1))·p + σ_W`,
+the subtraction-free form of the manuscript's
+`e(R,W) ≤ (δ·order − 2(order − 1))·p + σ_W`, which at its own presentation is
+`e(R,W) ≤ 15p₁₃ + σ_W`: `δ·order` is its `39 = 13·3` and `2(order − 1)` its
+`24 = 2·12`, twice the path edges of an induced copy.  Neither numeral appears.
 
-which at the manuscript's presentation is `def⁺(R) ≤ 15p₁₃ + σ_W`: `δ·order`
-is its `39` and `2(order − 1)` its `24`.  Neither numeral appears.
-
-No near-cubic hypothesis is used, exactly as the manuscript states. -/
-theorem positiveDeficiency_add_internal_mass_le (object : FiniteObject.{u})
+This is the *cut* budget — invariant 23, the window stub capacity — stated
+about `e(R,W)` alone, before any deficiency is compared to it.  The manuscript
+counts it on the window side ("every `R`--`W` edge leaves some window") and
+uses it on the remainder side; `boundaryIncidence_remainderSupport_eq` is that
+step, the cut being one number counted from either end. -/
+theorem boundaryIncidence_add_internal_mass_le (object : FiniteObject.{u})
     {order threshold : Nat} {packing : Finset (Finset object.Vertex)}
     (valid : object.IsWindowPacking order packing)
     (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex) :
-    object.positiveDeficiency (object.remainderSupport packing) threshold +
+    object.boundaryIncidence (object.remainderSupport packing) +
         2 * (order - 1) * packing.card ≤
       threshold * (order * packing.card) +
         object.ambientSurplus (windowSupport packing) threshold := by
   classical
-  have demand :
-      object.positiveDeficiency (object.remainderSupport packing) threshold ≤
-        object.boundaryIncidence (windowSupport packing) := by
-    rw [← object.boundaryIncidence_remainderSupport_eq packing]
-    exact object.positiveDeficiency_le_boundaryIncidence _ threshold baseline
+  have cut := object.boundaryIncidence_remainderSupport_eq packing
   have supply :
       object.boundaryIncidence (windowSupport packing) +
           ∑ vertex ∈ windowSupport packing,
@@ -261,6 +261,53 @@ theorem positiveDeficiency_add_internal_mass_le (object : FiniteObject.{u})
     omega
   have mass := object.internal_mass_windowSupport valid
   rw [object.windowSupport_card_eq valid] at supply
+  omega
+
+/-- **`lem:surplus-aware-window-stub`.**
+
+`def⁺(R) + 2(order − 1)·p ≤ δ·order·p + σ_W`, the subtraction-free form of the
+manuscript's chain
+
+  `def⁺(R) ≤ e(R,W) ≤ (δ·order − 2(order − 1))·p + σ_W`,
+
+which at its own presentation is `def⁺(R) ≤ 15p₁₃ + σ_W`.  It is exactly the
+capacity half above composed with `positiveDeficiency_le_boundaryIncidence`.
+
+No near-cubic hypothesis is used, exactly as the manuscript states. -/
+theorem positiveDeficiency_add_internal_mass_le (object : FiniteObject.{u})
+    {order threshold : Nat} {packing : Finset (Finset object.Vertex)}
+    (valid : object.IsWindowPacking order packing)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex) :
+    object.positiveDeficiency (object.remainderSupport packing) threshold +
+        2 * (order - 1) * packing.card ≤
+      threshold * (order * packing.card) +
+        object.ambientSurplus (windowSupport packing) threshold := by
+  have demand := object.positiveDeficiency_le_boundaryIncidence
+    (object.remainderSupport packing) threshold baseline
+  have capacity := object.boundaryIncidence_add_internal_mass_le valid baseline
+  omega
+
+/-- **`lem:stub-positive`, in exact form.**
+
+`def⁺(R) + 2(order − 1)·p ≤ δ·order·p + σ(G)`.
+
+The manuscript's own last step of `lem:stub-positive`:
+`e(R,W) ≤ 15p₁₃ + σ_W ≤ 15p₁₃ + σ(G)`, "since the windows are vertex-disjoint
+and surplus is nonnegative".  It is the form that a registered ceiling on
+`σ(G)` can be spent against: the manuscript spends `def:near-cubic-spine`'s
+`σ(G) = O(√n) = o(n)` and reads off `def⁺(R) ≤ 15p₁₃ + o(n)`, and a spine
+carrying an exact ceiling on `σ(G)` reads off the exact analogue. -/
+theorem positiveDeficiency_add_internal_mass_le_degreeSurplus
+    (object : FiniteObject.{u})
+    {order threshold : Nat} {packing : Finset (Finset object.Vertex)}
+    (valid : object.IsWindowPacking order packing)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex) :
+    object.positiveDeficiency (object.remainderSupport packing) threshold +
+        2 * (order - 1) * packing.card ≤
+      threshold * (order * packing.card) + object.degreeSurplus threshold := by
+  have stub := object.positiveDeficiency_add_internal_mass_le valid baseline
+  have global := object.ambientSurplus_le_degreeSurplus
+    (windowSupport packing) threshold baseline
   omega
 
 end FiniteObject

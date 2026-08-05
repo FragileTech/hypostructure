@@ -54,6 +54,10 @@ def closureFactName : Lean.Name :=
 
 inductive AutomaticClosureReason where
   | incompatibleFacts (left right : Lean.Name)
+  /-- One committed fact is impossible on every residual of the domain, so the
+  branch that committed it is uninhabited.  This is the closure of a terminal
+  whose alternative a branch test had to offer and no object can realize. -/
+  | impossibleFact (fact : Lean.Name)
   | emptyResidual
   deriving Repr, DecidableEq
 

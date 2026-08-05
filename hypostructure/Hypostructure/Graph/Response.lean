@@ -113,6 +113,27 @@ theorem exists_context_of_not_contextEquivalent {boundary : Boundary.{u}}
   · intro realized
     exact distinguishes ⟨fun _ => monotone outside realized, fun _ => realized⟩
 
+/-- **The closing clause of `lem:separated-testers`.**
+
+*"Consequently, any quotient identifying `w(u)` with `w(v)` is either
+context-universal or target-defective."*
+
+At a fixed labelled interface an identification of two boundaried states admits
+exactly these two outcomes: either no outside context separates them, or one
+does and is exhibited.  There is no third possibility, and in particular no
+outcome in which the identification is valid for some contexts without a
+witness for the rest.  This is the exhaustiveness a context-validity branch
+splits on. -/
+theorem contextEquivalent_or_targetDefect
+    {boundary : Boundary.{u}}
+    (Target : FiniteObject.{u} -> Prop)
+    (left right : BoundaryPiece boundary) :
+    ContextEquivalent Target left right \/ TargetDefect Target left right := by
+  classical
+  by_cases universal : ContextEquivalent Target left right
+  · exact Or.inl universal
+  · exact Or.inr (targetDefect_of_not_contextEquivalent universal)
+
 theorem notTargetComplete_of_targetDefect
     {boundary : Boundary.{u}}
     {Profile : Type uProfile}

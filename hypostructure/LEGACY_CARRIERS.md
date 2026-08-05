@@ -26,14 +26,30 @@ at that point -- could leave the build without touching it.
 The quarantined modules are still on disk and are the porting reference for the
 rows that have not been rewritten yet.  See `quarantine.txt`.
 
+**Deleted outright, once their rows had exactly one implementation.**  Block A's
+legacy layer is no longer quarantined beside the spine -- it is gone.  Twenty-two
+`Core.Strategy` modules (the counterexample-reduction chain, obstruction
+packing, the exact finite local algebra, the scale-threshold and barrier
+dichotomies, the density budget, and the row-37/38 normalization and
+boundary-demand pair) and seven `Graph.Strategy` modules were removed, together
+with `Graph.External.HegdeSandeepShashank`, `Graph.WindowCurvatureTypeB` and
+`Graph.Strategy.Official.Universal`.  The EG registration layer that drove them
+(`Official/`, `AB/`, `Presentation.lean`) went with them.
+
+**The framework stopped naming the problem.**  The curvature algebra is
+order-generic; the specializations at `windowOrder = 13` and the label count
+`399`, and the Hegde--Sandeep--Shashank axiom, now live in the proof and reach
+the framework only as fields of the problem's registered `Spine.Data`.
+
 ## Where things stand
 
 | | |
 |---|---|
-| live modules in the build | 111 |
-| quarantined | 315 |
-| entry-spine import closure | 58 modules |
+| live modules in the build | 106 |
+| quarantined | 302 |
+| entry-spine import closure | 62 modules |
 | legacy residual stack reachable from the spine | none |
+| problem-specific declarations in Core or Graph | none |
 | gate violations | 0 |
 
 The spine reaches no `Ledger`, `Stage`, `Query`, `Focus`, or `Decision`.  Block

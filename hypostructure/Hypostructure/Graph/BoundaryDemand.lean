@@ -202,6 +202,59 @@ theorem sum_internalDegree_comm (object : FiniteObject.{u})
     Finset.sum_congr rfl fun other _ => by
       simp [SimpleGraph.adj_comm]
 
+/-! ## `σ_W ≤ σ(G)`: paying a region's surplus out of the object's own -/
+
+/-- **`σ_W ≤ σ(G)`.**  Surplus is a sum of nonnegative vertex-local terms, so a
+larger region carries at least as much of it.  The manuscript's own reason for
+`σ_W ≤ σ(G)`: "the windows are vertex-disjoint and surplus is nonnegative". -/
+theorem ambientSurplus_le_of_subset (object : FiniteObject.{u})
+    {small large : Finset object.Vertex} (contained : small ⊆ large)
+    (threshold : Nat) :
+    object.ambientSurplus small threshold ≤
+      object.ambientSurplus large threshold :=
+  Finset.sum_le_sum_of_subset contained
+
+/-- **The surplus of any region is bounded by the object's own**, `σ_W ≤ σ(G)`.
+
+The whole object's surplus, read as a region, *is* the `degreeSurplus`
+observable that the node-`[19]` split compares: on the standing baseline the
+handshake gives `Σ_v (d(v) − δ) = 2m − δn`.  So this is not a second surplus
+notion, and a window-local surplus can be paid for out of a registered ceiling
+on `σ(G)`. -/
+theorem ambientSurplus_univ_eq_degreeSurplus (object : FiniteObject.{u})
+    (threshold : Nat)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex) :
+    letI : FinEnum object.Vertex := object.vertices
+    object.ambientSurplus Finset.univ threshold =
+      object.degreeSurplus threshold := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  classical
+  have split := object.sum_degree_eq_threshold_mul_card_add_ambientSurplus
+    Finset.univ threshold baseline
+  have handshake :
+      (∑ vertex : object.Vertex, object.degree vertex) =
+        2 * object.edgeCount := by
+    simpa [FiniteObject.degree, FiniteObject.edgeCount] using
+      object.graph.sum_degrees_eq_twice_card_edges
+  have card :
+      (Finset.univ : Finset object.Vertex).card = object.vertexCount := by
+    simp [FiniteObject.vertexCount, Finset.card_univ,
+      FinEnum.card_eq_fintypeCard]
+  rw [handshake, card] at split
+  unfold FiniteObject.degreeSurplus
+  omega
+
+theorem ambientSurplus_le_degreeSurplus (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex) :
+    object.ambientSurplus support threshold ≤
+      object.degreeSurplus threshold := by
+  letI : FinEnum object.Vertex := object.vertices
+  classical
+  rw [← object.ambientSurplus_univ_eq_degreeSurplus threshold baseline]
+  exact object.ambientSurplus_le_of_subset (Finset.subset_univ support) threshold
+
 end FiniteObject
 
 end Hypostructure.Graph

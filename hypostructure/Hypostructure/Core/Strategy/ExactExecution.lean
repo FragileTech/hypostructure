@@ -114,6 +114,38 @@ class Incompatible
   contradiction : (residual : Residual) ->
     left.At residual -> right.At residual -> False
 
+/-- Registered semantic impossibility of a single fact.
+
+A branch test must offer every alternative its domain admits, and some of those
+alternatives are realized by no object at all.  A branch that commits such a
+fact is uninhabited, and that is exactly what a closed terminal is.  Unlike
+`Incompatible`, the contradiction is carried by one fact, so no second fact has
+to be manufactured to record it. -/
+class Impossible
+    (Residual : Type uResidual)
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    (key : FactKey Residual) where
+  contradiction : (residual : Residual) -> key.At residual -> False
+
+/-- Close from one impossible fact visible on this branch. -/
+noncomputable def closeImpossible
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [system : FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    {current : Residual} {known : FactKeys Residual}
+    (previous : ExactLedger Residual current known)
+    (key : FactKey Residual)
+    [Core.Residual.FactKeys.Has key known]
+    [Impossible Residual key]
+    (fresh : system.closureKey ∉ known := by decide) :
+    ExactLedger Residual current (system.closureKey :: known) :=
+  ExactLedger.publishFact exactLedgerInternal% previous system.closureKey
+    (system.closureValue current {
+    reason := .impossibleFact key.name
+    contradiction := Impossible.contradiction current (ExactLedger.get previous key)
+    }) fresh `Hypostructure.Core.Strategy.autoclose.impossible
+
 /-- Optional exact emptiness decision for residual domains where emptiness is
 computable. -/
 class EmptinessOracle

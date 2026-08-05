@@ -1,28 +1,32 @@
-import HypostructureErdos64EG.Official.StructuralProgram
-import HypostructureErdos64EG.Official.ClosureProbe
-import HypostructureErdos64EG.AB.Execution
+import HypostructureErdos64EG.Problem
+import HypostructureErdos64EG.StrategyDag
 
 /-!
 # Erdős–Gyárfás as a Hypostructure application
 
-This is the library root and the package's default target.  It pulls in the
-three entry points that constitute the development, and nothing else:
+This is the library root and the package's default target.
 
-* `Official.StructuralProgram` -- the official problem, its registered strategy
-  data, and the sealed `reduceDag%` reduction whose JSON certificate is
-  exported for the validator.
-* `Official.ClosureProbe` -- the strict `ofDag%` frontend, which accepts the
-  declaration only when no residual survives.  This is the honest closure test:
-  `reduceDag%` retains residuals and therefore succeeds whatever remains open.
-* `AB.Execution` -- the Type-A/Type-B frontier reduction against the single
-  disjunctive target `OfficialTarget ∨ GlobalTypeA ∨ GlobalTypeB`.
+The application is exactly two modules:
 
-Both runs share one authored topology, the `erdosOfficialBlueprint%` macro in
-`HypostructureErdos64EG.StrategyDag`, so the official and A/B registries cannot
-drift apart.
+* `Problem` -- the pinned public statement, one Core problem, one Core target,
+  and the one record of registered data the framework's entry spine reads.
+  This is where the problem's own inputs live: the Hegde--Sandeep--Shashank
+  theorem (via `WindowAlgebra`) and the audited finite curvature table (via
+  `FiniteChecks.P13Barrier`).  The framework reads them from here and names
+  neither.
+* `StrategyDag` -- the authored topology.  It is currently a commented
+  reference: Block A now runs on `Graph.Strategy.Spine`, and re-rooting the DAG
+  on `Spine.run` with rows 11 onwards re-attached to `Spine.Result` is the next
+  step.
 
-Everything reachable from here is live.  The per-node modules of the earlier
-`NodeN.lean` development, together with the contract, fixture and workflow
-modules that supported them, were removed once the framework-native
-registration replaced them; they remain in git history.
+`WindowAlgebra` and `FiniteChecks.P13Barrier` are supporting inputs of
+`Problem` rather than entry points, so they are reached through it.
+
+The legacy registration layer -- `Official/Definition.lean`,
+`Official/Problem.lean`, `Official/StructuralProgram.lean`,
+`Official/ClosureProbe.lean`, the `AB/` directory and `Presentation.lean` --
+built a `Core.ProblemDefinition`: a registry of parallel capability lists whose
+entries were resolved by list position.  The canonical API replaces that
+outright, so the layer was deleted rather than carried; it remains in git
+history.
 -/

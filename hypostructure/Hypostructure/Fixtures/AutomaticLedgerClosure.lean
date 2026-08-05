@@ -26,6 +26,8 @@ instance : RefinementSystem Residual where
 inductive Key where
   | cold
   | hot
+  /-- The alternative a branch test has to offer and no residual can realize. -/
+  | both
   | contradiction
   deriving DecidableEq
 
@@ -35,6 +37,7 @@ instance : FactSystem Residual where
   name
     | .cold => `Cold
     | .hot => `Hot
+    | .both => `Both
     | .contradiction => closureFactName
   name_injective := by
     intro left right same
@@ -42,6 +45,7 @@ instance : FactSystem Residual where
   Value
     | .cold, residual => PLift residual.subject.Cold
     | .hot, residual => PLift residual.subject.Hot
+    | .both, residual => PLift (residual.subject.Cold ∧ residual.subject.Hot)
     | .contradiction, _ => ClosureEvidence
   value_subsingleton := by
     intro key residual
@@ -58,6 +62,10 @@ instance : FactSystem Residual where
         rw [refinement.1]
         exact value.down
     | hot =>
+        constructor
+        rw [refinement.1]
+        exact value.down
+    | both =>
         constructor
         rw [refinement.1]
         exact value.down
@@ -116,5 +124,61 @@ theorem branch_is_closed (subject : Subject)
     (cold : subject.Cold) (hot : subject.Hot) : False :=
   (ExactLedger.get (closedHistory subject cold hot)
     (FactSystem.closureKey (Residual := Residual))).contradiction
+
+/-! ## Single-fact closure
+
+A branch test must offer every alternative its domain admits, and some of them
+are realized by no object at all.  `Impossible` registers that, and
+`closeImpossible` closes the arm the moment it is taken, without a second fact
+having to be manufactured to record the contradiction.
+
+The fixture below is the generic witness for that operation: the residual keeps
+its subject, every earlier fact is still retrievable through
+`ExactLedger.get` after the closure, and the branch carries Core's reserved
+closure entry naming the impossible fact and nothing else. -/
+
+/-- A fact no residual of this domain can carry: it asserts both halves of the
+subject's own exclusion. -/
+def bothFact : FactKey Residual := .both
+
+instance : Impossible Residual bothFact where
+  contradiction residual value :=
+    residual.subject.exclusive value.down.1 value.down.2
+
+noncomputable def impossibleHistory (subject : Subject)
+    (cold : subject.Cold) (both : subject.Cold ∧ subject.Hot) :=
+  closeImpossible
+    (ExactLedger.publishFact exactLedgerInternal% (coldHistory subject cold)
+      bothFact ⟨both⟩ (by simp [bothFact, coldFact]))
+    bothFact (by simp [bothFact, coldFact])
+
+/-- **Predecessor preservation.**  The fact committed before the closure is
+still retrievable by exact key afterwards. -/
+theorem cold_remains_retrievable_after_impossible (subject : Subject)
+    (cold : subject.Cold) (both : subject.Cold ∧ subject.Hot) :
+    (ExactLedger.currentOf (impossibleHistory subject cold both)).subject.Cold :=
+  (ExactLedger.get (impossibleHistory subject cold both) coldFact).down
+
+/-- **Residual behaviour.**  A single-fact closure changes no residual: the
+subject the branch argues about is the one it started with. -/
+theorem subject_unchanged_after_impossible (subject : Subject)
+    (cold : subject.Cold) (both : subject.Cold ∧ subject.Hot) :
+    (ExactLedger.currentOf (impossibleHistory subject cold both)).subject =
+      subject := rfl
+
+/-- **The advertised theorem.**  The branch is closed. -/
+theorem impossible_branch_is_closed (subject : Subject)
+    (cold : subject.Cold) (both : subject.Cold ∧ subject.Hot) : False :=
+  (ExactLedger.get (impossibleHistory subject cold both)
+    (FactSystem.closureKey (Residual := Residual))).contradiction
+
+/-- **Ledger availability.**  The closure entry names the impossible fact, and
+`AutomaticClosureReason.impossibleFact` is what distinguishes it from a
+two-fact incompatibility. -/
+theorem impossible_closure_names_the_fact (subject : Subject)
+    (cold : subject.Cold) (both : subject.Cold ∧ subject.Hot) :
+    (ExactLedger.get (impossibleHistory subject cold both)
+      (FactSystem.closureKey (Residual := Residual))).reason =
+      .impossibleFact (FactSystem.name bothFact) := rfl
 
 end Hypostructure.Fixtures.AutomaticLedgerClosure

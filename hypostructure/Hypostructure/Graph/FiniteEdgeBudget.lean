@@ -32,6 +32,22 @@ theorem sum_edgeStratumCount_le_variableEdgeBudget
       (edgeCounts.sup (edgeStratumCount vertexCount)) fun edgeCount member =>
         Finset.le_sup member)
 
+/-- The pointwise form of the same union bound: one admissible stratum is
+dominated by the whole family's budget.  This is what a node holding a single
+exact edge count needs in order to state `rem:budget-robustness` — that its
+retained bound survives when the edge count is only known to lie in the family
+— and it is the elementary half of
+`sum_edgeStratumCount_le_variableEdgeBudget`: the exact stratum is one of the
+family's, so it is below the family's supremum, and the family is nonempty, so
+the supremum is below the budget's `card * sup`. -/
+theorem edgeStratumCount_le_variableEdgeBudget
+    (vertexCount : Nat) {edgeCounts : Finset Nat} {edgeCount : Nat}
+    (member : edgeCount ∈ edgeCounts) :
+    edgeStratumCount vertexCount edgeCount ≤
+      variableEdgeBudget vertexCount edgeCounts :=
+  le_trans (Finset.le_sup member)
+    (Nat.le_mul_of_pos_left _ (Finset.card_pos.mpr ⟨edgeCount, member⟩))
+
 noncomputable def edgeFamilyEntropy
     (vertexCount : Nat) (edgeCounts : Finset Nat) : ℝ :=
   Real.logb 2 (∑ edgeCount ∈ edgeCounts,

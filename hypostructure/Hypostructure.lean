@@ -22,8 +22,8 @@ import Hypostructure.Core.Finite.CertifiedTableAggregation
 import Hypostructure.Core.Finite.CertifiedTableBounds
 import Hypostructure.Core.FiniteTriangle
 import Hypostructure.Core.FiniteBitRelationBarrier
+import Hypostructure.Core.CeilSqrt
 import Hypostructure.Core.DyadicLength
-import Hypostructure.Core.Strategy.ExactFiniteLocalAlgebraBitTable
 import Hypostructure.Core.ArithmeticTransport
 import Hypostructure.Core.FiniteEntropy
 import Hypostructure.Core.OneThreeRepair
@@ -39,6 +39,15 @@ import Hypostructure.Core.Strategy.MinimalCounterexampleScope
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Strategy.SpineRows
 import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.ColdCorridor
+import Hypostructure.Graph.ColdFirstFailure
+import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRun
+import Hypostructure.Fixtures.ColdCorridorSignature
+import Hypostructure.Fixtures.ColdCorridorLedger
+import Hypostructure.Fixtures.ColdCorridorConstruction
+import Hypostructure.Fixtures.ColdCorridorShortSelfReturn
+import Hypostructure.Fixtures.ColdCorridorRun
 import Hypostructure.Core.Strategy.FactManifest
 import Hypostructure.Fixtures.ExactLedger
 import Hypostructure.Fixtures.ExactExecution
@@ -53,11 +62,11 @@ import Hypostructure.Fixtures.ExactLedgerDuplicateFact
 import Hypostructure.Fixtures.ExactLedgerMissingFact
 import Hypostructure.Fixtures.ExactExecutionMissingRequirement
 import Hypostructure.Fixtures.ExactExecutionDroppedFact
-import Hypostructure.Core.EntropyPackingBudget
 import Hypostructure.Routes.Registry
 import Hypostructure.Graph.Object
 import Hypostructure.Graph.Problem
 import Hypostructure.Graph.Finite
+import Hypostructure.Graph.SurplusPort
 import Hypostructure.Graph.FiniteEdgeBudget
 import Hypostructure.Graph.SupportComponents
 import Hypostructure.Graph.OneThreeRepair
@@ -66,7 +75,6 @@ import Hypostructure.Graph.Induced
 import Hypostructure.Graph.InducedPath
 import Hypostructure.Graph.InducedPathMaximalPacking
 import Hypostructure.Graph.PackedWindowRealization
-import Hypostructure.Graph.External.HegdeSandeepShashank
 import Hypostructure.Graph.Deletion
 import Hypostructure.Graph.Progress
 import Hypostructure.Graph.Minimality
@@ -102,8 +110,8 @@ import Hypostructure.Graph.CutParity
 -- checked.  See `quarantine.txt`.
 
 import Hypostructure.Core.Contract
-import Hypostructure.Core.Strategy.FiniteStateCapacityTheorems
-import Hypostructure.Graph.WedgeLowerBound
+-- `Graph.WedgeLowerBound` was rescued here until node `[30]` was ported; the
+-- spine's own vocabulary imports it now, so it is no longer a rescue.
 
 -- Rescued from the SequentialExtensionLedger quarantine boundary.
 import Hypostructure.Graph.FinitePathSelection
@@ -112,4 +120,3 @@ import Hypostructure.Graph.Strategy.InterfaceReplacement
 -- Rescued from the Core.Routing stage-deletion boundary: legal modules that
 -- were reachable only through a quarantined one.
 import Hypostructure.Core.DependentOwnerGlueCapacity
-import Hypostructure.Core.Strategy.ObstructionPackingSemantics
