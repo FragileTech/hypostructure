@@ -255,6 +255,10 @@ Hypostructure.Graph.ReceiverExhaustion
 Hypostructure.Graph.Replacement
 Hypostructure.Graph.Strategy
 Hypostructure.Graph.Strategy.AtomContextObstructionDichotomy
+Hypostructure.Graph.Strategy.ColdBranchAggregation
+Hypostructure.Graph.Strategy.ColdBranchF2Closure
+Hypostructure.Graph.Strategy.ColdBranchFailureRouting
+Hypostructure.Graph.Strategy.ColdBranchGermClosure
 Hypostructure.Graph.Strategy.ColdBranchPreludeAggregation
 Hypostructure.Graph.Strategy.FiniteStateCapacity
 Hypostructure.Graph.Strategy.NormalizationRank

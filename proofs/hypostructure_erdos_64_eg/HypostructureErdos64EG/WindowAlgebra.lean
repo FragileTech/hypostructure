@@ -1,4 +1,5 @@
 import Hypostructure.Graph.WindowCurvatureCode
+import Hypostructure.Graph.FanCertificate
 import Hypostructure.Graph.InducedPath
 import Hypostructure.Graph.Target
 
@@ -475,6 +476,29 @@ theorem windowCurvatureTwo_eq_true_iff (source middle target : Fin 399) :
           ¬ Safe 2 (windowLabel source) (windowLabel target) := by
   rw [windowCurvatureTwo_eq_curvatureTwo, curvatureTwo_eq_true_iff]
 
+
+/-! ## The marked-fan packing cap at this order
+
+`lem:fan-certificate`'s `α(D) = 2 + 2 + 2 + 2 = 8` is a kernel computation at the
+registered order, exactly like `lem:labels`' `399` above: the framework's
+`fanPackingCap` is order-generic, and the manuscript's `8` is its value here.
+
+The local Type B fan ledger of node `[74]`/`[82]` spends this value once, through
+the registered `Spine.Data.fanCapSlack`, as the slack `(11 − k)/4 ≥ 3/4` that lets
+the hybrid half-credits pay the closed-neighbour deficit.  What the ledger needs is
+only `α(D) + 1 ≤ 4 · 3`, so that is what is stated: the comparison is decided on
+the registered numbers, and no node writes `8`.
+
+The decision enumerates the fan-independent subsets of the thirteen window
+coordinates, so it is deliberately isolated in this one declaration rather than
+inlined at the registration site. -/
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 8000000 in
+theorem fanPackingCap_succ_le :
+    Hypostructure.Graph.WindowCurvature.fanPackingCap inducedPathOrder + 1 ≤
+      4 * 3 := by
+  unfold inducedPathOrder
+  decide
 
 end WindowAlgebra
 

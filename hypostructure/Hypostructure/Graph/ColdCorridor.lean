@@ -1247,16 +1247,25 @@ noncomputable def increment : Int :=
 /-- **Length-changing**, `δ ≠ 0`; its negation is the equal-length case. -/
 def LengthChanging : Prop := germ.increment ≠ 0
 
-/-- `δ = 0` is exactly the equal-length clause of `def:cold-bounded-germ`, and
-therefore exactly the condition under which a germ is a row of
-`def:cold-same-interface-table`.  This is `lem:cold-increment-arithmetic`'s
-case (d): "the equal-length switch belongs to the finite same-interface cold
-table". -/
+/-- `δ = 0` is exactly the equal-length clause of `def:cold-bounded-germ`. -/
 theorem increment_eq_zero_iff :
     germ.increment = 0 ↔
       germ.canonical.internalVertexCount = germ.piece.internalVertexCount := by
   unfold increment
   omega
+
+/-- **`def:cold-bounded-germ`'s dichotomy.**  *"It is length-changing if
+`δ ≠ 0`, and equal-length if `δ = 0`."*  A germ fails to be length-changing
+exactly when its two representatives have the same internal size, which is
+`TableRow`'s `equalLength` clause -- so the germs that are *not* length-changing
+are exactly the rows of `def:cold-same-interface-table`.  This is
+`lem:cold-increment-arithmetic`'s case (d): "the equal-length switch belongs to
+the finite same-interface cold table". -/
+theorem not_lengthChanging_iff :
+    ¬ germ.LengthChanging ↔
+      germ.canonical.internalVertexCount = germ.piece.internalVertexCount := by
+  rw [LengthChanging, not_not]
+  exact germ.increment_eq_zero_iff
 
 /-- **The three cases are exhaustive.**  `lem:cold-bounded-germ-trichotomy`'s
 own reading: the split is "by whether a compatible completion realizes a dyadic

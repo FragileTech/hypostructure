@@ -359,7 +359,7 @@ trichotomy's own exhaustiveness, committed at node `[155]`. -/
           ⟨fun germ shorter neutral =>
               excludes inputs.current (inputs.get uncompressible) germ.support
                 (germ.compressibleSupport_of_not_distinguishing shorter neutral.2),
-            fun germ => germ.increment_eq_zero_iff,
+            fun germ => germ.not_lengthChanging_iff,
             fun _increment _base _copies _length positive overlapping lower upper
                 accepted =>
               Graph.ColdCorridor.exists_not_survivesSmear_of_mem_interval
@@ -549,6 +549,152 @@ registered baseline and window order. -/
               Graph.ColdCorridor.selectedBranchExcess_length stubs,
             fun _cubicCount _coldCount _nonCubicBound split =>
               Graph.ColdCorridor.branchExcess_ge_of_cubic _ _ _ _ split⟩)
+        .nil)
+
+/-! ## Nodes `[153]`--`[157]`: the dispatch arms and the branch closure
+
+Rows 57--61.  The manuscript's cold branch ends by *closing*, not by returning a
+retained scan, and these three rows are what makes that a theorem: the (F4) arm
+transfers rather than being discharged against a manufactured empty schedule,
+the (F5) arm is unreachable because the extraction always produces a germ, and
+the branch as a whole has no terminal survivor. -/
+
+/-- **Node `[156]`: the (F4) dispatch arm.**
+
+The corridor reached precisely one declared interface of the branch's own
+recorded ledger, and the charge goes to it.  The ledger is quantified, so the
+arm cannot be discharged by an emptiness manufactured at a call site — which is
+what `def:surviving-cold-branch` (iv)--(v) actually asserts, and what a
+compiler-supplied `Enumeration.empty` never asserted. -/
+@[reducible] noncomputable def coldHandoffTransferRow
+    (coldFailureHandoff coldHandoffTransfer :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : coldFailureHandoff ≠ coldHandoffTransfer)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      Holds BranchState Presentation presentation data .coldHandoffTransfer
+        input.object →
+      coldHandoffTransfer.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldHandoffTransfer
+    (rowManifest coldFailureHandoff coldHandoffTransfer distinct)
+    (fun inputs =>
+      .cons (key := coldHandoffTransfer)
+        (encode inputs.current
+          (fun _windows _component _corridor _ledger _segment failure =>
+            Graph.ColdCorridor.Corridor.handoffExit_mem failure))
+        .nil)
+
+/-- **Nodes `[153]`, `[154]`: the (F5) arm.**
+
+`lem:hot-failure-cold-mass`, `lem:cold-germ-extraction`, and the positivity that
+makes the arm unreachable.  The extraction's mathematical content is greedy
+independence in the intersection graph of the candidate supports, proved for an
+arbitrary finite family and symmetric overlap relation; the manuscript's
+division by `Δ+1` is cleared, so nothing rounds. -/
+@[reducible] noncomputable def coldGermExtractionRow
+    (coldFailureRouting coldGermExtraction :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : coldFailureRouting ≠ coldGermExtraction)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      Holds BranchState Presentation presentation data .coldGermExtraction
+        input.object →
+      coldGermExtraction.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldGermExtraction
+    (rowManifest coldFailureRouting coldGermExtraction distinct)
+    (fun inputs =>
+      .cons (key := coldGermExtraction)
+        (encode inputs.current
+          ⟨fun _hotRate _skeletonRate _order _slack _hotCount _coldCount _packing
+              partition hotBound =>
+              Graph.ColdCorridor.hotFailure_coldMass _ _ _ _ _ _ _ partition
+                hotBound,
+            fun _Germ _decGerm Overlaps _decOverlaps symmetric candidates
+                bounded =>
+              Graph.ColdCorridor.coldGermExtraction Overlaps symmetric _ _
+                candidates bounded,
+            fun _Germ _decGerm _candidates _disjointFamily _denominator cover
+                positive =>
+              Graph.ColdCorridor.coldGerm_nonempty cover positive⟩)
+        .nil)
+
+/-- **Nodes `[145]`--`[157]`: `thm:cold-branch-quantitative-closure`.**
+
+The branch closes.  Every length-changing bounded germ is distinguishing, and a
+distinguishing germ's identification is a target-defective quotient the branch
+does not carry, so a branch that reaches a germ contradicts its own clause (ii).
+
+This is the row that replaces the legacy `classifiedStateForcesTarget`: that
+field was `Option`-valued and took the `none` escape on four arms, so the branch
+did not close.  Here there is no `Option` — the statement is that the situation
+is impossible. -/
+@[reducible] noncomputable def coldBranchClosedRow
+    (coldGermRealized coldGermSilent selection uncompressible coldBranchClosed :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinctRequired : coldGermRealized ≠ coldGermSilent)
+    (distinctSelection : coldGermRealized ≠ selection)
+    (distinctUncompressible : coldGermRealized ≠ uncompressible)
+    (distinctSelectionSilent : coldGermSilent ≠ selection)
+    (distinctUncompressibleSilent : coldGermSilent ≠ uncompressible)
+    (distinctPair : selection ≠ uncompressible)
+    (avoidsOf : (input : Input BranchState Presentation presentation data) →
+      selection.At input →
+      ¬ Graph.HasCycleWithLength data.LengthOK input.object)
+    (excludes : (input : Input BranchState Presentation presentation data) →
+      uncompressible.At input →
+      ∀ support : Finset input.object.Vertex,
+        ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) input.object support)
+    (notRealizingOf : (input : Input BranchState Presentation presentation data) →
+      coldGermRealized.At input →
+      ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) input.object,
+        ¬ germ.Realizing)
+    (notSilentOf : (input : Input BranchState Presentation presentation data) →
+      coldGermSilent.At input →
+      ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) input.object,
+        germ.increment < 0 → ¬ germ.Neutral)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      Holds BranchState Presentation presentation data .coldBranchClosed
+        input.object →
+      coldBranchClosed.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldBranchClosed
+    { Requires := [coldGermRealized, coldGermSilent, selection, uncompressible]
+      Produces := [coldBranchClosed]
+      requiresUnique := by
+        simp [distinctRequired, distinctSelection, distinctUncompressible,
+          distinctSelectionSilent, distinctUncompressibleSilent, distinctPair]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      -- The two closed arms are read back *by key* from the same ledger that
+      -- committed them at nodes `[155]` and `[157]`.  Re-deriving them here
+      -- from the selection's avoidance and `cor:uncompressible` would prove
+      -- the trichotomy a second time; the branch record is needed only for its
+      -- clause (ii), which nothing earlier has proved.
+      let notRealizing := notRealizingOf inputs.current (inputs.get coldGermRealized)
+      let notSilent := notSilentOf inputs.current (inputs.get coldGermSilent)
+      .cons (key := coldBranchClosed)
+        (encode inputs.current
+          ⟨fun germ shorter =>
+              Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
+                germ shorter,
+            fun branch germ lengthChanging =>
+              Graph.ColdCorridor.OrientedGerm.not_survives notRealizing notSilent
+                branch germ lengthChanging,
+            -- The other two germ families: every table row and short
+            -- self-return is handed off rather than retained.
+            fun _Handoff branch row =>
+              (Graph.ColdCorridor.coldBranch_closed
+                (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
+                notRealizing notSilent branch
+                (avoidsOf inputs.current (inputs.get selection))
+                (excludes inputs.current (inputs.get uncompressible))).2 row⟩)
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

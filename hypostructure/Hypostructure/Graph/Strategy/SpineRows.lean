@@ -462,7 +462,7 @@ noncomputable def barrierEnumerationDichotomy
     (barrierCap barrierOverflow :
       FactKey (Input BranchState Presentation presentation data))
     (encodeCap :
-      (2 ^ (data.windowRate * Graph.dyadicScaleCount current.object *
+      (2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
             current.object.windowPackingNumber data.windowOrder) ≤
           Graph.skeletonBudget current.object ∧
         ∀ family : Finset Nat, current.object.edgeCount ∈ family →
@@ -471,7 +471,7 @@ noncomputable def barrierEnumerationDichotomy
       barrierCap.At current)
     (encodeOverflow :
       (Graph.skeletonBudget current.object <
-        2 ^ (data.windowRate * Graph.dyadicScaleCount current.object *
+        2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
           current.object.windowPackingNumber data.windowOrder)) →
       barrierOverflow.At current)
     (capFresh : barrierCap ∉ known)
@@ -488,12 +488,97 @@ noncomputable def barrierEnumerationDichotomy
   Decision.run previous barrierCap barrierOverflow
     `Hypostructure.Graph.Strategy.Spine.finiteBarrierEnumeration
     (if overflow : Graph.skeletonBudget current.object <
-        2 ^ (data.windowRate * Graph.dyadicScaleCount current.object *
+        2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
           current.object.windowPackingNumber data.windowOrder) then
       .inr (encodeOverflow overflow)
     else
       .inl (encodeCap ⟨Nat.le_of_not_lt overflow, stable⟩))
     capFresh overflowFresh
+
+/-! ## Nodes `[21]`--`[22]`: the separation of the window package
+
+`lem:p13-window-package` builds its coordinate family and then *selects*: the
+package "uses `⌊log₂ n⌋ − O(1)` separated dyadic scales", the `O(1)` absorbing
+"endpoint collisions with the finitely many reserved boundary and tie-breaking
+choices inside the canonical packing".
+
+So separation is the property of the surviving coordinates, and the colliding
+ones are discarded.  This diamond is that selection: either the selected
+coordinates are separated and each carries the audited rate — the arm on which
+`lem:independent-target-entropy` applies — or they collide, and the arm leaves
+the block.  Both are retained; nothing about separation is assumed.
+
+The coordinate family is data, so what the arm commits is its existence, exactly
+as node `[17]` commits the packing's. -/
+noncomputable def windowPackageDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (windowPackageSeparated windowPackageCollided :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeSeparated :
+      (∀ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing →
+        ∃ (coordinateCount : Nat)
+          (family : Graph.PackedWindowRealization.SeparatedFamily current.object
+            (Fin coordinateCount)),
+          2 ^ (data.windowRate *
+                data.separatedScaleCount current.object.vertexCount *
+                current.object.windowPackingNumber data.windowOrder) ≤
+              Nat.card (∀ coordinate, family.State coordinate) ∧
+            jointPackageDemand data current.object packing ≤
+              Nat.card (∀ coordinate, family.State coordinate) ∧
+            family.slots.card ≤ current.object.edgeCount ∧
+            current.object.edgeCount ≤ family.pool.card) →
+      windowPackageSeparated.At current)
+    (encodeCollided :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          ∀ (coordinateCount : Nat)
+            (family : Graph.PackedWindowRealization.SeparatedFamily current.object
+              (Fin coordinateCount)),
+            ¬ (2 ^ (data.windowRate *
+                    data.separatedScaleCount current.object.vertexCount *
+                    current.object.windowPackingNumber data.windowOrder) ≤
+                  Nat.card (∀ coordinate, family.State coordinate) ∧
+              jointPackageDemand data current.object packing ≤
+                  Nat.card (∀ coordinate, family.State coordinate) ∧
+              family.slots.card ≤ current.object.edgeCount ∧
+              current.object.edgeCount ≤ family.pool.card)) →
+      windowPackageCollided.At current)
+    (separatedFresh : windowPackageSeparated ∉ known)
+    (collidedFresh : windowPackageCollided ∉ known) :
+    Decision windowPackageSeparated windowPackageCollided previous :=
+  Decision.run previous windowPackageSeparated windowPackageCollided
+    `Hypostructure.Graph.Strategy.Spine.windowPackageDichotomy
+    (by
+      classical
+      by_cases separated :
+          ∀ packing : Finset (Finset current.object.Vertex),
+            current.object.IsWindowPacking data.windowOrder packing →
+        ∃ (coordinateCount : Nat)
+          (family : Graph.PackedWindowRealization.SeparatedFamily current.object
+            (Fin coordinateCount)),
+          2 ^ (data.windowRate *
+                data.separatedScaleCount current.object.vertexCount *
+                current.object.windowPackingNumber data.windowOrder) ≤
+              Nat.card (∀ coordinate, family.State coordinate) ∧
+            jointPackageDemand data current.object packing ≤
+              Nat.card (∀ coordinate, family.State coordinate) ∧
+            family.slots.card ≤ current.object.edgeCount ∧
+            current.object.edgeCount ≤ family.pool.card
+      · exact .inl (encodeSeparated separated)
+      · refine .inr (encodeCollided ?_)
+        push Not at separated
+        obtain ⟨packing, valid, collides⟩ := separated
+        exact ⟨packing, valid, fun coordinateCount family conditions =>
+          absurd conditions.2.2.2
+            (Nat.not_le.mpr
+              (collides coordinateCount family conditions.1 conditions.2.1
+                conditions.2.2.1))⟩)
+    separatedFresh collidedFresh
 
 /-! ## Nodes `[22]`--`[24]`: the finite window-density budget
 
@@ -518,7 +603,7 @@ rounding and no asymptotic estimate inserted as data. -/
     (distinctRequired : barrierCap ≠ surplusAtOrBelow)
     (capOf : (input : Input BranchState Presentation presentation data) →
       barrierCap.At input →
-      2 ^ (data.windowRate * Graph.dyadicScaleCount input.object *
+      2 ^ (data.windowRate * data.separatedScaleCount input.object.vertexCount *
           input.object.windowPackingNumber data.windowOrder)
         ≤ Graph.skeletonBudget input.object)
     (surplusOf : (input : Input BranchState Presentation presentation data) →
@@ -526,7 +611,7 @@ rounding and no asymptotic estimate inserted as data. -/
       input.object.degreeSurplus data.threshold ≤
         data.surplusThreshold input.object.vertexCount)
     (encode : (input : Input BranchState Presentation presentation data) →
-      (2 * (data.windowRate * Graph.dyadicScaleCount input.object *
+      (2 * (data.windowRate * data.separatedScaleCount input.object.vertexCount *
           input.object.windowPackingNumber data.windowOrder) ≤
         (Graph.dyadicScaleCount input.object + 1) *
           (data.threshold * input.object.vertexCount +
@@ -550,7 +635,7 @@ rounding and no asymptotic estimate inserted as data. -/
       .cons (key := densityCap)
         (encode inputs.current
           (Graph.two_mul_exponent_le_scale_mul_edgeBudget object
-            (data.windowRate * Graph.dyadicScaleCount object *
+            (data.windowRate * data.separatedScaleCount object.vertexCount *
               object.windowPackingNumber data.windowOrder)
             data.threshold (data.surplusThreshold object.vertexCount)
             (capOf inputs.current (inputs.get barrierCap)) spine
@@ -1688,7 +1773,7 @@ distinguish; the budget side is node `[53]`'s comparison. -/
     (encode : (input : Input BranchState Presentation presentation data) →
       (∀ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing →
-        (2 ^ (data.windowRate * Graph.dyadicScaleCount input.object *
+        (2 ^ (data.windowRate * data.separatedScaleCount input.object.vertexCount *
               packing.card)) ^ data.entropyDenominator *
               input.object.vertexCount ^
                 (input.object.remainderSupport packing).card *
@@ -1861,7 +1946,10 @@ private theorem collision_of_margin
       maximalPacking.At input →
       ∃ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing ∧
-          packing.card = input.object.windowPackingNumber data.windowOrder)
+          packing.card = input.object.windowPackingNumber data.windowOrder ∧
+          ∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member)
     (supplyOf : (input : Input BranchState Presentation presentation data) →
       stubSupply.At input →
       ∀ packing : Finset (Finset input.object.Vertex),
@@ -1873,7 +1961,7 @@ private theorem collision_of_margin
             data.surplusThreshold input.object.vertexCount)
     (densityOf : (input : Input BranchState Presentation presentation data) →
       densityCap.At input →
-      2 * (data.windowRate * Graph.dyadicScaleCount input.object *
+      2 * (data.windowRate * data.separatedScaleCount input.object.vertexCount *
           input.object.windowPackingNumber data.windowOrder) ≤
         (Graph.dyadicScaleCount input.object + 1) *
           (data.threshold * input.object.vertexCount +
@@ -1884,6 +1972,9 @@ private theorem collision_of_margin
     (encode : (input : Input BranchState Presentation presentation data) →
       (∃ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           input.object.NegativeNetCharge
             (input.object.remainderSupport packing) data.threshold
             data.dischargeScale) →
@@ -1901,26 +1992,31 @@ private theorem collision_of_margin
       .cons (key := netDeficiencyCap)
         (encode inputs.current (by
           classical
-          obtain ⟨packing, valid, attains⟩ :=
+          obtain ⟨packing, valid, attains, maximal⟩ :=
             packingOf inputs.current (inputs.get maximalPacking)
-          refine ⟨packing, valid, ?_⟩
+          refine ⟨packing, valid, maximal, ?_⟩
           have large := orderOf inputs.current (inputs.get largeOrderResidual)
           have density := densityOf inputs.current (inputs.get densityCap)
           have stub :=
             supplyOf inputs.current (inputs.get stubSupply) packing valid
           have spread := inputs.current.object.remainderSupport_card_add_eq valid
-          -- The registered order exponent lies below the object's own dyadic
-          -- scale count, so node `[24]`'s `(scaleCount + 1)/scaleCount` slack is
-          -- bounded by the registered `(k + 1)/k`.
-          have scaleBound :
-              data.largeOrderExponent ≤
-                Graph.dyadicScaleCount inputs.current.object := by
-            have monotone := Nat.log_mono_right (b := 2) large
-            rw [Nat.log_pow (by norm_num)] at monotone
-            simpa [Graph.dyadicScaleCount, Nat.log2_eq_log_two] using monotone
+          -- The selection keeps pace with the object's own scale count, so
+          -- node `[24]`'s cap may be divided at the registered order exponent.
+          -- `separatedScaleReach` is that comparison, in registered terms.
+          have reach := data.separatedScaleReach inputs.current.object.vertexCount large
           have scalesPos :
-              0 < Graph.dyadicScaleCount inputs.current.object :=
-            Nat.lt_of_lt_of_le data.largeOrderExponent_pos scaleBound
+              0 < data.separatedScaleCount inputs.current.object.vertexCount := by
+            rcases Nat.eq_zero_or_pos
+                (data.separatedScaleCount inputs.current.object.vertexCount) with
+              zero | positive
+            · rw [zero] at reach
+              have := data.largeOrderExponent_pos
+              simp only [Nat.mul_zero] at reach
+              have grows : 0 < data.largeOrderExponent *
+                  (Nat.log2 inputs.current.object.vertexCount + 1) :=
+                Nat.mul_pos this (Nat.succ_pos _)
+              omega
+            · exact positive
           have ratePos : 0 < 2 * data.windowRate * data.largeOrderExponent := by
             have := data.netChargeRate
             omega
@@ -1932,28 +2028,12 @@ private theorem collision_of_margin
                   (data.threshold * inputs.current.object.vertexCount +
                     data.surplusThreshold inputs.current.object.vertexCount) := by
             refine Nat.le_of_mul_le_mul_left ?_ scalesPos
-            have slack :
-                data.largeOrderExponent *
-                    (Graph.dyadicScaleCount inputs.current.object + 1) ≤
-                  (data.largeOrderExponent + 1) *
-                    Graph.dyadicScaleCount inputs.current.object := by
-              calc data.largeOrderExponent *
-                    (Graph.dyadicScaleCount inputs.current.object + 1)
-                  = data.largeOrderExponent *
-                      Graph.dyadicScaleCount inputs.current.object +
-                    data.largeOrderExponent := by ring
-                _ ≤ data.largeOrderExponent *
-                      Graph.dyadicScaleCount inputs.current.object +
-                    Graph.dyadicScaleCount inputs.current.object :=
-                    Nat.add_le_add_left scaleBound _
-                _ = (data.largeOrderExponent + 1) *
-                      Graph.dyadicScaleCount inputs.current.object := by ring
-            calc Graph.dyadicScaleCount inputs.current.object *
+            calc data.separatedScaleCount inputs.current.object.vertexCount *
                   ((2 * data.windowRate * data.largeOrderExponent) *
                     inputs.current.object.windowPackingNumber data.windowOrder)
                 = data.largeOrderExponent *
                     (2 * (data.windowRate *
-                      Graph.dyadicScaleCount inputs.current.object *
+                      data.separatedScaleCount inputs.current.object.vertexCount *
                       inputs.current.object.windowPackingNumber
                         data.windowOrder)) := by ring
               _ ≤ data.largeOrderExponent *
@@ -1963,16 +2043,16 @@ private theorem collision_of_margin
                           inputs.current.object.vertexCount)) :=
                   Nat.mul_le_mul_left _ density
               _ = (data.largeOrderExponent *
-                    (Graph.dyadicScaleCount inputs.current.object + 1)) *
+                    (Nat.log2 inputs.current.object.vertexCount + 1)) *
                     (data.threshold * inputs.current.object.vertexCount +
-                      data.surplusThreshold inputs.current.object.vertexCount) :=
-                  by ring
+                      data.surplusThreshold inputs.current.object.vertexCount) := by
+                  rw [Graph.dyadicScaleCount]; ring
               _ ≤ ((data.largeOrderExponent + 1) *
-                    Graph.dyadicScaleCount inputs.current.object) *
+                    data.separatedScaleCount inputs.current.object.vertexCount) *
                     (data.threshold * inputs.current.object.vertexCount +
                       data.surplusThreshold inputs.current.object.vertexCount) :=
-                  Nat.mul_le_mul_right _ slack
-              _ = Graph.dyadicScaleCount inputs.current.object *
+                  Nat.mul_le_mul_right _ reach
+              _ = data.separatedScaleCount inputs.current.object.vertexCount *
                     ((data.largeOrderExponent + 1) *
                       (data.threshold * inputs.current.object.vertexCount +
                         data.surplusThreshold
@@ -2135,6 +2215,9 @@ noncomputable def netChargeDichotomy
     (encodeNonNegative :
       (∀ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset current.object.Vertex,
+          current.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
         current.object.NonNegativeNetCharge
           (current.object.remainderSupport packing) data.threshold
           data.dischargeScale) →
@@ -2142,6 +2225,9 @@ noncomputable def netChargeDichotomy
     (encodeNegative :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           current.object.NegativeNetCharge
             (current.object.remainderSupport packing) data.threshold
             data.dischargeScale) →
@@ -2156,14 +2242,17 @@ noncomputable def netChargeDichotomy
       by_cases nonNegative :
           ∀ packing : Finset (Finset current.object.Vertex),
             current.object.IsWindowPacking data.windowOrder packing →
+            (∀ window : Finset current.object.Vertex,
+              current.object.InducesWindow data.windowOrder window →
+              ∃ member ∈ packing, ¬ Disjoint window member) →
             current.object.NonNegativeNetCharge
               (current.object.remainderSupport packing) data.threshold
               data.dischargeScale
       · exact .inl (encodeNonNegative nonNegative)
       · refine .inr (encodeNegative ?_)
         push Not at nonNegative
-        obtain ⟨packing, valid, negative⟩ := nonNegative
-        exact ⟨packing, valid, Nat.lt_of_not_le negative⟩)
+        obtain ⟨packing, valid, maximal, negative⟩ := nonNegative
+        exact ⟨packing, valid, maximal, Nat.lt_of_not_le negative⟩)
     nonNegativeFresh negativeFresh
 
 /-! ## Node `[60]`: global window-join pressure
@@ -2187,6 +2276,9 @@ requires a linear excess of window surplus over remainder surplus. -/
       netChargeNonNegative.At input →
       ∀ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
         input.object.NonNegativeNetCharge
           (input.object.remainderSupport packing) data.threshold
           data.dischargeScale)
@@ -2207,6 +2299,9 @@ requires a linear excess of window surplus over remainder surplus. -/
     (encode : (input : Input BranchState Presentation presentation data) →
       (∀ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
         input.object.vertexCount +
               data.dischargeScale *
                 input.object.ambientSurplus
@@ -2229,7 +2324,7 @@ requires a linear excess of window surplus over remainder surplus. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := windowJoinPressure)
-        (encode inputs.current fun packing valid => by
+        (encode inputs.current fun packing valid maximal => by
           obtain ⟨demand, capacity⟩ :=
             demandOf inputs.current (inputs.get boundaryDemand) packing valid
           -- The two links of `lem:surplus-aware-window-stub`, composed.
@@ -2246,7 +2341,7 @@ requires a linear excess of window surplus over remainder surplus. -/
           rw [Nat.mul_add, Nat.mul_add] at scaled
           have charge :=
             chargeOf inputs.current (inputs.get netChargeNonNegative) packing
-              valid
+              valid maximal
           rw [Graph.FiniteObject.NonNegativeNetCharge] at charge
           have order :=
             inputs.current.object.remainderSupport_card_add_eq valid
@@ -2273,6 +2368,9 @@ carried here. -/
       netChargeNegative.At input →
       ∃ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           input.object.NegativeNetCharge
             (input.object.remainderSupport packing) data.threshold
             data.dischargeScale)
@@ -2291,6 +2389,9 @@ carried here. -/
     (encode : (input : Input BranchState Presentation presentation data) →
       (∃ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           ∃ piece : Finset input.object.Vertex,
             piece ⊆ input.object.remainderSupport packing ∧
               Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
@@ -2307,12 +2408,12 @@ carried here. -/
     (fun inputs =>
       .cons (key := negativeSupport)
         (encode inputs.current (by
-          obtain ⟨packing, valid, negative⟩ :=
+          obtain ⟨packing, valid, maximal, negative⟩ :=
             negativeOf inputs.current (inputs.get netChargeNegative)
           obtain ⟨piece, inside, connected, charge⟩ :=
             localizeOf inputs.current (inputs.get netChargeLocalization) packing
               valid negative
-          exact ⟨packing, valid, piece, inside, connected, charge⟩))
+          exact ⟨packing, valid, maximal, piece, inside, connected, charge⟩))
         .nil)
 
 /-! ## Node `[62]`: the Type A / Type B split
@@ -2338,6 +2439,9 @@ noncomputable def typeSplitDichotomy
     (supportOf : negativeSupport.At current →
       ∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           ∃ piece : Finset current.object.Vertex,
             piece ⊆ current.object.remainderSupport packing ∧
               Graph.SupportComponents.Connected.ConnectedOn current.object
@@ -2347,6 +2451,9 @@ noncomputable def typeSplitDichotomy
     (encodeTypeA :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           ∃ piece : Finset current.object.Vertex,
             piece ⊆ current.object.remainderSupport packing ∧
               Graph.SupportComponents.Connected.ConnectedOn current.object
@@ -2378,6 +2485,9 @@ noncomputable def typeSplitDichotomy
       by_cases typeA :
           ∃ packing : Finset (Finset current.object.Vertex),
             current.object.IsWindowPacking data.windowOrder packing ∧
+              (∀ window : Finset current.object.Vertex,
+                current.object.InducesWindow data.windowOrder window →
+                ∃ member ∈ packing, ¬ Disjoint window member) ∧
               ∃ piece : Finset current.object.Vertex,
                 piece ⊆ current.object.remainderSupport packing ∧
                   Graph.SupportComponents.Connected.ConnectedOn current.object
@@ -2387,15 +2497,981 @@ noncomputable def typeSplitDichotomy
                   current.object.ambientSurplus piece data.threshold = 0
       · exact .inl (encodeTypeA typeA)
       · refine .inr (encodeTypeB ?_)
-        obtain ⟨packing, valid, piece, inside, connected, charge⟩ :=
+        obtain ⟨packing, valid, maximal, piece, inside, connected, charge⟩ :=
           supportOf (ExactLedger.get previous negativeSupport)
         refine ⟨packing, valid, piece, inside, connected, charge, ?_⟩
         rcases Nat.eq_zero_or_pos
             (current.object.ambientSurplus piece data.threshold) with
           zero | positive
         · exact absurd
-            ⟨packing, valid, piece, inside, connected, charge, zero⟩ typeA
+            ⟨packing, valid, maximal, piece, inside, connected, charge, zero⟩
+            typeA
         · exact positive)
     typeAFresh typeBFresh
+
+/-! ## Node `[68]`, the standing law: the high-neighbourhood normal form
+
+`lem:heavy-neighbourhood-normal-form`.  At a high centre `h` -- one whose degree
+is strictly above the baseline -- the manuscript proves three things, and the
+whole Type B fan analysis runs on them:
+
+* (a) every vertex of `N_G(h)` has degree exactly the baseline;
+* (b) `G[N_G(h)]` is a matching;
+* (c) two nonadjacent neighbours of `h` have no common neighbour outside `{h}`.
+
+(a) is the tight-endpoint law of node `[9]` read at the edge `hx`: one endpoint
+sits exactly at the baseline, and it is not `h`.  (b) and (c) are the two
+quadrilaterals `hxyzh` and `hxzyh`, excluded because the selected object avoids
+the accepted lengths and the quadrilateral is one of them -- the registered
+`Data.quadrilateralAccepted`, which is where "no power-of-two cycle" enters at
+its own interface.
+
+The fact is stated of the *object*, at every high centre at once, because that
+is what the manuscript proves and because a centre is data: no fact can carry
+one.  Both arms of the degree split below read it. -/
+@[reducible] noncomputable def highCentreNormalFormRow
+    (selection tightEndpoint highCentreNormalForm :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinctRequired : selection ≠ tightEndpoint)
+    (avoidsOf : (input : Input BranchState Presentation presentation data) →
+      selection.At input →
+      ¬ Graph.HasCycleWithLength data.LengthOK input.object)
+    (tightOf : (input : Input BranchState Presentation presentation data) →
+      tightEndpoint.At input →
+      ∀ dart : input.object.graph.Dart,
+        input.object.degree dart.fst = data.threshold ∨
+          input.object.degree dart.snd = data.threshold)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ centre : input.object.Vertex,
+        Graph.IsHighCentre input.object data.threshold centre →
+        Graph.NormalForm input.object data.threshold centre) →
+      highCentreNormalForm.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm
+    { Requires := [selection, tightEndpoint]
+      Produces := [highCentreNormalForm]
+      requiresUnique := by simp [distinctRequired]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := highCentreNormalForm)
+        (encode inputs.current
+          (fun _centre high =>
+            Graph.normalForm
+              (tightOf inputs.current (inputs.get tightEndpoint))
+              (avoidsOf inputs.current (inputs.get selection))
+              data.quadrilateralAccepted high))
+        .nil)
+
+/-! ## Node `[68]`: the Type B heavy-centre split
+
+The manuscript asks whether some Type B fan centre has degree above the
+high-centre degree `δ + 1` -- for its own baseline, whether `d_G(h) > 4`.  The
+yes arm enters `[69]`, the heavy-centre local dichotomy; the no arm enters
+`[78]`, where every high centre the support carries sits exactly at `δ + 1`.
+
+The split is taken on a `Prop`, so no centre is extracted to build the branch:
+the arm not taken supplies the other arm's clause.  The no arm is committed in
+positive form -- *every* high centre of *every* Type B support has degree
+exactly `δ + 1` -- which is node `[78]`'s entry condition, and it quantifies
+over supports rather than naming one for the same reason node `[64]`'s own fact
+does.
+
+This is a `Decision`: the arm not taken is absent from the taken branch's key
+index, so no Type B row downstream can read the other alternative. -/
+noncomputable def heavyCentreDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeBHighSurplus typeBHeavyCentre typeBDegreeFourCentres :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeBHighSurplus known]
+    (supportOf : typeBHighSurplus.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold)
+    (encodeHeavy :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold ∧
+              ∃ centre ∈ piece,
+                data.threshold + 1 < current.object.degree centre) →
+      typeBHeavyCentre.At current)
+    (encodeDegreeFour :
+      (∀ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing →
+        ∀ piece : Finset current.object.Vertex,
+          piece ⊆ current.object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
+          current.object.NegativeNetCharge piece data.threshold
+            data.dischargeScale →
+          0 < current.object.ambientSurplus piece data.threshold →
+          ∀ centre ∈ piece, data.threshold < current.object.degree centre →
+            current.object.degree centre = data.threshold + 1) →
+      typeBDegreeFourCentres.At current)
+    (heavyFresh : typeBHeavyCentre ∉ known)
+    (degreeFourFresh : typeBDegreeFourCentres ∉ known) :
+    Decision typeBHeavyCentre typeBDegreeFourCentres previous :=
+  Decision.run previous typeBHeavyCentre typeBDegreeFourCentres
+    `Hypostructure.Graph.Strategy.Spine.heavyCentreDichotomy
+    (by
+      classical
+      by_cases heavy :
+          ∃ packing : Finset (Finset current.object.Vertex),
+            current.object.IsWindowPacking data.windowOrder packing ∧
+              ∃ piece : Finset current.object.Vertex,
+                piece ⊆ current.object.remainderSupport packing ∧
+                  Graph.SupportComponents.Connected.ConnectedOn current.object
+                    piece ∧
+                  current.object.NegativeNetCharge piece data.threshold
+                    data.dischargeScale ∧
+                  0 < current.object.ambientSurplus piece data.threshold ∧
+                  ∃ centre ∈ piece,
+                    data.threshold + 1 < current.object.degree centre
+      · exact .inl (encodeHeavy heavy)
+      · refine .inr (encodeDegreeFour ?_)
+        -- No support carries a centre above `δ + 1`, so a high centre of one,
+        -- being above `δ` and not above `δ + 1`, sits exactly at `δ + 1`.
+        intro packing valid piece inside connected charge positive centre
+          member high
+        by_contra different
+        exact heavy ⟨packing, valid, piece, inside, connected, charge, positive,
+          centre, member, by omega⟩)
+    heavyFresh degreeFourFresh
+
+/-! ## Node `[69]`: the heavy-centre local dichotomy
+
+`cor:heavy-center-local-dichotomy`.  At a heavy centre `h` -- degree at least
+two above the baseline, `d_G(h) ≥ 5` at the manuscript's `δ = 3` -- either two
+open ports at `h` are fan-compatible in the sense of
+`def:fan-compatible-open-ports`, or at least `d_G(h) − 2` ports at `h` are
+triangular, and in particular three are.
+
+The manuscript's argument is `Graph.heavyCentreLocalDichotomy`: the open
+endpoints are pairwise adjacent, because a nonadjacent pair would be
+fan-compatible by `lem:same-center-open-port-compatibility`; part (b) of the
+normal form makes `G[N_G(h)]` a matching, which has no clique of size three, so
+at most two endpoints are open; and every remaining port is triangular.  The
+"in particular three" is `Graph.three_le_triangularEndpoints_card`, the only
+place the *heaviness* of the centre is spent, and it spends it exactly as the
+manuscript does: `k − 2 ≥ 3`.
+
+The row reads the normal form and nothing else.  It does not require the
+heavy-centre existence fact: the statement is universally quantified over heavy
+centres, so it reads no witness, and declaring a requirement the executor does
+not consume would be a false dependency. -/
+@[reducible] noncomputable def heavyCentreLocalDichotomyRow
+    (highCentreNormalForm typeBLocalDichotomy :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : highCentreNormalForm ≠ typeBLocalDichotomy)
+    (normalFormOf : (input : Input BranchState Presentation presentation data) →
+      highCentreNormalForm.At input →
+      ∀ centre : input.object.Vertex,
+        Graph.IsHighCentre input.object data.threshold centre →
+        Graph.NormalForm input.object data.threshold centre)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ centre : input.object.Vertex,
+        data.threshold + 1 < input.object.degree centre →
+        (∃ left right : input.object.Vertex,
+            Graph.FanCompatible input.object centre left right) ∨
+          (input.object.degree centre - 2 ≤
+              (Graph.triangularEndpoints input.object centre).card ∧
+            3 ≤ (Graph.triangularEndpoints input.object centre).card)) →
+      typeBLocalDichotomy.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.heavyCentreLocalDichotomy
+    (rowManifest highCentreNormalForm typeBLocalDichotomy distinct)
+    (fun inputs =>
+      let normal :=
+        normalFormOf inputs.current (inputs.get highCentreNormalForm)
+      .cons (key := typeBLocalDichotomy)
+        (encode inputs.current
+          (fun centre heavy => by
+            -- A heavy centre is in particular a high centre.
+            rcases Graph.heavyCentreLocalDichotomy
+                (normal centre (Nat.lt_of_succ_lt heavy)) with
+              compatible | alternative
+            · exact Or.inl compatible
+            · exact Or.inr ⟨alternative,
+                Graph.three_le_triangularEndpoints_card data.three_le_threshold
+                  heavy alternative⟩))
+        .nil)
+
+/-! ## Node `[70]`: the certificate-marked fan-degree cap
+
+`lem:fan-certificate`, and `rem:fan-finite` as the observation about it.  A
+fan-certificate labelling sends the neighbours of a high centre to legal window
+labels that are pairwise `C₂`-compatible; the manuscript proves that such a
+family has size at most `α(D) = 2 + 2 + 2 + 2 = 8`, so a certificate-marked fan
+has `d_G(h) ≤ 8`.
+
+Nothing here writes `8`.  `D` is `ForbiddenGap 2` read as a relation on the
+window's own coordinates -- the differences whose wedge `u — h — v` closes an
+accepted cycle of length `4 + d` -- and the bound is
+`Graph.WindowCurvature.fanPackingCap`, its independence number, computed from
+the registered window order and the registered target.  `rem:fan-finite` is
+exactly the claim that this is a structural consequence of the label algebra
+rather than a free parameter, and that is what the derivation makes true.
+
+The row reads no prerequisite: the cap is a theorem about the registered label
+algebra and the object's own degree, so `Requires := []` is the honest
+declaration.  Because an `AtomicCT` carries no predecessor, this one executor
+value runs after either arm of node `[68]`, which is where the manuscript places
+`[70]`. -/
+@[reducible] noncomputable def fanCertificateCapRow
+    (fanCertificateCap :
+      FactKey (Input BranchState Presentation presentation data))
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ centre : input.object.Vertex,
+        Graph.IsHighCentre input.object data.threshold centre →
+        ∀ _marking :
+            Graph.FanCertificateLabelling input.object data.windowOrder centre,
+          input.object.degree centre ≤
+            Graph.WindowCurvature.fanPackingCap data.windowOrder) →
+      fanCertificateCap.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.fanCertificateCap
+    (sourceFreeManifest fanCertificateCap)
+    (fun inputs =>
+      .cons (key := fanCertificateCap)
+        (encode inputs.current
+          (fun _centre _high marking => marking.degree_le_fanPackingCap))
+        .nil)
+
+/-! ## Node `[71]`/`[80]`: is a certificate labelling present?
+
+`def:marked-typeB-fan`.  A Type B fan is *certificate-marked* when the
+fan-certificate labelling is part of the assigned support data; a high-degree
+centre assigned to a Type B support but not certificate-marked is a
+*fan-certificate residual center*, which is charged to the Type B
+bridge-residual mass of `def:typeB-residual-mass` and takes no part in the
+certificate-closed local discharging step.
+
+The question is therefore scoped to the centres of a Type B support, not to the
+object's high centres at large: a high centre lying in no Type B support is not
+a residual centre and carries no bridge mass.  That scope is the manuscript's
+own, and getting it wrong would charge Type B for centres it never assigned.
+
+The split is taken on a `Prop`, so no centre and no labelling is extracted to
+build the branch; the arm not taken supplies the other arm's clause.  This is a
+`Decision`, so the arm not taken is absent from the taken branch's key index. -/
+noncomputable def fanCertificateDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (fanCertificateMarked fanCertificateResidual :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeMarked :
+      (∀ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing →
+        ∀ piece : Finset current.object.Vertex,
+          piece ⊆ current.object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
+          current.object.NegativeNetCharge piece data.threshold
+            data.dischargeScale →
+          0 < current.object.ambientSurplus piece data.threshold →
+          ∀ centre ∈ piece,
+            Graph.IsHighCentre current.object data.threshold centre →
+            Nonempty (Graph.FanCertificateLabelling current.object
+              data.windowOrder centre)) →
+      fanCertificateMarked.At current)
+    (encodeResidual :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold ∧
+              ∃ centre ∈ piece,
+                Graph.IsHighCentre current.object data.threshold centre ∧
+                  IsEmpty (Graph.FanCertificateLabelling current.object
+                    data.windowOrder centre)) →
+      fanCertificateResidual.At current)
+    (markedFresh : fanCertificateMarked ∉ known)
+    (residualFresh : fanCertificateResidual ∉ known) :
+    Decision fanCertificateMarked fanCertificateResidual previous :=
+  Decision.run previous fanCertificateMarked fanCertificateResidual
+    `Hypostructure.Graph.Strategy.Spine.fanCertificateDichotomy
+    (by
+      classical
+      by_cases marked :
+          ∀ packing : Finset (Finset current.object.Vertex),
+            current.object.IsWindowPacking data.windowOrder packing →
+            ∀ piece : Finset current.object.Vertex,
+              piece ⊆ current.object.remainderSupport packing →
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece →
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale →
+              0 < current.object.ambientSurplus piece data.threshold →
+              ∀ centre ∈ piece,
+                Graph.IsHighCentre current.object data.threshold centre →
+                Nonempty (Graph.FanCertificateLabelling current.object
+                  data.windowOrder centre)
+      · exact .inl (encodeMarked marked)
+      · refine .inr (encodeResidual ?_)
+        -- Not every assigned centre is marked, so one of them is a
+        -- fan-certificate residual centre.  `push_neg` turns the negated
+        -- `Nonempty` into `IsEmpty` directly.
+        push_neg at marked
+        obtain ⟨packing, valid, piece, inside, connected, charge, positive,
+          centre, member, high, unmarked⟩ := marked
+        exact ⟨packing, valid, piece, inside, connected, charge, positive,
+          centre, member, high, unmarked⟩)
+    markedFresh residualFresh
+
+/-! ## Node `[74]`/`[82]`: the hybrid B1 fan ledger
+
+`lem:typeB-hybrid-B1`, and with it `lem:typeB-hybrid-incidence-budget`,
+`def:typeB-hybrid-incidence` and parts (a)--(b) of
+`prop:fan-closed-port-typeB-routing`.  The B2 arm of node `[72]`/`[81]` has
+supplied the global disjointness; this row supplies the *local* payment, which is
+what B2's clause (b) chooses between: at every certificate-marked centre of an
+assigned Type B support, the non-`h` incidences of its cubic-closed neighbours
+are pairwise distinct carriers, they split into `I_W` and `I_N`, their half-credit
+pays `D_B`, the non-window half-credit covers the remaining demand `D_N`, and two
+cubic-closed neighbours already make `D_B` positive.
+
+Three prerequisites, all consumed.  `selection` supplies the avoidance that kills
+the quadrilateral `u — h — v — z — u`, which is the whole reason two cubic-closed
+neighbours cannot share a carrier.  `fanCertificateMarked` supplies a labelling at
+the centre and `fanCertificateCap` turns it into `k ≤ α(D)`, which with the
+registered `fanCapSlack` is the slack `k + 1 ≤ s·δ` the payment spends — the
+manuscript's "and `k ≤ 8`".
+
+`typeBDirectCycleFree` is *not* declared.  The manuscript states the budget lemma
+under "none of the direct-cycle conclusions occurs", but its proof of the
+disjointness uses only dyadic safety, and no other clause reads it either; the
+fact is on this branch's index because the row runs after node `[72]`, and that is
+a property of the cursor rather than of the manifest.  Declaring it would be a
+false dependency. -/
+@[reducible] noncomputable def hybridEntryRow
+    (selection fanCertificateCap fanCertificateMarked typeBHybridEntry :
+      FactKey (Input BranchState Presentation presentation data))
+    (selectionNeCap : selection ≠ fanCertificateCap)
+    (selectionNeMarked : selection ≠ fanCertificateMarked)
+    (capNeMarked : fanCertificateCap ≠ fanCertificateMarked)
+    (avoidsOf : (input : Input BranchState Presentation presentation data) →
+      selection.At input →
+      ¬ Graph.HasCycleWithLength data.LengthOK input.object)
+    (capOf : (input : Input BranchState Presentation presentation data) →
+      fanCertificateCap.At input →
+      ∀ centre : input.object.Vertex,
+        Graph.IsHighCentre input.object data.threshold centre →
+        ∀ _marking :
+            Graph.FanCertificateLabelling input.object data.windowOrder centre,
+          input.object.degree centre ≤
+            Graph.WindowCurvature.fanPackingCap data.windowOrder)
+    (markedOf : (input : Input BranchState Presentation presentation data) →
+      fanCertificateMarked.At input →
+      ∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        ∀ piece : Finset input.object.Vertex,
+          piece ⊆ input.object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
+          input.object.NegativeNetCharge piece data.threshold
+            data.dischargeScale →
+          0 < input.object.ambientSurplus piece data.threshold →
+          ∀ centre ∈ piece,
+            Graph.IsHighCentre input.object data.threshold centre →
+            Nonempty (Graph.FanCertificateLabelling input.object
+              data.windowOrder centre))
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        ∀ piece : Finset input.object.Vertex,
+          piece ⊆ input.object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
+          input.object.NegativeNetCharge piece data.threshold
+            data.dischargeScale →
+          0 < input.object.ambientSurplus piece data.threshold →
+          ∀ centre ∈ piece,
+            Graph.IsHighCentre input.object data.threshold centre →
+            ∀ envelope windowSupport : Finset input.object.Vertex,
+              (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours input.object
+                  data.threshold envelope centre,
+                ∀ right ∈ Graph.TypeBFanIncidence.closedNeighbours input.object
+                    data.threshold envelope centre,
+                  left ≠ right →
+                  ∀ shared : input.object.Vertex,
+                    shared ∈ Graph.TypeBHybridIncidence.nonHubIncidences
+                      input.object centre left →
+                    shared ∉ Graph.TypeBHybridIncidence.nonHubIncidences
+                      input.object centre right) ∧
+                Graph.TypeBHybridIncidence.windowIncidences input.object
+                      data.threshold envelope windowSupport centre +
+                    Graph.TypeBHybridIncidence.nonWindowIncidences input.object
+                      data.threshold envelope windowSupport centre =
+                  (data.threshold - 1) *
+                    Graph.TypeBFanIncidence.closedCount input.object
+                      data.threshold envelope centre ∧
+                2 * Graph.TypeBFanIncidence.scaledDeficit input.object
+                        data.threshold data.dischargeScale envelope centre ≤
+                    (data.dischargeScale : Int) *
+                      ((Graph.TypeBHybridIncidence.windowIncidences input.object
+                          data.threshold envelope windowSupport centre : Int) +
+                        (Graph.TypeBHybridIncidence.nonWindowIncidences
+                          input.object data.threshold envelope windowSupport
+                          centre : Int)) ∧
+                Graph.TypeBHybridIncidence.nonWindowDemand input.object
+                      data.threshold data.dischargeScale envelope windowSupport
+                      centre ≤
+                    (data.dischargeScale : Int) *
+                      (Graph.TypeBHybridIncidence.nonWindowIncidences
+                        input.object data.threshold envelope windowSupport
+                        centre : Int) ∧
+                (2 ≤ Graph.TypeBFanIncidence.closedCount input.object
+                    data.threshold envelope centre →
+                  0 < Graph.TypeBFanIncidence.scaledDeficit input.object
+                    data.threshold data.dischargeScale envelope centre)) →
+      typeBHybridEntry.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.hybridEntry
+    { Requires := [selection, fanCertificateCap, fanCertificateMarked]
+      Produces := [typeBHybridEntry]
+      requiresUnique := by
+        simp [selectionNeCap, selectionNeMarked, capNeMarked]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let avoids := avoidsOf inputs.current (inputs.get selection)
+      let cap := capOf inputs.current (inputs.get fanCertificateCap)
+      let marked := markedOf inputs.current (inputs.get fanCertificateMarked)
+      .cons (key := typeBHybridEntry)
+        (encode inputs.current
+          (fun packing valid piece inside connected charge positive centre
+              member high envelope windowSupport => by
+            -- The marked fan's cap, and with it the manuscript's `k ≤ 8`.
+            obtain ⟨marking⟩ :=
+              marked packing valid piece inside connected charge positive centre
+                member high
+            have slack :
+                inputs.current.object.degree centre + 1 ≤
+                  data.dischargeScale * data.threshold :=
+              le_trans (Nat.succ_le_succ (cap centre high marking))
+                data.fanCapSlack
+            refine ⟨?_, ?_, ?_, ?_, ?_⟩
+            · -- The carriers are distinct: a shared endpoint is a quadrilateral.
+              intro left leftMember right rightMember different shared
+                leftIncidence rightIncidence
+              exact Graph.TypeBHybridIncidence.endpoints_not_shared avoids
+                data.quadrilateralAccepted
+                (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp leftMember)
+                (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp rightMember)
+                different leftIncidence rightIncidence
+            · exact Graph.TypeBHybridIncidence.windowIncidences_add_nonWindowIncidences
+                _ _ _ _ _
+            · exact Graph.TypeBHybridIncidence.hybridCapacity_pays _ _ _ _ _ _
+                data.three_le_threshold slack
+            · exact Graph.TypeBHybridIncidence.nonWindowCredit_ge_demand _ _ _ _
+                _ _ data.three_le_threshold slack
+            · intro two_le
+              exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
+                _ _ _ _ _ two_le high data.highCentreDeficitSlack))
+        .nil)
+
+/-! ## Nodes `[78]`--`[79]`: the degree-four fan profile
+
+`cor:degree-four-local-activation` and the profile Part VII's panel opens with.
+Node `[78]` is the no arm of `[68]`, already committed: every high centre a Type B
+support carries sits exactly at `δ + 1`.  This row reads that law and the normal
+form and commits `[79]`'s readings at every such centre.
+
+The activation dichotomy is `Graph.heavyCentreLocalDichotomy` -- the manuscript's
+own argument, and the *same* theorem row 21 uses at a heavy centre.  What differs
+is only what the degree buys afterwards: row 21 spends `k ≥ δ + 2` to get three
+triangular ports, and here `k = δ + 1` gives `δ − 1`, which is the manuscript's
+"at least `4 − |U| ≥ 2`" at its own baseline.  No second dichotomy theorem is
+introduced for the degree-four case.
+
+The three profile readings are `TypeBFanIncidence.degreeFourProfile`: the centre
+surplus, the count bound `c ≤ k`, and the deficit identity
+`D_B = c − (δ − (k+1)α)` at the registered discharge scale.  Nothing writes `7/4`
+or `11`; the deficit is carried at the scale `s` as an integer, so the rational
+never appears and nothing rounds. -/
+@[reducible] noncomputable def degreeFourProfileRow
+    (highCentreNormalForm typeBDegreeFourProfile :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : highCentreNormalForm ≠ typeBDegreeFourProfile)
+    (normalFormOf : (input : Input BranchState Presentation presentation data) →
+      highCentreNormalForm.At input →
+      ∀ centre : input.object.Vertex,
+        Graph.IsHighCentre input.object data.threshold centre →
+        Graph.NormalForm input.object data.threshold centre)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ centre : input.object.Vertex,
+        input.object.degree centre = data.threshold + 1 →
+        ((∃ left right : input.object.Vertex,
+              Graph.FanCompatible input.object centre left right) ∨
+            data.threshold - 1 ≤
+              (Graph.triangularEndpoints input.object centre).card) ∧
+          input.object.degree centre - data.threshold = 1 ∧
+          ∀ envelope : Finset input.object.Vertex,
+            Graph.TypeBFanIncidence.closedCount input.object data.threshold
+                envelope centre ≤ data.threshold + 1 ∧
+              Graph.TypeBFanIncidence.scaledDeficit input.object data.threshold
+                  data.dischargeScale envelope centre =
+                (data.dischargeScale : Int) *
+                    (Graph.TypeBFanIncidence.closedCount input.object
+                      data.threshold envelope centre : Int) -
+                  (data.dischargeScale : Int) * (data.threshold : Int) +
+                    ((data.threshold : Int) + 2)) →
+      typeBDegreeFourProfile.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.degreeFourProfile
+    (rowManifest highCentreNormalForm typeBDegreeFourProfile distinct)
+    (fun inputs =>
+      let normal :=
+        normalFormOf inputs.current (inputs.get highCentreNormalForm)
+      .cons (key := typeBDegreeFourProfile)
+        (encode inputs.current
+          (fun centre degree => by
+            -- A centre one above the baseline is a high centre, so the normal
+            -- form applies and `cor:degree-four-local-activation` fires.
+            have high : Graph.IsHighCentre inputs.current.object data.threshold
+                centre := by
+              rw [Graph.IsHighCentre, degree]
+              omega
+            refine ⟨?_, ?_⟩
+            · rcases Graph.heavyCentreLocalDichotomy (normal centre high) with
+                compatible | alternative
+              · exact Or.inl compatible
+              · exact Or.inr (by omega)
+            · obtain ⟨surplus, _counted, _identity, _range⟩ :=
+                Graph.TypeBFanIncidence.degreeFourProfile inputs.current.object
+                  data.threshold data.dischargeScale ∅ degree
+              refine ⟨surplus, fun envelope => ?_⟩
+              obtain ⟨_surplus, counted, identity, _range⟩ :=
+                Graph.TypeBFanIncidence.degreeFourProfile inputs.current.object
+                  data.threshold data.dischargeScale envelope degree
+              exact ⟨counted, identity⟩))
+        .nil)
+
+/-! ## Node `[72]`, first half: is a direct fan-window cycle present?
+
+`lem:typeB-direct-fan-window-cycles` and `lem:typeB-two-window-cycles`.  Before
+any incidence credit is counted, the four direct configurations are removed
+structurally: a same-window closed neighbour whose label gap closes a cycle, two
+closed neighbours whose wedge through the centre closes one, two whose closed
+labels interlace, and two with incidences to distinct packed windows.  Each
+display *builds* a cycle whose length the manuscript's arithmetic side condition
+declares accepted, so the arm that takes the configuration is uninhabited on a
+branch whose object avoids those lengths -- which is why this row's yes arm
+closes and its no arm carries `def:direct-cycle-free-closed-pair` forward.
+
+Nothing here writes `{2, 6}` or `{0, 4, 12}`.  Each side condition is
+`data.LengthOK` of the length of its own cycle; at the registered target and
+window order those readings are exactly the manuscript's sets.
+
+The split is `Classical.em` on the configuration proposition, so no window, no
+centre and no neighbour pair is extracted to build the branch, and the arm not
+taken supplies the other arm's clause.  This is a `Decision`: the arm not taken
+is absent from the taken branch's key index. -/
+noncomputable def directCycleDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeBDirectCycle typeBDirectCycleFree :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeConfiguration :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold ∧
+              ∃ centre ∈ piece,
+                Graph.IsHighCentre current.object data.threshold centre ∧
+                  Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
+                    data.windowOrder data.LengthOK packing centre) →
+      typeBDirectCycle.At current)
+    (encodeFree :
+      (∀ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing →
+        ∀ piece : Finset current.object.Vertex,
+          piece ⊆ current.object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
+          current.object.NegativeNetCharge piece data.threshold
+            data.dischargeScale →
+          0 < current.object.ambientSurplus piece data.threshold →
+          ∀ centre ∈ piece,
+            Graph.IsHighCentre current.object data.threshold centre →
+            Graph.TypeBDirectCycle.DirectCycleFree current.object
+              data.windowOrder data.LengthOK packing centre) →
+      typeBDirectCycleFree.At current)
+    (cycleFresh : typeBDirectCycle ∉ known)
+    (freeFresh : typeBDirectCycleFree ∉ known) :
+    Decision typeBDirectCycle typeBDirectCycleFree previous :=
+  Decision.run previous typeBDirectCycle typeBDirectCycleFree
+    `Hypostructure.Graph.Strategy.Spine.directCycleDichotomy
+    (by
+      classical
+      by_cases configuration :
+          ∃ packing : Finset (Finset current.object.Vertex),
+            current.object.IsWindowPacking data.windowOrder packing ∧
+              ∃ piece : Finset current.object.Vertex,
+                piece ⊆ current.object.remainderSupport packing ∧
+                  Graph.SupportComponents.Connected.ConnectedOn current.object
+                    piece ∧
+                  current.object.NegativeNetCharge piece data.threshold
+                    data.dischargeScale ∧
+                  0 < current.object.ambientSurplus piece data.threshold ∧
+                  ∃ centre ∈ piece,
+                    Graph.IsHighCentre current.object data.threshold centre ∧
+                      Graph.TypeBDirectCycle.DirectCycleConfiguration
+                        current.object data.windowOrder data.LengthOK packing
+                        centre
+      · exact .inl (encodeConfiguration configuration)
+      · refine .inr (encodeFree ?_)
+        -- No assigned centre carries a configuration, so every closed
+        -- fan-window pair at every one of them is direct-cycle-free.
+        intro packing valid piece inside connected charge positive centre member
+          high
+        exact fun present => configuration ⟨packing, valid, piece, inside,
+          connected, charge, positive, centre, member, high, present⟩)
+    cycleFresh freeFresh
+
+/-! ## Node `[72]`/`[81]`, second half: does the B2 disjoint ledger exist?
+
+(B2) of `def:typeB-bridge-statements`.  With the local fan-window ledger complete
+-- the direct configurations removed by the row above -- the question is whether
+the assigned high-degree centres of every connected assigned Type B support admit
+a *simultaneous* choice of candidate ledger entries with pairwise disjoint
+carriers, maximal for the support assignment.  It is a global question: an entry
+that pays at one centre may need a carrier another centre has already spent, so
+no local count decides it.
+
+Both arms are the manuscript's own mathematics rather than a proposition and its
+negation.  The no arm is `lem:typeB-bridge-to-overlap`: a disjoint-carrier
+failure is *represented* by a minimal Type B overlap obstruction, the smallest
+failing subfamily of demands, which is the object node `[73]`/`[83]` hands to the
+fan-mass accounting.  The yes arm is `lem:typeB-maximal-completion`: a support
+carrying no obstruction admits the maximal disjoint refined ledger.
+
+This is a `Decision`, so the arm not taken is absent from the taken branch's key
+index; the fan-mass row can no more read the ledger than the bridge-reduction row
+can read the obstruction. -/
+noncomputable def b2AssignmentDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeBDisjointAssignment typeBOverlapObstruction :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeLedger :
+      (∀ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing →
+        ∀ piece : Finset current.object.Vertex,
+          piece ⊆ current.object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
+          current.object.NegativeNetCharge piece data.threshold
+            data.dischargeScale →
+          0 < current.object.ambientSurplus piece data.threshold →
+          Nonempty (Graph.TypeBRefinedSupport.RefinedSupportAssignment current.object
+            data.threshold data.dischargeScale piece)) →
+      typeBDisjointAssignment.At current)
+    (encodeObstruction :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold ∧
+              Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction
+                current.object data.threshold data.dischargeScale piece)) →
+      typeBOverlapObstruction.At current)
+    (ledgerFresh : typeBDisjointAssignment ∉ known)
+    (obstructionFresh : typeBOverlapObstruction ∉ known) :
+    Decision typeBDisjointAssignment typeBOverlapObstruction previous :=
+  Decision.run previous typeBDisjointAssignment typeBOverlapObstruction
+    `Hypostructure.Graph.Strategy.Spine.b2AssignmentDichotomy
+    (by
+      classical
+      by_cases obstruction :
+          ∃ packing : Finset (Finset current.object.Vertex),
+            current.object.IsWindowPacking data.windowOrder packing ∧
+              ∃ piece : Finset current.object.Vertex,
+                piece ⊆ current.object.remainderSupport packing ∧
+                  Graph.SupportComponents.Connected.ConnectedOn current.object
+                    piece ∧
+                  current.object.NegativeNetCharge piece data.threshold
+                    data.dischargeScale ∧
+                  0 < current.object.ambientSurplus piece data.threshold ∧
+                  Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction
+                    current.object data.threshold data.dischargeScale piece)
+      · exact .inr (encodeObstruction obstruction)
+      · refine .inl (encodeLedger ?_)
+        -- No assigned support carries an overlap obstruction, so
+        -- `lem:typeB-maximal-completion` completes each one's ledger.
+        intro packing valid piece inside connected charge positive
+        exact Graph.TypeBRefinedSupport.typeBMaximalCompletion current.object
+          data.threshold data.dischargeScale piece
+          (fun carried => obstruction ⟨packing, valid, piece, inside, connected,
+            charge, positive, carried⟩))
+    ledgerFresh obstructionFresh
+
+/-! ## Node `[88]`: the routing and threshold algebra of a Type A support
+
+`def:typeA-support` is `def:admissible` with `σ(X) = 0`.  Since the object meets
+the baseline everywhere, a support of zero assigned surplus has every vertex at
+degree exactly `δ`, so its internal degrees never exceed `δ`: the vertices split
+into *receivers* of internal degree below `δ` and *full* vertices at `δ`, and
+`q(w) = δ − d_X(w)` is also the number of ambient edges leaving `w`.
+
+Two manuscript statements live here.
+
+`lem:typeA-receiver-loads` says the canonical trace `r(u)` is defined for every
+full `u` and lands on a receiver.  Its hypothesis is the empty internal
+`δ`-core, and that is *inherited*, not assumed: node `[27]` proves that no
+subregion of the remainder of a maximal packing meets the baseline, and the
+support is such a subregion.  `exists_traceTo_of_no_baseline_subsupport` is the
+argument the manuscript gives — the region a full vertex reaches through full
+vertices would otherwise keep the whole baseline inside itself.
+
+`lem:typeA-threshold-algebra` says a receiver of internal degree `δ − 1 − j`
+has `q(w) = j + 1`, hence saturation threshold `H_j = s·(j+1)`, never above
+`s·δ`.  At the manuscript's `δ = 3`, `s = 4` that is `H₀ ≤ 4`, `H₁ ≤ 8`,
+`H₂ ≤ 12`.
+
+The support is data and cannot travel, so the fact is stated at every Type A
+support of the object at once, exactly as node `[27]` is stated at every
+subregion. -/
+@[reducible] noncomputable def typeAReceiverRoutingRow
+    (remainderNormalized typeAReceiverRouting :
+      FactKey (Input BranchState Presentation presentation data))
+    (normalizedOf : (input : Input BranchState Presentation presentation data) →
+      remainderNormalized.At input →
+      ∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ support : Finset input.object.Vertex,
+          support ⊆ input.object.remainderSupport packing →
+          ¬ input.object.InducesWindow data.windowOrder support ∧
+            ¬ Graph.MinimumDegreeAtLeast data.threshold
+              (input.object.induce support))
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ piece : Finset input.object.Vertex,
+          piece ⊆ input.object.remainderSupport packing →
+          input.object.ambientSurplus piece data.threshold = 0 →
+          (∀ vertex ∈ piece,
+            input.object.internalDegree piece vertex = data.threshold →
+            ∃ receiver : input.object.Vertex,
+              input.object.traceReceiver? piece data.threshold vertex =
+                  some receiver ∧
+                input.object.IsReceiver piece data.threshold receiver) ∧
+            (∀ receiver : input.object.Vertex,
+              input.object.IsReceiver piece data.threshold receiver →
+              data.dischargeScale *
+                    input.object.missingPorts piece data.threshold receiver =
+                  data.dischargeScale *
+                    (data.threshold - 1 -
+                      input.object.internalDegree piece receiver + 1) ∧
+                data.dischargeScale *
+                    input.object.missingPorts piece data.threshold receiver ≤
+                  data.dischargeScale * data.threshold)) →
+      typeAReceiverRouting.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeAReceiverRouting
+    { Requires := [remainderNormalized]
+      Produces := [typeAReceiverRouting]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := typeAReceiverRouting)
+        (encode inputs.current (by
+          classical
+          intro packing valid maximal piece inside surplus
+          -- `σ(X) = 0` against the standing baseline: every vertex of the
+          -- support sits exactly at `δ`, so no internal degree exceeds it.
+          have capped : ∀ vertex ∈ piece,
+              inputs.current.object.internalDegree piece vertex ≤
+                data.threshold := by
+            intro vertex member
+            have exact : inputs.current.object.degree vertex = data.threshold := by
+              -- The standing baseline, read off the residual rather than from
+              -- a fact.
+              have nonneg : data.threshold ≤ inputs.current.object.degree vertex :=
+                le_trans inputs.current.baseline
+                  (inputs.current.object.minDegree_le_degree vertex)
+              have summand :
+                  inputs.current.object.degree vertex - data.threshold = 0 :=
+                Nat.eq_zero_of_le_zero
+                  (surplus ▸ Finset.single_le_sum
+                    (f := fun other =>
+                      inputs.current.object.degree other - data.threshold)
+                    (fun _ _ => Nat.zero_le _) member)
+              omega
+            exact exact ▸
+              inputs.current.object.internalDegree_le_degree piece vertex
+          -- Node `[27]` on the support: no subregion of it meets the baseline.
+          have noCore : ∀ inner : Finset inputs.current.object.Vertex,
+              inner ⊆ piece →
+              ¬ Graph.MinimumDegreeAtLeast data.threshold
+                (inputs.current.object.induce inner) := fun inner contained =>
+            (normalizedOf inputs.current (inputs.get remainderNormalized) packing
+              valid maximal inner (contained.trans inside)).2
+          refine ⟨fun vertex member full => ?_, fun receiver isReceiver => ?_⟩
+          · obtain ⟨target, trace⟩ :=
+              inputs.current.object.exists_traceTo_of_no_baseline_subsupport
+                piece data.threshold capped noCore member full
+            obtain ⟨found, routed⟩ :=
+              Option.isSome_iff_exists.mp
+                (inputs.current.object.isSome_traceReceiver?_of_traceTo trace)
+            exact ⟨found, routed,
+              inputs.current.object.isReceiver_of_traceTo
+                (inputs.current.object.traceTo_of_traceReceiver?_eq_some routed)⟩
+          · exact ⟨inputs.current.object.saturationThreshold_eq piece
+              data.threshold data.dischargeScale isReceiver.2,
+              inputs.current.object.saturationThreshold_le piece data.threshold
+                data.dischargeScale receiver⟩))
+        .nil)
+
+/-! ## Node `[89]`: is some receiver of the Type A support saturated?
+
+`L(w) ≥ s·q(w)?`  The yes arm is node `[93]`, where the saturated receiver's
+completion ports are examined; the no arm is node `[90]`, the unsaturated
+capacity `L(w) ≤ s·q(w) − 1` that node `[91]`'s discharging spends.
+
+The split is taken on a `Prop`, so no receiver is extracted to build the
+branch: the arm not taken supplies the other arm's clause.  The no arm is
+committed in the positive, subtraction-free form node `[90]` states —
+`1 + L(w) ≤ s·q(w)` — which is `lem:typeA-threshold-algebra`'s "if the
+saturated branch has been eliminated" clause and, at the manuscript's own
+values, the surviving capacities `3`, `7`, `11`.
+
+This is a `Decision`: the arm not taken is absent from the taken branch's key
+index, so no Type A row downstream can read the other alternative. -/
+noncomputable def typeASaturationDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeALowSurplus typeASaturatedReceiver typeAUnsaturatedReceivers :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeALowSurplus known]
+    (supportOf : typeALowSurplus.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0)
+    (encodeSaturated :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                    data.dischargeScale receiver) →
+      typeASaturatedReceiver.At current)
+    (encodeUnsaturated :
+      (∀ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset current.object.Vertex,
+          current.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ piece : Finset current.object.Vertex,
+          piece ⊆ current.object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
+          current.object.NegativeNetCharge piece data.threshold
+            data.dischargeScale →
+          current.object.ambientSurplus piece data.threshold = 0 →
+          ∀ receiver : current.object.Vertex,
+            current.object.IsReceiver piece data.threshold receiver →
+            1 + current.object.routedLoad piece data.threshold receiver ≤
+              data.dischargeScale *
+                current.object.missingPorts piece data.threshold receiver) →
+      typeAUnsaturatedReceivers.At current)
+    (saturatedFresh : typeASaturatedReceiver ∉ known)
+    (unsaturatedFresh : typeAUnsaturatedReceivers ∉ known) :
+    Decision typeASaturatedReceiver typeAUnsaturatedReceivers previous :=
+  Decision.run previous typeASaturatedReceiver typeAUnsaturatedReceivers
+    `Hypostructure.Graph.Strategy.Spine.typeASaturationDichotomy
+    (by
+      classical
+      -- The predecessor's own Type A support is read, so the branch is not
+      -- vacuous: the no arm is a statement about supports that exist.
+      have _support := supportOf (ExactLedger.get previous typeALowSurplus)
+      by_cases saturated :
+          ∃ packing : Finset (Finset current.object.Vertex),
+            current.object.IsWindowPacking data.windowOrder packing ∧
+              (∀ window : Finset current.object.Vertex,
+                current.object.InducesWindow data.windowOrder window →
+                ∃ member ∈ packing, ¬ Disjoint window member) ∧
+              ∃ piece : Finset current.object.Vertex,
+                piece ⊆ current.object.remainderSupport packing ∧
+                  Graph.SupportComponents.Connected.ConnectedOn current.object
+                    piece ∧
+                  current.object.NegativeNetCharge piece data.threshold
+                    data.dischargeScale ∧
+                  current.object.ambientSurplus piece data.threshold = 0 ∧
+                  ∃ receiver : current.object.Vertex,
+                    current.object.IsReceiver piece data.threshold receiver ∧
+                      current.object.Saturated piece data.threshold
+                        data.dischargeScale receiver
+      · exact .inl (encodeSaturated saturated)
+      · refine .inr (encodeUnsaturated ?_)
+        -- No receiver of any Type A support is saturated, so every one of them
+        -- keeps nonnegative final charge.
+        intro packing valid maximal piece inside connected charge surplus
+          receiver isReceiver
+        refine (current.object.not_saturated_iff piece data.threshold
+          data.dischargeScale receiver).mp ?_
+        exact fun full => saturated ⟨packing, valid, maximal, piece, inside,
+          connected, charge, surplus, receiver, isReceiver, full⟩)
+    saturatedFresh unsaturatedFresh
 
 end Hypostructure.Graph.Strategy.Spine

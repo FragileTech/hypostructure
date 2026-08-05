@@ -9,14 +9,8 @@ import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.WindowPacking
 import Hypostructure.Graph.WindowRemainder
 import Hypostructure.Graph.FanCertificate
-import Hypostructure.Graph.TypeBDirectCycle
-import Hypostructure.Graph.TypeBFanIncidence
-import Hypostructure.Graph.TypeBHybridIncidence
-import Hypostructure.Graph.TypeBRefinedSupport
-import Hypostructure.Graph.ExitFourPeeling
 import Hypostructure.Graph.Route8Residual
 import Hypostructure.Graph.BoundaryDemand
-import Hypostructure.Graph.ReceiverRouting
 import Hypostructure.Graph.WindowInternalMass
 import Hypostructure.Graph.WedgeLowerBound
 import Hypostructure.Graph.InternalWedgeFamily
@@ -24,7 +18,6 @@ import Hypostructure.Graph.CurvatureTargetRank
 import Hypostructure.Graph.OneThreeRepair
 import Hypostructure.Graph.WindowCurvatureCode
 import Hypostructure.Core.CeilSqrt
-import Hypostructure.Graph.SeparatedPackageSkeleton
 import Hypostructure.Graph.NetCharge
 import Hypostructure.Graph.RemainderEntropy
 import Hypostructure.Graph.SkeletonBudget
@@ -99,29 +92,6 @@ structure Data where
   graph.  A presentation whose accepted set misses the quadrilateral does not
   reach the local fan branch. -/
   quadrilateralAccepted : LengthOK 4
-  /-- **The marked-fan slack of `lem:typeB-multiclosed-budget`.**
-
-  The local Type B fan ledger pays the closed-neighbour deficit
-  `D_B = c − (δ − (k+1)α)` out of half-credits, and that arithmetic needs the
-  slack `δ − (k+1)α` to be nonnegative — the manuscript's `(11−k)/4 ≥ 3/4`,
-  which it gets from `k ≤ 8`.  The `8` is not a parameter: it is the label
-  algebra's own packing number `α(D)` at the registered window order, so the
-  condition relates two registered quantities and nothing else.
-
-  Registering it here is the analogue of `quadrilateralAccepted`: a presentation
-  whose label algebra is too rich for its discharge scale does not reach the
-  local fan ledger. -/
-  fanCapSlack :
-    Graph.WindowCurvature.fanPackingCap windowOrder + 1 ≤
-      dischargeScale * threshold
-  /-- **Two fan-closed ports already make the deficit positive.**
-
-  `prop:fan-closed-port-typeB-routing` (b): at `r ≥ 2` fan-closed ports the
-  deficit is at least `r − (δ − (k+1)α) ≥ (k−δ)α > 0`.  Cleared of denominators
-  at the smallest high-centre degree `k = δ + 1`, that is this comparison between
-  registered numbers — the manuscript's `12 < 13`. -/
-  highCentreDeficitSlack :
-    dischargeScale * threshold < 2 * dischargeScale + (threshold + 2)
   /-- **`C_sp` of node `[19]`.**  The registered scale threshold is
   `C_sp·⌈√n⌉`; only its coefficient is registered, because the `⌈√n⌉` is the
   framework's own and the large-budget branch needs to *know* the threshold is a
@@ -129,19 +99,6 @@ structure Data where
   surplusScale : Nat
   /-- The registered per-window barrier rate of the finite enumeration. -/
   windowRate : Nat
-  /-- **The selected dyadic scales of `lem:p13-window-package`.**
-
-  The manuscript's package "uses `⌊log₂ n⌋ − O(1)` separated dyadic scales for
-  these finite barriers", the `O(1)` loss absorbing "endpoint collisions with the
-  finitely many reserved boundary and tie-breaking choices inside the canonical
-  packing".  So the count is the object's own dyadic scale count less a bounded
-  discard, and this is where that count is registered — the same way node `[19]`
-  registers its scale threshold and node `[32]` its rank allowance.  A row reads
-  it; no row writes it. -/
-  separatedScaleCount : Nat → Nat
-  /-- The selected scales are among the object's own: the discard only loses
-  scales, it never invents them. -/
-  separatedScaleCount_le : ∀ size : Nat, separatedScaleCount size ≤ Nat.log2 size
   /-- The registered curvature rank allowance `o(W₂)` of node `[32]`, as a
   function of the wedge supply it is subtracted from.  Node `[32]` is the only
   comparison of the spine whose manuscript form still carries an asymptotic
@@ -179,16 +136,6 @@ structure Data where
   small-order arm is the finite residue the manuscript does not address. -/
   largeOrderExponent : Nat
   largeOrderExponent_pos : 0 < largeOrderExponent
-  /-- **The discard is bounded**, which is the other half of the manuscript's
-  `⌊log₂ n⌋ − O(1)`: `separatedScaleCount_le` says the selection only loses
-  scales, and this says it loses boundedly many, so the selected count keeps pace
-  with the object's own.  It is stated in the exact form node `[56]` consumes —
-  the comparison that lets node `[24]`'s cap be divided at the registered order
-  exponent instead of at the raw scale count — and every quantity in it is
-  registered. -/
-  separatedScaleReach : ∀ size : Nat, 2 ^ largeOrderExponent ≤ size →
-    largeOrderExponent * (Nat.log2 size + 1) ≤
-      (largeOrderExponent + 1) * separatedScaleCount size
   /-- **`τ_win < ¼` at the registered rate.**
 
   `prop:p13-density` turns node `[24]`'s cap into `θ ≤ (δ/2)/rate + o(1)`, and
@@ -483,17 +430,6 @@ inductive Key where
   forcing it, the transient of an even modulus, and case (d)'s equal-length
   switch -- decides which of the three arms a germ falls into. -/
   | coldGermSilent
-  /-- Nodes `[21]`--`[22]`: `lem:p13-window-package`.  The selected coordinates of
-  the multi-scale window package are separated, and each carries the audited
-  per-window rate.  This is the arm on which `lem:independent-target-entropy`
-  applies; the arm where the coordinates collide is the `O(1)` the manuscript's
-  scale count discards. -/
-  | windowPackageSeparated
-  /-- Nodes `[21]`--`[22]`, the other arm: the selected coordinates collide.  This
-  is the `O(1)` the manuscript's scale count discards — "endpoint collisions with
-  the finitely many reserved boundary and tie-breaking choices inside the
-  canonical packing" — and it leaves the block rather than being assumed away. -/
-  | windowPackageCollided
   /-- Nodes `[47]`--`[48]`: `cor:forced-curvature-cost`.  The full-rank residual
   pays `c_Ω·r_Ω(R) ≥ K_win|R| − o(|R|)`, which is the wedge demand floor of node
   `[30]` with node `[34]`'s rank substituted for its wedge supply and the
@@ -555,21 +491,6 @@ inductive Key where
   /-- Node `[62]`, yes arm — node `[64]`, Type B: the selected negative support
   carries assigned high-degree surplus. -/
   | typeBHighSurplus
-  /-- Node `[88]`: the routing and threshold algebra of a Type A support.
-  `lem:typeA-receiver-loads` — every vertex spending the whole baseline inside
-  the support is routed by the canonical trace to exactly one receiver — and
-  `lem:typeA-threshold-algebra` — a receiver of internal degree `δ − 1 − j` has
-  `q(w) = j + 1`, so its saturation threshold is `H_j = s·(j+1)`, never above
-  `s·δ`.  For the manuscript's baseline and discharge scale this is
-  `H₀ ≤ 4`, `H₁ ≤ 8`, `H₂ ≤ 12`. -/
-  | typeAReceiverRouting
-  /-- Node `[89]`, yes arm — the entry of node `[93]`: some receiver of a Type A
-  support has reached its saturation threshold, `L(w) ≥ s·q(w)`. -/
-  | typeASaturatedReceiver
-  /-- Node `[89]`, no arm — node `[90]`: every receiver of every Type A support
-  is unsaturated, `L(w) ≤ s·q(w) − 1`.  This is the capacity the `3/7/11`
-  discharging of node `[91]` spends. -/
-  | typeAUnsaturatedReceivers
   /-- Nodes `[154]`, `[155]`, the (F1) producer.  A compatible completion
   through a cold-window offset that realizes a power-of-two cycle would be an
   accepted cycle of the selected object, which node `[1]` excludes: (F1) never
@@ -650,88 +571,6 @@ inductive Key where
   `def:typeB-residual-mass` and takes no part in the certificate-closed local
   discharging step. -/
   | fanCertificateResidual
-  /-- Nodes `[78]`--`[79]`: the degree-four fan profile.  At a centre sitting
-  exactly one above the baseline, `cor:degree-four-local-activation` gives either
-  a fan-compatible open pair or `δ − 1` triangular ports -- the manuscript's "at
-  least two" at `δ = 3` -- and `[79]`'s three readings hold: the centre surplus
-  is `1`, the cubic-closed count is at most the degree, and the closed-neighbour
-  deficit of `def:typeB-multiclosed-residual` is `c − (δ − (k+1)α)`, the
-  manuscript's `c − 7/4` at its own values. -/
-  | typeBDegreeFourProfile
-  /-- Node `[74]`/`[82]`: the hybrid B1 fan ledger.  At every certificate-marked
-  centre of an assigned Type B support, the non-`h` incidences of its cubic-closed
-  neighbours are pairwise distinct carriers, they split into the window count
-  `I_W` and the non-window count `I_N` of `def:typeB-hybrid-incidence`, their
-  half-credit pays the closed-neighbour deficit `D_B`, the non-window half-credit
-  covers the remaining demand `D_N`, and two cubic-closed neighbours already make
-  `D_B` positive (`lem:typeB-hybrid-incidence-budget`, `lem:typeB-hybrid-B1`,
-  `prop:fan-closed-port-typeB-routing`). -/
-  | typeBHybridEntry
-  /-- Node `[72]`, the closing arm: some assigned centre carries one of the four
-  direct fan-window configurations of
-  `lem:typeB-direct-fan-window-cycles`/`lem:typeB-two-window-cycles`, so the
-  envelope contains a cycle of accepted length.  The branch that commits this is
-  uninhabited: the object was selected to avoid those lengths. -/
-  | typeBDirectCycle
-  /-- Node `[72]`, the surviving arm — the entry of the B2 question: every closed
-  fan-window pair at every assigned centre is direct-cycle-free
-  (`def:direct-cycle-free-closed-pair`), so the local fan-window ledger is
-  complete and the incidence payment may be counted. -/
-  | typeBDirectCycleFree
-  /-- Node `[72]`/`[81]`, yes arm — the entry of `[74]`/`[82]`: every connected
-  assigned Type B support admits the refined support ledger (B2) of
-  `def:typeB-bridge-statements` — a disjoint choice of candidate entries at all
-  its assigned centres, maximal for the support assignment. -/
-  | typeBDisjointAssignment
-  /-- Node `[72]`/`[81]`, no arm — the entry of `[73]`/`[83]`: B2's
-  disjoint-carrier clause fails on some assigned support, which by
-  `lem:typeB-bridge-to-overlap` carries a minimal Type B overlap obstruction of
-  `def:typeB-overlap-obstruction`.  The fact records the obstruction, not the
-  bare failure: the minimality is what the fan-mass accounting consumes. -/
-  | typeBOverlapObstruction
-  /-- Node `[101]`, the ladder's own exit-`(4)` test, yes arm: the exit-`(4)`
-  peel step is available.  `lem:typeA-exit4-residual-routing`: while a
-  receiver's peeled residual is still saturated, exit `(4)` supplies a fresh
-  unpeeled routed load, which `lem:typeA-exit4-discharge` adjoins to the peeling
-  set. -/
-  | typeAExitFourPeel
-  /-- Node `[101]`, no arm: no receiver admits the peel step. -/
-  | typeAExitFourNoPeel
-  /-- Node `[102]`, the peel's own output, which the manuscript routes back to
-  node `[89]`: every receiver has a peeling set leaving it unsaturated, so by
-  `lem:typeA-exit4-peeling-charge` its remaining charge `q(w) − ¼ − ¼·L₄(w)` is
-  nonnegative.  The descent that produces it is finite because each peel drops
-  `L₄(w)` by exactly one. -/
-  | typeAPeeledCharge
-  /-- Node `[103]`, the exit-`(5)` realization test, yes arm: the nontrivial
-  target-complete response compression *is realized by a smaller proper atom*,
-  so it is a target-complete compression in the sense of `lem:replacement` --
-  which `cor:uncompressible` at node `[14]` excludes. -/
-  | typeAExitFiveCompression
-  /-- Node `[103]`, the same test's no arm: the compression occurs only at the
-  trace-basin response level, so it is exactly failure alternative (b) of
-  `def:typeA-trace-basin` and the branch is not an admissible route-8
-  residual. -/
-  | typeAExitFiveTraceLevel
-  /-- Node `[101]`, yes arm: some indexed route-8 entry of the object realizes
-  the canonical exit-`(4)` quotient of clause (Q5) of
-  `def:typeA-exit4-family` -- a two-carrier entry whose declared deletion witness
-  makes a carrier-deletion quotient target-defective.  This is the arm the
-  manuscript peels a target-defective routed load on. -/
-  | typeAExitFour
-  /-- Node `[101]`, no arm: exit `(4)` is absent, which is (R2) of
-  `def:typeA-true-route8-residual` for exit `(4)`.  Every later row of the
-  route-8 arm reads this fact rather than assuming it. -/
-  | typeAExitFourFree
-  /-- Node `[103]`, yes arm: some indexed route-8 entry admits a nontrivial
-  target-complete quotient of its trace-basin reading -- alternative (b) of
-  `def:typeA-trace-basin`, which is exit `(5)`, the target-complete
-  compression. -/
-  | typeAExitFive
-  /-- Node `[103]`, no arm: exit `(5)` is absent, so the internal-forgetting
-  reading of every indexed entry is a proper quotient of its core reading.  This
-  is the surviving trace `lem:typeA-one-terminal-collapse` collapses against. -/
-  | typeAExitFiveFree
   /-- Node `[109]`, the route-8 arm: the object carries an admissible true
   large-budget route-8 carrier residual -- `def:typeA-silent-core-residual`'s
   reduced silent profile, `def:typeA-true-route8-residual`'s absence clause
@@ -939,8 +778,7 @@ the labelled skeleton budget. -/
 noncomputable abbrev jointPackageDemand (data : Data.{u})
     (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex)) : Nat :=
-  2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-        packing.card) *
+  2 ^ (data.windowRate * Graph.dyadicScaleCount object * packing.card) *
       remainderStates data object packing *
     2 ^ (data.curvatureCost *
       remainderCurvatureTargetRank data object packing)
@@ -1015,7 +853,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- manuscript's `c₁₃ p₁₃ log₂ n`.  Dropping the scale factor would state a
       -- demand that grows a whole `log₂ n` slower than the manuscript's, and
       -- node `[24]` would then cap nothing.
-      (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+      (2 ^ (data.windowRate * Graph.dyadicScaleCount object *
             object.windowPackingNumber data.windowOrder) ≤
           Graph.skeletonBudget object ∧
         ∀ family : Finset Nat, object.edgeCount ∈ family →
@@ -1023,7 +861,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             Graph.variableEdgeBudget object.vertexCount family)
   | .barrierOverflow, object =>
       (Graph.skeletonBudget object <
-        2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+        2 ^ (data.windowRate * Graph.dyadicScaleCount object *
           object.windowPackingNumber data.windowOrder))
   | .densityCap, object =>
       -- `prop:p13-density`.  Spending the skeleton budget's `m !` against the
@@ -1032,7 +870,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- manuscript's `θ_win = 1.5/118.108581006…`.  The `o(1)` is the
       -- `(scaleCount + 1)/scaleCount` factor and the `T(n)` term; both are
       -- exact here.
-      (2 * (data.windowRate * data.separatedScaleCount object.vertexCount *
+      (2 * (data.windowRate * Graph.dyadicScaleCount object *
           object.windowPackingNumber data.windowOrder) ≤
         (Graph.dyadicScaleCount object + 1) *
           (data.threshold * object.vertexCount +
@@ -1646,39 +1484,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 Graph.ColdCorridor.branchExcessOf
                   (data.threshold * data.windowOrder -
                     2 * (data.windowOrder - 1)) * nonCubicBound)
-  | .windowPackageSeparated, object =>
-      -- `lem:p13-window-package`.  One coordinate per packed window per selected
-      -- dyadic scale, separated, each carrying at least the audited rate, and
-      -- fitting the object's own edge count.  The family is data, so what the
-      -- ledger records is its existence -- exactly as the packing itself is
-      -- recorded by node `[17]` and never carried.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        ∃ (coordinateCount : Nat)
-          (family : Graph.PackedWindowRealization.SeparatedFamily object
-            (Fin coordinateCount)),
-          2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-                object.windowPackingNumber data.windowOrder) ≤
-              Nat.card (∀ coordinate, family.State coordinate) ∧
-            jointPackageDemand data object packing ≤
-              Nat.card (∀ coordinate, family.State coordinate) ∧
-            family.slots.card ≤ object.edgeCount ∧
-            object.edgeCount ≤ family.pool.card)
-  | .windowPackageCollided, object =>
-      -- Nodes `[21]`--`[22]`, the collided arm: the exact negation.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          ∀ (coordinateCount : Nat)
-            (family : Graph.PackedWindowRealization.SeparatedFamily object
-              (Fin coordinateCount)),
-            ¬ (2 ^ (data.windowRate *
-                    data.separatedScaleCount object.vertexCount *
-                    object.windowPackingNumber data.windowOrder) ≤
-                  Nat.card (∀ coordinate, family.State coordinate) ∧
-              jointPackageDemand data object packing ≤
-                  Nat.card (∀ coordinate, family.State coordinate) ∧
-              family.slots.card ≤ object.edgeCount ∧
-              object.edgeCount ≤ family.pool.card))
   | .coldHandoffTransfer, object =>
       -- `lem:cold-corridor-first-failure` (iv), as a closure rather than an
       -- open arm.  A corridor that first enters the declared handoff
@@ -1759,18 +1564,13 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (Graph.MinimumDegreeAtLeast data.threshold)
             (Graph.HasCycleWithLength data.LengthOK) object,
           germ.increment < 0 → germ.Distinguishing) ∧
-        -- `lem:cold-bounded-germ-trichotomy` in full: no length-changing germ
-        -- survives, in *either* orientation.  The manuscript's "oriented so
-        -- `δ ≥ 0`" names which representative is `E`; `OrientedGerm` records
-        -- both occurrences, so the naming is always available and `δ ≠ 0` is
-        -- the only hypothesis.
         (∀ branch : Graph.ColdCorridor.SurvivingColdBranch data.coldSignature
             (Graph.MinimumDegreeAtLeast data.threshold)
             (Graph.HasCycleWithLength data.LengthOK) object,
-          ∀ germ : Graph.ColdCorridor.OrientedGerm data.coldSignature
+          ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
               (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object,
-            germ.forward.increment ≠ 0 → False) ∧
+            germ.increment < 0 → False) ∧
         -- The other two germ families of the manuscript.  A row of
         -- `def:cold-same-interface-table` -- an equal-length germ or a short
         -- self-return exception -- cannot be realizing and cannot be
@@ -1833,7 +1633,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `2^{rate·p}·n^{|R|/d}·2^{c_Ω·r_Ω(R)}` states.
       (∀ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing →
-        (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+        (2 ^ (data.windowRate * Graph.dyadicScaleCount object *
               packing.card)) ^ data.entropyDenominator *
               object.vertexCount ^ (object.remainderSupport packing).card *
               (2 ^ (data.curvatureCost *
@@ -1868,16 +1668,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       --
       -- Stated at a maximal packing rather than at every one: the cap needs the
       -- packing *number*, which is what node `[24]` bounds, so the statement is
-      -- about the packings that attain it.  The maximality is *carried*, not
-      -- merely used: `def:admissible`'s inherited clauses are node `[27]`'s
-      -- conclusions about `R = G − W`, and node `[27]` is stated at a maximal
-      -- packing, so every later node that argues inside `R` needs the same
-      -- packing to still be known maximal.
+      -- about the packings that attain it.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           object.NegativeNetCharge (object.remainderSupport packing)
             data.threshold data.dischargeScale)
   | .netChargeLocalization, object =>
@@ -1896,22 +1689,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               object.NegativeNetCharge piece data.threshold
                 data.dischargeScale)
   | .netChargeNonNegative, object =>
-      -- Node `[59]`, yes: `N₀(R) ≥ 0`.  At the maximal packings, which is where
-      -- `R = G − W` is the manuscript's remainder.
+      -- Node `[59]`, yes: `N₀(R) ≥ 0`.
       (∀ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset object.Vertex,
-          object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
         object.NonNegativeNetCharge (object.remainderSupport packing)
           data.threshold data.dischargeScale)
   | .netChargeNegative, object =>
-      -- Node `[59]`, no: `N₀(R) < 0`, at a maximal packing.
+      -- Node `[59]`, no: `N₀(R) < 0`.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           object.NegativeNetCharge (object.remainderSupport packing)
             data.threshold data.dischargeScale)
   | .windowJoinPressure, object =>
@@ -1922,9 +1708,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- which at the manuscript's values is `σ_W − σ_R ≥ (n − 73p₁₃)/4`.
       (∀ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset object.Vertex,
-          object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
         object.vertexCount +
               data.dischargeScale *
                 object.ambientSurplus (object.remainderSupport packing)
@@ -1941,15 +1724,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Node `[61]`, `prop:negative-net-charge`.  The support is data, so what
       -- the ledger records is its existence, with the two clauses of
       -- `def:admissible` the decomposition supplies: it is a connected piece of
-      -- the remainder, and its net charge is negative.  The packing is carried
-      -- with its maximality, which is what lets node `[27]` be read on the
-      -- piece: `def:admissible`'s remaining inherited clauses are statements
-      -- about the remainder of a *maximal* packing.
+      -- the remainder, and its net charge is negative.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           ∃ piece : Finset object.Vertex,
             piece ⊆ object.remainderSupport packing ∧
               Graph.SupportComponents.Connected.ConnectedOn object piece ∧
@@ -1957,15 +1734,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 data.dischargeScale)
   | .typeALowSurplus, object =>
       -- Node `[62]`, no -- node `[63]`, Type A: the selected support carries no
-      -- assigned surplus.  The packing keeps its maximality: `def:typeA-support`
-      -- is `def:admissible` with `σ(X) = 0`, and the inherited clauses the Type
-      -- A ladder spends -- window-freeness and the empty internal `δ`-core --
-      -- are node `[27]`'s conclusions about the remainder of a maximal packing.
+      -- assigned surplus.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
           ∃ piece : Finset object.Vertex,
             piece ⊆ object.remainderSupport packing ∧
               Graph.SupportComponents.Connected.ConnectedOn object piece ∧
@@ -1982,77 +1753,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               0 < object.ambientSurplus piece data.threshold)
-  | .typeAReceiverRouting, object =>
-      -- Node `[88]`.  Stated at every Type A support the object carries, in
-      -- the same way node `[27]` is stated at every subregion of a remainder:
-      -- a support is data and cannot travel, so what the ledger records is the
-      -- statement about all of them.
-      --
-      -- `def:typeA-support` is `def:admissible` with `σ(X) = 0`; the two
-      -- clauses below are `def:typeA-receiver-load`'s own consequences at such
-      -- a support.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset object.Vertex,
-          object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset object.Vertex,
-          piece ⊆ object.remainderSupport packing →
-          object.ambientSurplus piece data.threshold = 0 →
-          -- `lem:typeA-receiver-loads`: `r(u)` is defined for every vertex of
-          -- internal degree `δ`, and it is a receiver.  Uniqueness is the
-          -- routing being a function of `u`.
-          (∀ vertex ∈ piece,
-            object.internalDegree piece vertex = data.threshold →
-            ∃ receiver : object.Vertex,
-              object.traceReceiver? piece data.threshold vertex = some receiver ∧
-                object.IsReceiver piece data.threshold receiver) ∧
-            -- `lem:typeA-threshold-algebra`: `H_j = s·q(w) = s·(j+1) ≤ s·δ`.
-            (∀ receiver : object.Vertex,
-              object.IsReceiver piece data.threshold receiver →
-              data.dischargeScale *
-                    object.missingPorts piece data.threshold receiver =
-                  data.dischargeScale *
-                    (data.threshold - 1 -
-                      object.internalDegree piece receiver + 1) ∧
-                data.dischargeScale *
-                    object.missingPorts piece data.threshold receiver ≤
-                  data.dischargeScale * data.threshold))
-  | .typeASaturatedReceiver, object =>
-      -- Node `[89]`, yes: some receiver of a Type A support is saturated.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset object.Vertex,
-            piece ⊆ object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn object piece ∧
-              object.NegativeNetCharge piece data.threshold
-                data.dischargeScale ∧
-              object.ambientSurplus piece data.threshold = 0 ∧
-              ∃ receiver : object.Vertex,
-                object.IsReceiver piece data.threshold receiver ∧
-                  object.Saturated piece data.threshold data.dischargeScale
-                    receiver)
-  | .typeAUnsaturatedReceivers, object =>
-      -- Node `[89]`, no -- node `[90]`: `L(w) ≤ s·q(w) − 1` at every receiver of
-      -- every Type A support, written without subtraction.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset object.Vertex,
-          object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset object.Vertex,
-          piece ⊆ object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn object piece →
-          object.NegativeNetCharge piece data.threshold data.dischargeScale →
-          object.ambientSurplus piece data.threshold = 0 →
-          ∀ receiver : object.Vertex,
-            object.IsReceiver piece data.threshold receiver →
-            1 + object.routedLoad piece data.threshold receiver ≤
-              data.dischargeScale *
-                object.missingPorts piece data.threshold receiver)
   | .highCentreNormalForm, object =>
       -- Node `[68]`: `lem:heavy-neighbourhood-normal-form`, at every high
       -- centre of the object at once.  It is not about one support, so it is
@@ -2144,256 +1844,55 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                   IsEmpty
                     (Graph.FanCertificateLabelling object data.windowOrder
                       centre))
-  | .typeBDegreeFourProfile, object =>
-      -- Nodes `[78]`--`[79]`.  Stated at every centre of the object sitting one
-      -- above the baseline at once, because `[78]`'s own fact says every high
-      -- centre a Type B support carries is such a centre, and a centre is data
-      -- that no fact can carry.  The envelope is quantified for the same reason:
-      -- which vertices a marked fan assigns is fan data.
-      (∀ centre : object.Vertex, object.degree centre = data.threshold + 1 →
-        ((∃ left right : object.Vertex,
-              Graph.FanCompatible object centre left right) ∨
-            data.threshold - 1 ≤
-              (Graph.triangularEndpoints object centre).card) ∧
-          object.degree centre - data.threshold = 1 ∧
-          ∀ envelope : Finset object.Vertex,
-            Graph.TypeBFanIncidence.closedCount object data.threshold envelope
-                centre ≤ data.threshold + 1 ∧
-              Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                  data.dischargeScale envelope centre =
-                (data.dischargeScale : Int) *
-                    (Graph.TypeBFanIncidence.closedCount object data.threshold
-                      envelope centre : Int) -
-                  (data.dischargeScale : Int) * (data.threshold : Int) +
-                    ((data.threshold : Int) + 2))
-  | .typeBHybridEntry, object =>
-      -- Node `[74]`/`[82]`.  Scoped to the centres of a Type B support, because
-      -- `k ≤ α(D)` is available only at a certificate-marked fan, and quantified
-      -- over the envelope and the packed-window union because both are fan data.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset object.Vertex,
-          piece ⊆ object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn object piece →
-          object.NegativeNetCharge piece data.threshold data.dischargeScale →
-          0 < object.ambientSurplus piece data.threshold →
-          ∀ centre ∈ piece,
-            Graph.IsHighCentre object data.threshold centre →
-            ∀ envelope windowSupport : Finset object.Vertex,
-              -- The carriers are distinct: no non-`h` endpoint is shared.
-              (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours object
-                  data.threshold envelope centre,
-                ∀ right ∈ Graph.TypeBFanIncidence.closedNeighbours object
-                    data.threshold envelope centre,
-                  left ≠ right →
-                  ∀ shared : object.Vertex,
-                    shared ∈ Graph.TypeBHybridIncidence.nonHubIncidences object
-                      centre left →
-                    shared ∉ Graph.TypeBHybridIncidence.nonHubIncidences object
-                      centre right) ∧
-                -- `I_W + I_N = (δ − 1)·c`.
-                Graph.TypeBHybridIncidence.windowIncidences object data.threshold
-                      envelope windowSupport centre +
-                    Graph.TypeBHybridIncidence.nonWindowIncidences object
-                      data.threshold envelope windowSupport centre =
-                  (data.threshold - 1) *
-                    Graph.TypeBFanIncidence.closedCount object data.threshold
-                      envelope centre ∧
-                -- The hybrid entry pays `D_B`.
-                2 * Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                        data.dischargeScale envelope centre ≤
-                    (data.dischargeScale : Int) *
-                      ((Graph.TypeBHybridIncidence.windowIncidences object
-                          data.threshold envelope windowSupport centre : Int) +
-                        (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                          data.threshold envelope windowSupport centre : Int)) ∧
-                -- The non-window half-credit covers `D_N`.
-                Graph.TypeBHybridIncidence.nonWindowDemand object data.threshold
-                      data.dischargeScale envelope windowSupport centre ≤
-                    (data.dischargeScale : Int) *
-                      (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                        data.threshold envelope windowSupport centre : Int) ∧
-                -- Two cubic-closed neighbours make the deficit positive.
-                (2 ≤ Graph.TypeBFanIncidence.closedCount object data.threshold
-                    envelope centre →
-                  0 < Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                    data.dischargeScale envelope centre))
-  | .typeBDirectCycle, object =>
-      -- Node `[72]`, the closing arm.  `lem:typeB-direct-fan-window-cycles` and
-      -- `lem:typeB-two-window-cycles` in the shape their negation produces: an
-      -- assigned centre of a Type B support carries one of the four direct
-      -- configurations, over the windows of the packing the support is read in.
-      -- The configuration is data, so the fact records that one exists.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          ∃ piece : Finset object.Vertex,
-            piece ⊆ object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn object piece ∧
-              object.NegativeNetCharge piece data.threshold
-                data.dischargeScale ∧
-              0 < object.ambientSurplus piece data.threshold ∧
-              ∃ centre ∈ piece,
-                Graph.IsHighCentre object data.threshold centre ∧
-                  Graph.TypeBDirectCycle.DirectCycleConfiguration object
-                    data.windowOrder data.LengthOK packing centre)
-  | .typeBDirectCycleFree, object =>
-      -- Node `[72]`, the surviving arm: `def:direct-cycle-free-closed-pair` at
-      -- every assigned centre of every Type B support, over every packing.
-      -- Stated positively and universally, for the same reason node `[78]`'s
-      -- own fact is: a support and a centre are data, and no fact carries one.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset object.Vertex,
-          piece ⊆ object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn object piece →
-          object.NegativeNetCharge piece data.threshold data.dischargeScale →
-          0 < object.ambientSurplus piece data.threshold →
-          ∀ centre ∈ piece,
-            Graph.IsHighCentre object data.threshold centre →
-            Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder
-              data.LengthOK packing centre)
-  | .typeBDisjointAssignment, object =>
-      -- Node `[72]`/`[81]`, yes.  (B2) of `def:typeB-bridge-statements` at every
-      -- connected assigned Type B support: its assigned centres carry a maximal
-      -- disjoint refined ledger.  The ledger is data, so the fact records that
-      -- one exists.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset object.Vertex,
-          piece ⊆ object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn object piece →
-          object.NegativeNetCharge piece data.threshold data.dischargeScale →
-          0 < object.ambientSurplus piece data.threshold →
-          Nonempty (Graph.TypeBRefinedSupport.RefinedSupportAssignment object
-            data.threshold data.dischargeScale piece))
-  | .typeBOverlapObstruction, object =>
-      -- Node `[72]`/`[81]`, no.  `lem:typeB-bridge-to-overlap`: the
-      -- disjoint-carrier clause fails on some assigned support, and what that
-      -- support then carries is a *minimal* Type B overlap obstruction.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          ∃ piece : Finset object.Vertex,
-            piece ⊆ object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn object piece ∧
-              object.NegativeNetCharge piece data.threshold
-                data.dischargeScale ∧
-              0 < object.ambientSurplus piece data.threshold ∧
-              Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-                data.threshold data.dischargeScale piece))
 
-  | .typeAExitFourPeel, object =>
-      -- Node `[101]`, yes: `lem:typeA-exit4-residual-routing`'s exit-`(4)` case,
-      -- read at every receiver of every support at once, because a support and a
-      -- receiver are data and no fact may carry them.
-      (∀ piece : Finset object.Vertex, ∀ receiver : object.Vertex,
-        ∀ peeled : Finset object.Vertex,
-          peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver →
-          Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
-              receiver peeled →
-            ∃ load ∈ Graph.ExitFour.routedLoads piece data.threshold receiver,
-              load ∉ peeled)
-  | .typeAExitFourNoPeel, object =>
-      -- Node `[101]`, no.
-      (¬ ∀ piece : Finset object.Vertex, ∀ receiver : object.Vertex,
-        ∀ peeled : Finset object.Vertex,
-          peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver →
-          Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
-              receiver peeled →
-            ∃ load ∈ Graph.ExitFour.routedLoads piece data.threshold receiver,
-              load ∉ peeled)
-  | .typeAPeeledCharge, object =>
-      -- Node `[102]`: the peeled receiver, retested at `[89]`.
-      (∀ piece : Finset object.Vertex, ∀ receiver : object.Vertex,
-        ∃ peeled : Finset object.Vertex,
-          peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver ∧
-            ¬ Graph.ExitFour.SaturatedAfter piece data.threshold
-              data.dischargeScale receiver peeled)
-  | .typeAExitFiveCompression, object =>
-      -- Node `[103]`, yes: the compression is realized by a smaller proper
-      -- atom, which is `lem:replacement`'s target-complete compression.
-      (∃ support : Finset object.Vertex,
-        Graph.Strategy.InterfaceReplacement.CompressibleSupport
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object support)
-  | .typeAExitFiveTraceLevel, object =>
-      -- Node `[103]`, no: it stays at the trace-basin response level.
-      (¬ ∃ support : Finset object.Vertex,
-        Graph.Strategy.InterfaceReplacement.CompressibleSupport
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object support)
-  | .typeAExitFour, object =>
-      -- Node `[101]`, yes.  A route-8 entry is data, so the fact records that
-      -- some data on the object has an entry realizing exit `(4)`.
-      (∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        ∃ index ∈ residual.entries, residual.ExitFour index)
-  | .typeAExitFourFree, object =>
-      -- Node `[101]`, no -- (R2) for exit `(4)`.
-      (Graph.Route8.ExitFourFree (Graph.HasCycleWithLength data.LengthOK) object)
-  | .typeAExitFive, object =>
-      -- Node `[103]`, yes: some indexed entry's internal-forgetting reading is
-      -- its core reading, which is alternative (b) of `def:typeA-trace-basin`.
-      (∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        ∃ index ∈ residual.entries, ¬ residual.SurvivingTrace index)
-  | .typeAExitFiveFree, object =>
-      -- Node `[103]`, no -- (R2) for exit `(5)`.
-      (Graph.Route8.TraceSurviving
-        (Graph.HasCycleWithLength data.LengthOK) object)
   | .route8Residual, object =>
-      -- Node `[109]` with `[111]`--`[112]`: the arm is entered with a
-      -- *large-budget* route-8 collection.  The collection is data, so the fact
-      -- records that one exists; the three readings that depend on it -- the
-      -- burden, the large-budget deficit and the registered rate -- are the
-      -- statement of this key.  The exit clauses (R2) are *not* here: they are
-      -- nodes `[101]` and `[103]`'s own facts.
-      (∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.LargeBudget)
+      -- Node `[109]`: the route-8 arm is entered.  The residual is data, so the
+      -- fact records that one exists rather than carrying it; every later row
+      -- of the block quantifies over all of them.
+      (Nonempty (Graph.Route8.Residual
+        (Graph.HasCycleWithLength data.LengthOK) object))
   | .route8Free, object =>
       -- Node `[109]`, the complementary arm.
-      (¬ ∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.LargeBudget)
+      (IsEmpty (Graph.Route8.Residual
+        (Graph.HasCycleWithLength data.LengthOK) object))
   | .route8Burden, object =>
-      -- Nodes `[111]`--`[113]`: the same residual with `lem:typeA-route8-burden`
-      -- substituted into `def:typeA-large-budget-deficit`, which is the reading
-      -- the census of node `[122]` spends.
-      (∃ residual : Graph.Route8.Data
+      -- Nodes `[111]`--`[113]`.  `lem:typeA-route8-burden`'s
+      -- `N_basin(𝒳) ≥ discharge·D_A(𝒳)` and
+      -- `def:typeA-large-budget-deficit`'s bound, cleared of denominators
+      -- against the boundary supply ceiling.
+      (∀ residual : Graph.Route8.Residual
           (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.Reduced)
+        residual.discharge * residual.deficiency ≤ residual.entries.card ∧
+          residual.remainderSize ≤
+            residual.discharge * residual.deficiency +
+              residual.discharge * residual.ambient.card)
   | .route8CarrierCore, object =>
       -- Nodes `[114]`--`[116]`, `lem:typeA-one-terminal-collapse`.
-      (∀ residual : Graph.Route8.Data
+      (∀ residual : Graph.Route8.Residual
           (Graph.HasCycleWithLength data.LengthOK) object,
-        ∀ index ∈ residual.entries,
-          residual.SurvivingTrace index → 2 ≤ residual.alpha index)
+        ∀ index ∈ residual.entries, 2 ≤ residual.alpha index)
   | .route8Census, object =>
-      -- Nodes `[117]`--`[122]`, `prop:typeA-route8-carrier-reduction`: a reduced
-      -- large-budget route-8 residual contains the terminal two-carrier package
-      -- of `def:typeA-terminal-two-carrier`.
-      (∀ residual : Graph.Route8.Data
+      -- Nodes `[117]`--`[122]`, `prop:typeA-route8-carrier-reduction`.
+      (∀ residual : Graph.Route8.Residual
           (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.Reduced → residual.TwoCarrierEntry)
+        ∃ index ∈ residual.entries, residual.TwoCarrier index)
   | .route8Descent, object =>
-      -- Node `[123]`.  The first clause is the manuscript's routing: the
-      -- remaining ledger forces a two-carrier route-8 entry, which is the
-      -- terminal package node `[124]` is entered with.  The second is the
-      -- descent's own measure -- peeling an entry strictly decreases the active
-      -- set -- which is why the loop back to `[89]` terminates.
-      (∀ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        (residual.Reduced → residual.TwoCarrierEntry) ∧
+      -- Node `[123]`.  The first clause is the non-peeling case the manuscript
+      -- routes to `[124]`: with exits (1)--(7) absent no indexed entry carries
+      -- an exit-(4) peel.  The second is the descent's own strict decrease, the
+      -- measure a peel would spend.
+      ((∀ residual : Graph.Route8.Residual
+            (Graph.HasCycleWithLength data.LengthOK) object,
+          ∀ index ∈ residual.entries, ¬ residual.ExitFour index) ∧
+        ∀ residual : Graph.Route8.Residual
+            (Graph.HasCycleWithLength data.LengthOK) object,
           ∀ active : Finset residual.Index, ∀ index ∈ active,
             (active.erase index).card < active.card)
   | .route8Closed, object =>
       -- Node `[124]`, `thm:typeA-two-carrier-nogo` with
-      -- `prop:typeA-route8-closure-from-nogo`: no large-budget route-8
-      -- collection exists, which is what closes the arm against node `[109]`'s
-      -- own fact.
-      (¬ ∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.LargeBudget)
+      -- `prop:typeA-route8-closure-from-nogo`.
+      (IsEmpty (Graph.Route8.Residual
+        (Graph.HasCycleWithLength data.LengthOK) object))
 
 /-- Audit names.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2466,20 +1965,6 @@ def name : Key → Lean.Name
       `Hypostructure.Graph.Strategy.Spine.fanCertificateMarked
   | .fanCertificateResidual =>
       `Hypostructure.Graph.Strategy.Spine.fanCertificateResidual
-  | .typeBDegreeFourProfile =>
-      `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourProfile
-  | .typeBHybridEntry => `Hypostructure.Graph.Strategy.Spine.typeBHybridEntry
-  | .typeBDirectCycle => `Hypostructure.Graph.Strategy.Spine.typeBDirectCycle
-  | .typeBDirectCycleFree =>
-      `Hypostructure.Graph.Strategy.Spine.typeBDirectCycleFree
-  | .typeBDisjointAssignment =>
-      `Hypostructure.Graph.Strategy.Spine.typeBDisjointAssignment
-  | .typeBOverlapObstruction =>
-      `Hypostructure.Graph.Strategy.Spine.typeBOverlapObstruction
-  | .windowPackageSeparated =>
-      `Hypostructure.Graph.Strategy.Spine.windowPackageSeparated
-  | .windowPackageCollided =>
-      `Hypostructure.Graph.Strategy.Spine.windowPackageCollided
   | .forcedCurvatureCost =>
       `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCost
   | .remainderEntropyHigh =>
@@ -2506,24 +1991,6 @@ def name : Key → Lean.Name
   | .negativeSupport => `Hypostructure.Graph.Strategy.Spine.negativeSupport
   | .typeALowSurplus => `Hypostructure.Graph.Strategy.Spine.typeALowSurplus
   | .typeBHighSurplus => `Hypostructure.Graph.Strategy.Spine.typeBHighSurplus
-  | .typeAReceiverRouting =>
-      `Hypostructure.Graph.Strategy.Spine.typeAReceiverRouting
-  | .typeASaturatedReceiver =>
-      `Hypostructure.Graph.Strategy.Spine.typeASaturatedReceiver
-  | .typeAUnsaturatedReceivers =>
-      `Hypostructure.Graph.Strategy.Spine.typeAUnsaturatedReceivers
-  | .typeAExitFourPeel => `Hypostructure.Graph.Strategy.Spine.typeAExitFourPeel
-  | .typeAExitFourNoPeel =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitFourNoPeel
-  | .typeAPeeledCharge => `Hypostructure.Graph.Strategy.Spine.typeAPeeledCharge
-  | .typeAExitFiveCompression =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitFiveCompression
-  | .typeAExitFiveTraceLevel =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitFiveTraceLevel
-  | .typeAExitFour => `Hypostructure.Graph.Strategy.Spine.typeAExitFour
-  | .typeAExitFourFree => `Hypostructure.Graph.Strategy.Spine.typeAExitFourFree
-  | .typeAExitFive => `Hypostructure.Graph.Strategy.Spine.typeAExitFive
-  | .typeAExitFiveFree => `Hypostructure.Graph.Strategy.Spine.typeAExitFiveFree
   | .route8Residual => `Hypostructure.Graph.Strategy.Spine.route8Residual
   | .route8Free => `Hypostructure.Graph.Strategy.Spine.route8Free
   | .route8Burden => `Hypostructure.Graph.Strategy.Spine.route8Burden

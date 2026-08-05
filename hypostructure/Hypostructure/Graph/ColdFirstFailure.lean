@@ -372,7 +372,7 @@ encoded: no earlier prefix has met any declared interface. -/
 the envelopes of `def:decorated-fan-envelope` together with the route-8 carrier
 support, each with its declared support.  The supports are pairwise disjoint,
 which is what makes "precisely one" in clause (iv) a theorem. -/
-structure HandoffLedger (object : Graph.FiniteObject.{u}) where
+structure HandoffEnvelopes (object : Graph.FiniteObject.{u}) where
   /-- The declared envelopes and carrier supports the branch has recorded. -/
   Envelope : Type
   /-- The declared support of each. -/
@@ -384,10 +384,10 @@ structure HandoffLedger (object : Graph.FiniteObject.{u}) where
 /-- **Clause (F4)**: the corridor *first* enters a declared handoff envelope at
 this initial segment. -/
 def FirstFailureHandoff (corridor : Corridor object windows component)
-    (ledger : HandoffLedger object) (segment : corridor.Segment) : Prop :=
-  (∃ envelope, corridor.head segment ∈ ledger.support envelope) ∧
+    (envelopes : HandoffEnvelopes object) (segment : corridor.Segment) : Prop :=
+  (∃ envelope, corridor.head segment ∈ envelopes.support envelope) ∧
     ∀ earlier : corridor.Segment, earlier.1 < segment.1 →
-      ∀ envelope, corridor.head earlier ∉ ledger.support envelope
+      ∀ envelope, corridor.head earlier ∉ envelopes.support envelope
 
 /-- **`lem:cold-corridor-first-failure` (iv): "the corridor has reached
 precisely one of the declared interfaces".**
@@ -395,26 +395,26 @@ precisely one of the declared interfaces".**
 Precisely one, not at least one: the declared supports are disjoint, so the
 envelope the charge transfers to is determined by the corridor. -/
 theorem exists_unique_handoff {corridor : Corridor object windows component}
-    {ledger : HandoffLedger object} {segment : corridor.Segment}
-    (failure : FirstFailureHandoff corridor ledger segment) :
-    ∃! envelope, corridor.head segment ∈ ledger.support envelope := by
+    {envelopes : HandoffEnvelopes object} {segment : corridor.Segment}
+    (failure : FirstFailureHandoff corridor envelopes segment) :
+    ∃! envelope, corridor.head segment ∈ envelopes.support envelope := by
   obtain ⟨⟨envelope, member⟩, _first⟩ := failure
   exact ⟨envelope, member, fun other otherMember =>
-    ledger.disjoint other envelope _ otherMember member⟩
+    envelopes.disjoint other envelope _ otherMember member⟩
 
 /-- **The (F4) handoff exit.**  The charge is transferred to the already
 existing ledger: what leaves the corridor is the declared envelope the corridor
 entered, and nothing else.  It is not closed at the corridor. -/
 noncomputable def handoffExit {corridor : Corridor object windows component}
-    {ledger : HandoffLedger object} {segment : corridor.Segment}
-    (failure : FirstFailureHandoff corridor ledger segment) :
-    {envelope : ledger.Envelope // corridor.head segment ∈ ledger.support envelope} :=
+    {envelopes : HandoffEnvelopes object} {segment : corridor.Segment}
+    (failure : FirstFailureHandoff corridor envelopes segment) :
+    {envelope : envelopes.Envelope // corridor.head segment ∈ envelopes.support envelope} :=
   ⟨failure.1.choose, failure.1.choose_spec⟩
 
 @[simp] theorem handoffExit_mem {corridor : Corridor object windows component}
-    {ledger : HandoffLedger object} {segment : corridor.Segment}
-    (failure : FirstFailureHandoff corridor ledger segment) :
-    corridor.head segment ∈ ledger.support (handoffExit failure).1 :=
+    {envelopes : HandoffEnvelopes object} {segment : corridor.Segment}
+    (failure : FirstFailureHandoff corridor envelopes segment) :
+    corridor.head segment ∈ envelopes.support (handoffExit failure).1 :=
   (handoffExit failure).2
 
 /-! ## (F5) and the existence of a first failure
@@ -671,7 +671,8 @@ clauses it needs, and clauses (ii), (iv) and (v) are what close (F2) and route
 (F4). -/
 
 /-- **`def:surviving-cold-branch`.** -/
-structure SurvivingColdBranch (Baseline Target : Graph.FiniteObject.{u} → Prop)
+structure SurvivingColdBranch (S : DeclaredSignature)
+    (Baseline Target : Graph.FiniteObject.{u} → Prop)
     (object : Graph.FiniteObject.{u}) where
   /-- (i) no target cycle has been found. -/
   noTargetCycle : ¬ Target object
@@ -694,14 +695,53 @@ structure SurvivingColdBranch (Baseline Target : Graph.FiniteObject.{u} → Prop
     (left right : Graph.BoundaryPiece boundary),
     Identified boundary left right →
       Graph.Response.ContextEquivalent Target left right
+  /-- **A bounded germ's two representatives are one of the identifications the
+  branch makes.**
+
+  `def:cold-bounded-germ` defines a germ as "a finite boundaried support with
+  two boundary interfaces `x, y` and two same-interface `x`--`y` representatives
+  `Q[x,y]` and `E`", and the local replacement of
+  `lem:cold-same-interface-table` is the quotient identifying them.  So a germ
+  *is* an identification, and this field says so.
+
+  It is the link `lem:cold-bounded-germ-trichotomy` G2 needs: with it,
+  "the induced quotient is target-defective, so it is routed to the sparse exit
+  or exit-(4) ledger" becomes a consequence of the clause above rather than a
+  separate assumption. -/
+  germIdentified : ∀ germ : BoundedGerm S Baseline Target object,
+    Identified germ.atom.interface germ.piece germ.canonical
   /-- (iii) no unpaid exit-(4) peel remains, (iv) no Type B handoff residual
   remains outside its ledger, and (v) no route-8 residual remains outside its
   theorem: what is left of them is exactly the recorded ledger. -/
-  handoffLedger : Corridor.HandoffLedger object
+  handoffEnvelopes : Corridor.HandoffEnvelopes object
   /-- (vi) the spine estimate the sparse surplus branch supplied:
   `σ(G) = 2m − 3n` is within the registered `o(n)`. -/
   surplusBound : Nat
   spineEstimate : object.degreeSurplus 3 ≤ surplusBound
+
+/-- **`lem:cold-bounded-germ-trichotomy` G2, routed.**
+
+*"Some compatible outside context distinguishes the two representatives by
+dyadic truth value without already realizing the cycle in the current graph.
+The induced quotient is target-defective, so it is routed to the sparse exit or
+exit-\textup{(4)} ledger."*  Both are excluded by
+`def:surviving-cold-branch` (ii).
+
+This is **derived**, not assumed: the germ's two representatives are an
+identification the branch makes (`germIdentified`), a distinguishing germ
+separates them against a compatible outside context, and clause (ii) says every
+identification the branch makes survives every such context.  The manuscript's
+chain, with no step collapsed. -/
+theorem SurvivingColdBranch.noGermDefect {S : DeclaredSignature}
+    {Baseline Target : Graph.FiniteObject.{u} → Prop}
+    {object : Graph.FiniteObject.{u}}
+    (branch : SurvivingColdBranch S Baseline Target object)
+    (germ : BoundedGerm S Baseline Target object) :
+    ¬ germ.Distinguishing := by
+  rintro ⟨outside, separated⟩
+  exact separated
+    (branch.noTargetDefect germ.atom.interface germ.piece germ.canonical
+      (branch.germIdentified germ) outside)
 
 /-! ## `def:cold-skeleton-excess` and `lem:cold-window-stub-excess`
 
@@ -767,29 +807,17 @@ theorem branchExcess_ge_of_cubic (perWindow cubicCount coldCount nonCubicBound :
 > is an already named Type B or route-8 handoff; (v) case (F5) is a cold bounded
 > germ in the sense of `def:cold-bounded-germ`.
 
-The existence half is `Corridor.exists_firstFailure` above and the four routing clauses
-are the theorems below, each stated against the branch clause it actually
-spends. -/
+The existence half is `Corridor.exists_firstFailure` above.  Of the four routing
+clauses only two are theorems here, and only because no earlier node proves
+them: (F2)'s and (F4)'s.  (F1) and (F3) are *not* restated against the branch
+record -- nodes `[155]` and `[157]` commit them to the ledger from the
+selection's own target avoidance and from `cor:uncompressible`, and a second
+proof against `SurvivingColdBranch` would be the same theorem twice. -/
 
 section Routing
 
 variable {S : DeclaredSignature} {order : Nat}
 variable {Baseline Target : Graph.FiniteObject.{u} → Prop}
-
-/-- **(i) "case (F1) is a dyadic cycle in `G`" -- and the branch has none.**
-
-The displayed completion is literally an accepted cycle of the object, and
-`def:surviving-cold-branch` (i) says no target cycle has been found.  So (F1)
-cannot occur on the surviving cold branch. -/
-theorem not_firstFailureCycle {LengthOK : Nat → Prop}
-    (branch : SurvivingColdBranch Baseline Target object)
-    (corridor : Corridor object windows component)
-    (targetIsCycle : Target = Graph.HasCycleWithLength LengthOK)
-    (window : Window object order) (segment : corridor.Segment) :
-    ¬ corridor.FirstFailureCycle window LengthOK segment := by
-  intro failure
-  exact branch.noTargetCycle
-    (targetIsCycle ▸ Corridor.hasCycleWithLength_of_firstFailureCycle failure)
 
 /-- **(ii) "case (F2) is a target-defective quotient" -- and the branch has
 none.**
@@ -800,7 +828,7 @@ the branch makes is context-equivalent.  So an (F2) discrepancy is not one of
 the branch's identifications: the two prefixes it separates are not identified
 here. -/
 theorem not_identified_of_firstFailureDefect {boundary : Graph.Boundary.{u}}
-    (branch : SurvivingColdBranch Baseline Target object)
+    (branch : SurvivingColdBranch S Baseline Target object)
     (corridor : Corridor object windows component)
     (presentation : Presentation.{u} S object)
     (index : corridor.Segment → presentation.Segment)
@@ -813,30 +841,18 @@ theorem not_identified_of_firstFailureDefect {boundary : Graph.Boundary.{u}}
   obtain ⟨_same, outside, separated⟩ := failure
   exact separated (branch.noTargetDefect _ _ _ identified outside)
 
-/-- **(iii) "case (F3) is a target-complete compression of a proper support"
--- forbidden by `cor:uncompressible`.** -/
-theorem not_firstFailureCompression
-    (branch : SurvivingColdBranch Baseline Target object)
-    (corridor : Corridor object windows component)
-    (presentation : Presentation.{u} S object)
-    (index : corridor.Segment → presentation.Segment)
-    (support : corridor.Segment → Finset object.Vertex) :
-    ¬ Corridor.FirstFailureCompression.Occurs corridor presentation index Baseline Target
-      support :=
-  Corridor.FirstFailureCompression.not_occurs branch.noCompression
-
 /-- **(iv) "case (F4) is an already named Type B or route-8 handoff".**
 
 The corridor has reached precisely one of the declared interfaces recorded in
 the branch state, and the charge transfers to it.  The exit carries the envelope
 and nothing else: the corridor closes nothing. -/
 noncomputable def firstFailureHandoffExit
-    (branch : SurvivingColdBranch Baseline Target object)
+    (branch : SurvivingColdBranch S Baseline Target object)
     (corridor : Corridor object windows component)
     {segment : corridor.Segment}
-    (failure : Corridor.FirstFailureHandoff corridor branch.handoffLedger segment) :
-    {envelope : branch.handoffLedger.Envelope //
-      corridor.head segment ∈ branch.handoffLedger.support envelope} :=
+    (failure : Corridor.FirstFailureHandoff corridor branch.handoffEnvelopes segment) :
+    {envelope : branch.handoffEnvelopes.Envelope //
+      corridor.head segment ∈ branch.handoffEnvelopes.support envelope} :=
   Corridor.handoffExit failure
 
 /-! **(v) "case (F5) is a cold bounded germ".**
@@ -849,31 +865,6 @@ dichotomy is.  With the two boundary interfaces, themselves bounded by
 number of internal vertices and all boundary data are bounded by the fixed
 finite cut-state constant", which is what makes the germ types finite.  Neither
 bound is restated here. -/
-
-/-- **`lem:cold-corridor-first-failure`, in full.**
-
-On the surviving cold branch a corridor has a first failure, and the non-(F5)
-alternatives are each closed or transferred: (F1) is excluded by the branch's
-own target avoidance, (F3) by its uncompressibility, (F2) leaves a
-target-defective quotient the branch excludes, and (F4) transfers to the
-recorded ledger.  What survives is (F5), whose two subcases are the dichotomy
-`Corridor.exists_firstFailure` proves. -/
-theorem firstFailure_routed {LengthOK : Nat → Prop}
-    (branch : SurvivingColdBranch Baseline Target object)
-    (corridor : Corridor object windows component)
-    (targetIsCycle : Target = Graph.HasCycleWithLength LengthOK)
-    (window : Window object order)
-    (presentation : Presentation.{u} S object)
-    (index : corridor.Segment → presentation.Segment)
-    (injective : Function.Injective index)
-    (support : corridor.Segment → Finset object.Vertex) :
-    (∀ segment, ¬ corridor.FirstFailureCycle window LengthOK segment) ∧
-      (¬ Corridor.FirstFailureCompression.Occurs corridor presentation index Baseline
-        Target support) ∧
-      (Corridor.TerminalCorridor corridor S ∨ Corridor.RepeatedState corridor presentation index) :=
-  ⟨fun segment => not_firstFailureCycle branch corridor targetIsCycle window segment,
-    not_firstFailureCompression branch corridor presentation index support,
-    Corridor.exists_firstFailure corridor presentation index injective⟩
 
 end Routing
 

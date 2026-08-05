@@ -76,6 +76,8 @@ def erdosReceiverLoadProfile :
   baselineDegree := 3
   loadMultiplier := 4
   remainderEntropyThresholdDenominator := 10
+  dischargeRate_gt := by norm_num
+  dischargeRate_le := by norm_num
 
 /-- The sole baseline hypothesis in the official theorem, with its threshold
 read from the registered problem presentation. -/
@@ -176,25 +178,8 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   -- The quadrilateral the high-centre normal form excludes: `4 = 2 ^ 2` is a
   -- power-of-two length, so it is one of this problem's accepted cycles.
   quadrilateralAccepted := Core.DyadicLength.powerOfTwoLength_four
-  -- The marked-fan slack the local Type B fan ledger spends: the label algebra's
-  -- own packing number at the registered order leaves the closed-neighbour
-  -- deficit nonnegative slack against this problem's discharge scale.  The value
-  -- is computed once, in `WindowAlgebra.fanPackingCap_succ_le`; nothing here
-  -- writes the manuscript's `8`.
-  fanCapSlack := by
-    simpa [erdosReceiverLoadProfile] using WindowAlgebra.fanPackingCap_succ_le
-  -- `prop:fan-closed-port-typeB-routing` (b) at the smallest high-centre degree:
-  -- the manuscript's `12 < 13`, decided on the registered numbers.
-  highCentreDeficitSlack := by norm_num [erdosReceiverLoadProfile]
   surplusScale := surplusScaleCoefficient
   windowRate := FiniteChecks.P13Barrier.windowRate
-  -- `lem:p13-window-package`'s selected dyadic scales.  The manuscript writes
-  -- `⌊log₂ n⌋ − O(1)`; this presentation registers no discard, so the selection
-  -- is the object's own dyadic scale count.  The `O(1)` remains available to a
-  -- refinement that needs it -- `separatedScaleCount_le` and
-  -- `separatedScaleReach` are exactly what a nonzero discard has to satisfy.
-  separatedScaleCount := Nat.log2
-  separatedScaleCount_le := fun _size => le_refl _
   rankDefect := nodeThirtyTwoRankAllowance
   -- `c_Ω`, as the natural number the spine multiplies by: the framework's
   -- `binaryRowRateFloor` of the audited barrier table's length-`1` connector
@@ -220,20 +205,6 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   -- the registered numbers rather than restated as numerals here.
   largeOrderExponent := 56
   largeOrderExponent_pos := by norm_num
-  -- With no discard the reach is the registered exponent lying below the
-  -- object's own scale count, which is what `2 ^ k ≤ n` says.
-  separatedScaleReach := by
-    intro size large
-    have reach : 56 ≤ Nat.log2 size := by
-      have monotone := Nat.log_mono_right (b := 2) large
-      rw [Nat.log_pow (by norm_num)] at monotone
-      simpa [Nat.log2_eq_log_two] using monotone
-    calc 56 * (Nat.log2 size + 1)
-        = 56 * Nat.log2 size + 56 := by
-          ring
-      _ ≤ 56 * Nat.log2 size + Nat.log2 size :=
-          Nat.add_le_add_left reach _
-      _ = (56 + 1) * Nat.log2 size := by ring
   -- `τ_win < ¼` cleared of denominators.  Every factor is registered -- the
   -- baseline, the window order, the discharge scale, the order exponent, and
   -- the audited table's own rate -- so the comparison is decided, not written.

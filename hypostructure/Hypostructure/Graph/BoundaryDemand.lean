@@ -47,6 +47,39 @@ theorem internalDegree_le_degree (object : FiniteObject.{u})
       (Finset.inter_subset_left (s₁ := object.graph.neighborFinset vertex)
         (s₂ := support))
 
+/-- **The internal degree is the degree of the induced restriction.**
+
+`internalDegree` counts a vertex's neighbours inside a support without ever
+building the induced object; this identifies that count with the honest degree
+of `induce`, which is what turns a pointwise internal-degree bound into a
+`MinimumDegreeAtLeast` statement about a genuine subgraph. -/
+theorem degree_induce_eq_internalDegree (object : FiniteObject.{u})
+    (support : Finset object.Vertex)
+    (vertex : (object.induce support).Vertex) :
+    (object.induce support).degree vertex =
+      object.internalDegree support vertex.1 := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  let induced := object.induce support
+  letI : FinEnum induced.Vertex := induced.vertices
+  letI : DecidableRel induced.graph.Adj := induced.decideAdj
+  classical
+  rw [degree, internalDegree, ← SimpleGraph.card_neighborSet_eq_degree,
+    ← Fintype.card_coe ((object.graph.neighborFinset vertex.1) ∩ support)]
+  -- Neighbours of `vertex` in the restriction are exactly the neighbours of
+  -- `vertex.1` that lie in the support.
+  exact Fintype.card_congr
+    { toFun := fun neighbour =>
+        ⟨neighbour.1.1, Finset.mem_inter.mpr
+          ⟨(SimpleGraph.mem_neighborFinset _ _ _).mpr neighbour.2,
+            neighbour.1.2⟩⟩
+      invFun := fun neighbour =>
+        ⟨⟨neighbour.1, (Finset.mem_inter.mp neighbour.2).2⟩,
+          (SimpleGraph.mem_neighborFinset _ _ _).mp
+            (Finset.mem_inter.mp neighbour.2).1⟩
+      left_inv := fun neighbour => by ext; rfl
+      right_inv := fun neighbour => by ext; rfl }
+
 /-- Enlarging the support cannot lose an internal neighbour. -/
 theorem internalDegree_mono (object : FiniteObject.{u})
     {small large : Finset object.Vertex} (contained : small ⊆ large)

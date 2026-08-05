@@ -12,9 +12,9 @@ Transport and Residual columns claim:
 * the block elaborates only against a branch whose key index already carries
   node `[1]`'s selection and node `[14]`'s uncompressibility -- both `Has`
   instances are discharged by resolution against the incoming index;
-* the output index is the incoming one with the ten cold facts on top, so every
+* the output index is the incoming one with the thirteen cold facts on top, so every
   earlier fact of the branch is still in the type;
-* the audit lists exactly the twenty-eight committed facts, in commit order, and
+* the audit lists exactly the thirty-one committed facts, in commit order, and
   accounts for all of them with chronological commits.
 
 Nothing here is specific to one manuscript: the run is at the framework's own
@@ -54,32 +54,55 @@ noncomputable def run
     ExactLedger (Input BranchState Presentation presentation data) selected
       coldKeys :=
   runCold history (stateFresh := by simp) (tableFresh := by simp)
-    (cycleFresh := by simp) (defectFresh := by simp)
+    (realizedFresh := by simp) (distinguishedFresh := by simp)
+    (silentFresh := by simp) (cycleFresh := by simp) (defectFresh := by simp)
     (compressionFresh := by simp) (handoffFresh := by simp)
-    (routingFresh := by simp) (by simp) (by simp) (by simp)
+    (routingFresh := by simp) (transferFresh := by simp)
+    (extractionFresh := by simp) (closedFresh := by simp)
 
-/-- **The cold block's own seven facts head the audit, in commit order.**
+/-- **The thirteen facts of rows 43--61 are all on the ledger after the block.**
 
-The tail is whatever the entry block committed, and
-`run_audit_accounts_for_every_fact` below certifies that all of it is still
-accounted for; stating the head alone keeps this check independent of how many
-facts the entry block grows to carry.
-
-The seven are `def:cold-corridor-first-failure`'s cut-state,
-`def:cold-same-interface-table`'s closure, the four first-failure producers, and
-`lem:cold-corridor-first-failure`'s existence half. -/
-theorem run_audit_facts
+Membership rather than position: the cold block is extended as later rows land
+(later blocks add their own facts to the same index), and this check is about
+what the cold block contributes, so it must not depend on how many facts sit around
+them.  `run_audit_accounts_for_every_fact` and `run_audit_facts_unique` below
+certify the rest — that every fact in the index is accounted for by a
+chronological commit, and that none was committed twice. -/
+theorem run_audit_contains_cold_facts
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected coldKeys) :
-    (ExactLedger.audit history).facts.take 7 =
-      [`Hypostructure.Graph.Strategy.Spine.coldFailureRouting,
-        `Hypostructure.Graph.Strategy.Spine.coldFailureHandoff,
-        `Hypostructure.Graph.Strategy.Spine.coldFailureCompression,
-        `Hypostructure.Graph.Strategy.Spine.coldFailureDefect,
-        `Hypostructure.Graph.Strategy.Spine.coldFailureCycle,
+    ∀ fact ∈ [`Hypostructure.Graph.Strategy.Spine.coldCorridorState,
         `Hypostructure.Graph.Strategy.Spine.coldSameInterfaceTable,
-        `Hypostructure.Graph.Strategy.Spine.coldCorridorState] := rfl
+        `Hypostructure.Graph.Strategy.Spine.coldGermRealized,
+        `Hypostructure.Graph.Strategy.Spine.coldGermDistinguished,
+        `Hypostructure.Graph.Strategy.Spine.coldGermSilent,
+        `Hypostructure.Graph.Strategy.Spine.coldFailureCycle,
+        `Hypostructure.Graph.Strategy.Spine.coldFailureDefect,
+        `Hypostructure.Graph.Strategy.Spine.coldFailureCompression,
+        `Hypostructure.Graph.Strategy.Spine.coldFailureHandoff,
+        `Hypostructure.Graph.Strategy.Spine.coldFailureRouting,
+        `Hypostructure.Graph.Strategy.Spine.coldHandoffTransfer,
+        `Hypostructure.Graph.Strategy.Spine.coldGermExtraction,
+        `Hypostructure.Graph.Strategy.Spine.coldBranchClosed],
+      fact ∈ (ExactLedger.audit history).facts := by
+  intro fact member
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+  rcases member with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl
+  · exact List.mem_map.mpr ⟨K .coldCorridorState, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldSameInterfaceTable, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldGermRealized, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldGermDistinguished, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldGermSilent, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldFailureCycle, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldFailureDefect, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldFailureCompression, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldFailureHandoff, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldFailureRouting, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldHandoffTransfer, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldGermExtraction, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldBranchClosed, by simp, rfl⟩
 
 /-- **Every fact of the cold block is accounted for by a chronological
 commit.** -/

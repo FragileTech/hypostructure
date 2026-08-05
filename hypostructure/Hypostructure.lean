@@ -38,9 +38,12 @@ import Hypostructure.Core.Strategy.FactOnlyStrategy
 import Hypostructure.Core.Strategy.MinimalCounterexampleScope
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Strategy.SpineRows
+import Hypostructure.Graph.Strategy.Route8Rows
+import Hypostructure.Graph.Strategy.Route8Run
 import Hypostructure.Graph.Strategy.SpineRun
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
+import Hypostructure.Graph.ColdBranchClosure
 import Hypostructure.Graph.Strategy.ColdCorridorRows
 import Hypostructure.Graph.Strategy.ColdCorridorRun
 import Hypostructure.Fixtures.ColdCorridorSignature
@@ -48,6 +51,9 @@ import Hypostructure.Fixtures.ColdCorridorLedger
 import Hypostructure.Fixtures.ColdCorridorConstruction
 import Hypostructure.Fixtures.ColdCorridorShortSelfReturn
 import Hypostructure.Fixtures.ColdCorridorRun
+import Hypostructure.Fixtures.TypeAReceiverNode
+import Hypostructure.Fixtures.TypeBFanWindowNode
+import Hypostructure.Fixtures.Route8Run
 import Hypostructure.Core.Strategy.FactManifest
 import Hypostructure.Fixtures.ExactLedger
 import Hypostructure.Fixtures.ExactExecution
@@ -92,6 +98,7 @@ import Hypostructure.Graph.RootedReturn
 import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.SameTokenBlockerRoles
 import Hypostructure.Graph.ReceiverLoad
+import Hypostructure.Graph.ReceiverRouting
 import Hypostructure.Graph.WindowCurvatureAlgebra
 import Hypostructure.Graph.WindowCurvatureEnumeration
 import Hypostructure.Graph.WindowCurvatureCode
@@ -102,6 +109,10 @@ import Hypostructure.Graph.SurplusClasswiseOverload
 -- application, but naming them here is what keeps a bare `lake build` covering
 -- them -- `TypeARoute8Stages` in particular is imported by nothing else.
 import Hypostructure.Graph.CutParity
+import Hypostructure.Graph.ExitFourPeeling
+import Hypostructure.Graph.Route8Carrier
+import Hypostructure.Graph.Route8Closure
+import Hypostructure.Graph.Route8Residual
 
 -- Modules rescued from the quarantine boundary: legal modules that happened to
 -- be reachable only through a quarantined one.  They are imported explicitly so

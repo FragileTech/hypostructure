@@ -104,13 +104,36 @@ cold key *is* the manuscript statement, so nothing is re-encoded. -/
   coldFailureRoutingRow (K .coldCorridorState) (K .coldFailureRouting) (by simp)
     (fun _input value => ⟨value⟩)
 
+/-- Node `[156]`: the (F4) dispatch arm, as a transfer. -/
+@[reducible] noncomputable def coldHandoffTransfer :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  coldHandoffTransferRow (K .coldFailureHandoff) (K .coldHandoffTransfer)
+    (by simp) (fun _input value => ⟨value⟩)
+
+/-- Nodes `[153]`, `[154]`: the (F5) arm's extraction. -/
+@[reducible] noncomputable def coldGermExtraction :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  coldGermExtractionRow (K .coldFailureRouting) (K .coldGermExtraction)
+    (by simp) (fun _input value => ⟨value⟩)
+
+/-- Nodes `[145]`--`[157]`: `thm:cold-branch-quantitative-closure`. -/
+@[reducible] noncomputable def coldBranchClosed :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  coldBranchClosedRow (K .coldGermRealized) (K .coldGermSilent) (K .selection)
+    (K .uncompressible) (K .coldBranchClosed)
+    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
+    (fun _input fact => fact.down.1) (fun _input fact => fact.down)
+    (fun _input fact => fact.down.1) (fun _input fact => fact.down.1)
+    (fun _input value => ⟨value⟩)
+
 /-! ## The block, run -/
 
 /-- The key index a branch carries after the cold corridor block. -/
 abbrev coldKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .coldFailureRouting :: K .coldFailureHandoff :: K .coldFailureCompression ::
+  K .coldBranchClosed :: K .coldGermExtraction :: K .coldHandoffTransfer ::
+    K .coldFailureRouting :: K .coldFailureHandoff :: K .coldFailureCompression ::
     K .coldFailureDefect :: K .coldFailureCycle :: K .coldGermSilent ::
     K .coldGermDistinguished :: K .coldGermRealized ::
     K .coldSameInterfaceTable :: K .coldCorridorState :: known
@@ -138,7 +161,10 @@ noncomputable def runCold
     (defectFresh : K (data := data) .coldFailureDefect ∉ known)
     (compressionFresh : K (data := data) .coldFailureCompression ∉ known)
     (handoffFresh : K (data := data) .coldFailureHandoff ∉ known)
-    (routingFresh : K (data := data) .coldFailureRouting ∉ known) :
+    (routingFresh : K (data := data) .coldFailureRouting ∉ known)
+    (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
+    (extractionFresh : K (data := data) .coldGermExtraction ∉ known)
+    (closedFresh : K (data := data) .coldBranchClosed ∉ known) :
     ExactLedger (Input BranchState Presentation presentation data) current
       (coldKeys known) := by
   classical
@@ -204,11 +230,33 @@ noncomputable def runCold
       subst isNew
       revert isOld
       simp [handoffFresh])
-  exact (coldFailureRouting (data := data)).run afterHandoff (by
+  have afterRouting :=
+    (coldFailureRouting (data := data)).run afterHandoff (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [routingFresh])
+  -- Rows 57--61: the (F4) transfer, the (F5) extraction, and the closure.
+  have afterTransfer :=
+    (coldHandoffTransfer (data := data)).run afterRouting (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [transferFresh])
+  have afterExtraction :=
+    (coldGermExtraction (data := data)).run afterTransfer (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [extractionFresh])
+  exact (coldBranchClosed (data := data)).run afterExtraction (by
     intro key isNew isOld
     simp only [List.mem_singleton] at isNew
     subst isNew
     revert isOld
-    simp [routingFresh])
+    simp [closedFresh])
 
 end Hypostructure.Graph.Strategy.Spine
