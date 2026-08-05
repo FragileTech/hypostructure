@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **252**.
+Compiled declarations: **254**.
 
-Category counts: **Canonical execution** 29, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 94, **Canonical manifest** 32, **Canonical residual domain** 17, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 4, **Minimum-degree cycle spine vocabulary** 19, **Sealed topology** 46.
+Category counts: **Canonical execution** 29, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 94, **Canonical manifest** 32, **Canonical residual domain** 17, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 6, **Minimum-degree cycle spine vocabulary** 19, **Sealed topology** 46.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -3647,6 +3647,68 @@ Graph.Strategy.Spine.Key → ℕ
             Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold) →
               Type
 ```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.criticalityManifest`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {threshold : ℕ} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
+          (required tight slack :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
+            tight ≠ required →
+              slack ≠ required →
+                tight ≠ slack →
+                  Core.Strategy.FactManifest
+                    (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.deletionCriticalityRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {threshold : ℕ} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
+          (noProperBaseline tightEndpoint slackIndependent :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
+            tightEndpoint ≠ noProperBaseline →
+              slackIndependent ≠ noProperBaseline →
+                tightEndpoint ≠ slackIndependent →
+                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+                      (a : noProperBaseline.At input) (subgraph : Graph.ProperSubgraph input.object),
+                      ¬Graph.MinimumDegreeAtLeast threshold subgraph.value) →
+                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
+                        (∀ (dart : input.object.graph.Dart),
+                            Graph.FiniteObject.degree input.object dart.toProd.1 = threshold ∨
+                              Graph.FiniteObject.degree input.object dart.toProd.2 = threshold) →
+                          tightEndpoint.At input) →
+                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
+                          (∀ (left right : input.object.Vertex),
+                              threshold < Graph.FiniteObject.degree input.object left →
+                                threshold < Graph.FiniteObject.degree input.object right →
+                                  ¬input.object.graph.Adj left right) →
+                            slackIndependent.At input) →
+                        Core.Strategy.AtomicStrategy
+                          (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
 #### `Hypostructure.Graph.Strategy.Spine.factSystem`
 
