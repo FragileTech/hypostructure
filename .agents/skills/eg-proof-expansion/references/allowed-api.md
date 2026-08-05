@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **254**.
+Compiled declarations: **255**.
 
-Category counts: **Canonical execution** 29, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 94, **Canonical manifest** 32, **Canonical residual domain** 17, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 6, **Minimum-degree cycle spine vocabulary** 19, **Sealed topology** 46.
+Category counts: **Canonical execution** 29, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 94, **Canonical manifest** 32, **Canonical residual domain** 17, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 7, **Minimum-degree cycle spine vocabulary** 19, **Sealed topology** 46.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -3649,6 +3649,31 @@ Graph.Strategy.Spine.Key → ℕ
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.contextOfSelection`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {threshold : ℕ} →
+        {LengthOK : ℕ → Prop} →
+          (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
+            ¬Graph.HasCycleWithLength LengthOK input.object →
+              (∀ (smaller : Graph.FiniteObject),
+                  (Graph.Strategy.Spine.progress BranchState Presentation presentation threshold).Smaller smaller
+                      input.object →
+                    Graph.MinimumDegreeAtLeast threshold smaller → Graph.HasCycleWithLength LengthOK smaller) →
+                Core.MinimalCounterexampleContext
+                  (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold)
+                  (Graph.HasCycleWithLength LengthOK)
+                  (Graph.Strategy.Spine.progress BranchState Presentation presentation threshold)
+```
 
 #### `Hypostructure.Graph.Strategy.Spine.criticalityManifest`
 

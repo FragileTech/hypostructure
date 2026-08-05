@@ -36,6 +36,32 @@ abbrev Input (BranchState : Graph.FiniteObject.{u} → Type v)
 
 variable [FactSystem (Input BranchState Presentation presentation threshold)]
 
+/-- **The selected context, as the ledger records it.**
+
+Nodes `[11]` onwards call framework theorems that are stated against a
+`MinimalCounterexampleContext`.  This rebuilds that context from the residual
+and the selection *fact* — its two components are exactly the context's
+`avoids` and its minimality kernel — so a later row consumes the committed
+fact rather than re-selecting, re-deriving, or re-quantifying over the ambient
+graph.  Nothing is proved here; this is the reading of one ledger entry. -/
+def contextOfSelection
+    (input : Input BranchState Presentation presentation threshold)
+    (avoids : ¬ Graph.HasCycleWithLength LengthOK input.object)
+    (minimal : ∀ smaller : Graph.FiniteObject.{u},
+      (progress BranchState Presentation presentation threshold).Smaller
+        smaller input.object →
+      Graph.MinimumDegreeAtLeast threshold smaller →
+      Graph.HasCycleWithLength LengthOK smaller) :
+    Core.MinimalCounterexampleContext
+      (problem BranchState Presentation presentation threshold)
+      (Graph.HasCycleWithLength LengthOK)
+      (progress BranchState Presentation presentation threshold) where
+  G := input.object
+  baseline := input.baseline
+  state := input.branchState
+  avoids := avoids
+  minimal := minimal
+
 /-- The manifest shape shared by every one-in/one-out spine row. -/
 abbrev rowManifest
     (required produced :
