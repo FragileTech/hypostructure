@@ -84,9 +84,7 @@ import Hypostructure.Fixtures.ExactExecutionDroppedFact
 import Hypostructure.Core.Strategy.BinaryDecisionDichotomy
 import Hypostructure.Core.Strategy.ColdBranchAggregation
 import Hypostructure.Core.Strategy.AtomContextObstructionDichotomy
-import Hypostructure.Core.Strategy.FiniteStateCapacity
 import Hypostructure.Core.Strategy.FiniteScheduleCapacity
-import Hypostructure.Core.Strategy.Dag
 import Hypostructure.Core.Strategy.ObstructionPackingClosure
 import Hypostructure.Core.Strategy.ExactFiniteLocalAlgebra
 import Hypostructure.Core.Strategy.OrderedSurplusActivation
@@ -95,11 +93,6 @@ import Hypostructure.Core.Strategy.CanonicalPairResponseAccounting
 import Hypostructure.Core.Strategy.CanonicalCapacityTokenAccounting
 import Hypostructure.Core.Strategy.CoupledHomogeneousFibrePressure
 import Hypostructure.Core.Strategy.FiniteBottleneckClassification
-import Hypostructure.Core.Strategy.SupportComplementNormalization
-import Hypostructure.Core.Strategy.BoundaryDemandAccounting
-import Hypostructure.Core.Strategy.LocalSupplyLowerBound
-import Hypostructure.Core.Strategy.TargetRelativeRankDichotomy
-import Hypostructure.Core.Strategy.RegistrationAudit
 import Hypostructure.Core.EntropyPackingBudget
 import Hypostructure.Graph.Strategy.ColdBranchPreludeAggregation
 import Hypostructure.Core.NormalForm.ClassClosure
@@ -135,9 +128,6 @@ import Hypostructure.Graph.Problem
 import Hypostructure.Graph.Finite
 import Hypostructure.Graph.SupportComponents
 import Hypostructure.Graph.Strategy
-import Hypostructure.PDE.Strategy.AtomContextObstructionDichotomy
-import Hypostructure.PDE.Strategy.ObstructionPackingClosure
-import Hypostructure.PDE
 import Hypostructure.Graph.SupportCharge
 import Hypostructure.Graph.Budget
 import Hypostructure.Graph.NegativeSupport
@@ -157,7 +147,6 @@ import Hypostructure.Graph.Minimality
 import Hypostructure.Graph.DeletionCriticality
 import Hypostructure.Graph.Target
 import Hypostructure.Graph.MinimumDegreeCycleTarget
-import Hypostructure.Graph.TypeABCertificate
 import Hypostructure.Graph.Coordinate
 import Hypostructure.Graph.Boundary
 import Hypostructure.Graph.Gluing
@@ -214,7 +203,21 @@ import Hypostructure.Graph.SurplusClasswiseOverload
 -- application, but naming them here is what keeps a bare `lake build` covering
 -- them -- `TypeARoute8Stages` in particular is imported by nothing else.
 import Hypostructure.Graph.CutParity
-import Hypostructure.Graph.TypeARoute8Carriers
-import Hypostructure.Graph.Strategy.TypeARoute8Closure
-import Hypostructure.Graph.Strategy.TypeARoute8Stages
-import Hypostructure.Graph.Strategy.TypeAReceiverStages
+
+-- Modules rescued from the quarantine boundary: legal modules that happened to
+-- be reachable only through a quarantined one.  They are imported explicitly so
+-- the quarantine removes the illegal carriers and nothing else -- without these
+-- lines they would drop out of the build closure and silently stop being
+-- checked.  See `quarantine.txt`.
+
+import Hypostructure.Core.Contract
+import Hypostructure.Core.Strategy.CounterexampleReduction
+import Hypostructure.Core.Strategy.FiniteBarrierEnumeration
+import Hypostructure.Core.Strategy.FiniteDensityBudget
+import Hypostructure.Core.Strategy.FiniteStateCapacityTheorems
+import Hypostructure.Core.Strategy.MinimalSubobjectExclusion
+import Hypostructure.Core.Strategy.Route8CarrierClosure
+import Hypostructure.Core.Strategy.TargetAlgebraReduction
+import Hypostructure.Core.Strategy.Validate
+import Hypostructure.Graph.Strategy.Official.Features.SupportIncidenceLedger
+import Hypostructure.Graph.WedgeLowerBound
