@@ -49,6 +49,7 @@ mathlib-cache:
 
 lint:
 	$(PYTHON) $(HYPOSTRUCTURE_DIR)/scripts/check_total_execution.py
+	$(PYTHON) $(HYPOSTRUCTURE_DIR)/scripts/check_quarantine.py
 
 # Type-A/Type-B frontier.  `abClosure` is expected to be rejected while any
 # terminal is open; `reduceDag%` still exports the run, so the JSON
