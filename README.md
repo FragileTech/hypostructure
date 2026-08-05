@@ -212,9 +212,9 @@ the build closure.
 ## Roadmap: the rest of `to_formalize/`
 
 The Erdős–Gyárfás port is the framework's proving ground. The larger goal is the body of
-work in [`to_formalize/`](to_formalize/) — a conditional program on three-dimensional
-Navier–Stokes regularity, written in the same structural-exhaustion style, plus the two
-methodology manuscripts that specify the style itself.
+work in [`to_formalize/`](to_formalize/) — a program on three-dimensional Navier–Stokes
+regularity, written in the same structural-exhaustion style, plus the two methodology
+manuscripts that specify the style itself.
 
 **Methodology (specifies the framework).**
 
@@ -231,19 +231,30 @@ methodology manuscripts that specify the style itself.
 
 - `original_erdos_64_proof.tex` — Erdős–Gyárfás. **In progress** (above).
 
-**Navier–Stokes (a conditional program; papers depend on each other in this order).**
+**Navier–Stokes.** A chain in which each paper *discharges* the hypothesis the previous
+one names. The dependencies are between the papers, not on anything left open.
 
 - `proof_setup.tex` — the local pointwise Type I reduction: Seregin extraction,
   concentration and compactness, and the small-amplitude / stationary / uniformly
-  $L^3$-tight / structure-and-decay class exclusions.
-- `paperIV_residual_branch.tex` — the residual-class hypothesis the setup leaves open:
-  ordered residual decomposition, circulation absorption, mesoscopic-scale rigidity, and
-  an endpoint sequence-$L^3$ Liouville argument.
-- `type_II_regularity.tex` — local retained-branch exclusion near a possible singular
-  point: repaired-gauge representation, local Calderón–Zygmund pressure control,
-  Caccioppoli on compact cylinders, multibubble and cascade reductions.
+  $L^3$-tight / structure-and-decay class exclusions. Its Type I contradiction rests on
+  one named residual-class hypothesis (`p1:hyp:no-remainder`), and the paper says so
+  rather than claiming more than it proves.
+- `paperIV_residual_branch.tex` — **proves that hypothesis.** Ordered residual
+  decomposition, centered angular-circulation absorption, minimal mesoscopic-scale
+  rigidity, and an endpoint sequence-$L^3$ Liouville argument for bounded mild ancient
+  solutions yield the refined residual closure. Inserted into the setup paper's final
+  assembly, the two-paper chain gives `cor:local-typeI-unconditional`: every
+  finite-energy singular point belongs to the local Type II alternative. No global
+  critical-norm estimate and no global Liouville theorem are used.
+- `type_II_regularity.tex` — the local retained-branch exclusion criterion for the
+  remaining alternative: repaired-gauge representation for nondegenerate concentration
+  cores, local Calderón–Zygmund pressure control, a Caccioppoli estimate on compact
+  cylinders, multibubble and cascade reductions, and scale-collapse cost estimates, with
+  the retained compact branch closed by routing into the scale-rigid discharge.
 - `ns_perelman.tex` — a localized entropy functional $\mathcal{W}_{\mathrm{loc}}$ on the
-  singular-branch state space supplied by the three papers above.
+  singular-branch state space supplied by the three papers above. This one is
+  conditional by design and by its own title: it is an organizing quantity for the
+  program, not the load-bearing exclusion.
 - `overall_proof_architecture.tex` — the referee guide tying the stratification together.
 - `stokes_appendix_body.tex` — supporting Stokes-system material.
 
@@ -263,15 +274,17 @@ and typed. The concrete next steps:
    rewrite and sits outside the live build closure. It is real work — parabolic atlases,
    localization, vorticity, the Navier–Stokes model — and it is *reference*, to be
    rebuilt on the canonical API exactly as the EG rows are, never re-imported.
-4. **Port the Navier–Stokes program**, in dependency order: `proof_setup`, then
-   `paperIV_residual_branch`, then `type_II_regularity`, then `ns_perelman`. Each is
-   conditional on its predecessors, which is precisely the residual-promotion structure
-   the ledger is built to track: an unproved companion result is a fact its branch never
-   commits, and the type says so.
+4. **Port the Navier–Stokes chain**, in dependency order: `proof_setup`, then
+   `paperIV_residual_branch`, then `type_II_regularity`, then `ns_perelman`. The chain
+   is exactly the residual-promotion structure the ledger is built to track. The setup
+   paper names a residual-class hypothesis and promotes it; Paper IV discharges it and
+   commits the fact; the final assembly reads that fact back. Formalized, the discharge
+   stops being a cross-reference a referee has to chase and becomes a key in the branch
+   index — present or absent, checked by the elaborator.
 
-No timeline is claimed for any of this. The Navier–Stokes targets are large and the
-manuscripts are conditional; what the framework offers is that the conditionality is
-mechanically visible rather than a matter of trust.
+No timeline is claimed for any of this; the targets are large. What the framework adds
+is not extra caution about the results but mechanical bookkeeping of where each one is
+used: which branch a theorem closes, and which facts were on the ledger when it did.
 
 ---
 
