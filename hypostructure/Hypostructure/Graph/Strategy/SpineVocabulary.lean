@@ -7,6 +7,7 @@ import Hypostructure.Graph.MinimumDegreeCycleTarget
 import Hypostructure.Graph.FiniteEdgeBudget
 import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.WindowPacking
+import Hypostructure.Graph.WindowRemainder
 import Hypostructure.Graph.WindowCurvatureCode
 import Hypostructure.Graph.Strategy.InterfaceReplacement
 
@@ -128,6 +129,9 @@ inductive Key where
   /-- Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing
   in the object's own dyadic scale. -/
   | densityCap
+  /-- Nodes `[25]`--`[27]`: the remainder of a maximal packing carries no
+  window and no subgraph meeting the baseline (`sec:remainder`). -/
+  | remainderNormalized
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -206,6 +210,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         (Graph.dyadicScaleCount object + 1) *
           (data.threshold * object.vertexCount +
             data.surplusThreshold object.vertexCount))
+  | .remainderNormalized, object =>
+      -- Quantified over every maximal packing, so no family has to travel from
+      -- the row that produced one: the statement is about all of them.
+      (∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset object.Vertex,
+          object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ support : Finset object.Vertex,
+          support ⊆ object.remainderSupport packing →
+          ¬ object.InducesWindow data.windowOrder support ∧
+            ¬ Graph.MinimumDegreeAtLeast data.threshold
+              (object.induce support))
 
 /-- Audit names.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -223,6 +240,8 @@ def name : Key → Lean.Name
   | .barrierCap => `Hypostructure.Graph.Strategy.Spine.barrierCap
   | .barrierOverflow => `Hypostructure.Graph.Strategy.Spine.barrierOverflow
   | .densityCap => `Hypostructure.Graph.Strategy.Spine.densityCap
+  | .remainderNormalized =>
+      `Hypostructure.Graph.Strategy.Spine.remainderNormalized
 
 /-- The value schema at a residual: the object-level statement, read at the
 residual's own object. -/

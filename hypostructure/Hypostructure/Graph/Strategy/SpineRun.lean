@@ -118,6 +118,12 @@ variable (targetInvariant : Core.TargetInvariant
   localAlgebraRow (K .maximalPacking) (K .localAlgebra) (by simp)
     (fun _input value => ⟨value⟩)
 
+/-- Nodes `[25]`--`[27]`. -/
+@[reducible] noncomputable def remainderNormalization :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  remainderNormalizationRow (K .selection) (K .remainderNormalized) (by simp)
+    (fun _input fact => fact.down.1) (fun _input value => ⟨value⟩)
+
 /-- Nodes `[22]`--`[24]`. -/
 @[reducible] noncomputable def densityBudget :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
@@ -131,7 +137,7 @@ end Rows
 
 /-- The key index of a ledger that has completed the block. -/
 abbrev completedKeys : FactKeys (Input BranchState Presentation presentation data) :=
-  [K .densityCap, K .barrierCap, K .surplusAtOrBelow, K .localAlgebra,
+  [K .remainderNormalized, K .densityCap, K .barrierCap, K .surplusAtOrBelow, K .localAlgebra,
     K .maximalPacking, K .uncompressible, K .tightEndpoint,
     K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
     K .selection]
@@ -218,7 +224,11 @@ noncomputable def run
       | .right overflowHistory => exact .barrierOverflow overflowHistory
       | .left capHistory =>
           -- Nodes `[22]`--`[24]`: spend the retained cap.
-          exact .complete ((densityBudget (data := data)).run capHistory (by simp))
+          -- Nodes `[25]`--`[27]`: normalize the packed-window remainder.
+          exact .complete
+            ((remainderNormalization (data := data)).run
+              ((densityBudget (data := data)).run capHistory (by simp))
+              (by simp))
 
 /-! ## What the run leaves behind -/
 
@@ -233,7 +243,8 @@ theorem complete_audit_facts
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected completedKeys) :
     (ExactLedger.audit history).facts =
-      [`Hypostructure.Graph.Strategy.Spine.densityCap,
+      [`Hypostructure.Graph.Strategy.Spine.remainderNormalized,
+        `Hypostructure.Graph.Strategy.Spine.densityCap,
         `Hypostructure.Graph.Strategy.Spine.barrierCap,
         `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow,
         `Hypostructure.Graph.Strategy.Spine.localAlgebra,

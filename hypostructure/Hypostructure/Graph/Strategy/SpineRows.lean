@@ -533,4 +533,52 @@ the object.  There is no `o(·)` term and no rounding. -/
             (surplusOf inputs.current (inputs.get surplusAtOrBelow))))
         .nil)
 
+/-! ## Nodes `[25]`--`[27]`: the packed-window remainder
+
+`sec:remainder`.  With `W` the union of a maximal packing and `R = G − W`, the
+manuscript asserts that `R` carries no induced window -- "since any such copy
+would extend `𝒫`" -- and that no subgraph of `R` has minimum degree at least the
+baseline.  The second is the cited external law applied at its own interface:
+the induced closure of such a subgraph is still window-free, so it has an
+accepted cycle, and a cycle of an induced subgraph is a cycle of the selected
+object, which avoids the target.
+
+The row quantifies over every maximal packing rather than naming one.  That is
+what the manuscript's statement actually says, and it is also what the ledger
+permits: a packing is data, and no fact can carry it.  The row's manifest
+therefore lists `selection` alone -- the avoidance half of it is the only thing
+the derivation consumes. -/
+@[reducible] noncomputable def remainderNormalizationRow
+    (selection remainderNormalized :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : selection ≠ remainderNormalized)
+    (avoidsOf : (input : Input BranchState Presentation presentation data) →
+      selection.At input →
+      ¬ Graph.HasCycleWithLength data.LengthOK input.object)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ support : Finset input.object.Vertex,
+          support ⊆ input.object.remainderSupport packing →
+          ¬ input.object.InducesWindow data.windowOrder support ∧
+            ¬ Graph.MinimumDegreeAtLeast data.threshold
+              (input.object.induce support)) →
+      remainderNormalized.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.remainderNormalization
+    (rowManifest selection remainderNormalized distinct)
+    (fun inputs =>
+      let object := inputs.current.object
+      let avoids := avoidsOf inputs.current (inputs.get selection)
+      .cons (key := remainderNormalized)
+        (encode inputs.current
+          (fun _packing _valid maximal support inside =>
+            ⟨object.not_inducesWindow_of_subset_remainderSupport maximal inside,
+              object.not_baseline_induce_of_subset_remainderSupport
+                data.freeForcesTarget avoids maximal inside⟩))
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine
