@@ -138,8 +138,6 @@ import Hypostructure.Graph.InducedPath
 import Hypostructure.Graph.InducedPathMaximalPacking
 import Hypostructure.Graph.PackedWindowRealization
 import Hypostructure.Graph.InducedPathWindowLedger
-import Hypostructure.Graph.InducedPathCold
-import Hypostructure.Graph.InducedPathColdQuery
 import Hypostructure.Graph.External.HegdeSandeepShashank
 import Hypostructure.Graph.Deletion
 import Hypostructure.Graph.Progress
@@ -221,3 +219,7 @@ import Hypostructure.Core.Strategy.TargetAlgebraReduction
 import Hypostructure.Core.Strategy.Validate
 import Hypostructure.Graph.Strategy.Official.Features.SupportIncidenceLedger
 import Hypostructure.Graph.WedgeLowerBound
+
+-- Rescued from the SequentialExtensionLedger quarantine boundary.
+import Hypostructure.Graph.FinitePathSelection
+import Hypostructure.Graph.Strategy.InterfaceReplacement

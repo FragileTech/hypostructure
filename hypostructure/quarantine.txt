@@ -2,6 +2,7 @@
 # canonical Core.Residual.ExactLedger.  Kept on disk as the porting
 # reference for the rewrite; no live module may import them.
 Hypostructure.Canonical.WebExport
+Hypostructure.Core.SequentialExtensionLedger
 Hypostructure.Core.Strategy.BoundaryDemandAccounting
 Hypostructure.Core.Strategy.Dag
 Hypostructure.Core.Strategy.FiniteStateCapacity
@@ -46,6 +47,8 @@ Hypostructure.Fixtures.StrategyDagRouting
 Hypostructure.Fixtures.StrategyDagValidation
 Hypostructure.Fixtures.SupportComplementNormalizationPublishedFacts
 Hypostructure.Fixtures.WellFoundedExhaustion
+Hypostructure.Graph.InducedPathCold
+Hypostructure.Graph.InducedPathColdQuery
 Hypostructure.Graph.Strategy.NormalizationRank
 Hypostructure.Graph.Strategy.Official
 Hypostructure.Graph.Strategy.Official.Compiler
