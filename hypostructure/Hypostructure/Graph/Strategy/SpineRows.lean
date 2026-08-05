@@ -3238,6 +3238,182 @@ noncomputable def b2AssignmentDichotomy
             charge, positive, carried⟩))
     ledgerFresh obstructionFresh
 
+/-! ## Nodes `[73]`/`[75]` and `[83]`/`[84]`: the Type B bridge fan-mass
+
+`lem:typeB-bridge-deficit-bound` and the ordinary-role half of
+`prop:typeB-bridge-sublinear`.  Both entries of the fan-mass node are bridge
+*residuals*: `[75]`/`[84]` is a fan-certificate residual centre, `[73]`/`[83]` a
+B2 disjoint-carrier failure represented by its minimal overlap obstruction.
+Neither has a local ledger entry to spend, so the manuscript stops resolving
+overlaps and simply bounds what is left unpaid.
+
+Its estimate is entirely local.  In the augmented ledger of
+`def:typeB-assigned-ledger` a vertex is measured by `δ − d_E(v) − α` against the
+assigned fan envelope, and only two kinds of vertex are negative: the centre,
+at `δ − k − α`, and each of its `c` cubic-closed neighbours, at `−α`.  Every
+other fan neighbour sits at the baseline and misses at least one incidence of
+the envelope, so it is at `d_E ≤ δ − 1` and pays at least `1 − α` -- the
+manuscript's "internal degree at most `2` … contributes at least `3/4`".  The
+unpaid part is therefore `(k − δ + α) + cα`, and with `c ≤ k` it is below
+`F(k − δ)` for the registered mass factor: the manuscript's
+`5k/4 − 11/4 ≤ 8(k−3)`, which "is equivalent to `27k ≥ 85`".
+
+Summing over the assigned centres of a support gives display (2),
+`Ĉh_B(X) ≥ −F·σ(X)`, because a vertex of a support that is not a centre carries
+no surplus; summing over the pieces of the packed-window remainder gives
+`M_B ≤ F·S_B`, and `S_B ≤ σ(G)` is the surplus of a region against the object's
+own.  Nothing writes `8`, `85`, `27` or `16`: the factor is registered and its
+validity is `Data.bridgeMassSlack`.
+
+The one prerequisite is the normal form, and it is consumed for exactly one
+clause: that the fan neighbours which are *not* cubic-closed sit at the
+baseline, which is what makes the two negative terms the whole negative part
+rather than a selection of it. -/
+@[reducible] noncomputable def bridgeFanMassRow
+    (highCentreNormalForm typeBBridgeMass :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : highCentreNormalForm ≠ typeBBridgeMass)
+    (normalFormOf : (input : Input BranchState Presentation presentation data) →
+      highCentreNormalForm.At input →
+      ∀ centre : input.object.Vertex,
+        Graph.IsHighCentre input.object data.threshold centre →
+        Graph.NormalForm input.object data.threshold centre)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ envelope : input.object.Vertex → Finset input.object.Vertex,
+        (∀ centre : input.object.Vertex,
+          Graph.IsHighCentre input.object data.threshold centre →
+          ∀ owner : input.object.Vertex, input.object.graph.Adj centre owner →
+            ¬ Graph.TypeBFanIncidence.IsCubicClosed input.object data.threshold
+                (envelope centre) centre owner →
+            0 ≤ Graph.TypeBEnvelopeCharge.scaledCharge input.object
+              data.threshold data.dischargeScale (envelope centre) owner) ∧
+          (∀ centre : input.object.Vertex,
+            Graph.IsHighCentre input.object data.threshold centre →
+            Graph.TypeBEnvelopeCharge.envelopeNegativePart input.object
+                data.threshold data.dischargeScale (envelope centre) centre ≤
+              data.bridgeMassFactor * data.dischargeScale *
+                (input.object.degree centre - data.threshold)) ∧
+          ∀ packing : Finset (Finset input.object.Vertex),
+            input.object.IsWindowPacking data.windowOrder packing →
+            (∀ piece : Finset input.object.Vertex,
+              piece ⊆ input.object.remainderSupport packing →
+              ∑ centre ∈ Graph.TypeBRefinedSupport.centres input.object
+                  data.threshold piece,
+                  Graph.TypeBEnvelopeCharge.envelopeNegativePart input.object
+                    data.threshold data.dischargeScale (envelope centre)
+                    centre ≤
+                data.bridgeMassFactor * data.dischargeScale *
+                  input.object.ambientSurplus piece data.threshold) ∧
+              ∑ piece ∈ input.object.canonicalPieces
+                  (input.object.remainderSupport packing),
+                  ∑ centre ∈ Graph.TypeBRefinedSupport.centres input.object
+                      data.threshold
+                      (input.object.pieceSupport
+                        (input.object.remainderSupport packing) piece),
+                    Graph.TypeBEnvelopeCharge.envelopeNegativePart input.object
+                      data.threshold data.dischargeScale (envelope centre)
+                      centre ≤
+                data.bridgeMassFactor * data.dischargeScale *
+                  input.object.degreeSurplus data.threshold) →
+      typeBBridgeMass.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeBBridgeMass
+    (rowManifest highCentreNormalForm typeBBridgeMass distinct)
+    (fun inputs =>
+      let normal :=
+        normalFormOf inputs.current (inputs.get highCentreNormalForm)
+      .cons (key := typeBBridgeMass)
+        (encode inputs.current (fun envelope => by
+          -- The standing baseline, read off the residual rather than a fact.
+          have baseline : ∀ vertex : inputs.current.object.Vertex,
+              data.threshold ≤ inputs.current.object.degree vertex := fun vertex =>
+            le_trans inputs.current.baseline
+              (inputs.current.object.minDegree_le_degree vertex)
+          refine ⟨?_, ?_, ?_⟩
+          · -- Every fan neighbour that is not cubic-closed pays.
+            intro centre high owner adjacent notClosed
+            exact Graph.TypeBEnvelopeCharge.scaledCharge_openNeighbour_nonneg
+              data.dischargeScale_pos adjacent
+              ((normal centre high).neighbourTight adjacent) notClosed
+          · -- `lem:typeB-bridge-deficit-bound`, display (1).
+            intro centre high
+            exact Graph.TypeBEnvelopeCharge.envelopeNegativePart_le _ high
+              data.bridgeMassSlack
+          · intro packing _valid
+            refine ⟨fun piece _inside => ?_, ?_⟩
+            · -- Display (2), at one assigned support.
+              exact Graph.TypeBEnvelopeCharge.sum_envelopeNegativePart_le piece
+                envelope data.bridgeMassSlack
+            · -- `M_B ≤ F·S_B ≤ F·σ(G)` for the ordinary assigned role.
+              refine le_trans
+                (Graph.TypeBEnvelopeCharge.sum_canonicalPieces_envelopeNegativePart_le
+                  _ envelope data.bridgeMassSlack) ?_
+              exact Nat.mul_le_mul_left _
+                (Graph.TypeBEnvelopeCharge.ambientSurplus_le_degreeSurplus
+                  inputs.current.object _ data.threshold baseline)))
+        .nil)
+
+/-! ## Nodes `[76]`/`[85]`: Step 1 of the Type B exclusion
+
+`lem:typeB-exclusion`, Step 1.  The B1 arm has paid every positive-deficit fan
+locally and B2 has supplied the disjointness; what remains at the join is the
+manuscript's own charge calculation at a certificate-closed fan,
+
+  `ch_X(h) + Σ_{u ∈ N(h)} ch_X(u) ≥ (δ − (k+1)α) − c = −D_B(𝔉_h) ≥ 0`,
+
+its `(11−k)/4 − c ≥ 0`.  The three terms are the three envelope readings the row
+above already names, and the last inequality is exactly certificate-closedness,
+`D_B ≤ 0`, which node `[74]`/`[82]`'s alternative left standing.
+
+Nothing rounds: the charge is carried at the discharge scale as an integer, so
+the manuscript's quarters never appear.
+
+What this row does *not* do is Step 2.  Summing the disjoint ledger entries and
+discharging the post-ledger core needs `lem:typeB-postledger-core-hygiene` and
+the Type A saturated/unsaturated discharge of nodes `[89]`--`[90]`, and the
+unsaturated arm of `[90]` is an open leaf of this spine.  So the conclusion
+`defp(X) − σ(X) ≥ ¼|V(X)|` is not committed here, and this row commits exactly
+the step whose inputs the branch owns. -/
+@[reducible] noncomputable def typeBExclusionChargeRow
+    (highCentreNormalForm typeBExclusionCharge :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : highCentreNormalForm ≠ typeBExclusionCharge)
+    (normalFormOf : (input : Input BranchState Presentation presentation data) →
+      highCentreNormalForm.At input →
+      ∀ centre : input.object.Vertex,
+        Graph.IsHighCentre input.object data.threshold centre →
+        Graph.NormalForm input.object data.threshold centre)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ centre : input.object.Vertex,
+        Graph.IsHighCentre input.object data.threshold centre →
+        ∀ envelope : Finset input.object.Vertex,
+          Graph.TypeBEnvelopeCharge.IsFanEnvelope input.object envelope centre →
+          - Graph.TypeBFanIncidence.scaledDeficit input.object data.threshold
+                data.dischargeScale envelope centre ≤
+              Graph.TypeBEnvelopeCharge.closedNeighbourhoodCharge input.object
+                data.threshold data.dischargeScale envelope centre ∧
+            (Graph.TypeBFanIncidence.IsCertificateClosed input.object
+                data.threshold data.dischargeScale envelope centre →
+              0 ≤ Graph.TypeBEnvelopeCharge.closedNeighbourhoodCharge
+                input.object data.threshold data.dischargeScale envelope
+                centre)) →
+      typeBExclusionCharge.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeBExclusionCharge
+    (rowManifest highCentreNormalForm typeBExclusionCharge distinct)
+    (fun inputs =>
+      let normal :=
+        normalFormOf inputs.current (inputs.get highCentreNormalForm)
+      .cons (key := typeBExclusionCharge)
+        (encode inputs.current (fun centre high envelope assigned =>
+          -- (a) of the normal form: every fan neighbour is at the baseline.
+          ⟨Graph.TypeBEnvelopeCharge.neg_scaledDeficit_le_closedNeighbourhoodCharge
+              assigned (normal centre high).neighbourTight,
+            fun closed =>
+              Graph.TypeBEnvelopeCharge.closedNeighbourhoodCharge_nonneg assigned
+                (normal centre high).neighbourTight closed⟩))
+        .nil)
+
 /-! ## Node `[88]`: the routing and threshold algebra of a Type A support
 
 `def:typeA-support` is `def:admissible` with `σ(X) = 0`.  Since the object meets

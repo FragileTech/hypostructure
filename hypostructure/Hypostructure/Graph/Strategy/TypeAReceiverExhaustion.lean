@@ -75,58 +75,6 @@ noncomputable def receiverLoadLedger {Residual : Type u}
 
 
 
-/-- **Exit (4)**: *"a quotient in the canonical exit-(4) family `Q_4(w)` is
-target-defective."*
-
-`def:typeA-exit4-family` calls `Q_4(w)` the *canonical* family: its members are
-the visible-coordinate, silent-basin, trace-basin, continuation/switch and
-two-carrier deletion quotients built **at a receiver `w` of one Type A
-support**, and each carries a *declared routed-load support*.  So this is not a
-search over the atoms of an assembly; it is a statement about the routed loads
-of the certificate the incoming residual carries.
-
-The shape is `def:typeA-exit4-peeling` verbatim, which is what
-`lem:typeA-exit4-discharge` consumes: a peeling set `P_4(w)` is a duplicate-free
-set of routed loads each equipped with one exit-(4) witness, and the exit occurs
-when, at every stage at which the residual load `L_4(w) = L(w) - |P_4(w)|` still
-meets the raw threshold, some *unpeeled* routed load carries such a witness.
-That is exactly the `step` hypothesis of
-`TypeAReceiverClosure.saturated_handoff`, so no peel is written here: the
-framework's own descent consumes this predicate unchanged.
-
-The witness itself is `def:typeA-exit4-family`'s own two clauses, read on the
-certificate's support.  The declared routed-load support of the canonical
-quotient is a proper sub-support containing the peeled load -- clause (Q1)'s
-identified visible coordinates, (Q2)'s basin `B(w)`, (Q3)'s `{u}`, (Q4)'s
-connector family `K`, (Q5)'s indexed load -- and the quotient identifies the
-declared coordinates carried over it.  `Core.AdmissibleQuotient` is the
-framework's closed reading of such an identification: either it is
-label-injective, or it is witnessed by a `representative`, a certified subobject
-retaining the registered baseline, which on the graph adapter is that
-sub-support with `Graph.TypeAB.Baseline`.  Exit (6) already states its own
-alternative through that same representative clause. -/
-noncomputable def TargetDefectiveQuotient
-    (presentation : Graph.TypeAB.Presentation.{uVertex})
-    (object : Graph.FiniteObject.{uVertex})
-    (profile : LoadCapacityProfile) : Prop :=
-  ∃ (certificate : Graph.TypeAB.TypeACertificate presentation object)
-      (routing : RoutedLoad (object := object) profile
-        ⟨certificate.common.support⟩),
-    ∀ (receiver :
-          (⟨certificate.common.support⟩ : Support object).ReceiverVertex profile)
-        (peeled : Finset
-          ((⟨certificate.common.support⟩ : Support object).FullVertex profile)),
-      peeled ⊆ TypeAReceiverClosure.routedFibre routing receiver →
-        profile.loadMultiplier *
-              (⟨certificate.common.support⟩ : Support object).missingPorts
-                profile receiver ≤
-            (TypeAReceiverClosure.routedFibre routing receiver \ peeled).card →
-          ∃ load ∈ TypeAReceiverClosure.routedFibre routing receiver \ peeled,
-            ∃ declared : Finset object.Vertex,
-              load.1 ∈ declared ∧ declared ⊂ certificate.common.support ∧
-                Graph.TypeAB.Baseline presentation (object.induce declared)
-
-
 def TargetCompleteCompression
     (presentation : Graph.TypeAB.Presentation.{uVertex})
     (object : Graph.FiniteObject.{uVertex}) : Prop :=
@@ -422,67 +370,6 @@ noncomputable def exitFiveSplit
           certificate nonempty proper baseline complete)⟩)
 
 
-
-
-noncomputable def exitFourSplit
-    {P : Core.Problem.{uAmbient, uBranch}} {T : Core.Target P}
-    {LengthOK : Nat → Prop}
-    (presentation : Graph.TypeAB.Presentation.{uVertex})
-    (object : Core.Strategy.ProblemInput P → Graph.FiniteObject.{uVertex})
-    (profile : Core.Strategy.ProblemInput P → LoadCapacityProfile)
-    (targetIsCycle : ∀ candidate : Graph.FiniteObject.{uVertex},
-      presentation.Target candidate ↔
-        Graph.HasCycleWithLength LengthOK candidate)
-    (baseline : ∀ input : Core.Strategy.ProblemInput P,
-      presentation.baselineDegree = (profile input).baselineDegree)
-    (scale : ∀ input : Core.Strategy.ProblemInput P,
-      presentation.dischargeScale = (profile input).loadMultiplier)
-    (closure : ∀ input : Core.Strategy.ProblemInput P,
-      Graph.HasCycleWithLength LengthOK (object input) →
-        T.Predicate input.object) :
-    Core.DichotomyData.{uAmbient, uBranch, 0} P T :=
-  Core.DichotomyData.ofAlternative
-    (fun input =>
-      TargetDefectiveQuotient presentation (object input) (profile input))
-    { name := "Exit 4: target-defective quotient"
-      note := ""
-      tags := ["type-a", "node-101", "exit-4"] }
-    { name := "Target-defect peels one load"
-      note := "" }
-    { name := "No target-defective quotient"
-      note := "" }
-    (closeLeft := some ⟨fun input witness => by
-      classical
-      obtain ⟨certificate, routing, peelStep⟩ := witness.down
-      by_cases declared : ∃ smaller : Finset (object input).Vertex,
-          smaller.Nonempty ∧ smaller ⊂ certificate.common.support ∧
-            Graph.TypeAB.Baseline presentation ((object input).induce smaller)
-      · obtain ⟨smaller, nonempty, proper, base⟩ := declared
-        exact closure input
-          (TypeAReceiverClosure.hasCycleWithLength_of_properBaselineSubsupport
-            certificate targetIsCycle nonempty proper base)
-      · refine absurd trivial fun _ =>
-          TypeAReceiverClosure.certificate_unsaturated_impossible certificate
-            routing ?_ (baseline input) (scale input)
-        intro receiver
-        rcases TypeAReceiverClosure.saturated_handoff routing receiver False
-            (fun load => ∃ smaller : Finset (object input).Vertex,
-              load.1 ∈ smaller ∧ smaller ⊂ certificate.common.support ∧
-                Graph.TypeAB.Baseline presentation
-                  ((object input).induce smaller))
-            (fun peeled subset saturated =>
-              Or.inr (peelStep receiver peeled subset saturated))
-          with impossible | ⟨peeled, _subset, witnessed, below⟩
-        · exact impossible.elim
-        · have empty : peeled = ∅ := by
-            by_contra notEmpty
-            obtain ⟨load, member⟩ := Finset.nonempty_iff_ne_empty.mpr notEmpty
-            obtain ⟨smaller, memberSmaller, proper, base⟩ :=
-              witnessed load member
-            exact declared ⟨smaller, ⟨load.1, memberSmaller⟩, proper, base⟩
-          rw [empty, Finset.sdiff_empty,
-            TypeAReceiverClosure.card_routedFibre] at below
-          exact below⟩)
 
 
 noncomputable def exitSevenSplit

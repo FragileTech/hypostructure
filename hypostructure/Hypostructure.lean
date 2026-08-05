@@ -54,6 +54,7 @@ import Hypostructure.Fixtures.ColdCorridorRun
 import Hypostructure.Fixtures.TypeAReceiverNode
 import Hypostructure.Fixtures.TypeBFanWindowNode
 import Hypostructure.Fixtures.Route8Run
+import Hypostructure.Fixtures.ExitFourFamily
 import Hypostructure.Core.Strategy.FactManifest
 import Hypostructure.Fixtures.ExactLedger
 import Hypostructure.Fixtures.ExactExecution
@@ -97,6 +98,9 @@ import Hypostructure.Graph.TargetClosure
 import Hypostructure.Graph.RootedReturn
 import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.SameTokenBlockerRoles
+import Hypostructure.Graph.MatchingStar
+import Hypostructure.Graph.HomogeneousTokenCap
+import Hypostructure.Graph.TokenLoadClosure
 import Hypostructure.Graph.ReceiverLoad
 import Hypostructure.Graph.ReceiverRouting
 import Hypostructure.Graph.WindowCurvatureAlgebra
@@ -110,6 +114,7 @@ import Hypostructure.Graph.SurplusClasswiseOverload
 -- them -- `TypeARoute8Stages` in particular is imported by nothing else.
 import Hypostructure.Graph.CutParity
 import Hypostructure.Graph.ExitFourPeeling
+import Hypostructure.Graph.ExitFourFamily
 import Hypostructure.Graph.Route8Carrier
 import Hypostructure.Graph.Route8Closure
 import Hypostructure.Graph.Route8Residual

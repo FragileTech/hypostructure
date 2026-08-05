@@ -13,7 +13,8 @@ import Hypostructure.Graph.TypeBDirectCycle
 import Hypostructure.Graph.TypeBFanIncidence
 import Hypostructure.Graph.TypeBHybridIncidence
 import Hypostructure.Graph.TypeBRefinedSupport
-import Hypostructure.Graph.ExitFourPeeling
+import Hypostructure.Graph.TypeBEnvelopeCharge
+import Hypostructure.Graph.ExitFourFamily
 import Hypostructure.Graph.Route8Residual
 import Hypostructure.Graph.BoundaryDemand
 import Hypostructure.Graph.ReceiverRouting
@@ -32,6 +33,7 @@ import Hypostructure.Graph.Strategy.InterfaceReplacement
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
 import Hypostructure.Graph.ColdBranchClosure
+import Hypostructure.Graph.SparsePortActivation
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -233,6 +235,30 @@ structure Data where
   the cold-window offsets a corridor interface meets are the offsets of the
   same induced window every earlier node argued about. -/
   coldSignature_windowOrder : coldSignature.windowOrder = windowOrder
+  /-- **`F`, the registered Type B bridge-mass factor.**
+
+  `lem:typeB-bridge-deficit-bound` charges each bridge residual centre at
+  `No_-(X) ≤ F·Σ_{h∈H_X}(d_G(h) − δ)` — the manuscript's `8`.  The value is not
+  forced by anything: the estimate `(k − δ + α) + cα ≤ F(k − δ)` holds for every
+  factor above a floor the next field records, and the manuscript picks a round
+  one.  So it is a presentation constant, registered here in the same way as the
+  order exponent, and `prop:typeB-bridge-sublinear`'s `16σ(G)` is this factor
+  against the at-most-twice occurrence convention. -/
+  bridgeMassFactor : Nat
+  /-- **`27k ≥ 85`, in registered numbers.**
+
+  The manuscript's per-centre estimate is `5k/4 − 11/4 ≤ 8(k−3)`, and it says
+  this "is equivalent to `27k ≥ 85`, and holds for every `k ≥ 4`".  Cleared of
+  denominators at the registered baseline and discharge scale and spent against
+  the smallest high-centre surplus `k − δ = 1`, that equivalence is exactly this
+  comparison between registered numbers.
+
+  Registering it here is the analogue of `fanCapSlack`: it is arithmetic of the
+  presentation, discharged once, and never a hypothesis about a graph.  A
+  presentation whose mass factor is too small for its baseline does not reach the
+  Type B bridge. -/
+  bridgeMassSlack :
+    threshold + 2 + dischargeScale ≤ bridgeMassFactor * dischargeScale
 
 /-- **The registered scale threshold `C_sp·⌈√n⌉` of node `[19]`**, derived from
 its coefficient and the framework's own ceiling square root.  Every node that
@@ -689,19 +715,40 @@ inductive Key where
   `def:typeB-overlap-obstruction`.  The fact records the obstruction, not the
   bare failure: the minimality is what the fan-mass accounting consumes. -/
   | typeBOverlapObstruction
-  /-- Node `[101]`, the ladder's own exit-`(4)` test, yes arm: the exit-`(4)`
-  peel step is available.  `lem:typeA-exit4-residual-routing`: while a
-  receiver's peeled residual is still saturated, exit `(4)` supplies a fresh
-  unpeeled routed load, which `lem:typeA-exit4-discharge` adjoins to the peeling
+  /-- Nodes `[73]`/`[75]` and `[83]`/`[84]`: the Type B bridge fan-mass estimate.
+  In the augmented ledger of `def:typeB-assigned-ledger` the only negative terms
+  of an assigned fan envelope are its centre and its cubic-closed neighbours; the
+  unpaid part they leave is at most the registered mass factor against the
+  centre's own surplus (`lem:typeB-bridge-deficit-bound`), summing over the
+  assigned centres of a support to `Ĉh_B(X) ≥ −F·σ(X)` and over the pieces of the
+  packed-window remainder to the ordinary-role half of
+  `prop:typeB-bridge-sublinear`, `M_B ≤ F·S_B ≤ F·σ(G)`. -/
+  | typeBBridgeMass
+  /-- Nodes `[76]`/`[85]`: Step 1 of `lem:typeB-exclusion`.  At every high centre
+  of the object, in every assigned fan envelope, the closed-neighbourhood charge
+  of `def:typeB-assigned-ledger` is at least `−D_B(𝔉_h)` — the manuscript's
+  `(11−k)/4 − c` — so a certificate-closed fan carries nonnegative closed
+  neighbourhood charge. -/
+  | typeBExclusionCharge
+  /-- Node `[101]`, the ladder's own exit-`(4)` test, yes arm: exit `(4)` of
+  `def:typeA-saturated-exits` occurs at an unpeeled routed load -- a quotient in
+  the canonical family `𝒬₄(w)` of `def:typeA-exit4-family` is target-defective
+  and its declared support contains that load's canonical coordinate, which is
+  `def:typeA-exit4-peeling`'s exit-`(4)` witness.  This is
+  `lem:typeA-exit4-residual-routing`'s exit-`(4)` case: while a receiver's
+  peeled residual is still saturated, exit `(4)` supplies a witnessed fresh
+  unpeeled load, which `lem:typeA-exit4-discharge` adjoins to the peeling
   set. -/
   | typeAExitFourPeel
-  /-- Node `[101]`, no arm: no receiver admits the peel step. -/
+  /-- Node `[101]`, no arm: exit `(4)` witnesses no unpeeled load of any
+  receiver, so no peeling set can be enlarged. -/
   | typeAExitFourNoPeel
   /-- Node `[102]`, the peel's own output, which the manuscript routes back to
-  node `[89]`: every receiver has a peeling set leaving it unsaturated, so by
-  `lem:typeA-exit4-peeling-charge` its remaining charge `q(w) − ¼ − ¼·L₄(w)` is
-  nonnegative.  The descent that produces it is finite because each peel drops
-  `L₄(w)` by exactly one. -/
+  node `[89]`: every receiver has a peeling set -- each of its loads carrying its
+  own exit-`(4)` witness, as `def:typeA-exit4-peeling` requires -- leaving it
+  unsaturated, so by `lem:typeA-exit4-peeling-charge` its remaining charge
+  `q(w) − ¼ − ¼·L₄(w)` is nonnegative.  The descent that produces it is finite
+  because each peel drops `L₄(w)` by exactly one. -/
   | typeAPeeledCharge
   /-- Node `[103]`, the exit-`(5)` realization test, yes arm: the nontrivial
   target-complete response compression *is realized by a smaller proper atom*,
@@ -768,6 +815,19 @@ inductive Key where
   route-8 obstruction, so the object carries no route-8 carrier residual at
   all and the arm closes. -/
   | route8Closed
+  /-- Node `[126]`, `lem:sparse-slack-surplus`: the sparse slack identity
+  `m = (3/2)n + (1/2)σ(G)`, cleared of division at the registered baseline. -/
+  | sparseSlackSurplus
+  /-- Node `[127]`, `lem:sparse-excess-port-extraction`, with the family half of
+  `lem:surviving-active-family`: the excess selector `𝒫_exc` has exactly `σ(G)`
+  members, every selected port has a centre strictly above the baseline and an
+  endpoint exactly at it, and therefore carries exactly `δ − 1` shoulders. -/
+  | activeSurplusFamily
+  /-- Node `[128]`, `lem:sparse-port-activation`, clauses (a), (c) and (d): at a
+  selected port carrying a shoulder pair, an open port carries the suppression
+  witness `Q_p ⊆ G − x(p)` whose restored length is accepted, and a triangular
+  port carries the triangle `x a_p b_p x`. -/
+  | sparsePortActivation
   deriving DecidableEq
 
 /-- **`𝒲₂(R)`**: the raw internal length-two curvature tests carried by the
@@ -2280,32 +2340,108 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               0 < object.ambientSurplus piece data.threshold ∧
               Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
                 data.threshold data.dischargeScale piece))
+  | .typeBBridgeMass, object =>
+      -- Nodes `[73]`/`[75]`, `[83]`/`[84]`.  The envelope assignment is fan
+      -- data, so it is quantified: the estimate holds of every assignment, at
+      -- every high centre of the object, and the three clauses are the
+      -- manuscript's own three steps.
+      (∀ envelope : object.Vertex → Finset object.Vertex,
+        -- Only the centre and the cubic-closed neighbours are negative: every
+        -- other fan neighbour sits at `d_E ≤ δ − 1` and pays at least `1 − α`.
+        (∀ centre : object.Vertex, Graph.IsHighCentre object data.threshold centre →
+          ∀ owner : object.Vertex, object.graph.Adj centre owner →
+            ¬ Graph.TypeBFanIncidence.IsCubicClosed object data.threshold
+                (envelope centre) centre owner →
+            0 ≤ Graph.TypeBEnvelopeCharge.scaledCharge object data.threshold
+              data.dischargeScale (envelope centre) owner) ∧
+          -- `lem:typeB-bridge-deficit-bound`, display (1).
+          (∀ centre : object.Vertex, Graph.IsHighCentre object data.threshold centre →
+            Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
+                data.dischargeScale (envelope centre) centre ≤
+              data.bridgeMassFactor * data.dischargeScale *
+                (object.degree centre - data.threshold)) ∧
+          ∀ packing : Finset (Finset object.Vertex),
+            object.IsWindowPacking data.windowOrder packing →
+            -- Display (2), at one assigned support.
+            (∀ piece : Finset object.Vertex,
+              piece ⊆ object.remainderSupport packing →
+              ∑ centre ∈ Graph.TypeBRefinedSupport.centres object data.threshold
+                  piece,
+                  Graph.TypeBEnvelopeCharge.envelopeNegativePart object
+                    data.threshold data.dischargeScale (envelope centre) centre ≤
+                data.bridgeMassFactor * data.dischargeScale *
+                  object.ambientSurplus piece data.threshold) ∧
+              -- `prop:typeB-bridge-sublinear`, ordinary role: `M_B ≤ F·σ(G)`.
+              ∑ piece ∈ object.canonicalPieces (object.remainderSupport packing),
+                  ∑ centre ∈ Graph.TypeBRefinedSupport.centres object
+                      data.threshold
+                      (object.pieceSupport (object.remainderSupport packing)
+                        piece),
+                    Graph.TypeBEnvelopeCharge.envelopeNegativePart object
+                      data.threshold data.dischargeScale (envelope centre)
+                      centre ≤
+                data.bridgeMassFactor * data.dischargeScale *
+                  object.degreeSurplus data.threshold)
+  | .typeBExclusionCharge, object =>
+      -- Nodes `[76]`/`[85]`, Step 1 of `lem:typeB-exclusion`.  Stated at every
+      -- high centre of the object and every coherent assigned envelope, because
+      -- both the centre and the envelope are data no fact can carry.
+      (∀ centre : object.Vertex, Graph.IsHighCentre object data.threshold centre →
+        ∀ envelope : Finset object.Vertex,
+          Graph.TypeBEnvelopeCharge.IsFanEnvelope object envelope centre →
+          - Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+                data.dischargeScale envelope centre ≤
+              Graph.TypeBEnvelopeCharge.closedNeighbourhoodCharge object
+                data.threshold data.dischargeScale envelope centre ∧
+            (Graph.TypeBFanIncidence.IsCertificateClosed object data.threshold
+                data.dischargeScale envelope centre →
+              0 ≤ Graph.TypeBEnvelopeCharge.closedNeighbourhoodCharge object
+                data.threshold data.dischargeScale envelope centre))
 
   | .typeAExitFourPeel, object =>
-      -- Node `[101]`, yes: `lem:typeA-exit4-residual-routing`'s exit-`(4)` case,
-      -- read at every receiver of every support at once, because a support and a
-      -- receiver are data and no fact may carry them.
+      -- Node `[101]`, yes: exit `(4)` of `def:typeA-saturated-exits` -- *"a
+      -- quotient in the canonical exit-(4) family `𝒬₄(w)` is
+      -- target-defective"* -- at an unpeeled routed load, which is
+      -- `lem:typeA-exit4-residual-routing`'s exit-`(4)` case together with the
+      -- exit-`(4)` witness of `def:typeA-exit4-peeling`.  A support, a
+      -- receiver, and the receiver's declared reading are data, so the fact is
+      -- read at every one of them at once.
       (∀ piece : Finset object.Vertex, ∀ receiver : object.Vertex,
+        ∀ family : Graph.ExitFour.Family
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+            receiver (Sym2 object.Vertex),
         ∀ peeled : Finset object.Vertex,
-          peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver →
+          family.IsPeeling peeled →
           Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
               receiver peeled →
-            ∃ load ∈ Graph.ExitFour.routedLoads piece data.threshold receiver,
-              load ∉ peeled)
+            ∃ load ∈
+                Graph.ExitFour.unpeeledLoads piece data.threshold receiver
+                  peeled,
+              family.Witness load)
   | .typeAExitFourNoPeel, object =>
       -- Node `[101]`, no.
       (¬ ∀ piece : Finset object.Vertex, ∀ receiver : object.Vertex,
+        ∀ family : Graph.ExitFour.Family
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+            receiver (Sym2 object.Vertex),
         ∀ peeled : Finset object.Vertex,
-          peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver →
+          family.IsPeeling peeled →
           Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
               receiver peeled →
-            ∃ load ∈ Graph.ExitFour.routedLoads piece data.threshold receiver,
-              load ∉ peeled)
+            ∃ load ∈
+                Graph.ExitFour.unpeeledLoads piece data.threshold receiver
+                  peeled,
+              family.Witness load)
   | .typeAPeeledCharge, object =>
-      -- Node `[102]`: the peeled receiver, retested at `[89]`.
+      -- Node `[102]`: the peeled receiver, retested at `[89]`.  The peeling set
+      -- it stops at is `def:typeA-exit4-peeling`'s: every load it lists carries
+      -- its own exit-`(4)` witness.
       (∀ piece : Finset object.Vertex, ∀ receiver : object.Vertex,
+        ∀ family : Graph.ExitFour.Family
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+            receiver (Sym2 object.Vertex),
         ∃ peeled : Finset object.Vertex,
-          peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver ∧
+          family.IsPeeling peeled ∧
             ¬ Graph.ExitFour.SaturatedAfter piece data.threshold
               data.dischargeScale receiver peeled)
   | .typeAExitFiveCompression, object =>
@@ -2394,6 +2530,39 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       (¬ ∃ residual : Graph.Route8.Data
           (Graph.HasCycleWithLength data.LengthOK) object,
         residual.LargeBudget)
+  | .sparseSlackSurplus, object =>
+      -- `lem:sparse-slack-surplus`: `2m = δn + σ(G)`, the manuscript's
+      -- `m = (3/2)n + (1/2)σ(G)` cleared of division.
+      (2 * object.edgeCount =
+        data.threshold * object.vertexCount +
+          object.degreeSurplus data.threshold)
+  | .activeSurplusFamily, object =>
+      -- `lem:sparse-excess-port-extraction`, and the family statement of
+      -- `lem:surviving-active-family`.
+      ((object.excessPorts data.threshold).card =
+          object.degreeSurplus data.threshold ∧
+        ∀ pair : object.Vertex × object.Vertex,
+          ∀ member : pair ∈ object.excessPorts data.threshold,
+            data.threshold < object.degree pair.1 ∧
+              object.degree pair.2 = data.threshold ∧
+              (object.surplusPortOfMem member).shoulders.card =
+                data.threshold - 1)
+  | .sparsePortActivation, object =>
+      -- `lem:sparse-port-activation`, clauses (a), (c) and (d).
+      (∀ pair : object.Vertex × object.Vertex,
+        ∀ member : pair ∈ object.excessPorts data.threshold,
+          ∀ left right : object.Vertex,
+            (∀ vertex : object.Vertex,
+              vertex ∈ (object.surplusPortOfMem member).shoulders ↔
+                (vertex = left ∨ vertex = right)) →
+            left ≠ right →
+            (¬ object.graph.Adj left right →
+              Nonempty (Graph.FiniteObject.SurplusPort.OpenPortWitness
+                object data.LengthOK pair.2 left right)) ∧
+              (object.graph.Adj left right →
+                object.graph.Adj pair.2 left ∧
+                  object.graph.Adj left right ∧
+                  object.graph.Adj right pair.2))
 
 /-- Audit names.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2476,6 +2645,9 @@ def name : Key → Lean.Name
       `Hypostructure.Graph.Strategy.Spine.typeBDisjointAssignment
   | .typeBOverlapObstruction =>
       `Hypostructure.Graph.Strategy.Spine.typeBOverlapObstruction
+  | .typeBBridgeMass => `Hypostructure.Graph.Strategy.Spine.typeBBridgeMass
+  | .typeBExclusionCharge =>
+      `Hypostructure.Graph.Strategy.Spine.typeBExclusionCharge
   | .windowPackageSeparated =>
       `Hypostructure.Graph.Strategy.Spine.windowPackageSeparated
   | .windowPackageCollided =>
@@ -2531,6 +2703,12 @@ def name : Key → Lean.Name
   | .route8Census => `Hypostructure.Graph.Strategy.Spine.route8Census
   | .route8Descent => `Hypostructure.Graph.Strategy.Spine.route8Descent
   | .route8Closed => `Hypostructure.Graph.Strategy.Spine.route8Closed
+  | .sparseSlackSurplus =>
+      `Hypostructure.Graph.Strategy.Spine.sparseSlackSurplus
+  | .activeSurplusFamily =>
+      `Hypostructure.Graph.Strategy.Spine.activeSurplusFamily
+  | .sparsePortActivation =>
+      `Hypostructure.Graph.Strategy.Spine.sparsePortActivation
 
 /-- The value schema at a residual: the object-level statement, read at the
 residual's own object. -/

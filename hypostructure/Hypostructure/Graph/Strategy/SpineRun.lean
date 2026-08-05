@@ -320,6 +320,21 @@ run after either of the two B2 cursors. -/
   degreeFourProfileRow (K .highCentreNormalForm) (K .typeBDegreeFourProfile)
     (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
 
+/-- Nodes `[73]`/`[75]` and `[83]`/`[84]`.  One executor value, run after each of
+the four bridge-residual cursors: the two fan-certificate residual arms of node
+`[71]`/`[80]` and the two overlap-obstruction arms of node `[72]`/`[81]`. -/
+@[reducible] noncomputable def bridgeFanMass :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  bridgeFanMassRow (K .highCentreNormalForm) (K .typeBBridgeMass)
+    (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
+
+/-- Nodes `[76]`/`[85]`, Step 1 of `lem:typeB-exclusion`.  One executor value,
+run after either of the two B1 cursors. -/
+@[reducible] noncomputable def typeBExclusionCharge :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  typeBExclusionChargeRow (K .highCentreNormalForm) (K .typeBExclusionCharge)
+    (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
+
 end Rows
 
 /-- Nodes `[44]` and `[45]`: the repair identity and the global barrier. -/
@@ -706,6 +721,16 @@ abbrev typeBHybridEntryKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBHybridEntry :: typeBDisjointAssignmentKeys
 
+/-- Node `[76]`: Step 1 of `lem:typeB-exclusion`, after `[74]`. -/
+abbrev typeBExclusionChargeKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBExclusionCharge :: typeBHybridEntryKeys
+
+/-- Node `[85]`: the same row, after `[82]`. -/
+abbrev degreeFourExclusionChargeKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBExclusionCharge :: degreeFourHybridEntryKeys
+
 /-- Node `[72]`/`[81]`, no arm — the entry of `[73]`/`[83]`, which the
 manuscript routes to the fan-mass node `[75]`/`[84]`. -/
 abbrev typeBOverlapObstructionKeys :
@@ -717,6 +742,28 @@ manuscript routes it to the fan-mass node `[75]`. -/
 abbrev typeBCertificateResidualKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .fanCertificateResidual :: typeBHeavyFanCapKeys
+
+/-- Node `[75]`: the fan-mass estimate on the heavy arm's residual cursor. -/
+abbrev typeBCertificateResidualMassKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBBridgeMass :: typeBCertificateResidualKeys
+
+/-- Node `[84]`: the same row, on the degree-four residual cursor. -/
+abbrev degreeFourResidualMassKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBBridgeMass :: degreeFourResidualKeys
+
+/-- Node `[75]` entered from `[73]`: the fan-mass estimate on the heavy arm's
+overlap-obstruction cursor. -/
+abbrev typeBOverlapObstructionMassKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBBridgeMass :: typeBOverlapObstructionKeys
+
+/-- Node `[84]` entered from `[83]`: the same row on the degree-four
+overlap-obstruction cursor. -/
+abbrev degreeFourOverlapObstructionMassKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBBridgeMass :: degreeFourOverlapObstructionKeys
 
 /-- The key index of the closed terminal `[39]`, proper atom compression. -/
 abbrev atomCompressionKeys :
@@ -816,27 +863,27 @@ inductive Result (selected : Input BranchState Presentation presentation data)
   | typeBDirectCycleClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected typeBDirectCycleClosedKeys)
-  | typeBHybridEntry
+  | typeBExclusionCharge
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected typeBHybridEntryKeys)
-  | typeBOverlapObstruction
+        selected typeBExclusionChargeKeys)
+  | typeBOverlapObstructionMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected typeBOverlapObstructionKeys)
-  | typeBCertificateResidual
+        selected typeBOverlapObstructionMassKeys)
+  | typeBCertificateResidualMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected typeBCertificateResidualKeys)
-  | degreeFourCertificateResidual
+        selected typeBCertificateResidualMassKeys)
+  | degreeFourResidualMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected degreeFourResidualKeys)
+        selected degreeFourResidualMassKeys)
   | degreeFourDirectCycleClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected degreeFourDirectCycleClosedKeys)
-  | degreeFourHybridEntry
+  | degreeFourExclusionCharge
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected degreeFourHybridEntryKeys)
-  | degreeFourOverlapObstruction
+        selected degreeFourExclusionChargeKeys)
+  | degreeFourOverlapObstructionMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected degreeFourOverlapObstructionKeys)
+        selected degreeFourOverlapObstructionMassKeys)
 
 set_option maxHeartbeats 1200000 in
 /-- **Block A, run.**
@@ -1110,15 +1157,27 @@ noncomputable def run
                                           | .left ledgerHistory =>
                                               -- Node `[74]`: the local hybrid B1
                                               -- payment, on the B2 cursor.
-                                              exact .typeBHybridEntry
-                                                ((hybridEntry (data := data)).run
-                                                  ledgerHistory (by simp))
+                                              -- Node `[76]`: Step 1 of the Type
+                                              -- B exclusion, on that cursor.
+                                              exact .typeBExclusionCharge
+                                                ((typeBExclusionCharge
+                                                    (data := data)).run
+                                                  ((hybridEntry (data := data)).run
+                                                    ledgerHistory (by simp))
+                                                  (by simp))
                                           | .right obstructionHistory =>
-                                              exact .typeBOverlapObstruction
-                                                obstructionHistory
+                                              -- Node `[73]` → `[75]`: the
+                                              -- fan-mass estimate on the
+                                              -- obstruction cursor.
+                                              exact .typeBOverlapObstructionMass
+                                                ((bridgeFanMass (data := data)).run
+                                                  obstructionHistory (by simp))
                                   | .right residualHistory =>
-                                      exact .typeBCertificateResidual
-                                        residualHistory
+                                      -- Node `[75]`: the fan-mass estimate on
+                                      -- the fan-certificate residual cursor.
+                                      exact .typeBCertificateResidualMass
+                                        ((bridgeFanMass (data := data)).run
+                                          residualHistory (by simp))
                               | .right degreeFourHistory =>
                                   -- Node `[70]` on the degree-four arm: the
                                   -- same executor after the other cursor.
@@ -1138,8 +1197,11 @@ noncomputable def run
                                       (fun residual => ⟨residual⟩)
                                       (by simp) (by simp) with
                                   | .right residualHistory =>
-                                      exact .degreeFourCertificateResidual
-                                        residualHistory
+                                      -- Node `[84]`: the same fan-mass row on
+                                      -- the degree-four residual cursor.
+                                      exact .degreeFourResidualMass
+                                        ((bridgeFanMass (data := data)).run
+                                          residualHistory (by simp))
                                   | .left markedHistory =>
                                       -- Node `[81]`, first half.
                                       match directCycleDichotomy markedHistory
@@ -1163,13 +1225,19 @@ noncomputable def run
                                               (by simp) (by simp) with
                                           | .left ledgerHistory =>
                                               -- Node `[82]`: the same executor,
-                                              -- after the other B2 cursor.
-                                              exact .degreeFourHybridEntry
-                                                ((hybridEntry (data := data)).run
-                                                  ledgerHistory (by simp))
+                                              -- after the other B2 cursor, then
+                                              -- node `[85]`.
+                                              exact .degreeFourExclusionCharge
+                                                ((typeBExclusionCharge
+                                                    (data := data)).run
+                                                  ((hybridEntry (data := data)).run
+                                                    ledgerHistory (by simp))
+                                                  (by simp))
                                           | .right obstructionHistory =>
-                                              exact .degreeFourOverlapObstruction
-                                                obstructionHistory
+                                              -- Node `[83]` → `[84]`.
+                                              exact .degreeFourOverlapObstructionMass
+                                                ((bridgeFanMass (data := data)).run
+                                                  obstructionHistory (by simp))
 
 /-! ## What the run leaves behind -/
 

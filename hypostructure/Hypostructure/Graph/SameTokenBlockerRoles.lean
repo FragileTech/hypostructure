@@ -100,6 +100,9 @@ structure Role where
   token : TokenSubtype
 deriving DecidableEq, Fintype, Repr
 
+/-- The alphabet is inhabited: every coordinate is a nonempty clause list. -/
+instance : Inhabited Role := ⟨⟨.sharedDeclaredSupport, .boundaryWindow⟩⟩
+
 /-- The role alphabet factors as blocker type times token subtype: the `6 · _`
 of `|𝔕_st| ≤ 6(2+1+3)`. -/
 theorem card_role :
@@ -137,14 +140,17 @@ def sameTokenRoleBound : Nat := Fintype.card Role
 def homogeneousCapCharge (patternBound : Nat) : Nat :=
   sameTokenRoleBound * ((patternBound - 1) * (2 * patternBound - 3))
 
-/-- The geometric pattern bound at a registered baseline degree. -/
-def geometricPatternBound (baselineDegree : Nat) : Nat := baselineDegree + 1
+/-- `L_geom := Q_geom + 1` of `thm:homogeneous-overload-geometric-closure`,
+where `Q_geom` is the cardinality of the routing-label alphabet of
+`def:same-token-routing-germs`.  The bound is the caller's own count of that
+alphabet; nothing here computes it. -/
+def geometricPatternBound (routingLabelBound : Nat) : Nat := routingLabelBound + 1
 
-/-- `M_0 = Cap_hom(L_geom)` in ordered-incidence units: the bounded census
-reads each blocked pair once from each of its two endpoints, so both sides of
-the comparison are doubled and the comparison is unchanged.  The factor `2` is
-the arity of an unordered pair, a unit conversion rather than a threshold. -/
-def homogeneousTokenCap (baselineDegree : Nat) : Nat :=
-  2 * homogeneousCapCharge (geometricPatternBound baselineDegree)
+/-- `M₀ = Cap_hom(L_geom)`: the uniform token load `cor:homogeneous-same-token-caps-close`
+forms from the three fixed class caps once
+`thm:homogeneous-overload-geometric-closure` has set
+`L_W = L_R = L_P = L_geom`. -/
+def homogeneousTokenCap (routingLabelBound : Nat) : Nat :=
+  homogeneousCapCharge (geometricPatternBound routingLabelBound)
 
 end Hypostructure.Graph.SameTokenBlockerRoles

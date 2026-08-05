@@ -64,9 +64,15 @@ theorem routedLoad_eq_card :
   ext source
   simp only [Finset.mem_filter]
 
+/-- **The unpeeled routed loads `ℒ(w) ∖ P₄(w)`**: the loads still charged to the
+receiver after peeling. -/
+noncomputable def unpeeledLoads (peeled : Finset object.Vertex) :
+    Finset object.Vertex :=
+  (routedLoads support threshold receiver) \ peeled
+
 /-- **`L₄(w) = L(w) − |P₄(w)|`**, the residual load after peeling. -/
 noncomputable def residualLoad (peeled : Finset object.Vertex) : Nat :=
-  ((routedLoads support threshold receiver) \ peeled).card
+  (unpeeledLoads support threshold receiver peeled).card
 
 /-- **The receiver is still saturated at the peeled residual**: its residual load
 has reached the registered multiple of its port count.  This is
@@ -92,9 +98,9 @@ theorem not_saturatedAfter_iff (peeled : Finset object.Vertex) :
   omega
 
 /-- An unpeeled load is a routed load that has not been peeled. -/
-theorem mem_sdiff_iff {peeled : Finset object.Vertex}
+theorem mem_unpeeledLoads {peeled : Finset object.Vertex}
     {load : object.Vertex} :
-    load ∈ (routedLoads support threshold receiver) \ peeled ↔
+    load ∈ unpeeledLoads support threshold receiver peeled ↔
       load ∈ routedLoads support threshold receiver ∧ load ∉ peeled :=
   Finset.mem_sdiff
 
@@ -111,7 +117,7 @@ exactly one, which by `lem:typeA-exit4-peeling-charge` is exactly one quarter of
 remaining deficit. -/
 theorem residualLoad_insert {peeled : Finset object.Vertex}
     {load : object.Vertex}
-    (unpeeled : load ∈ (routedLoads support threshold receiver) \ peeled) :
+    (unpeeled : load ∈ unpeeledLoads support threshold receiver peeled) :
     residualLoad support threshold receiver (insert load peeled) + 1 =
       residualLoad support threshold receiver peeled := by
   have erase :
@@ -121,11 +127,12 @@ theorem residualLoad_insert {peeled : Finset object.Vertex}
     simp only [Finset.mem_sdiff, Finset.mem_insert, Finset.mem_erase,
       not_or]
     tauto
-  rw [residualLoad, residualLoad, erase,
-    Finset.card_erase_of_mem unpeeled]
+  rw [residualLoad, residualLoad, unpeeledLoads, unpeeledLoads, erase,
+    Finset.card_erase_of_mem (by simpa [unpeeledLoads] using unpeeled)]
   have positive :
-      0 < ((routedLoads support threshold receiver) \ peeled).card :=
+      0 < (unpeeledLoads support threshold receiver peeled).card :=
     Finset.card_pos.mpr ⟨load, unpeeled⟩
+  rw [unpeeledLoads] at positive
   omega
 
 /-- A peeling set is a set of routed loads. -/
@@ -148,45 +155,53 @@ supplies a fresh unpeeled load.  Each enlargement drops `L₄(w)` by exactly one
 peeling set whose residual is unsaturated -- the receiver retested at node
 `[89]` with nonnegative charge.
 
-Nothing about the witness is used beyond its load: `def:typeA-exit4-peeling`
-says the witness "serves only as a routing record for its selected load". -/
+`Retained` is whatever the peeling set is required to carry along the descent;
+`def:typeA-exit4-peeling` equips each listed load with one exit-`(4)` witness,
+which is `ExitFour.Family.IsPeeling`, and the descent preserves it because each
+step supplies its own witness. -/
 theorem exists_unsaturated_peeling
-    (step : ∀ peeled ⊆ routedLoads support threshold receiver,
+    {Retained : Finset object.Vertex → Prop} (empty : Retained ∅)
+    (step : ∀ peeled ⊆ routedLoads support threshold receiver, Retained peeled →
       SaturatedAfter support threshold scale receiver peeled →
-      ∃ load ∈ routedLoads support threshold receiver, load ∉ peeled) :
+      ∃ load ∈ routedLoads support threshold receiver,
+        load ∉ peeled ∧ Retained (insert load peeled)) :
     ∃ peeled ⊆ routedLoads support threshold receiver,
-      ¬ SaturatedAfter support threshold scale receiver peeled := by
+      Retained peeled ∧
+        ¬ SaturatedAfter support threshold scale receiver peeled := by
   -- Descent on the residual load, which every peel step strictly decreases.
   suffices claim : ∀ bound : Nat,
-      ∀ peeled ⊆ routedLoads support threshold receiver,
+      ∀ peeled ⊆ routedLoads support threshold receiver, Retained peeled →
         residualLoad support threshold receiver peeled ≤ bound →
         ∃ larger ⊆ routedLoads support threshold receiver,
-          ¬ SaturatedAfter support threshold scale receiver larger by
+          Retained larger ∧
+            ¬ SaturatedAfter support threshold scale receiver larger by
     exact claim (residualLoad support threshold receiver ∅)
-      ∅ (Finset.empty_subset _) le_rfl
+      ∅ (Finset.empty_subset _) empty le_rfl
   intro bound
   induction bound with
   | zero =>
-      intro peeled inside _small
-      refine ⟨peeled, inside, ?_⟩
+      intro peeled inside retained _small
+      refine ⟨peeled, inside, retained, ?_⟩
       intro saturated
-      obtain ⟨load, routed, fresh⟩ := step peeled inside saturated
+      obtain ⟨load, routed, fresh, _⟩ := step peeled inside retained saturated
       have positive :
           0 < residualLoad support threshold receiver peeled :=
         Finset.card_pos.mpr ⟨load, Finset.mem_sdiff.mpr ⟨routed, fresh⟩⟩
       omega
   | succ bound inductionHypothesis =>
-      intro peeled inside small
+      intro peeled inside retained small
       by_cases saturated :
           SaturatedAfter support threshold scale receiver peeled
-      · obtain ⟨load, routed, fresh⟩ := step peeled inside saturated
-        have unpeeled : load ∈ (routedLoads support threshold receiver) \ peeled :=
+      · obtain ⟨load, routed, fresh, larger⟩ :=
+          step peeled inside retained saturated
+        have unpeeled : load ∈ unpeeledLoads support threshold receiver peeled :=
           Finset.mem_sdiff.mpr ⟨routed, fresh⟩
         refine inductionHypothesis (insert load peeled)
-          (insert_subset_routedLoads support threshold receiver inside routed) ?_
+          (insert_subset_routedLoads support threshold receiver inside routed)
+          larger ?_
         have drop :=
           residualLoad_insert support threshold receiver unpeeled
         omega
-      · exact ⟨peeled, inside, saturated⟩
+      · exact ⟨peeled, inside, retained, saturated⟩
 
 end Hypostructure.Graph.ExitFour

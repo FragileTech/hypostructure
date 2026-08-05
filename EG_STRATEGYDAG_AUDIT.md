@@ -360,8 +360,8 @@ bookkeeping; the first is not:
 | 13 | Exit 1: Mersenne return [95] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
 | 14 | Exit 2: power-of-two theta [97] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
 | 15 | Exit 3: P13 label collision [99] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 16 | Exit 4: target-defective quotient [101] | `Spine.typeAExitFourDichotomy` — the route-8 (R2) absence generator only; the `[101]`/`[102]` peel ledger is unbuilt | ❌ | ❌ | ❌ | ❌ |
-| 17 | Exit 5: target-complete compression [103] | `Spine.typeAExitFiveDichotomy` — the route-8 (R2) absence generator only; the `[103]`/`[104]` compression contradiction is unbuilt | ❌ | ❌ | ❌ | ❌ |
+| 16 | Exit 4: target-defective quotient [101] | `Spine.typeAExitFourPeelDichotomy`, `Spine.typeAPeeledCharge`, `Spine.typeAExitFourDichotomy` over `Graph/ExitFourPeeling.lean` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`) — the peel ledger is built; the alternative is the exit-(4) *conclusion*, not the quotient | ✅ | ✅ | ✅ | ❌ |
+| 17 | Exit 5: target-complete compression [103] | `Spine.typeAExitFiveDichotomy`, `Spine.typeAExitFiveRealizationDichotomy`, `Spine.typeAExitFiveCompressionClosed` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`, checked in `Fixtures/Route8ExitFive.lean`) | ✅ | ✅ | ✅ | ✅ |
 | 18 | Exit 6: response delocalization [105] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
 | 19 | Exit 7: decorated handoff fan [107] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
 
@@ -392,6 +392,20 @@ bookkeeping; the first is not:
 > `CompressibleSupport` and **closes** against node `[14]`'s `uncompressible`
 > through `closeIncompatible`; the response-level arm records alternative (b)
 > and, lacking `typeAExitFiveFree`, cannot enter the route-8 arm.
+> `Fixtures/Route8ExitFive.lean` checks both halves of that sentence on the
+> Type A residual of node `[63]` that `Spine.run` already reaches: the realized
+> arm's index carries the compression fact *and* Core's closure entry with every
+> incoming fact retained, `RoutedTask.dispatchFor` returns `closed` on it for
+> every task list, and its audit is complete, duplicate-free and has no empty
+> commit; the response-level arm carries neither the closure entry nor
+> `typeAExitFiveFree`.  Every theorem row 17 rests on has been checked with
+> `#print axioms` and depends on `propext`, `Classical.choice` and `Quot.sound`
+> alone.
+>
+> Row 17's four columns are about node `[103]` itself, which is entered from
+> node `[101]`'s no arm inside `Spine.runRouteEight`.  That block is not yet
+> attached to `Spine.run`, because the path `[93]`--`[99]` from node `[89]` is
+> rows 12--15, which are unbuilt; that is those rows' gap, recorded there.
 
 ## C. Type B fan
 
@@ -2037,13 +2051,38 @@ the manuscript's loop back to `[89]` is the descent inside
   reading level is the trace-basin response, which is where
   `def:typeA-trace-basin`'s alternative (b) lives; the receiver's general
   response data of node `[93]` is row 12's and is not needed by either case.
-- **Ledger and residual.** Two `Decision.run`s; the closure is Core's
-  `closeIncompatible` reading node `[14]` and node `[103]` by exact key.  The
-  block requires `uncompressible` on the incoming index, so a branch that has
-  not proved node `[14]` does not elaborate.
+  The realization test is taken on the object — *does any proper support carry
+  `lem:replacement`'s compression* — rather than on the particular quotient the
+  yes arm committed.  That is the manuscript's split with the weaker premise on
+  the closing side and the stronger conclusion on the other: the realized arm
+  closes on a compression that genuinely exists, and the response-level arm
+  carries `¬ ∃ support, CompressibleSupport …`, which entails that *this*
+  compression is not realized by a smaller proper atom.  The split is
+  exhaustive, so no branch of exit (5) is left unaccounted for.
+  Node `[103]` is entered from node `[101]`'s no arm inside
+  `Spine.runRouteEight`, which is not yet attached to `Spine.run`: the path
+  `[93]`--`[99]` from node `[89]` is rows 12--15 and is unbuilt.  That is those
+  rows' gap and is recorded there; row 17 elaborates against any incoming index
+  that carries node `[14]`'s `uncompressible`, and `Fixtures/Route8ExitFive.lean`
+  runs it on the Type A residual of node `[63]` that `Spine.run` does reach.
+- **Ledger and residual.** Two `Decision.run`s, so the residual is unchanged and
+  each arm commits its own fact against the one immutable prefix; the closure is
+  Core's `closeIncompatible` reading node `[14]` and node `[103]` by exact key.
+  The block requires `uncompressible` on the incoming index, so a branch that has
+  not proved node `[14]` does not elaborate.  Nothing upstream is dropped:
+  `Fixtures.Route8ExitFive.closed_arm_retains_every_incoming_fact` and
+  `…trace_level_arm_retains_every_incoming_fact` show every incoming key is still
+  in the arm's exact index.
 - **Transport and terminals.** `Route8Result.exitFiveClosed` carries the closure
-  key; `Route8Result.exitFiveTraceLevel` leaves the block open, as the
-  manuscript's alternative (b) does.
+  key, and `Fixtures.Route8ExitFive.closed_arm_dispatches_closed` shows
+  `RoutedTask.dispatchFor` returns `closed` on that index for every task list, so
+  the terminal is the framework router's and not the row's.
+  `Route8Result.exitFiveTraceLevel` leaves the block open, as the manuscript's
+  alternative (b) does: `…trace_level_arm_is_not_closed` and
+  `…trace_level_arm_has_no_exit_five_absence` show it carries neither the closure
+  entry nor `typeAExitFiveFree`, so it is neither a closed terminal nor an
+  admissible route-8 residual.  The closed arm's audit is complete,
+  duplicate-free and free of empty commits.
 
 **Paper objects at this row.**
 
@@ -2053,7 +2092,7 @@ the manuscript's loop back to `[89]` is the descent inside
 | `def:typeA-trace-basin` alternative (b) | def | `Graph.Route8.Data.SurvivingTrace`<br>`Graph.Route8.TraceSurviving` | standalone |
 | `lem:replacement` compression | lem | `Graph.Strategy.InterfaceReplacement.CompressibleSupport` | standalone |
 | `cor:uncompressible` | cor | node `[14]`'s `uncompressible` fact, read by `Spine.typeAExitFiveCompressionClosed` | standalone |
-| `lem:typeA-exits-discharged` exit-(5) case | lem | `Spine.typeAExitFiveRealizationDichotomy` with `closeIncompatible` | standalone |
+| `lem:typeA-exits-discharged` exit-(5) case | lem | `Spine.typeAExitFiveRealizationDichotomy` with `closeIncompatible`<br>`Spine.typeAExitFiveCompressionClosed`<br>checked in `Fixtures.Route8ExitFive` | standalone |
 
 **CT composition at this row.** None.  Two `Decision`s and Core's closure.
 
@@ -2065,34 +2104,41 @@ the manuscript's loop back to `[89]` is the descent inside
   adjoining a larger connected support `Z ⊋ B_u`, *either with `Z ⊊ G` or with
   `Z = G`*.  `lem:typeA-exits-discharged` excludes the first by
   `lem:proper-smearing` and the second by `lem:no-silent-global-smearing`.
-- **What the Lean does.**  `ResponseDelocalization presentation object` is
-  `∃ certificate, ∃ smaller : Finset object.Vertex,
-   smaller.Nonempty ∧ smaller ⊂ certificate.common.support ∧
-   Graph.TypeAB.Baseline presentation (object.induce smaller)`.
-  `exitSixSplit`'s `closeLeft` applies
-  `TypeAReceiverClosure.hasCycleWithLength_of_properBaselineSubsupport
-  certificate targetIsCycle nonempty proper baseline`, with
-  `targetIsCycle := fun _ => Iff.rfl` supplied at the registration site.
+- **What the Lean does.**  Nothing.  There is no live declaration for node
+  `[105]`: the spine vocabulary has no exit-`(6)` key — its `Key` enumeration
+  carries `typeAExitFour…` and `typeAExitFive…` but nothing for exit `(6)` — no
+  `Decision` names the node, and no fixture reaches it.  The only code that
+  mentions the alternative is `Strategy.TypeAReceiverExhaustion.exitSixSplit`
+  with `ResponseDelocalization`, which is **quarantined** (listed in
+  `hypostructure/quarantine.txt`, imported by no live module), and the
+  `typeAExitSix` slot of the commented-out legacy `Blueprint` topology in
+  `StrategyDag.lean`, which does not elaborate.  Neither is evidence about the
+  current proof.
 - **What it should do.**  The alternative has to name two response coordinates,
   their equality, and a support `Z` strictly containing the basin at which that
   equality first becomes target-complete, split into the two cases `Z ⊊ G` and
-  `Z = G`, with the two exclusions applied respectively.
-- **Gap.**  Neither the coordinates, the equality, the enlarging support `Z`,
-  nor the `Z ⊊ G` / `Z = G` split occurs in the type.  What is tested is
-  "the certificate's support has a nonempty proper sub-support satisfying the
-  minimum-degree baseline" — a *shrinking*, not a delocalization, and the
-  direction opposite to the paper's.  It is exit (5)'s predicate with the target
-  implication deleted, so exit 5 implies exit 6 and the two nodes are nested.
-  **Facts therefore fails.**
-- **Ledger and residual.**  `DichotomyData` on `ProblemInput`; the sub-support is
-  re-quantified from `input.object`.  Stable residual retained.
-- **Transport and terminals.**  No CT: Core `DichotomyData` with `closeLeft`.
-  `v31` is entered by `e37` from `v30`, leaving by `e31` `v31 → t10` (`left`,
-  closed, "Delocalization branch") and `e36` `v31 → v32` (`right`, conditional).
-  The silent copy `v36` is entered by `e51` from `v35`, leaving by `e45`
-  `v36 → t16` (`left`, closed) and `e50` `v36 → v37` (`right`, conditional).  The
-  audit table records the second vertex as `v35`; the second `dichotomy:11` is
-  `v36`.
+  `Z = G`, with the two exclusions applied respectively.  Both arms close, so
+  the node contributes two closure entries and no continuation — exit `(6)` is a
+  *closed* exit in `def:typeA-saturated-exits`.
+- **Gap.**  The whole row.  It is entered from node `[103]`'s no arm, which
+  exists (`typeAExitFiveFree`, row 17), so the predecessor is available; what is
+  missing is the node itself and everything under it.  A port has to supply, as
+  generic framework declarations: the enlarging support `Z ⊋ B_u` and the
+  coordinate equality that first becomes target-complete at it; the `Z ⊊ G` /
+  `Z = G` split; and the two exclusions, which are nodes `[40]`–`[43]` of
+  row 40 — so it may only *read* them by exact key, never restate them.  The
+  earlier revision of this entry described the quarantined
+  `ResponseDelocalization` predicate as though it were running, and reported a
+  nesting defect against exit (5) on that basis; both claims are withdrawn as
+  statements about code that is not in the build.
+- **Ledger and residual.**  None — no ledger step exists at this node.  When
+  ported it is fact-only: the alternative is a property of the object, so the
+  residual is unchanged and the node is a `Decision` against the immutable
+  prefix, with the two closures appended by Core rather than by a row.
+- **Transport and terminals.**  None.  The `v31`/`e37`/`t10` vertex and edge
+  identifiers recorded in the earlier revision belong to the retired legacy
+  `Blueprint` DAG, which is a comment in `StrategyDag.lean`; there is no live
+  topology in which they exist.
 
 **Paper objects at this row.**
 
@@ -2106,13 +2152,9 @@ exclusions it invokes, `lem:proper-smearing` and
 `lem:no-silent-global-smearing`, are nodes `[40]`–`[43]`, which belong to
 row 40.
 
-**CT composition at this row.**  No CT.  The Core recipe is
-`DichotomyData.ofAlternative`.  This row's stage decides the sub-support
-predicate and registers `closeLeft`, so its yes-arm closes through
-`hasCycleWithLength_of_properBaselineSubsupport` and its no-arm is a conditional
-edge into row 19.  Since the predicate is exit (5)'s minus one conjunct, the two
-consecutive stages classify nested propositions, and neither stage retains
-anything by which a later stage could tell them apart.
+**CT composition at this row.**  None, and none is expected: like rows 16 and
+17 this is a `Decision` on a property of the object followed by Core's closure,
+with the two exclusions read from row 40 by exact key.
 
 ### Row 19 — Exit 7: decorated handoff fan `[107]`
 
@@ -2130,50 +2172,44 @@ anything by which a later stage could tell them apart.
   handed over by `lem:typeA-high-degree-handoff`.
   `rem:typeA-typeB-stratification` records that this whole block uses no
   conclusion of `lem:typeB-exclusion` — only the handoff interface.
-- **What the Lean does.**  `DecoratedHandoffEnvelope presentation object` is
-  `∀ certificate : TypeACertificate presentation object,
-   ∃ centers : Finset object.Vertex, centers.Nonempty ∧
-     Nonempty (Graph.TypeAB.DecoratedHandoffData presentation object
-       certificate.common.support centers)`.
-  `DecoratedHandoffData` has fields `terminal : Vertex → Vertex`,
-  `arm` (a walk from each neighbour of each center to its terminal),
-  `terminal_mem`, `arm_path`, and
-  `centers_safe : ∀ center ∈ centers, FanSafeCenter presentation object center`,
-  where `FanSafeCenter` is
-  `presentation.baselineDegree < object.degree center ∧ ∀ left right ∈
-  orderedNeighbors center, left ≠ right → FanReturnSafe …`.
-  `exitSevenSplit` registers `ofAlternative` with neither `closeLeft` nor
-  `closeRight`; both arms are open continuations.
+- **What the Lean does.**  Nothing.  There is no live declaration for node
+  `[107]`: the spine vocabulary has no exit-`(7)` key, no `Decision` names the
+  node, and no fixture reaches it.  The declarations the earlier revision
+  described — `Strategy.TypeAReceiverExhaustion.exitSevenSplit` and
+  `Graph.TypeABCertificate`'s `DecoratedHandoffEnvelope` /
+  `TypeAB.DecoratedHandoffData` — are **quarantined**; the only live module that
+  imported `TypeABCertificate`, `Graph.TypeAReceiverClosure`, is quarantined
+  too, so nothing in the build reaches any of it.  The `typeAExitSeven` slot in
+  `StrategyDag.lean` is inside the commented-out legacy topology.
 - **What it should do.**  The alternative has to be existential in the
   certificate, produce the envelope out of the two connector germs and their
   surviving first separator at the `[89]` receiver, and carry the envelope's
   admissibility and no-double-count accounting so the Type B branch can consume
   it.
-- **Gap.**  The predicate is `∀ certificate`, so on an input with no Type A
-  certificate it is vacuously true and the left "Type B handoff" arm fires with
-  no envelope at all.  The centers are unrelated to the receiver, the port, the
-  connector germs or the first separator; no envelope support, no double-count
-  bound and no center accounting appear in the type.  Nothing links this data to
-  the Type B branch: the arm ends at an open terminal rather than at a Type B
-  node.  **Facts therefore fails.**
-- **Ledger and residual.**  `DichotomyData` on `ProblemInput`; the centers and
-  the handoff data are re-quantified from `input.object`.  Stable residual
-  retained.
-- **Transport and terminals.**  No CT: Core `DichotomyData` with no registered
-  closure.  `v32` is entered by `e36` from `v31`, leaving by `e32`
-  `v32 → t11` (`left`, **open**, "Type B handoff"; `t11` is a `branch_endpoint`
-  with `reason = "empty continuation"` and
-  `residual.kind = accumulated_strategy_residual`) and by `e35` `v32 → v33`
-  (`right`, conditional, "Route-8 residual").  The silent copy `v37` is entered
-  by `e50` from `v36`, leaving by `e46` `v37 → t17` (`left`, open, same shape as
-  `t11`) and `e49` `v37 → v38` (`right`, conditional).  The audit table records
-  the second vertex as `v36`; the second `dichotomy:12` is `v37`.
+- **Gap.**  The whole row, and it is the only exit in the range whose arm is not
+  a terminal: exit `(7)` *hands the branch to Type B*, so a port must land on the
+  Type B entry as a fact the Type B rows read by exact key, not on an open leaf.
+  `rem:typeA-typeB-stratification` constrains how: the handoff may use only the
+  interface objects, never a conclusion of `lem:typeB-exclusion`, so the envelope
+  and its admissibility have to be available to Type A without importing the Type
+  B exclusion argument.  The earlier revision's defect analysis — that the
+  predicate is vacuous on an object with no Type A certificate, and that its
+  centers are unrelated to the receiver — was a correct reading of the
+  quarantined predicate, but it is not a statement about the current proof and is
+  withdrawn as such.
+- **Ledger and residual.**  None — no ledger step exists at this node.  When
+  ported, the envelope is data about the object, so the residual is unchanged and
+  the handoff is a fact on the shared prefix.
+- **Transport and terminals.**  None.  The `v32`/`e36`/`t11` identifiers and the
+  `branch_endpoint` / `accumulated_strategy_residual` shapes recorded in the
+  earlier revision are from the retired legacy `Blueprint` DAG and its sealed
+  report; neither exists in the live spine.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:decorated-fan-envelope` | def | `Graph.TypeAB.DecoratedHandoffData` | no CT |
+| `def:decorated-fan-envelope` | def |  | *(only the quarantined `Graph.TypeAB.DecoratedHandoffData`; nothing live)* |
 | `lem:decorated-envelope-no-double-count` | lem | | |
 | `lem:window-handoff-center-accounting` | lem | | |
 | `lem:typeA-continuation-routing` | lem | | |
@@ -2182,15 +2218,12 @@ anything by which a later stage could tell them apart.
 | `lem:decorated-fan-admissibility` | lem | | |
 | `rem:typeA-typeB-stratification` | rem | | placed here as the closest row: it is a remark about the whole `[89]`–`[109]` block and about this row's handoff in particular |
 
-**CT composition at this row.**  No CT.  The Core recipe is
-`DichotomyData.ofAlternative`, and this is the one row in the range that
-registers *neither* closure, so both of its arms leave the recipe open: the left
-arm reaches the open terminals `t11`/`t17` and the right arm is the conditional
-edge into the route-8 carrier closure (`v33`/`v38`), which is the only vertex in
-this neighbourhood that composes CTs (`CT5 → CT14 → CT12`, audited at rows
-62–67).  Everything this row would need to hand Type B a usable envelope — an
-executed enumeration of centers, a retained accounting ledger — is exactly what
-`ofAlternative` cannot provide.
+**CT composition at this row.**  None yet.  This is the one exit in the range
+whose yes arm neither closes nor stays in Type A, so a port has to decide
+whether the envelope's admissibility and no-double-count accounting are proved
+by a CT or by generic `Graph` lemmas read as facts; the no arm is the edge into
+node `[109]`, which row 17's no arm already reaches through
+`Spine.runRouteEight`.
 
 ### Row 20 — Heavy-centre split `[68]` (ported: `Spine.highCentreNormalForm`, `Spine.heavyCentreDichotomy`)
 

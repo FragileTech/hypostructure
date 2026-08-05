@@ -37,20 +37,26 @@ abbrev Route8Data (data : Data.{u}) (object : Graph.FiniteObject.{u}) :=
 
 /-! ## Node `[101]`: exit `(4)`, the ladder's peel
 
-`def:typeA-saturated-exits` exit `(4)` is the *target-defect peeling* exit: "it
-removes exactly the routed load whose declared coordinate is used by the
-canonical target-defective quotient".  `def:typeA-exit4-peeling` gives the
-receiver its routed loads `ℒ(w)`, a peeling set `P₄(w) ⊆ ℒ(w)` and the residual
-load `L₄(w) = L(w) − |P₄(w)|`; `lem:typeA-exit4-residual-routing` says that while
-`L₄(w) ≥ 4q(w)` the unpeeled loads realize an exit, and in the exit-`(4)` case
-the peeling set can be enlarged by one; `lem:typeA-exit4-discharge` says that
-enlargement is valid and drops the deficit by exactly `¼`; and
-`lem:typeA-exit4-peeling-charge` says the remaining charge `q(w) − ¼ − ¼·L₄(w)`
-is nonnegative once `L₄(w) ≤ 4q(w) − 1`.
+`def:typeA-saturated-exits` exit `(4)` is *"a quotient in the canonical exit-(4)
+family `𝒬₄(w)` of `def:typeA-exit4-family` is target-defective"*, and it is the
+*target-defect peeling* exit: "it removes exactly the routed load whose declared
+coordinate is used by the canonical target-defective quotient".
+`def:typeA-exit4-peeling` gives the receiver its routed loads `ℒ(w)`, a peeling
+set `P₄(w) ⊆ ℒ(w)` each of whose loads carries one exit-`(4)` witness, and the
+residual load `L₄(w) = L(w) − |P₄(w)|`; `lem:typeA-exit4-residual-routing` says
+that while `L₄(w) ≥ 4q(w)` the unpeeled loads realize an exit, and in the
+exit-`(4)` case the peeling set can be enlarged by one;
+`lem:typeA-exit4-discharge` says that enlargement is valid and drops the deficit
+by exactly `¼`; and `lem:typeA-exit4-peeling-charge` says the remaining charge
+`q(w) − ¼ − ¼·L₄(w)` is nonnegative once `L₄(w) ≤ 4q(w) − 1`.
 
-The yes arm is therefore not a terminal: it peels and returns to node `[89]`
-with the receiver retested.  This row decides whether the peel step is
-available. -/
+The decision is therefore taken on the exit itself: is there, at every stage at
+which the peeled residual is still saturated, an unpeeled routed load carrying a
+target-defective quotient of `𝒬₄(w)` whose declared support contains its
+canonical coordinate?  The yes arm is not a terminal: it peels and returns to
+node `[89]` with the receiver retested.  The family is data -- it is the
+receiver's own declared reading -- so, like the support and the receiver, it is
+quantified over rather than carried. -/
 noncomputable def typeAExitFourPeelDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -62,21 +68,31 @@ noncomputable def typeAExitFourPeelDichotomy
     (encodePeel :
       (∀ piece : Finset current.object.Vertex,
         ∀ receiver : current.object.Vertex,
-          ∀ peeled : Finset current.object.Vertex,
-            peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver →
-            Graph.ExitFour.SaturatedAfter piece data.threshold
-                data.dischargeScale receiver peeled →
-              ∃ load ∈ Graph.ExitFour.routedLoads piece data.threshold receiver,
-                load ∉ peeled) → typeAExitFourPeel.At current)
+          ∀ family : Graph.ExitFour.Family
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              receiver (Sym2 current.object.Vertex),
+            ∀ peeled : Finset current.object.Vertex,
+              family.IsPeeling peeled →
+              Graph.ExitFour.SaturatedAfter piece data.threshold
+                  data.dischargeScale receiver peeled →
+                ∃ load ∈
+                    Graph.ExitFour.unpeeledLoads piece data.threshold receiver
+                      peeled,
+                  family.Witness load) → typeAExitFourPeel.At current)
     (encodeNoPeel :
       (¬ ∀ piece : Finset current.object.Vertex,
         ∀ receiver : current.object.Vertex,
-          ∀ peeled : Finset current.object.Vertex,
-            peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver →
-            Graph.ExitFour.SaturatedAfter piece data.threshold
-                data.dischargeScale receiver peeled →
-              ∃ load ∈ Graph.ExitFour.routedLoads piece data.threshold receiver,
-                load ∉ peeled) → typeAExitFourNoPeel.At current)
+          ∀ family : Graph.ExitFour.Family
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              receiver (Sym2 current.object.Vertex),
+            ∀ peeled : Finset current.object.Vertex,
+              family.IsPeeling peeled →
+              Graph.ExitFour.SaturatedAfter piece data.threshold
+                  data.dischargeScale receiver peeled →
+                ∃ load ∈
+                    Graph.ExitFour.unpeeledLoads piece data.threshold receiver
+                      peeled,
+                  family.Witness load) → typeAExitFourNoPeel.At current)
     (peelFresh : typeAExitFourPeel ∉ known)
     (noPeelFresh : typeAExitFourNoPeel ∉ known) :
     Decision typeAExitFourPeel typeAExitFourNoPeel previous :=
@@ -87,14 +103,17 @@ noncomputable def typeAExitFourPeelDichotomy
       by_cases available :
           ∀ piece : Finset current.object.Vertex,
             ∀ receiver : current.object.Vertex,
-              ∀ peeled : Finset current.object.Vertex,
-                peeled ⊆
-                    Graph.ExitFour.routedLoads piece data.threshold receiver →
-                Graph.ExitFour.SaturatedAfter piece data.threshold
-                    data.dischargeScale receiver peeled →
-                  ∃ load ∈
-                      Graph.ExitFour.routedLoads piece data.threshold receiver,
-                    load ∉ peeled
+              ∀ family : Graph.ExitFour.Family
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  receiver (Sym2 current.object.Vertex),
+                ∀ peeled : Finset current.object.Vertex,
+                  family.IsPeeling peeled →
+                  Graph.ExitFour.SaturatedAfter piece data.threshold
+                      data.dischargeScale receiver peeled →
+                    ∃ load ∈
+                        Graph.ExitFour.unpeeledLoads piece data.threshold
+                          receiver peeled,
+                      family.Witness load
       · exact .inl (encodePeel available)
       · exact .inr (encodeNoPeel available))
     peelFresh noPeelFresh
@@ -102,13 +121,15 @@ noncomputable def typeAExitFourPeelDichotomy
 /-! ## Node `[102]`: the peeled receiver, returned to node `[89]`
 
 `lem:typeA-exit4-peeling-charge` and `lem:typeA-exit4-discharge`, run as the
-finite descent `lem:typeA-exit4-residual-routing` opens: each peel drops `L₄(w)`
-by exactly one, so peeling terminates, and it terminates at a peeling set whose
-residual is unsaturated -- the receiver's remaining charge `q(w) − ¼ − ¼·L₄(w)`
-is nonnegative and the receiver is retested at node `[89]`.
+finite descent `lem:typeA-exit4-residual-routing` opens: each peel adjoins one
+witnessed unpeeled load and drops `L₄(w)` by exactly one, so peeling terminates,
+and it terminates at a peeling set -- every load of it carrying its own
+exit-`(4)` witness -- whose residual is unsaturated: the receiver's remaining
+charge `q(w) − ¼ − ¼·L₄(w)` is nonnegative and the receiver is retested at node
+`[89]`.
 
-The row reads node `[101]`'s peel step by exact key; the descent is
-`Graph.ExitFour.exists_unsaturated_peeling`. -/
+The row reads node `[101]`'s exit by exact key; the descent is
+`Graph.ExitFour.Family.exists_unsaturated_isPeeling`. -/
 @[reducible] noncomputable def typeAPeeledChargeRow
     (typeAExitFourPeel typeAPeeledCharge :
       FactKey (Input BranchState Presentation presentation data))
@@ -116,18 +137,26 @@ The row reads node `[101]`'s peel step by exact key; the descent is
     (peelOf : (input : Input BranchState Presentation presentation data) →
       typeAExitFourPeel.At input →
       ∀ piece : Finset input.object.Vertex, ∀ receiver : input.object.Vertex,
-        ∀ peeled : Finset input.object.Vertex,
-          peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver →
-          Graph.ExitFour.SaturatedAfter piece data.threshold
-              data.dischargeScale receiver peeled →
-            ∃ load ∈ Graph.ExitFour.routedLoads piece data.threshold receiver,
-              load ∉ peeled)
+        ∀ family : Graph.ExitFour.Family
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+            receiver (Sym2 input.object.Vertex),
+          ∀ peeled : Finset input.object.Vertex,
+            family.IsPeeling peeled →
+            Graph.ExitFour.SaturatedAfter piece data.threshold
+                data.dischargeScale receiver peeled →
+              ∃ load ∈
+                  Graph.ExitFour.unpeeledLoads piece data.threshold receiver
+                    peeled,
+                family.Witness load)
     (encode : (input : Input BranchState Presentation presentation data) →
       (∀ piece : Finset input.object.Vertex, ∀ receiver : input.object.Vertex,
-        ∃ peeled : Finset input.object.Vertex,
-          peeled ⊆ Graph.ExitFour.routedLoads piece data.threshold receiver ∧
-            ¬ Graph.ExitFour.SaturatedAfter piece data.threshold
-              data.dischargeScale receiver peeled) →
+        ∀ family : Graph.ExitFour.Family
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+            receiver (Sym2 input.object.Vertex),
+          ∃ peeled : Finset input.object.Vertex,
+            family.IsPeeling peeled ∧
+              ¬ Graph.ExitFour.SaturatedAfter piece data.threshold
+                data.dischargeScale receiver peeled) →
       typeAPeeledCharge.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeAPeeledCharge
@@ -136,11 +165,9 @@ The row reads node `[101]`'s peel step by exact key; the descent is
       let step := peelOf inputs.current (inputs.get typeAExitFourPeel)
       .cons (key := typeAPeeledCharge)
         (encode inputs.current
-          (fun piece receiver => by
-            obtain ⟨peeled, inside, unsaturated⟩ :=
-              Graph.ExitFour.exists_unsaturated_peeling piece data.threshold
-                data.dischargeScale receiver (step piece receiver)
-            exact ⟨peeled, inside, unsaturated⟩))
+          (fun piece receiver family =>
+            family.exists_unsaturated_isPeeling (scale := data.dischargeScale)
+              (step piece receiver family)))
         .nil)
 
 /-! ## Node `[101]`: exit `(4)`, the route-8 (Q5) reading
