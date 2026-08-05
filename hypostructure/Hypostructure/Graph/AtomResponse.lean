@@ -227,31 +227,31 @@ noncomputable def pairOfIdentified
     (left : Query Previous (fun _ => system.Coordinate))
     (right : Query Previous (fun _ => system.Coordinate))
     (identified : Query Previous (fun previous =>
-      (quotient.read previous).Identified
-        (left.read previous) (right.read previous))) :
+      (quotient previous).Identified
+        (left previous) (right previous))) :
   Query Previous (fun previous => SameFibrePair system) :=
-  Query.ofFunction fun previous =>
-    (quotient.read previous).pairOfIdentified (identified.read previous)
+   fun previous =>
+    (quotient previous).pairOfIdentified (identified previous)
 
 def profileEquality
     (pairs : Query Previous (fun _ => SameFibrePair system)) :
     Query Previous (fun previous =>
-      system.boundaryDegreeProfile (pairs.read previous).left =
-        system.boundaryDegreeProfile (pairs.read previous).right) :=
-  Query.ofFunction fun previous => (pairs.read previous).profile_eq
+      system.boundaryDegreeProfile (pairs previous).left =
+        system.boundaryDegreeProfile (pairs previous).right) :=
+   fun previous => (pairs previous).profile_eq
 
 def contextUniversality
     (quotient : Query Previous (fun _ => TargetCompleteQuotient system))
     (left : Query Previous (fun _ => system.Coordinate))
     (right : Query Previous (fun _ => system.Coordinate))
     (identified : Query Previous (fun previous =>
-      (quotient.read previous).Identified
-        (left.read previous) (right.read previous))) :
+      (quotient previous).Identified
+        (left previous) (right previous))) :
     Query Previous (fun previous =>
-      system.ContextEquivalent (left.read previous) (right.read previous)) :=
-  Query.ofFunction fun previous =>
-    (quotient.read previous).contextUniversal_of_identified
-      (identified.read previous)
+      system.ContextEquivalent (left previous) (right previous)) :=
+   fun previous =>
+    (quotient previous).contextUniversal_of_identified
+      (identified previous)
 
 end QuerySurface
 
@@ -423,9 +423,9 @@ noncomputable def contextClassification
     (left : Query Previous (fun _ => system.Coordinate))
     (right : Query Previous (fun _ => system.Coordinate)) :
     Query Previous (fun previous =>
-      ContextClassification system (left.read previous) (right.read previous)) :=
-  Query.ofFunction fun previous =>
-    system.classifyContext (left.read previous) (right.read previous)
+      ContextClassification system (left previous) (right previous)) :=
+   fun previous =>
+    system.classifyContext (left previous) (right previous)
 
 end QuerySurface
 

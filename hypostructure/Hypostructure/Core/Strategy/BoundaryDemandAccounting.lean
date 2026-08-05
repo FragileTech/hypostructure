@@ -1,5 +1,6 @@
 import Hypostructure.CTAdapters
 import Hypostructure.Core.Strategy.BoundaryDemandAccountingSemantics
+import Hypostructure.Core.Strategy.SupportComplementNormalization
 
 /-!
 # Boundary-demand accounting
@@ -72,7 +73,7 @@ def demandQuery :
     Query Previous fun previous =>
       Core.Finite.Enumeration
         (profile.Demand previous
-          (profile.normalizedSupport.read previous)) :=
+          (profile.normalizedSupport previous)) :=
   profile.normalizedSupport.dependentMap fun previous support =>
     profile.demands previous support
 
@@ -81,7 +82,7 @@ def payerQuery :
     Query Previous fun previous =>
       Core.Finite.Enumeration
         (profile.Payer previous
-          (profile.normalizedSupport.read previous)) :=
+          (profile.normalizedSupport previous)) :=
   profile.normalizedSupport.dependentMap fun previous support =>
     profile.payers previous support
 
@@ -94,7 +95,7 @@ def assignmentDemands :
     Query Previous fun previous =>
       Core.Finite.Enumeration
         (profile.Demand previous
-          (profile.normalizedSupport.read previous)) :=
+          (profile.normalizedSupport previous)) :=
   profile.assignmentInputs.map fun _ inputs => inputs.fst
 
 /-- CT4's payer schedule, projected dependently from the exact combined
@@ -103,7 +104,7 @@ def assignmentPayers :
     Query Previous fun previous =>
       Core.Finite.Enumeration
         (profile.Payer previous
-          (profile.normalizedSupport.read previous)) :=
+          (profile.normalizedSupport previous)) :=
   profile.assignmentInputs.dependentMap fun _ inputs => inputs.snd
 
 /-- CT4 semantics on the literal predecessor.
@@ -113,23 +114,23 @@ is not accepted as registration data. -/
 def assignmentSpec : CT4.Spec Previous where
   Demand := fun previous =>
     profile.Demand previous
-      (profile.normalizedSupport.read previous)
+      (profile.normalizedSupport previous)
   Payer := fun previous =>
     profile.Payer previous
-      (profile.normalizedSupport.read previous)
+      (profile.normalizedSupport previous)
   Eligible := fun previous =>
     profile.Eligible previous
-      (profile.normalizedSupport.read previous)
+      (profile.normalizedSupport previous)
   demandWeight := fun previous =>
     profile.demandWeight previous
-      (profile.normalizedSupport.read previous)
+      (profile.normalizedSupport previous)
   capacity := fun previous =>
     profile.payerCapacity previous
-      (profile.normalizedSupport.read previous)
+      (profile.normalizedSupport previous)
   required := fun previous =>
-    ((profile.assignmentDemands.read previous).values.map
+    ((profile.assignmentDemands previous).values.map
       (profile.demandWeight previous
-        (profile.normalizedSupport.read previous))).sum
+        (profile.normalizedSupport previous))).sum
 
 /-- CT4 capability derived from the two exact queried schedules. -/
 def assignmentCapability : CT4.Capability profile.assignmentSpec where
@@ -137,11 +138,11 @@ def assignmentCapability : CT4.Capability profile.assignmentSpec where
   payers := profile.assignmentPayers
   eligibleDecidable := fun previous =>
     profile.eligibleDecidable previous
-      (profile.normalizedSupport.read previous)
+      (profile.normalizedSupport previous)
   inputSize := fun previous =>
     CT4.localCheckBound
-      (profile.assignmentDemands.read previous)
-      (profile.assignmentPayers.read previous)
+      (profile.assignmentDemands previous)
+      (profile.assignmentPayers previous)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -205,13 +206,13 @@ def summaryOfResult
       CT4.totalCapacity profile.assignmentCapability result.stage.previous
     ambientCount :=
       (profile.normalizationSummary result.stage.previous
-        (profile.normalizedSupport.read result.stage.previous)).ambientCount
+        (profile.normalizedSupport result.stage.previous)).ambientCount
     selectedCount :=
       (profile.normalizationSummary result.stage.previous
-        (profile.normalizedSupport.read result.stage.previous)).selectedCount
+        (profile.normalizedSupport result.stage.previous)).selectedCount
     complementCount :=
       (profile.normalizationSummary result.stage.previous
-        (profile.normalizedSupport.read result.stage.previous)).complementCount }
+        (profile.normalizedSupport result.stage.previous)).complementCount }
 
 /-- **CT9's partition, transported across the accounting boundary.**
 
@@ -226,13 +227,13 @@ theorem summaryOfResult_selectedCount_add_complementCount_eq_ambientCount
       profile.assignmentCapability)
     (partition :
       (profile.normalizationSummary result.stage.previous
-          (profile.normalizedSupport.read
+          (profile.normalizedSupport
             result.stage.previous)).selectedCount +
         (profile.normalizationSummary result.stage.previous
-          (profile.normalizedSupport.read
+          (profile.normalizedSupport
             result.stage.previous)).complementCount =
       (profile.normalizationSummary result.stage.previous
-        (profile.normalizedSupport.read result.stage.previous)).ambientCount) :
+        (profile.normalizedSupport result.stage.previous)).ambientCount) :
     (profile.summaryOfResult result).selectedCount +
         (profile.summaryOfResult result).complementCount =
       (profile.summaryOfResult result).ambientCount := partition
@@ -303,7 +304,7 @@ abbrev AfterAssignment := profile.assignment.AfterAssignment
 the preserved normalized-support query. -/
 def aggregateMembers :
     Query profile.AfterAssignment fun stage =>
-      let inputs := profile.assignment.assignmentAndSupport.read stage
+      let inputs := profile.assignment.assignmentAndSupport stage
       Core.Finite.Enumeration
         (profile.aggregate.Member stage.previous inputs.fst inputs.snd) :=
   profile.assignment.assignmentAndSupport.dependentMap
@@ -313,21 +314,21 @@ def aggregateMembers :
 /-- CT14 semantics over the exact paired predecessor views. -/
 def aggregateSpec : CT14.Spec profile.AfterAssignment where
   Member := fun stage =>
-    let inputs := profile.assignment.assignmentAndSupport.read stage
+    let inputs := profile.assignment.assignmentAndSupport stage
     profile.aggregate.Member stage.previous inputs.fst inputs.snd
   Label := fun stage =>
-    let inputs := profile.assignment.assignmentAndSupport.read stage
+    let inputs := profile.assignment.assignmentAndSupport stage
     profile.aggregate.Label stage.previous inputs.fst inputs.snd
   memberLowerMass := fun stage member =>
-    let inputs := profile.assignment.assignmentAndSupport.read stage
+    let inputs := profile.assignment.assignmentAndSupport stage
     profile.aggregate.memberLowerMass
       stage.previous inputs.fst inputs.snd member
   memberCapacity := fun stage member =>
-    let inputs := profile.assignment.assignmentAndSupport.read stage
+    let inputs := profile.assignment.assignmentAndSupport stage
     some (profile.aggregate.memberCapacity
       stage.previous inputs.fst inputs.snd member)
   memberLabel := fun stage member =>
-    let inputs := profile.assignment.assignmentAndSupport.read stage
+    let inputs := profile.assignment.assignmentAndSupport stage
     some (profile.aggregate.memberLabel
       stage.previous inputs.fst inputs.snd member)
 
@@ -335,11 +336,11 @@ def aggregateSpec : CT14.Spec profile.AfterAssignment where
 def aggregateCapability : CT14.Capability profile.aggregateSpec where
   members := profile.aggregateMembers
   labelDecidableEq := fun stage =>
-    let inputs := profile.assignment.assignmentAndSupport.read stage
+    let inputs := profile.assignment.assignmentAndSupport stage
     profile.aggregate.labelDecidableEq
       stage.previous inputs.fst inputs.snd
   inputSize := fun stage =>
-    CT14.localCheckBound (profile.aggregateMembers.read stage)
+    CT14.localCheckBound (profile.aggregateMembers stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -403,153 +404,18 @@ private theorem noMissingLabel
       have impossible := residual.holds
       simp [aggregateSpec] at impossible
 
-/-- Literal CT4 → CT14 output with the predecessor identities supplied by
-the two canonical adapters and dependent composition. -/
-structure ExactOutput (previous : Previous) where
-  output : profile.execution.Output previous
-  assignmentPrevious : output.fst.stage.previous = previous
-  aggregatePrevious :
-    output.snd.stage.previous.previous = previous
-  aggregateAdded :
-    output.snd.stage.previous.added = output.fst
+/-- The sealed strategy exposes the canonical composed execution directly.
+There is no strategy-local router, replacement residual, or callback surface:
+Core's `toContract` appends the literal CT4–CT14 output to the one dependent
+ledger chain. -/
+noncomputable def contract : Core.Strategy.Contract Previous :=
+  profile.execution.toContract
 
-/-- The literal CT4 assignment table transported back to the accounting
-predecessor.  This projects the table retained by CT4; it does not repeat the
-first-eligible search. -/
-def ExactOutput.assignmentState
-    {previous : Previous} (exact : profile.ExactOutput previous) :
-    CT4.AssignmentState profile.assignment.assignmentCapability previous :=
-  exact.assignmentPrevious ▸
-    profile.assignment.assignmentStateOf exact.output.fst
-
-/-- Exhaustive terminal-indexed successor of the exact CT4 → CT14
-composition.  The complete literal output is retained in every constructor;
-no exceptional terminal is erased or treated as a target in generic Core. -/
-inductive RoutedResidual (previous : Previous) where
-  | missingPayer
-      (exact : profile.ExactOutput previous)
-      (selected : exact.output.fst.terminal = .missingPayer)
-  | overloadedFibre
-      (exact : profile.ExactOutput previous)
-      (selected : exact.output.fst.terminal = .overloadedFibre)
-  | assignmentCertificate
-      (exact : profile.ExactOutput previous)
-      (selected : exact.output.fst.terminal = .c4)
-  | aggregateCertificate
-      (exact : profile.ExactOutput previous)
-      (assignmentSelected : exact.output.fst.terminal = .capacity)
-      (selected : exact.output.snd.terminal = .aggregate)
-  | capacityResidual
-      (exact : profile.ExactOutput previous)
-      (assignmentSelected : exact.output.fst.terminal = .capacity)
-      (selected : exact.output.snd.terminal = .capacity)
-
-/-- Every exhaustive accounting route retains the identical composed CT
-output.  This projection lets later Strategies read that output without
-matching separately on the five terminals. -/
-def RoutedResidual.exactOutput {previous : Previous} :
-    profile.RoutedResidual previous → profile.ExactOutput previous
-  | .missingPayer exact _ => exact
-  | .overloadedFibre exact _ => exact
-  | .assignmentCertificate exact _ => exact
-  | .aggregateCertificate exact _ _ => exact
-  | .capacityResidual exact _ _ => exact
-
-/-- Exact CT4 assignment state preserved by every accounting route. -/
-def RoutedResidual.assignmentState {previous : Previous}
-    (routed : profile.RoutedResidual previous) :
-    CT4.AssignmentState profile.assignment.assignmentCapability previous :=
-  routed.exactOutput.assignmentState
-
-/-- Interpret the complete composed output once.  CT14 is semantically
-consumed only on CT4's capacity terminal; all other CT4 terminals remain
-explicit typed successors. -/
-noncomputable def route (previous : Previous) :
-    profile.RoutedResidual previous :=
-  let output := profile.execution.run previous
-  let exact : profile.ExactOutput previous :=
-    ⟨output, rfl, rfl, rfl⟩
-  match assignmentTerminal : output.fst.terminal with
-  | .missingPayer =>
-      .missingPayer exact assignmentTerminal
-  | .overloadedFibre =>
-      .overloadedFibre exact assignmentTerminal
-  | .c4 =>
-      .assignmentCertificate exact assignmentTerminal
-  | .capacity =>
-      match aggregateTerminal : output.snd.terminal with
-      | .unboundedMember =>
-          (profile.noUnbounded output.snd aggregateTerminal).elim
-      | .missingLabel =>
-          (profile.noMissingLabel output.snd aggregateTerminal).elim
-      | .aggregate =>
-          .aggregateCertificate exact assignmentTerminal aggregateTerminal
-      | .capacity =>
-          .capacityResidual exact assignmentTerminal aggregateTerminal
-
-/-- Standard completed Strategy boundary over the exhaustive typed result.
-Core appends this one payload; applications cannot supply an interpreter for
-either CT terminal. -/
-noncomputable def contract : Core.Strategy.Contract Previous where
-  Terminal := Core.Strategy.CompletedTerminal
-  Payload := fun previous _ => profile.RoutedResidual previous
-  produce := fun previous => ⟨.completed, profile.route previous⟩
-  exhaustive := fun previous => ⟨⟨.completed, profile.route previous⟩⟩
-
-/-- Exact numeric ledger of whichever exhaustive successor Core routed to.
-Every constructor retains the same literal CT4 output. -/
-def summaryOfRouted {previous : Previous} :
-    profile.RoutedResidual previous → Summary
-  | .missingPayer exact _ =>
-      profile.assignment.summaryOfResult exact.output.fst
-  | .overloadedFibre exact _ =>
-      profile.assignment.summaryOfResult exact.output.fst
-  | .assignmentCertificate exact _ =>
-      profile.assignment.summaryOfResult exact.output.fst
-  | .aggregateCertificate exact _ _ =>
-      profile.assignment.summaryOfResult exact.output.fst
-  | .capacityResidual exact _ _ =>
-      profile.assignment.summaryOfResult exact.output.fst
-
-/-- The inherited CT9 partition equation for the summary on every route. -/
-theorem summaryOfRouted_partition {previous : Previous}
-    (routed : profile.RoutedResidual previous)
-    (partition :
-      let summary := profile.assignment.normalizationSummary previous
-        (profile.assignment.normalizedSupport.read previous)
-      summary.selectedCount + summary.complementCount = summary.ambientCount) :
-    (profile.summaryOfRouted routed).selectedCount +
-        (profile.summaryOfRouted routed).complementCount =
-      (profile.summaryOfRouted routed).ambientCount := by
-  cases routed with
-  | missingPayer exact selected
-  | overloadedFibre exact selected
-  | assignmentCertificate exact selected
-  | aggregateCertificate exact assignmentSelected selected
-  | capacityResidual exact assignmentSelected selected =>
-      exact profile.assignment.summaryOfResult_selectedCount_add_complementCount_eq_ambientCount
-        exact.output.fst (exact.assignmentPrevious.symm ▸ partition)
-
-/-- CT4's capacity terminal publishes its exact aggregate inequality on every
-outer route; no schedule is rerun to obtain it. -/
-theorem summaryOfRouted_required_le_capacity {previous : Previous}
-    (routed : profile.RoutedResidual previous)
-    (selected : routed.exactOutput.output.fst.terminal = .capacity) :
-    (profile.summaryOfRouted routed).requiredTotal ≤
-      (profile.summaryOfRouted routed).capacityTotal := by
-  cases routed with
-  | missingPayer exact routeSelected
-  | overloadedFibre exact routeSelected
-  | assignmentCertificate exact routeSelected
-  | aggregateCertificate exact routeSelected aggregateSelected
-  | capacityResidual exact routeSelected aggregateSelected =>
-      have outcome : CT4.Outcome profile.assignment.assignmentCapability
-          exact.output.fst.stage.previous .capacity := by
-        rw [← selected]
-        exact exact.output.fst.outcome
-      cases outcome with
-      | capacity total bounded residual =>
-          exact residual
+/-- Numeric projection of the literal CT4 component retained by Core's
+composed output. -/
+def summaryOfOutput {previous : Previous}
+    (output : profile.execution.Output previous) : Summary :=
+  profile.assignment.summaryOfResult output.fst
 
 end Profile
 
@@ -563,66 +429,95 @@ schedule from the stable residual. -/
 def Profile.ofRegistrationAt
     {Previous : Type u} {Residual : Type uResidual}
     [HasResidual Previous Residual]
+    {AmbientItem : Residual → Type uDemand}
+    {ambient : (residual : Residual) →
+      Core.Finite.Enumeration (AmbientItem residual)}
+    {Block : Residual → Type uPayer}
+    {cover : (residual : Residual) → Block residual →
+      List (AmbientItem residual)}
     (registration :
-      Registration.{uResidual, uDemand, uPayer, uMember, uLabel} Residual)
+      Registration Residual AmbientItem ambient Block cover)
     (current : Query Previous fun _ => Residual)
-    (support : Query Previous fun _ =>
-      ULift.{uSupport} SupportComplementNormalization.Summary) :
-    Profile.{u, uResidual, uSupport, uDemand, uPayer, uMember, uLabel}
+    (exact : SupportComplementNormalization.ExactLedger Previous Residual
+      (fun previous => AmbientItem (current previous))) :
+    Profile
       Previous Residual :=
   let assignment :
-      AssignmentProfile.{u, uSupport, uDemand, uPayer} Previous :=
-    { NormalizedSupport := fun _ =>
-        ULift.{uSupport} SupportComplementNormalization.Summary
-      normalizedSupport := support
+      AssignmentProfile Previous :=
+    { NormalizedSupport := fun _ => PUnit
+      normalizedSupport :=  fun _ => PUnit.unit
       Demand := fun previous _ =>
-        registration.Demand (current.read previous)
+        { pair : AmbientItem (current previous) ×
+            AmbientItem (current previous) //
+          registration.Interaction (current previous) pair.1 pair.2 }
       Payer := fun previous _ =>
-        registration.Payer (current.read previous)
+        { pair : exact.Block previous × AmbientItem (current previous) //
+          pair.2 ∈ exact.cover previous pair.1 }
       demands := fun previous _ =>
-        registration.demands (current.read previous)
+        (exact.complement previous).product
+          (exact.selected previous) |>.subtype
+            (fun pair => registration.Interaction
+              (current previous) pair.1 pair.2)
+            (fun pair => registration.interactionDecidable
+              (current previous) pair.1 pair.2)
       payers := fun previous _ =>
-        registration.payers (current.read previous)
-      Eligible := fun previous _ =>
-        registration.Eligible (current.read previous)
-      eligibleDecidable := fun previous _ =>
-        registration.eligibleDecidable (current.read previous)
-      demandWeight := fun previous _ =>
-        registration.demandWeight (current.read previous)
-      payerCapacity := fun previous _ =>
-        registration.payerCapacity (current.read previous)
-      normalizationSummary := fun _ support => support.down }
+        (exact.blocks previous).product
+          (exact.ambient previous) |>.subtype
+            (fun pair => pair.2 ∈ exact.cover previous pair.1)
+            (fun pair => by
+              letI := (exact.ambient previous).decEq
+              exact inferInstance)
+      Eligible := fun _ _ demand payer => demand.1.2 = payer.1.2
+      eligibleDecidable := fun previous _ _ _ => by
+        letI := (exact.ambient previous).decEq
+        exact inferInstance
+      demandWeight := fun _ _ _ => 1
+      payerCapacity := fun previous _ payer => by
+        letI := (exact.ambient previous).decEq
+        exact (exact.ambient previous).values.countP fun other =>
+          @decide (registration.Interaction
+            (current previous) payer.1.2 other)
+            (registration.interactionDecidable
+              (current previous) payer.1.2 other) &&
+          !decide (other ∈ exact.cover previous payer.1.1)
+      normalizationSummary := fun previous _ => exact.summary previous }
   { assignment
     aggregate :=
-      { Member := fun previous _ _ =>
-          registration.Member (current.read previous)
-        Label := fun previous _ _ =>
-          registration.Label (current.read previous)
-        members := fun previous _ _ =>
-          registration.members (current.read previous)
-        memberLowerMass := fun previous _ _ =>
-          registration.memberLowerMass (current.read previous)
-        -- Manuscript node [29]: the external-incidence supply available to a
-        -- member is its registered rate times the exact selected count
-        -- published by the preceding support-complement normalization.
-        memberCapacity := fun previous _ support member =>
-          registration.memberCapacityRate (current.read previous) member *
-            support.down.selectedCount
-        memberLabel := fun previous _ _ =>
-          registration.memberLabel (current.read previous)
+      { Member := fun previous _ _ => AmbientItem (current previous)
+        Label := fun previous _ _ => AmbientItem (current previous)
+        members := fun previous _ _ => exact.complement previous
+        memberLowerMass := fun previous _ _ member =>
+          registration.baseline (current previous) -
+            (exact.complement previous).values.countP fun other =>
+              @decide (registration.Interaction
+                (current previous) member other)
+                (registration.interactionDecidable
+                  (current previous) member other)
+        memberCapacity := fun previous _ _ member =>
+          (exact.selected previous).values.countP fun other =>
+            @decide (registration.Interaction
+              (current previous) member other)
+              (registration.interactionDecidable
+                (current previous) member other)
+        memberLabel := fun _ _ _ member => member
         labelDecidableEq := fun previous _ _ =>
-          registration.labelDecidableEq (current.read previous) } }
+          (exact.ambient previous).decEq } }
 
 /-- Stable-residual specialization of the query-native constructor. -/
 def Profile.ofRegistration
     {Previous : Type u} {Residual : Type uResidual}
     [HasResidual Previous Residual]
+    {AmbientItem : Residual → Type uDemand}
+    {ambient : (residual : Residual) →
+      Core.Finite.Enumeration (AmbientItem residual)}
+    {Block : Residual → Type uPayer}
+    {cover : (residual : Residual) → Block residual →
+      List (AmbientItem residual)}
     (registration :
-      Registration.{uResidual, uDemand, uPayer, uMember, uLabel} Residual)
-    (support : Query Previous fun _ =>
-      ULift.{uSupport} SupportComplementNormalization.Summary) :
-    Profile.{u, uResidual, uSupport, uDemand, uPayer, uMember, uLabel}
-      Previous Residual :=
-  Profile.ofRegistrationAt registration Query.residual support
+      Registration Residual AmbientItem ambient Block cover)
+    (exact : SupportComplementNormalization.ExactLedger Previous Residual
+      (fun previous => AmbientItem (residualOf previous))) :
+    Profile Previous Residual :=
+  Profile.ofRegistrationAt registration Query.residual exact
 
 end Hypostructure.Core.Strategy.BoundaryDemandAccounting

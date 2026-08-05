@@ -38,30 +38,30 @@ variable (profile : Profile.{uPrevious, uResidual, uCandidate}
 
 def decodedProfile (previous : Previous) :
     Core.FiniteBitRelationBarrier.Profile
-      (profile.registration.labelCount (profile.current.read previous)) where
+      (profile.registration.labelCount (profile.current previous)) where
   row := fun relation source =>
     BitVec.ofFnLE fun target =>
-      profile.sourceCode.read previous |>.getD
+      profile.sourceCode previous |>.getD
         (profile.registration.relationPosition
-            (profile.current.read previous) relation *
-            profile.registration.labelCount (profile.current.read previous) ^ 2 +
+            (profile.current previous) relation *
+            profile.registration.labelCount (profile.current previous) ^ 2 +
           source.1 *
-            profile.registration.labelCount (profile.current.read previous) +
+            profile.registration.labelCount (profile.current previous) +
           target.1)
         false
 
 abbrev Candidate (previous : Previous) :=
-  profile.registration.Candidate (profile.current.read previous)
+  profile.registration.Candidate (profile.current previous)
 
 def candidateFlatCount (previous : Previous)
     (candidate : profile.Candidate previous) : Nat :=
-  let residual := profile.current.read previous
+  let residual := profile.current previous
   (profile.decodedProfile previous).flatCount
     (profile.registration.leftLength residual candidate)
     (profile.registration.rightLength residual candidate)
 
 def admissible (previous : Previous) (candidate : profile.Candidate previous) : Prop :=
-  profile.registration.accepted (profile.current.read previous) candidate ∧
+  profile.registration.accepted (profile.current previous) candidate ∧
     0 < profile.candidateFlatCount previous candidate
 
 def admissibleDecidable (previous : Previous)
@@ -69,7 +69,7 @@ def admissibleDecidable (previous : Previous)
     Decidable (profile.admissible previous candidate) :=
   @instDecidableAnd _ _
     (profile.registration.acceptedDecidable
-      (profile.current.read previous) candidate)
+      (profile.current previous) candidate)
     (Nat.decLt 0 (profile.candidateFlatCount previous candidate))
 
 abbrev Accepted (previous : Previous) :=
@@ -77,12 +77,12 @@ abbrev Accepted (previous : Previous) :=
 
 def acceptedSchedule (previous : Previous) :
     Core.Finite.CompleteEnumeration (profile.Accepted previous) :=
-  (profile.registration.candidates (profile.current.read previous)).subtype
+  (profile.registration.candidates (profile.current previous)).subtype
     (profile.admissible previous) (profile.admissibleDecidable previous)
 
 def countRow (previous : Previous) (index : profile.Accepted previous) :
     Nat × Nat :=
-  let residual := profile.current.read previous
+  let residual := profile.current previous
   let table := profile.decodedProfile previous
   (table.safeCount (profile.registration.leftLength residual index.1)
       (profile.registration.rightLength residual index.1),
@@ -178,7 +178,7 @@ theorem rows_multiScale (previous : Previous) :
     (multiScale (Previous := Previous) registration scaleCount
         current sourceCode).rows previous
       = (Core.Finite.Enumeration.ofFinEnum
-            (inferInstance : FinEnum (Fin (scaleCount (current.read previous))))
+            (inferInstance : FinEnum (Fin (scaleCount (current previous))))
           ).values.flatMap
           (fun _ => (scaleFree (Previous := Previous) registration current sourceCode).rows
             previous) := by
@@ -188,8 +188,8 @@ theorem rows_multiScale (previous : Previous) :
     Core.Finite.CompleteEnumeration.ofFinEnum]
   refine Eq.trans (subtype_product_values_map
     (left := (Core.Finite.Enumeration.ofFinEnum
-      (inferInstance : FinEnum (Fin (scaleCount (current.read previous))))))
-    (right := (registration.candidates (current.read previous)).toEnumeration)
+      (inferInstance : FinEnum (Fin (scaleCount (current previous))))))
+    (right := (registration.candidates (current previous)).toEnumeration)
     (predicate := (scaleFree (Previous := Previous) registration current sourceCode).admissible
       previous)
     (decidePredicate :=
@@ -203,11 +203,11 @@ omit [HasResidual Previous Residual] in
 /-- The exact number of scheduled scales. -/
 theorem scaleSchedule_length (previous : Previous) :
     (Core.Finite.Enumeration.ofFinEnum
-        (inferInstance : FinEnum (Fin (scaleCount (current.read previous))))
-      ).values.length = scaleCount (current.read previous) := by
+        (inferInstance : FinEnum (Fin (scaleCount (current previous))))
+      ).values.length = scaleCount (current previous) := by
   simpa [Core.Finite.Enumeration.card] using
     Core.Finite.Enumeration.card_ofFinEnum
-      (inferInstance : FinEnum (Fin (scaleCount (current.read previous))))
+      (inferInstance : FinEnum (Fin (scaleCount (current previous))))
 
 /-- **The multi-scale safe demand is the scale-free one raised to the scale
 count.**  This is the residual-dependence of the barrier rate: with
@@ -219,7 +219,7 @@ theorem safeProduct_multiScale (previous : Previous) :
         scaleCount current sourceCode).rows previous)).safeProduct
       = (Summary.ofRows ((scaleFree (Previous := Previous)
           registration current sourceCode).rows previous)).safeProduct ^
-        scaleCount (current.read previous) := by
+        scaleCount (current previous) := by
   rw [Summary.ofRows_safeProduct, Summary.ofRows_safeProduct,
     rows_multiScale, List.map_flatMap, prod_flatMap_const,
     scaleSchedule_length]
@@ -232,7 +232,7 @@ theorem flatProduct_multiScale (previous : Previous) :
         scaleCount current sourceCode).rows previous)).flatProduct
       = (Summary.ofRows ((scaleFree (Previous := Previous)
           registration current sourceCode).rows previous)).flatProduct ^
-        scaleCount (current.read previous) := by
+        scaleCount (current previous) := by
   rw [Summary.ofRows_flatProduct, Summary.ofRows_flatProduct,
     rows_multiScale, List.map_flatMap, prod_flatMap_const,
     scaleSchedule_length]
@@ -255,7 +255,7 @@ theorem two_pow_rate_mul_scaleCount_mul_flatProduct_le_safeProduct
           registration current sourceCode).rows previous)).flatProduct ≤
         (Summary.ofRows ((scaleFree (Previous := Previous)
           registration current sourceCode).rows previous)).safeProduct) :
-    2 ^ (rate * scaleCount (current.read previous)) *
+    2 ^ (rate * scaleCount (current previous)) *
         (Summary.ofRows ((multiScale (Previous := Previous) registration
           scaleCount current sourceCode).rows previous)).flatProduct ≤
       (Summary.ofRows ((multiScale (Previous := Previous) registration
@@ -347,13 +347,13 @@ def workDegree : Nat :=
 def primitiveChecks (previous : Previous) : Nat :=
   (profile.acceptedSchedule previous).card *
     let size :=
-      profile.registration.labelCount (profile.current.read previous)
+      profile.registration.labelCount (profile.current previous)
     (size + size ^ relationNestingDepth +
       Summary.aggregationChecksPerRow)
 
 def inputSize (previous : Previous) : Nat :=
   (profile.acceptedSchedule previous).card +
-    profile.registration.labelCount (profile.current.read previous)
+    profile.registration.labelCount (profile.current previous)
 
 private def spec : CT16.Spec Previous where
   Coordinate := profile.Accepted
@@ -376,7 +376,7 @@ private def computation : CT16.ClosedCodeComputation profile.spec where
       simp only [primitiveChecks, inputSize]
       let rows := (profile.acceptedSchedule previous).card
       let labels :=
-        profile.registration.labelCount (profile.current.read previous)
+        profile.registration.labelCount (profile.current previous)
       change rows * (labels + labels ^ relationNestingDepth +
           Summary.aggregationChecksPerRow) ≤
         workCoefficient * (rows + labels + 1) ^ workDegree
@@ -426,7 +426,7 @@ private def equalityDecision : CT16.CodeEqualityDecision profile.spec :=
 
 private def capability : CT16.Capability profile.spec where
   coordinates :=
-    Query.ofFunction fun previous =>
+     fun previous =>
       (profile.acceptedSchedule previous).toEnumeration
   inSupportDecidable := fun _ _ => .isTrue trivial
   codeComputation := profile.computation

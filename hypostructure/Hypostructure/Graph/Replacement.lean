@@ -223,7 +223,7 @@ abbrev FocusedAtomReplacementClaim
           (problem Baseline BranchState) Target
           (lexicographicProgress Baseline BranchState)))
     (stage : Previous) (active : focus.Active stage) : Prop :=
-  let ctx := context.read stage active
+  let ctx := context stage active
   forall (atom : ProperBoundariedAtom ctx.G)
     (replacement : BoundaryPiece atom.decomposition.interface),
       AtomReplacementCertificate ctx atom replacement -> False
@@ -337,7 +337,7 @@ abbrev FocusedNormalizedAtomReplacementClaim
           (lexicographicProgress Baseline BranchState)))
     (profile : NormalizedAtomReplacementProfile Baseline)
     (stage : Previous) (active : focus.Active stage) : Prop :=
-  let ctx := context.read stage active
+  let ctx := context stage active
   forall (atom : NormalizedProperBoundariedAtom ctx.G)
     (replacement : BoundaryPiece atom.toAtom.decomposition.interface),
       NormalizedAtomReplacementCertificate profile ctx atom replacement ->
@@ -467,10 +467,10 @@ abbrev FocusedRegisteredContextUniversalityClaim
           (lexicographicProgress Baseline BranchState)))
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active)))
+        BoundariedAtomRegistration (context stage active)))
     (stage : Previous) (active : focus.Active stage) : Prop :=
-  let ctx := context.read stage active
-  let registered := registration.read stage active
+  let ctx := context stage active
+  let registered := registration stage active
   forall (atom : ProperBoundariedAtom ctx.G)
     (system : AtomResponse.CoordinateSystem.{u, w}
       (registered.family atom) Target)
@@ -494,7 +494,7 @@ def focusedRegisteredContextUniversalityProjectionQuery
           (lexicographicProgress Baseline BranchState)))
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active))) :
+        BoundariedAtomRegistration (context stage active))) :
     Core.Residual.Focus.ActiveQuery focus
       (FocusedRegisteredContextUniversalityClaim focus context
         registration) :=
@@ -518,10 +518,10 @@ abbrev FocusedNormalizedAtomUncompressibilityClaim
     (profile : NormalizedAtomReplacementProfile Baseline)
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active)))
+        BoundariedAtomRegistration (context stage active)))
     (stage : Previous) (active : focus.Active stage) : Prop :=
-  let ctx := context.read stage active
-  let registered := registration.read stage active
+  let ctx := context stage active
+  let registered := registration stage active
   (forall (atom : NormalizedProperBoundariedAtom ctx.G)
     (replacement : BoundaryPiece atom.toAtom.decomposition.interface),
       NormalizedAtomReplacementCertificate profile ctx atom replacement ->
@@ -550,18 +550,22 @@ def focusedNormalizedAtomUncompressibilityProjectionQuery
     (profile : NormalizedAtomReplacementProfile Baseline)
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active)))
+        BoundariedAtomRegistration (context stage active)))
     (replacement : Core.Residual.Focus.ActiveQuery focus
       (FocusedNormalizedAtomReplacementClaim focus context profile))
     (universality : Core.Residual.Focus.ActiveQuery focus
-      (FocusedRegisteredContextUniversalityClaim focus context registration)) :
+      (FocusedRegisteredContextUniversalityClaim.{u, v, w, uPrevious}
+        focus context registration)) :
     Core.Residual.Focus.ActiveQuery focus
-      (FocusedNormalizedAtomUncompressibilityClaim focus context profile
-        registration) :=
+      (FocusedNormalizedAtomUncompressibilityClaim.{u, v, w, uPrevious}
+        focus context profile registration) :=
   (replacement.and universality).map
     fun _stage _active inherited =>
       ⟨inherited.fst,
-        fun _atom _system {_left _right} notEquivalent =>
+        fun _atom
+            (_system : AtomResponse.CoordinateSystem.{u, w}
+              ((registration _stage _active).family _atom) Target)
+            {_left _right} notEquivalent =>
           ⟨by
               intro identified
               obtain ⟨quotient, quotientIdentifies⟩ := identified
@@ -586,7 +590,7 @@ abbrev FocusedNormalizedAtomUncompressibilityStage
     (profile : NormalizedAtomReplacementProfile Baseline)
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active))) :=
+        BoundariedAtomRegistration (context stage active))) :=
   Core.Residual.ProofProjection.Stage focus
     (FocusedNormalizedAtomUncompressibilityClaim.{u, v, w, uPrevious}
       focus context profile registration)
@@ -607,7 +611,7 @@ def executeFocusedNormalizedAtomUncompressibilityCounted
     (profile : NormalizedAtomReplacementProfile Baseline)
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active)))
+        BoundariedAtomRegistration (context stage active)))
     (replacement : Core.Residual.Focus.ActiveQuery focus
       (FocusedNormalizedAtomReplacementClaim focus context profile))
     (universality : Core.Residual.Focus.ActiveQuery focus
@@ -638,7 +642,7 @@ def executeFocusedNormalizedAtomUncompressibility
     (profile : NormalizedAtomReplacementProfile Baseline)
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active)))
+        BoundariedAtomRegistration (context stage active)))
     (replacement : Core.Residual.Focus.ActiveQuery focus
       (FocusedNormalizedAtomReplacementClaim focus context profile))
     (universality : Core.Residual.Focus.ActiveQuery focus
@@ -664,17 +668,17 @@ def focusedNormalizedAtomUncompressibilityQuery
     (profile : NormalizedAtomReplacementProfile Baseline)
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active))) :
+        BoundariedAtomRegistration (context stage active))) :
     Core.Residual.Focus.ActiveQuery
       (Core.Residual.ProofProjection.Profile focus
-        (FocusedNormalizedAtomUncompressibilityClaim focus context profile
-          registration))
+        (FocusedNormalizedAtomUncompressibilityClaim.{u, v, w, uPrevious}
+          focus context profile registration))
       (fun stage active =>
-        FocusedNormalizedAtomUncompressibilityClaim focus context profile
-          registration stage.previous active) :=
+        FocusedNormalizedAtomUncompressibilityClaim.{u, v, w, uPrevious}
+          focus context profile registration stage.previous active) :=
   Core.Residual.ProofProjection.latestClaim focus
-    (FocusedNormalizedAtomUncompressibilityClaim focus context profile
-      registration)
+    (FocusedNormalizedAtomUncompressibilityClaim.{u, v, w, uPrevious}
+      focus context profile registration)
 
 @[simp] theorem executeFocusedAtomReplacementCounted_checks
     {Previous : Type uPrevious}
@@ -832,7 +836,7 @@ theorem executeFocusedNormalizedAtomReplacementCounted_work_within
     (profile : NormalizedAtomReplacementProfile Baseline)
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active)))
+        BoundariedAtomRegistration (context stage active)))
     (replacement : Core.Residual.Focus.ActiveQuery focus
       (FocusedNormalizedAtomReplacementClaim focus context profile))
     (universality : Core.Residual.Focus.ActiveQuery focus
@@ -864,7 +868,7 @@ theorem executeFocusedNormalizedAtomUncompressibilityCounted_checks_bounded
     (profile : NormalizedAtomReplacementProfile Baseline)
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active)))
+        BoundariedAtomRegistration (context stage active)))
     (replacement : Core.Residual.Focus.ActiveQuery focus
       (FocusedNormalizedAtomReplacementClaim focus context profile))
     (universality : Core.Residual.Focus.ActiveQuery focus
@@ -896,7 +900,7 @@ theorem executeFocusedNormalizedAtomUncompressibilityCounted_work_within
     (profile : NormalizedAtomReplacementProfile Baseline)
     (registration : Core.Residual.Focus.ActiveQuery focus
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage active)))
+        BoundariedAtomRegistration (context stage active)))
     (replacement : Core.Residual.Focus.ActiveQuery focus
       (FocusedNormalizedAtomReplacementClaim focus context profile))
     (universality : Core.Residual.Focus.ActiveQuery focus

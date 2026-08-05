@@ -47,17 +47,17 @@ def residualQuery : Query Previous (fun _ => Residual) :=
 /-- CT4 primitive assignment semantics. -/
 def assignmentSpec : CT4.Spec Previous where
   Demand := fun previous =>
-    profile.registration.Demand (profile.current.read previous)
+    profile.registration.Demand (profile.current previous)
   Payer := fun previous =>
-    profile.registration.Token (profile.current.read previous)
+    profile.registration.Token (profile.current previous)
   Eligible := fun previous demand token =>
-    profile.registration.Eligible (profile.current.read previous) demand token
+    profile.registration.Eligible (profile.current previous) demand token
   demandWeight := fun previous demand =>
-    profile.registration.demandWeight (profile.current.read previous) demand
+    profile.registration.demandWeight (profile.current previous) demand
   capacity := fun previous token =>
-    profile.registration.tokenCapacity (profile.current.read previous) token
+    profile.registration.tokenCapacity (profile.current previous) token
   required := fun previous =>
-    profile.registration.required (profile.current.read previous)
+    profile.registration.required (profile.current previous)
 
 /-- Exact residual-owned demand schedule consumed by CT4. -/
 def demandQuery :
@@ -81,11 +81,11 @@ def assignmentCapability : CT4.Capability profile.assignmentSpec where
   payers := profile.tokenQuery
   eligibleDecidable := fun previous demand token =>
     profile.registration.eligibleDecidable
-      (profile.current.read previous) demand token
+      (profile.current previous) demand token
   inputSize := fun previous =>
     CT4.localCheckBound
-      (profile.demandQuery.read previous)
-      (profile.tokenQuery.read previous)
+      (profile.demandQuery previous)
+      (profile.tokenQuery previous)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -111,7 +111,7 @@ def assignmentResult :
 /-- Public projection of CT4's generated first-eligible assignment table. -/
 def assignedPayerQuery :
     Query profile.AfterAssignment fun stage =>
-      let result := profile.assignmentResult.read stage
+      let result := profile.assignmentResult stage
       (demand :
           profile.assignmentSpec.Demand result.stage.previous) →
         Option (profile.assignmentSpec.Payer result.stage.previous) :=
@@ -134,7 +134,7 @@ def assignedPayerQuery :
 /-- CT9 receives CT4's exact demand schedule through the retained result. -/
 def ct9Items :
     Query profile.AfterAssignment fun stage =>
-      let result := profile.assignmentResult.read stage
+      let result := profile.assignmentResult stage
       Core.Finite.Enumeration
         (profile.assignmentSpec.Demand result.stage.previous) :=
   profile.assignmentResult.dependentMap fun _stage result =>
@@ -143,43 +143,43 @@ def ct9Items :
 /-- Complete label schedule indexed by CT4's exact predecessor. -/
 def ct9Labels :
     Query profile.AfterAssignment fun stage =>
-      let result := profile.assignmentResult.read stage
+      let result := profile.assignmentResult stage
       Core.Finite.CompleteEnumeration
         (profile.registration.Label
-          (profile.current.read result.stage.previous)) :=
+          (profile.current result.stage.previous)) :=
   profile.assignmentResult.dependentMap fun _stage result =>
     profile.registration.completeLabels
-      (profile.current.read result.stage.previous)
+      (profile.current result.stage.previous)
 
 /-- CT9 labels each demand by CT4's generated payer and its residual role. -/
 def fibreSpec : CT9.Spec profile.AfterAssignment where
   Item := fun stage =>
     profile.assignmentSpec.Demand
-      (profile.assignmentResult.read stage).stage.previous
+      (profile.assignmentResult stage).stage.previous
   Label := fun stage =>
     profile.registration.Label
-      (profile.current.read
-        (profile.assignmentResult.read stage).stage.previous)
+      (profile.current
+        (profile.assignmentResult stage).stage.previous)
   label := fun stage demand =>
-    let result := profile.assignmentResult.read stage
-    let residual := profile.current.read result.stage.previous
+    let result := profile.assignmentResult stage
+    let residual := profile.current result.stage.previous
     profile.registration.labelOf residual
-      ((profile.assignedPayerQuery.read stage) demand)
+      ((profile.assignedPayerQuery stage) demand)
       (profile.registration.roleOf residual demand)
   capacity := fun stage label =>
-    let result := profile.assignmentResult.read stage
+    let result := profile.assignmentResult stage
     profile.registration.labelCapacity
-      (profile.current.read result.stage.previous) label
+      (profile.current result.stage.previous) label
 
 /-- CT9 capability over the exact CT4 extension. -/
 def fibreCapability : CT9.Capability profile.fibreSpec where
   items := profile.ct9Items
   labels := fun stage =>
-    profile.ct9Labels.read stage
+    profile.ct9Labels stage
   inputSize := fun stage =>
     CT9.localCheckBound
-      (profile.ct9Items.read stage)
-      (profile.ct9Labels.read stage).toEnumeration
+      (profile.ct9Items stage)
+      (profile.ct9Labels stage).toEnumeration
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -205,7 +205,7 @@ def fibreResult :
 /-- Public projection of CT9's generated partition on either terminal. -/
 def partitionQuery :
     Query profile.AfterFibres fun stage =>
-      let result := profile.fibreResult.read stage
+      let result := profile.fibreResult stage
       CT9.Partition profile.fibreCapability result.stage.previous :=
   profile.fibreResult.dependentMap fun _stage result =>
     match result.terminal, result.outcome with
@@ -215,7 +215,7 @@ def partitionQuery :
 /-- CT14 members are CT9's exact complete label schedule. -/
 def aggregateMembers :
     Query profile.AfterFibres fun stage =>
-      let result := profile.fibreResult.read stage
+      let result := profile.fibreResult stage
       Core.Finite.Enumeration
         (profile.fibreSpec.Label result.stage.previous) :=
   profile.fibreResult.dependentMap fun _stage result =>
@@ -225,39 +225,39 @@ def aggregateMembers :
 def aggregateSpec : CT14.Spec profile.AfterFibres where
   Member := fun stage =>
     profile.fibreSpec.Label
-      (profile.fibreResult.read stage).stage.previous
+      (profile.fibreResult stage).stage.previous
   Label := fun stage =>
-    let result := profile.fibreResult.read stage
+    let result := profile.fibreResult stage
     -- CT9's label family is indexed by this exact retained CT4 predecessor.
     let assignment :=
-      profile.assignmentResult.read result.stage.previous
+      profile.assignmentResult result.stage.previous
     profile.registration.aggregateLabel
-      (profile.current.read assignment.stage.previous)
+      (profile.current assignment.stage.previous)
   memberLowerMass := fun stage label =>
-    (profile.partitionQuery.read stage).count label
+    (profile.partitionQuery stage).count label
   memberCapacity := fun stage label =>
     some (profile.fibreSpec.capacity
-      (profile.fibreResult.read stage).stage.previous label)
+      (profile.fibreResult stage).stage.previous label)
   memberLabel := fun stage label =>
-    let result := profile.fibreResult.read stage
+    let result := profile.fibreResult stage
     -- This is a type index only; no CT4 outcome or assignment is inspected.
     let assignment :=
-      profile.assignmentResult.read result.stage.previous
+      profile.assignmentResult result.stage.previous
     some (profile.registration.memberAggregateLabel
-      (profile.current.read assignment.stage.previous) label)
+      (profile.current assignment.stage.previous) label)
 
 /-- CT14 capability derived from CT9's exact complete label schedule. -/
 def aggregateCapability : CT14.Capability profile.aggregateSpec where
   members := profile.aggregateMembers
   labelDecidableEq := fun stage =>
-    let result := profile.fibreResult.read stage
+    let result := profile.fibreResult stage
     -- Use the same dependent label-family index as `aggregateSpec.Label`.
     let assignment :=
-      profile.assignmentResult.read result.stage.previous
+      profile.assignmentResult result.stage.previous
     profile.registration.aggregateLabelDecidableEq
-      (profile.current.read assignment.stage.previous)
+      (profile.current assignment.stage.previous)
   inputSize := fun stage =>
-    CT14.localCheckBound (profile.aggregateMembers.read stage)
+    CT14.localCheckBound (profile.aggregateMembers stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -293,7 +293,7 @@ noncomputable def assignmentOutput :
 /-- Exact CT9 payload projected from the composed ledger entry. -/
 noncomputable def fibreOutput :
     Query profile.AfterExecution fun stage =>
-      let output := profile.executionResult.read stage
+      let output := profile.executionResult stage
       profile.fibreExecution.Output
         (Ledger.extend stage.previous output.fst) :=
   profile.executionResult.dependentMap fun _ output => output.snd.fst
@@ -301,7 +301,7 @@ noncomputable def fibreOutput :
 /-- Exact CT14 payload projected from the composed ledger entry. -/
 noncomputable def aggregateOutput :
     Query profile.AfterExecution fun stage =>
-      let output := profile.executionResult.read stage
+      let output := profile.executionResult stage
       let assignmentStage := Ledger.extend stage.previous output.fst
       profile.aggregateExecution.Output
         (Ledger.extend assignmentStage output.snd.fst) :=

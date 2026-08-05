@@ -37,7 +37,7 @@ def profileRecurrenceSpec {Previous : Type uPrevious}
   exactType := exactType
   response := response
   StrictlySmaller := fun previous candidate =>
-    progress.Smaller candidate (source.read previous)
+    progress.Smaller candidate (source previous)
 
 /-- Supply only predecessor-owned recurrence schedules, primitive represented
 semantics, a certified removal, and the work envelope. -/
@@ -75,12 +75,12 @@ def profileRecurrenceCapability {Previous : Type uPrevious}
         response previous first context = response previous second context) ->
       progress.Smaller
         (remove previous first second sameType equalResponses)
-        (source.read previous))
+        (source previous))
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
       _root_.Hypostructure.CT8.localCheckBound
-          (sequence.read previous)
-          (responseContexts.read previous).toEnumeration <=
+          (sequence previous)
+          (responseContexts previous).toEnumeration <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT8.Capability
       (profileRecurrenceSpec M progress source State ExactType ResponseContext

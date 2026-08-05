@@ -31,7 +31,7 @@ structure Capability {Previous : Type uPrevious}
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (members.read previous) <=
+    localCheckBound (members previous) <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -41,7 +41,7 @@ def membersAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uMember, uLabel} Previous}
     (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Member previous) :=
-  capability.members.read previous
+  capability.members previous
 
 /-- Framework-visible polynomial work envelope. -/
 def polynomialBudget {Previous : Type uPrevious}

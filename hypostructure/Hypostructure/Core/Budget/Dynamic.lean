@@ -21,7 +21,7 @@ structure Profile (Previous : Sort uPrevious) (Quantity : Type uQuantity)
     [Preorder Quantity] where
   value : Query Previous (fun _previous => Quantity)
   budget : Query Previous (fun _previous => Quantity)
-  within : forall previous, value.read previous <= budget.read previous
+  within : forall previous, value previous <= budget previous
 
 namespace Profile
 
@@ -55,36 +55,36 @@ def map
 @[simp]
 theorem reindex_read_value (project : Previous' -> Previous)
     (profile : Profile Previous Quantity) (previous' : Previous') :
-    (reindex (Previous := Previous) (Quantity := Quantity) project profile).value.read previous'
-      = profile.value.read (project previous') := rfl
+    (reindex (Previous := Previous) (Quantity := Quantity) project profile).value previous'
+      = profile.value (project previous') := rfl
 
 @[simp]
 theorem reindex_read_budget (project : Previous' -> Previous)
     (profile : Profile Previous Quantity) (previous' : Previous') :
-    (reindex (Previous := Previous) (Quantity := Quantity) project profile).budget.read previous'
-      = profile.budget.read (project previous') := rfl
+    (reindex (Previous := Previous) (Quantity := Quantity) project profile).budget previous'
+      = profile.budget (project previous') := rfl
 
 @[simp]
 theorem map_read_value (f : Quantity -> NewQuantity)
     (monotone : Monotone f) (profile : Profile Previous Quantity)
     (previous : Previous) :
-    (map (Quantity := Quantity) (NewQuantity := NewQuantity) f monotone profile).value.read previous
-      = f (profile.value.read previous) := rfl
+    (map (Quantity := Quantity) (NewQuantity := NewQuantity) f monotone profile).value previous
+      = f (profile.value previous) := rfl
 
 @[simp]
 theorem map_read_budget (f : Quantity -> NewQuantity)
     (monotone : Monotone f) (profile : Profile Previous Quantity)
     (previous : Previous) :
-    (map (Quantity := Quantity) (NewQuantity := NewQuantity) f monotone profile).budget.read previous
-      = f (profile.budget.read previous) := rfl
+    (map (Quantity := Quantity) (NewQuantity := NewQuantity) f monotone profile).budget previous
+      = f (profile.budget previous) := rfl
 
 def current (profile : Profile Previous Quantity) (previous : Previous) :
     Quantity :=
-  profile.value.read previous
+  profile.value previous
 
 def limit (profile : Profile Previous Quantity) (previous : Previous) :
     Quantity :=
-  profile.budget.read previous
+  profile.budget previous
 
 theorem current_le_limit (profile : Profile Previous Quantity)
     (previous : Previous) :
@@ -118,14 +118,14 @@ theorem Profile.reindex_current
     (project : Previous' -> Previous) (profile : Profile Previous Quantity)
     (previous' : Previous') :
     (current (Profile.reindex (Previous := Previous) (Quantity := Quantity) project profile) previous')
-      = profile.value.read (project previous') := rfl
+      = profile.value (project previous') := rfl
 
 @[simp]
 theorem Profile.reindex_limit
     (project : Previous' -> Previous) (profile : Profile Previous Quantity)
     (previous' : Previous') :
     (limit (Profile.reindex (Previous := Previous) (Quantity := Quantity) project profile) previous')
-      = profile.budget.read (project previous') := rfl
+      = profile.budget (project previous') := rfl
 
 @[simp]
 theorem Profile.map_current
@@ -133,7 +133,7 @@ theorem Profile.map_current
     (monotone : Monotone f) (profile : Profile Previous Quantity)
     (previous : Previous) :
     (current (Profile.map (Quantity := Quantity) (NewQuantity := NewQuantity) f monotone profile)
-      previous) = f (profile.value.read previous) := rfl
+      previous) = f (profile.value previous) := rfl
 
 @[simp]
 theorem Profile.map_limit
@@ -141,6 +141,6 @@ theorem Profile.map_limit
     (monotone : Monotone f) (profile : Profile Previous Quantity)
     (previous : Previous) :
     (limit (Profile.map (Quantity := Quantity) (NewQuantity := NewQuantity) f monotone profile)
-      previous) = f (profile.budget.read previous) := rfl
+      previous) = f (profile.budget previous) := rfl
 
 end Hypostructure.Core.Budget.Dynamic

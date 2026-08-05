@@ -36,7 +36,7 @@ structure Capability {Previous : Type uPrevious}
     Core.Finite.Enumeration Nat
   selectedScale : Core.Residual.Query Previous fun _previous => Nat
   selectedScale_mem : forall previous,
-    selectedScale.read previous ∈ (scales.read previous).values
+    selectedScale previous ∈ (scales previous).values
   positions : (scale : Nat) -> Core.Residual.Query Previous fun previous =>
     Core.Finite.Enumeration (spec.Position previous scale)
   finiteScaleLimit : Core.Residual.Query Previous fun _previous => Nat
@@ -49,8 +49,8 @@ structure Capability {Previous : Type uPrevious}
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (targets.read previous) (offsets.read previous)
-      ((positions (selectedScale.read previous)).read previous) <=
+    localCheckBound (targets previous) (offsets previous)
+      ((positions (selectedScale previous)) previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -59,37 +59,37 @@ namespace Capability
 def targetsAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uTarget, uOffset, uPosition, uValue} Previous}
     (capability : Capability spec) (previous : Previous) :=
-  capability.targets.read previous
+  capability.targets previous
 
 /-- Exact inherited offset schedule, shared by block and orbit arithmetic. -/
 def offsetsAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uTarget, uOffset, uPosition, uValue} Previous}
     (capability : Capability spec) (previous : Previous) :=
-  capability.offsets.read previous
+  capability.offsets previous
 
 /-- Exact inherited schedule of admissible scale values. -/
 def scalesAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uTarget, uOffset, uPosition, uValue} Previous}
     (capability : Capability spec) (previous : Previous) :=
-  capability.scales.read previous
+  capability.scales previous
 
 /-- Scale selected by the predecessor for this CT17 invocation. -/
 def scaleAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uTarget, uOffset, uPosition, uValue} Previous}
     (capability : Capability spec) (previous : Previous) : Nat :=
-  capability.selectedScale.read previous
+  capability.selectedScale previous
 
 /-- Exact inherited position schedule at the selected scale. -/
 def positionsAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uTarget, uOffset, uPosition, uValue} Previous}
     (capability : Capability spec) (previous : Previous) :=
-  (capability.positions (capability.scaleAt previous)).read previous
+  (capability.positions (capability.scaleAt previous)) previous
 
 /-- Finite/orbit cutoff inherited from the predecessor. -/
 def scaleLimitAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uTarget, uOffset, uPosition, uValue} Previous}
     (capability : Capability spec) (previous : Previous) : Nat :=
-  capability.finiteScaleLimit.read previous
+  capability.finiteScaleLimit previous
 
 /-- Target-major, offset-minor compatibility and arithmetic schedule. -/
 def pairScheduleAt {Previous : Type uPrevious}

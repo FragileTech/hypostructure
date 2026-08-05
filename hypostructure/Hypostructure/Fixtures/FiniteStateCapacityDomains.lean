@@ -394,12 +394,12 @@ private noncomputable def profile :
       (Core.Strategy.InitStage problem) Residual where
   AmbientItem := fun _ => Unit
   registration := registration.toCore
-  complement := Query.ofFunction fun _ => Neutral.singleton
-  independentRank := Query.ofFunction fun _ => 0
+  complement :=  fun _ => Neutral.singleton
+  independentRank :=  fun _ => 0
   finiteBarrierSummary :=
-    Query.ofFunction fun _ =>
+     fun _ =>
       Core.Strategy.FiniteBarrierEnumeration.Summary.ofRows [(0, 0)]
-  localSupply := Query.ofFunction fun _ =>
+  localSupply :=  fun _ =>
     Neutral.supplySummary
 
 theorem computes_survivor :
@@ -635,12 +635,12 @@ private noncomputable def profile :
       (Core.Strategy.InitStage problem) Residual where
   AmbientItem := fun _ => Unit
   registration := registration.toCore
-  complement := Query.ofFunction fun _ => Neutral.singleton
-  independentRank := Query.ofFunction fun _ => 0
+  complement :=  fun _ => Neutral.singleton
+  independentRank :=  fun _ => 0
   finiteBarrierSummary :=
-    Query.ofFunction fun _ =>
+     fun _ =>
       Core.Strategy.FiniteBarrierEnumeration.Summary.ofRows [(0, 0)]
-  localSupply := Query.ofFunction fun _ =>
+  localSupply :=  fun _ =>
     Neutral.supplySummary
 
 theorem computes_survivor :

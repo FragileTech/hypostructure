@@ -295,7 +295,7 @@ def successorActive (tier : TierMode) (context : ContextMode) :
 
 def generated (tier : TierMode) (context : ContextMode) :=
   (profile PDERow5DirectedExhaustiveness.visibleBoundaryProfile tier
-    context).outputQuery.read
+    context).outputQuery
     (execution tier context).value (successorActive tier context)
 
 theorem execution_retains_literal_row_five (tier : TierMode)
@@ -352,7 +352,7 @@ theorem target_visible_focus_rejects_unaligned (tier : TierMode)
 
 def queriedUnaligned (tier : TierMode) (context : ContextMode) :=
   (profile PDERow5DirectedExhaustiveness.visibleBoundaryProfile tier
-    context).unalignedOutputQuery.read
+    context).unalignedOutputQuery
     (execution tier context).value (unalignedActive tier context)
 
 theorem unaligned_query_reads_the_exact_output (tier : TierMode)

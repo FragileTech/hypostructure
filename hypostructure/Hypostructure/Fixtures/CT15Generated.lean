@@ -30,15 +30,15 @@ def coordinatesQuery : Core.Residual.Query Previous fun _previous =>
 abbrev spec : CT15.Spec Previous where
   Coordinate := fun _previous => Fin 3
   TargetDependent := fun previous coordinate =>
-    (residualQuery.read previous).dropIndex = some coordinate
+    (residualQuery previous).dropIndex = some coordinate
   charge := fun _previous coordinate => coordinate.1 + 1
-  capacity := fun previous => (residualQuery.read previous).capacity
+  capacity := fun previous => (residualQuery previous).capacity
 
 def capability : CT15.Capability spec where
   coordinates := coordinatesQuery
   targetDependentDecidable := fun previous coordinate => by
-    exact decEq (residualQuery.read previous).dropIndex (some coordinate)
-  inputSize := fun previous => (coordinatesQuery.read previous).card
+    exact decEq (residualQuery previous).dropIndex (some coordinate)
+  inputSize := fun previous => (coordinatesQuery previous).card
   workCoefficient := 2
   workDegree := 1
   workBound := by

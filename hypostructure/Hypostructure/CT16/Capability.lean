@@ -82,7 +82,7 @@ def coordinatesAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uCoordinate, uCode} Previous}
     (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Coordinate previous) :=
-  capability.coordinates.read previous
+  capability.coordinates previous
 
 /-- Full support-scan budget.  An early support failure may execute a strict
 prefix, but no support branch can exceed this predecessor-owned schedule. -/

@@ -64,7 +64,7 @@ def ct9Capability : CT9.Capability profile.ct9Spec where
     profile.semantics.labels (residualOf previous)
   inputSize := fun previous =>
     (profile.semantics.labels (residualOf previous)).card *
-      ((profile.items.read previous).card + 1)
+      ((profile.items previous).card + 1)
   workCoefficient := 1
   workDegree := 1
   workBound := by

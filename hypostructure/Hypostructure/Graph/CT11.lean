@@ -25,9 +25,9 @@ def additiveSpec {Previous : Type uPrevious}
     _root_.Hypostructure.CT11.Spec Previous where
   Cell := Cell
   Admissible := fun previous cell =>
-    admissible previous (object.read previous) cell
+    admissible previous (object previous) cell
   localBudget := fun previous cell =>
-    localBudget previous (object.read previous) cell
+    localBudget previous (object previous) cell
 
 /-- Supply only residual-owned cells, primitive graph semantics, the registered
 negative total, and a work envelope to the common CT11 executor. -/
@@ -43,13 +43,13 @@ def additiveCapability {Previous : Type uPrevious}
       Core.Finite.Enumeration (Cell previous))
     (admissibleDecidable : (previous : Previous) ->
       (cell : Cell previous) ->
-        Decidable (admissible previous (object.read previous) cell))
+        Decidable (admissible previous (object previous) cell))
     (negativeTotal : Core.Residual.Query Previous fun previous =>
-      ((cells.read previous).values.map
-        (fun cell => localBudget previous (object.read previous) cell)).sum < 0)
+      ((cells previous).values.map
+        (fun cell => localBudget previous (object previous) cell)).sum < 0)
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
-      _root_.Hypostructure.CT11.localCheckBound (cells.read previous) <=
+      _root_.Hypostructure.CT11.localCheckBound (cells previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT11.Capability
       (additiveSpec object Cell admissible localBudget) where
@@ -71,16 +71,16 @@ def negativeBudgetProfile {Previous : Type uPrevious}
     (cells : Core.Residual.Query Previous fun previous =>
       Core.Finite.Enumeration (Cell previous))
     (negativeTotal : Core.Residual.Query Previous fun previous =>
-      ((cells.read previous).values.map
-        (fun cell => localBudget previous (object.read previous) cell)).sum < 0)
+      ((cells previous).values.map
+        (fun cell => localBudget previous (object previous) cell)).sum < 0)
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
-      _root_.Hypostructure.CT11.localCheckBound (cells.read previous) <=
+      _root_.Hypostructure.CT11.localCheckBound (cells previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT11.OrderedNegativeBudgetProfile Previous where
   Cell := Cell
   localBudget := fun previous cell =>
-    localBudget previous (object.read previous) cell
+    localBudget previous (object previous) cell
   cells := cells
   negativeTotal := negativeTotal
   inputSize := inputSize

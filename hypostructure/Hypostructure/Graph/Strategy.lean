@@ -41,9 +41,9 @@ noncomputable def supportScan (object : Graph.FiniteObject.{u})
 only application input; order and finite scheduling are framework-owned. -/
 structure WitnessScan (Previous : Type u) where
   object : Core.Residual.Query Previous (fun _ => Graph.FiniteObject.{u})
-  witness : (previous : Previous) -> (object.read previous).Vertex -> Prop
+  witness : (previous : Previous) -> (object previous).Vertex -> Prop
   witnessDecidable : (previous : Previous) ->
-    (vertex : (object.read previous).Vertex) ->
+    (vertex : (object previous).Vertex) ->
       Decidable (witness previous vertex)
 
 /-- Generic graph response interface for local finite coordinates. -/
@@ -66,7 +66,7 @@ structure ChargeProfile (Previous : Type u) where
 structure ConnectedSupportProfile (Previous : Type u) where
   object : Core.Residual.Query Previous (fun _ => Graph.FiniteObject.{u})
   support : Core.Residual.Query Previous (fun previous =>
-    Finset (object.read previous).Vertex)
+    Finset (object previous).Vertex)
 
 /-! ## Graph-to-Core strategy adapters
 
@@ -77,9 +77,9 @@ create a ledger value; those operations remain in Core's strategy runner. -/
 noncomputable def WitnessScan.toCore
     (profile : WitnessScan Previous) :
     Core.Strategy.OrderedWitnessScan Previous where
-  Item := fun previous => (profile.object.read previous).Vertex
-  schedule := Core.Residual.Query.ofFunction fun previous =>
-    vertexScan (profile.object.read previous)
+  Item := fun previous => (profile.object previous).Vertex
+  schedule := fun previous =>
+    vertexScan (profile.object previous)
   witness := profile.witness
   witnessDecidable := profile.witnessDecidable
   exhaustive := by
@@ -121,28 +121,28 @@ def ChargeProfile.toCore
 noncomputable def ConnectedSupportProfile.toCore
     (profile : ConnectedSupportProfile Previous)
     (localBudget : (previous : Previous) ->
-      {vertex : (profile.object.read previous).Vertex //
-        vertex ∈ profile.support.read previous} -> Int)
+      {vertex : (profile.object previous).Vertex //
+        vertex ∈ profile.support previous} -> Int)
     (selected : (previous : Previous) ->
-      {vertex : (profile.object.read previous).Vertex //
-        vertex ∈ profile.support.read previous})
+      {vertex : (profile.object previous).Vertex //
+        vertex ∈ profile.support previous})
     (selected_negative : (previous : Previous) ->
       localBudget previous (selected previous) < 0) :
     Core.Strategy.SupportLocalization Previous where
   Cell := fun previous =>
-    {vertex : (profile.object.read previous).Vertex //
-      vertex ∈ profile.support.read previous}
-  schedule := Core.Residual.Query.ofFunction fun previous =>
-    supportScan (profile.object.read previous) (profile.support.read previous)
+    {vertex : (profile.object previous).Vertex //
+      vertex ∈ profile.support previous}
+  schedule := fun previous =>
+    supportScan (profile.object previous) (profile.support previous)
   localBudget := localBudget
   selected := selected
   selected_negative := selected_negative
 
 def targetAvoiding
     (target : Core.Residual.Query Previous (fun _ => Prop))
-    (decidable : (previous : Previous) -> Decidable (target.read previous)) :
+    (decidable : (previous : Previous) -> Decidable (target previous)) :
     Core.Strategy.TargetAvoidingContinuation Previous where
-  Target := fun previous => target.read previous
+  Target := fun previous => target previous
   targetDecidable := decidable
 
 def rankBudget
@@ -169,9 +169,9 @@ def dichotomy
 noncomputable def connectedComponents
     (profile : ConnectedSupportProfile Previous) (previous : Previous) :
     List (Graph.SupportComponents.Connected.Component
-      (profile.object.read previous) (profile.support.read previous)) :=
+      (profile.object previous) (profile.support previous)) :=
   Graph.SupportComponents.Connected.order
-    (profile.object.read previous) (profile.support.read previous)
+    (profile.object previous) (profile.support previous)
 
 /-! ## Graph-to-Core registered data builders
 

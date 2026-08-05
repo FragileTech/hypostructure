@@ -185,7 +185,7 @@ theorem outcomeChecks_le_limit {capability : Capability spec}
     outcomeChecks outcome <=
       localCheckBound (capability.payersAt previous)
         (capability.obstructionsAt previous)
-        (capability.tierTwo.read previous) := by
+        (capability.tierTwo previous) := by
   cases outcome with
   | tierOne residual =>
       have inspected : residual.index.1 + 1 <=
@@ -388,7 +388,7 @@ theorem checks_le_limit {capability : Capability spec} {previous : Previous}
     routed.checks <=
       localCheckBound (capability.payersAt previous)
         (capability.obstructionsAt previous)
-        (capability.tierTwo.read previous) :=
+        (capability.tierTwo previous) :=
   outcomeChecks_le_limit routed.outcome
 
 /-- Output-only routed work satisfies the capability polynomial envelope. -/
@@ -606,7 +606,7 @@ theorem generateCounted_checks_le_limit (capability : Capability spec)
     (generateCounted capability previous).checks <=
       localCheckBound (capability.payersAt previous)
         (capability.obstructionsAt previous)
-        (capability.tierTwo.read previous) := by
+        (capability.tierTwo previous) := by
   rw [generateCounted_checks]
   exact (generateCounted capability previous).value.checks_le_limit
 
@@ -734,7 +734,7 @@ theorem checks_le_limit {capability : Capability spec}
     result.checks <=
       localCheckBound (capability.payersAt result.stage.previous)
         (capability.obstructionsAt result.stage.previous)
-        (capability.tierTwo.read result.stage.previous) := by
+        (capability.tierTwo result.stage.previous) := by
   rw [result.checks_eq]
   exact outcomeChecks_le_limit result.stage.added.outcome
 

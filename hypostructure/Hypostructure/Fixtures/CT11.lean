@@ -66,7 +66,7 @@ abbrev spec : _root_.Hypostructure.CT11.Spec Previous where
     localBudgetFor (scenarioAt previous) cell
 
 def negativeTotalQuery : Core.Residual.Query Previous fun previous =>
-    ((cellQuery.read previous).values.map
+    ((cellQuery previous).values.map
       (spec.localBudget previous)).sum < 0 :=
   residualQuery.map fun previous _residual => by
     simpa [cellQuery, residualQuery, spec, scenarioAt] using
@@ -229,7 +229,7 @@ abbrev spec := _root_.Hypostructure.Graph.CT11.additiveSpec objectQuery
 
 def negativeTotalQuery :
     Core.Residual.Query Neutral.Previous fun previous =>
-      ((Neutral.cellQuery.read previous).values.map
+      ((Neutral.cellQuery previous).values.map
         (spec.localBudget previous)).sum < 0 :=
   Neutral.residualQuery.map fun previous _residual => by
     simpa [Neutral.cellQuery, Neutral.residualQuery, spec,
@@ -314,7 +314,7 @@ abbrev spec := _root_.Hypostructure.PDE.CT11.additiveSpec model stateQuery
 
 def negativeTotalQuery :
     Core.Residual.Query Neutral.Previous fun previous =>
-      ((Neutral.cellQuery.read previous).values.map
+      ((Neutral.cellQuery previous).values.map
         (spec.localBudget previous)).sum < 0 :=
   Neutral.residualQuery.map fun previous _residual => by
     simpa [Neutral.cellQuery, Neutral.residualQuery, spec,

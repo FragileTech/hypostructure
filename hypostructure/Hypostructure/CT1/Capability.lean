@@ -20,7 +20,7 @@ def searchCheckBound {Previous : Type uPrevious}
     (schedule : Core.Residual.Query Previous fun previous =>
       Core.Finite.Enumeration (spec.Candidate previous))
     (previous : Previous) : Nat :=
-  (schedule.read previous).card
+  (schedule previous).card
 
 /-- Minimal executable surface for exhaustive CT1 validation. -/
 structure Capability {Previous : Type uPrevious}
@@ -47,7 +47,7 @@ structure TargetBridge {Previous : Type uPrevious}
     (capability : Capability spec) (PublicTarget : Previous -> Prop) : Prop where
   equivalent : forall previous,
     PublicTarget previous <->
-      Target spec previous (capability.schedule.read previous)
+      Target spec previous (capability.schedule previous)
 
 namespace Capability
 
@@ -56,7 +56,7 @@ def scheduleAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uCandidate} Previous}
     (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Candidate previous) :=
-  capability.schedule.read previous
+  capability.schedule previous
 
 /-- Framework-visible worst-case polynomial work budget. -/
 def polynomialBudget {Previous : Type uPrevious}

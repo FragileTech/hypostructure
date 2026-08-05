@@ -76,7 +76,7 @@ structure Contract {Previous : Sort uPrevious}
   items : Focus.ActiveQuery focus fun _previous _active => List Item
   package :
     Focus.ActiveQuery focus fun previous active =>
-      (item : Item) -> item ∈ items.read previous active -> Package
+      (item : Item) -> item ∈ items previous active -> Package
 
 namespace Contract
 
@@ -87,8 +87,8 @@ variable (contract : Contract focus)
 structure Certificate (previous : Previous) (active : focus.Active previous) where
   package :
     (item : contract.Item) ->
-      item ∈ contract.items.read previous active -> contract.Package
-  exact : package = contract.package.read previous active
+      item ∈ contract.items previous active -> contract.Package
+  exact : package = contract.package previous active
 
 abbrev Stage :=
   Focus.Stage focus fun previous active =>
@@ -97,7 +97,7 @@ abbrev Stage :=
 /-- Register the package query as one proof-only focused extension. -/
 def registerCounted (previous : Previous) : Counted contract.Stage :=
   Focus.runCounted focus previous fun active _checks _exact =>
-    { package := contract.package.read previous active
+    { package := contract.package previous active
       exact := rfl }
 
 def register (previous : Previous) : contract.Stage :=
@@ -129,7 +129,7 @@ extension. -/
 def latestPackage :
     Focus.ActiveQuery contract.successor fun stage active =>
       (item : contract.Item) ->
-        item ∈ contract.items.read stage.previous active -> contract.Package :=
+        item ∈ contract.items stage.previous active -> contract.Package :=
   (Focus.ActiveQuery.latest).map fun _stage _active certificate =>
     certificate.package
 
@@ -137,10 +137,10 @@ def latestPackage :
 package query. -/
 def latestPackageExact :
     Focus.ActiveQuery contract.successor fun stage active =>
-      contract.latestPackage.read stage active =
-        contract.package.read stage.previous active :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    (Focus.ActiveQuery.latest.read stage active).exact
+      contract.latestPackage stage active =
+        contract.package stage.previous active :=
+  fun stage active =>
+    (Focus.ActiveQuery.latest stage active).exact
 
 /-- Read one selected package using item and membership queries owned by the
 same focused residual.  This is the standard replacement for downstream
@@ -151,12 +151,12 @@ def latestPackageAt
         contract.Item)
     (member :
       Focus.ActiveQuery contract.successor fun stage active =>
-        item.read stage active ∈ contract.items.read stage.previous active) :
+        item stage active ∈ contract.items stage.previous active) :
     Focus.ActiveQuery contract.successor fun _stage _active =>
       contract.Package :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    contract.latestPackage.read stage active
-      (item.read stage active) (member.read stage active)
+  fun stage active =>
+    contract.latestPackage stage active
+      (item stage active) (member stage active)
 
 /-- Project a non-dependent value from a selected package while keeping
 package retrieval inside the framework query API. -/
@@ -166,11 +166,11 @@ def latestPackageValue
         contract.Item)
     (member :
       Focus.ActiveQuery contract.successor fun stage active =>
-        item.read stage active ∈ contract.items.read stage.previous active)
+        item stage active ∈ contract.items stage.previous active)
     (Result : Sort uResult) (project : contract.Package -> Result) :
     Focus.ActiveQuery contract.successor fun _stage _active => Result :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    project ((contract.latestPackageAt item member).read stage active)
+  fun stage active =>
+    project ((contract.latestPackageAt item member) stage active)
 
 /-- Project a proof-valued obligation from a selected package. -/
 def latestPackageProof
@@ -179,24 +179,24 @@ def latestPackageProof
         contract.Item)
     (member :
       Focus.ActiveQuery contract.successor fun stage active =>
-        item.read stage active ∈ contract.items.read stage.previous active)
+        item stage active ∈ contract.items stage.previous active)
     (property : contract.Package -> Prop)
     (prove : (package : contract.Package) -> property package) :
     Focus.ActiveQuery contract.successor fun stage active =>
-      property ((contract.latestPackageAt item member).read stage active) :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    prove ((contract.latestPackageAt item member).read stage active)
+      property ((contract.latestPackageAt item member) stage active) :=
+  fun stage active =>
+    prove ((contract.latestPackageAt item member) stage active)
 
 @[simp] theorem latestPackage_read_active (previous : Previous)
     (active : focus.Active previous) :
-    contract.latestPackage.read
+    contract.latestPackage
         (Ledger.extend previous
           (.active active
-            ({ package := contract.package.read previous active
+            ({ package := contract.package previous active
                exact := rfl } :
               contract.Certificate previous active)))
         active =
-      contract.package.read previous active :=
+      contract.package previous active :=
   rfl
 
 end Contract
@@ -213,7 +213,7 @@ structure VerifiedContract {Previous : Sort uPrevious}
   items : Focus.ActiveQuery focus fun _previous _active => List Item
   package :
     Focus.ActiveQuery focus fun previous active =>
-      (item : Item) -> item ∈ items.read previous active -> VerifiedPackage
+      (item : Item) -> item ∈ items previous active -> VerifiedPackage
 
 namespace VerifiedContract
 
@@ -259,13 +259,13 @@ theorem registerCounted_checks (previous : Previous) :
 def latestPackage :
     Focus.ActiveQuery contract.successor fun stage active =>
       (item : contract.Item) ->
-        item ∈ contract.items.read stage.previous active -> VerifiedPackage :=
+        item ∈ contract.items stage.previous active -> VerifiedPackage :=
   (contract.toContract).latestPackage
 
 def latestPackageExact :
     Focus.ActiveQuery contract.successor fun stage active =>
-      contract.latestPackage.read stage active =
-        contract.package.read stage.previous active :=
+      contract.latestPackage stage active =
+        contract.package stage.previous active :=
   (contract.toContract).latestPackageExact
 
 def latestPackageAt
@@ -274,7 +274,7 @@ def latestPackageAt
         contract.Item)
     (member :
       Focus.ActiveQuery contract.successor fun stage active =>
-        item.read stage active ∈ contract.items.read stage.previous active) :
+        item stage active ∈ contract.items stage.previous active) :
     Focus.ActiveQuery contract.successor fun _stage _active =>
       VerifiedPackage :=
   (contract.toContract).latestPackageAt item member
@@ -285,11 +285,11 @@ def latestBoundaryCompatible
         contract.Item)
     (member :
       Focus.ActiveQuery contract.successor fun stage active =>
-        item.read stage active ∈ contract.items.read stage.previous active) :
+        item stage active ∈ contract.items stage.previous active) :
     Focus.ActiveQuery contract.successor fun stage active =>
-      ((contract.latestPackageAt item member).read stage active).boundaryCompatible :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    ((contract.latestPackageAt item member).read stage active).boundaryCompatibleProof
+      ((contract.latestPackageAt item member) stage active).boundaryCompatible :=
+  fun stage active =>
+    ((contract.latestPackageAt item member) stage active).boundaryCompatibleProof
 
 def latestSameResponse
     (item :
@@ -297,11 +297,11 @@ def latestSameResponse
         contract.Item)
     (member :
       Focus.ActiveQuery contract.successor fun stage active =>
-        item.read stage active ∈ contract.items.read stage.previous active) :
+        item stage active ∈ contract.items stage.previous active) :
     Focus.ActiveQuery contract.successor fun stage active =>
-      ((contract.latestPackageAt item member).read stage active).sameResponse :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    ((contract.latestPackageAt item member).read stage active).sameResponseProof
+      ((contract.latestPackageAt item member) stage active).sameResponse :=
+  fun stage active =>
+    ((contract.latestPackageAt item member) stage active).sameResponseProof
 
 def latestTargetComplete
     (item :
@@ -309,11 +309,11 @@ def latestTargetComplete
         contract.Item)
     (member :
       Focus.ActiveQuery contract.successor fun stage active =>
-        item.read stage active ∈ contract.items.read stage.previous active) :
+        item stage active ∈ contract.items stage.previous active) :
     Focus.ActiveQuery contract.successor fun stage active =>
-      ((contract.latestPackageAt item member).read stage active).targetComplete :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    ((contract.latestPackageAt item member).read stage active).targetCompleteProof
+      ((contract.latestPackageAt item member) stage active).targetComplete :=
+  fun stage active =>
+    ((contract.latestPackageAt item member) stage active).targetCompleteProof
 
 end VerifiedContract
 

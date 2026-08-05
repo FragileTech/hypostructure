@@ -24,42 +24,42 @@ theorem preserve_residual (stage : Stage) (added : Added stage) :
     residualOf (Ledger.extend stage added) = residualOf stage := rfl
 
 theorem preserve_summary (stage : Stage) (added : Added stage) :
-    (ledger.preserve (Added := Added)).summary.read (Ledger.extend stage added) =
-      ledger.summary.read stage := rfl
+    (ledger.preserve (Added := Added)).summary (Ledger.extend stage added) =
+      ledger.summary stage := rfl
 
 theorem preserve_partitionExact (stage : Stage) (added : Added stage) :
-    (ledger.preserve (Added := Added)).partitionExact.read
+    (ledger.preserve (Added := Added)).partitionExact
         (Ledger.extend stage added) =
-      ledger.partitionExact.read stage := rfl
+      ledger.partitionExact stage := rfl
 
 theorem preserve_selectedUniform (stage : Stage) (added : Added stage) :
-    (ledger.preserve (Added := Added)).selectedUniform.read
+    (ledger.preserve (Added := Added)).selectedUniform
         (Ledger.extend stage added) =
-      ledger.selectedUniform.read stage := rfl
+      ledger.selectedUniform stage := rfl
 
 theorem preserve_complementExact (stage : Stage) (added : Added stage) :
-    (ledger.preserve (Added := Added)).complementExact.read
+    (ledger.preserve (Added := Added)).complementExact
         (Ledger.extend stage added) =
-      ledger.complementExact.read stage := rfl
+      ledger.complementExact stage := rfl
 
 theorem preserve_ambient (stage : Stage) (added : Added stage) :
-    (ledger.preserve (Added := Added)).ambient.read (Ledger.extend stage added) =
-      ledger.ambient.read stage := rfl
+    (ledger.preserve (Added := Added)).ambient (Ledger.extend stage added) =
+      ledger.ambient stage := rfl
 
 theorem preserve_selected (stage : Stage) (added : Added stage) :
-    (ledger.preserve (Added := Added)).selected.read (Ledger.extend stage added) =
-      ledger.selected.read stage := rfl
+    (ledger.preserve (Added := Added)).selected (Ledger.extend stage added) =
+      ledger.selected stage := rfl
 
 theorem preserve_blocks (stage : Stage) (added : Added stage) :
-    (ledger.preserve (Added := Added)).blocks.read (Ledger.extend stage added) =
-      ledger.blocks.read stage := rfl
+    (ledger.preserve (Added := Added)).blocks (Ledger.extend stage added) =
+      ledger.blocks stage := rfl
 
 theorem preserve_coverCardExact (stage : Stage) (added : Added stage) :
-    (ledger.preserve (Added := Added)).coverCardExact.read
-      (Ledger.extend stage added) = ledger.coverCardExact.read stage := rfl
+    (ledger.preserve (Added := Added)).coverCardExact
+      (Ledger.extend stage added) = ledger.coverCardExact stage := rfl
 
 theorem preserve_entropyCap (stage : Stage) (added : Added stage) :
-    (Hypostructure.Core.Strategy.FiniteDensityBudget.CapLedger.preserve capLedger (Added := Added)).entropyCap.read
-        (Ledger.extend stage added) = capLedger.entropyCap.read stage := rfl
+    (Hypostructure.Core.Strategy.FiniteDensityBudget.CapLedger.preserve capLedger (Added := Added)).entropyCap
+        (Ledger.extend stage added) = capLedger.entropyCap stage := rfl
 
 end Hypostructure.Fixtures.SupportComplementNormalizationPublishedFacts

@@ -39,7 +39,7 @@ structure Semantics
     Tight previous → Slack previous → Prop
   Critical : (previous : Previous) → Atomic previous → Prop
   subobject : (previous : Previous) →
-    Atomic previous → Subobject (context.read previous).G
+    Atomic previous → Subobject (context previous).G
   baseline_of_not_critical :
     ∀ (previous : Previous) (modification : Atomic previous),
       ¬ Critical previous modification →
@@ -70,7 +70,7 @@ abbrev NoSubobjectQuery
       (Subobject := Subobject) (profile := profile) Previous) :=
   Query Previous (fun previous =>
     Core.Minimality.NoSubobjectBaselineCertificate profile
-      (semantics.context.read previous))
+      (semantics.context previous))
 
 /-- First appended output: every incoming-stage atomic modification is
 critical. -/

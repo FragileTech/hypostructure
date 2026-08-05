@@ -30,11 +30,11 @@ def orderedActivitySpec {Previous : Type uPrevious}
   Index := Index
   FailureData := FailureData
   Failure := fun previous index =>
-    failure previous (object.read previous) index
+    failure previous (object previous) index
   failureData := fun previous index failed =>
-    failureData previous (object.read previous) index failed
+    failureData previous (object previous) index failed
   contribution := fun previous index =>
-    contribution previous (object.read previous) index
+    contribution previous (object previous) index
 
 /-- Construct the common CT6 capability from residual-owned graph sites and
 their primitive activity decider. -/
@@ -58,14 +58,14 @@ def orderedActivityCapability {Previous : Type uPrevious}
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
       _root_.Hypostructure.CT6.localCheckBound
-          (failureOrder.read previous) <=
+          (failureOrder previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT6.Capability
       (orderedActivitySpec object Index FailureData failure failureData
         contribution) where
   failureOrder := failureOrder
   failureDecidable := fun previous index =>
-    failureDecidable previous (object.read previous) index
+    failureDecidable previous (object previous) index
   inputSize := inputSize
   workCoefficient := workCoefficient
   workDegree := workDegree

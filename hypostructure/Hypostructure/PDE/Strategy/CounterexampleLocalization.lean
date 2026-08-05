@@ -129,7 +129,7 @@ def equationStateQuery
       Core.MinimalCounterexampleContext M.problem T.Predicate
         (registration M T).selection.progress) :
     Core.Residual.Query Previous fun previous =>
-      let focused := (focusQuery presentation context).read previous
+      let focused := (focusQuery presentation context) previous
       PDE.EquationState M.equation focused.2.outer :=
   (activeResidualQuery (T := T) context).dependentMap fun _ residual =>
     presentation.outerState residual
@@ -168,11 +168,11 @@ def activeQuery : Core.Residual.Query Previous fun _ => PDE.ActiveResidual M :=
   activeResidualQuery (T := T) profile.context
 
 def baselineQuery : Core.Residual.Query Previous fun previous =>
-    M.problem.Baseline (profile.objectQuery.read previous) :=
+    M.problem.Baseline (profile.objectQuery previous) :=
   profile.context.dependentMap fun _ context => context.baseline
 
 def avoidingQuery : Core.Residual.Query Previous fun previous =>
-    Not (T.Predicate (profile.objectQuery.read previous)) :=
+    Not (T.Predicate (profile.objectQuery previous)) :=
   profile.context.dependentMap fun _ context => context.avoids
 
 /-! ### Steps 3 and 4, wired by the framework

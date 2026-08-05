@@ -29,16 +29,16 @@ structure Profile {Previous : Type uPrevious}
     (object : M.problem.Ambient) -> Decidable (saturated previous object)
   residual : (previous : Previous) -> Core.Finite.Enumeration (Item previous)
   saturationSound : (previous : Previous) -> saturated previous
-      (state.read previous) ->
-      residual previous = support.read previous
+      (state previous) ->
+      residual previous = support previous
 
 def strategy {Previous : Type uPrevious} {M : PDE.LocalModel.{uModel}}
     (profile : Profile (M := M) (Previous := Previous)) :
     Core.Strategy.Contract Previous :=
   Core.Strategy.binaryContract
-    (fun previous => profile.saturated previous (profile.state.read previous))
+    (fun previous => profile.saturated previous (profile.state previous))
     (fun previous => profile.saturatedDecidable previous
-      (profile.state.read previous))
+      (profile.state previous))
     profile.residual
 
 end Hypostructure.PDE.FastTrack.Saturation

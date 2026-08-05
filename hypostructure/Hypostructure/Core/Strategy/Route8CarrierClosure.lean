@@ -64,19 +64,19 @@ def residualQuery (profile : Profile Previous Residual AmbientItem) :
 def carrierSpec (profile : Profile Previous Residual AmbientItem) :
     CT5.Spec Previous where
   budget := profile.registration.budget
-  Site := fun previous => AmbientItem (profile.residualQuery.read previous)
+  Site := fun previous => AmbientItem (profile.residualQuery previous)
   Witness := fun previous =>
-    profile.registration.Witness (profile.residualQuery.read previous)
+    profile.registration.Witness (profile.residualQuery previous)
   Active := fun previous =>
-    profile.registration.Active (profile.residualQuery.read previous)
+    profile.registration.Active (profile.residualQuery previous)
   Supports := fun previous =>
-    profile.registration.Supports (profile.residualQuery.read previous)
+    profile.registration.Supports (profile.residualQuery previous)
   contribution := fun previous =>
-    profile.registration.witnessContribution (profile.residualQuery.read previous)
+    profile.registration.witnessContribution (profile.residualQuery previous)
   required := fun previous =>
-    profile.registration.required (profile.residualQuery.read previous)
+    profile.registration.required (profile.residualQuery previous)
   capacity := fun previous =>
-    profile.registration.capacity (profile.residualQuery.read previous)
+    profile.registration.capacity (profile.residualQuery previous)
 
 def carrierFamily (profile : Profile Previous Residual AmbientItem) :
     Query Previous fun previous =>
@@ -91,10 +91,10 @@ def carrierCapability (profile : Profile Previous Residual AmbientItem) :
   family := profile.carrierFamily
   activeDecidable := fun previous site =>
     profile.registration.activeDecidable
-      (profile.residualQuery.read previous) site
+      (profile.residualQuery previous) site
   supportsDecidable := fun previous site witness =>
     profile.registration.supportsDecidable
-      (profile.residualQuery.read previous) site witness
+      (profile.residualQuery previous) site witness
   resourceLEDecidable := profile.registration.resourceLEDecidable
 
 noncomputable def carrierExecution (profile : Profile Previous Residual AmbientItem) :
@@ -122,18 +122,18 @@ def ct5AndResidual (profile : Profile Previous Residual AmbientItem) :
 
 def censusSpec (profile : Profile Previous Residual AmbientItem) :
     CT14.Spec profile.AfterCarriers where
-  Member := fun stage => AmbientItem (profile.residualAfterCarriers.read stage)
+  Member := fun stage => AmbientItem (profile.residualAfterCarriers stage)
   Label := fun stage =>
-    profile.registration.Label (profile.residualAfterCarriers.read stage)
+    profile.registration.Label (profile.residualAfterCarriers stage)
   memberLowerMass := fun stage member =>
     profile.registration.memberLowerMass
-      (profile.residualAfterCarriers.read stage) member
+      (profile.residualAfterCarriers stage) member
   memberCapacity := fun stage member =>
     profile.registration.memberCapacity
-      (profile.residualAfterCarriers.read stage) member
+      (profile.residualAfterCarriers stage) member
   memberLabel := fun stage member =>
     profile.registration.memberLabel
-      (profile.residualAfterCarriers.read stage) member
+      (profile.residualAfterCarriers stage) member
 
 def censusMembers (profile : Profile Previous Residual AmbientItem) :
     Query profile.AfterCarriers fun stage =>
@@ -146,9 +146,9 @@ def censusCapability (profile : Profile Previous Residual AmbientItem) :
   members := profile.censusMembers
   labelDecidableEq := fun stage =>
     profile.registration.labelDecidableEq
-      (profile.residualAfterCarriers.read stage)
+      (profile.residualAfterCarriers stage)
   inputSize := fun stage =>
-    CT14.localCheckBound (profile.censusMembers.read stage)
+    CT14.localCheckBound (profile.censusMembers stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -172,27 +172,27 @@ def residualAfterCensus (profile : Profile Previous Residual AmbientItem) :
 def descentSpec (profile : Profile Previous Residual AmbientItem) :
     CT12.Spec profile.AfterCensus where
   State := fun stage =>
-    profile.registration.State (profile.residualAfterCensus.read stage)
+    profile.registration.State (profile.residualAfterCensus stage)
   Peeled := fun state => profile.registration.Peeled state
   DemandResidual := fun stage =>
-    profile.registration.DemandResidual (profile.residualAfterCensus.read stage)
+    profile.registration.DemandResidual (profile.residualAfterCensus stage)
   TierResidual := fun stage =>
-    profile.registration.TierResidual (profile.residualAfterCensus.read stage)
+    profile.registration.TierResidual (profile.residualAfterCensus stage)
   peel := fun state => profile.registration.peel state
   restorations := fun peeled => profile.registration.restorations peeled
 
 def descentInitial (profile : Profile Previous Residual AmbientItem) :
     Query profile.AfterCensus (CT12.InitialState profile.descentSpec) :=
-  Query.ofFunction fun stage =>
+   fun stage =>
     { load := profile.registration.initialLoad
-        (profile.residualAfterCensus.read stage)
+        (profile.residualAfterCensus stage)
       state := profile.registration.initialState
-        (profile.residualAfterCensus.read stage) }
+        (profile.residualAfterCensus stage) }
 
 def descentCapability (profile : Profile Previous Residual AmbientItem) :
     CT12.Capability profile.descentSpec where
   initial := profile.descentInitial
-  inputSize := fun stage => (profile.descentInitial.read stage).load
+  inputSize := fun stage => (profile.descentInitial stage).load
   -- Both are read off CT12's own check schedule rather than written.  The
   -- coefficient is the cost CT12 charges a single peel, `maximumChecks 1`, and
   -- the degree is one because an exact erase removes one entry per step, so the

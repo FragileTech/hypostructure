@@ -403,11 +403,11 @@ def attachmentLabelSafeQuery {Stage : Sort v}
     (activeObject : Core.Residual.Query Stage fun _ => FiniteObject.{u})
     (avoidance : Core.Residual.Query Stage fun stage =>
       TargetClosure.AvoidsTarget (HasCycleWithLength PowerOfTwoLength)
-        (activeObject.read stage)) :
+        (activeObject stage)) :
     Core.Residual.Query Stage fun stage =>
       ∀ (order : Nat)
-        (window : InducedPathMaximalPacking.Window (activeObject.read stage) order)
-        (outsideVertex : (activeObject.read stage).Vertex),
+        (window : InducedPathMaximalPacking.Window (activeObject stage) order)
+        (outsideVertex : (activeObject stage).Vertex),
         (∀ index : Fin order, outsideVertex ≠ window index) →
           Safe 0 (attachmentLabel window outsideVertex)
             (attachmentLabel window outsideVertex) :=
@@ -426,11 +426,11 @@ def attachmentLabelLegalQuery {Stage : Sort v}
     (activeObject : Core.Residual.Query Stage fun _ => FiniteObject.{u})
     (avoidance : Core.Residual.Query Stage fun stage =>
       TargetClosure.AvoidsTarget (HasCycleWithLength PowerOfTwoLength)
-        (activeObject.read stage)) :
+        (activeObject stage)) :
     Core.Residual.Query Stage fun stage =>
       ∀ (order : Nat)
-        (window : InducedPathMaximalPacking.Window (activeObject.read stage) order)
-        (outsideVertex : (activeObject.read stage).Vertex),
+        (window : InducedPathMaximalPacking.Window (activeObject stage) order)
+        (outsideVertex : (activeObject stage).Vertex),
         (∀ index : Fin order, outsideVertex ≠ window index) →
           (attachmentLabel window outsideVertex).Nonempty →
             attachmentLabel window outsideVertex ∈ Labels order :=

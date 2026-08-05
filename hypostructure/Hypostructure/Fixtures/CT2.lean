@@ -61,7 +61,7 @@ def piecesQuery : Core.Residual.Query Previous fun _previous =>
     (Core.Residual.residualOf previous).pieces
 
 def selectedIndexQuery : Core.Residual.Query Previous fun previous =>
-    Fin (piecesQuery.read previous).card :=
+    Fin (piecesQuery previous).card :=
   residualQuery.map fun previous _residual => by
     let source := Core.Residual.residualOf previous
     exact Fin.cast (by rfl) source.selected
@@ -221,12 +221,12 @@ def contextQuery : Core.Residual.Query Previous fun _previous =>
     (Core.Residual.residualOf previous).inheritedContext
 
 def edgeQuery : Core.Residual.Query Previous fun previous =>
-    Core.Finite.Enumeration ((contextQuery.read previous).G.graph.edgeSet) :=
+    Core.Finite.Enumeration ((contextQuery previous).G.graph.edgeSet) :=
   residualQuery.map fun previous _residual =>
     (Core.Residual.residualOf previous).edges
 
 def selectedIndexQuery : Core.Residual.Query Previous fun previous =>
-    Fin (edgeQuery.read previous).card :=
+    Fin (edgeQuery previous).card :=
   residualQuery.map fun previous _residual => by
     let source := Core.Residual.residualOf previous
     exact Fin.cast (by rfl) source.selected

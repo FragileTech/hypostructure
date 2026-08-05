@@ -31,11 +31,11 @@ def orderedActivitySpec {Previous : Type uPrevious}
   Index := Index
   FailureData := FailureData
   Failure := fun previous index =>
-    failure previous (state.read previous) index
+    failure previous (state previous) index
   failureData := fun previous index failed =>
-    failureData previous (state.read previous) index failed
+    failureData previous (state previous) index failed
   contribution := fun previous index =>
-    contribution previous (state.read previous) index
+    contribution previous (state previous) index
 
 /-- Construct the common CT6 capability from a predecessor-owned PDE order
 and its primitive represented failure decider. -/
@@ -59,14 +59,14 @@ def orderedActivityCapability {Previous : Type uPrevious}
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
       _root_.Hypostructure.CT6.localCheckBound
-          (failureOrder.read previous) <=
+          (failureOrder previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT6.Capability
       (orderedActivitySpec M state Index FailureData failure failureData
         contribution) where
   failureOrder := failureOrder
   failureDecidable := fun previous index =>
-    failureDecidable previous (state.read previous) index
+    failureDecidable previous (state previous) index
   inputSize := inputSize
   workCoefficient := workCoefficient
   workDegree := workDegree
@@ -92,17 +92,17 @@ def focusedScheduleEvents {Previous : Type uPrevious}
     (runner :
       Core.Residual.Focus.ActiveQuery focus
         fun previous active =>
-          (item : Item) -> Output (state.read previous active) item)
+          (item : Item) -> Output (state previous active) item)
     (event : (previous : Previous) -> (active : focus.Active previous) ->
-      (item : Item) -> Output (state.read previous active) item -> Prop)
+      (item : Item) -> Output (state previous active) item -> Prop)
     (eventDecidable :
       (previous : Previous) -> (active : focus.Active previous) ->
         (item : Item) ->
           Decidable (event previous active item
-            ((runner.read previous active) item))) :
+            ((runner previous active) item))) :
     Core.Finite.ScheduleEvents.FocusedContract focus :=
   Core.Finite.ScheduleEvents.focusedFromQueries Item items
-    (fun previous active item => Output (state.read previous active) item)
+    (fun previous active item => Output (state previous active) item)
     runner event eventDecidable
 
 end Hypostructure.PDE.CT6

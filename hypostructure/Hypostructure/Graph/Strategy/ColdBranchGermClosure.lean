@@ -30,7 +30,7 @@ theorem storedF1Target
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f1) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f1) :
     Graph.HasCycleWithLength CycleLengthOK object := by
   let family := canonicalFamilyProducer profile CycleLengthOK
     cycleLengthDecidable Target decideTarget handoffItems handoffSupport
@@ -57,7 +57,7 @@ theorem storedF1DisjunctiveTarget
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f1)
+      family.FailureOwner (family.storedClassificationQuery stage) .f1)
     (Rest : FiniteObject.{u} → Prop) :
     Graph.HasCycleWithLength CycleLengthOK object ∨ Rest object :=
   Or.inl (storedF1Target profile CycleLengthOK cycleLengthDecidable Target
@@ -97,7 +97,7 @@ theorem storedF3Impossible
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f3) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f3) :
     False := by
   let family := canonicalFamilyProducer profile CycleLengthOK
     cycleLengthDecidable Target decideTarget handoffItems handoffSupport
@@ -132,7 +132,7 @@ theorem repeatedResponseEqual
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.RepeatedF5Owner (family.classifiedStateQuery.read view.previous)) :
+      family.RepeatedF5Owner (family.classifiedStateQuery view.previous)) :
     germTargetResponse owner.1.1.1.1.1 owner.1.1.1.1.2 Target decideTarget
         (canonicalRepeatedEarlier profile CycleLengthOK cycleLengthDecidable
           Target decideTarget handoffItems handoffSupport view owner) =
@@ -228,7 +228,7 @@ theorem repeatedNoTargetDefect
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.RepeatedF5Owner (family.classifiedStateQuery.read view.previous)) :
+      family.RepeatedF5Owner (family.classifiedStateQuery view.previous)) :
     ¬ F2TargetDefect owner.1.1.1.1.1 owner.1.1.1.1.2 Target
         (canonicalRepeatedEarlier profile CycleLengthOK cycleLengthDecidable
           Target decideTarget handoffItems handoffSupport view owner)
@@ -323,7 +323,7 @@ theorem repeatedNoResponseMismatch
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.RepeatedF5Owner (family.classifiedStateQuery.read view.previous))
+      family.RepeatedF5Owner (family.classifiedStateQuery view.previous))
     (coordinate : DeclaredColdCoordinate) :
     ¬ _root_.Hypostructure.CT7.ResponseMismatch
         (canonicalF5CT7Capability (Previous := Previous) profile CycleLengthOK

@@ -30,7 +30,7 @@ structure Profile (Previous : Type uPrevious) where
   ledger : Residual.Query Previous fun _previous =>
     ClosedClassLedger closure TargetNull
   quotient : (previous : Previous) ->
-    LedgerQuotient.{uCarrier, uQuotient} (ledger.read previous)
+    LedgerQuotient.{uCarrier, uQuotient} (ledger previous)
   TargetVisible : (previous : Previous) ->
     (quotient previous).Quotient -> Prop
   targetVisibleDecidable : (previous : Previous) ->
@@ -54,12 +54,12 @@ variable {Previous : Type uPrevious}
 
 /-- The exact remainder enumeration queried from the predecessor ledger. -/
 abbrev familyAt (previous : Previous) : Finite.Enumeration profile.Carrier :=
-  profile.family.read previous
+  profile.family previous
 
 /-- The exact accumulated closed-class ledger queried from the predecessor. -/
 abbrev ledgerAt (previous : Previous) :
     ClosedClassLedger profile.closure profile.TargetNull :=
-  profile.ledger.read previous
+  profile.ledger previous
 
 /-- The registered target projection at the literal predecessor. -/
 abbrev quotientAt (previous : Previous) :

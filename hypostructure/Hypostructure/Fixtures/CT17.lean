@@ -107,8 +107,8 @@ def spec : _root_.Hypostructure.CT17.Spec Previous where
 
 def localSize (previous : Previous) : Nat :=
   _root_.Hypostructure.CT17.localCheckBound
-    (targetQuery.read previous) (offsetQuery.read previous)
-    ((positionQuery (selectedScaleQuery.read previous)).read previous)
+    (targetQuery previous) (offsetQuery previous)
+    ((positionQuery (selectedScaleQuery previous)) previous)
 
 def capability : _root_.Hypostructure.CT17.Capability spec where
   targets := targetQuery
@@ -219,7 +219,7 @@ theorem survivor_list :
       (previous .survivors) = [true] := rfl
 
 theorem orbit_values :
-    (offsetQuery.read (previous .orbit)).values.map
+    (offsetQuery (previous .orbit)).values.map
         (fun offset => if offset then 100 else 99) =
       ([99, 100] : List Nat) := rfl
 
@@ -350,8 +350,8 @@ def spec := Graph.CT17.boundedTargetSpec objectQuery
 
 def localSize (previous : Previous) : Nat :=
   _root_.Hypostructure.CT17.localCheckBound
-    (targets.read previous) (offsets.read previous)
-    ((positions (selectedScale.read previous)).read previous)
+    (targets previous) (offsets previous)
+    ((positions (selectedScale previous)) previous)
 
 def capability := Graph.CT17.boundedTargetCapability objectQuery
   (fun _previous => Bool) (fun _previous => Bool)
@@ -491,8 +491,8 @@ def spec := PDE.CT17.boundedScaleSpec model stateQuery
 
 def localSize (previous : Previous) : Nat :=
   _root_.Hypostructure.CT17.localCheckBound
-    (targets.read previous) (offsets.read previous)
-    ((positions (selectedScale.read previous)).read previous)
+    (targets previous) (offsets previous)
+    ((positions (selectedScale previous)) previous)
 
 def capability := PDE.CT17.boundedScaleCapability model stateQuery
   (fun _previous => Bool) (fun _previous => Bool)

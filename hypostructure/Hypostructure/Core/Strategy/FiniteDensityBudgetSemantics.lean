@@ -43,33 +43,33 @@ structure CapLedger (Stage : Type uStage) where
     (fun _ => FiniteBarrierEnumeration.Summary)
   ambientCapacity : Query Stage (fun _ => Nat)
   cap : Query Stage fun stage =>
-    (barrierSummary.read stage).safeProduct ^ packingCount.read stage ≤
-      (barrierSummary.read stage).flatProduct ^ packingCount.read stage *
-        ambientCapacity.read stage
+    (barrierSummary stage).safeProduct ^ packingCount stage ≤
+      (barrierSummary stage).flatProduct ^ packingCount stage *
+        ambientCapacity stage
   /-- The exact entropy-form cap derived from the retained CT14 comparison.
   This is published as a query so downstream Strategies can consume the
   density fact without unfolding the predecessor or replaying CT14. -/
   entropyCap : Query Stage fun stage =>
-    2 ^ ((barrierSummary.read stage).binaryRateFloor *
-      packingCount.read stage) ≤ ambientCapacity.read stage
+    2 ^ ((barrierSummary stage).binaryRateFloor *
+      packingCount stage) ≤ ambientCapacity stage
   /-- The represented ambient state space is nonempty.  This is the density
   registration's own `ambientCapacity_pos`, forwarded rather than reproved --
   for the graph presentation it is `skeletonBudget_pos`, the statement that the
   residual object's own edge count is an admissible edge count on its own
   vertex set. -/
   ambientCapacity_pos : Query Stage fun stage =>
-    0 < ambientCapacity.read stage
+    0 < ambientCapacity stage
   /-- The compared barrier `Summary` is the one Core derived by `ofRows`, so
   its `binaryRateFloor` is a genuine `log₂` of its own aggregation columns and
   not a free field.  Produced at the barrier node and transported here by the
   compiler through `FiniteBarrierEnumeration.RateLedger`. -/
   barrierDerived : Query Stage fun stage =>
-    FiniteBarrierEnumeration.Summary.Derived (barrierSummary.read stage)
+    FiniteBarrierEnumeration.Summary.Derived (barrierSummary stage)
   /-- The compared barrier `Summary`'s flat column -- the denominator of the
   flatness ratio `log₂(W/F)` -- is nonvanishing, as proved and published by the
   sealed barrier strategy. -/
   barrierFlatPositive : Query Stage fun stage =>
-    0 < (barrierSummary.read stage).flatProduct
+    0 < (barrierSummary stage).flatProduct
   /-- **`def:near-cubic-spine`, retained on this node's own ledger.**  The
   node-`[19]` `scaleThresholdDichotomy`'s at-or-below branch load, carried
   forward rather than re-derived: `degreeSurplusLoad` is that branch's own
@@ -80,7 +80,7 @@ structure CapLedger (Stage : Type uStage) where
   /-- The node-`[19]` at-or-below comparison itself, i.e. `def:near-cubic-spine`
   read off the retained branch payload -- never re-derived, never assumed. -/
   nearCubic : Query Stage fun stage =>
-    degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage
+    degreeSurplusLoad stage ≤ degreeSurplusThreshold stage
 
 namespace CapLedger
 
@@ -130,21 +130,21 @@ several ledger extensions below the producing node can still read it. -/
 theorem two_pow_rate_mul_packingCount_le_ambientCapacity
     (ledger : CapLedger Stage) (stage : Stage) {rate : Nat}
     (rateFloor :
-      2 ^ rate * (ledger.barrierSummary.read stage).flatProduct ≤
-        (ledger.barrierSummary.read stage).safeProduct)
+      2 ^ rate * (ledger.barrierSummary stage).flatProduct ≤
+        (ledger.barrierSummary stage).safeProduct)
     (flatPositive :
-      0 < (ledger.barrierSummary.read stage).flatProduct) :
-    2 ^ (rate * ledger.packingCount.read stage) ≤
-      ledger.ambientCapacity.read stage := by
-  have capExact := ledger.cap.read stage
-  set packing := ledger.packingCount.read stage with packingDef
-  set flat := (ledger.barrierSummary.read stage).flatProduct with flatDef
-  set safe := (ledger.barrierSummary.read stage).safeProduct with safeDef
+      0 < (ledger.barrierSummary stage).flatProduct) :
+    2 ^ (rate * ledger.packingCount stage) ≤
+      ledger.ambientCapacity stage := by
+  have capExact := ledger.cap stage
+  set packing := ledger.packingCount stage with packingDef
+  set flat := (ledger.barrierSummary stage).flatProduct with flatDef
+  set safe := (ledger.barrierSummary stage).safeProduct with safeDef
   have raised : (2 ^ rate * flat) ^ packing ≤ safe ^ packing :=
     Nat.pow_le_pow_left rateFloor _
   rw [mul_pow, ← pow_mul] at raised
   have chain : 2 ^ (rate * packing) * flat ^ packing ≤
-      flat ^ packing * ledger.ambientCapacity.read stage :=
+      flat ^ packing * ledger.ambientCapacity stage :=
     le_trans raised capExact
   rw [mul_comm (flat ^ packing)] at chain
   exact Nat.le_of_mul_le_mul_right chain (Nat.pow_pos flatPositive)
@@ -173,16 +173,16 @@ No numeral, no rounding, and no `o(·)` term enters, and every symbol is a read
 from the stage this ledger is indexed by. -/
 theorem two_pow_binaryRateFloor_mul_packingCount_le_ambientCapacity
     (ledger : CapLedger Stage) (stage : Stage) :
-    2 ^ ((ledger.barrierSummary.read stage).binaryRateFloor *
-          ledger.packingCount.read stage) ≤
-      ledger.ambientCapacity.read stage := by
-  rcases (ledger.barrierDerived.read
+    2 ^ ((ledger.barrierSummary stage).binaryRateFloor *
+          ledger.packingCount stage) ≤
+      ledger.ambientCapacity stage := by
+  rcases (ledger.barrierDerived
       stage).two_pow_binaryRateFloor_mul_flatProduct_le_or_eq_zero with
     rateFloor | rateZero
   · exact ledger.two_pow_rate_mul_packingCount_le_ambientCapacity stage
-      rateFloor (ledger.barrierFlatPositive.read stage)
+      rateFloor (ledger.barrierFlatPositive stage)
   · rw [rateZero, Nat.zero_mul, pow_zero]
-    exact ledger.ambientCapacity_pos.read stage
+    exact ledger.ambientCapacity_pos stage
 
 /-- **The rate ceiling of the compared barrier table, read off the density
 ledger.**  `binaryRateFloor` under-reports the table's true flatness cost by
@@ -193,12 +193,12 @@ coincide only when `safeProduct / flatProduct` is an exact power of two, which
 the registered `P₁₃` window table's `2 ^ 118.10858…` is not. -/
 theorem safeProduct_le_two_pow_succ_binaryRateFloor_mul_flatProduct
     (ledger : CapLedger Stage) (stage : Stage) :
-    (ledger.barrierSummary.read stage).safeProduct ≤
-      2 ^ ((ledger.barrierSummary.read stage).binaryRateFloor + 1) *
-        (ledger.barrierSummary.read stage).flatProduct :=
-  (ledger.barrierDerived.read
+    (ledger.barrierSummary stage).safeProduct ≤
+      2 ^ ((ledger.barrierSummary stage).binaryRateFloor + 1) *
+        (ledger.barrierSummary stage).flatProduct :=
+  (ledger.barrierDerived
       stage).safeProduct_le_two_pow_succ_binaryRateFloor_mul_flatProduct
-    (ledger.barrierFlatPositive.read stage)
+    (ledger.barrierFlatPositive stage)
 
 end CapLedger
 

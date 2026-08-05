@@ -304,9 +304,9 @@ abbrev FocusedLexicographicMinimalOutput
     (_object : Core.Residual.Focus.ActiveQuery focus
       (fun _previous _active => FiniteObject.{u}))
     (_baseline : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Baseline (_object.read previous active)))
+      (fun previous active => Baseline (_object previous active)))
     (_avoids : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Not (Target (_object.read previous active))))
+      (fun previous active => Not (Target (_object previous active))))
     (_stage : Previous) (_active : focus.Active _stage) :=
   Core.MinimalCounterexampleContext
     (problem Baseline BranchState) Target
@@ -323,9 +323,9 @@ abbrev FocusedLexicographicMinimalStage
     (object : Core.Residual.Focus.ActiveQuery focus
       (fun _previous _active => FiniteObject.{u}))
     (baseline : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Baseline (object.read previous active)))
+      (fun previous active => Baseline (object previous active)))
     (avoids : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Not (Target (object.read previous active)))) :=
+      (fun previous active => Not (Target (object previous active)))) :=
   Core.Residual.Focus.Stage focus
     (FocusedLexicographicMinimalOutput (BranchState := BranchState)
       focus object baseline avoids)
@@ -341,9 +341,9 @@ abbrev FocusedLexicographicMinimalProfile
     (object : Core.Residual.Focus.ActiveQuery focus
       (fun _previous _active => FiniteObject.{u}))
     (baseline : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Baseline (object.read previous active)))
+      (fun previous active => Baseline (object previous active)))
     (avoids : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Not (Target (object.read previous active)))) :=
+      (fun previous active => Not (Target (object previous active)))) :=
   Core.Residual.Focus.successor focus
     (FocusedLexicographicMinimalOutput (BranchState := BranchState)
       focus object baseline avoids)
@@ -359,9 +359,9 @@ def focusedLexicographicMinimalContextQuery
     (object : Core.Residual.Focus.ActiveQuery focus
       (fun _previous _active => FiniteObject.{u}))
     (baseline : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Baseline (object.read previous active)))
+      (fun previous active => Baseline (object previous active)))
     (avoids : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Not (Target (object.read previous active)))) :
+      (fun previous active => Not (Target (object previous active)))) :
     Core.Residual.Focus.ActiveQuery
       (FocusedLexicographicMinimalProfile (BranchState := BranchState)
         focus object baseline avoids)
@@ -381,9 +381,9 @@ noncomputable def executeFocusedLexicographicMinimalCounted
     (object : Core.Residual.Focus.ActiveQuery focus
       (fun _previous _active => FiniteObject.{u}))
     (baseline : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Baseline (object.read previous active)))
+      (fun previous active => Baseline (object previous active)))
     (avoids : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Not (Target (object.read previous active))))
+      (fun previous active => Not (Target (object previous active))))
     (stateOf : (current : FiniteObject.{u}) -> BranchState current)
     (previous : Previous) :
     Core.Counted
@@ -393,8 +393,8 @@ noncomputable def executeFocusedLexicographicMinimalCounted
     (Output := FocusedLexicographicMinimalOutput
       (BranchState := BranchState) focus object baseline avoids) previous
     fun active _checks _exact =>
-      selectLexicographicMinimal (object.read previous active)
-        (baseline.read previous active) (avoids.read previous active)
+      selectLexicographicMinimal (object previous active)
+        (baseline previous active) (avoids previous active)
         stateOf
 
 /-- Public stage projection of Graph's lexicographic minimal-counterexample
@@ -408,9 +408,9 @@ noncomputable def executeFocusedLexicographicMinimal
     (object : Core.Residual.Focus.ActiveQuery focus
       (fun _previous _active => FiniteObject.{u}))
     (baseline : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Baseline (object.read previous active)))
+      (fun previous active => Baseline (object previous active)))
     (avoids : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Not (Target (object.read previous active))))
+      (fun previous active => Not (Target (object previous active))))
     (stateOf : (current : FiniteObject.{u}) -> BranchState current)
     (previous : Previous) :
     FocusedLexicographicMinimalStage (BranchState := BranchState)
@@ -427,9 +427,9 @@ noncomputable def executeFocusedLexicographicMinimal
     (object : Core.Residual.Focus.ActiveQuery focus
       (fun _previous _active => FiniteObject.{u}))
     (baseline : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Baseline (object.read previous active)))
+      (fun previous active => Baseline (object previous active)))
     (avoids : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Not (Target (object.read previous active))))
+      (fun previous active => Not (Target (object previous active))))
     (stateOf : (current : FiniteObject.{u}) -> BranchState current)
     (previous : Previous) :
     (executeFocusedLexicographicMinimalCounted focus object baseline avoids
@@ -447,9 +447,9 @@ theorem executeFocusedLexicographicMinimalCounted_work_within
     (object : Core.Residual.Focus.ActiveQuery focus
       (fun _previous _active => FiniteObject.{u}))
     (baseline : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Baseline (object.read previous active)))
+      (fun previous active => Baseline (object previous active)))
     (avoids : Core.Residual.Focus.ActiveQuery focus
-      (fun previous active => Not (Target (object.read previous active))))
+      (fun previous active => Not (Target (object previous active))))
     (stateOf : (current : FiniteObject.{u}) -> BranchState current)
     (previous : Previous) :
     focus.selectionBudget.Within previous

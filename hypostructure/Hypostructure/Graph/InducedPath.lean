@@ -55,7 +55,7 @@ def focusedInducedPathEncoding {Previous : Type uPrevious}
     (order : Nat) :
     _root_.Hypostructure.CT1.FocusedCertificateEncoding.Encoding profile
       (fun previous active =>
-        HasInducedPath (object.read previous active) order) :=
+        HasInducedPath (object previous active) order) :=
   focusedInducedObstructionEncoding profile object (inducedPathObstruction order)
 
 /-- Counted focused CT1 execution for an induced-path certificate target. -/

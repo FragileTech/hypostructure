@@ -89,17 +89,17 @@ def canonicalMembers : Core.Finite.Enumeration Unit :=
 def spec : CT1.Spec Previous where
   Candidate := fun _ => Unit
   Realizes := fun previous _ =>
-    (profile.presentation.read previous).AtomObstruction
-      (profile.presentation.read previous).atomRepresented
+    (profile.presentation previous).AtomObstruction
+      (profile.presentation previous).atomRepresented
 
 /-- The primitive decision procedure is interpreted only by CT1. -/
 def capability : CT1.Capability profile.spec where
-  schedule := Query.ofFunction fun _ => canonicalMembers
+  schedule :=  fun _ => canonicalMembers
   realizesDecidable := fun previous _ =>
-    (profile.presentation.read previous).atomDecidable
+    (profile.presentation previous).atomDecidable
   inputSize := fun previous =>
     CT1.searchCheckBound profile.spec
-      (Query.ofFunction fun _ => canonicalMembers) previous
+      ( fun _ => canonicalMembers) previous
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -117,10 +117,10 @@ structure AtomResidual (previous : Previous) : Type (max uData uPrevious) where
   result : CT1.ExecutionResult profile.spec profile.capability
   previous_eq : result.stage.previous = previous
   decomposition :
-    ExactDecomposition (profile.presentation.read previous)
+    ExactDecomposition (profile.presentation previous)
   obstruction :
-    (profile.presentation.read previous).AtomObstruction
-      (profile.presentation.read previous).atomRepresented
+    (profile.presentation previous).AtomObstruction
+      (profile.presentation previous).atomRepresented
 
 /-- The complementary context obstruction at the same predecessor.  The
 negative atom decision is retained independently and remains queryable on
@@ -130,21 +130,21 @@ structure ContextResidual (previous : Previous) : Type (max uData uPrevious) whe
   result : CT1.ExecutionResult profile.spec profile.capability
   previous_eq : result.stage.previous = previous
   decomposition :
-    ExactDecomposition (profile.presentation.read previous)
+    ExactDecomposition (profile.presentation previous)
   atomAbsent :
-    Not ((profile.presentation.read previous).AtomObstruction
-      (profile.presentation.read previous).atomRepresented)
+    Not ((profile.presentation previous).AtomObstruction
+      (profile.presentation previous).atomRepresented)
   obstruction :
-    (profile.presentation.read previous).ContextObstruction
-      (profile.presentation.read previous).contextRepresented
+    (profile.presentation previous).ContextObstruction
+      (profile.presentation previous).contextRepresented
 
 /-- CT1 avoidance of the complete unit schedule is exactly atom failure. -/
 private theorem absentOfAvoidance (previous : Previous)
     (avoids :
       Core.Finite.Search.Avoids canonicalMembers
         (profile.spec.Realizes previous)) :
-    Not ((profile.presentation.read previous).AtomObstruction
-      (profile.presentation.read previous).atomRepresented) := by
+    Not ((profile.presentation previous).AtomObstruction
+      (profile.presentation previous).atomRepresented) := by
   intro obstruction
   have rejected := avoids ⟨0, by decide⟩
   exact rejected obstruction
@@ -153,7 +153,7 @@ private theorem absentOfAvoidance (previous : Previous)
 noncomputable def route (previous : Previous) :
     Sum (profile.AtomResidual previous)
       (profile.ContextResidual previous) :=
-  let presentation := profile.presentation.read previous
+  let presentation := profile.presentation previous
   let decomposition := exactDecomposition presentation
   let result := profile.execution.run previous
   match result.stage.added.added with

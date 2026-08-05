@@ -118,7 +118,7 @@ structure FocusedContract {Previous : Sort uPrevious}
   eventDecidable : (previous : Previous) -> (active : focus.Active previous) ->
     (item : Item) ->
       Decidable (event previous active item
-        ((runner.read previous active) item))
+        ((runner previous active) item))
 
 /-- Core constructor from active residual queries.  Domain layers should use
 this helper instead of rebuilding schedule-event plumbing: they provide only
@@ -138,7 +138,7 @@ def focusedFromQueries {Previous : Sort uPrevious}
       (previous : Previous) -> (active : focus.Active previous) ->
         (item : Item) ->
           Decidable (event previous active item
-            ((runner.read previous active) item))) :
+            ((runner previous active) item))) :
     FocusedContract focus where
   Item := Item
   schedule := schedule
@@ -155,9 +155,9 @@ variable (contract : FocusedContract focus)
 /-- Pure finite contract seen at one active predecessor. -/
 def finiteContract (previous : Previous) (active : focus.Active previous) :
     Contract contract.Item where
-  schedule := contract.schedule.read previous active
+  schedule := contract.schedule previous active
   Output := contract.Output previous active
-  run := contract.runner.read previous active
+  run := contract.runner previous active
 
 /-- Event branch for the active predecessor. -/
 def ExistsEvent (previous : Previous) (active : focus.Active previous) : Prop :=
@@ -238,10 +238,10 @@ def hitRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
       ∃ hit : contract.ExistsEvent stage.previous active,
-        contract.latestCertificate.read stage active =
+        contract.latestCertificate stage active =
           Certificate.hit hit)
     (fun stage active => Counted.pure (by
-      cases certificate : contract.latestCertificate.read stage active with
+      cases certificate : contract.latestCertificate stage active with
       | hit hit => exact isTrue ⟨hit, rfl⟩
       | noEvent _ =>
           exact isFalse (by
@@ -256,10 +256,10 @@ def noEventRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
       ∃ noEvent : contract.NoEvent stage.previous active,
-        contract.latestCertificate.read stage active =
+        contract.latestCertificate stage active =
           Certificate.noEvent noEvent)
     (fun stage active => Counted.pure (by
-      cases certificate : contract.latestCertificate.read stage active with
+      cases certificate : contract.latestCertificate stage active with
       | hit _ =>
           exact isFalse (by
             intro witness
@@ -281,23 +281,23 @@ abbrev noEventFocus : Focus.Profile contract.Stage :=
 def hitQuery :
     Focus.ActiveQuery contract.hitFocus fun stage active =>
       contract.ExistsEvent stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun _stage active =>
+  fun _stage active =>
     Classical.choose active.accepted
 
 /-- Read the no-event residual on the complementary branch. -/
 def noEventQuery :
     Focus.ActiveQuery contract.noEventFocus fun stage active =>
       contract.NoEvent stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun _stage active =>
+  fun _stage active =>
     Classical.choose active.accepted
 
 /-- Convert the no-event residual into pointwise absence over the exact
 residual-owned schedule. -/
 def pointwiseAbsentQuery :
     Focus.ActiveQuery contract.noEventFocus fun stage active =>
-      ∀ item ∈ ((contract.schedule.preserve).read stage active.parent).values,
+      ∀ item ∈ ((contract.schedule.preserve) stage active.parent).values,
         Not (contract.event stage.previous active.parent item
-          ((contract.runner.preserve).read stage active.parent item)) :=
+          ((contract.runner.preserve) stage active.parent item)) :=
   contract.noEventQuery.map fun stage active noEvent =>
     (contract.finiteContract stage.previous active.parent)
       |>.pointwise_absent_of_noEvent
@@ -310,13 +310,13 @@ silent/germ packets downstream without a custom handoff. -/
 def pointwiseAbsentOutputQuery :
     Focus.ActiveQuery contract.noEventFocus fun stage active =>
       ∀ item,
-        item ∈ ((contract.schedule.preserve).read stage active.parent).values ->
+        item ∈ ((contract.schedule.preserve) stage active.parent).values ->
           { output :
               contract.Output stage.previous active.parent item //
               Not (contract.event stage.previous active.parent item output) } :=
-  Focus.ActiveQuery.ofFunction fun stage active item member =>
-    ⟨(contract.runner.preserve).read stage active.parent item,
-      contract.pointwiseAbsentQuery.read stage active item member⟩
+  fun stage active item member =>
+    ⟨(contract.runner.preserve) stage active.parent item,
+      contract.pointwiseAbsentQuery stage active item member⟩
 
 /-- Refine a no-event branch to any residual predicate that follows from
 absence of the excluded event for each exact runner output. -/
@@ -330,13 +330,13 @@ def pointwiseRemainingQuery
             Remaining previous active item output) :
     Focus.ActiveQuery contract.noEventFocus fun stage active =>
       ∀ item,
-        item ∈ ((contract.schedule.preserve).read stage active.parent).values ->
+        item ∈ ((contract.schedule.preserve) stage active.parent).values ->
           Remaining stage.previous active.parent item
-            ((contract.runner.preserve).read stage active.parent item) :=
-  Focus.ActiveQuery.ofFunction fun stage active item member =>
+            ((contract.runner.preserve) stage active.parent item) :=
+  fun stage active item member =>
     remaining_of_absent stage.previous active.parent item
-      ((contract.pointwiseAbsentOutputQuery.read stage active item member).1)
-      ((contract.pointwiseAbsentOutputQuery.read stage active item member).2)
+      ((contract.pointwiseAbsentOutputQuery stage active item member).1)
+      ((contract.pointwiseAbsentOutputQuery stage active item member).2)
 
 end FocusedContract
 

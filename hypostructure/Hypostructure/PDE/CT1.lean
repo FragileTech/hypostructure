@@ -43,7 +43,7 @@ def capability {Previous : Type uPrevious}
       Decidable (realizes previous object candidate))
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
-      (schedule.read previous).card <=
+      (schedule previous).card <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT1.Capability
       (targetSpec M Candidate candidateObject realizes) where
@@ -80,16 +80,16 @@ def capabilityOfEquationState {Previous : Type uPrevious}
       Decidable (realizes previous object candidate))
     (inputSize : Previous → Nat) (workCoefficient workDegree : Nat)
     (workBound : ∀ previous,
-      (schedule.read previous).card ≤
+      (schedule previous).card ≤
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT1.Capability
       (targetSpec M Candidate
         (fun previous candidate =>
-          candidateObject previous (state.read previous) candidate)
+          candidateObject previous (state previous) candidate)
         realizes) :=
   capability M Candidate
     (fun previous candidate =>
-      candidateObject previous (state.read previous) candidate)
+      candidateObject previous (state previous) candidate)
     realizes schedule realizesDecidable inputSize workCoefficient workDegree
     workBound
 

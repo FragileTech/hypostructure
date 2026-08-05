@@ -499,7 +499,7 @@ def HaltingProgram.LiveExtension.producedQuery
       Option (PLift (T.Predicate (residualOf stage).object))}
     (live : HaltingProgram.LiveExtension T Previous contract certify) :
     (HaltingProgram.LiveExtension.producedQuery
-      (T := T) (contract := contract) (certify := certify)).read live =
+      (T := T) (contract := contract) (certify := certify)) live =
       contract.produce live.previous :=
   live.produced
 
@@ -893,7 +893,9 @@ private def
         HaltingProgram.LiveExtension T
           (HaltingProgram.LiveExtension T Previous first firstCertify)
           second secondCertify //
-      residualOf continuation = residualOf live } := by
+      continuation.toLedger.previous.toLedger.previous =
+          live.toLedger.previous ∧
+        residualOf continuation = residualOf live } := by
   let composition :=
     HaltingProgram.composeLiveContracts first firstCertify second secondCertify
   rcases live with ⟨ledger, isLive, _produced⟩
@@ -911,6 +913,7 @@ private def
     exact
       ⟨HaltingProgram.LiveExtension.mk continued.stage rejected
           continued.produced,
+        continued.previous_eq,
         continued.residual_preserved⟩
 
 /-- Recover the literal live second-stage extension from a surviving
@@ -970,7 +973,36 @@ This is the dependent query transport law used by sealed DAG composition. -/
           first firstCertify second secondCertify live) =
       residualOf live :=
   (HaltingProgram.LiveContractComposition.liveContinuationWithResidual
-    first firstCertify second secondCertify live).property
+    first firstCertify second secondCertify live).property.2
+
+/-- Core's live-continuation projection retains the literal predecessor of
+the composed live stage.  This is stronger than residual equality and permits
+arbitrary predecessor-indexed facts to be transported without rebuilding
+their queries. -/
+@[simp] theorem HaltingProgram.LiveContractComposition.liveContinuation_previous
+    {P : Core.Problem} {T : Core.Target P}
+    {Previous : Type uRunnerStage}
+    [HasResidual Previous (ProblemInput P)]
+    (first : Contract.{uRunnerStage, 0, uRunnerStage} Previous)
+    (firstCertify : (stage : Previous) → Sigma (first.Payload stage) →
+      Option (PLift (T.Predicate (residualOf stage).object)))
+    (second : Contract.{uRunnerStage, 0, uRunnerStage}
+      (HaltingProgram.LiveExtension T Previous first firstCertify))
+    (secondCertify :
+      (stage : HaltingProgram.LiveExtension T Previous first firstCertify) →
+      Sigma (second.Payload stage) →
+      Option (PLift (T.Predicate (residualOf stage).object)))
+    (live :
+      let composition :=
+        HaltingProgram.composeLiveContracts first firstCertify
+          second secondCertify
+      HaltingProgram.LiveExtension T Previous
+        composition.contract composition.certify) :
+    (HaltingProgram.LiveContractComposition.liveContinuation
+      first firstCertify second secondCertify live).toLedger.previous.toLedger.previous =
+        live.toLedger.previous :=
+  (HaltingProgram.LiveContractComposition.liveContinuationWithResidual
+    first firstCertify second secondCertify live).property.1
 
 /-- Literal-predecessor law: every appended vertex extends the exact stage
 produced by the previous program. -/
@@ -1542,7 +1574,7 @@ structure OrderedWitnessScan (Previous : Type uPrevious) where
   witnessDecidable : (previous : Previous) -> (item : Item previous) ->
     Decidable (witness previous item)
   exhaustive : (previous : Previous) -> (item : Item previous) ->
-    item ∈ (schedule.read previous).values ->
+    item ∈ (schedule previous).values ->
       witness previous item ∨ ¬ witness previous item
 
 /-- A finite response classifier over a predecessor-owned schedule. -/
@@ -1652,6 +1684,53 @@ def CTExecution.compose
     first.work previous +
       next.work (Ledger.extend previous firstOutput)
 
+/-! ## Framework-owned theorem publication
+
+A sealed Strategy may derive additional propositions from the literal output
+of an atomic CT.  The proposition and its proof are not registration data and
+cannot influence the CT's schedules, terminal, trace, checks, or work.  Core
+appends the proof as one ordinary dependent ledger entry after the exact CT
+output. -/
+
+/-- Append facts proved from an atomic CT's literal output.
+
+The returned execution first runs `execution` unchanged and then appends one
+zero-work `ProofPayload`.  The proof is indexed by the actual intermediate
+ledger stage, so it cannot describe a reconstructed output or a different
+predecessor. -/
+def CTExecution.appendDerivedFacts
+    (execution : CTExecution Previous)
+    (Facts : Ledger.Extension Previous execution.Output → Prop)
+    (verified : ∀ stage, Facts stage) : CTExecution Previous :=
+  execution.compose
+    { Terminal := CompletedTerminal
+      Output := fun stage => ProofPayload (Facts stage)
+      run := fun stage => proofPayload (verified stage)
+      terminal := fun _ _ => .completed
+      checks := fun _ => 0
+      work := fun _ => 0 }
+
+/-- The atomic output retained by `appendDerivedFacts`. -/
+def CTExecution.appendDerivedFactsOutput
+    (execution : CTExecution Previous)
+    (Facts : Ledger.Extension Previous execution.Output → Prop)
+    (verified : ∀ stage, Facts stage)
+    (previous : Previous)
+    (output : (execution.appendDerivedFacts Facts verified).Output previous) :
+    execution.Output previous :=
+  output.fst
+
+/-- The appended proof is exactly a theorem about the retained atomic output
+and its literal predecessor. -/
+theorem CTExecution.appendDerivedFacts_verified
+    (execution : CTExecution Previous)
+    (Facts : Ledger.Extension Previous execution.Output → Prop)
+    (verified : ∀ stage, Facts stage)
+    (previous : Previous)
+    (output : (execution.appendDerivedFacts Facts verified).Output previous) :
+    Facts (Ledger.extend previous output.fst) :=
+  output.snd.down
+
 /-! Public preservation API for dependent CT composition.  These lemmas are
 deliberately stated against the literal `run` value: a composed strategy may
 add output, but it cannot replace or silently re-create the predecessor. -/
@@ -1724,7 +1803,7 @@ def CTExecution.liveOutputQuery
         Option (PLift (T.Predicate (residualOf stage).object)))
     (live :
       HaltingProgram.LiveExtension T Previous execution.toContract certify) :
-    (execution.liveOutputQuery certify).read live =
+    (execution.liveOutputQuery certify) live =
       execution.run live.previous := by
   change (live.ledger.added).snd = execution.run live.previous
   have produced := live.produced
@@ -1898,7 +1977,7 @@ def entry (strategy : OrderedWitnessScan Previous) (previous : Previous)
 
 def entries (strategy : OrderedWitnessScan Previous) (previous : Previous) :
     List (strategy.Entry previous) :=
-  (strategy.schedule.read previous).values.map (strategy.entry previous)
+  (strategy.schedule previous).values.map (strategy.entry previous)
 
 def asContract (strategy : OrderedWitnessScan Previous) : Contract Previous where
   Terminal := CompletedTerminal
@@ -1926,7 +2005,7 @@ def entry (strategy : ResponseClassifier Previous) (previous : Previous)
 
 def entries (strategy : ResponseClassifier Previous) (previous : Previous) :
     List (strategy.Entry previous) :=
-  (strategy.schedule.read previous).values.map (strategy.entry previous)
+  (strategy.schedule previous).values.map (strategy.entry previous)
 
 def asContract (strategy : ResponseClassifier Previous) : Contract Previous where
   Terminal := CompletedTerminal
@@ -1954,7 +2033,7 @@ def entry (strategy : CapacityLedger Previous) (previous : Previous)
 
 def entries (strategy : CapacityLedger Previous) (previous : Previous) :
     List (strategy.Entry previous) :=
-  (strategy.schedule.read previous).values.map (strategy.entry previous)
+  (strategy.schedule previous).values.map (strategy.entry previous)
 
 def asContract (strategy : CapacityLedger Previous) : Contract Previous where
   Terminal := CompletedTerminal

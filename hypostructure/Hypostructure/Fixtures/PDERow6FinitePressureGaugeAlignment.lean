@@ -201,18 +201,18 @@ def zeroQuotientGenerator
   generator := 0
 
 def gaugeQuotientAt (previous : PressureFormStage) :
-    RepresentedQuotient (pressureFormQuery.read previous) Real :=
-  representedGaugeQuotient (pressureFormQuery.read previous)
+    RepresentedQuotient (pressureFormQuery previous) Real :=
+  representedGaugeQuotient (pressureFormQuery previous)
 
 def matchingGeneratorAt (previous : PressureFormStage) :
-    QuotientGenerator (pressureFormQuery.read previous)
+    QuotientGenerator (pressureFormQuery previous)
       (gaugeQuotientAt previous) :=
-  matchingQuotientGenerator (pressureFormQuery.read previous)
+  matchingQuotientGenerator (pressureFormQuery previous)
 
 def zeroGeneratorAt (previous : PressureFormStage) :
-    QuotientGenerator (pressureFormQuery.read previous)
+    QuotientGenerator (pressureFormQuery previous)
       (gaugeQuotientAt previous) :=
-  zeroQuotientGenerator (pressureFormQuery.read previous)
+  zeroQuotientGenerator (pressureFormQuery previous)
 
 noncomputable def positiveGeometry : DefectGeometry Pressure where
   carrier := ⊤
@@ -532,7 +532,7 @@ def rowFiveStageOutput :
     DirectedExhaustiveness.Output rowFiveProfile
       PDERow5DirectedExhaustiveness.previous
       PDERow5DirectedExhaustiveness.active :=
-  rowFiveProfile.outputQuery.read rowFiveRun.value
+  rowFiveProfile.outputQuery rowFiveRun.value
     PDERow5DirectedExhaustiveness.active
 
 theorem rank_terminal :
@@ -604,7 +604,7 @@ def rowFiveActive :
       })
 
 def rowFiveBoundary :=
-  rowFiveProfile.targetVisibleBoundaryQuery.read rowFiveRun.value rowFiveActive
+  rowFiveProfile.targetVisibleBoundaryQuery rowFiveRun.value rowFiveActive
 
 theorem rowFive_selected_pressure :
     rowFiveBoundary.closure.residual.hit.value = boundaryPressure := by
@@ -647,13 +647,13 @@ theorem selectedCarrier_eq_boundary
     DefectRoutingAlignment.selectedCarrier rowFiveProfile stage active =
       boundaryPressure := by
   have member :=
-    (rowFiveProfile.targetVisibleBoundaryQuery.read stage active).closure.residual.hit.member
+    (rowFiveProfile.targetVisibleBoundaryQuery stage active).closure.residual.hit.member
   have member' :
-      (rowFiveProfile.targetVisibleBoundaryQuery.read stage active).closure.residual.hit.value ∈
+      (rowFiveProfile.targetVisibleBoundaryQuery stage active).closure.residual.hit.value ∈
         boundarySchedule.values := by
     simpa [rowFiveProfile, familyAt_eq] using member
   change
-    (rowFiveProfile.targetVisibleBoundaryQuery.read stage active).closure.residual.hit.value ∈
+    (rowFiveProfile.targetVisibleBoundaryQuery stage active).closure.residual.hit.value ∈
       [boundaryPressure] at member'
   simpa [DefectRoutingAlignment.selectedCarrier] using member'
 
@@ -776,7 +776,7 @@ noncomputable def harmonicContract (defect : Pressure) :
 abbrev routableContractQuery : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DirectResistanceContract Pressure
-        (routableRegistrationQuery.read stage active).geometry
+        (routableRegistrationQuery stage active).geometry
         (DefectRoutingAlignment.exactDefect rowFiveProfile
           routableRegistrationQuery boundaryCoordinateQuery stage active)
         Pressure :=
@@ -788,7 +788,7 @@ abbrev routableContractQuery : Focus.ActiveQuery
 abbrev closedContractQuery : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DirectResistanceContract Pressure
-        (closedGaugeRegistrationQuery.read stage active).geometry
+        (closedGaugeRegistrationQuery stage active).geometry
         (DefectRoutingAlignment.exactDefect rowFiveProfile
           closedGaugeRegistrationQuery boundaryCoordinateQuery stage active)
         Unit :=
@@ -800,7 +800,7 @@ abbrev closedContractQuery : Focus.ActiveQuery
 abbrev visibleContractQuery : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DirectResistanceContract Pressure
-        (visibleGaugeRegistrationQuery.read stage active).geometry
+        (visibleGaugeRegistrationQuery stage active).geometry
         (DefectRoutingAlignment.exactDefect rowFiveProfile
           visibleGaugeRegistrationQuery boundaryCoordinateQuery stage active)
         Unit :=
@@ -820,56 +820,56 @@ def zeroClosedQuery : Focus.ActiveQuery
 
 noncomputable def routableZeroDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((routableContractQuery.read stage active).harmonic = 0) :=
+      Decidable ((routableContractQuery stage active).harmonic = 0) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((routableContractQuery.read stage active).harmonic = 0)
+      ((routableContractQuery stage active).harmonic = 0)
 
 noncomputable def routableLedgerDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((routableContractQuery.read stage active).harmonic ∈
+      Decidable ((routableContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((routableContractQuery.read stage active).harmonic ∈
+      ((routableContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes)
 
 noncomputable def closedZeroDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((closedContractQuery.read stage active).harmonic = 0) :=
+      Decidable ((closedContractQuery stage active).harmonic = 0) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((closedContractQuery.read stage active).harmonic = 0)
+      ((closedContractQuery stage active).harmonic = 0)
 
 noncomputable def closedLedgerDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((closedContractQuery.read stage active).harmonic ∈
+      Decidable ((closedContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((closedContractQuery.read stage active).harmonic ∈
+      ((closedContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes)
 
 noncomputable def visibleZeroDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((visibleContractQuery.read stage active).harmonic = 0) :=
+      Decidable ((visibleContractQuery stage active).harmonic = 0) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((visibleContractQuery.read stage active).harmonic = 0)
+      ((visibleContractQuery stage active).harmonic = 0)
 
 noncomputable def visibleLedgerDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((visibleContractQuery.read stage active).harmonic ∈
+      Decidable ((visibleContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((visibleContractQuery.read stage active).harmonic ∈
+      ((visibleContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes)
 
 def routableRoutingComplete : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DefectRoutingAlignment.RoutingCompleteAt rowFiveProfile
-        (routableContractQuery.read stage active) stage active :=
+        (routableContractQuery stage active) stage active :=
   rowFiveProfile.targetVisibleBoundaryQuery.map
     fun stage active _boundary => by
       constructor
@@ -881,7 +881,7 @@ def routableRoutingComplete : Focus.ActiveQuery
 def closedRoutingComplete : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DefectRoutingAlignment.RoutingCompleteAt rowFiveProfile
-        (closedContractQuery.read stage active) stage active :=
+        (closedContractQuery stage active) stage active :=
   rowFiveProfile.targetVisibleBoundaryQuery.map
     fun stage active _boundary => by
       constructor
@@ -903,7 +903,7 @@ def closedRoutingComplete : Focus.ActiveQuery
 def visibleRoutingComplete : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DefectRoutingAlignment.RoutingCompleteAt rowFiveProfile
-        (visibleContractQuery.read stage active) stage active :=
+        (visibleContractQuery stage active) stage active :=
   rowFiveProfile.targetVisibleBoundaryQuery.map
     fun stage active _boundary => by
       constructor
@@ -1005,13 +1005,13 @@ def visibleSuccessorActive :
   exact rowFiveActive
 
 def routableGenerated :=
-  routableProfile.outputQuery.read routableRun.value routableSuccessorActive
+  routableProfile.outputQuery routableRun.value routableSuccessorActive
 
 def closedGenerated :=
-  closedProfile.outputQuery.read closedRun.value closedSuccessorActive
+  closedProfile.outputQuery closedRun.value closedSuccessorActive
 
 def visibleGenerated :=
-  visibleProfile.outputQuery.read visibleRun.value visibleSuccessorActive
+  visibleProfile.outputQuery visibleRun.value visibleSuccessorActive
 
 theorem routableConditionAt
     (stage : DefectRouting.RowFiveStage rowFiveProfile)
@@ -1131,15 +1131,15 @@ def visibleHarmonicActive :
   accepted := visible_disposition
 
 def queriedRoutable :=
-  routableProfile.capacityReadyOutputQuery.read
+  routableProfile.capacityReadyOutputQuery
     routableRun.value routableCapacityReadyActive
 
 def queriedClosed :=
-  closedProfile.capacityReadyOutputQuery.read
+  closedProfile.capacityReadyOutputQuery
     closedRun.value closedCapacityReadyActive
 
 def queriedVisible :=
-  visibleProfile.targetVisibleHarmonicOutputQuery.read
+  visibleProfile.targetVisibleHarmonicOutputQuery
     visibleRun.value visibleHarmonicActive
 
 theorem focused_queries_read_exact_outputs :
@@ -1211,7 +1211,7 @@ theorem runs_retain_root_residual :
   exact ⟨rfl, rfl, rfl⟩
 
 theorem routable_successor_exact_defect :
-    routableProfile.exactDefectQueryAtSuccessor.read
+    routableProfile.exactDefectQueryAtSuccessor
       routableRun.value routableSuccessorActive = pressurePair 1 2 := by
   change DefectRoutingAlignment.exactDefect rowFiveProfile
     routableRegistrationQuery boundaryCoordinateQuery
@@ -1219,7 +1219,7 @@ theorem routable_successor_exact_defect :
   exact routable_exact_defect _ _
 
 theorem closed_successor_exact_defect :
-    closedProfile.exactDefectQueryAtSuccessor.read
+    closedProfile.exactDefectQueryAtSuccessor
       closedRun.value closedSuccessorActive = pressurePair 1 1 := by
   change DefectRoutingAlignment.exactDefect rowFiveProfile
     closedGaugeRegistrationQuery boundaryCoordinateQuery
@@ -1227,7 +1227,7 @@ theorem closed_successor_exact_defect :
   exact closed_exact_defect _ _
 
 theorem visible_successor_exact_defect :
-    visibleProfile.exactDefectQueryAtSuccessor.read
+    visibleProfile.exactDefectQueryAtSuccessor
       visibleRun.value visibleSuccessorActive = pressurePair 1 2 := by
   change DefectRoutingAlignment.exactDefect rowFiveProfile
     visibleGaugeRegistrationQuery boundaryCoordinateQuery
@@ -1235,18 +1235,18 @@ theorem visible_successor_exact_defect :
   exact visible_exact_defect _ _
 
 theorem successor_quotient_kills_constant_gauge :
-    (closedProfile.currentQuotientQueryAtSuccessor.read
+    (closedProfile.currentQuotientQueryAtSuccessor
       closedRun.value closedSuccessorActive).project (pressurePair 3 3) =
-        (closedProfile.currentQuotientQueryAtSuccessor.read
+        (closedProfile.currentQuotientQueryAtSuccessor
           closedRun.value closedSuccessorActive).null := by
   change gaugeClassProject (pressurePair 3 3) = false
   have gauge : IsGauge (pressurePair 3 3) := by simp [IsGauge]
   simp [gaugeClassProject, gauge]
 
 theorem successor_quotient_preserves_visible_oscillation :
-    (visibleProfile.currentQuotientQueryAtSuccessor.read
+    (visibleProfile.currentQuotientQueryAtSuccessor
       visibleRun.value visibleSuccessorActive).project (pressurePair 1 2) ≠
-        (visibleProfile.currentQuotientQueryAtSuccessor.read
+        (visibleProfile.currentQuotientQueryAtSuccessor
           visibleRun.value visibleSuccessorActive).null := by
   change gaugeClassProject (pressurePair 1 2) ≠ false
   have notGauge : Not (IsGauge (pressurePair 1 2)) := by

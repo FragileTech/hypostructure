@@ -89,17 +89,17 @@ noncomputable def combinedInputsB : CombinedInputs () where
   cold := coldInputs preludeInputsB.stage64
 
 noncomputable def profile : Profile Unit where
-  registration.inputs := Core.Residual.Query.ofFunction fun previous => by
+  registration.inputs := fun previous => by
     cases previous
     exact preludeInputs
 
 noncomputable def combinedProfile : CombinedProfile Unit where
-  registration.inputs := Core.Residual.Query.ofFunction fun previous => by
+  registration.inputs := fun previous => by
     cases previous
     exact combinedInputs
 
 noncomputable def combinedProfileB : CombinedProfile Unit where
-  registration.inputs := Core.Residual.Query.ofFunction fun previous => by
+  registration.inputs := fun previous => by
     cases previous
     exact combinedInputsB
 
@@ -122,97 +122,97 @@ example :
     combinedProfileB.typeABExecution.terminal () typeBResult =
       .typeB := by rfl
 example :
-    (combinedProfile.typeAProofQuery?).read typeAResult |>.isSome := by
+    (combinedProfile.typeAProofQuery?) typeAResult |>.isSome := by
   rfl
 example :
-    (combinedProfile.typeBProofQuery?).read typeAResult = none := by
+    (combinedProfile.typeBProofQuery?) typeAResult = none := by
   rfl
 example :
-    (combinedProfileB.typeAProofQuery?).read typeBResult = none := by
+    (combinedProfileB.typeAProofQuery?) typeBResult = none := by
   rfl
 example :
-    (combinedProfileB.typeBProofQuery?).read typeBResult |>.isSome := by
+    (combinedProfileB.typeBProofQuery?) typeBResult |>.isSome := by
   rfl
 
 /-! Every node-57--64 fact remains directly queryable from the classified
 residual; consumers never traverse the predecessor chain. -/
-example : combinedProfile.netAtTypeABQuery.read typeAResult = () := by rfl
-example : combinedProfile.chargeAtTypeABQuery.read typeAResult = () := by rfl
+example : combinedProfile.netAtTypeABQuery typeAResult = () := by rfl
+example : combinedProfile.chargeAtTypeABQuery typeAResult = () := by rfl
 example :
-    combinedProfile.node59AtTypeABQuery.read typeAResult =
+    combinedProfile.node59AtTypeABQuery typeAResult =
       .noBranch (by decide) := by
   rfl
-example : combinedProfile.closedAtTypeABQuery.read typeAResult = () := by rfl
+example : combinedProfile.closedAtTypeABQuery typeAResult = () := by rfl
 example :
-    combinedProfile.componentAtTypeABQuery.read typeAResult = () := by
+    combinedProfile.componentAtTypeABQuery typeAResult = () := by
   rfl
 example :
-    match combinedProfile.node62AtTypeABQuery.read typeAResult with
+    match combinedProfile.node62AtTypeABQuery typeAResult with
     | .above _ => False
     | .atOrBelow _ => True := by
   trivial
-example : combinedProfile.handoffAtTypeABQuery.read typeAResult = () := by rfl
+example : combinedProfile.handoffAtTypeABQuery typeAResult = () := by rfl
 example :
-    combinedProfile.node64ResidualAtTypeABQuery.read typeAResult = () := by
+    combinedProfile.node64ResidualAtTypeABQuery typeAResult = () := by
   rfl
 
 /-! The twenty cold-branch facts are likewise read directly from the
 framework-owned Type-A branch stage. -/
 example :
-    combinedProfile.interface145AtTypeABQuery.read typeAResult = () := by
+    combinedProfile.interface145AtTypeABQuery typeAResult = () := by
   rfl
 example :
-    match combinedProfile.decision146AtTypeABQuery.read typeAResult with
+    match combinedProfile.decision146AtTypeABQuery typeAResult with
     | .yesBranch _ => False
     | .noBranch _ => True := by
   trivial
-example : combinedProfile.route147AtTypeABQuery.read typeAResult = () := by rfl
+example : combinedProfile.route147AtTypeABQuery typeAResult = () := by rfl
 example :
-    combinedProfile.private148AtTypeABQuery.read typeAResult = () := by
+    combinedProfile.private148AtTypeABQuery typeAResult = () := by
   rfl
-example : combinedProfile.audit149AtTypeABQuery.read typeAResult = () := by rfl
-example : combinedProfile.cold150AtTypeABQuery.read typeAResult = () := by rfl
+example : combinedProfile.audit149AtTypeABQuery typeAResult = () := by rfl
+example : combinedProfile.cold150AtTypeABQuery typeAResult = () := by rfl
 example :
-    combinedProfile.filter151AtTypeABQuery.read typeAResult = () := by
+    combinedProfile.filter151AtTypeABQuery typeAResult = () := by
   rfl
-example : combinedProfile.stubs152AtTypeABQuery.read typeAResult = () := by rfl
-example : combinedProfile.scan153AtTypeABQuery.read typeAResult = () := by rfl
+example : combinedProfile.stubs152AtTypeABQuery typeAResult = () := by rfl
+example : combinedProfile.scan153AtTypeABQuery typeAResult = () := by rfl
 example :
-    match combinedProfile.decision154AtTypeABQuery.read typeAResult with
+    match combinedProfile.decision154AtTypeABQuery typeAResult with
     | .yesBranch _ => False
     | .noBranch _ => True := by
   trivial
 example :
-    combinedProfile.certificate155AtTypeABQuery.read typeAResult = () := by
+    combinedProfile.certificate155AtTypeABQuery typeAResult = () := by
   rfl
 example :
-    match combinedProfile.decision156AtTypeABQuery.read typeAResult with
+    match combinedProfile.decision156AtTypeABQuery typeAResult with
     | .yesBranch _ => True
     | .noBranch _ => False := by
   trivial
-example : combinedProfile.germ157AtTypeABQuery.read typeAResult = () := by rfl
+example : combinedProfile.germ157AtTypeABQuery typeAResult = () := by rfl
 example : True := by
-  have _bounded := combinedProfile.bounded158AtTypeABQuery.read typeAResult
+  have _bounded := combinedProfile.bounded158AtTypeABQuery typeAResult
   trivial
 example : True := by
-  have _witness := combinedProfile.witness159AtTypeABQuery.read typeAResult
+  have _witness := combinedProfile.witness159AtTypeABQuery typeAResult
   trivial
 example :
-    match combinedProfile.decision160AtTypeABQuery.read typeAResult with
+    match combinedProfile.decision160AtTypeABQuery typeAResult with
     | .yesBranch _ => True
     | .noBranch _ => False := by
   trivial
 example :
-    combinedProfile.evidence161AtTypeABQuery.read typeAResult = () := by
+    combinedProfile.evidence161AtTypeABQuery typeAResult = () := by
   rfl
 example :
-    combinedProfile.residual162AtTypeABQuery.read typeAResult = () := by
+    combinedProfile.residual162AtTypeABQuery typeAResult = () := by
   rfl
 example :
-    combinedProfile.package163AtTypeABQuery.read typeAResult = () := by
+    combinedProfile.package163AtTypeABQuery typeAResult = () := by
   rfl
 example :
-    combinedProfile.package164AtTypeABQuery.read typeAResult = () := by
+    combinedProfile.package164AtTypeABQuery typeAResult = () := by
   rfl
 
 #check Profile.residualQuery

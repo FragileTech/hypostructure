@@ -80,8 +80,8 @@ structure Capability {Previous : Type uPrevious}
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (payers.read previous) (obstructions.read previous)
-      (tierTwo.read previous) <=
+    localCheckBound (payers previous) (obstructions previous)
+      (tierTwo previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -92,23 +92,23 @@ variable {Previous : Type uPrevious}
 /-- Exact residual-owned tier-one payer order. -/
 def payersAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Payer previous) :=
-  capability.payers.read previous
+  capability.payers previous
 
 /-- Exact residual-owned nonempty obstruction order. -/
 def obstructionsAt (capability : Capability spec) (previous : Previous) :
     ObstructionSchedule (spec.Obstruction previous) :=
-  capability.obstructions.read previous
+  capability.obstructions previous
 
 /-- Exact residual-owned tier-two order for one inherited obstruction. -/
 def tierTwoAt (capability : Capability spec) (previous : Previous)
     (obstruction : spec.Obstruction previous) :
     Core.Finite.Enumeration (spec.Payer previous) :=
-  (capability.tierTwo.read previous) obstruction
+  (capability.tierTwo previous) obstruction
 
 /-- Total inherited tier-two cardinality envelope. -/
 def tierTwoCardSumAt (capability : Capability spec) (previous : Previous) : Nat :=
   tierTwoCardSum (capability.obstructionsAt previous)
-    (capability.tierTwo.read previous)
+    (capability.tierTwo previous)
 
 /-- Framework-visible polynomial envelope for the prescribed CT13 machine. -/
 def polynomialBudget (capability : Capability spec) :
@@ -117,7 +117,7 @@ def polynomialBudget (capability : Capability spec) :
   checks := fun previous =>
     localCheckBound (capability.payersAt previous)
       (capability.obstructionsAt previous)
-      (capability.tierTwo.read previous)
+      (capability.tierTwo previous)
   coefficient := capability.workCoefficient
   degree := capability.workDegree
   bounded := capability.workBound

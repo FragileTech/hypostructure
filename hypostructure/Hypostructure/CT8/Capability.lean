@@ -100,8 +100,8 @@ structure Capability {Previous : Type uPrevious}
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (sequence.read previous)
-        (responseContexts.read previous).toEnumeration <=
+    localCheckBound (sequence previous)
+        (responseContexts previous).toEnumeration <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -113,17 +113,17 @@ variable {Previous : Type uPrevious}
 /-- Literal ordered state sequence retrieved from the predecessor. -/
 def sequenceAt (capability : Capability spec) (previous : Previous) :
     List (spec.State previous) :=
-  capability.sequence.read previous
+  capability.sequence previous
 
 /-- Exact finite type universe retrieved from the predecessor. -/
 def exactTypesAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.CompleteEnumeration (spec.ExactType previous) :=
-  capability.exactTypes.read previous
+  capability.exactTypes previous
 
 /-- Exact complete response-context schedule retrieved from the predecessor. -/
 def responseContextsAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.CompleteEnumeration (spec.ResponseContext previous) :=
-  capability.responseContexts.read previous
+  capability.responseContexts previous
 
 /-- Canonical framework-derived pair schedule for the exact incoming list. -/
 def orderedPairsAt (capability : Capability spec) (previous : Previous) :

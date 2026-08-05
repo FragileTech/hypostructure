@@ -33,13 +33,13 @@ def localWitnessSpec {Previous : Type uPrevious}
   Site := Site
   Witness := Witness
   Active := fun previous site =>
-    Active previous (object.read previous) site
+    Active previous (object previous) site
   Supports := fun previous site witness =>
-    Supports previous (object.read previous) site witness
+    Supports previous (object previous) site witness
   contribution := fun previous site witness =>
-    contribution previous (object.read previous) site witness
-  required := fun previous => required previous (object.read previous)
-  capacity := fun previous => capacity previous (object.read previous)
+    contribution previous (object previous) site witness
+  required := fun previous => required previous (object previous)
+  capacity := fun previous => capacity previous (object previous)
 
 /-- Build the shared capability from the exact predecessor-owned dependent
 family and primitive graph-semantic decisions. -/
@@ -73,9 +73,9 @@ def localWitnessCapability {Previous : Type uPrevious}
         required capacity) where
   family := family
   activeDecidable := fun previous site =>
-    activeDecidable previous (object.read previous) site
+    activeDecidable previous (object previous) site
   supportsDecidable := fun previous site witness =>
-    supportsDecidable previous (object.read previous) site witness
+    supportsDecidable previous (object previous) site witness
   resourceLEDecidable := resourceLEDecidable
 
 end Hypostructure.Graph.CT5

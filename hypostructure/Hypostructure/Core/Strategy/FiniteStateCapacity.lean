@@ -5,7 +5,9 @@ import Hypostructure.Core.Residual.Stage
 import Hypostructure.Core.Strategy.FiniteStateCapacitySemantics
 import Hypostructure.Core.Strategy.FiniteBarrierEnumeration
 import Hypostructure.Core.Strategy.LocalSupplyLowerBound
+import Hypostructure.Core.Strategy.TargetRelativeRankDichotomySemantics
 import Hypostructure.Core.Strategy.FiniteStateNetChargeContinuationSemantics
+import Hypostructure.Core.Strategy.FiniteStateCapacityTheorems
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
@@ -52,7 +54,12 @@ structure Profile (Previous : Type uPrevious) (Residual : Type uResidual)
   registration : Registration.{uResidual, uAmbient, uData} Residual AmbientItem
   current : Query Previous fun _ => Residual := Query.residual
   complement : Query Previous fun previous =>
-    Core.Finite.Enumeration (AmbientItem (current.read previous))
+    Core.Finite.Enumeration (AmbientItem (current previous))
+  /-- Exact rank/coordinate equality published by the upstream full-rank
+  branch.  This is a theorem-backed projection, not a second rank scan. -/
+  fullRankCertificate :
+    Query Previous fun _ =>
+      TargetRelativeRankDichotomy.FullRankCertificate
   independentRank : Query Previous fun _ => Nat
   finiteBarrierSummary :
     Query Previous fun _ => FiniteBarrierEnumeration.Summary
@@ -83,15 +90,15 @@ def inheritedLocalSupply (profile : Profile Previous Residual) :
 
 def independentRankAt (profile : Profile Previous Residual)
     (previous : Previous) : Nat :=
-  profile.inheritedIndependentRank.read previous
+  profile.inheritedIndependentRank previous
 
 def finiteBarrierSummaryAt (profile : Profile Previous Residual)
     (previous : Previous) : FiniteBarrierEnumeration.Summary :=
-  profile.inheritedFiniteBarrierSummary.read previous
+  profile.inheritedFiniteBarrierSummary previous
 
 def localSupplyAt (profile : Profile Previous Residual)
     (previous : Previous) : LocalSupplyLowerBound.Summary :=
-  profile.inheritedLocalSupply.read previous
+  profile.inheritedLocalSupply previous
 
 /-- Residual access uses the compiler's one active-input query, the same query
 the inherited complement is indexed by.  At the spine it is literally
@@ -104,13 +111,13 @@ def residualQuery (profile : Profile Previous Residual) :
 producer's own exact schedule, read through the query; nothing is rebuilt. -/
 def complementAt (profile : Profile Previous Residual) (previous : Previous) :
     Core.Finite.Enumeration
-      (profile.AmbientItem (profile.residualQuery.read previous)) :=
-  profile.complement.read previous
+      (profile.AmbientItem (profile.residualQuery previous)) :=
+  profile.complement previous
 
 def targets (profile : Profile Previous Residual) :
     Query Previous fun previous =>
       Core.Finite.Enumeration
-        (profile.registration.Target (profile.residualQuery.read previous)) :=
+        (profile.registration.Target (profile.residualQuery previous)) :=
   profile.residualQuery.dependentMap fun previous residual =>
     profile.registration.targets residual (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
@@ -118,7 +125,7 @@ def targets (profile : Profile Previous Residual) :
 def offsets (profile : Profile Previous Residual) :
     Query Previous fun previous =>
       Core.Finite.Enumeration
-        (profile.registration.Offset (profile.residualQuery.read previous)) :=
+        (profile.registration.Offset (profile.residualQuery previous)) :=
   profile.residualQuery.dependentMap fun previous residual =>
     profile.registration.offsets residual (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
@@ -140,7 +147,7 @@ def positions (profile : Profile Previous Residual) (scale : Nat) :
     Query Previous fun previous =>
       Core.Finite.Enumeration
         (profile.registration.Position
-          (profile.residualQuery.read previous) scale) :=
+          (profile.residualQuery previous) scale) :=
   profile.residualQuery.dependentMap fun previous residual =>
     profile.registration.positions residual
       (profile.independentRankAt previous)
@@ -158,35 +165,35 @@ def finiteScaleLimit (profile : Profile Previous Residual) :
 def stateSpec (profile : Profile Previous Residual) :
     CT17.Spec Previous where
   Target := fun previous =>
-    profile.registration.Target (profile.residualQuery.read previous)
+    profile.registration.Target (profile.residualQuery previous)
   Offset := fun previous =>
-    profile.registration.Offset (profile.residualQuery.read previous)
+    profile.registration.Offset (profile.residualQuery previous)
   Position := fun previous scale =>
     profile.registration.Position
-      (profile.residualQuery.read previous) scale
+      (profile.residualQuery previous) scale
   Value := fun previous =>
-    profile.registration.Value (profile.residualQuery.read previous)
+    profile.registration.Value (profile.residualQuery previous)
   targetValue := fun previous target =>
     profile.registration.targetValue
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
       target
   blockValue := fun previous scale position offset =>
     profile.registration.blockValue
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
       scale position offset
   orbitValue := fun previous scale offset =>
     profile.registration.orbitValue
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
       scale offset
   Compatible := fun previous target offset =>
     profile.registration.Compatible
-      (profile.residualQuery.read previous) target offset
+      (profile.residualQuery previous) target offset
 
 /-- CT17 capability built from the official query projections. -/
 def stateCapability (profile : Profile Previous Residual) :
@@ -197,22 +204,22 @@ def stateCapability (profile : Profile Previous Residual) :
   selectedScale := profile.selectedScale
   selectedScale_mem := fun previous =>
     profile.registration.selectedScale_mem
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
   positions := profile.positions
   finiteScaleLimit := profile.finiteScaleLimit
   compatibleDecidable := fun previous target offset =>
     profile.registration.compatibleDecidable
-      (profile.residualQuery.read previous) target offset
+      (profile.residualQuery previous) target offset
   valueDecidableEq := fun previous =>
     profile.registration.valueDecidableEq
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
   inputSize := fun previous =>
     CT17.localCheckBound
-      (profile.targets.read previous)
-      (profile.offsets.read previous)
-      ((profile.positions (profile.selectedScale.read previous)).read previous)
+      (profile.targets previous)
+      (profile.offsets previous)
+      ((profile.positions (profile.selectedScale previous)) previous)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -237,7 +244,7 @@ def stateResult (profile : Profile Previous Residual) :
 /-- CT14's schedule is projected at CT17's exact result stage. -/
 def capacityMembers (profile : Profile Previous Residual) :
     Query profile.AfterState fun stage =>
-      let result := profile.stateResult.read stage
+      let result := profile.stateResult stage
       Core.Finite.Enumeration
         (profile.stateSpec.Position result.stage.previous
           (profile.stateCapability.scaleAt result.stage.previous)) :=
@@ -279,31 +286,31 @@ def capacityMembers (profile : Profile Previous Residual) :
 def capacitySpec (profile : Profile Previous Residual) :
     CT14.Spec profile.AfterState where
   Member := fun stage =>
-    let result := profile.stateResult.read stage
+    let result := profile.stateResult stage
     profile.stateSpec.Position result.stage.previous
       (profile.stateCapability.scaleAt result.stage.previous)
   Label := fun stage =>
-    let result := profile.stateResult.read stage
+    let result := profile.stateResult stage
     profile.registration.Label
-      (profile.residualQuery.read result.stage.previous)
+      (profile.residualQuery result.stage.previous)
   memberLowerMass := fun stage member =>
-    let result := profile.stateResult.read stage
+    let result := profile.stateResult stage
     profile.registration.memberLowerMass
-      (profile.residualQuery.read result.stage.previous)
+      (profile.residualQuery result.stage.previous)
       (profile.independentRankAt result.stage.previous)
       (profile.finiteBarrierSummaryAt result.stage.previous)
       (profile.localSupplyAt result.stage.previous) member
   memberCapacity := fun stage member =>
-    let result := profile.stateResult.read stage
+    let result := profile.stateResult stage
     profile.registration.memberCapacity
-      (profile.residualQuery.read result.stage.previous)
+      (profile.residualQuery result.stage.previous)
       (profile.independentRankAt result.stage.previous)
       (profile.finiteBarrierSummaryAt result.stage.previous)
       (profile.localSupplyAt result.stage.previous) member
   memberLabel := fun stage member =>
-    let result := profile.stateResult.read stage
+    let result := profile.stateResult stage
     profile.registration.memberLabel
-      (profile.residualQuery.read result.stage.previous)
+      (profile.residualQuery result.stage.previous)
       (profile.independentRankAt result.stage.previous)
       (profile.finiteBarrierSummaryAt result.stage.previous)
       (profile.localSupplyAt result.stage.previous) member
@@ -312,11 +319,11 @@ def capacityCapability (profile : Profile Previous Residual) :
     CT14.Capability profile.capacitySpec where
   members := profile.capacityMembers
   labelDecidableEq := fun stage =>
-    let result := profile.stateResult.read stage
+    let result := profile.stateResult stage
     profile.registration.labelDecidableEq
-      (profile.residualQuery.read result.stage.previous)
+      (profile.residualQuery result.stage.previous)
   inputSize := fun stage =>
-    CT14.localCheckBound (profile.capacityMembers.read stage)
+    CT14.localCheckBound (profile.capacityMembers stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -336,13 +343,13 @@ noncomputable def realizedStateCount (profile : Profile Previous Residual) :
     Query Previous fun _ => Nat :=
   profile.residualQuery.map fun previous _residual => by
     letI := profile.registration.realizedStateFinite
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.complementAt previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous)
       (profile.localSupplyAt previous)
     exact Nat.card (profile.registration.RealizedState
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.complementAt previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous)
@@ -351,7 +358,7 @@ noncomputable def realizedStateCount (profile : Profile Previous Residual) :
 def ambientOrder (profile : Profile Previous Residual) :
     Query Previous fun _ => Nat :=
   profile.residualQuery.map fun previous _residual =>
-    profile.registration.ambientOrder (profile.residualQuery.read previous)
+    profile.registration.ambientOrder (profile.residualQuery previous)
       (profile.complementAt previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
@@ -359,7 +366,7 @@ def ambientOrder (profile : Profile Previous Residual) :
 def remainderCard (profile : Profile Previous Residual) :
     Query Previous fun _ => Nat :=
   profile.residualQuery.map fun previous _residual =>
-    profile.registration.remainderCard (profile.residualQuery.read previous)
+    profile.registration.remainderCard (profile.residualQuery previous)
       (profile.complementAt previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
@@ -384,52 +391,52 @@ noncomputable def statePowerProfile (profile : Profile Previous Residual) :
 
 abbrev StatePowerAtLeast (profile : Profile Previous Residual)
     (previous : Previous) : Prop :=
-  (profile.statePowerProfile.read previous).threshold ≤
-    (profile.statePowerProfile.read previous).value
+  (profile.statePowerProfile previous).threshold ≤
+    (profile.statePowerProfile previous).value
 
 abbrev StatePowerBelow (profile : Profile Previous Residual)
     (previous : Previous) : Prop :=
-  (profile.statePowerProfile.read previous).value <
-    (profile.statePowerProfile.read previous).threshold
+  (profile.statePowerProfile previous).value <
+    (profile.statePowerProfile previous).threshold
 
 inductive StatePowerResidual (profile : Profile Previous Residual)
     (previous : Previous) where
   | atLeast (selected : profile.StatePowerAtLeast previous)
       (remainderBits :
-        ((profile.remainderCard.read previous : ℝ) /
-          profile.statePowerExponent.read previous) *
-            Real.logb 2 (profile.ambientOrder.read previous) ≤
-          Real.logb 2 (profile.realizedStateCount.read previous))
+        ((profile.remainderCard previous : ℝ) /
+          profile.statePowerExponent previous) *
+            Real.logb 2 (profile.ambientOrder previous) ≤
+          Real.logb 2 (profile.realizedStateCount previous))
   | below (selected : profile.StatePowerBelow previous)
 
 noncomputable def statePowerResidual (profile : Profile Previous Residual)
     (previous : Previous) : profile.StatePowerResidual previous := by
-  let ambient := profile.ambientOrder.read previous
-  let remainder := profile.remainderCard.read previous
-  let states := profile.realizedStateCount.read previous
-  let power := profile.statePowerExponent.read previous
+  let ambient := profile.ambientOrder previous
+  let remainder := profile.remainderCard previous
+  let states := profile.realizedStateCount previous
+  let power := profile.statePowerExponent previous
   have powerPositive : 0 < power :=
     profile.registration.statePowerExponent_pos
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous)
       (profile.localSupplyAt previous)
   have statePositive : 0 < states := by
     dsimp [states, realizedStateCount]
     letI := profile.registration.realizedStateFinite
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.complementAt previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous)
       (profile.localSupplyAt previous)
     letI := profile.registration.realizedStateNonempty
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.complementAt previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous)
       (profile.localSupplyAt previous)
     exact Nat.card_pos
-  let split := (profile.statePowerProfile.read previous).run
+  let split := (profile.statePowerProfile previous).run
   match split with
   | .high selected =>
       exact StatePowerResidual.atLeast selected (by
@@ -448,7 +455,11 @@ noncomputable def statePowerResidual (profile : Profile Previous Residual)
               realizedStateCount, statePowerExponent, ambient, remainder,
               states, power] using selected
           have poweredReal : (ambient : ℝ) ^ remainder ≤ (states : ℝ) ^ power := by
-            exact_mod_cast powered
+            have castPowered :
+                ((ambient ^ remainder : ℕ) : ℝ) ≤
+                  ((states ^ power : ℕ) : ℝ) := by
+              exact_mod_cast powered
+            simpa only [Nat.cast_pow] using castPowered
           have logged := (Real.logb_le_logb (show (1 : ℝ) < 2 by norm_num)
             (pow_pos (by exact_mod_cast ambientPositive) remainder)
             (pow_pos (by exact_mod_cast statePositive) power)).2 poweredReal
@@ -462,7 +473,7 @@ noncomputable def statePowerResidual (profile : Profile Previous Residual)
 /-- Logarithmic joint budget from the literal state count, remainder
 contribution, and finite powered-capacity presentation. -/
 def JointBudget (profile : Profile Previous Residual) (previous : Previous) : Prop :=
-  let residual := profile.residualQuery.read previous
+  let residual := profile.residualQuery previous
   let rank := profile.independentRankAt previous
   let barrier := profile.finiteBarrierSummaryAt previous
   let supply := profile.localSupplyAt previous
@@ -471,9 +482,9 @@ def JointBudget (profile : Profile Previous Residual) (previous : Previous) : Pr
   let error := profile.registration.jointErrorExponent residual rank barrier supply
   let capacity := profile.registration.jointCapacity residual rank barrier supply
   (exponent : ℝ) *
-      (((profile.remainderCard.read previous : ℝ) /
-        profile.statePowerExponent.read previous) *
-        Real.logb 2 (profile.ambientOrder.read previous)) + desired ≤
+      (((profile.remainderCard previous : ℝ) /
+        profile.statePowerExponent previous) *
+        Real.logb 2 (profile.ambientOrder previous)) + desired ≤
     (exponent : ℝ) * Real.logb 2 capacity + error
 
 /-- Compute the joint budget by logarithmically normalizing the registered
@@ -481,17 +492,17 @@ finite-capacity inequality and adding the exact state-count contribution. -/
 noncomputable def jointBudget (profile : Profile Previous Residual)
     (previous : Previous)
     (remainderBits :
-      ((profile.remainderCard.read previous : ℝ) /
-        profile.statePowerExponent.read previous) *
-          Real.logb 2 (profile.ambientOrder.read previous) ≤
-        Real.logb 2 (profile.realizedStateCount.read previous)) :
+      ((profile.remainderCard previous : ℝ) /
+        profile.statePowerExponent previous) *
+          Real.logb 2 (profile.ambientOrder previous) ≤
+        Real.logb 2 (profile.realizedStateCount previous)) :
     profile.JointBudget previous := by
-  let residual := profile.residualQuery.read previous
+  let residual := profile.residualQuery previous
   let complement := profile.complementAt previous
   let rank := profile.independentRankAt previous
   let barrier := profile.finiteBarrierSummaryAt previous
   let supply := profile.localSupplyAt previous
-  let states := profile.realizedStateCount.read previous
+  let states := profile.realizedStateCount previous
   let joint :=
     profile.registration.jointProfile residual complement rank barrier supply
   let exponent := profile.registration.jointExponent residual rank barrier supply
@@ -569,10 +580,10 @@ noncomputable def jointCapacityTerminal
     (profile : Profile Previous Residual) (previous : Previous)
     (statePower : profile.StatePowerAtLeast previous)
     (remainderBits :
-      ((profile.remainderCard.read previous : ℝ) /
-        profile.statePowerExponent.read previous) *
-          Real.logb 2 (profile.ambientOrder.read previous) ≤
-        Real.logb 2 (profile.realizedStateCount.read previous)) :
+      ((profile.remainderCard previous : ℝ) /
+        profile.statePowerExponent previous) *
+          Real.logb 2 (profile.ambientOrder previous) ≤
+        Real.logb 2 (profile.realizedStateCount previous)) :
     profile.JointCapacityTerminal previous :=
   let budget := profile.jointBudget previous remainderBits
   JointCapacityTerminal.mk statePower budget (not_not_intro budget)
@@ -610,18 +621,18 @@ def residualPowerProfile (profile : Profile Previous Residual) :
 
 abbrev ResidualPowerAtLeast (profile : Profile Previous Residual)
     (previous : Previous) : Prop :=
-  (profile.residualPowerProfile.read previous).threshold ≤
-    (profile.residualPowerProfile.read previous).value
+  (profile.residualPowerProfile previous).threshold ≤
+    (profile.residualPowerProfile previous).value
 
 abbrev ResidualPowerBelow (profile : Profile Previous Residual)
     (previous : Previous) : Prop :=
-  (profile.residualPowerProfile.read previous).value <
-    (profile.residualPowerProfile.read previous).threshold
+  (profile.residualPowerProfile previous).value <
+    (profile.residualPowerProfile previous).threshold
 
 /-- Product-fit guard on the at-least power alternative. -/
 abbrev ProductFit (profile : Profile Previous Residual) (previous : Previous) : Prop :=
-  profile.forcedPower.read previous ≤
-    profile.flatPower.read previous * profile.realizedStateCount.read previous
+  profile.forcedPower previous ≤
+    profile.flatPower previous * profile.realizedStateCount previous
 
 /-- Product fit and a below-threshold state count contradict the at-least
 residual-power alternative. -/
@@ -629,15 +640,15 @@ theorem productFit_atLeast_impossible (profile : Profile Previous Residual)
     (previous : Previous) (statePower : profile.StatePowerBelow previous)
     (atLeast : profile.ResidualPowerAtLeast previous)
     (fit : profile.ProductFit previous) : False := by
-  let forced := profile.forcedPower.read previous
-  let flat := profile.flatPower.read previous
-  let states := profile.realizedStateCount.read previous
-  let upper := profile.ambientOrder.read previous ^ profile.remainderCard.read previous
-  let exponent := profile.statePowerExponent.read previous
+  let forced := profile.forcedPower previous
+  let flat := profile.flatPower previous
+  let states := profile.realizedStateCount previous
+  let upper := profile.ambientOrder previous ^ profile.remainderCard previous
+  let exponent := profile.statePowerExponent previous
   have flatPositive : 0 < flat := by
     dsimp [flat, flatPower]
     exact Nat.pow_pos (profile.registration.flatBase_pos
-      (profile.residualQuery.read previous)
+      (profile.residualQuery previous)
       (profile.independentRankAt previous)
       (profile.finiteBarrierSummaryAt previous)
       (profile.localSupplyAt previous))
@@ -733,7 +744,7 @@ noncomputable def capacityOutcome (profile : Profile Previous Residual)
       .jointTerminal
         (profile.jointCapacityTerminal previous atLeast remainderBits)
   | .below below =>
-      match (profile.residualPowerProfile.read previous).run with
+      match (profile.residualPowerProfile previous).run with
       | .high atLeast =>
           if fit : profile.ProductFit previous then
             False.elim
@@ -996,25 +1007,25 @@ surviving residual routed forward, not an alternative anyone must exclude. -/
 inherited values every other projection uses. -/
 def forcedBaseAt (profile : Profile Previous Residual) (previous : Previous) :
     Nat :=
-  profile.registration.forcedBase (profile.residualQuery.read previous)
+  profile.registration.forcedBase (profile.residualQuery previous)
     (profile.independentRankAt previous)
     (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
 
 /-- The flat power base at one literal predecessor. -/
 def flatBaseAt (profile : Profile Previous Residual) (previous : Previous) :
     Nat :=
-  profile.registration.flatBase (profile.residualQuery.read previous)
+  profile.registration.flatBase (profile.residualQuery previous)
     (profile.independentRankAt previous)
     (profile.finiteBarrierSummaryAt previous) (profile.localSupplyAt previous)
 
 @[simp] theorem forcedPower_read (profile : Profile Previous Residual)
     (previous : Previous) :
-    profile.forcedPower.read previous =
+    profile.forcedPower previous =
       profile.forcedBaseAt previous ^ profile.independentRankAt previous := rfl
 
 @[simp] theorem flatPower_read (profile : Profile Previous Residual)
     (previous : Previous) :
-    profile.flatPower.read previous =
+    profile.flatPower previous =
       profile.flatBaseAt previous ^ profile.independentRankAt previous := rfl
 
 /-- Exact CT17-survivor and CT14-capacity continuation.
@@ -1118,15 +1129,16 @@ branch receives the stronger cap carried by `capacityContinuationQuery`. -/
 noncomputable def inheritedContinuationLedger
     (profile : Profile Previous Residual) :
     FiniteStateNetChargeContinuation.CapacityLedger Previous :=
-  { localSupply := Query.ofFunction fun previous =>
+  { localSupply :=  fun previous =>
       profile.localSupplyAt previous
+    fullRankCertificate := profile.fullRankCertificate
     forcedPower := profile.forcedPower
     flatPower := profile.flatPower
     realizedStateCount := profile.realizedStateCount
     ambientOrder := profile.ambientOrder
     remainderCard := profile.remainderCard
     statePowerExponent := profile.statePowerExponent
-    scaledDeficiency := Query.ofFunction fun previous =>
+    scaledDeficiency :=  fun previous =>
       (profile.scaledDeficiencyCap previous).finiteCap }
 
 /-- Query-only interface to the exact selected capacity ledger entry. -/
@@ -1136,18 +1148,20 @@ noncomputable def continuationLedger
   let continuation := profile.capacityContinuationQuery
   { localSupply := continuation.map fun stage _ =>
       profile.localSupplyAt stage.previous
+    fullRankCertificate := continuation.map fun stage _ =>
+      profile.fullRankCertificate stage.previous
     forcedPower := continuation.map fun stage _ =>
-      profile.forcedPower.read stage.previous
+      profile.forcedPower stage.previous
     flatPower := continuation.map fun stage _ =>
-      profile.flatPower.read stage.previous
+      profile.flatPower stage.previous
     realizedStateCount := continuation.map fun stage _ =>
-      profile.realizedStateCount.read stage.previous
+      profile.realizedStateCount stage.previous
     ambientOrder := continuation.map fun stage _ =>
-      profile.ambientOrder.read stage.previous
+      profile.ambientOrder stage.previous
     remainderCard := continuation.map fun stage _ =>
-      profile.remainderCard.read stage.previous
+      profile.remainderCard stage.previous
     statePowerExponent := continuation.map fun stage _ =>
-      profile.statePowerExponent.read stage.previous
+      profile.statePowerExponent stage.previous
     scaledDeficiency := continuation.map fun _ selected =>
       selected.finiteCap }
 
@@ -1155,14 +1169,14 @@ noncomputable def continuationLedger
 theorem capacityResidualQuery_read_extend
     (profile : Profile Previous Residual) (previous : Previous)
     (residual : profile.CapacityResidual previous) :
-    profile.capacityResidualQuery.read (Ledger.extend previous residual) =
+    profile.capacityResidualQuery (Ledger.extend previous residual) =
       residual :=
   rfl
 
 theorem capacityContinuationQuery_read_extend
     (profile : Profile Previous Residual) (previous : Previous)
     (residual : profile.CapacityResidual previous) :
-    profile.capacityContinuationQuery.read (Ledger.extend previous residual) =
+    profile.capacityContinuationQuery (Ledger.extend previous residual) =
       residual.continuation :=
   rfl
 

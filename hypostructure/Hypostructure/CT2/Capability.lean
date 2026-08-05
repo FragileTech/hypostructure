@@ -24,9 +24,9 @@ structure Capability
   context : Core.Residual.Query Previous fun _previous =>
     Core.MinimalCounterexampleContext P Target progress
   pieces : Core.Residual.Query Previous fun previous =>
-    Core.Finite.Enumeration (spec.Piece (context.read previous).G)
+    Core.Finite.Enumeration (spec.Piece (context previous).G)
   selectedIndex : Core.Residual.Query Previous fun previous =>
-    Fin (pieces.read previous).card
+    Fin (pieces previous).card
   properDecidable : {object : P.Ambient} ->
     (piece : spec.Piece object) -> Decidable (spec.Proper piece)
   admissibleDecidable : {object : P.Ambient} ->
@@ -55,7 +55,7 @@ def contextAt
     {spec : Spec.{uAmbient, uBranch, uPrevious, uPiece} P Previous}
     (capability : Capability Target progress spec) (previous : Previous) :
     Core.MinimalCounterexampleContext P Target progress :=
-  capability.context.read previous
+  capability.context previous
 
 /-- The exact finite piece carrier retrieved from the predecessor ledger. -/
 def piecesAt
@@ -66,7 +66,7 @@ def piecesAt
     (capability : Capability Target progress spec) (previous : Previous) :
     Core.Finite.Enumeration
       (spec.Piece (capability.contextAt previous).G) :=
-  capability.pieces.read previous
+  capability.pieces previous
 
 /-- Framework-owned selection by the residual-owned bounded index. -/
 def selectedPiece
@@ -77,7 +77,7 @@ def selectedPiece
     (capability : Capability Target progress spec) (previous : Previous) :
     spec.Piece (capability.contextAt previous).G :=
   (capability.piecesAt previous).get
-    (capability.selectedIndex.read previous)
+    (capability.selectedIndex previous)
 
 /-- Exact local predicate decided by the CT2 executor. -/
 def Eligible
@@ -113,7 +113,7 @@ theorem selectedPiece_mem
     capability.selectedPiece previous ∈
       (capability.piecesAt previous).values :=
   (capability.piecesAt previous).get_mem
-    (capability.selectedIndex.read previous)
+    (capability.selectedIndex previous)
 
 /-- One explicit local decision has a constant degree-zero work budget. -/
 def localDeletionBudget

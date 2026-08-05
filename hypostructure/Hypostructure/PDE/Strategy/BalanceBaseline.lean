@@ -144,12 +144,12 @@ def balanceQuery :
         PDE.IsLocalSolution dimension Value μ Momentum
           (PDE.HarmonicKernelNormalized dimension Value Index μ reader
             spatialDirection) input.object) :=
-  Core.Residual.Query.ofFunction fun input => input.baseline
+  fun input => input.baseline
 
 @[simp] theorem read_balanceQuery
     (input : BalancedInput dimension Value Index μ reader spatialDirection
       Momentum BranchState Presentation presentation) :
-    (balanceQuery (BranchState := BranchState) (presentation := presentation)).read
+    (balanceQuery (BranchState := BranchState) (presentation := presentation))
       input = input.baseline := rfl
 
 end Hypostructure.PDE.Strategy

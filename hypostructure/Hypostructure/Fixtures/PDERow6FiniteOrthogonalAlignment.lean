@@ -251,7 +251,7 @@ def rowFiveStageOutput :
     DirectedExhaustiveness.Output rowFiveProfile
       PDERow5DirectedExhaustiveness.previous
       PDERow5DirectedExhaustiveness.active :=
-  rowFiveProfile.outputQuery.read rowFiveRun.value
+  rowFiveProfile.outputQuery rowFiveRun.value
     PDERow5DirectedExhaustiveness.active
 
 theorem rank_terminal :
@@ -325,7 +325,7 @@ def rowFiveActive :
       })
 
 def rowFiveBoundary :=
-  rowFiveProfile.targetVisibleBoundaryQuery.read rowFiveRun.value rowFiveActive
+  rowFiveProfile.targetVisibleBoundaryQuery rowFiveRun.value rowFiveActive
 
 theorem rowFive_selected_carrier :
     rowFiveBoundary.closure.residual.hit.value = (2 : Real) := by
@@ -427,12 +427,12 @@ theorem selectedCarrier_eq_two
     DefectRoutingAlignment.selectedCarrier rowFiveProfile stage active =
       (2 : Real) := by
   have member :=
-    (rowFiveProfile.targetVisibleBoundaryQuery.read stage active).closure.residual.hit.member
+    (rowFiveProfile.targetVisibleBoundaryQuery stage active).closure.residual.hit.member
   have member' :
-      (rowFiveProfile.targetVisibleBoundaryQuery.read stage active).closure.residual.hit.value ∈
+      (rowFiveProfile.targetVisibleBoundaryQuery stage active).closure.residual.hit.value ∈
         visibleSchedule.values := by
     simpa [rowFiveProfile, familyAt_eq] using member
-  change (rowFiveProfile.targetVisibleBoundaryQuery.read stage active).closure.residual.hit.value ∈
+  change (rowFiveProfile.targetVisibleBoundaryQuery stage active).closure.residual.hit.value ∈
     [(2 : Real)] at member'
   simpa [DefectRoutingAlignment.selectedCarrier] using member'
 
@@ -543,7 +543,7 @@ noncomputable def harmonicContract (defect : Real) :
 abbrev positiveContractQuery : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DirectResistanceContract Real
-        (positiveRegistrationQuery.read stage active).geometry
+        (positiveRegistrationQuery stage active).geometry
         (DefectRoutingAlignment.exactDefect rowFiveProfile
           positiveRegistrationQuery halfCoordinateQuery stage active)
         Real :=
@@ -555,7 +555,7 @@ abbrev positiveContractQuery : Focus.ActiveQuery
 abbrev closedContractQuery : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DirectResistanceContract Real
-        (harmonicRegistrationQuery.read stage active).geometry
+        (harmonicRegistrationQuery stage active).geometry
         (DefectRoutingAlignment.exactDefect rowFiveProfile
           harmonicRegistrationQuery halfCoordinateQuery stage active)
         Unit :=
@@ -567,7 +567,7 @@ abbrev closedContractQuery : Focus.ActiveQuery
 abbrev visibleContractQuery : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DirectResistanceContract Real
-        (harmonicRegistrationQuery.read stage active).geometry
+        (harmonicRegistrationQuery stage active).geometry
         (DefectRoutingAlignment.exactDefect rowFiveProfile
           harmonicRegistrationQuery identityCoordinateQuery stage active)
         Unit :=
@@ -587,56 +587,56 @@ def zeroClosedQuery : Focus.ActiveQuery
 
 noncomputable def positiveZeroDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((positiveContractQuery.read stage active).harmonic = 0) :=
+      Decidable ((positiveContractQuery stage active).harmonic = 0) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((positiveContractQuery.read stage active).harmonic = 0)
+      ((positiveContractQuery stage active).harmonic = 0)
 
 noncomputable def positiveLedgerDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((positiveContractQuery.read stage active).harmonic ∈
+      Decidable ((positiveContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((positiveContractQuery.read stage active).harmonic ∈
+      ((positiveContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes)
 
 noncomputable def closedZeroDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((closedContractQuery.read stage active).harmonic = 0) :=
+      Decidable ((closedContractQuery stage active).harmonic = 0) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((closedContractQuery.read stage active).harmonic = 0)
+      ((closedContractQuery stage active).harmonic = 0)
 
 noncomputable def closedLedgerDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((closedContractQuery.read stage active).harmonic ∈
+      Decidable ((closedContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((closedContractQuery.read stage active).harmonic ∈
+      ((closedContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes)
 
 noncomputable def visibleZeroDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((visibleContractQuery.read stage active).harmonic = 0) :=
+      Decidable ((visibleContractQuery stage active).harmonic = 0) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((visibleContractQuery.read stage active).harmonic = 0)
+      ((visibleContractQuery stage active).harmonic = 0)
 
 noncomputable def visibleLedgerDecision : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
-      Decidable ((visibleContractQuery.read stage active).harmonic ∈
+      Decidable ((visibleContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes) :=
   rowFiveProfile.targetVisibleBoundaryQuery.map fun stage active _boundary =>
     Classical.propDecidable
-      ((visibleContractQuery.read stage active).harmonic ∈
+      ((visibleContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile stage active).classes)
 
 def positiveRoutingComplete : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DefectRoutingAlignment.RoutingCompleteAt rowFiveProfile
-        (positiveContractQuery.read stage active) stage active :=
+        (positiveContractQuery stage active) stage active :=
   rowFiveProfile.targetVisibleBoundaryQuery.map
     fun stage active _boundary => by
       constructor
@@ -648,7 +648,7 @@ def positiveRoutingComplete : Focus.ActiveQuery
 def closedRoutingComplete : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DefectRoutingAlignment.RoutingCompleteAt rowFiveProfile
-        (closedContractQuery.read stage active) stage active :=
+        (closedContractQuery stage active) stage active :=
   rowFiveProfile.targetVisibleBoundaryQuery.map
     fun stage active _boundary => by
       constructor
@@ -667,7 +667,7 @@ def closedRoutingComplete : Focus.ActiveQuery
 def visibleRoutingComplete : Focus.ActiveQuery
     rowFiveProfile.TargetVisibleFocus fun stage active =>
       DefectRoutingAlignment.RoutingCompleteAt rowFiveProfile
-        (visibleContractQuery.read stage active) stage active :=
+        (visibleContractQuery stage active) stage active :=
   rowFiveProfile.targetVisibleBoundaryQuery.map
     fun stage active _boundary => by
       constructor
@@ -770,21 +770,21 @@ def visibleSuccessorActive :
   exact rowFiveActive
 
 def positiveGenerated :=
-  positiveProfile.outputQuery.read positiveRun.value positiveSuccessorActive
+  positiveProfile.outputQuery positiveRun.value positiveSuccessorActive
 
 def closedGenerated :=
-  closedProfile.outputQuery.read closedRun.value closedSuccessorActive
+  closedProfile.outputQuery closedRun.value closedSuccessorActive
 
 def visibleGenerated :=
-  visibleProfile.outputQuery.read visibleRun.value visibleSuccessorActive
+  visibleProfile.outputQuery visibleRun.value visibleSuccessorActive
 
 theorem positiveConditionAt
     (stage : DefectRoutingAlignment.RowFiveStage rowFiveProfile)
     (active : rowFiveProfile.TargetVisibleFocus.Active stage) :
     positiveProfile.Condition (Focus.ActiveView.of stage active)
       .finiteResistanceHarmonicZero := by
-  change (positiveContractQuery.read stage active).Finite /\
-    (positiveContractQuery.read stage active).harmonic = 0
+  change (positiveContractQuery stage active).Finite /\
+    (positiveContractQuery stage active).harmonic = 0
   constructor
   · simp [DirectResistanceContract.Finite, positiveContract]
   · simp [DirectResistanceContract.harmonic, positiveContract]
@@ -794,16 +794,16 @@ theorem closedConditionAt
     (active : rowFiveProfile.TargetVisibleFocus.Active stage) :
     closedProfile.Condition (Focus.ActiveView.of stage active)
       .finiteResistanceHarmonicClosed := by
-  change (closedContractQuery.read stage active).Finite /\
-    (closedContractQuery.read stage active).harmonic ≠ 0 /\
-      (closedContractQuery.read stage active).harmonic ∈
+  change (closedContractQuery stage active).Finite /\
+    (closedContractQuery stage active).harmonic ≠ 0 /\
+      (closedContractQuery stage active).harmonic ∈
         (DefectRoutingAlignment.CurrentLedgerAt rowFiveProfile
           stage active).classes
   constructor
   · simp [DirectResistanceContract.Finite, harmonicContract]
   · constructor
     · have harmonicEq :
-          (closedContractQuery.read stage active).harmonic =
+          (closedContractQuery stage active).harmonic =
             (1 : Real) := by
           change DefectRoutingAlignment.exactDefect rowFiveProfile
             harmonicRegistrationQuery halfCoordinateQuery
@@ -812,7 +812,7 @@ theorem closedConditionAt
       rw [harmonicEq]
       norm_num
     · have harmonicEq :
-          (closedContractQuery.read stage active).harmonic =
+          (closedContractQuery stage active).harmonic =
             (1 : Real) := by
           change DefectRoutingAlignment.exactDefect rowFiveProfile
             harmonicRegistrationQuery halfCoordinateQuery
@@ -922,17 +922,17 @@ def visibleSemanticActive :
 
 def positiveSemanticOutput :=
   (positiveProfile.semanticTagOutputQuery
-    .finiteResistanceHarmonicZero).read positiveRun.value
+    .finiteResistanceHarmonicZero) positiveRun.value
       positiveSemanticActive
 
 def closedSemanticOutput :=
   (closedProfile.semanticTagOutputQuery
-    .finiteResistanceHarmonicClosed).read closedRun.value
+    .finiteResistanceHarmonicClosed) closedRun.value
       closedSemanticActive
 
 def visibleSemanticOutput :=
   (visibleProfile.semanticTagOutputQuery
-    .targetVisibleHarmonic).read visibleRun.value
+    .targetVisibleHarmonic) visibleRun.value
       visibleSemanticActive
 
 theorem semantic_queries_read_exact_outputs :
@@ -1022,15 +1022,15 @@ theorem visible_capacity_focus_rejected :
   cases impossible
 
 def positiveCapacityOutput :=
-  positiveProfile.capacityReadyOutputQuery.read positiveRun.value
+  positiveProfile.capacityReadyOutputQuery positiveRun.value
     positiveCapacityReadyActive
 
 def closedCapacityOutput :=
-  closedProfile.capacityReadyOutputQuery.read closedRun.value
+  closedProfile.capacityReadyOutputQuery closedRun.value
     closedCapacityReadyActive
 
 def visibleTargetOutput :=
-  visibleProfile.targetVisibleHarmonicOutputQuery.read visibleRun.value
+  visibleProfile.targetVisibleHarmonicOutputQuery visibleRun.value
     visibleTargetHarmonicActive
 
 theorem refined_queries_read_exact_outputs :
@@ -1054,15 +1054,15 @@ theorem runs_retain_root_residual :
   exact ⟨rfl, rfl, rfl⟩
 
 def positiveDefectAtSuccessor :=
-  positiveProfile.exactDefectQueryAtSuccessor.read positiveRun.value
+  positiveProfile.exactDefectQueryAtSuccessor positiveRun.value
     positiveSuccessorActive
 
 def closedDefectAtSuccessor :=
-  closedProfile.exactDefectQueryAtSuccessor.read closedRun.value
+  closedProfile.exactDefectQueryAtSuccessor closedRun.value
     closedSuccessorActive
 
 def visibleDefectAtSuccessor :=
-  visibleProfile.exactDefectQueryAtSuccessor.read visibleRun.value
+  visibleProfile.exactDefectQueryAtSuccessor visibleRun.value
     visibleSuccessorActive
 
 theorem successor_defects_are_exact :
@@ -1076,15 +1076,15 @@ theorem successor_defects_are_exact :
     · exact visible_exact_defect _ _
 
 def positiveLedgerAtSuccessor :=
-  positiveProfile.currentLedgerQueryAtSuccessor.read positiveRun.value
+  positiveProfile.currentLedgerQueryAtSuccessor positiveRun.value
     positiveSuccessorActive
 
 def closedLedgerAtSuccessor :=
-  closedProfile.currentLedgerQueryAtSuccessor.read closedRun.value
+  closedProfile.currentLedgerQueryAtSuccessor closedRun.value
     closedSuccessorActive
 
 def visibleLedgerAtSuccessor :=
-  visibleProfile.currentLedgerQueryAtSuccessor.read visibleRun.value
+  visibleProfile.currentLedgerQueryAtSuccessor visibleRun.value
     visibleSuccessorActive
 
 theorem successor_ledgers_are_unchanged :
@@ -1094,15 +1094,15 @@ theorem successor_ledgers_are_unchanged :
   exact ⟨rfl, rfl, rfl⟩
 
 def positiveQuotientAtSuccessor :=
-  positiveProfile.currentQuotientQueryAtSuccessor.read positiveRun.value
+  positiveProfile.currentQuotientQueryAtSuccessor positiveRun.value
     positiveSuccessorActive
 
 def closedQuotientAtSuccessor :=
-  closedProfile.currentQuotientQueryAtSuccessor.read closedRun.value
+  closedProfile.currentQuotientQueryAtSuccessor closedRun.value
     closedSuccessorActive
 
 def visibleQuotientAtSuccessor :=
-  visibleProfile.currentQuotientQueryAtSuccessor.read visibleRun.value
+  visibleProfile.currentQuotientQueryAtSuccessor visibleRun.value
     visibleSuccessorActive
 
 theorem successor_quotients_are_unchanged :
@@ -1112,17 +1112,17 @@ theorem successor_quotients_are_unchanged :
   exact ⟨rfl, rfl, rfl⟩
 
 theorem successor_resistance_reads_are_preserved :
-    positiveProfile.resistanceContractQueryAtSuccessor.read positiveRun.value
+    positiveProfile.resistanceContractQueryAtSuccessor positiveRun.value
         positiveSuccessorActive =
-      positiveContractQuery.read positiveRun.value.previous
+      positiveContractQuery positiveRun.value.previous
         positiveSuccessorActive /\
-    closedProfile.resistanceContractQueryAtSuccessor.read closedRun.value
+    closedProfile.resistanceContractQueryAtSuccessor closedRun.value
         closedSuccessorActive =
-      closedContractQuery.read closedRun.value.previous
+      closedContractQuery closedRun.value.previous
         closedSuccessorActive /\
-    visibleProfile.resistanceContractQueryAtSuccessor.read visibleRun.value
+    visibleProfile.resistanceContractQueryAtSuccessor visibleRun.value
         visibleSuccessorActive =
-      visibleContractQuery.read visibleRun.value.previous
+      visibleContractQuery visibleRun.value.previous
         visibleSuccessorActive := by
   exact ⟨rfl, rfl, rfl⟩
 

@@ -2909,9 +2909,9 @@ noncomputable def canonicalF5Focus
     (profile := parent) family.storedSurvivingOwnersQuery
   let refinement : Core.Residual.Focus.Refinement parent :=
     Core.Residual.Focus.Refinement.ofDecision
-      (fun stage active => (owners.read stage active).values ≠ [])
+      (fun stage active => (owners stage active).values ≠ [])
       (fun stage active =>
-        { value := Classical.propDecidable ((owners.read stage active).values ≠ [])
+        { value := Classical.propDecidable ((owners stage active).values ≠ [])
           checks := 1 })
       (Core.PolynomialCheckBudget.constant (fun _stage => 0) 1)
       (fun _stage _active => rfl)
@@ -2938,7 +2938,7 @@ noncomputable def canonicalF5RepresentativePair
     Core.Response.Representatives (CanonicalColdStage profile owner) := by
   let family := CanonicalColdFamily profile CycleLengthOK
     cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-  let classification := family.storedClassificationQuery.read view.previous
+  let classification := family.storedClassificationQuery view.previous
   letI := family.stateFintype owner.1
   if selected : Core.Finite.ColdCorridor.Contract.Classification.IsFailure
       (family.contractAt owner.1)
@@ -3009,7 +3009,7 @@ noncomputable def canonicalRepeatedEarlier
     (owner :
       let family := CanonicalColdFamily profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.RepeatedF5Owner (family.classifiedStateQuery.read view.previous)) :
+      family.RepeatedF5Owner (family.classifiedStateQuery view.previous)) :
     CanonicalColdStage profile owner.1.1 := by
   let family := CanonicalColdFamily profile CycleLengthOK
     cycleLengthDecidable Target decideTarget handoffItems handoffSupport
@@ -3035,7 +3035,7 @@ noncomputable def canonicalRepeatedLater
     (owner :
       let family := CanonicalColdFamily profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.RepeatedF5Owner (family.classifiedStateQuery.read view.previous)) :
+      family.RepeatedF5Owner (family.classifiedStateQuery view.previous)) :
     CanonicalColdStage profile owner.1.1 := by
   let family := CanonicalColdFamily profile CycleLengthOK
     cycleLengthDecidable Target decideTarget handoffItems handoffSupport
@@ -3063,7 +3063,7 @@ theorem canonicalF5Representatives_at_repeated
     (owner :
       let family := CanonicalColdFamily profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.RepeatedF5Owner (family.classifiedStateQuery.read view.previous)) :
+      family.RepeatedF5Owner (family.classifiedStateQuery view.previous)) :
     let representatives := canonicalF5Representatives profile CycleLengthOK
       cycleLengthDecidable Target decideTarget handoffItems handoffSupport view
     representatives.source owner.1.1 =
@@ -3078,7 +3078,7 @@ theorem canonicalF5Representatives_at_repeated
   letI := family.stateFintype owner.1.1.1
   have selected : Core.Finite.ColdCorridor.Contract.Classification.IsFailure
       (family.contractAt owner.1.1.1)
-      ((family.storedClassificationQuery.read view.previous).classify
+      ((family.storedClassificationQuery view.previous).classify
         owner.1.1) .f5 := by
     exact owner.1.2
   unfold canonicalF5Representatives
@@ -3134,7 +3134,7 @@ theorem canonicalRepeatedF5Witness_facts
     (owner :
       let family := CanonicalColdFamily profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.RepeatedF5Owner (family.classifiedStateQuery.read view.previous)) :
+      family.RepeatedF5Owner (family.classifiedStateQuery view.previous)) :
     let earlier := canonicalRepeatedEarlier profile CycleLengthOK
       cycleLengthDecidable Target decideTarget handoffItems handoffSupport view owner
     let later := canonicalRepeatedLater profile CycleLengthOK
@@ -3255,7 +3255,7 @@ noncomputable def canonicalF5CT7Spec
     ∃ selected :
         Core.Finite.ColdCorridor.Contract.Classification.IsFailure
           (family.contractAt context.1.1)
-          ((family.storedClassificationQuery.read view.previous).classify
+          ((family.storedClassificationQuery view.previous).classify
             context.1) .f5,
       letI : DecidableEq object.Vertex := object.vertices.decEq
       Graph.HasCycleWithLength CycleLengthOK
@@ -3287,15 +3287,15 @@ noncomputable def canonicalF5CT7Capability
       (Core.Residual.Focus.ActiveView focus)
       (fun _ => Core.Response.Representatives
         (CanonicalColdRepresentative profile)) :=
-    (Core.Residual.Focus.ActiveQuery.ofFunction
-      (profile := focus) fun stage active =>
+    Core.Residual.Focus.ActiveQuery.onView
+      (profile := focus) (fun stage active =>
         canonicalF5Representatives profile CycleLengthOK cycleLengthDecidable
           Target decideTarget handoffItems handoffSupport
-          (Core.Residual.Focus.ActiveView.of stage active)).onView
+          (Core.Residual.Focus.ActiveView.of stage active))
   let contexts : Core.Residual.Query
       (Core.Residual.Focus.ActiveView focus)
       (fun _ => Enumeration (CanonicalColdContext profile)) :=
-    Core.Residual.Query.ofFunction fun _ => canonicalColdContextSchedule profile
+    fun _ => canonicalColdContextSchedule profile
   exact _root_.Hypostructure.CT7.Capability.ofExactContexts
     representatives contexts
     (by change DecidableEq Bool; infer_instance)
@@ -3640,7 +3640,7 @@ theorem canonicalF5G3RepeatedFacts
     (owner :
       let family := CanonicalColdFamily profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.RepeatedF5Owner (family.classifiedStateQuery.read view.previous)) :
+      family.RepeatedF5Owner (family.classifiedStateQuery view.previous)) :
     let representatives : Core.Response.Representatives
         (CanonicalColdRepresentative profile) :=
       (canonicalF5CT7Capability (Previous := Previous) profile CycleLengthOK
@@ -3947,19 +3947,19 @@ def focusedCorridorEvents {Previous : Type u}
     (stages :
       _root_.Hypostructure.Core.Residual.Focus.ActiveQuery focus
         fun previous active =>
-          (item : Item) -> Enumeration ((object.read previous active).Vertex))
+          (item : Item) -> Enumeration ((object previous active).Vertex))
     (event : (previous : Previous) -> (active : focus.Active previous) ->
-      (item : Item) -> Enumeration ((object.read previous active).Vertex) ->
+      (item : Item) -> Enumeration ((object previous active).Vertex) ->
         Prop)
     (eventDecidable :
       (previous : Previous) -> (active : focus.Active previous) ->
         (item : Item) ->
           Decidable (event previous active item
-            ((stages.read previous active) item))) :
+            ((stages previous active) item))) :
     Core.Finite.ScheduleEvents.FocusedContract focus :=
   Core.Finite.ScheduleEvents.focusedFromQueries Item items
     (fun previous active _item =>
-      Enumeration ((object.read previous active).Vertex))
+      Enumeration ((object previous active).Vertex))
     stages event eventDecidable
 
 end Hypostructure.Graph.InducedPathCold

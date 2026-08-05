@@ -26,10 +26,10 @@ structure Profile (Previous : Type uPrevious) where
     (window : Window previous) -> Decidable (charge previous window ≥ 0)
 
 def totalCharge (profile : Profile Previous) (previous : Previous) : Int :=
-  (profile.schedule.read previous).values.map (profile.charge previous) |>.sum
+  (profile.schedule previous).values.map (profile.charge previous) |>.sum
 
 def totalCapacity (profile : Profile Previous) (previous : Previous) : Int :=
-  (profile.schedule.read previous).values.map (profile.capacity previous) |>.sum
+  (profile.schedule previous).values.map (profile.capacity previous) |>.sum
 
 def overload (profile : Profile Previous) (previous : Previous) : Prop :=
   totalCharge profile previous > totalCapacity profile previous

@@ -246,21 +246,21 @@ structure Profile
     (wholeQuery : Core.Residual.Query Previous Carrier) where
   LocalClosed :
     (previous : Previous) →
-      ExactLocalTail (Carrier previous) (wholeQuery.read previous) →
+      ExactLocalTail (Carrier previous) (wholeQuery previous) →
         Type uClosed
   splitQuery :
     Core.Residual.Query Previous fun previous =>
-      ExactLocalTail (Carrier previous) (wholeQuery.read previous)
+      ExactLocalTail (Carrier previous) (wholeQuery previous)
   localClosedQuery :
     Core.Residual.Query Previous fun previous =>
-      LocalClosed previous (splitQuery.read previous)
+      LocalClosed previous (splitQuery previous)
   representedTailQuery :
     Core.Residual.Query Previous fun previous =>
-      RepresentedTail M (wholeQuery.read previous)
-        (splitQuery.read previous)
+      RepresentedTail M (wholeQuery previous)
+        (splitQuery previous)
   focusQuery :
     Core.Residual.Query Previous fun previous =>
-      TailFocus M (representedTailQuery.read previous).sourceWindow
+      TailFocus M (representedTailQuery previous).sourceWindow
 
 namespace Profile
 
@@ -289,25 +289,25 @@ def activationInputs :
         (PProd
           (PProd
             (ExactLocalTail (Carrier previous)
-              (wholeQuery.read previous))
+              (wholeQuery previous))
             (profile.LocalClosed previous
-              (profile.splitQuery.read previous)))
-          (RepresentedTail M (wholeQuery.read previous)
-            (profile.splitQuery.read previous)))
+              (profile.splitQuery previous)))
+          (RepresentedTail M (wholeQuery previous)
+            (profile.splitQuery previous)))
         (TailFocus M
-          (profile.representedTailQuery.read previous).sourceWindow) :=
+          (profile.representedTailQuery previous).sourceWindow) :=
   ((profile.splitQuery.and profile.localClosedQuery).and
     profile.representedTailQuery).and profile.focusQuery
 
 private def activate
     (previous : Previous)
     (_split :
-      ExactLocalTail (Carrier previous) (wholeQuery.read previous))
+      ExactLocalTail (Carrier previous) (wholeQuery previous))
     (_localClosed :
-      profile.LocalClosed previous (profile.splitQuery.read previous))
+      profile.LocalClosed previous (profile.splitQuery previous))
     (represented :
-      RepresentedTail M (wholeQuery.read previous)
-        (profile.splitQuery.read previous))
+      RepresentedTail M (wholeQuery previous)
+        (profile.splitQuery previous))
     (focus : TailFocus M represented.sourceWindow) :
     RecenteredTail represented focus :=
   represented.recenter focus
@@ -319,38 +319,38 @@ closure, represented equation, and focus queries.
 def recenteredTailQuery :
     Core.Residual.Query Previous fun previous =>
       RecenteredTail
-        (profile.representedTailQuery.read previous)
-        (profile.focusQuery.read previous) :=
+        (profile.representedTailQuery previous)
+        (profile.focusQuery previous) :=
   profile.activationInputs.dependentMap fun previous inputs =>
     profile.activate previous inputs.1.1.1 inputs.1.1.2
-      (profile.representedTailQuery.read previous)
-      (profile.focusQuery.read previous)
+      (profile.representedTailQuery previous)
+      (profile.focusQuery previous)
 
 /-- The represented recentered equation consumed by later PDE adapters. -/
 def recenteredEquationQuery :
     Core.Residual.Query Previous fun previous =>
       EquationState M.equation
-        (profile.focusQuery.read previous).targetWindow :=
+        (profile.focusQuery previous).targetWindow :=
   profile.recenteredTailQuery.map fun _ recentered => recentered.state
 
 /-- The original exact decomposition certificate remains queryable. -/
 def originalReconstructionQuery :
     Core.Residual.Query Previous fun previous =>
-      (profile.splitQuery.read previous).localPart +
-          (profile.splitQuery.read previous).tailPart =
-        wholeQuery.read previous :=
+      (profile.splitQuery previous).localPart +
+          (profile.splitQuery previous).tailPart =
+        wholeQuery previous :=
   profile.splitQuery.dependentMap fun _ split =>
     split.exact_reconstruction
 
 /-- Tail activation visibly reads the immediately preceding local closure. -/
 theorem recenteredTailQuery_read
     (previous : Previous) :
-    profile.recenteredTailQuery.read previous =
+    profile.recenteredTailQuery previous =
       profile.activate previous
-        (profile.splitQuery.read previous)
-        (profile.localClosedQuery.read previous)
-        (profile.representedTailQuery.read previous)
-        (profile.focusQuery.read previous) :=
+        (profile.splitQuery previous)
+        (profile.localClosedQuery previous)
+        (profile.representedTailQuery previous)
+        (profile.focusQuery previous) :=
   rfl
 
 /--

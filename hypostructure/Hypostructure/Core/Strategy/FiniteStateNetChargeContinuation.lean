@@ -49,11 +49,11 @@ variable (profile : Profile Previous Residual)
 
 abbrev DensityCap56 (previous : Previous) : Prop :=
   ∀ rate : Nat,
-    2 ^ rate * (profile.density.barrierSummary.read previous).flatProduct ≤
-        (profile.density.barrierSummary.read previous).safeProduct →
-      0 < (profile.density.barrierSummary.read previous).flatProduct →
-        2 ^ (rate * profile.density.packingCount.read previous) ≤
-          profile.density.ambientCapacity.read previous
+    2 ^ rate * (profile.density.barrierSummary previous).flatProduct ≤
+        (profile.density.barrierSummary previous).safeProduct →
+      0 < (profile.density.barrierSummary previous).flatProduct →
+        2 ^ (rate * profile.density.packingCount previous) ≤
+          profile.density.ambientCapacity previous
 
 abbrev Stage56 :=
   Ledger.Extension Previous profile.DensityCap56
@@ -73,22 +73,22 @@ def density56 : FiniteDensityBudget.CapLedger profile.Stage56 :=
 abbrev RateCap56 (stage : profile.Stage56) : Prop :=
   ∀ num den windowOrder stubRate windowCount : Nat,
     0 < num → 0 < den →
-    (profile.capacity56.localSupply.read stage).selectedCount =
+    (profile.capacity56.localSupply stage).selectedCount =
         windowOrder * windowCount →
-      (profile.capacity56.localSupply.read stage).netDeficiency.remainder +
-          (profile.capacity56.localSupply.read stage).selectedCount =
-            (profile.capacity56.localSupply.read stage).ambientCount →
+      (profile.capacity56.localSupply stage).netDeficiency.remainder +
+          (profile.capacity56.localSupply stage).selectedCount =
+            (profile.capacity56.localSupply stage).ambientCount →
         (den * stubRate + num * windowOrder) * windowCount <
-            num * (profile.capacity56.localSupply.read stage).ambientCount →
-          (profile.capacity56.localSupply.read
+            num * (profile.capacity56.localSupply stage).ambientCount →
+          (profile.capacity56.localSupply
               stage).netDeficiency.coefficient ≤ stubRate * windowCount →
-            (profile.capacity56.localSupply.read
+            (profile.capacity56.localSupply
                 stage).netDeficiency.remainder ≤
-              (profile.capacity56.localSupply.read
+              (profile.capacity56.localSupply
                 stage).netDeficiency.scale →
-              ((profile.capacity56.localSupply.read
+              ((profile.capacity56.localSupply
                     stage).netDeficiency.coefficient : ℝ) /
-                  (profile.capacity56.localSupply.read
+                  (profile.capacity56.localSupply
                     stage).netDeficiency.scale <
                 (num : ℝ) / (den : ℝ)
 
@@ -101,7 +101,7 @@ noncomputable def stage56Rate (previous : Previous) : profile.Stage56Rate :=
     (by
       intro num den windowOrder stubRate windowCount numPos denPos
         windowCover partition densityCap stubBound scaleBound
-      set summary := profile.capacity56.localSupply.read stage with summaryEq
+      set summary := profile.capacity56.localSupply stage with summaryEq
       -- Compare the coefficient with the residual scale at the supplied rate.
       -- The products are nonlinear, so each comparison is explicit.
       have strict : den * summary.netDeficiency.coefficient <
@@ -155,26 +155,26 @@ def density56Rate : FiniteDensityBudget.CapLedger profile.Stage56Rate :=
 abbrev Stage57 :=
   Ledger.Extension profile.Stage56Rate
     (fun stage =>
-      let _summary := profile.capacity56Rate.localSupply.read stage
+      let _summary := profile.capacity56Rate.localSupply stage
       LocalSupplyLowerBound.NetDeficiencyAccounting)
 
 noncomputable def stage57 (previous : Previous) : profile.Stage57 :=
   let stage := profile.stage56Rate previous
   Ledger.extend stage
-    (profile.capacity56Rate.localSupply.read stage).netDeficiency
+    (profile.capacity56Rate.localSupply stage).netDeficiency
 
 def capacity57 : CapacityLedger profile.Stage57 :=
   profile.capacity56Rate.preserve (Added := fun stage =>
-    let _summary := profile.capacity56Rate.localSupply.read stage
+    let _summary := profile.capacity56Rate.localSupply stage
     LocalSupplyLowerBound.NetDeficiencyAccounting)
 
 def density57 : FiniteDensityBudget.CapLedger profile.Stage57 :=
   profile.density56Rate.preserve (Added := fun stage =>
-    let _summary := profile.capacity56Rate.localSupply.read stage
+    let _summary := profile.capacity56Rate.localSupply stage
     LocalSupplyLowerBound.NetDeficiencyAccounting)
 
 abbrev Charge58 (stage : profile.Stage57) : Prop :=
-  let supply := profile.capacity57.localSupply.read stage
+  let supply := profile.capacity57.localSupply stage
   supply.netDeficiency.scale * supply.netDeficiency.deficiency ≤
     supply.netDeficiency.coefficient * supply.netDeficiency.remainder +
       supply.netDeficiency.scale * supply.netDeficiency.surplus
@@ -184,7 +184,7 @@ abbrev Stage58 :=
 
 noncomputable def stage58 (previous : Previous) : profile.Stage58 :=
   let stage := profile.stage57 previous
-  Ledger.extend stage (profile.capacity57.scaledDeficiency.read stage)
+  Ledger.extend stage (profile.capacity57.scaledDeficiency stage)
 
 def capacity58 : CapacityLedger profile.Stage58 :=
   profile.capacity57.preserveProp (Added := profile.Charge58)
@@ -194,13 +194,13 @@ def density58 : FiniteDensityBudget.CapLedger profile.Stage58 :=
 
 private def comparison59 (stage : profile.Stage58) :
     Core.OrderThresholdSplit.Profile Nat :=
-  { value := profile.capacity58.forcedPower.read stage ^
-      profile.capacity58.statePowerExponent.read stage
+  { value := profile.capacity58.forcedPower stage ^
+      profile.capacity58.statePowerExponent stage
     threshold :=
-      profile.capacity58.flatPower.read stage ^
-          profile.capacity58.statePowerExponent.read stage *
-        profile.capacity58.ambientOrder.read stage ^
-          profile.capacity58.remainderCard.read stage }
+      profile.capacity58.flatPower stage ^
+          profile.capacity58.statePowerExponent stage *
+        profile.capacity58.ambientOrder stage ^
+          profile.capacity58.remainderCard stage }
 
 abbrev High59 (stage : profile.Stage58) : Prop :=
   (profile.comparison59 stage).threshold <
@@ -233,13 +233,13 @@ def density59 : FiniteDensityBudget.CapLedger profile.Stage59 :=
 
 abbrev NetCapContradiction60 (stage : profile.Stage59) : Prop :=
   ∀ rate : ℝ,
-    (((profile.capacity59.localSupply.read stage).netDeficiency.coefficient : ℝ) /
-        (profile.capacity59.localSupply.read stage).netDeficiency.scale < rate) →
-      0 < (profile.capacity59.localSupply.read stage).netDeficiency.remainder →
+    (((profile.capacity59.localSupply stage).netDeficiency.coefficient : ℝ) /
+        (profile.capacity59.localSupply stage).netDeficiency.scale < rate) →
+      0 < (profile.capacity59.localSupply stage).netDeficiency.remainder →
         ¬ (rate *
-              (profile.capacity59.localSupply.read stage).netDeficiency.remainder +
-            (profile.capacity59.localSupply.read stage).netDeficiency.surplus ≤
-          (profile.capacity59.localSupply.read stage).netDeficiency.deficiency)
+              (profile.capacity59.localSupply stage).netDeficiency.remainder +
+            (profile.capacity59.localSupply stage).netDeficiency.surplus ≤
+          (profile.capacity59.localSupply stage).netDeficiency.deficiency)
 
 abbrev Stage60 :=
   Ledger.Extension profile.Stage59 profile.NetCapContradiction60
@@ -248,7 +248,7 @@ noncomputable def stage60 (previous : Previous) : profile.Stage60 :=
   let stage := profile.stage59 previous
   Ledger.extend stage
     (fun _rate above remainderPos =>
-      (profile.capacity59.localSupply.read stage).netDeficiency.not_rate_reached
+      (profile.capacity59.localSupply stage).netDeficiency.not_rate_reached
         above remainderPos)
 
 def capacity60 : CapacityLedger profile.Stage60 :=
@@ -263,7 +263,7 @@ abbrev Stage61 :=
 
 noncomputable def stage61 (previous : Previous) : profile.Stage61 :=
   let stage := profile.stage60 previous
-  Ledger.extend stage (profile.capacity60.localSupply.read stage)
+  Ledger.extend stage (profile.capacity60.localSupply stage)
 
 def capacity61 : CapacityLedger profile.Stage61 :=
   profile.capacity60.preserve
@@ -279,8 +279,40 @@ selects Type A.  The quantity is the local-supply ledger's own aggregate of
 the registered per-member surplus observation, not a derived capacity total. -/
 private def comparison62 (stage : profile.Stage61) :
     Core.OrderThresholdSplit.Profile Nat :=
-  { value := (profile.capacity61.localSupply.read stage).assignedSurplus
+  { value := (profile.capacity61.localSupply stage).assignedSurplus
     threshold := 0 }
+
+/-- The exact integer quantity in `def:net-charge`, read from the retained
+local-supply ledger.  The multiplier is the paper's reciprocal discharge rate
+(four in the Erdős--Gyárfás specialization); all three summands are ledger
+coordinates, so this definition performs no graph-side recount. -/
+def netChargeValue (stage : profile.Stage61) : Int :=
+  4 * ((profile.capacity61.localSupply stage).requiredMass : Int) -
+      4 * ((profile.capacity61.localSupply stage).assignedSurplus : Int) -
+    (profile.capacity61.localSupply stage).netDeficiency.remainder
+
+theorem netChargeValue_eq_definition (stage : profile.Stage61) :
+    profile.netChargeValue stage =
+      4 * (((profile.capacity61.localSupply stage).requiredMass : Int) -
+        ((profile.capacity61.localSupply stage).assignedSurplus : Int)) -
+      ((profile.capacity61.localSupply stage).netDeficiency.remainder : Int) := by
+  simp only [netChargeValue]
+  ring
+
+theorem netChargeValue_eq_scaledNetCharge (stage : profile.Stage61) :
+    profile.netChargeValue stage =
+      4 * ((profile.capacity61.localSupply stage).requiredMass : Int) -
+        4 * ((profile.capacity61.localSupply stage).assignedSurplus : Int) -
+        ((profile.capacity61.localSupply stage).netDeficiency.remainder : Int) := by
+  rfl
+
+theorem netChargeValue_nonnegative_iff (stage : profile.Stage61) :
+    0 ≤ profile.netChargeValue stage ↔
+      ((profile.capacity61.localSupply stage).netDeficiency.remainder : Int) ≤
+        4 * ((profile.capacity61.localSupply stage).requiredMass : Int) -
+          4 * ((profile.capacity61.localSupply stage).assignedSurplus : Int) := by
+  rw [netChargeValue_eq_scaledNetCharge]
+  omega
 
 private noncomputable def comparison62Family :
     Core.OrderThresholdSplit.DependentProfileFamily Unit
@@ -327,29 +359,29 @@ the exact ledger-backed node-[62] decision. -/
 structure TypeAResidual (_previous : Previous) where
   stage : profile.Stage62
   noSurplus :
-    (profile.capacity62.localSupply.read stage).assignedSurplus = 0
+    (profile.capacity62.localSupply stage).assignedSurplus = 0
 
 structure TypeBResidual (_previous : Previous) where
   stage : profile.Stage62
   positiveSurplus :
-    0 < (profile.capacity62.localSupply.read stage).assignedSurplus
+    0 < (profile.capacity62.localSupply stage).assignedSurplus
 
 theorem TypeAResidual.remainder_le_subcubicAtomCard {previous : Previous}
     (residual : profile.TypeAResidual previous) :
-    (profile.capacity62.localSupply.read
+    (profile.capacity62.localSupply
         residual.stage).netDeficiency.remainder ≤
-      (profile.capacity62.localSupply.read residual.stage).subcubicAtomCard := by
+      (profile.capacity62.localSupply residual.stage).subcubicAtomCard := by
   have part :=
-    (profile.capacity62.localSupply.read residual.stage).subcubicAtomPart
+    (profile.capacity62.localSupply residual.stage).subcubicAtomPart
   have vanishes := residual.noSurplus
   omega
 
 theorem TypeBResidual.subcubicAtomCard_lt_remainder {previous : Previous}
     (residual : profile.TypeBResidual previous) :
-    (profile.capacity62.localSupply.read residual.stage).subcubicAtomCard <
-      (profile.capacity62.localSupply.read
+    (profile.capacity62.localSupply residual.stage).subcubicAtomCard <
+      (profile.capacity62.localSupply
         residual.stage).netDeficiency.remainder :=
-  (profile.capacity62.localSupply.read residual.stage).assignedSurplusNonAtom
+  (profile.capacity62.localSupply residual.stage).assignedSurplusNonAtom
     residual.positiveSurplus
 
 /-- The Type B remainder is nonempty.
@@ -360,9 +392,9 @@ the members the remainder counts.  Node `[60]`'s net-cap contradiction takes
 consumer now discharges it from the residual rather than assuming it. -/
 theorem TypeBResidual.remainder_pos {previous : Previous}
     (residual : profile.TypeBResidual previous) :
-    0 < (profile.capacity62.localSupply.read
+    0 < (profile.capacity62.localSupply
       residual.stage).netDeficiency.remainder :=
-  (profile.capacity62.localSupply.read
+  (profile.capacity62.localSupply
     residual.stage).remainder_pos_of_assignedSurplus_pos residual.positiveSurplus
 
 /-- **`prop:p13-density` on the node-[63] residual.**
@@ -377,12 +409,12 @@ theorem TypeAResidual.two_pow_rate_mul_packingCount_le_ambientCapacity
     {rate : Nat}
     (rateFloor :
       2 ^ rate *
-          (profile.density62.barrierSummary.read residual.stage).flatProduct ≤
-        (profile.density62.barrierSummary.read residual.stage).safeProduct)
+          (profile.density62.barrierSummary residual.stage).flatProduct ≤
+        (profile.density62.barrierSummary residual.stage).safeProduct)
     (flatPositive :
-      0 < (profile.density62.barrierSummary.read residual.stage).flatProduct) :
-    2 ^ (rate * profile.density62.packingCount.read residual.stage) ≤
-      profile.density62.ambientCapacity.read residual.stage :=
+      0 < (profile.density62.barrierSummary residual.stage).flatProduct) :
+    2 ^ (rate * profile.density62.packingCount residual.stage) ≤
+      profile.density62.ambientCapacity residual.stage :=
   profile.density62.two_pow_rate_mul_packingCount_le_ambientCapacity
     residual.stage rateFloor flatPositive
 
@@ -394,12 +426,12 @@ theorem TypeBResidual.two_pow_rate_mul_packingCount_le_ambientCapacity
     {rate : Nat}
     (rateFloor :
       2 ^ rate *
-          (profile.density62.barrierSummary.read residual.stage).flatProduct ≤
-        (profile.density62.barrierSummary.read residual.stage).safeProduct)
+          (profile.density62.barrierSummary residual.stage).flatProduct ≤
+        (profile.density62.barrierSummary residual.stage).safeProduct)
     (flatPositive :
-      0 < (profile.density62.barrierSummary.read residual.stage).flatProduct) :
-    2 ^ (rate * profile.density62.packingCount.read residual.stage) ≤
-      profile.density62.ambientCapacity.read residual.stage :=
+      0 < (profile.density62.barrierSummary residual.stage).flatProduct) :
+    2 ^ (rate * profile.density62.packingCount residual.stage) ≤
+      profile.density62.ambientCapacity residual.stage :=
   profile.density62.two_pow_rate_mul_packingCount_le_ambientCapacity
     residual.stage rateFloor flatPositive
 
@@ -410,30 +442,30 @@ theorem TypeAResidual.negativeNetCharge_or_windowStubExcess
     {previous : Previous} (residual : profile.TypeAResidual previous)
     {windowOrder stubRate : Nat}
     (windowCover :
-      (profile.capacity62.localSupply.read residual.stage).selectedCount =
-        windowOrder * profile.density62.packingCount.read residual.stage)
+      (profile.capacity62.localSupply residual.stage).selectedCount =
+        windowOrder * profile.density62.packingCount residual.stage)
     (partition :
-      (profile.capacity62.localSupply.read
+      (profile.capacity62.localSupply
           residual.stage).netDeficiency.remainder +
-          (profile.capacity62.localSupply.read residual.stage).selectedCount =
-        (profile.capacity62.localSupply.read residual.stage).ambientCount)
+          (profile.capacity62.localSupply residual.stage).selectedCount =
+        (profile.capacity62.localSupply residual.stage).ambientCount)
     (densityCap :
       (4 * stubRate + windowOrder) *
-          profile.density62.packingCount.read residual.stage <
-        (profile.capacity62.localSupply.read residual.stage).ambientCount) :
-    4 * (((profile.capacity62.localSupply.read
+          profile.density62.packingCount residual.stage <
+        (profile.capacity62.localSupply residual.stage).ambientCount) :
+    4 * (((profile.capacity62.localSupply
               residual.stage).requiredMass : Int) -
-          ((profile.capacity62.localSupply.read
+          ((profile.capacity62.localSupply
             residual.stage).assignedSurplus : Int)) <
-        ((profile.capacity62.localSupply.read
+        ((profile.capacity62.localSupply
           residual.stage).netDeficiency.remainder : Int) ∨
-      ((stubRate * profile.density62.packingCount.read residual.stage :
+      ((stubRate * profile.density62.packingCount residual.stage :
           Nat) : Int) <
-        ((profile.capacity62.localSupply.read
+        ((profile.capacity62.localSupply
             residual.stage).requiredMass : Int) -
-          ((profile.capacity62.localSupply.read
+          ((profile.capacity62.localSupply
             residual.stage).assignedSurplus : Int) :=
-  (profile.capacity62.localSupply.read
+  (profile.capacity62.localSupply
     residual.stage).negativeNetCharge_or_windowStubExcess
     windowCover partition densityCap
 
@@ -444,30 +476,30 @@ theorem TypeBResidual.negativeNetCharge_or_windowStubExcess
     {previous : Previous} (residual : profile.TypeBResidual previous)
     {windowOrder stubRate : Nat}
     (windowCover :
-      (profile.capacity62.localSupply.read residual.stage).selectedCount =
-        windowOrder * profile.density62.packingCount.read residual.stage)
+      (profile.capacity62.localSupply residual.stage).selectedCount =
+        windowOrder * profile.density62.packingCount residual.stage)
     (partition :
-      (profile.capacity62.localSupply.read
+      (profile.capacity62.localSupply
           residual.stage).netDeficiency.remainder +
-          (profile.capacity62.localSupply.read residual.stage).selectedCount =
-        (profile.capacity62.localSupply.read residual.stage).ambientCount)
+          (profile.capacity62.localSupply residual.stage).selectedCount =
+        (profile.capacity62.localSupply residual.stage).ambientCount)
     (densityCap :
       (4 * stubRate + windowOrder) *
-          profile.density62.packingCount.read residual.stage <
-        (profile.capacity62.localSupply.read residual.stage).ambientCount) :
-    4 * (((profile.capacity62.localSupply.read
+          profile.density62.packingCount residual.stage <
+        (profile.capacity62.localSupply residual.stage).ambientCount) :
+    4 * (((profile.capacity62.localSupply
               residual.stage).requiredMass : Int) -
-          ((profile.capacity62.localSupply.read
+          ((profile.capacity62.localSupply
             residual.stage).assignedSurplus : Int)) <
-        ((profile.capacity62.localSupply.read
+        ((profile.capacity62.localSupply
           residual.stage).netDeficiency.remainder : Int) ∨
-      ((stubRate * profile.density62.packingCount.read residual.stage :
+      ((stubRate * profile.density62.packingCount residual.stage :
           Nat) : Int) <
-        ((profile.capacity62.localSupply.read
+        ((profile.capacity62.localSupply
             residual.stage).requiredMass : Int) -
-          ((profile.capacity62.localSupply.read
+          ((profile.capacity62.localSupply
             residual.stage).assignedSurplus : Int) :=
-  (profile.capacity62.localSupply.read
+  (profile.capacity62.localSupply
     residual.stage).negativeNetCharge_or_windowStubExcess
     windowCover partition densityCap
 
@@ -475,40 +507,40 @@ theorem TypeBResidual.negativeNetCharge_or_windowJoinPressure
     {previous : Previous} (residual : profile.TypeBResidual previous)
     {windowOrder stubRate windowSurplus : Nat}
     (windowStub :
-      (profile.capacity62.localSupply.read residual.stage).requiredMass ≤
-        stubRate * profile.density62.packingCount.read residual.stage +
+      (profile.capacity62.localSupply residual.stage).requiredMass ≤
+        stubRate * profile.density62.packingCount residual.stage +
           windowSurplus)
     (windowCover :
-      (profile.capacity62.localSupply.read residual.stage).selectedCount =
-        windowOrder * profile.density62.packingCount.read residual.stage)
+      (profile.capacity62.localSupply residual.stage).selectedCount =
+        windowOrder * profile.density62.packingCount residual.stage)
     (partition :
-      (profile.capacity62.localSupply.read
+      (profile.capacity62.localSupply
           residual.stage).netDeficiency.remainder +
-          (profile.capacity62.localSupply.read residual.stage).selectedCount =
-        (profile.capacity62.localSupply.read residual.stage).ambientCount) :
-    4 * (((profile.capacity62.localSupply.read
+          (profile.capacity62.localSupply residual.stage).selectedCount =
+        (profile.capacity62.localSupply residual.stage).ambientCount) :
+    4 * (((profile.capacity62.localSupply
               residual.stage).requiredMass : Int) -
-          ((profile.capacity62.localSupply.read
+          ((profile.capacity62.localSupply
             residual.stage).assignedSurplus : Int)) <
-        ((profile.capacity62.localSupply.read
+        ((profile.capacity62.localSupply
           residual.stage).netDeficiency.remainder : Int) ∨
-      ((profile.capacity62.localSupply.read
+      ((profile.capacity62.localSupply
           residual.stage).ambientCount : Int) ≤
         (((4 * stubRate + windowOrder) *
-            profile.density62.packingCount.read residual.stage : Nat) : Int) +
+            profile.density62.packingCount residual.stage : Nat) : Int) +
           4 * ((windowSurplus : Int) -
-            ((profile.capacity62.localSupply.read
+            ((profile.capacity62.localSupply
               residual.stage).assignedSurplus : Int)) := by
   by_cases negative :
-      4 * (((profile.capacity62.localSupply.read
+      4 * (((profile.capacity62.localSupply
                 residual.stage).requiredMass : Int) -
-            ((profile.capacity62.localSupply.read
+            ((profile.capacity62.localSupply
               residual.stage).assignedSurplus : Int)) <
-        ((profile.capacity62.localSupply.read
+        ((profile.capacity62.localSupply
           residual.stage).netDeficiency.remainder : Int)
   · exact Or.inl negative
   · exact Or.inr
-      ((profile.capacity62.localSupply.read
+      ((profile.capacity62.localSupply
         residual.stage).windowJoinPressure_of_not_negativeNetCharge
         windowStub windowCover partition negative)
 
@@ -518,7 +550,7 @@ abbrev ClassifiedOutput (previous : Previous) :=
 def typeAResidualQuery :
     Query (profile.ClassifiedOutput previous)
       (fun _ => Option (profile.TypeAResidual previous)) :=
-  Query.ofFunction fun output =>
+   fun output =>
     match output with
     | .inl residual => some residual
     | .inr _ => none
@@ -526,7 +558,7 @@ def typeAResidualQuery :
 def typeBResidualQuery :
     Query (profile.ClassifiedOutput previous)
       (fun _ => Option (profile.TypeBResidual previous)) :=
-  Query.ofFunction fun output =>
+   fun output =>
     match output with
     | .inl _ => none
     | .inr residual => some residual
@@ -539,7 +571,7 @@ abbrev node64ResidualQuery (previous : Previous) :=
 /-- The exact node-[62] stage selected by either open frontier residual. -/
 def classifiedStageQuery :
     Query (profile.ClassifiedOutput previous) (fun _ => profile.Stage62) :=
-  Query.ofFunction fun output =>
+   fun output =>
     match output with
     | .inl residual => residual.stage
     | .inr residual => residual.stage
@@ -547,7 +579,7 @@ def classifiedStageQuery :
 /-- Every inherited capacity query remains available on both node-[63] and
 node-[64] outputs through the standard residual projection. -/
 def classifiedCapacityLedger : CapacityLedger (profile.ClassifiedOutput previous) :=
-  profile.capacity62.comap profile.classifiedStageQuery.read
+  profile.capacity62.comap profile.classifiedStageQuery
 
 /-- The retained density-cap ledger, likewise available on both open frontier
 outputs.  Its three scalar queries are the packing cardinality, the barrier
@@ -555,32 +587,32 @@ outputs.  Its three scalar queries are the packing cardinality, the barrier
 compared at. -/
 def classifiedDensityLedger :
     FiniteDensityBudget.CapLedger (profile.ClassifiedOutput previous) :=
-  profile.density62.comap profile.classifiedStageQuery.read
+  profile.density62.comap profile.classifiedStageQuery
 
 def classifiedDecision62Query :
     Query (profile.ClassifiedOutput previous)
       (fun output => profile.Decision62
-        (profile.classifiedStageQuery.read output).previous) :=
-  profile.decision62Query.comap profile.classifiedStageQuery.read
+        (profile.classifiedStageQuery output).previous) :=
+  profile.decision62Query.comap profile.classifiedStageQuery
 
 noncomputable def execution : Core.Strategy.CTExecution Previous where
   Terminal := Terminal
   Output := profile.ClassifiedOutput
   run := fun previous =>
     let final := profile.stage62 previous
-    match profile.decision62Query.read final with
+    match profile.decision62Query final with
     | Core.Residual.Decision.Binary.yesBranch high =>
         have positiveSurplus :
-            0 < (profile.capacity62.localSupply.read final).assignedSurplus := by
+            0 < (profile.capacity62.localSupply final).assignedSurplus := by
           change 0 <
-            (profile.capacity61.localSupply.read final.previous).assignedSurplus
+            (profile.capacity61.localSupply final.previous).assignedSurplus
           simpa [High62, comparison62] using high
         .inr ⟨final, positiveSurplus⟩
     | Core.Residual.Decision.Binary.noBranch noHigh =>
         have noSurplus :
-            (profile.capacity62.localSupply.read final).assignedSurplus = 0 := by
+            (profile.capacity62.localSupply final).assignedSurplus = 0 := by
           change
-            (profile.capacity61.localSupply.read final.previous).assignedSurplus = 0
+            (profile.capacity61.localSupply final.previous).assignedSurplus = 0
           apply Nat.eq_zero_of_le_zero
           simpa [NoHigh62, comparison62] using noHigh
         .inl ⟨final, noSurplus⟩
@@ -594,7 +626,7 @@ noncomputable def execution : Core.Strategy.CTExecution Previous where
 def netDeficiencyQuery :=
   let query := (Query.latest (Previous := profile.Stage56Rate)
     (Added := fun stage =>
-      let _summary := profile.capacity56Rate.localSupply.read stage
+      let _summary := profile.capacity56Rate.localSupply stage
       LocalSupplyLowerBound.NetDeficiencyAccounting))
   let query := query.preserve (Added := profile.Charge58)
   let query := query.preserve (Added := profile.Decision59)
@@ -627,7 +659,7 @@ def densityCap56Query :=
     (Added := profile.DensityCap56))
   let query := query.preserve (Added := profile.RateCap56)
   let query := query.preserve (Added := fun stage =>
-    let _summary := profile.capacity56Rate.localSupply.read stage
+    let _summary := profile.capacity56Rate.localSupply stage
     LocalSupplyLowerBound.NetDeficiencyAccounting)
   let query := query.preserve (Added := profile.Charge58)
   let query := query.preserve (Added := profile.Decision59)

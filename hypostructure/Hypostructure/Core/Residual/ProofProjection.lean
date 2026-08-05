@@ -108,7 +108,7 @@ def executeCounted {Previous : Type uPrevious}
     (projection : Focus.ActiveQuery focus Claim)
     (previous : Previous) : Counted (Stage focus Claim) :=
   Focus.runCounted focus previous fun active checks exact =>
-    .mk (projection.read previous active) checks exact
+    .mk (projection previous active) checks exact
 
 /-- Public stage projection. Exact work remains queryable from the private
 certificate and is definitionally the count of `executeCounted`. -/
@@ -185,9 +185,9 @@ to the executor. -/
     (Claim : (previous : Previous) -> focus.Active previous -> Prop)
     (projection : Focus.ActiveQuery focus Claim)
     (previous : Previous) (active : focus.Active previous) :
-    (latestClaim focus Claim).read
+    (latestClaim focus Claim)
         (execute focus Claim projection previous) active =
-      projection.read previous active :=
+      projection previous active :=
   Subsingleton.elim _ _
 
 /-- The certificate read from an executed active branch records exactly the
@@ -197,10 +197,10 @@ counted focus-selection work. -/
     (Claim : (previous : Previous) -> focus.Active previous -> Prop)
     (projection : Focus.ActiveQuery focus Claim)
     (previous : Previous) (active : focus.Active previous) :
-    ((latest focus Claim).read
+    ((latest focus Claim)
       (execute focus Claim projection previous) active).checks =
         focus.selectionBudget.checks previous :=
-  ((latest focus Claim).read
+  ((latest focus Claim)
     (execute focus Claim projection previous) active).checks_eq_budget
 
 /-- The stored certificate count is the exact count returned by the single
@@ -210,7 +210,7 @@ theorem latest_checks_eq_execution {Previous : Type uPrevious}
     (Claim : (previous : Previous) -> focus.Active previous -> Prop)
     (projection : Focus.ActiveQuery focus Claim)
     (previous : Previous) (active : focus.Active previous) :
-    ((latest focus Claim).read
+    ((latest focus Claim)
       (execute focus Claim projection previous) active).checks =
         (executeCounted focus Claim projection previous).checks := by
   rw [latest_checks_eq_budget, executeCounted_checks]

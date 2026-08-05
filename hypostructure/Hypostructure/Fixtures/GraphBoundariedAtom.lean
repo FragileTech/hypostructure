@@ -138,10 +138,10 @@ noncomputable def stage := countedStage.value
 def active : focus.Active previous := True.intro
 
 noncomputable def registration : BoundariedAtomRegistration context :=
-  (focusedBoundariedAtomRegistrationQuery focus contextQuery).read stage active
+  (focusedBoundariedAtomRegistrationQuery focus contextQuery) stage active
 
 noncomputable def executionCertificate :=
-  (focusedBoundariedAtomCertificateQuery focus contextQuery).read stage active
+  (focusedBoundariedAtomCertificateQuery focus contextQuery) stage active
 
 noncomputable def certificate : BoundariedAtomProfileCertificate atom :=
   registration.family atom

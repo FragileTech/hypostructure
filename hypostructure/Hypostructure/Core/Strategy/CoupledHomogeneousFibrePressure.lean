@@ -84,7 +84,7 @@ structure OverloadLedger (Stage : Type uPrevious) (Residual : Type uResidual)
   private mk ::
   current : Query Stage fun _ => Residual
   private claim : Query Stage fun stage =>
-    OverloadClaim registration (current.read stage)
+    OverloadClaim registration (current stage)
 
 namespace OverloadLedger
 
@@ -97,7 +97,7 @@ variable {registration : Registration.{
 private def ofClaim
     (current : Query Stage fun _ => Residual)
     (claim : Query Stage fun stage =>
-      OverloadClaim registration (current.read stage)) :
+      OverloadClaim registration (current stage)) :
     OverloadLedger Stage Residual registration :=
   .mk current claim
 
@@ -107,24 +107,24 @@ retained partition equality; the partition is not recomputed. -/
 noncomputable def selected
     (ledger : OverloadLedger Stage Residual registration) :
     Query Stage fun stage =>
-      Option (SelectedOverload registration (ledger.current.read stage)) :=
-  Query.ofFunction fun stage => by
-    cases claim_eq : ledger.claim.read stage with
+      Option (SelectedOverload registration (ledger.current stage)) :=
+   fun stage => by
+    cases claim_eq : ledger.claim stage with
     | none => exact none
     | some selected =>
         let label := selected.fst
         let fibre := selected.snd.fst
         have facts := selected.snd.snd.down
         have itemFacts : ∀ item, item ∈ fibre →
-            item ∈ (registration.items (ledger.current.read stage)).values ∧
-              registration.labelOf (ledger.current.read stage) item = label := by
+            item ∈ (registration.items (ledger.current stage)).values ∧
+              registration.labelOf (ledger.current stage) item = label := by
           intro item member
           have filtered : item ∈
-              registrationFibre registration (ledger.current.read stage) label := by
+              registrationFibre registration (ledger.current stage) label := by
             rw [← facts.2.1]
             exact member
-          letI : DecidableEq (registration.Label (ledger.current.read stage)) :=
-            (registration.completeLabels (ledger.current.read stage)).decEq
+          letI : DecidableEq (registration.Label (ledger.current stage)) :=
+            (registration.completeLabels (ledger.current stage)).decEq
           simpa [registrationFibre] using filtered
         exact some {
           label := label
@@ -135,7 +135,7 @@ noncomputable def selected
           fibre_nodup := by
             change selected.snd.fst.Nodup
             rw [facts.2.1]
-            exact (registration.items (ledger.current.read stage)).nodup.filter _
+            exact (registration.items (ledger.current stage)).nodup.filter _
           overloaded := facts.2.2 }
 
 /-- The exact selected fibre as a duplicate-free finite schedule.  The
@@ -144,46 +144,46 @@ uses the literal CT9 fibre and its inherited nodup proof. -/
 noncomputable def selectedEnumeration
     (ledger : OverloadLedger Stage Residual registration) :
     Query Stage fun stage =>
-      Core.Finite.Enumeration (registration.Item (ledger.current.read stage)) :=
-  Query.ofFunction fun stage => by
-    cases selected_eq : ledger.selected.read stage with
+      Core.Finite.Enumeration (registration.Item (ledger.current stage)) :=
+   fun stage => by
+    cases selected_eq : ledger.selected stage with
     | none =>
-        letI : DecidableEq (registration.Item (ledger.current.read stage)) :=
-          (registration.items (ledger.current.read stage)).decEq
+        letI : DecidableEq (registration.Item (ledger.current stage)) :=
+          (registration.items (ledger.current stage)).decEq
         exact Core.Finite.Enumeration.empty _
     | some selected =>
         exact {
           values := selected.fibre
           nodup := selected.fibre_nodup
-          decEq := (registration.items (ledger.current.read stage)).decEq }
+          decEq := (registration.items (ledger.current stage)).decEq }
 
 /-- CT9's exact first overloaded label. -/
 def selectedLabel (ledger : OverloadLedger Stage Residual registration) :
     Query Stage fun stage =>
-      Option (registration.Label (ledger.current.read stage)) :=
+      Option (registration.Label (ledger.current stage)) :=
   ledger.claim.map fun _ claim => claim.map Sigma.fst
 
 /-- The literal fibre retained with the selected label. -/
 def selectedFibre (ledger : OverloadLedger Stage Residual registration) :
     Query Stage fun stage =>
-      Option (List (registration.Item (ledger.current.read stage))) :=
+      Option (List (registration.Item (ledger.current stage))) :=
   ledger.claim.map fun _ claim => claim.map fun selected => selected.snd.fst
 
 /-- Schedule membership of the exact selected label. -/
 def labelMember (ledger : OverloadLedger Stage Residual registration) :
     Query Stage fun stage =>
-      match ledger.selectedLabel.read stage with
+      match ledger.selectedLabel stage with
       | none => PUnit
       | some label =>
           PLift (label ∈
-            (registration.completeLabels (ledger.current.read stage)).values) :=
-  Query.ofFunction fun stage => by
-    change match (ledger.claim.read stage).map Sigma.fst with
+            (registration.completeLabels (ledger.current stage)).values) :=
+   fun stage => by
+    change match (ledger.claim stage).map Sigma.fst with
       | none => PUnit
       | some label =>
           PLift (label ∈
-            (registration.completeLabels (ledger.current.read stage)).values)
-    cases claim_eq : ledger.claim.read stage with
+            (registration.completeLabels (ledger.current stage)).values)
+    cases claim_eq : ledger.claim stage with
     | none => exact PUnit.unit
     | some selected => exact PLift.up selected.snd.snd.down.1
 
@@ -191,27 +191,38 @@ def labelMember (ledger : OverloadLedger Stage Residual registration) :
 schedule and label map. -/
 def fibreExact (ledger : OverloadLedger Stage Residual registration) :
     Query Stage fun stage =>
-      match ledger.claim.read stage with
+      match ledger.claim stage with
       | none => PUnit
       | some selected =>
           PLift (selected.snd.fst =
-            registrationFibre registration (ledger.current.read stage)
+            registrationFibre registration (ledger.current stage)
               selected.fst) :=
-  Query.ofFunction fun stage => by
-    cases claim_eq : ledger.claim.read stage with
+  fun stage => by
+    change match ledger.claim stage with
+      | none => PUnit
+      | some selected =>
+          PLift (selected.snd.fst =
+            registrationFibre registration (ledger.current stage)
+              selected.fst)
+    cases claim_eq : ledger.claim stage with
     | none => exact PUnit.unit
     | some selected => exact PLift.up selected.snd.snd.down.2.1
 
 /-- Strict capacity excess of the literal retained fibre. -/
 def overloaded (ledger : OverloadLedger Stage Residual registration) :
     Query Stage fun stage =>
-      match ledger.claim.read stage with
+      match ledger.claim stage with
       | none => PUnit
       | some selected =>
-          PLift (registration.fibreCapacity (ledger.current.read stage) selected.fst <
+          PLift (registration.fibreCapacity (ledger.current stage) selected.fst <
             selected.snd.fst.length) :=
-  Query.ofFunction fun stage => by
-    cases claim_eq : ledger.claim.read stage with
+  fun stage => by
+    change match ledger.claim stage with
+      | none => PUnit
+      | some selected =>
+          PLift (registration.fibreCapacity (ledger.current stage)
+            selected.fst < selected.snd.fst.length)
+    cases claim_eq : ledger.claim stage with
     | none => exact PUnit.unit
     | some selected => exact PLift.up selected.snd.snd.down.2.2
 
@@ -222,11 +233,11 @@ def comap {NewStage : Type uNew} [HasResidual NewStage Residual]
     (project : NewStage → Stage)
     (current : Query NewStage fun _ => Residual)
     (current_eq : ∀ stage,
-      ledger.current.read (project stage) = current.read stage) :
+      ledger.current (project stage) = current stage) :
     OverloadLedger NewStage Residual registration :=
-  ofClaim current (Query.ofFunction fun stage =>
+  ofClaim current ( fun stage =>
     Eq.mp (congrArg (OverloadClaim registration) (current_eq stage))
-      (ledger.claim.read (project stage)))
+      (ledger.claim (project stage)))
 
 end OverloadLedger
 
@@ -243,33 +254,33 @@ def residualQuery : Query Previous fun _ => Residual :=
 
 def itemQuery : Query Previous fun previous =>
     Core.Finite.Enumeration
-      (profile.registration.Item (profile.current.read previous)) :=
+      (profile.registration.Item (profile.current previous)) :=
   profile.residualQuery.dependentMap fun _ residual =>
     profile.registration.items residual
 
 def completeLabelQuery : Query Previous fun previous =>
     Core.Finite.CompleteEnumeration
-      (profile.registration.Label (profile.current.read previous)) :=
+      (profile.registration.Label (profile.current previous)) :=
   profile.residualQuery.dependentMap fun _ residual =>
     profile.registration.completeLabels residual
 
 def overloadSpec : CT9.Spec Previous where
   Item := fun previous =>
-    profile.registration.Item (profile.current.read previous)
+    profile.registration.Item (profile.current previous)
   Label := fun previous =>
-    profile.registration.Label (profile.current.read previous)
+    profile.registration.Label (profile.current previous)
   label := fun previous item =>
-    profile.registration.labelOf (profile.current.read previous) item
+    profile.registration.labelOf (profile.current previous) item
   capacity := fun previous label =>
-    profile.registration.fibreCapacity (profile.current.read previous) label
+    profile.registration.fibreCapacity (profile.current previous) label
 
 def overloadCapability : CT9.Capability profile.overloadSpec where
   items := profile.itemQuery
-  labels := fun previous => profile.completeLabelQuery.read previous
+  labels := fun previous => profile.completeLabelQuery previous
   inputSize := fun previous =>
     CT9.localCheckBound
-      (profile.itemQuery.read previous)
-      (profile.completeLabelQuery.read previous).toEnumeration
+      (profile.itemQuery previous)
+      (profile.completeLabelQuery previous).toEnumeration
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -290,63 +301,63 @@ def overloadResult :
 
 def payerQuery :
     Query profile.AfterOverload fun stage =>
-      let result := profile.overloadResult.read stage
+      let result := profile.overloadResult stage
       Core.Finite.Enumeration
         (profile.registration.Payer
-          (profile.current.read result.stage.previous)) :=
+          (profile.current result.stage.previous)) :=
   profile.overloadResult.dependentMap fun _stage result =>
-    profile.registration.payers (profile.current.read result.stage.previous)
+    profile.registration.payers (profile.current result.stage.previous)
 
 def obstructionQuery :
     Query profile.AfterOverload fun stage =>
-      let result := profile.overloadResult.read stage
+      let result := profile.overloadResult stage
       CT13.ObstructionSchedule
         (profile.registration.Obstruction
-          (profile.current.read result.stage.previous)) :=
+          (profile.current result.stage.previous)) :=
   profile.overloadResult.dependentMap fun _stage result =>
-    profile.registration.obstructions (profile.current.read result.stage.previous)
+    profile.registration.obstructions (profile.current result.stage.previous)
 
 def tierTwoQuery :
     Query profile.AfterOverload fun stage =>
-      let result := profile.overloadResult.read stage
+      let result := profile.overloadResult stage
       (obstruction :
           profile.registration.Obstruction
-            (profile.current.read result.stage.previous)) →
+            (profile.current result.stage.previous)) →
         Core.Finite.Enumeration
           (profile.registration.Payer
-            (profile.current.read result.stage.previous)) :=
+            (profile.current result.stage.previous)) :=
   profile.overloadResult.dependentMap fun _stage result =>
-    profile.registration.tierTwo (profile.current.read result.stage.previous)
+    profile.registration.tierTwo (profile.current result.stage.previous)
 
 def reconciliationSpec : CT13.Spec profile.AfterOverload where
   Payer := fun stage =>
-    let result := profile.overloadResult.read stage
-    profile.registration.Payer (profile.current.read result.stage.previous)
+    let result := profile.overloadResult stage
+    profile.registration.Payer (profile.current result.stage.previous)
   Obstruction := fun stage =>
-    let result := profile.overloadResult.read stage
-    profile.registration.Obstruction (profile.current.read result.stage.previous)
+    let result := profile.overloadResult stage
+    profile.registration.Obstruction (profile.current result.stage.previous)
   Resource := fun stage =>
-    let result := profile.overloadResult.read stage
-    profile.registration.Resource (profile.current.read result.stage.previous)
+    let result := profile.overloadResult stage
+    profile.registration.Resource (profile.current result.stage.previous)
   Eligible := fun stage payer =>
-    let result := profile.overloadResult.read stage
+    let result := profile.overloadResult stage
     profile.registration.Eligible
-      (profile.current.read result.stage.previous) payer
+      (profile.current result.stage.previous) payer
   obstructionCost := fun stage obstruction =>
-    let result := profile.overloadResult.read stage
+    let result := profile.overloadResult stage
     profile.registration.obstructionCost
-      (profile.current.read result.stage.previous) obstruction
+      (profile.current result.stage.previous) obstruction
   payerResource := fun stage payer =>
-    let result := profile.overloadResult.read stage
+    let result := profile.overloadResult stage
     profile.registration.payerResource
-      (profile.current.read result.stage.previous) payer
+      (profile.current result.stage.previous) payer
   charge := fun stage payer =>
-    let result := profile.overloadResult.read stage
+    let result := profile.overloadResult stage
     profile.registration.charge
-      (profile.current.read result.stage.previous) payer
+      (profile.current result.stage.previous) payer
   demand := fun stage =>
-    let result := profile.overloadResult.read stage
-    profile.registration.demand (profile.current.read result.stage.previous)
+    let result := profile.overloadResult stage
+    profile.registration.demand (profile.current result.stage.previous)
 
 def reconciliationCapability :
     CT13.Capability profile.reconciliationSpec where
@@ -354,18 +365,18 @@ def reconciliationCapability :
   obstructions := profile.obstructionQuery
   tierTwo := profile.tierTwoQuery
   eligibleDecidable := fun stage payer =>
-    let result := profile.overloadResult.read stage
+    let result := profile.overloadResult stage
     profile.registration.eligibleDecidable
-      (profile.current.read result.stage.previous) payer
+      (profile.current result.stage.previous) payer
   resourceDecidableEq := fun stage =>
-    let result := profile.overloadResult.read stage
+    let result := profile.overloadResult stage
     profile.registration.resourceDecidableEq
-      (profile.current.read result.stage.previous)
+      (profile.current result.stage.previous)
   inputSize := fun stage =>
     CT13.localCheckBound
-      (profile.payerQuery.read stage)
-      (profile.obstructionQuery.read stage)
-      (profile.tierTwoQuery.read stage)
+      (profile.payerQuery stage)
+      (profile.obstructionQuery stage)
+      (profile.tierTwoQuery stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -389,44 +400,44 @@ def reconciliationResult :
 
 def pressureMembers :
     Query profile.AfterReconciliation fun stage =>
-      let result := profile.reconciliationResult.read stage
+      let result := profile.reconciliationResult stage
       Core.Finite.Enumeration
         (profile.registration.Member
-          (profile.current.read result.stage.previous.previous)) :=
+          (profile.current result.stage.previous.previous)) :=
   profile.reconciliationResult.dependentMap fun _stage result =>
     profile.registration.members
-      (profile.current.read result.stage.previous.previous)
+      (profile.current result.stage.previous.previous)
 
 def pressureSpec : CT14.Spec profile.AfterReconciliation where
   Member := fun stage =>
-    let result := profile.reconciliationResult.read stage
+    let result := profile.reconciliationResult stage
     profile.registration.Member
-      (profile.current.read result.stage.previous.previous)
+      (profile.current result.stage.previous.previous)
   Label := fun stage =>
-    let result := profile.reconciliationResult.read stage
+    let result := profile.reconciliationResult stage
     profile.registration.AggregateLabel
-      (profile.current.read result.stage.previous.previous)
+      (profile.current result.stage.previous.previous)
   memberLowerMass := fun stage member =>
-    let result := profile.reconciliationResult.read stage
+    let result := profile.reconciliationResult stage
     profile.registration.memberLowerMass
-      (profile.current.read result.stage.previous.previous) member
+      (profile.current result.stage.previous.previous) member
   memberCapacity := fun stage member =>
-    let result := profile.reconciliationResult.read stage
+    let result := profile.reconciliationResult stage
     profile.registration.memberCapacity
-      (profile.current.read result.stage.previous.previous) member
+      (profile.current result.stage.previous.previous) member
   memberLabel := fun stage member =>
-    let result := profile.reconciliationResult.read stage
+    let result := profile.reconciliationResult stage
     profile.registration.memberLabel
-      (profile.current.read result.stage.previous.previous) member
+      (profile.current result.stage.previous.previous) member
 
 def pressureCapability : CT14.Capability profile.pressureSpec where
   members := profile.pressureMembers
   labelDecidableEq := fun stage =>
     profile.registration.aggregateLabelDecidableEq
-      (profile.current.read
-        (profile.reconciliationResult.read stage).stage.previous.previous)
+      (profile.current
+        (profile.reconciliationResult stage).stage.previous.previous)
   inputSize := fun stage =>
-    CT14.localCheckBound (profile.pressureMembers.read stage)
+    CT14.localCheckBound (profile.pressureMembers stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -461,7 +472,7 @@ noncomputable def overloadOutput :
 /-- Exact CT13 payload projected from the composed ledger entry. -/
 noncomputable def reconciliationOutput :
     Query profile.AfterExecution fun stage =>
-      let output := profile.executionResult.read stage
+      let output := profile.executionResult stage
       profile.reconciliationExecution.Output
         (Ledger.extend stage.previous output.fst) :=
   profile.executionResult.dependentMap fun _ output => output.snd.fst
@@ -469,7 +480,7 @@ noncomputable def reconciliationOutput :
 /-- Exact CT14 payload projected from the composed ledger entry. -/
 noncomputable def pressureOutput :
     Query profile.AfterExecution fun stage =>
-      let output := profile.executionResult.read stage
+      let output := profile.executionResult stage
       let overloadStage := Ledger.extend stage.previous output.fst
       profile.pressureExecution.Output
         (Ledger.extend overloadStage output.snd.fst) :=
@@ -512,9 +523,9 @@ private noncomputable def overloadClaimLive
         profile.execution.toContract certify)
       (fun live => OverloadClaim profile.registration
         ((Core.Strategy.HaltingProgram.LiveExtension.preserveQuery
-          (T := T) profile.current).read live)) :=
-  Query.ofFunction fun live => by
-    let composed := (profile.execution.liveOutputQuery certify).read live
+          (T := T) profile.current) live)) :=
+   fun live => by
+    let composed := (profile.execution.liveOutputQuery certify) live
     let overloadOutput := composed.fst
     have composed_eq : composed = profile.execution.run live.previous :=
       Core.Strategy.CTExecution.read_liveOutputQuery
@@ -532,21 +543,21 @@ private noncomputable def overloadClaimLive
         have member :
             label ∈
               (profile.registration.completeLabels
-                (profile.current.read overloadOutput.stage.previous)).values := by
+                (profile.current overloadOutput.stage.previous)).values := by
           exact overloaded.scheduled
         have items_read :
             profile.overloadCapability.itemsAt overloadOutput.stage.previous =
               profile.registration.items
-                (profile.current.read overloadOutput.stage.previous) := by
+                (profile.current overloadOutput.stage.previous) := by
           rfl
         have fibre_exact :
             fibre = registrationFibre profile.registration
-              (profile.current.read overloadOutput.stage.previous) label := by
+              (profile.current overloadOutput.stage.previous) label := by
           letI : DecidableEq
               (profile.registration.Label
-                (profile.current.read overloadOutput.stage.previous)) :=
+                (profile.current overloadOutput.stage.previous)) :=
             (profile.registration.completeLabels
-              (profile.current.read overloadOutput.stage.previous)).decEq
+              (profile.current overloadOutput.stage.previous)).decEq
           dsimp only [fibre]
           rw [partition.fibres_exact label]
           unfold CT9.fibre registrationFibre
@@ -555,19 +566,19 @@ private noncomputable def overloadClaimLive
             List.filter
                 (fun item => decide
                   (profile.registration.labelOf
-                    (profile.current.read overloadOutput.stage.previous) item = label))
+                    (profile.current overloadOutput.stage.previous) item = label))
                 (profile.registration.items
-                  (profile.current.read overloadOutput.stage.previous)).values =
+                  (profile.current overloadOutput.stage.previous)).values =
               List.filter
                 (fun item => decide
                   (profile.registration.labelOf
-                    (profile.current.read overloadOutput.stage.previous) item = label))
+                    (profile.current overloadOutput.stage.previous) item = label))
                 (profile.registration.items
-                  (profile.current.read overloadOutput.stage.previous)).values
+                  (profile.current overloadOutput.stage.previous)).values
           rfl
         have strict :
             profile.registration.fibreCapacity
-                (profile.current.read overloadOutput.stage.previous) label <
+                (profile.current overloadOutput.stage.previous) label <
               fibre.length := by
           change
             profile.overloadSpec.capacity overloadOutput.stage.previous
@@ -575,9 +586,9 @@ private noncomputable def overloadClaimLive
               partition.count overloaded.label
           exact overloaded.overloaded
         have current_eq :
-            profile.current.read overloadOutput.stage.previous =
+            profile.current overloadOutput.stage.previous =
               (Core.Strategy.HaltingProgram.LiveExtension.preserveQuery
-                (T := T) profile.current).read live := by
+                (T := T) profile.current) live := by
           rw [previous_eq]
           rfl
         exact Eq.mp

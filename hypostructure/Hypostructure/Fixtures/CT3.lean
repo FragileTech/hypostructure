@@ -90,17 +90,17 @@ def rowQuery : Core.Residual.Query Previous fun _previous =>
 schedule, not from a global `FinEnum Bool` instance. -/
 def coverage (previous : Previous) (replacement : Bool) :
     Core.Response.FiniteTable.SymbolicCoverage responseSystem
-      (spec.representatives (sourceQuery.read previous) replacement)
+      (spec.representatives (sourceQuery previous) replacement)
       (Core.Response.FiniteTable.ExactSchedule.ofList
-        (coordinateQuery.read previous).values) where
+        (coordinateQuery previous).values) where
   locate := by
     intro context
     change Bool at context
-    have complete : context ∈ (coordinateQuery.read previous).values := by
+    have complete : context ∈ (coordinateQuery previous).values := by
       simpa [coordinateQuery, residualQuery] using
         (Core.Residual.residualOf previous).coordinatesComplete context
     obtain ⟨index, rfl⟩ :=
-      ((coordinateQuery.read previous).mem_iff_exists_index context).mp
+      ((coordinateQuery previous).mem_iff_exists_index context).mp
         complete
     exact ⟨index, rfl, rfl⟩
 
@@ -281,13 +281,13 @@ abbrev scheduledFocus : Core.Residual.Focus.Profile Unit :=
 def scheduledItems :
     Core.Residual.Focus.ActiveQuery scheduledFocus
       fun _previous _active => Core.Finite.Enumeration Bool :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     boolCoordinates
 
 def scheduledInput :
     Core.Residual.Focus.ActiveQuery scheduledFocus
       fun _previous _active => Bool -> Previous :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active item =>
+  fun _previous _active item =>
     if item then knownRowPrevious else compressionPrevious
 
 noncomputable def scheduledContract :
@@ -307,13 +307,13 @@ theorem scheduled_stage_previous :
 theorem scheduled_false_terminal :
     scheduledContract.terminal () trivial false = .compression := by
   change ((_root_.Hypostructure.CT3.RunSchedule.resultAt spec capability Bool
-      scheduledInput).read () trivial false).terminal = .compression
+      scheduledInput) () trivial false).terminal = .compression
   exact compression_terminal
 
 theorem scheduled_true_terminal :
     scheduledContract.terminal () trivial true = .knownRow := by
   change ((_root_.Hypostructure.CT3.RunSchedule.resultAt spec capability Bool
-      scheduledInput).read () trivial true).terminal = .knownRow
+      scheduledInput) () trivial true).terminal = .knownRow
   exact knownRow_terminal
 
 end Neutral
@@ -387,11 +387,11 @@ noncomputable def capability : _root_.Hypostructure.CT3.Capability spec where
       Hypostructure.Fixtures.GraphResponse.hasThreeVerticesDecidable Bool
       Hypostructure.Fixtures.GraphResponse.outsideByCode Bool id
     intro context
-    have complete : context ∈ (coordinateQuery.read previous).values := by
+    have complete : context ∈ (coordinateQuery previous).values := by
       change context ∈ (Core.Residual.residualOf previous).coordinates.values
       exact (Core.Residual.residualOf previous).coordinatesComplete context
     obtain ⟨index, indexed⟩ :=
-      ((coordinateQuery.read previous).mem_iff_exists_index context).mp
+      ((coordinateQuery previous).mem_iff_exists_index context).mp
         complete
     exact ⟨index, indexed.symm⟩
   rowCoverage := by
@@ -401,11 +401,11 @@ noncomputable def capability : _root_.Hypostructure.CT3.Capability spec where
       Hypostructure.Fixtures.GraphResponse.hasThreeVerticesDecidable Bool
       Hypostructure.Fixtures.GraphResponse.outsideByCode Bool id
     intro context
-    have complete : context ∈ (coordinateQuery.read previous).values := by
+    have complete : context ∈ (coordinateQuery previous).values := by
       change context ∈ (Core.Residual.residualOf previous).coordinates.values
       exact (Core.Residual.residualOf previous).coordinatesComplete context
     obtain ⟨index, indexed⟩ :=
-      ((coordinateQuery.read previous).mem_iff_exists_index context).mp
+      ((coordinateQuery previous).mem_iff_exists_index context).mp
         complete
     exact ⟨index, indexed.symm⟩
   inputSize := fun _previous => 0
@@ -501,13 +501,13 @@ abbrev scheduledFocus : Core.Residual.Focus.Profile Unit :=
 def scheduledItems :
     Core.Residual.Focus.ActiveQuery scheduledFocus
       fun _previous _active => Core.Finite.Enumeration Unit :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     Core.Finite.Enumeration.singleton ()
 
 noncomputable def scheduledInput :
     Core.Residual.Focus.ActiveQuery scheduledFocus
       fun _previous _active => Unit -> Previous :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active _item =>
+  fun _previous _active _item =>
     previous
 
 noncomputable def scheduledContract :
@@ -571,7 +571,7 @@ theorem graph_scheduled_package_stage_source_previous :
 def residualItems :
     Core.Residual.Focus.ActiveQuery scheduledFocus
       fun _previous _active => Core.Finite.Enumeration Unit :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     Core.Finite.Enumeration.singleton ()
 
 def residualScheduleContract :
@@ -646,13 +646,13 @@ abbrev scheduledFocus : Core.Residual.Focus.Profile Unit :=
 def scheduledItems :
     Core.Residual.Focus.ActiveQuery scheduledFocus
       fun _previous _active => Core.Finite.Enumeration Unit :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     Core.Finite.Enumeration.singleton ()
 
 def scheduledInput :
     Core.Residual.Focus.ActiveQuery scheduledFocus
       fun _previous _active => Unit -> Neutral.Previous :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active _item =>
+  fun _previous _active _item =>
     Neutral.compressionPrevious
 
 noncomputable def scheduledContract :

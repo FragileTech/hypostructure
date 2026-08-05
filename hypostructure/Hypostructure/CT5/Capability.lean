@@ -48,7 +48,7 @@ variable {Previous : Type uPrevious}
 def familyAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.DependentEnumeration (spec.Site previous)
       (spec.Witness previous) :=
-  capability.family.read previous
+  capability.family previous
 
 /-- Exact ordered site schedule. -/
 def sitesAt (capability : Capability spec) (previous : Previous) :

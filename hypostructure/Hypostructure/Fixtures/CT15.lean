@@ -40,7 +40,7 @@ def targetDependentDecidable (previous : Previous) (coordinate : Fin 3) :
 def capability : _root_.Hypostructure.CT15.Capability spec where
   coordinates := coordinatesQuery
   targetDependentDecidable := targetDependentDecidable
-  inputSize := fun previous => (coordinatesQuery.read previous).card
+  inputSize := fun previous => (coordinatesQuery previous).card
   workCoefficient := 2
   workDegree := 1
   workBound := by
@@ -132,7 +132,7 @@ def spec := Graph.CT15.targetRelativeSpec objectQuery Coordinate
 def capability := Graph.CT15.targetRelativeCapability objectQuery Coordinate
   TargetDependent charge capacity coordinatesQuery
   (fun _previous _object _coordinate => .isFalse id)
-  (fun previous => (coordinatesQuery.read previous).card) 2 1 (by
+  (fun previous => (coordinatesQuery previous).card) 2 1 (by
     intro previous
     simp only [_root_.Hypostructure.CT15.localCheckBound, Nat.pow_one]
     omega)
@@ -253,7 +253,7 @@ def spec := PDE.CT15.targetRelativeSpec model stateQuery Coordinate
 def capability := PDE.CT15.targetRelativeCapability model stateQuery Coordinate
   TargetDependent charge capacity coordinatesQuery
   (fun _previous _state _coordinate => .isFalse id)
-  (fun previous => (coordinatesQuery.read previous).card) 2 1 (by
+  (fun previous => (coordinatesQuery previous).card) 2 1 (by
     intro previous
     simp only [_root_.Hypostructure.CT15.localCheckBound, Nat.pow_one]
     omega)

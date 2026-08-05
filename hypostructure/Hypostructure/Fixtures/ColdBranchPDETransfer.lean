@@ -87,7 +87,7 @@ abbrev pdeModel : PDE.LocalModel where
 
 def pdeState :
     Focus.ActiveQuery focus fun _previous _active => pdeModel.problem.Ambient :=
-  Focus.ActiveQuery.ofFunction fun _previous _active => ()
+  fun _previous _active => ()
 
 abbrev focus : Focus.Profile Unit :=
   Focus.always Unit
@@ -97,7 +97,7 @@ def windowSchedule : Enumeration Window :=
 
 def selectedWindows :
     Focus.ActiveQuery focus fun _previous _active => Enumeration Window :=
-  Focus.ActiveQuery.ofFunction fun _previous _active => windowSchedule
+  fun _previous _active => windowSchedule
 
 def selectedContract : SelectedSchedule.Contract focus where
   Item := Window
@@ -107,27 +107,27 @@ def selectedStage : selectedContract.Stage :=
   selectedContract.run ()
 
 theorem selected_card_from_ledger :
-    selectedContract.latestCard.read selectedStage trivial = 3 :=
+    selectedContract.latestCard selectedStage trivial = 3 :=
   rfl
 
 theorem selected_card_exact_from_ledger :
-    selectedContract.latestCard.read selectedStage trivial =
-      (selectedWindows.read () trivial).card :=
-  selectedContract.latestCardExact.read selectedStage trivial
+    selectedContract.latestCard selectedStage trivial =
+      (selectedWindows () trivial).card :=
+  selectedContract.latestCardExact selectedStage trivial
 
 theorem selected_attached_card_from_ledger :
-    (selectedContract.latestAttached.read selectedStage trivial).card =
+    (selectedContract.latestAttached selectedStage trivial).card =
       windowSchedule.card := by
   have card :=
-    selectedContract.latestAttachedCardExact.read selectedStage trivial
+    selectedContract.latestAttachedCardExact selectedStage trivial
   have schedule_eq :
-      (selectedWindows.read selectedStage.previous trivial).card =
+      (selectedWindows selectedStage.previous trivial).card =
         windowSchedule.card := by
     simp [selectedStage, selectedContract, selectedWindows]
   exact card.trans schedule_eq
 
 theorem selected_attached_windows_from_ledger :
-    ∀ entry ∈ (selectedContract.latestAttached.read selectedStage
+    ∀ entry ∈ (selectedContract.latestAttached selectedStage
         trivial).values,
       entry.1 ∈ windowSchedule.values := by
   intro entry _member
@@ -150,12 +150,12 @@ def partitionStage : partitionContract.Stage :=
   partitionContract.runStage ()
 
 theorem partition_card_exact :
-    (partitionContract.latestAccepted.read partitionStage trivial).card +
-        (partitionContract.latestRejected.read partitionStage trivial).card =
+    (partitionContract.latestAccepted partitionStage trivial).card +
+        (partitionContract.latestRejected partitionStage trivial).card =
       windowSchedule.card := by
-  have card := partitionContract.latestCardPartition.read partitionStage trivial
+  have card := partitionContract.latestCardPartition partitionStage trivial
   have schedule_eq :
-      ((partitionContract.schedule.preserve).read partitionStage trivial).card =
+      ((partitionContract.schedule.preserve) partitionStage trivial).card =
         windowSchedule.card := by
     simp [partitionStage, partitionContract, selectedWindows]
   exact card.trans schedule_eq
@@ -170,7 +170,7 @@ def atomFamily : DependentEnumeration Window fun _window => Shell where
 def atomFamilyQuery :
     Focus.ActiveQuery focus fun _previous _active =>
       DependentEnumeration Window fun _window => Shell :=
-  Focus.ActiveQuery.ofFunction fun _previous _active => atomFamily
+  fun _previous _active => atomFamily
 
 def flattenContract : Flatten.FocusedContract.{1, 0, 0} focus where
   Index := Window
@@ -182,22 +182,22 @@ def flattenStage : flattenContract.Stage :=
 
 def constantShellFibres :
     Focus.ActiveQuery flattenContract.successor fun stage active =>
-      ∀ window ∈ ((flattenContract.schedule.preserve).read stage
+      ∀ window ∈ ((flattenContract.schedule.preserve) stage
           active).indices.values,
-        (((flattenContract.schedule.preserve).read stage
+        (((flattenContract.schedule.preserve) stage
           active).fibres window).card = 2 :=
-  Focus.ActiveQuery.ofFunction fun _stage _active window _member => by
+  fun _stage _active window _member => by
     cases window <;> rfl
 
 theorem flattened_atom_count :
-    (flattenContract.latestFlattened.read flattenStage trivial).card =
+    (flattenContract.latestFlattened flattenStage trivial).card =
       2 * windowSchedule.card := by
   have card :=
     (flattenContract.latestCardEqContributionMul 2
-      constantShellFibres).read flattenStage trivial
+      constantShellFibres) flattenStage trivial
   have rhs_eq :
       2 *
-          ((flattenContract.schedule.preserve).read flattenStage
+          ((flattenContract.schedule.preserve) flattenStage
             trivial).indices.card =
         2 * windowSchedule.card := by
     simp [flattenStage, flattenContract, atomFamilyQuery, atomFamily]
@@ -220,7 +220,7 @@ def highAmplitudeDecidable (window : Window) :
 def eventContract : ScheduleEvents.FocusedContract.{1, 0, 0} focus :=
   PDE.CT6.focusedScheduleEvents pdeModel pdeState Window selectedWindows
     (fun _state _window => PDEPacket)
-    (Focus.ActiveQuery.ofFunction fun _previous _active => packetRunner)
+    (fun _previous _active => packetRunner)
     (fun _previous _active window packet => highAmplitude window packet)
     (fun _previous _active window => highAmplitudeDecidable window)
 
@@ -243,7 +243,7 @@ theorem event_hit_from_pde_schedule :
     ∃ window ∈ windowSchedule.values,
       highAmplitude window (packetRunner window) :=
   (@ScheduleEvents.FocusedContract.hitQuery.{1, 0, 0, 0, 0} Unit focus
-    eventContract).read eventStage eventHitActive
+    eventContract) eventStage eventHitActive
 
 def pdeEventRouteTarget :
     Execution.Spec eventContract.Stage where
@@ -321,7 +321,7 @@ def extremeAmplitudeDecidable (window : Window) :
 def noExtremeEventContract : ScheduleEvents.FocusedContract.{1, 0, 0} focus :=
   PDE.CT6.focusedScheduleEvents pdeModel pdeState Window selectedWindows
     (fun _state _window => PDEPacket)
-    (Focus.ActiveQuery.ofFunction fun _previous _active => packetRunner)
+    (fun _previous _active => packetRunner)
     (fun _previous _active window packet => extremeAmplitude window packet)
     (fun _previous _active window => extremeAmplitudeDecidable window)
 
@@ -347,7 +347,7 @@ def noExtremeEventActive :
 theorem no_extreme_packet_residual_output :
     ∀ window, (member : window ∈ windowSchedule.values) ->
       (((@ScheduleEvents.FocusedContract.pointwiseAbsentOutputQuery.{1, 0, 0, 0, 0}
-        Unit focus noExtremeEventContract).read noExtremeEventStage
+        Unit focus noExtremeEventContract) noExtremeEventStage
           noExtremeEventActive window member).1 = packetRunner window) := by
   intro window member
   rfl
@@ -356,7 +356,7 @@ theorem no_extreme_packet_residual_absent :
     ∀ window, (member : window ∈ windowSchedule.values) ->
       Not (extremeAmplitude window (packetRunner window)) :=
   (@ScheduleEvents.FocusedContract.pointwiseAbsentQuery.{1, 0, 0, 0, 0}
-    Unit focus noExtremeEventContract).read noExtremeEventStage
+    Unit focus noExtremeEventContract) noExtremeEventStage
       noExtremeEventActive
 
 def pdeSilentResidual (_window : Window) (_packet : PDEPacket) : Prop :=
@@ -371,7 +371,7 @@ theorem no_extreme_packet_remaining :
         pdeSilentResidual window packet)
       (fun _previous _active window _packet _absent => by
         unfold pdeSilentResidual
-        trivial)).read noExtremeEventStage noExtremeEventActive
+        trivial)) noExtremeEventStage noExtremeEventActive
 
 def scaleContract : ScaleRoute.FocusedScheduleContract.{1, 0} focus where
   Item := Window
@@ -396,18 +396,18 @@ def scaleLongActive : scaleContract.longFocus.Active scaleStage := by
 theorem scale_route_detects_long_packet :
     scaleContract.AnyLong scaleStage.previous trivial :=
   (@ScaleRoute.FocusedScheduleContract.longQuery.{1, 0} Unit focus
-    scaleContract).read scaleStage scaleLongActive
+    scaleContract) scaleStage scaleLongActive
 
 def responseItems :
     Focus.ActiveQuery focus fun _previous _active => List Window :=
-  Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     [Window.near, Window.far]
 
 def responsePackage :
   Focus.ActiveQuery focus fun previous active =>
-      (window : Window) -> window ∈ responseItems.read previous active ->
+      (window : Window) -> window ∈ responseItems previous active ->
         Response.SameInterface.VerifiedPackage :=
-  Focus.ActiveQuery.ofFunction fun _previous _active window _member =>
+  fun _previous _active window _member =>
     { Source := Window
       Replacement := Window
       Interface := Nat
@@ -433,31 +433,31 @@ def sameInterfaceStage : sameInterfaceContract.Stage :=
   sameInterfaceContract.run ()
 
 theorem same_interface_package_read
-    (member : Window.near ∈ responseItems.read () trivial) :
-    ((sameInterfaceContract.latestPackage.read sameInterfaceStage trivial)
+    (member : Window.near ∈ responseItems () trivial) :
+    ((sameInterfaceContract.latestPackage sameInterfaceStage trivial)
       Window.near member).targetComplete :=
   trivial
 
 def sameInterfaceSelectedItem :
     Focus.ActiveQuery sameInterfaceContract.successor fun _stage _active =>
       Window :=
-  Focus.ActiveQuery.ofFunction fun _stage _active => Window.near
+  fun _stage _active => Window.near
 
 def sameInterfaceSelectedMember :
     Focus.ActiveQuery sameInterfaceContract.successor fun stage active =>
-      sameInterfaceSelectedItem.read stage active ∈
-        responseItems.read stage.previous active :=
-  Focus.ActiveQuery.ofFunction fun stage active => by
+      sameInterfaceSelectedItem stage active ∈
+        responseItems stage.previous active :=
+  fun stage active => by
     simp [sameInterfaceSelectedItem, responseItems]
 
 theorem same_interface_target_complete_from_core_projection :
     ((sameInterfaceContract.latestPackageAt sameInterfaceSelectedItem
-      sameInterfaceSelectedMember).read sameInterfaceStage
+      sameInterfaceSelectedMember) sameInterfaceStage
         trivial).targetComplete :=
   (sameInterfaceContract.latestPackageProof sameInterfaceSelectedItem
     sameInterfaceSelectedMember
     (fun package => package.targetComplete)
-    (fun package => package.targetCompleteProof)).read sameInterfaceStage
+    (fun package => package.targetCompleteProof)) sameInterfaceStage
       trivial
 
 def pdeRouteSpec : Execution.Spec sameInterfaceContract.Stage where
@@ -645,7 +645,7 @@ theorem pde_residual_route_profile_enabled
 
 def ct3GoodScheduleQuery :
     Focus.ActiveQuery focus fun _previous _active => Enumeration Window :=
-  Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     Enumeration.ofNodupList [Window.near, Window.far] (by decide)
 
 def ct3GoodFocusedContract :
@@ -703,16 +703,16 @@ noncomputable def ct3GoodPackageItem :
     Focus.ActiveQuery
       (ct3GoodSameInterfaceContract.sameInterfaceContract).successor
         fun _stage _active => Window :=
-  Focus.ActiveQuery.ofFunction fun _stage _active => Window.near
+  fun _stage _active => Window.near
 
 noncomputable def ct3GoodPackageMember :
     Focus.ActiveQuery
       (ct3GoodSameInterfaceContract.sameInterfaceContract).successor
         fun stage active =>
-          ct3GoodPackageItem.read stage active ∈
-            (ct3GoodSameInterfaceContract.sameInterfaceContract).items.read
+          ct3GoodPackageItem stage active ∈
+            (ct3GoodSameInterfaceContract.sameInterfaceContract).items
               stage.previous active :=
-  Focus.ActiveQuery.ofFunction fun _stage _active => by
+  fun _stage _active => by
     change Window.near ∈
       (Enumeration.ofNodupList [Window.near, Window.far] (by decide)).values
     decide
@@ -722,12 +722,12 @@ theorem ct3_good_same_interface_target_complete
       (ct3GoodSameInterfaceContract.sameInterfaceContract).successor.Active
         ct3GoodPackageStage) :
     (((ct3GoodSameInterfaceContract.sameInterfaceContract).latestPackageAt
-      ct3GoodPackageItem ct3GoodPackageMember).read
+      ct3GoodPackageItem ct3GoodPackageMember)
         ct3GoodPackageStage active).targetComplete :=
   ((ct3GoodSameInterfaceContract.sameInterfaceContract).latestPackageProof
     ct3GoodPackageItem ct3GoodPackageMember
     (fun package => package.targetComplete)
-    (fun package => package.targetCompleteProof)).read
+    (fun package => package.targetCompleteProof))
       ct3GoodPackageStage active
 
 theorem ct3_good_verified_same_interface_target_complete
@@ -735,10 +735,10 @@ theorem ct3_good_verified_same_interface_target_complete
       (ct3GoodSameInterfaceContract.verifiedSameInterfaceContract).successor.Active
         ct3GoodPackageStage) :
     (((ct3GoodSameInterfaceContract.verifiedSameInterfaceContract).latestPackageAt
-      ct3GoodPackageItem ct3GoodPackageMember).read
+      ct3GoodPackageItem ct3GoodPackageMember)
         ct3GoodPackageStage active).targetComplete :=
   ((ct3GoodSameInterfaceContract.verifiedSameInterfaceContract).latestTargetComplete
-    ct3GoodPackageItem ct3GoodPackageMember).read
+    ct3GoodPackageItem ct3GoodPackageMember)
       ct3GoodPackageStage active
 
 #print axioms selected_card_from_ledger

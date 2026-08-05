@@ -38,7 +38,7 @@ def schedule : Enumeration Nat :=
 
 def selectedScheduleQuery : Focus.ActiveQuery focus fun _previous _active =>
     Enumeration Nat :=
-  Focus.ActiveQuery.ofFunction fun _previous _active => schedule
+  fun _previous _active => schedule
 
 def selectedScheduleContract : SelectedSchedule.Contract focus where
   Item := Nat
@@ -52,14 +52,14 @@ theorem selectedSchedule_preserves_previous :
   selectedScheduleContract.run_previous 5
 
 theorem selectedSchedule_attached_card_exact :
-    (selectedScheduleContract.latestAttached.read selectedScheduleStage
+    (selectedScheduleContract.latestAttached selectedScheduleStage
         trivial).card =
       schedule.card := by
   have card :=
-    selectedScheduleContract.latestAttachedCardExact.read
+    selectedScheduleContract.latestAttachedCardExact
       selectedScheduleStage trivial
   have schedule_eq :
-      (selectedScheduleQuery.read selectedScheduleStage.previous
+      (selectedScheduleQuery selectedScheduleStage.previous
         trivial).card = schedule.card := by
     simp [selectedScheduleStage, selectedScheduleContract,
       selectedScheduleQuery]
@@ -67,7 +67,7 @@ theorem selectedSchedule_attached_card_exact :
 
 theorem selectedSchedule_attached_members :
     ∀ entry ∈
-      (selectedScheduleContract.latestAttached.read selectedScheduleStage
+      (selectedScheduleContract.latestAttached selectedScheduleStage
         trivial).values,
         entry.1 ∈ schedule.values := by
   intro entry _member
@@ -89,7 +89,7 @@ theorem partition_card_exact :
 
 def partitionScheduleQuery : Focus.ActiveQuery focus fun _previous _active =>
     Enumeration Nat :=
-  Focus.ActiveQuery.ofFunction fun _previous _active => schedule
+  fun _previous _active => schedule
 
 def focusedPartitionContract :
     Partition.FocusedContract.{1, 0} focus where
@@ -106,14 +106,14 @@ theorem focusedPartition_preserves_previous :
   focusedPartitionContract.runStage_previous 5
 
 theorem focusedPartition_card_exact :
-    (focusedPartitionContract.latestAccepted.read focusedPartitionStage trivial).card +
-        (focusedPartitionContract.latestRejected.read focusedPartitionStage trivial).card =
+    (focusedPartitionContract.latestAccepted focusedPartitionStage trivial).card +
+        (focusedPartitionContract.latestRejected focusedPartitionStage trivial).card =
       schedule.card := by
   have card :=
-    focusedPartitionContract.latestCardPartition.read focusedPartitionStage
+    focusedPartitionContract.latestCardPartition focusedPartitionStage
       trivial
   have schedule_eq :
-      ((focusedPartitionContract.schedule.preserve).read focusedPartitionStage
+      ((focusedPartitionContract.schedule.preserve) focusedPartitionStage
         trivial).card = schedule.card := by
     simp [focusedPartitionStage, focusedPartitionContract,
       partitionScheduleQuery]
@@ -144,7 +144,7 @@ theorem flattened_card_sum :
 def dependentScheduleQuery :
     Focus.ActiveQuery focus fun _previous _active =>
       DependentEnumeration Bool Fibre :=
-  Focus.ActiveQuery.ofFunction fun _previous _active => dependent
+  fun _previous _active => dependent
 
 def focusedFlattenContract :
     Flatten.FocusedContract.{1, 0, 0} focus where
@@ -160,16 +160,16 @@ theorem focusedFlatten_preserves_previous :
   focusedFlattenContract.runStage_previous 5
 
 theorem focusedFlatten_card_sum :
-    (focusedFlattenContract.latestFlattened.read focusedFlattenStage
+    (focusedFlattenContract.latestFlattened focusedFlattenStage
         trivial).card =
       (dependent.indices.values.map fun i => (dependent.fibres i).card).sum := by
   have card :=
-    focusedFlattenContract.latestCardEqSum.read focusedFlattenStage trivial
+    focusedFlattenContract.latestCardEqSum focusedFlattenStage trivial
   have rhs_eq :
-      (((focusedFlattenContract.schedule.preserve).read focusedFlattenStage
+      (((focusedFlattenContract.schedule.preserve) focusedFlattenStage
           trivial).indices.values.map
         fun i =>
-          (((focusedFlattenContract.schedule.preserve).read
+          (((focusedFlattenContract.schedule.preserve)
             focusedFlattenStage trivial).fibres i).card).sum =
         (dependent.indices.values.map fun i => (dependent.fibres i).card).sum := by
     simp [focusedFlattenStage, focusedFlattenContract, dependentScheduleQuery]
@@ -177,24 +177,24 @@ theorem focusedFlatten_card_sum :
 
 def focusedFlattenConstantFibres :
     Focus.ActiveQuery focusedFlattenContract.successor fun stage active =>
-      ∀ index ∈ ((focusedFlattenContract.schedule.preserve).read stage
+      ∀ index ∈ ((focusedFlattenContract.schedule.preserve) stage
           active).indices.values,
-        (((focusedFlattenContract.schedule.preserve).read stage
+        (((focusedFlattenContract.schedule.preserve) stage
           active).fibres index).card = 2 :=
-  Focus.ActiveQuery.ofFunction fun stage active => by
+  fun stage active => by
     intro index member
     exact boolFibre_card index
 
 theorem focusedFlatten_card_constant :
-    (focusedFlattenContract.latestFlattened.read focusedFlattenStage
+    (focusedFlattenContract.latestFlattened focusedFlattenStage
         trivial).card =
       2 * dependent.indices.card := by
   have card :=
     (focusedFlattenContract.latestCardEqContributionMul 2
-      focusedFlattenConstantFibres).read focusedFlattenStage trivial
+      focusedFlattenConstantFibres) focusedFlattenStage trivial
   have rhs_eq :
       2 *
-          ((focusedFlattenContract.schedule.preserve).read focusedFlattenStage
+          ((focusedFlattenContract.schedule.preserve) focusedFlattenStage
             trivial).indices.card =
         2 * dependent.indices.card := by
     simp [focusedFlattenStage, focusedFlattenContract, dependentScheduleQuery]

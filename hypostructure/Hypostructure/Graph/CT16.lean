@@ -18,9 +18,9 @@ def vertexCoordinates {Previous : Type uPrevious}
     (object : Core.Residual.Query Previous fun _previous =>
       FiniteObject.{uVertex}) :
     Core.Residual.Query Previous fun previous =>
-      Core.Finite.Enumeration (object.read previous).Vertex :=
+      Core.Finite.Enumeration (object previous).Vertex :=
   object.map fun previous _selected =>
-    Core.Finite.Enumeration.ofFinEnum (object.read previous).vertices
+    Core.Finite.Enumeration.ofFinEnum (object previous).vertices
 
 /-- CT16 semantics for whole vertex support and one computed graph code. -/
 def vertexSpec {Previous : Type uPrevious}
@@ -32,11 +32,11 @@ def vertexSpec {Previous : Type uPrevious}
     (closedCode : FiniteObject.{uVertex} -> ClosedCode)
     (targetCode : ClosedCode) :
     _root_.Hypostructure.CT16.Spec Previous where
-  Coordinate := fun previous => (object.read previous).Vertex
+  Coordinate := fun previous => (object previous).Vertex
   InSupport := fun previous coordinate =>
-    InSupport (object.read previous) coordinate
+    InSupport (object previous) coordinate
   ClosedCode := fun _previous => ClosedCode
-  closedCode := fun previous => closedCode (object.read previous)
+  closedCode := fun previous => closedCode (object previous)
   targetCode := fun _previous => targetCode
 
 /-- Build the graph CT16 capability.  Vertex enumeration is derived from the
@@ -56,7 +56,7 @@ def vertexCapability {Previous : Type uPrevious}
       (computeClosedCode selected).value = closedCode selected)
     (codeComputationBudget : Core.PolynomialCheckBudget Previous)
     (computeClosedCode_checks : forall previous,
-      (computeClosedCode (object.read previous)).checks =
+      (computeClosedCode (object previous)).checks =
         codeComputationBudget.checks previous)
     (inSupportDecidable : (selected : FiniteObject.{uVertex}) ->
       (vertex : selected.Vertex) -> Decidable (InSupport selected vertex))
@@ -65,11 +65,11 @@ def vertexCapability {Previous : Type uPrevious}
       (vertexSpec object InSupport ClosedCode closedCode targetCode) where
   coordinates := vertexCoordinates object
   inSupportDecidable := fun previous coordinate =>
-    inSupportDecidable (object.read previous) coordinate
+    inSupportDecidable (object previous) coordinate
   codeComputation := {
-    run := fun previous => computeClosedCode (object.read previous)
+    run := fun previous => computeClosedCode (object previous)
     correct := fun previous =>
-      computeClosedCode_correct (object.read previous)
+      computeClosedCode_correct (object previous)
     budget := codeComputationBudget
     checks_eq := computeClosedCode_checks
   }

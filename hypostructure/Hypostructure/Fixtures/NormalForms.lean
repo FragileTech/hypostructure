@@ -251,10 +251,10 @@ def equalityProfile : EqualityRigidity.Profile Previous where
     | some _ => quotientClass = true
   rigidityVisibleDecidable := by
     intro previous quotientClass
-    cases separatorQuery.read previous <;> exact Bool.decEq quotientClass true
+    cases separatorQuery previous <;> exact Bool.decEq quotientClass true
   visibleNonzero := by
     intro previous carrier visible equalNull
-    cases separator : separatorQuery.read previous with
+    cases separator : separatorQuery previous with
     | none =>
         rw [separator] at visible
         exact visible_projection_nonzero visible equalNull
@@ -263,7 +263,7 @@ def equalityProfile : EqualityRigidity.Profile Previous where
         exact visible_projection_nonzero visible equalNull
   nullOfNotVisible := by
     intro previous carrier invisible
-    cases separator : separatorQuery.read previous with
+    cases separator : separatorQuery previous with
     | none =>
         rw [separator] at invisible
         exact invisible_projection_null invisible
@@ -312,11 +312,11 @@ theorem equality_visible_terminal :
   decide
 
 theorem equality_none_separator_consumed :
-    separatorQuery.read zeroPrevious = none :=
+    separatorQuery zeroPrevious = none :=
   rfl
 
 theorem equality_some_separator_consumed :
-    separatorQuery.read visiblePrevious = some PUnit.unit :=
+    separatorQuery visiblePrevious = some PUnit.unit :=
   rfl
 
 end ClassModel
@@ -388,12 +388,12 @@ def data : SignGap.Data extraction budget Previous where
   loss := fun _previous mode => loss mode
   readout := fun _previous mode => readout mode
   gap := fun _previous mode => gap mode
-  Normalized := fun previous mode => mode = modeQuery.read previous
+  Normalized := fun previous mode => mode = modeQuery previous
   normalized := by intros; rfl
   lossNonnegative := by intros; exact Nat.zero_le _
   readoutPositive := by
     intro previous
-    cases modeQuery.read previous with
+    cases modeQuery previous with
     | subcritical =>
         change (0 : Nat) <= 1 ∧ Not (1 <= 0)
         omega
@@ -409,47 +409,47 @@ def data : SignGap.Data extraction budget Previous where
   gapNonnegative := by intros; exact Nat.zero_le _
 
 def comparison : SignGap.ExactComparison data where
-  Subcritical := fun previous => modeQuery.read previous = .subcritical
-  Feeding := fun previous => modeQuery.read previous = .feeding
-  Equality := fun previous => modeQuery.read previous = .equality
-  ZeroGap := fun previous => modeQuery.read previous = .zeroGap
+  Subcritical := fun previous => modeQuery previous = .subcritical
+  Feeding := fun previous => modeQuery previous = .feeding
+  Equality := fun previous => modeQuery previous = .equality
+  ZeroGap := fun previous => modeQuery previous = .zeroGap
   subcriticalDecidable := fun _previous => inferInstance
   feedingDecidable := fun _previous => inferInstance
   equalityDecidable := fun _previous => inferInstance
   subcriticalSound := by
     intro previous proof
-    change modeQuery.read previous = Mode.subcritical at proof
+    change modeQuery previous = Mode.subcritical at proof
     change SignGap.StrictlyBelow budget
-        (readout (modeQuery.read previous)) (loss (modeQuery.read previous)) ∨
+        (readout (modeQuery previous)) (loss (modeQuery previous)) ∨
       SignGap.StrictlyBelow budget budget.zero
-        (gap (modeQuery.read previous))
+        (gap (modeQuery previous))
     rw [proof]
     apply Or.inl
     change (1 : Nat) <= 2 ∧ Not (2 <= 1)
     omega
   feedingSound := by
     intro previous proof
-    change modeQuery.read previous = Mode.feeding at proof
+    change modeQuery previous = Mode.feeding at proof
     change SignGap.StrictlyBelow budget
-      (loss (modeQuery.read previous)) (readout (modeQuery.read previous))
+      (loss (modeQuery previous)) (readout (modeQuery previous))
     rw [proof]
     change (1 : Nat) <= 2 ∧ Not (2 <= 1)
     omega
   equalitySound := by
     intro previous proof
-    change modeQuery.read previous = Mode.equality at proof
-    change loss (modeQuery.read previous) = readout (modeQuery.read previous)
+    change modeQuery previous = Mode.equality at proof
+    change loss (modeQuery previous) = readout (modeQuery previous)
     rw [proof]
     rfl
   zeroGapSound := by
     intro previous proof
-    change modeQuery.read previous = Mode.zeroGap at proof
-    change gap (modeQuery.read previous) = budget.zero
+    change modeQuery previous = Mode.zeroGap at proof
+    change gap (modeQuery previous) = budget.zero
     rw [proof]
     rfl
   exhaustive := by
     intro previous
-    cases modeQuery.read previous <;> simp
+    cases modeQuery previous <;> simp
   subcriticalDisjoint := by
     intro previous subcritical remainder
     rcases remainder with feeding | equality | zeroGap <;> simp_all

@@ -105,7 +105,7 @@ def runActiveProof
 theorem outputQuery_run_of_active
     (contract : DirectedExhaustiveness Previous focus Potential Current)
     (previous : Previous) (active : focus.Active previous) :
-    contract.toProfile.outputQuery.read (contract.run previous).value
+    contract.toProfile.outputQuery (contract.run previous).value
         (contract.runActiveProof previous active) =
       _root_.Hypostructure.PDE.FastTrack.DirectedExhaustiveness.generateActive
         contract.toProfile (Residual.Focus.ActiveView.of previous active) :=
@@ -309,7 +309,7 @@ def runActiveProof (contract : CapacityTarget rowSix)
 theorem outputQuery_run_of_active (contract : CapacityTarget rowSix)
     (previous : CapacityProfile.RowSixStage rowSix)
     (active : rowSix.CapacityReadyFocus.Active previous) :
-    (CapacityProfile.outputQuery contract.toCapacityProfile).read
+    (CapacityProfile.outputQuery contract.toCapacityProfile)
         (contract.run previous).value
         (contract.runActiveProof previous active) =
       (CapacityProfile.generateActiveCounted contract.toCapacityProfile

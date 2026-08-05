@@ -35,7 +35,7 @@ structure Certificate (profile : Profile Previous) (previous : Previous) where
   validPaths : ∀ path, path ∈ paths -> profile.valid previous path
   pairwiseDisjoint : paths.Pairwise (fun left right =>
     ¬ profile.overlap previous left right)
-  maximal : ∀ event ∈ (profile.schedule.read previous).values,
+  maximal : ∀ event ∈ (profile.schedule previous).values,
     (∃ path ∈ paths, profile.covered previous event path) ∨
       (∃ path ∈ paths, profile.overlap previous path path)
 

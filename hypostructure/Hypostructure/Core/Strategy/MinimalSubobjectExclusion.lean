@@ -36,7 +36,7 @@ abbrev DirectStage
       Core.MinimalCounterexampleContext P Target progress) :=
   Core.Residual.Ledger.Extension Previous fun previous =>
     Core.Minimality.NoSubobjectBaselineCertificate profile
-      (context.read previous)
+      (context previous)
 
 /-- Append the generic minimality certificate to the literal predecessor. -/
 def executeDirect
@@ -54,7 +54,7 @@ def executeDirect
     DirectStage profile context :=
   Core.Residual.Ledger.extend previous
     (Core.Minimality.deriveNoSubobjectBaseline profile
-      (context.read previous))
+      (context previous))
 
 /-- Read the exact certificate appended by `executeDirect`. -/
 def directCertificateQuery
@@ -70,7 +70,7 @@ def directCertificateQuery
       Core.MinimalCounterexampleContext P Target progress) :
     Core.Residual.Query (DirectStage profile context) fun stage =>
       Core.Minimality.NoSubobjectBaselineCertificate profile
-        (context.read stage.previous) :=
+        (context stage.previous) :=
   Core.Residual.Query.latest
 
 /-- Certificate appended by the existing minimality operation on an active

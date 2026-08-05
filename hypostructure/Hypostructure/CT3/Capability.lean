@@ -59,24 +59,24 @@ structure Capability {Previous : Type uPrevious}
     (candidate : spec.Candidate) ->
       Decidable (spec.StrictlySmaller previous source candidate)
   candidateCoverage : (previous : Previous) -> (candidate : spec.Candidate) ->
-    candidate ∈ (candidates.read previous).values ->
+    candidate ∈ (candidates previous).values ->
       Core.Response.FiniteTable.SymbolicCoverage spec.system
-        (spec.representatives (source.read previous)
+        (spec.representatives (source previous)
           (spec.candidatePiece candidate))
         (Core.Response.FiniteTable.ExactSchedule.ofList
-          (coordinates.read previous).values)
+          (coordinates previous).values)
   rowCoverage : (previous : Previous) -> (row : spec.Row) ->
-    row ∈ (rows.read previous).values ->
+    row ∈ (rows previous).values ->
       Core.Response.FiniteTable.SymbolicCoverage spec.system
-        (spec.representatives (source.read previous) (spec.rowPiece row))
+        (spec.representatives (source previous) (spec.rowPiece row))
         (Core.Response.FiniteTable.ExactSchedule.ofList
-          (coordinates.read previous).values)
+          (coordinates previous).values)
   inputSize : Previous -> Nat
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (coordinates.read previous) (candidates.read previous)
-      (rows.read previous) <=
+    localCheckBound (coordinates previous) (candidates previous)
+      (rows previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -88,22 +88,22 @@ variable {Previous : Type uPrevious}
 /-- Source representative retrieved from the exact predecessor. -/
 def sourceAt (capability : Capability spec) (previous : Previous) :
     spec.Representative :=
-  capability.source.read previous
+  capability.source previous
 
 /-- Exact coordinate schedule retrieved from the exact predecessor. -/
 def coordinatesAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration spec.system.Coordinate :=
-  capability.coordinates.read previous
+  capability.coordinates previous
 
 /-- Exact candidate schedule retrieved from the exact predecessor. -/
 def candidatesAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration spec.Candidate :=
-  capability.candidates.read previous
+  capability.candidates previous
 
 /-- Exact row schedule retrieved from the exact predecessor. -/
 def rowsAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration spec.Row :=
-  capability.rows.read previous
+  capability.rows previous
 
 /-- Core's exact response-table schedule for the queried coordinates. -/
 def exactScheduleAt (capability : Capability spec) (previous : Previous) :

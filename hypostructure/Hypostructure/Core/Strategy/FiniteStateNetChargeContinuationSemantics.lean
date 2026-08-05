@@ -1,5 +1,6 @@
 import Hypostructure.Core.Residual.Query
 import Hypostructure.Core.Strategy.LocalSupplyLowerBoundSemantics
+import Hypostructure.Core.Strategy.TargetRelativeRankDichotomySemantics
 
 namespace Hypostructure.Core.Strategy.FiniteStateNetChargeContinuation
 
@@ -16,6 +17,11 @@ cap.  Nothing here records which alternative of the entropy split was taken,
 so both alternatives of `prop:two-budget` publish the same ledger. -/
 structure CapacityLedger (Stage : Type uStage) where
   localSupply : Query Stage (fun _ => LocalSupplyLowerBound.Summary)
+  /-- The upstream CT15 full-rank certificate, transported through the
+  literal row41 stage. -/
+  fullRankCertificate :
+    Query Stage (fun _ =>
+      TargetRelativeRankDichotomy.FullRankCertificate)
   forcedPower : Query Stage (fun _ => Nat)
   flatPower : Query Stage (fun _ => Nat)
   realizedStateCount : Query Stage (fun _ => Nat)
@@ -23,12 +29,12 @@ structure CapacityLedger (Stage : Type uStage) where
   remainderCard : Query Stage (fun _ => Nat)
   statePowerExponent : Query Stage (fun _ => Nat)
   scaledDeficiency : Query Stage fun stage =>
-    (localSupply.read stage).netDeficiency.scale *
-        (localSupply.read stage).netDeficiency.deficiency ≤
-      (localSupply.read stage).netDeficiency.coefficient *
-          (localSupply.read stage).netDeficiency.remainder +
-        (localSupply.read stage).netDeficiency.scale *
-          (localSupply.read stage).netDeficiency.surplus
+    (localSupply stage).netDeficiency.scale *
+        (localSupply stage).netDeficiency.deficiency ≤
+      (localSupply stage).netDeficiency.coefficient *
+          (localSupply stage).netDeficiency.remainder +
+        (localSupply stage).netDeficiency.scale *
+          (localSupply stage).netDeficiency.surplus
 
 namespace CapacityLedger
 
@@ -36,6 +42,7 @@ namespace CapacityLedger
 def comap (ledger : CapacityLedger Stage) (project : NewStage → Stage) :
     CapacityLedger NewStage where
   localSupply := ledger.localSupply.comap project
+  fullRankCertificate := ledger.fullRankCertificate.comap project
   forcedPower := ledger.forcedPower.comap project
   flatPower := ledger.flatPower.comap project
   realizedStateCount := ledger.realizedStateCount.comap project

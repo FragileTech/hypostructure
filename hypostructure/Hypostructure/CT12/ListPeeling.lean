@@ -67,7 +67,7 @@ def spec {Previous : Type uPrevious} (profile : Profile Previous) :
 /-- Exact initial state derived from the predecessor-owned schedule. -/
 def initialState {Previous : Type uPrevious} (profile : Profile Previous)
     (previous : Previous) : CT12.InitialState (spec profile) previous :=
-  let schedule := profile.schedule.read previous
+  let schedule := profile.schedule previous
   {
     load := schedule.card
     state := ⟨schedule.values, rfl⟩
@@ -79,13 +79,13 @@ def capability {Previous : Type uPrevious} (profile : Profile Previous) :
     CT12.Capability (spec profile) where
   initial := profile.schedule.map fun previous _schedule =>
     initialState profile previous
-  inputSize := fun previous => (profile.schedule.read previous).card
+  inputSize := fun previous => (profile.schedule previous).card
   workCoefficient := 5
   workDegree := 1
   workBound := by
     intro previous
-    change 4 * (profile.schedule.read previous).card + 1 <=
-      5 * ((profile.schedule.read previous).card + 1) ^ 1
+    change 4 * (profile.schedule previous).card + 1 <=
+      5 * ((profile.schedule previous).card + 1) ^ 1
     simp only [pow_one]
     omega
 
@@ -132,7 +132,7 @@ theorem run_terminal_exhausted
     (previous : Previous) :
     (run profile previous).terminal = .exhausted := by
   exact runLoop_terminal_exhausted profile previous
-    (profile.schedule.read previous).card
+    (profile.schedule previous).card
     (initialState profile previous).state
 
 private theorem runLoop_iterations_eq_load
@@ -161,9 +161,9 @@ theorem run_iterations_eq_card
     {Previous : Type uPrevious} (profile : Profile Previous)
     (previous : Previous) :
     (run profile previous).iterations =
-      (profile.schedule.read previous).card := by
+      (profile.schedule previous).card := by
   exact runLoop_iterations_eq_load profile previous
-    (profile.schedule.read previous).card
+    (profile.schedule previous).card
     (initialState profile previous).state
 
 private theorem runLoop_trace_eq_expected
@@ -194,13 +194,13 @@ theorem run_trace_eq_expected
     {Previous : Type uPrevious} (profile : Profile Previous)
     (previous : Previous) :
     (run profile previous).traceNodes =
-      expectedTrace (profile.schedule.read previous).card := by
+      expectedTrace (profile.schedule previous).card := by
   change .entry ::
       (CT12.runLoop (spec profile) previous
-        (profile.schedule.read previous).card
+        (profile.schedule previous).card
         (initialState profile previous).state).trace.nodes = _
   rw [runLoop_trace_eq_expected profile previous
-    (profile.schedule.read previous).card
+    (profile.schedule previous).card
     (initialState profile previous).state]
   rfl
 
@@ -209,7 +209,7 @@ theorem run_checks_eq
     {Previous : Type uPrevious} (profile : Profile Previous)
     (previous : Previous) :
     (run profile previous).checks =
-      4 * (profile.schedule.read previous).card + 1 := by
+      4 * (profile.schedule previous).card + 1 := by
   rw [(run profile previous).checks_eq_exact,
     run_terminal_exhausted profile previous,
     run_iterations_eq_card profile previous]

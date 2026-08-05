@@ -47,7 +47,7 @@ def spec : CT1.Spec Previous where
   Realizes := fun _ _ => True
 
 def capability : CT1.Capability (profile.spec (Previous := Previous)) where
-  schedule := Query.ofFunction fun previous =>
+  schedule :=  fun previous =>
     profile.occurrences (residualOf previous)
   realizesDecidable := fun _ _ => .isTrue trivial
   inputSize := fun previous =>
@@ -164,15 +164,15 @@ noncomputable def packingAtQuery
     (current : Query Previous fun _ => Core.Strategy.ProblemInput P)
     (previous : Previous) :=
   Packing.canonical
-    (profile.occurrences (current.read previous))
-    (profile.conflict (current.read previous))
-    (profile.conflictDecidable (current.read previous))
-    (profile.conflictSymmetric (current.read previous))
+    (profile.occurrences (current previous))
+    (profile.conflict (current previous))
+    (profile.conflictDecidable (current previous))
+    (profile.conflictSymmetric (current previous))
 
 def specAt
     (current : Query Previous fun _ => Core.Strategy.ProblemInput P) :
     CT1.Spec Previous where
-  Candidate := fun previous => profile.Occurrence (current.read previous)
+  Candidate := fun previous => profile.Occurrence (current previous)
   Realizes := fun _ _ => True
 
 def capabilityAt
@@ -180,7 +180,7 @@ def capabilityAt
     CT1.Capability (profile.specAt current) where
   schedule := current.dependentMap fun _ input => profile.occurrences input
   realizesDecidable := fun _ _ => .isTrue trivial
-  inputSize := fun previous => (profile.occurrences (current.read previous)).card
+  inputSize := fun previous => (profile.occurrences (current previous)).card
   workCoefficient := 1
   workDegree := 1
   workBound := by
@@ -202,7 +202,7 @@ private theorem schedule_empty_of_avoidsAt
     (avoids : Core.Finite.Search.Avoids
       ((profile.capabilityAt current).scheduleAt previous)
       ((profile.specAt current).Realizes previous)) :
-    (profile.occurrences (current.read previous)).values = [] := by
+    (profile.occurrences (current previous)).values = [] := by
   apply List.eq_nil_iff_forall_not_mem.mpr
   intro occurrence member
   obtain ⟨index, indexed⟩ :=
@@ -215,9 +215,9 @@ abbrev OutputAt
     (stage : CT1.Stage (profile.specAt current) (profile.capabilityAt current)) :=
   Core.Residual.Decision.Continuation
     (fun _ _ => NonemptyPacking
-      (profile.occurrences (current.read stage.previous))
-      (profile.conflict (current.read stage.previous)))
-    (fun _ _ => T.Predicate (current.read stage.previous).object)
+      (profile.occurrences (current stage.previous))
+      (profile.conflict (current stage.previous)))
+    (fun _ _ => T.Predicate (current stage.previous).object)
     stage.added.previous stage.added.added
 
 noncomputable def continuationAt
@@ -229,7 +229,7 @@ noncomputable def continuationAt
       ⟨packingAtQuery profile current stage.previous,
         packingAtQuery_selected_nonempty profile current stage hasHit⟩)
     (fun avoids =>
-      profile.freeForcesTarget (current.read stage.previous)
+      profile.freeForcesTarget (current stage.previous)
         (schedule_empty_of_avoidsAt profile current stage.previous avoids))).added
 
 abbrev StageAt
@@ -248,9 +248,9 @@ abbrev OutcomeAt
     (current : Query Previous fun _ => Core.Strategy.ProblemInput P)
     (previous : Previous) :=
   Sum (NonemptyPacking
-    (profile.occurrences (current.read previous))
-    (profile.conflict (current.read previous)))
-    (PLift (T.Predicate (current.read previous).object))
+    (profile.occurrences (current previous))
+    (profile.conflict (current previous)))
+    (PLift (T.Predicate (current previous).object))
 
 noncomputable def outcomeAt
     (current : Query Previous fun _ => Core.Strategy.ProblemInput P)

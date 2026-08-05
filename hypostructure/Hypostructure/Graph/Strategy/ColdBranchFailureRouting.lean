@@ -83,7 +83,7 @@ noncomputable def storedF2Event
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f2) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f2) :
     Core.Finite.ColdCorridor.Contract.EventWitness
       (canonicalFirstFailurePresentation owner.1.1.1.1 owner.1.1.1.2
         CycleLengthOK cycleLengthDecidable Target decideTarget
@@ -112,7 +112,7 @@ noncomputable def storedF2Bookkeeping
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f2) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f2) :
     F2Bookkeeping (object := object) (order := order) (profile := profile)
       owner.1.1.1.1 owner.1.1.1.2 Target
       (storedF2Event profile CycleLengthOK cycleLengthDecidable Target
@@ -141,7 +141,7 @@ theorem storedF2TargetDefect
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f2) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f2) :
     let bookkeeping := storedF2Bookkeeping profile CycleLengthOK
       cycleLengthDecidable Target decideTarget handoffItems handoffSupport stage owner
     F2TargetDefect owner.1.1.1.1 owner.1.1.1.2 Target
@@ -171,7 +171,7 @@ theorem storedF2SameInterface
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f2) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f2) :
     let bookkeeping := storedF2Bookkeeping profile CycleLengthOK
       cycleLengthDecidable Target decideTarget handoffItems handoffSupport stage owner
     let later := (storedF2Event profile CycleLengthOK cycleLengthDecidable
@@ -214,7 +214,7 @@ noncomputable def storedF4Event
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f4) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f4) :
     Core.Finite.ColdCorridor.Contract.EventWitness
       (canonicalFirstFailurePresentation owner.1.1.1.1 owner.1.1.1.2
         CycleLengthOK cycleLengthDecidable Target decideTarget
@@ -244,7 +244,7 @@ noncomputable def storedF4HandoffEntry
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f4) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f4) :
     {item : Handoff //
       item ∈ handoffItems.values ∧
         returnEndpoint owner.1.1.1.1 owner.1.1.1.2
@@ -274,7 +274,7 @@ theorem storedF4EntryMemberOfIncomingLedger
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f4) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f4) :
     (storedF4HandoffEntry profile CycleLengthOK cycleLengthDecidable Target
       decideTarget handoffItems handoffSupport stage owner).1 ∈
       handoffItems.values :=
@@ -299,7 +299,7 @@ theorem storedF4EntryEndpointIncidence
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f4) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f4) :
     returnEndpoint owner.1.1.1.1 owner.1.1.1.2
         (storedF4Event profile CycleLengthOK cycleLengthDecidable Target
           decideTarget handoffItems handoffSupport stage owner).item ∈
@@ -337,7 +337,7 @@ theorem storedF4Impossible_of_emptyHandoff
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f4) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f4) :
     False := by
   have recorded := storedF4EntryMemberOfIncomingLedger profile CycleLengthOK
     cycleLengthDecidable Target decideTarget handoffItems handoffSupport stage owner
@@ -396,7 +396,7 @@ theorem canonicalF5Representatives_at_terminal
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.TerminalF5Owner (family.classifiedStateQuery.read view.previous)) :
+      family.TerminalF5Owner (family.classifiedStateQuery view.previous)) :
     let schedule := returnStageSchedule owner.1.1.1.1.1 owner.1.1.1.1.2
     let nonempty : schedule.values ≠ [] :=
       returnStageSchedule_nonempty owner.1.1.1.1.1 owner.1.1.1.1.2
@@ -420,7 +420,7 @@ theorem canonicalF5Representatives_at_terminal
   letI := family.stateFintype owner.1.1.1
   have selected : Core.Finite.ColdCorridor.Contract.Classification.IsFailure
       (family.contractAt owner.1.1.1)
-      ((family.storedClassificationQuery.read view.previous).classify
+      ((family.storedClassificationQuery view.previous).classify
         owner.1.1) .f5 := owner.1.2
   unfold canonicalF5Representatives
   dsimp only
@@ -516,7 +516,7 @@ theorem storedTerminalF5ScheduleBound
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.TerminalF5Owner (family.classifiedStateQuery.read stage)) :
+      family.TerminalF5Owner (family.classifiedStateQuery stage)) :
     (returnStageSchedule owner.1.1.1.1.1 owner.1.1.1.1.2).card ≤
       Fintype.card (CorridorState object order) := by
   have bound :=
@@ -557,7 +557,7 @@ theorem storedTerminalF5GermFacts
     (owner :
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable Target decideTarget handoffItems handoffSupport
-      family.TerminalF5Owner (family.classifiedStateQuery.read view.previous)) :
+      family.TerminalF5Owner (family.classifiedStateQuery view.previous)) :
     let representatives : Core.Response.Representatives
         (CanonicalColdRepresentative profile) :=
       (canonicalF5CT7Capability (Previous := Previous) profile CycleLengthOK

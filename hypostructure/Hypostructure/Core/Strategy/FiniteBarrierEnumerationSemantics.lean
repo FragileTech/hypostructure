@@ -375,16 +375,16 @@ structure RateLedger (Stage : Type uStage) where
   summary : Core.Residual.Query Stage (fun _ => Summary)
   sourceRows : Core.Residual.Query Stage (fun _ => List (Nat × Nat))
   exact : Core.Residual.Query Stage fun stage =>
-    summary.read stage = Summary.ofRows (sourceRows.read stage)
+    summary stage = Summary.ofRows (sourceRows stage)
   /-- The retained summary is the one Core derived from its own generated
   rows, so its `binaryRateFloor` is a genuine `log₂` of its own columns. -/
   derived : Core.Residual.Query Stage fun stage =>
-    Summary.Derived (summary.read stage)
+    Summary.Derived (summary stage)
   /-- The registered accepted schedule's flat column is nonvanishing, so the
   flatness ratio `safeProduct / flatProduct` the manuscript takes `log₂` of is
   defined. -/
   flatPositive : Core.Residual.Query Stage fun stage =>
-    0 < (summary.read stage).flatProduct
+    0 < (summary stage).flatProduct
 
 namespace RateLedger
 
@@ -408,66 +408,66 @@ def preserveProp {Added : Stage → Prop} (ledger : RateLedger Stage) :
 
 /-- Read the safe count of a retained barrier row from the CT16 ledger. -/
 def safeAt (ledger : RateLedger Stage) (stage : Stage) (position : Nat) : Nat :=
-  (ledger.summary.read stage).safeAt position
+  (ledger.summary stage).safeAt position
 
 theorem summary_eq_ofRows (ledger : RateLedger Stage) (stage : Stage) :
-    ledger.summary.read stage = Summary.ofRows (ledger.sourceRows.read stage) :=
-  ledger.exact.read stage
+    ledger.summary stage = Summary.ofRows (ledger.sourceRows stage) :=
+  ledger.exact stage
 
 /-- Read the flat count of a retained barrier row from the CT16 ledger. -/
 def flatAt (ledger : RateLedger Stage) (stage : Stage) (position : Nat) : Nat :=
-  (ledger.summary.read stage).flatAt position
+  (ledger.summary stage).flatAt position
 
 /-- Read the composition-obstructed count of a retained barrier row from the
 CT16 ledger. -/
 def obstructedAt (ledger : RateLedger Stage) (stage : Stage)
     (position : Nat) : Nat :=
-  (ledger.summary.read stage).obstructedAt position
+  (ledger.summary stage).obstructedAt position
 
 /-- Read one exact barrier cost from the CT16-produced summary. -/
 noncomputable def rowRate (ledger : RateLedger Stage) (stage : Stage)
     (position : Nat) : ℝ :=
-  (ledger.summary.read stage).rowRate position
+  (ledger.summary stage).rowRate position
 
 /-- Read the exact sum of all generated barrier costs from the CT16 ledger. -/
 noncomputable def scheduleRate (ledger : RateLedger Stage) (stage : Stage) : ℝ :=
-  (ledger.summary.read stage).scheduleRate
+  (ledger.summary stage).scheduleRate
 
 /-- Read the aggregate-product presentation of the same table rate from the
 CT16 ledger. -/
 noncomputable def windowRate (ledger : RateLedger Stage) (stage : Stage) : ℝ :=
-  (ledger.summary.read stage).windowRate
+  (ledger.summary stage).windowRate
 
 /-- **The registered table's rate floor, read off the ledger.** -/
 theorem two_pow_binaryRateFloor_mul_flatProduct_le
     (ledger : RateLedger Stage) (stage : Stage)
-    (improves : (ledger.summary.read stage).flatProduct ≤
-      (ledger.summary.read stage).safeProduct) :
-    2 ^ (ledger.summary.read stage).binaryRateFloor *
-        (ledger.summary.read stage).flatProduct ≤
-      (ledger.summary.read stage).safeProduct :=
-  (ledger.derived.read stage).two_pow_binaryRateFloor_mul_flatProduct_le
-    (ledger.flatPositive.read stage) improves
+    (improves : (ledger.summary stage).flatProduct ≤
+      (ledger.summary stage).safeProduct) :
+    2 ^ (ledger.summary stage).binaryRateFloor *
+        (ledger.summary stage).flatProduct ≤
+      (ledger.summary stage).safeProduct :=
+  (ledger.derived stage).two_pow_binaryRateFloor_mul_flatProduct_le
+    (ledger.flatPositive stage) improves
 
 /-- **The registered table's rate ceiling, read off the ledger.**  The exponent
 is `binaryRateFloor + 1`; the exact rate and its natural-number floor are kept
 apart and never identified. -/
 theorem safeProduct_le_two_pow_succ_binaryRateFloor_mul_flatProduct
     (ledger : RateLedger Stage) (stage : Stage) :
-    (ledger.summary.read stage).safeProduct ≤
-      2 ^ ((ledger.summary.read stage).binaryRateFloor + 1) *
-        (ledger.summary.read stage).flatProduct :=
-  (ledger.derived.read stage).safeProduct_le_two_pow_succ_binaryRateFloor_mul_flatProduct
-    (ledger.flatPositive.read stage)
+    (ledger.summary stage).safeProduct ≤
+      2 ^ ((ledger.summary stage).binaryRateFloor + 1) *
+        (ledger.summary stage).flatProduct :=
+  (ledger.derived stage).safeProduct_le_two_pow_succ_binaryRateFloor_mul_flatProduct
+    (ledger.flatPositive stage)
 
 /-- The unconditional form of the rate floor, read off the ledger. -/
 theorem two_pow_binaryRateFloor_mul_flatProduct_le_or_eq_zero
     (ledger : RateLedger Stage) (stage : Stage) :
-    2 ^ (ledger.summary.read stage).binaryRateFloor *
-        (ledger.summary.read stage).flatProduct ≤
-      (ledger.summary.read stage).safeProduct ∨
-      (ledger.summary.read stage).binaryRateFloor = 0 :=
-  (ledger.derived.read stage).two_pow_binaryRateFloor_mul_flatProduct_le_or_eq_zero
+    2 ^ (ledger.summary stage).binaryRateFloor *
+        (ledger.summary stage).flatProduct ≤
+      (ledger.summary stage).safeProduct ∨
+      (ledger.summary stage).binaryRateFloor = 0 :=
+  (ledger.derived stage).two_pow_binaryRateFloor_mul_flatProduct_le_or_eq_zero
 
 end RateLedger
 

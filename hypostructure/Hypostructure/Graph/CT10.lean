@@ -22,12 +22,12 @@ def vertexSpec {Previous : Type uPrevious}
     (Class : Previous -> Type uClass)
     (Promotion : Previous -> Type uPromotion)
     (classOf : (previous : Previous) ->
-      (object.read previous).Vertex -> Class previous)
+      (object previous).Vertex -> Class previous)
     (Direct : (previous : Previous) -> Class previous -> Prop)
     (promote : (previous : Previous) ->
       Class previous -> Promotion previous) :
     _root_.Hypostructure.CT10.Spec Previous where
-  Datum := fun previous => (object.read previous).Vertex
+  Datum := fun previous => (object previous).Vertex
   Class := Class
   Promotion := Promotion
   classOf := classOf
@@ -39,9 +39,9 @@ def vertexData {Previous : Type uPrevious}
     (object : Core.Residual.Query Previous fun _previous =>
       FiniteObject.{uVertex}) :
     Core.Residual.Query Previous fun previous =>
-      Core.Finite.Enumeration (object.read previous).Vertex :=
+      Core.Finite.Enumeration (object previous).Vertex :=
   object.map fun previous _current =>
-    Core.Finite.Enumeration.ofFinEnum (object.read previous).vertices
+    Core.Finite.Enumeration.ofFinEnum (object previous).vertices
 
 /-- Build the generic CT10 capability for residual-owned vertex classes. -/
 def vertexCapability {Previous : Type uPrevious}
@@ -50,7 +50,7 @@ def vertexCapability {Previous : Type uPrevious}
     (Class : Previous -> Type uClass)
     (Promotion : Previous -> Type uPromotion)
     (classOf : (previous : Previous) ->
-      (object.read previous).Vertex -> Class previous)
+      (object previous).Vertex -> Class previous)
     (Direct : (previous : Previous) -> Class previous -> Prop)
     (promote : (previous : Previous) ->
       Class previous -> Promotion previous)

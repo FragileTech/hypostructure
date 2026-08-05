@@ -34,8 +34,8 @@ structure Profile (Previous : Type uPrevious) where
 structure Certificate (profile : Profile Previous) (previous : Previous) where
   rootEvent : profile.Event previous
   returnEvent : profile.Event previous
-  rootMem : rootEvent ∈ (profile.events.read previous).values
-  returnMem : returnEvent ∈ (profile.events.read previous).values
+  rootMem : rootEvent ∈ (profile.events previous).values
+  returnMem : returnEvent ∈ (profile.events previous).values
   rootEvidence : profile.root previous rootEvent
   returnEvidence : profile.returns previous rootEvent returnEvent
 
@@ -51,8 +51,8 @@ noncomputable def Has.decide (profile : Profile Previous) (previous : Previous) 
 theorem has_iff_exists
     (profile : Profile Previous) (previous : Previous) :
     Has profile previous ↔
-    ∃ rootEvent ∈ (profile.events.read previous).values,
-        ∃ returnEvent ∈ (profile.events.read previous).values,
+    ∃ rootEvent ∈ (profile.events previous).values,
+        ∃ returnEvent ∈ (profile.events previous).values,
           profile.root previous rootEvent ∧
             profile.returns previous rootEvent returnEvent := by
   constructor

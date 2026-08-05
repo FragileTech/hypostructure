@@ -168,16 +168,16 @@ variable (contract : FocusedContract focus)
 
 /-- Pure finite partition seen at one active predecessor. -/
 def partitionAt (previous : Previous) (active : focus.Active previous) :
-    Result (contract.schedule.read previous active)
+    Result (contract.schedule previous active)
       (contract.predicate previous active) :=
-  run (contract.schedule.read previous active)
+  run (contract.schedule previous active)
     (contract.predicate previous active)
     (contract.decidePredicate previous active)
 
 /-- Focused stage carrying exactly one Core-owned partition result. -/
 abbrev Stage :=
   Focus.Stage focus fun previous active =>
-    Result (contract.schedule.read previous active)
+    Result (contract.schedule previous active)
       (contract.predicate previous active)
 
 /-- Execute the partition and register the accepted/rejected schedules. -/
@@ -208,13 +208,13 @@ theorem executeCounted_checks (previous : Previous) :
 
 abbrev successor : Focus.Profile contract.Stage :=
   Focus.successor focus fun previous active =>
-    Result (contract.schedule.read previous active)
+    Result (contract.schedule previous active)
       (contract.predicate previous active)
 
 /-- Read the complete partition result from the newest ledger extension. -/
 def latestResult :
     Focus.ActiveQuery contract.successor fun stage active =>
-      Result (contract.schedule.read stage.previous active)
+      Result (contract.schedule stage.previous active)
         (contract.predicate stage.previous active) :=
   Focus.ActiveQuery.latest
 
@@ -235,11 +235,11 @@ def latestRejected :
 /-- Read the lossless cardinality identity from the newest ledger extension. -/
 def latestCardPartition :
     Focus.ActiveQuery contract.successor fun stage active =>
-      (contract.latestAccepted.read stage active).card +
-          (contract.latestRejected.read stage active).card =
-        ((contract.schedule.preserve).read stage active).card :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    (contract.latestResult.read stage active).card_partition
+      (contract.latestAccepted stage active).card +
+          (contract.latestRejected stage active).card =
+        ((contract.schedule.preserve) stage active).card :=
+  fun stage active =>
+    (contract.latestResult stage active).card_partition
 
 end FocusedContract
 

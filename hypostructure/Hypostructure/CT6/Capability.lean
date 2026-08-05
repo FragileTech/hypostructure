@@ -30,7 +30,7 @@ structure Capability {Previous : Type uPrevious}
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (failureOrder.read previous) <=
+    localCheckBound (failureOrder previous) <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -41,7 +41,7 @@ variable {Previous : Type uPrevious}
 /-- Exact residual-owned order at one predecessor. -/
 def failureOrderAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Index previous) :=
-  capability.failureOrder.read previous
+  capability.failureOrder previous
 
 /-- Framework-visible polynomial envelope for the complete CT6 pass. -/
 def polynomialBudget (capability : Capability spec) :

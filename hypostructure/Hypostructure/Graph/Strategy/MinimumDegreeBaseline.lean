@@ -29,7 +29,7 @@ def minimumDegreeThresholdQuery
           (Graph.MinimumDegreeAtLeast k) BranchState
           Presentation presentation))
       fun _ => Nat :=
-  Core.Residual.Query.ofFunction fun _ => k
+  fun _ => k
 
 /-- A Core problem input for the canonical minimum-degree graph problem
 already contains the corresponding minimum-degree theorem. -/
@@ -57,7 +57,7 @@ theorem minimumDegreeThresholdQuery_le_minDegree
         Presentation presentation)) :
     (minimumDegreeThresholdQuery
       (k := k) (BranchState := BranchState)
-      (Presentation := Presentation) (presentation := presentation)).read input
+      (Presentation := Presentation) (presentation := presentation)) input
         ≤ input.object.minDegree :=
   minimumDegreeAtLeast_of_problemInput input
 

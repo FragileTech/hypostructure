@@ -8,7 +8,7 @@ open Hypostructure.Core.Strategy
 def comparison (value threshold : Nat) :
     Core.Residual.Query Unit fun _ =>
       Core.OrderThresholdSplit.Profile Nat :=
-  Core.Residual.Query.ofFunction fun _ => ⟨value, threshold⟩
+  fun _ => ⟨value, threshold⟩
 
 noncomputable def highProfile :
     ScaleThresholdDichotomy.Profile Unit :=

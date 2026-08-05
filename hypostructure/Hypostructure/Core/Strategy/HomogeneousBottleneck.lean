@@ -126,22 +126,22 @@ def boundedMemberQuery :=
 
 def collisionSpec : CT9.Spec Previous where
   Item := fun previous =>
-    profile.registration.Item (profile.current.read previous)
+    profile.registration.Item (profile.current previous)
   Label := fun previous =>
-    profile.registration.HomogeneityCode (profile.current.read previous)
+    profile.registration.HomogeneityCode (profile.current previous)
   label := fun previous item =>
-    profile.registration.homogeneityCodeOf (profile.current.read previous) item
+    profile.registration.homogeneityCodeOf (profile.current previous) item
   capacity := fun previous code =>
-    profile.registration.homogeneityCapacity (profile.current.read previous) code
+    profile.registration.homogeneityCapacity (profile.current previous) code
 
 def collisionCapability : CT9.Capability profile.collisionSpec where
   items := profile.itemQuery
   labels := fun previous =>
-    profile.homogeneityCodeQuery.read previous
+    profile.homogeneityCodeQuery previous
   inputSize := fun previous =>
     CT9.localCheckBound
-      (profile.itemQuery.read previous)
-      (profile.homogeneityCodeQuery.read previous).toEnumeration
+      (profile.itemQuery previous)
+      (profile.homogeneityCodeQuery previous).toEnumeration
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -162,7 +162,7 @@ def collisionResult :
 
 def collisionPartition :
     Query profile.AfterCollision fun stage =>
-      let result := profile.collisionResult.read stage
+      let result := profile.collisionResult stage
       CT9.Partition profile.collisionCapability result.stage.previous :=
   profile.collisionResult.dependentMap fun _ result =>
     match result.terminal, result.outcome with
@@ -171,7 +171,7 @@ def collisionPartition :
 
 def codeMembers :
     Query profile.AfterCollision fun stage =>
-      let result := profile.collisionResult.read stage
+      let result := profile.collisionResult stage
       Core.Finite.Enumeration
         (profile.collisionSpec.Label result.stage.previous) :=
   profile.collisionResult.dependentMap fun _ result =>
@@ -182,26 +182,26 @@ def codeMembers :
 def codeCapacitySpec : CT14.Spec profile.AfterCollision where
   Member := fun stage =>
     profile.collisionSpec.Label
-      (profile.collisionResult.read stage).stage.previous
+      (profile.collisionResult stage).stage.previous
   Label := fun stage =>
     profile.registration.CapacityLabel
-      (profile.current.read (profile.collisionResult.read stage).stage.previous)
+      (profile.current (profile.collisionResult stage).stage.previous)
   memberLowerMass := fun stage code =>
-    (profile.collisionPartition.read stage).count code
+    (profile.collisionPartition stage).count code
   memberCapacity := fun stage code =>
     profile.registration.codeCapacity
-      (profile.current.read (profile.collisionResult.read stage).stage.previous) code
+      (profile.current (profile.collisionResult stage).stage.previous) code
   memberLabel := fun stage code =>
     profile.registration.codeLabel
-      (profile.current.read (profile.collisionResult.read stage).stage.previous) code
+      (profile.current (profile.collisionResult stage).stage.previous) code
 
 def codeCapacityCapability : CT14.Capability profile.codeCapacitySpec where
   members := profile.codeMembers
   labelDecidableEq := fun stage =>
     profile.registration.codeLabelDecidableEq
-      (profile.current.read (profile.collisionResult.read stage).stage.previous)
+      (profile.current (profile.collisionResult stage).stage.previous)
   inputSize := fun stage =>
-    CT14.localCheckBound (profile.codeMembers.read stage)
+    CT14.localCheckBound (profile.codeMembers stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -239,24 +239,24 @@ def localClassesAfterCodeCapacity :=
 
 def classificationSpec : CT10.Spec profile.AfterCodeCapacity where
   Datum := fun stage =>
-    profile.registration.Datum (profile.currentAfterCodeCapacity.read stage)
+    profile.registration.Datum (profile.currentAfterCodeCapacity stage)
   Class := fun stage =>
-    profile.registration.LocalClass (profile.currentAfterCodeCapacity.read stage)
+    profile.registration.LocalClass (profile.currentAfterCodeCapacity stage)
   Promotion := fun stage =>
-    profile.registration.Promotion (profile.currentAfterCodeCapacity.read stage)
+    profile.registration.Promotion (profile.currentAfterCodeCapacity stage)
   classOf := fun stage datum =>
-    profile.registration.classOf (profile.currentAfterCodeCapacity.read stage) datum
+    profile.registration.classOf (profile.currentAfterCodeCapacity stage) datum
   Direct := fun stage localClass =>
-    profile.registration.Direct (profile.currentAfterCodeCapacity.read stage) localClass
+    profile.registration.Direct (profile.currentAfterCodeCapacity stage) localClass
   promote := fun stage localClass =>
-    profile.registration.promote (profile.currentAfterCodeCapacity.read stage) localClass
+    profile.registration.promote (profile.currentAfterCodeCapacity stage) localClass
 
 def classificationCapability :
     CT10.Capability profile.classificationSpec where
   data := profile.dataAfterCodeCapacity
   classes := profile.localClassesAfterCodeCapacity
   directDecidable := fun stage localClass =>
-    profile.registration.directDecidable (profile.currentAfterCodeCapacity.read stage) localClass
+    profile.registration.directDecidable (profile.currentAfterCodeCapacity stage) localClass
   inputSize := fun stage =>
     CT10.localCheckBound profile.classificationSpec
       profile.dataAfterCodeCapacity
@@ -290,24 +290,24 @@ def localOrderAfterClassification :=
 
 def localFailureSpec : CT6.Spec profile.AfterClassification where
   Index := fun stage =>
-    profile.registration.LocalIndex (profile.currentAfterClassification.read stage)
+    profile.registration.LocalIndex (profile.currentAfterClassification stage)
   FailureData := fun stage index =>
-    profile.registration.LocalFailureData (profile.currentAfterClassification.read stage) index
+    profile.registration.LocalFailureData (profile.currentAfterClassification stage) index
   Failure := fun stage index =>
-    profile.registration.LocalFailure (profile.currentAfterClassification.read stage) index
+    profile.registration.LocalFailure (profile.currentAfterClassification stage) index
   failureData := fun stage index failure =>
     profile.registration.localFailureData
-      (profile.currentAfterClassification.read stage) index failure
+      (profile.currentAfterClassification stage) index failure
   contribution := fun stage index =>
-    profile.registration.localContribution (profile.currentAfterClassification.read stage) index
+    profile.registration.localContribution (profile.currentAfterClassification stage) index
 
 def localFailureCapability : CT6.Capability profile.localFailureSpec where
   failureOrder := profile.localOrderAfterClassification
   failureDecidable := fun stage index =>
     profile.registration.localFailureDecidable
-      (profile.currentAfterClassification.read stage) index
+      (profile.currentAfterClassification stage) index
   inputSize := fun stage =>
-    CT6.localCheckBound (profile.localOrderAfterClassification.read stage)
+    CT6.localCheckBound (profile.localOrderAfterClassification stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -367,9 +367,9 @@ def responseSpec : CT3.Spec profile.AfterLocalFailure where
   rowPiece := profile.registration.rowPiece
   rowResponse := profile.registration.rowResponse
   Admissible := fun stage =>
-    profile.registration.ResponseAdmissible (profile.currentAfterLocalFailure.read stage)
+    profile.registration.ResponseAdmissible (profile.currentAfterLocalFailure stage)
   StrictlySmaller := fun stage =>
-    profile.registration.ResponseStrictlySmaller (profile.currentAfterLocalFailure.read stage)
+    profile.registration.ResponseStrictlySmaller (profile.currentAfterLocalFailure stage)
 
 def responseCapability : CT3.Capability profile.responseSpec where
   source := profile.responseSourceAfterFinite
@@ -379,21 +379,21 @@ def responseCapability : CT3.Capability profile.responseSpec where
   valueDecEq := profile.registration.responseValueDecEq
   admissibleDecidable := fun stage source candidate =>
     profile.registration.responseAdmissibleDecidable
-      (profile.currentAfterLocalFailure.read stage) source candidate
+      (profile.currentAfterLocalFailure stage) source candidate
   smallerDecidable := fun stage source candidate =>
     profile.registration.responseSmallerDecidable
-      (profile.currentAfterLocalFailure.read stage) source candidate
+      (profile.currentAfterLocalFailure stage) source candidate
   candidateCoverage := fun stage candidate member =>
     profile.registration.responseCandidateCoverage
-      (profile.currentAfterLocalFailure.read stage) candidate member
+      (profile.currentAfterLocalFailure stage) candidate member
   rowCoverage := fun stage row member =>
     profile.registration.responseRowCoverage
-      (profile.currentAfterLocalFailure.read stage) row member
+      (profile.currentAfterLocalFailure stage) row member
   inputSize := fun stage =>
     CT3.localCheckBound
-      (profile.responseCoordinatesAfterFinite.read stage)
-      (profile.responseCandidatesAfterFinite.read stage)
-      (profile.responseRowsAfterFinite.read stage)
+      (profile.responseCoordinatesAfterFinite stage)
+      (profile.responseCandidatesAfterFinite stage)
+      (profile.responseRowsAfterFinite stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -425,27 +425,27 @@ def admissibilityOrderAfterResponse :=
 
 def admissibilitySpec : CT6.Spec profile.AfterResponse where
   Index := fun stage =>
-    profile.registration.AdmissibilityField (profile.currentAfterResponse.read stage)
+    profile.registration.AdmissibilityField (profile.currentAfterResponse stage)
   FailureData := fun stage field =>
     profile.registration.AdmissibilityFailureData
-      (profile.currentAfterResponse.read stage) field
+      (profile.currentAfterResponse stage) field
   Failure := fun stage field =>
-    profile.registration.AdmissibilityFailure (profile.currentAfterResponse.read stage) field
+    profile.registration.AdmissibilityFailure (profile.currentAfterResponse stage) field
   failureData := fun stage field failure =>
     profile.registration.admissibilityFailureData
-      (profile.currentAfterResponse.read stage) field failure
+      (profile.currentAfterResponse stage) field failure
   contribution := fun stage field =>
     profile.registration.admissibilityContribution
-      (profile.currentAfterResponse.read stage) field
+      (profile.currentAfterResponse stage) field
 
 def admissibilityCapability : CT6.Capability profile.admissibilitySpec where
   failureOrder := profile.admissibilityOrderAfterResponse
   failureDecidable := fun stage field =>
     profile.registration.admissibilityFailureDecidable
-      (profile.currentAfterResponse.read stage) field
+      (profile.currentAfterResponse stage) field
   inputSize := fun stage =>
     CT6.localCheckBound
-      (profile.admissibilityOrderAfterResponse.read stage)
+      (profile.admissibilityOrderAfterResponse stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -479,14 +479,14 @@ def outcomeCandidatesAfterAdmissibility :=
 def outcomeSpec : CT1.Spec profile.AfterAdmissibility where
   Candidate := fun stage =>
     Sum
-      (profile.registration.TargetCandidate (profile.currentAfterAdmissibility.read stage))
-      (profile.registration.ExceptionalCandidate (profile.currentAfterAdmissibility.read stage))
+      (profile.registration.TargetCandidate (profile.currentAfterAdmissibility stage))
+      (profile.registration.ExceptionalCandidate (profile.currentAfterAdmissibility stage))
   Realizes := fun stage candidate =>
     match candidate with
     | .inl target =>
-        profile.registration.RealizesTarget (profile.currentAfterAdmissibility.read stage) target
+        profile.registration.RealizesTarget (profile.currentAfterAdmissibility stage) target
     | .inr exceptional =>
-        profile.registration.RealizesException (profile.currentAfterAdmissibility.read stage) exceptional
+        profile.registration.RealizesException (profile.currentAfterAdmissibility stage) exceptional
 
 def outcomeCapability : CT1.Capability profile.outcomeSpec where
   schedule := profile.outcomeCandidatesAfterAdmissibility
@@ -494,10 +494,10 @@ def outcomeCapability : CT1.Capability profile.outcomeSpec where
     match candidate with
     | .inl target =>
         profile.registration.targetRealizationDecidable
-          (profile.currentAfterAdmissibility.read stage) target
+          (profile.currentAfterAdmissibility stage) target
     | .inr exceptional =>
         profile.registration.exceptionRealizationDecidable
-          (profile.currentAfterAdmissibility.read stage) exceptional
+          (profile.currentAfterAdmissibility stage) exceptional
   inputSize := fun stage =>
     CT1.searchCheckBound profile.outcomeSpec
       profile.outcomeCandidatesAfterAdmissibility stage
@@ -535,30 +535,30 @@ def supportFamilyAfterOutcome :=
 def supportSpec : CT5.Spec profile.AfterOutcome where
   budget := profile.registration.supportBudget
   Site := fun stage =>
-    profile.registration.SupportSite (profile.currentAfterOutcome.read stage)
+    profile.registration.SupportSite (profile.currentAfterOutcome stage)
   Witness := fun stage site =>
-    profile.registration.SupportWitness (profile.currentAfterOutcome.read stage) site
+    profile.registration.SupportWitness (profile.currentAfterOutcome stage) site
   Active := fun stage site =>
-    profile.registration.SupportActive (profile.currentAfterOutcome.read stage) site
+    profile.registration.SupportActive (profile.currentAfterOutcome stage) site
   Supports := fun stage site witness =>
     profile.registration.SupportRelation
-      (profile.currentAfterOutcome.read stage) site witness
+      (profile.currentAfterOutcome stage) site witness
   contribution := fun stage site witness =>
     profile.registration.supportContribution
-      (profile.currentAfterOutcome.read stage) site witness
+      (profile.currentAfterOutcome stage) site witness
   required := fun stage =>
-    profile.registration.supportRequired (profile.currentAfterOutcome.read stage)
+    profile.registration.supportRequired (profile.currentAfterOutcome stage)
   capacity := fun stage =>
-    profile.registration.supportCapacity (profile.currentAfterOutcome.read stage)
+    profile.registration.supportCapacity (profile.currentAfterOutcome stage)
 
 def supportCapability : CT5.Capability profile.supportSpec where
   family := profile.supportFamilyAfterOutcome
   activeDecidable := fun stage site =>
     profile.registration.supportActiveDecidable
-      (profile.currentAfterOutcome.read stage) site
+      (profile.currentAfterOutcome stage) site
   supportsDecidable := fun stage site witness =>
     profile.registration.supportRelationDecidable
-      (profile.currentAfterOutcome.read stage) site witness
+      (profile.currentAfterOutcome stage) site witness
   resourceLEDecidable :=
     profile.registration.supportResourceLEDecidable
 
@@ -589,22 +589,22 @@ def boundedMembersAfterSupport :=
 
 def boundedSpec : CT14.Spec profile.AfterSupport where
   Member := fun stage =>
-    profile.registration.BoundedMember (profile.currentAfterSupport.read stage)
+    profile.registration.BoundedMember (profile.currentAfterSupport stage)
   Label := fun stage =>
-    profile.registration.BoundedLabel (profile.currentAfterSupport.read stage)
+    profile.registration.BoundedLabel (profile.currentAfterSupport stage)
   memberLowerMass := fun stage member =>
-    profile.registration.boundedLowerMass (profile.currentAfterSupport.read stage) member
+    profile.registration.boundedLowerMass (profile.currentAfterSupport stage) member
   memberCapacity := fun stage member =>
-    profile.registration.boundedCapacity (profile.currentAfterSupport.read stage) member
+    profile.registration.boundedCapacity (profile.currentAfterSupport stage) member
   memberLabel := fun stage member =>
-    profile.registration.boundedLabel (profile.currentAfterSupport.read stage) member
+    profile.registration.boundedLabel (profile.currentAfterSupport stage) member
 
 def boundedCapability : CT14.Capability profile.boundedSpec where
   members := profile.boundedMembersAfterSupport
   labelDecidableEq := fun stage =>
-    profile.registration.boundedLabelDecidableEq (profile.currentAfterSupport.read stage)
+    profile.registration.boundedLabelDecidableEq (profile.currentAfterSupport stage)
   inputSize := fun stage =>
-    CT14.localCheckBound (profile.boundedMembersAfterSupport.read stage)
+    CT14.localCheckBound (profile.boundedMembersAfterSupport stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -673,32 +673,32 @@ clients never traverse the nested ledger representation. -/
 structure ExactOutput (previous : Previous) where
   output : profile.execution.Output previous
   collisionResidual :
-    profile.current.read (profile.collisionOutput output).stage.previous =
-      profile.current.read previous
+    profile.current (profile.collisionOutput output).stage.previous =
+      profile.current previous
   codeCapacityResidual :
-    profile.currentAfterCollision.read (profile.codeCapacityOutput output).stage.previous =
-      profile.current.read previous
+    profile.currentAfterCollision (profile.codeCapacityOutput output).stage.previous =
+      profile.current previous
   classificationResidual :
-    profile.currentAfterCodeCapacity.read (profile.classificationOutput output).stage.previous =
-      profile.current.read previous
+    profile.currentAfterCodeCapacity (profile.classificationOutput output).stage.previous =
+      profile.current previous
   localFailureResidual :
-    profile.currentAfterClassification.read (profile.localFailureOutput output).stage.previous =
-      profile.current.read previous
+    profile.currentAfterClassification (profile.localFailureOutput output).stage.previous =
+      profile.current previous
   responseResidual :
-    profile.currentAfterLocalFailure.read (profile.responseOutput output).stage.previous =
-      profile.current.read previous
+    profile.currentAfterLocalFailure (profile.responseOutput output).stage.previous =
+      profile.current previous
   admissibilityResidual :
-    profile.currentAfterResponse.read (profile.admissibilityOutput output).stage.previous =
-      profile.current.read previous
+    profile.currentAfterResponse (profile.admissibilityOutput output).stage.previous =
+      profile.current previous
   outcomeResidual :
-    profile.currentAfterAdmissibility.read (profile.outcomeOutput output).stage.previous =
-      profile.current.read previous
+    profile.currentAfterAdmissibility (profile.outcomeOutput output).stage.previous =
+      profile.current previous
   supportResidual :
-    profile.currentAfterOutcome.read (profile.supportOutput output).stage.previous =
-      profile.current.read previous
+    profile.currentAfterOutcome (profile.supportOutput output).stage.previous =
+      profile.current previous
   boundedResidual :
-    profile.currentAfterSupport.read (profile.boundedOutput output).stage.previous =
-      profile.current.read previous
+    profile.currentAfterSupport (profile.boundedOutput output).stage.previous =
+      profile.current previous
 
 /-- Terminal-specific implications derived from one inert registration.
 These fields consume exact CT evidence; none returns a route or result. -/
@@ -707,9 +707,9 @@ structure Semantics where
   targetOfRealization : ∀ previous (exact : profile.ExactOutput previous)
     (candidate :
       profile.registration.TargetCandidate
-        (profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous)),
+        (profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous)),
       profile.registration.RealizesTarget
-        (profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous)
+        (profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous)
         candidate → Target previous
   localFailureAvoidingImpossible :
     ∀ previous (exact : profile.ExactOutput previous),
@@ -743,7 +743,7 @@ def ExceptionalSelected {previous : Previous}
     (exact : profile.ExactOutput previous) : Prop :=
   ∃ candidate :
       profile.registration.ExceptionalCandidate
-        (profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous),
+        (profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous),
     ∃ hasHit :
         (profile.outcomeOutput exact.output).stage.added.previous.HasHit,
       (Core.Finite.Search.Execution.hitOfHasHit
@@ -837,8 +837,8 @@ other three constructors say nothing either way about that terminal. -/
 theorem bounded_load_le_cap {semantics : profile.Semantics}
     {previous : Previous}
     (witness : profile.RoutedResidual semantics previous .bounded) :
-    profile.registration.boundedLoad (profile.current.read previous) ≤
-      profile.registration.boundedCap (profile.current.read previous) := by
+    profile.registration.boundedLoad (profile.current previous) ≤
+      profile.registration.boundedCap (profile.current previous) := by
   cases witness with
   | bounded exact _ _ capacitySelected =>
       have outcome := (profile.boundedOutput exact.output).outcome
@@ -979,7 +979,7 @@ def semanticsOfProfile
     profile.Semantics := by
   let registration := profile.registration
   refine
-    { Target := fun previous => Target (profile.current.read previous)
+    { Target := fun previous => Target (profile.current previous)
       targetOfRealization := ?_
       localFailureAvoidingImpossible := ?_
       responseDefectAvoidingImpossible := ?_
@@ -991,11 +991,11 @@ def semanticsOfProfile
   · intro previous exact candidate realizes
     have target :=
       registration.targetOfRealization
-        (profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous)
+        (profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous)
         candidate realizes
     have residual_eq :
-        profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous =
-          profile.current.read previous :=
+        profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous =
+          profile.current previous :=
       exact.outcomeResidual
     exact residual_eq ▸ target
   · intro previous exact localTerminal outcomeTerminal
@@ -1006,28 +1006,28 @@ def semanticsOfProfile
         have forcedAtOutcome :
             ∃ candidate :
                 registration.ExceptionalCandidate
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous),
               Sum.inr candidate ∈
                   (registration.outcomeCandidates
-                    (profile.currentAfterAdmissibility.read
+                    (profile.currentAfterAdmissibility
                       (profile.outcomeOutput exact.output).stage.previous)).values ∧
                 registration.RealizesException
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous)
                   candidate := by
           have localResidual :
-              profile.currentAfterClassification.read
+              profile.currentAfterClassification
                   (profile.localFailureOutput exact.output).stage.previous =
-                profile.current.read previous :=
+                profile.current previous :=
             exact.localFailureResidual
           have outcomeResidual :
-              profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous =
-                profile.current.read previous :=
+              profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous =
+                profile.current previous :=
             exact.outcomeResidual
           exact localResidual.trans outcomeResidual.symm ▸
             registration.localFailureScheduled
-              (profile.currentAfterClassification.read
+              (profile.currentAfterClassification
                 (profile.localFailureOutput exact.output).stage.previous)
               failure.hit.value failure.hit.member failure.hit.holds
         obtain ⟨candidate, scheduled, realizes⟩ := forcedAtOutcome
@@ -1037,7 +1037,7 @@ def semanticsOfProfile
                 (profile.outcomeOutput exact.output).stage.previous).values := by
           change Sum.inr candidate ∈
             (registration.outcomeCandidates
-              (profile.currentAfterAdmissibility.read
+              (profile.currentAfterAdmissibility
                 (profile.outcomeOutput exact.output).stage.previous)).values
           exact scheduled
         cases branch :
@@ -1059,7 +1059,7 @@ def semanticsOfProfile
         have rowScheduled :
             certificate.row ∈
               (registration.responseRows
-                (profile.currentAfterLocalFailure.read
+                (profile.currentAfterLocalFailure
                   (profile.responseOutput exact.output).stage.previous)).values := by
           change certificate.row ∈
             (profile.responseCapability.rowsAt
@@ -1068,7 +1068,7 @@ def semanticsOfProfile
         have coordinateScheduled :
             certificate.coordinate ∈
               (registration.responseCoordinates
-                (profile.currentAfterLocalFailure.read
+                (profile.currentAfterLocalFailure
                   (profile.responseOutput exact.output).stage.previous)).values := by
           change certificate.coordinate ∈
             (profile.responseCapability.coordinatesAt
@@ -1077,28 +1077,28 @@ def semanticsOfProfile
         have forcedAtOutcome :
             ∃ candidate :
                 registration.ExceptionalCandidate
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous),
               Sum.inr candidate ∈
                   (registration.outcomeCandidates
-                    (profile.currentAfterAdmissibility.read
+                    (profile.currentAfterAdmissibility
                       (profile.outcomeOutput exact.output).stage.previous)).values ∧
                 registration.RealizesException
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous)
                   candidate := by
           have responseResidual :
-              profile.currentAfterLocalFailure.read
+              profile.currentAfterLocalFailure
                   (profile.responseOutput exact.output).stage.previous =
-                profile.current.read previous :=
+                profile.current previous :=
             exact.responseResidual
           have outcomeResidual :
-              profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous =
-                profile.current.read previous :=
+              profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous =
+                profile.current previous :=
             exact.outcomeResidual
           exact responseResidual.trans outcomeResidual.symm ▸
             registration.responseDefectScheduled
-              (profile.currentAfterLocalFailure.read
+              (profile.currentAfterLocalFailure
                 (profile.responseOutput exact.output).stage.previous)
               certificate.row certificate.coordinate rowScheduled
               coordinateScheduled certificate.differs
@@ -1109,7 +1109,7 @@ def semanticsOfProfile
                 (profile.outcomeOutput exact.output).stage.previous).values := by
           change Sum.inr candidate ∈
             (registration.outcomeCandidates
-              (profile.currentAfterAdmissibility.read
+              (profile.currentAfterAdmissibility
                 (profile.outcomeOutput exact.output).stage.previous)).values
           exact scheduled
         cases branch :
@@ -1131,28 +1131,28 @@ def semanticsOfProfile
         have forcedAtOutcome :
             ∃ candidate :
                 registration.ExceptionalCandidate
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous),
               Sum.inr candidate ∈
                   (registration.outcomeCandidates
-                    (profile.currentAfterAdmissibility.read
+                    (profile.currentAfterAdmissibility
                       (profile.outcomeOutput exact.output).stage.previous)).values ∧
                 registration.RealizesException
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous)
                   candidate := by
           have admissibilityResidual :
-              profile.currentAfterResponse.read
+              profile.currentAfterResponse
                   (profile.admissibilityOutput exact.output).stage.previous =
-                profile.current.read previous :=
+                profile.current previous :=
             exact.admissibilityResidual
           have outcomeResidual :
-              profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous =
-                profile.current.read previous :=
+              profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous =
+                profile.current previous :=
             exact.outcomeResidual
           exact admissibilityResidual.trans outcomeResidual.symm ▸
             registration.admissibilityFailureScheduled
-              (profile.currentAfterResponse.read
+              (profile.currentAfterResponse
                 (profile.admissibilityOutput exact.output).stage.previous)
               failure.hit.value failure.hit.member failure.hit.holds
         obtain ⟨candidate, scheduled, realizes⟩ := forcedAtOutcome
@@ -1162,7 +1162,7 @@ def semanticsOfProfile
                 (profile.outcomeOutput exact.output).stage.previous).values := by
           change Sum.inr candidate ∈
             (registration.outcomeCandidates
-              (profile.currentAfterAdmissibility.read
+              (profile.currentAfterAdmissibility
                 (profile.outcomeOutput exact.output).stage.previous)).values
           exact scheduled
         cases branch :
@@ -1184,7 +1184,7 @@ def semanticsOfProfile
         have siteScheduled :
             deficit.value ∈
               (registration.supportFamily
-                (profile.currentAfterOutcome.read
+                (profile.currentAfterOutcome
                   (profile.supportOutput exact.output).stage.previous)).indices.values := by
           change deficit.value ∈
             (profile.supportCapability.sitesAt
@@ -1192,7 +1192,7 @@ def semanticsOfProfile
           exact deficit.scheduled
         have active :
             registration.SupportActive
-              (profile.currentAfterOutcome.read
+              (profile.currentAfterOutcome
                 (profile.supportOutput exact.output).stage.previous)
               deficit.value := by
           change profile.supportSpec.Active
@@ -1201,15 +1201,15 @@ def semanticsOfProfile
         have noSupport :
             ∀ index : Fin
                 ((registration.supportFamily
-                  (profile.currentAfterOutcome.read
+                  (profile.currentAfterOutcome
                     (profile.supportOutput exact.output).stage.previous)).fibres
                       deficit.value).card,
               ¬ registration.SupportRelation
-                (profile.currentAfterOutcome.read
+                (profile.currentAfterOutcome
                   (profile.supportOutput exact.output).stage.previous)
                 deficit.value
                 (((registration.supportFamily
-                  (profile.currentAfterOutcome.read
+                  (profile.currentAfterOutcome
                     (profile.supportOutput exact.output).stage.previous)).fibres
                       deficit.value).get index) := by
           change CT5.NoSupportingWitness profile.supportCapability
@@ -1218,27 +1218,27 @@ def semanticsOfProfile
         have forcedAtOutcome :
             ∃ candidate :
                 registration.ExceptionalCandidate
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous),
               Sum.inr candidate ∈
                   (registration.outcomeCandidates
-                    (profile.currentAfterAdmissibility.read
+                    (profile.currentAfterAdmissibility
                       (profile.outcomeOutput exact.output).stage.previous)).values ∧
                 registration.RealizesException
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous)
                   candidate := by
           have supportResidual :
-              profile.currentAfterOutcome.read (profile.supportOutput exact.output).stage.previous =
-                profile.current.read previous :=
+              profile.currentAfterOutcome (profile.supportOutput exact.output).stage.previous =
+                profile.current previous :=
             exact.supportResidual
           have outcomeResidual :
-              profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous =
-                profile.current.read previous :=
+              profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous =
+                profile.current previous :=
             exact.outcomeResidual
           exact supportResidual.trans outcomeResidual.symm ▸
             registration.supportDeficitScheduled
-              (profile.currentAfterOutcome.read
+              (profile.currentAfterOutcome
                 (profile.supportOutput exact.output).stage.previous)
               deficit.value siteScheduled active noSupport
         obtain ⟨candidate, scheduled, realizes⟩ := forcedAtOutcome
@@ -1248,7 +1248,7 @@ def semanticsOfProfile
                 (profile.outcomeOutput exact.output).stage.previous).values := by
           change Sum.inr candidate ∈
             (registration.outcomeCandidates
-              (profile.currentAfterAdmissibility.read
+              (profile.currentAfterAdmissibility
                 (profile.outcomeOutput exact.output).stage.previous)).values
           exact scheduled
         cases branch :
@@ -1269,10 +1269,10 @@ def semanticsOfProfile
     | c4 certificate =>
         have capacityFailure :
             ¬ registration.supportRequired
-                (profile.currentAfterOutcome.read
+                (profile.currentAfterOutcome
                   (profile.supportOutput exact.output).stage.previous) ≤
               registration.supportCapacity
-                (profile.currentAfterOutcome.read
+                (profile.currentAfterOutcome
                   (profile.supportOutput exact.output).stage.previous) := by
           change ¬ profile.supportSpec.required
               (profile.supportOutput exact.output).stage.previous ≤
@@ -1282,27 +1282,27 @@ def semanticsOfProfile
         have forcedAtOutcome :
             ∃ candidate :
                 registration.ExceptionalCandidate
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous),
               Sum.inr candidate ∈
                   (registration.outcomeCandidates
-                    (profile.currentAfterAdmissibility.read
+                    (profile.currentAfterAdmissibility
                       (profile.outcomeOutput exact.output).stage.previous)).values ∧
                 registration.RealizesException
-                  (profile.currentAfterAdmissibility.read
+                  (profile.currentAfterAdmissibility
                     (profile.outcomeOutput exact.output).stage.previous)
                   candidate := by
           have supportResidual :
-              profile.currentAfterOutcome.read (profile.supportOutput exact.output).stage.previous =
-                profile.current.read previous :=
+              profile.currentAfterOutcome (profile.supportOutput exact.output).stage.previous =
+                profile.current previous :=
             exact.supportResidual
           have outcomeResidual :
-              profile.currentAfterAdmissibility.read (profile.outcomeOutput exact.output).stage.previous =
-                profile.current.read previous :=
+              profile.currentAfterAdmissibility (profile.outcomeOutput exact.output).stage.previous =
+                profile.current previous :=
             exact.outcomeResidual
           exact supportResidual.trans outcomeResidual.symm ▸
             registration.supportCapacityFailureScheduled
-              (profile.currentAfterOutcome.read
+              (profile.currentAfterOutcome
                 (profile.supportOutput exact.output).stage.previous)
               capacityFailure
         obtain ⟨candidate, scheduled, realizes⟩ := forcedAtOutcome
@@ -1312,7 +1312,7 @@ def semanticsOfProfile
                 (profile.outcomeOutput exact.output).stage.previous).values := by
           change Sum.inr candidate ∈
             (registration.outcomeCandidates
-              (profile.currentAfterAdmissibility.read
+              (profile.currentAfterAdmissibility
                 (profile.outcomeOutput exact.output).stage.previous)).values
           exact scheduled
         cases branch :
@@ -1333,12 +1333,12 @@ def semanticsOfProfile
     | unboundedMember _ residual =>
         obtain ⟨capacity, capacityEq⟩ :=
           registration.boundedCapacityTotal
-            (profile.currentAfterSupport.read
+            (profile.currentAfterSupport
               (profile.boundedOutput exact.output).stage.previous)
             residual.value residual.member
         have missing := residual.holds
         change registration.boundedCapacity
-            (profile.currentAfterSupport.read
+            (profile.currentAfterSupport
               (profile.boundedOutput exact.output).stage.previous)
             residual.value = none at missing
         rw [capacityEq] at missing
@@ -1350,12 +1350,12 @@ def semanticsOfProfile
     | missingLabel _ _ residual =>
         obtain ⟨label, labelEq⟩ :=
           registration.boundedLabelTotal
-            (profile.currentAfterSupport.read
+            (profile.currentAfterSupport
               (profile.boundedOutput exact.output).stage.previous)
             residual.value residual.member
         have missing := residual.holds
         change registration.boundedLabel
-            (profile.currentAfterSupport.read
+            (profile.currentAfterSupport
               (profile.boundedOutput exact.output).stage.previous)
             residual.value = none at missing
         rw [labelEq] at missing

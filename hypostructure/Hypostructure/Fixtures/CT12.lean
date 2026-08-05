@@ -341,7 +341,7 @@ def profile := Graph.CT12.vertexPeelingProfile objectQuery
 
 def result := Graph.CT12.peelVertices objectQuery previous
 
-theorem schedule_card : (profile.schedule.read previous).card = 3 := by
+theorem schedule_card : (profile.schedule previous).card = 3 := by
   change (Core.Finite.Enumeration.ofFinEnum
     (inferInstance : FinEnum (Fin 3))).card = 3
   rw [Core.Finite.Enumeration.card_ofFinEnum]
@@ -353,7 +353,7 @@ theorem terminal : result.terminal = .exhausted :=
 
 theorem iterations : result.iterations = 3 := by
   calc
-    result.iterations = (profile.schedule.read previous).card :=
+    result.iterations = (profile.schedule previous).card :=
       _root_.Hypostructure.CT12.ListPeeling.run_iterations_eq_card
         profile previous
     _ = 3 := schedule_card
@@ -418,7 +418,7 @@ def profile := PDE.CT12.observablePeelingProfile observables scheduleQuery
 
 def result := PDE.CT12.peelObservables observables scheduleQuery previous
 
-theorem schedule_card : (profile.schedule.read previous).card = 3 := by
+theorem schedule_card : (profile.schedule previous).card = 3 := by
   change (Core.Finite.Enumeration.ofFinEnum
     (inferInstance : FinEnum (Fin 3))).card = 3
   rw [Core.Finite.Enumeration.card_ofFinEnum]
@@ -430,7 +430,7 @@ theorem terminal : result.terminal = .exhausted :=
 
 theorem iterations : result.iterations = 3 := by
   calc
-    result.iterations = (profile.schedule.read previous).card :=
+    result.iterations = (profile.schedule previous).card :=
       _root_.Hypostructure.CT12.ListPeeling.run_iterations_eq_card
         profile previous
     _ = 3 := schedule_card

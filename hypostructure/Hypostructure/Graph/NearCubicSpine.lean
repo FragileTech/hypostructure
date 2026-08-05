@@ -440,8 +440,8 @@ theorem nearCubicSpine_of_atOrBelow
         (Graph.Strategy.ScaleThresholdDichotomy.degreeSurplusRegistration
           Baseline BranchState Presentation presentation baselineDegree
           table) current).AtOrBelowResidual previous) :
-    (current.read previous).object.degreeSurplus baselineDegree
-      ≤ table.threshold (current.read previous).object.vertexCount :=
+    (current previous).object.degreeSurplus baselineDegree
+      ≤ table.threshold (current previous).object.vertexCount :=
   residual.registeredComparisonAt _ _
 
 open Classical in
@@ -474,15 +474,15 @@ theorem selected_le_ambientCubic_add_threshold_of_atOrBelow
           table) current).AtOrBelowResidual previous)
     {order : Nat}
     (packing : InducedPathMaximalPacking.Profile
-      (current.read previous).object order)
+      (current previous).object order)
     (minDegree : ∀ v, baselineDegree ≤
-      (current.read previous).object.degree v) :
+      (current previous).object.degree v) :
     packing.selected.length
       ≤ (packing.selected.toFinset.filter
             (fun window => ∀ position : Fin order,
-              (current.read previous).object.degree
+              (current previous).object.degree
                 (window position) = baselineDegree)).card
-        + table.threshold (current.read previous).object.vertexCount := by
+        + table.threshold (current previous).object.vertexCount := by
   classical
   have spine := nearCubicSpine_of_atOrBelow current residual
   have bound :=

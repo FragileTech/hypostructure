@@ -42,7 +42,7 @@ theorem storedF2Target
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable (Graph.HasCycleWithLength CycleLengthOK)
         decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f2) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f2) :
     Graph.HasCycleWithLength CycleLengthOK object := by
   have defect := Graph.Strategy.ColdBranchF2Closure.storedF2Defect
     (Previous := Previous) (profile := profile) CycleLengthOK
@@ -78,25 +78,25 @@ noncomputable def inducedPathFamilyCapability
       Core.Strategy.ObstructionPackingClosure.Packing
         ((Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
           presentation).occurrences
-            (current.read previous))
+            (current previous))
         ((Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
           presentation).conflict
-            (current.read previous)))
+            (current previous)))
     {Handoff : Residual → Type uVertex}
     (handoffItems : Core.Residual.Query Previous fun previous =>
-      Core.Finite.Enumeration (Handoff (current.read previous)))
+      Core.Finite.Enumeration (Handoff (current previous)))
     (handoffSupport : (residual : Residual) → Handoff residual →
-      Finset (presentation.object.read residual).Vertex)
-    (handoffAbsent : Option (Core.Residual.Query Previous fun previous =>
-      (handoffItems.read previous).values = []))
+      Finset (presentation.object residual).Vertex)
+    (handoffAbsent : Option (PLift (∀ previous,
+      (handoffItems previous).values = [])))
     (CycleLengthOK : Nat → Prop)
     (cycleLengthDecidable : DecidablePred CycleLengthOK)
     (cycleForcesTarget : ∀ residual : Residual,
       Graph.HasCycleWithLength CycleLengthOK
-          (presentation.object.read residual) →
+          (presentation.object residual) →
         Target residual) :
     Core.Strategy.ColdBranchAggregation.FamilyCapability Previous
-      (fun previous => Target (current.read previous)) := by
+      (fun previous => Target (current previous)) := by
   classical
   let graphProfile :=
     Graph.Strategy.ObstructionPackingClosure.inducedPathProfileQueryAt
@@ -106,81 +106,81 @@ noncomputable def inducedPathFamilyCapability
     fun _ => Classical.propDecidable _
   exact {
     Owner := fun previous =>
-      AmbientCubicScheduledExteriorBranch (graphProfile.read previous)
+      AmbientCubicScheduledExteriorBranch (graphProfile previous)
     family := graphProfile.dependentMap fun previous activePacking =>
       canonicalFamilyProducer activePacking CycleLengthOK
         cycleLengthDecidable (Graph.HasCycleWithLength CycleLengthOK)
-        decideCycle (handoffItems.read previous)
-        (handoffSupport (current.read previous))
+        decideCycle (handoffItems previous)
+        (handoffSupport (current previous))
     storedF1ForcesTarget := fun previous stage owner =>
-      cycleForcesTarget (current.read previous)
+      cycleForcesTarget (current previous)
         (Graph.Strategy.ColdBranchGermClosure.storedF1Target
-          (graphProfile.read previous) CycleLengthOK cycleLengthDecidable
+          (graphProfile previous) CycleLengthOK cycleLengthDecidable
           (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-          (handoffItems.read previous)
-          (handoffSupport (current.read previous)) stage owner)
+          (handoffItems previous)
+          (handoffSupport (current previous)) stage owner)
     classifiedStateForcesTarget := fun previous stage =>
-      match ((canonicalFamilyProducer (graphProfile.read previous)
+      match ((canonicalFamilyProducer (graphProfile previous)
           CycleLengthOK cycleLengthDecidable
           (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-          (handoffItems.read previous)
-          (handoffSupport (current.read previous))).storedF2OwnersQuery.read
+          (handoffItems previous)
+          (handoffSupport (current previous))).storedF2OwnersQuery
           stage).values with
       | owner :: _ =>
-          some (PLift.up (cycleForcesTarget (current.read previous)
-            (storedF2Target (graphProfile.read previous) CycleLengthOK
-              cycleLengthDecidable decideCycle (handoffItems.read previous)
-              (handoffSupport (current.read previous)) stage owner)))
+          some (PLift.up (cycleForcesTarget (current previous)
+            (storedF2Target (graphProfile previous) CycleLengthOK
+              cycleLengthDecidable decideCycle (handoffItems previous)
+              (handoffSupport (current previous)) stage owner)))
       | [] =>
-      match ((canonicalFamilyProducer (graphProfile.read previous)
+      match ((canonicalFamilyProducer (graphProfile previous)
           CycleLengthOK cycleLengthDecidable
           (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-          (handoffItems.read previous)
-          (handoffSupport (current.read previous))).storedF4OwnersQuery.read
+          (handoffItems previous)
+          (handoffSupport (current previous))).storedF4OwnersQuery
           stage).values with
       | owner :: _ =>
           match handoffAbsent with
           | some absent =>
               (Graph.Strategy.ColdBranchFailureRouting.storedF4Impossible_of_emptyHandoff
-                (graphProfile.read previous) CycleLengthOK cycleLengthDecidable
+                (graphProfile previous) CycleLengthOK cycleLengthDecidable
                 (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-                (handoffItems.read previous)
-                (handoffSupport (current.read previous))
-                (absent.read previous) stage owner).elim
+                (handoffItems previous)
+                (handoffSupport (current previous))
+                (absent.down previous) stage owner).elim
           | none => none
       | [] =>
       match (canonicalF5Focus (Previous := Previous)
-          (graphProfile.read previous) CycleLengthOK cycleLengthDecidable
+          (graphProfile previous) CycleLengthOK cycleLengthDecidable
           (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-          (handoffItems.read previous)
-          (handoffSupport (current.read previous))).select stage |>.value with
+          (handoffItems previous)
+          (handoffSupport (current previous))).select stage |>.value with
       | .isFalse _ => none
       | .isTrue active =>
           let generated := (_root_.Hypostructure.CT7.generateCounted
               (canonicalF5CT7Capability (Previous := Previous)
-                (graphProfile.read previous) CycleLengthOK
+                (graphProfile previous) CycleLengthOK
                 cycleLengthDecidable
                 (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-                (handoffItems.read previous)
-                (handoffSupport (current.read previous)))
+                (handoffItems previous)
+                (handoffSupport (current previous)))
               (Core.Residual.Focus.ActiveView.of stage active)).value
           match generated.terminal, generated.outcome with
           | _, .realization certificate =>
-              some (PLift.up (cycleForcesTarget (current.read previous)
-                (canonicalF5G1Target (graphProfile.read previous)
+              some (PLift.up (cycleForcesTarget (current previous)
+                (canonicalF5G1Target (graphProfile previous)
                   CycleLengthOK cycleLengthDecidable
                   (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-                  (handoffItems.read previous)
-                  (handoffSupport (current.read previous))
+                  (handoffItems previous)
+                  (handoffSupport (current previous))
                   (Core.Residual.Focus.ActiveView.of stage active)
                   certificate)))
           | _, .distinguishing residual =>
-              some (PLift.up (cycleForcesTarget (current.read previous)
+              some (PLift.up (cycleForcesTarget (current previous)
                 (Graph.Strategy.ColdBranchF2Closure.canonicalF5G2Target
-                  (profile := graphProfile.read previous) CycleLengthOK
+                  (profile := graphProfile previous) CycleLengthOK
                   cycleLengthDecidable decideCycle
-                  (handoffItems.read previous)
-                  (handoffSupport (current.read previous))
+                  (handoffItems previous)
+                  (handoffSupport (current previous))
                   (Core.Residual.Focus.ActiveView.of stage active)
                   residual)))
           | _, .neutral _ => none }
@@ -208,26 +208,26 @@ noncomputable def inducedPathDisjunctiveFamilyCapability
     (packing : Core.Residual.Query Previous fun previous =>
       Core.Strategy.ObstructionPackingClosure.Packing
         ((Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
-          presentation).occurrences (current.read previous))
+          presentation).occurrences (current previous))
         ((Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
-          presentation).conflict (current.read previous)))
+          presentation).conflict (current previous)))
     {Handoff : Residual → Type uVertex}
     (handoffItems : Core.Residual.Query Previous fun previous =>
-      Core.Finite.Enumeration (Handoff (current.read previous)))
+      Core.Finite.Enumeration (Handoff (current previous)))
     (handoffSupport : (residual : Residual) → Handoff residual →
-      Finset (presentation.object.read residual).Vertex)
-    (handoffAbsent : Option (Core.Residual.Query Previous fun previous =>
-      (handoffItems.read previous).values = []))
+      Finset (presentation.object residual).Vertex)
+    (handoffAbsent : Option (PLift (∀ previous,
+      (handoffItems previous).values = [])))
     (CycleLengthOK : Nat → Prop)
     (cycleLengthDecidable : DecidablePred CycleLengthOK)
     (Rest : Graph.FiniteObject.{uVertex} → Prop)
     (disjunctForcesTarget : ∀ residual : Residual,
       (Graph.HasCycleWithLength CycleLengthOK
-            (presentation.object.read residual) ∨
-          Rest (presentation.object.read residual)) →
+            (presentation.object residual) ∨
+          Rest (presentation.object residual)) →
         Target residual) :
     Core.Strategy.ColdBranchAggregation.FamilyCapability Previous
-      (fun previous => Target (current.read previous)) :=
+      (fun previous => Target (current previous)) :=
   inducedPathFamilyCapability presentation current packing
     handoffItems handoffSupport handoffAbsent CycleLengthOK
     cycleLengthDecidable
@@ -244,31 +244,31 @@ noncomputable def inducedPathDisjunctiveMinimalFamilyCapability
     (packing : Core.Residual.Query Previous fun previous =>
       Core.Strategy.ObstructionPackingClosure.Packing
         ((Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
-          presentation).occurrences (current.read previous))
+          presentation).occurrences (current previous))
         ((Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
-          presentation).conflict (current.read previous)))
+          presentation).conflict (current previous)))
     {Handoff : Residual → Type uVertex}
     (handoffItems : Core.Residual.Query Previous fun previous =>
-      Core.Finite.Enumeration (Handoff (current.read previous)))
+      Core.Finite.Enumeration (Handoff (current previous)))
     (handoffSupport : (residual : Residual) → Handoff residual →
-      Finset (presentation.object.read residual).Vertex)
-    (handoffAbsent : Option (Core.Residual.Query Previous fun previous =>
-      (handoffItems.read previous).values = []))
+      Finset (presentation.object residual).Vertex)
+    (handoffAbsent : Option (PLift (∀ previous,
+      (handoffItems previous).values = [])))
     (CycleLengthOK : Nat → Prop)
     (cycleLengthDecidable : DecidablePred CycleLengthOK)
     (Rest : Graph.FiniteObject.{uVertex} → Prop)
     (disjunctForcesTarget : ∀ residual : Residual,
       (Graph.HasCycleWithLength CycleLengthOK
-            (presentation.object.read residual) ∨
-          Rest (presentation.object.read residual)) →
+            (presentation.object residual) ∨
+          Rest (presentation.object residual)) →
         Target residual)
     (noBaselineProperSubgraph : (previous : Previous) →
       ∀ subgraph :
-        Graph.ProperSubgraph (presentation.object.read (current.read previous)),
-        ¬ ((presentation.object.read (current.read previous)).minDegree ≤
+        Graph.ProperSubgraph (presentation.object (current previous)),
+        ¬ ((presentation.object (current previous)).minDegree ≤
             subgraph.value.minDegree)) :
     Core.Strategy.ColdBranchAggregation.FamilyCapability Previous
-      (fun previous => Target (current.read previous)) := by
+      (fun previous => Target (current previous)) := by
   classical
   let graphProfile :=
     Graph.Strategy.ObstructionPackingClosure.inducedPathProfileQueryAt
@@ -278,95 +278,95 @@ noncomputable def inducedPathDisjunctiveMinimalFamilyCapability
     fun _ => Classical.propDecidable _
   exact {
     Owner := fun previous =>
-      AmbientCubicScheduledExteriorBranch (graphProfile.read previous)
+      AmbientCubicScheduledExteriorBranch (graphProfile previous)
     family := graphProfile.dependentMap fun previous activePacking =>
       canonicalFamilyProducer activePacking CycleLengthOK
         cycleLengthDecidable (Graph.HasCycleWithLength CycleLengthOK)
-        decideCycle (handoffItems.read previous)
-        (handoffSupport (current.read previous))
+        decideCycle (handoffItems previous)
+        (handoffSupport (current previous))
     storedF1ForcesTarget := fun previous stage owner =>
-      disjunctForcesTarget (current.read previous)
+      disjunctForcesTarget (current previous)
         (Or.inl (Graph.Strategy.ColdBranchGermClosure.storedF1Target
-          (graphProfile.read previous) CycleLengthOK cycleLengthDecidable
+          (graphProfile previous) CycleLengthOK cycleLengthDecidable
           (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-          (handoffItems.read previous)
-          (handoffSupport (current.read previous)) stage owner))
+          (handoffItems previous)
+          (handoffSupport (current previous)) stage owner))
     classifiedStateForcesTarget := fun previous stage =>
-      match ((canonicalFamilyProducer (graphProfile.read previous)
+      match ((canonicalFamilyProducer (graphProfile previous)
           CycleLengthOK cycleLengthDecidable
           (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-          (handoffItems.read previous)
-          (handoffSupport (current.read previous))).storedF2OwnersQuery.read
+          (handoffItems previous)
+          (handoffSupport (current previous))).storedF2OwnersQuery
           stage).values with
       | owner :: _ =>
-          some (PLift.up (disjunctForcesTarget (current.read previous)
-            (Or.inl (storedF2Target (graphProfile.read previous) CycleLengthOK
-              cycleLengthDecidable decideCycle (handoffItems.read previous)
-              (handoffSupport (current.read previous)) stage owner))))
+          some (PLift.up (disjunctForcesTarget (current previous)
+            (Or.inl (storedF2Target (graphProfile previous) CycleLengthOK
+              cycleLengthDecidable decideCycle (handoffItems previous)
+              (handoffSupport (current previous)) stage owner))))
       | [] =>
-      match ((canonicalFamilyProducer (graphProfile.read previous)
+      match ((canonicalFamilyProducer (graphProfile previous)
           CycleLengthOK cycleLengthDecidable
           (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-          (handoffItems.read previous)
-          (handoffSupport (current.read previous))).storedF3OwnersQuery.read
+          (handoffItems previous)
+          (handoffSupport (current previous))).storedF3OwnersQuery
           stage).values with
       | owner :: _ =>
           (Graph.Strategy.ColdBranchGermClosure.storedF3Impossible
-            (graphProfile.read previous) CycleLengthOK cycleLengthDecidable
+            (graphProfile previous) CycleLengthOK cycleLengthDecidable
             (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-            (handoffItems.read previous)
-            (handoffSupport (current.read previous))
+            (handoffItems previous)
+            (handoffSupport (current previous))
             (noBaselineProperSubgraph previous) stage owner).elim
       | [] =>
-      match ((canonicalFamilyProducer (graphProfile.read previous)
+      match ((canonicalFamilyProducer (graphProfile previous)
           CycleLengthOK cycleLengthDecidable
           (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-          (handoffItems.read previous)
-          (handoffSupport (current.read previous))).storedF4OwnersQuery.read
+          (handoffItems previous)
+          (handoffSupport (current previous))).storedF4OwnersQuery
           stage).values with
       | owner :: _ =>
           match handoffAbsent with
           | some absent =>
               (Graph.Strategy.ColdBranchFailureRouting.storedF4Impossible_of_emptyHandoff
-                (graphProfile.read previous) CycleLengthOK cycleLengthDecidable
+                (graphProfile previous) CycleLengthOK cycleLengthDecidable
                 (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-                (handoffItems.read previous)
-                (handoffSupport (current.read previous))
-                (absent.read previous) stage owner).elim
+                (handoffItems previous)
+                (handoffSupport (current previous))
+                (absent.down previous) stage owner).elim
           | none => none
       | [] =>
       match (canonicalF5Focus (Previous := Previous)
-          (graphProfile.read previous) CycleLengthOK cycleLengthDecidable
+          (graphProfile previous) CycleLengthOK cycleLengthDecidable
           (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-          (handoffItems.read previous)
-          (handoffSupport (current.read previous))).select stage |>.value with
+          (handoffItems previous)
+          (handoffSupport (current previous))).select stage |>.value with
       | .isFalse _ => none
       | .isTrue active =>
           let generated := (_root_.Hypostructure.CT7.generateCounted
               (canonicalF5CT7Capability (Previous := Previous)
-                (graphProfile.read previous) CycleLengthOK
+                (graphProfile previous) CycleLengthOK
                 cycleLengthDecidable
                 (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-                (handoffItems.read previous)
-                (handoffSupport (current.read previous)))
+                (handoffItems previous)
+                (handoffSupport (current previous)))
               (Core.Residual.Focus.ActiveView.of stage active)).value
           match generated.terminal, generated.outcome with
           | _, .realization certificate =>
-              some (PLift.up (disjunctForcesTarget (current.read previous)
-                (Or.inl (canonicalF5G1Target (graphProfile.read previous)
+              some (PLift.up (disjunctForcesTarget (current previous)
+                (Or.inl (canonicalF5G1Target (graphProfile previous)
                   CycleLengthOK cycleLengthDecidable
                   (Graph.HasCycleWithLength CycleLengthOK) decideCycle
-                  (handoffItems.read previous)
-                  (handoffSupport (current.read previous))
+                  (handoffItems previous)
+                  (handoffSupport (current previous))
                   (Core.Residual.Focus.ActiveView.of stage active)
                   certificate))))
           | _, .distinguishing residual =>
-              some (PLift.up (disjunctForcesTarget (current.read previous)
+              some (PLift.up (disjunctForcesTarget (current previous)
                 (Or.inl (Graph.Strategy.ColdBranchF2Closure.canonicalF5G2Target
-                  (profile := graphProfile.read previous) CycleLengthOK
+                  (profile := graphProfile previous) CycleLengthOK
                   cycleLengthDecidable decideCycle
-                  (handoffItems.read previous)
-                  (handoffSupport (current.read previous))
+                  (handoffItems previous)
+                  (handoffSupport (current previous))
                   (Core.Residual.Focus.ActiveView.of stage active)
                   residual))))
           | _, .neutral _ => none }
@@ -388,13 +388,13 @@ noncomputable def inducedPathLedgerRegistration
     (cycleLengthDecidable : DecidablePred CycleLengthOK)
     (cycleForcesTarget : ∀ input : Core.Strategy.ProblemInput P,
       Graph.HasCycleWithLength CycleLengthOK
-          (presentation.object.read input) →
+          (presentation.object input) →
         T.Predicate input.object) :
     Core.Strategy.ColdBranchAggregation.LedgerRegistration
       P T progress replacement
         (Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
           presentation)
-        (fun input => Finset (presentation.object.read input).Vertex) where
+        (fun input => Finset (presentation.object input).Vertex) where
   atStage := fun _exact current _activeObject packing handoffItems
       handoffAbsent =>
     inducedPathFamilyCapability presentation current packing handoffItems
@@ -421,31 +421,31 @@ noncomputable def inducedPathPressureLedgerRegistration
     (cycleLengthDecidable : DecidablePred CycleLengthOK)
     (cycleForcesTarget : ∀ input : Core.Strategy.ProblemInput P,
       Graph.HasCycleWithLength CycleLengthOK
-          (presentation.object.read input) →
+          (presentation.object input) →
         T.Predicate input.object) :
     Core.Strategy.ColdBranchAggregation.LedgerRegistration
       P T progress replacement
         (Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
           presentation)
         ((Graph.Strategy.SurplusAccounting.CanonicalAccounting.fibrePressure
-          (fun input => presentation.object.read input) baselineDegree).Item) where
+          (fun input => presentation.object input) baselineDegree).Item) where
   atStage := fun _exact current _activeObject packing handoffItems
       handoffAbsent =>
     inducedPathFamilyCapability presentation current packing
       (Handoff := fun input => ULift.{uVertex}
         ((Graph.Strategy.SurplusAccounting.CanonicalAccounting.fibrePressure
-          (fun input => presentation.object.read input) baselineDegree).Item
+          (fun input => presentation.object input) baselineDegree).Item
             input))
       (handoffItems.map fun _previous schedule =>
         schedule.map ULift.up ULift.up_injective (Classical.decEq _))
       (fun input item =>
         Graph.Strategy.SurplusAccounting.CanonicalAccounting.pairSupport
-          (fun input => presentation.object.read input) baselineDegree
+          (fun input => presentation.object input) baselineDegree
           input item.down)
       (handoffAbsent.map fun absent =>
-        Core.Residual.Query.ofFunction fun previous => by
-          show (handoffItems.read previous).values.map ULift.up = []
-          rw [absent.read previous]
+        PLift.up fun previous => by
+          show (handoffItems previous).values.map ULift.up = []
+          rw [absent.down previous]
           rfl)
       CycleLengthOK cycleLengthDecidable cycleForcesTarget
 
@@ -467,32 +467,32 @@ noncomputable def inducedPathDisjunctivePressureLedgerRegistration
     (Rest : Graph.FiniteObject.{uVertex} → Prop)
     (disjunctForcesTarget : ∀ input : Core.Strategy.ProblemInput P,
       (Graph.HasCycleWithLength CycleLengthOK
-            (presentation.object.read input) ∨
-          Rest (presentation.object.read input)) →
+            (presentation.object input) ∨
+          Rest (presentation.object input)) →
         T.Predicate input.object) :
     Core.Strategy.ColdBranchAggregation.LedgerRegistration
       P T progress replacement
         (Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
           presentation)
         ((Graph.Strategy.SurplusAccounting.CanonicalAccounting.fibrePressure
-          (fun input => presentation.object.read input) baselineDegree).Item) where
+          (fun input => presentation.object input) baselineDegree).Item) where
   atStage := fun _exact current _activeObject packing handoffItems
       handoffAbsent =>
     inducedPathDisjunctiveFamilyCapability presentation current packing
       (Handoff := fun input => ULift.{uVertex}
         ((Graph.Strategy.SurplusAccounting.CanonicalAccounting.fibrePressure
-          (fun input => presentation.object.read input) baselineDegree).Item
+          (fun input => presentation.object input) baselineDegree).Item
             input))
       (handoffItems.map fun _previous schedule =>
         schedule.map ULift.up ULift.up_injective (Classical.decEq _))
       (fun input item =>
         Graph.Strategy.SurplusAccounting.CanonicalAccounting.pairSupport
-          (fun input => presentation.object.read input) baselineDegree
+          (fun input => presentation.object input) baselineDegree
           input item.down)
       (handoffAbsent.map fun absent =>
-        Core.Residual.Query.ofFunction fun previous => by
-          show (handoffItems.read previous).values.map ULift.up = []
-          rw [absent.read previous]
+        PLift.up fun previous => by
+          show (handoffItems previous).values.map ULift.up = []
+          rw [absent.down previous]
           rfl)
       CycleLengthOK cycleLengthDecidable Rest disjunctForcesTarget
 
@@ -521,7 +521,7 @@ noncomputable def inducedPathDisjunctiveMinimalPressureLedgerRegistration
         (Core.Strategy.ProblemInput (Graph.problemWithPresentation Baseline
           BranchState Presentation presentationValue))
         (fun input => T.Predicate input.object))
-    (objectIsInput : ∀ input, presentation.object.read input = input.object)
+    (objectIsInput : ∀ input, presentation.object input = input.object)
     (baselineDegree : Core.Strategy.ProblemInput
       (Graph.problemWithPresentation Baseline BranchState Presentation
         presentationValue) → Nat)
@@ -532,8 +532,8 @@ noncomputable def inducedPathDisjunctiveMinimalPressureLedgerRegistration
         (Graph.problemWithPresentation Baseline BranchState Presentation
           presentationValue),
       (Graph.HasCycleWithLength CycleLengthOK
-            (presentation.object.read input) ∨
-          Rest (presentation.object.read input)) →
+            (presentation.object input) ∨
+          Rest (presentation.object input)) →
         T.Predicate input.object) :
     Core.Strategy.ColdBranchAggregation.LedgerRegistration
       (Graph.problemWithPresentation Baseline BranchState Presentation
@@ -542,38 +542,38 @@ noncomputable def inducedPathDisjunctiveMinimalPressureLedgerRegistration
         (Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
           presentation)
         ((Graph.Strategy.SurplusAccounting.CanonicalAccounting.fibrePressure
-          (fun input => presentation.object.read input) baselineDegree).Item) where
+          (fun input => presentation.object input) baselineDegree).Item) where
   atStage := fun exact current activeObject packing handoffItems
       handoffAbsent =>
     inducedPathDisjunctiveMinimalFamilyCapability presentation current packing
       (Handoff := fun input => ULift.{uVertex}
         ((Graph.Strategy.SurplusAccounting.CanonicalAccounting.fibrePressure
-          (fun input => presentation.object.read input) baselineDegree).Item
+          (fun input => presentation.object input) baselineDegree).Item
             input))
       (handoffItems.map fun _previous schedule =>
         schedule.map ULift.up ULift.up_injective (Classical.decEq _))
       (fun input item =>
         Graph.Strategy.SurplusAccounting.CanonicalAccounting.pairSupport
-          (fun input => presentation.object.read input) baselineDegree
+          (fun input => presentation.object input) baselineDegree
           input item.down)
       (handoffAbsent.map fun absent =>
-        Core.Residual.Query.ofFunction fun previous => by
-          show (handoffItems.read previous).values.map ULift.up = []
-          rw [absent.read previous]
+        PLift.up fun previous => by
+          show (handoffItems previous).values.map ULift.up = []
+          rw [absent.down previous]
           rfl)
       CycleLengthOK cycleLengthDecidable Rest disjunctForcesTarget
       (fun previous => by
         have objectEq :
-            presentation.object.read (current.read previous) =
-              (exact.context.read previous).G :=
-          (objectIsInput (current.read previous)).trans
-            (activeObject.read previous)
+            presentation.object (current previous) =
+              (exact.context previous).G :=
+          (objectIsInput (current previous)).trans
+            (activeObject previous)
         rw [objectEq]
         intro subgraph degreeBound
         refine (Core.Minimality.deriveNoSubobjectBaseline subobjectProfile
-          (exact.context.read previous)).excludes subgraph ?_
+          (exact.context previous)).excludes subgraph ?_
         rw [subobjectValue subgraph]
-        exact baselineMonotone (exact.context.read previous).baseline
+        exact baselineMonotone (exact.context previous).baseline
           degreeBound)
 
 /-- Build the existing Core cold profile from exact live Graph queries.  The
@@ -597,7 +597,7 @@ noncomputable def inducedPathLedgerProfile
           presentation).conflict
             (Core.Residual.residualOf previous)))
     (packing_nonempty : Core.Residual.Query Previous fun previous =>
-      (packing.read previous).selected ≠ [])
+      (packing previous).selected ≠ [])
     (barrierSummary : Core.Residual.Query Previous fun _ =>
       Core.Strategy.FiniteBarrierEnumeration.Summary)
     (overflow :
@@ -608,14 +608,14 @@ noncomputable def inducedPathLedgerProfile
     (handoffItems : Core.Residual.Query Previous fun previous =>
       Core.Finite.Enumeration (Handoff (Core.Residual.residualOf previous)))
     (handoffSupport : (residual : Residual) → Handoff residual →
-      Finset (presentation.object.read residual).Vertex)
-    (handoffAbsent : Option (Core.Residual.Query Previous fun previous =>
-      (handoffItems.read previous).values = []))
+      Finset (presentation.object residual).Vertex)
+    (handoffAbsent : Option (PLift (∀ previous,
+      (handoffItems previous).values = [])))
     (CycleLengthOK : Nat → Prop)
     (cycleLengthDecidable : DecidablePred CycleLengthOK)
     (cycleForcesTarget : ∀ residual : Residual,
       Graph.HasCycleWithLength CycleLengthOK
-          (presentation.object.read residual) →
+          (presentation.object residual) →
         Target residual) :
     Core.Strategy.ColdBranchAggregation.LedgerProfile
       Previous Residual Target
@@ -657,7 +657,7 @@ noncomputable def inducedPathDisjunctiveLedgerProfile
         ((Graph.Strategy.ObstructionPackingClosure.inducedPathSemanticsOfPresentation
           presentation).conflict (Core.Residual.residualOf previous)))
     (packing_nonempty : Core.Residual.Query Previous fun previous =>
-      (packing.read previous).selected ≠ [])
+      (packing previous).selected ≠ [])
     (barrierSummary : Core.Residual.Query Previous fun _ =>
       Core.Strategy.FiniteBarrierEnumeration.Summary)
     (overflow : Core.Strategy.ColdBranchAggregation.OverflowLedger Previous)
@@ -667,16 +667,16 @@ noncomputable def inducedPathDisjunctiveLedgerProfile
     (handoffItems : Core.Residual.Query Previous fun previous =>
       Core.Finite.Enumeration (Handoff (Core.Residual.residualOf previous)))
     (handoffSupport : (residual : Residual) → Handoff residual →
-      Finset (presentation.object.read residual).Vertex)
-    (handoffAbsent : Option (Core.Residual.Query Previous fun previous =>
-      (handoffItems.read previous).values = []))
+      Finset (presentation.object residual).Vertex)
+    (handoffAbsent : Option (PLift (∀ previous,
+      (handoffItems previous).values = [])))
     (CycleLengthOK : Nat → Prop)
     (cycleLengthDecidable : DecidablePred CycleLengthOK)
     (Rest : Graph.FiniteObject.{uVertex} → Prop)
     (disjunctForcesTarget : ∀ residual : Residual,
       (Graph.HasCycleWithLength CycleLengthOK
-            (presentation.object.read residual) ∨
-          Rest (presentation.object.read residual)) →
+            (presentation.object residual) ∨
+          Rest (presentation.object residual)) →
         Target residual) :
     Core.Strategy.ColdBranchAggregation.LedgerProfile
       Previous Residual Target

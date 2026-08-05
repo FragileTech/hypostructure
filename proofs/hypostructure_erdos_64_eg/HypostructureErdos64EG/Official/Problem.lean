@@ -31,7 +31,7 @@ abbrev target := HypostructureErdos64EG.target
 receiver-load presentation.  Graph reconstructs it from the problem
 constructor; the application registers no second numeric field. -/
 def baselineDegreeQuery :
-    Core.Residual.Query (Core.Strategy.ProblemInput problem) fun _ => Nat :=
+    (input : Core.Strategy.ProblemInput problem) → Nat :=
   Graph.Strategy.minimumDegreeThresholdQuery
 
 /-- The single registered HSS consequence, read through the official cycle
@@ -40,7 +40,7 @@ presentation of the axiom's conclusion are all framework-owned. -/
 theorem hssHasPowerOfTwoCycle
     (input : Core.Strategy.ProblemInput problem)
     (object : Graph.FiniteObject)
-    (minimumDegree : baselineDegreeQuery.read input ≤ object.minDegree)
+    (minimumDegree : baselineDegreeQuery input ≤ object.minDegree)
     (free : Graph.InducedPathFree object
       Graph.External.HegdeSandeepShashank.inducedPathOrder) :
     Graph.HasCycleWithLength PowerOfTwoLength object :=

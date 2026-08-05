@@ -169,11 +169,11 @@ def positiveStageActive :
   (contract .positive).runActiveProof rowSixStage rowSixActive
 
 def zeroOutput :=
-  (CapacityProfile.outputQuery (profile .zero)).read zeroRun.value
+  (CapacityProfile.outputQuery (profile .zero)) zeroRun.value
     zeroStageActive
 
 def positiveOutput :=
-  (CapacityProfile.outputQuery (profile .positive)).read positiveRun.value
+  (CapacityProfile.outputQuery (profile .positive)) positiveRun.value
     positiveStageActive
 
 theorem positiveOutput_terminal :

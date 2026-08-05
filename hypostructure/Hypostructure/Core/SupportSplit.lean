@@ -97,24 +97,24 @@ abbrev SourceQuery (Carrier : Type u) :=
 def highValuesQuery {Carrier : Type u}
     (source : SourceQuery (Previous := Previous) Carrier)
     (split : Query Previous (fun previous =>
-      HighSplit Carrier (source.read previous))) :
+      HighSplit Carrier (source previous))) :
     Query Previous (fun _previous => List Carrier) :=
   split.map fun _previous activeSplit => highValues activeSplit
 
 def outcomeQuery {Carrier : Type u}
     (source : SourceQuery (Previous := Previous) Carrier)
     (split : Query Previous (fun previous =>
-      HighSplit Carrier (source.read previous))) :
+      HighSplit Carrier (source previous))) :
     Query Previous (fun previous =>
-      Outcome Carrier (source.read previous) (split.read previous)) :=
+      Outcome Carrier (source previous) (split previous)) :=
   split.dependentMap fun _previous activeSplit => execute activeSplit
 
 def stageNode {Carrier : Type u}
     (source : SourceQuery (Previous := Previous) Carrier)
     (split : Query Previous (fun previous =>
-      HighSplit Carrier (source.read previous))) :
+      HighSplit Carrier (source previous))) :
     StageNode Previous (fun previous =>
-      Outcome Carrier (source.read previous) (split.read previous)) :=
+      Outcome Carrier (source previous) (split previous)) :=
   StageNode.derive (outcomeQuery source split)
     (fun _previous outcome => outcome)
 

@@ -34,7 +34,7 @@ structure Capability {Previous : Type uPrevious}
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (coordinates.read previous) <=
+    localCheckBound (coordinates previous) <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -44,7 +44,7 @@ def coordinatesAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uCoordinate} Previous}
     (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Coordinate previous) :=
-  capability.coordinates.read previous
+  capability.coordinates previous
 
 /-- Framework-visible worst-case polynomial envelope. -/
 def polynomialBudget {Previous : Type uPrevious}

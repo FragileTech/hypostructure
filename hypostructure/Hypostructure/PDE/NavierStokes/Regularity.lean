@@ -154,11 +154,11 @@ external output.
 
 def windowQuery (profile : Profile) :
     Core.Residual.Query Unit (fun _ => Core.Finite.Enumeration Window) :=
-  Core.Residual.Query.ofFunction (fun _ => profile.windows)
+  (fun _ => profile.windows)
 
 def localRegularQuery (profile : Profile) :
     Core.Residual.Query Unit (fun _ => Window -> Prop) :=
-  Core.Residual.Query.ofFunction (fun _ => profile.localRegular)
+  (fun _ => profile.localRegular)
 
 def localRegularityDecision (profile : Profile) (window : Window) :
     Decidable (profile.localRegular window) :=

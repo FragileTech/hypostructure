@@ -623,7 +623,7 @@ structure GlobalEquationRealization (M : LocalModel.{u}) (Previous : Type u) whe
   state_object : ∀ (previous : Previous)
     (window : M.atlas.Window),
     (state previous window).object =
-      M.atlas.restrict (object.read previous) window
+      M.atlas.restrict (object previous) window
   restrict_state : ∀ (previous : Previous)
     {inner outer : M.atlas.Window} (nested : M.atlas.nested inner outer),
     (state previous outer).restrict nested = state previous inner
@@ -639,11 +639,11 @@ def ofPublicPresentation {M : LocalModel.{u}} {Previous : Type u}
     GlobalEquationRealization M Previous where
   object := active.map fun _ residual => residual.object
   state := fun previous window =>
-    presentation.state (active.read previous) window
+    presentation.state (active previous) window
   state_object := fun previous window =>
-    presentation.state_object (active.read previous) window
+    presentation.state_object (active previous) window
   restrict_state := fun previous _inner _outer nested =>
-    presentation.restrict_state (active.read previous) nested
+    presentation.restrict_state (active previous) nested
 
 end GlobalEquationRealization
 
@@ -702,7 +702,7 @@ theorem recenteredInnerState_object_eq_restrict_run
     (realization.recenteredInnerState previous recentered).object =
       M.atlas.restrict
         ((GlobalEquationRealization.innerRecenterPath recentered).run
-          (realization.object.read previous))
+          (realization.object previous))
         (recentered.interface.targetWindow recentered.shift focus.inner) := by
   apply EquationState.transportPath_object_eq_restrict_run
   rw [realization.innerState_eq]
@@ -791,7 +791,7 @@ def residualQuery {Previous : Type u}
       elliptic)]
     (previous : Previous) :
     (residualQuery (M := M) (N := N) (Interface := Interface)
-      (Carrier := Carrier) (Source := Source) (elliptic := elliptic)).read
+      (Carrier := Carrier) (Source := Source) (elliptic := elliptic))
         previous =
       Core.Residual.residualOf previous :=
   rfl
@@ -868,8 +868,8 @@ def splitQuery {Previous : Sort*}
       (fun _ => CurrentLocalEllipticResidual M N Admissible Interface Carrier Source
       elliptic)) :
     Core.Residual.Query Previous (fun previous =>
-      ExactLocalTail (Carrier (current.read previous).interface)
-        (current.read previous).whole) :=
+      ExactLocalTail (Carrier (current previous).interface)
+        (current previous).whole) :=
   current.dependentMap fun _ residual => residual.split
 
 /-- Build the current local residual from the public ambient-to-local
@@ -880,15 +880,15 @@ def ofGlobal {Previous : Type u}
     (previous : Previous) {point : M.atlas.Point}
     (focus : NestedFocus M point)
     (admissible :
-      Admissible (realization.object.read previous) focus.outer) :
+      Admissible (realization.object previous) focus.outer) :
     CurrentLocalEllipticResidual M N Admissible Interface Carrier Source
       elliptic where
-  ambient := realization.object.read previous
+  ambient := realization.object previous
   point := point
   focus := focus
   admissible := admissible
   componentSite :=
-    elliptic.selectSite (realization.object.read previous) focus admissible
+    elliptic.selectSite (realization.object previous) focus admissible
   componentSite_eq := rfl
   outerState := realization.outerState previous focus
   outerState_object := realization.state_object previous focus.outer
@@ -941,11 +941,11 @@ def ofActiveResidualQuery {Previous : Sort*}
     (previous : Previous) :
     (ofActiveResidualQuery (N := N) (Interface := Interface)
       (Carrier := Carrier) (Source := Source) (elliptic := elliptic)
-      presentation active admissible).read previous =
+      presentation active admissible) previous =
       ofActiveResidual (N := N) (Interface := Interface)
         (Carrier := Carrier) (Source := Source) (elliptic := elliptic)
-        presentation (active.read previous)
-        (admissible (active.read previous)) :=
+        presentation (active previous)
+        (admissible (active previous)) :=
   rfl
 
 @[simp] theorem splitQuery_read {Previous : Sort*}
@@ -954,7 +954,7 @@ def ofActiveResidualQuery {Previous : Sort*}
         CurrentLocalEllipticResidual M N Admissible Interface Carrier Source
       elliptic))
     (previous : Previous) :
-    (splitQuery current).read previous = (current.read previous).split :=
+    (splitQuery current) previous = (current previous).split :=
   rfl
 
 end CurrentLocalEllipticResidual

@@ -37,7 +37,7 @@ structure Profile {Previous : Type uPrevious}
     (object : M.problem.Ambient) -> Decidable (strictGap previous object)
   strictGapSound : (previous : Previous) -> (object : M.problem.Ambient) ->
     strictGap previous object ->
-      forall radius, radius ∈ (radii.read previous).values ->
+      forall radius, radius ∈ (radii previous).values ->
         draining previous object radius
 
 inductive Outcome {Previous : Type uPrevious} {M : PDE.LocalModel.{uModel}}
@@ -45,10 +45,10 @@ inductive Outcome {Previous : Type uPrevious} {M : PDE.LocalModel.{uModel}}
     (previous : Previous) (object : M.problem.Ambient) where
   | draining (proof : profile.strictGap previous object)
   | feeding (radius : profile.Radius previous)
-      (member : radius ∈ (profile.radii.read previous).values)
+      (member : radius ∈ (profile.radii previous).values)
       (notDraining : ¬ profile.draining previous object radius)
   | equality (radius : profile.Radius previous)
-      (member : radius ∈ (profile.radii.read previous).values)
+      (member : radius ∈ (profile.radii previous).values)
 
 def classify {Previous : Type uPrevious} {M : PDE.LocalModel.{uModel}}
     (profile : Profile (M := M) (Previous := Previous))
@@ -58,7 +58,7 @@ def classify {Previous : Type uPrevious} {M : PDE.LocalModel.{uModel}}
   @dite _ (profile.strictGap previous object)
     (profile.strictGapDecidable previous object)
     (fun h => Sum.inl ⟨h⟩)
-    (fun _ => Sum.inr (profile.radii.read previous))
+    (fun _ => Sum.inr (profile.radii previous))
 
 /-! ## Strategy execution
 
@@ -76,8 +76,8 @@ def strategy {Previous : Type uPrevious} {M : PDE.LocalModel.{uModel}}
     (state : Core.Residual.Query Previous (fun _ => M.problem.Ambient)) :
     Core.Strategy.Contract Previous :=
   Core.Strategy.binaryContract
-    (fun previous => profile.strictGap previous (state.read previous))
-    (fun previous => profile.strictGapDecidable previous (state.read previous))
-    (fun previous => profile.radii.read previous)
+    (fun previous => profile.strictGap previous (state previous))
+    (fun previous => profile.strictGapDecidable previous (state previous))
+    (fun previous => profile.radii previous)
 
 end Hypostructure.PDE.FastTrack.FluxRadius

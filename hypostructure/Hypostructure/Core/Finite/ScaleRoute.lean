@@ -78,11 +78,11 @@ variable (contract : FocusedContract focus)
 
 /-- Bounded residual predicate at an active predecessor. -/
 def Bounded (previous : Previous) (active : focus.Active previous) : Prop :=
-  contract.supportSize.read previous active <= contract.scale.read previous active
+  contract.supportSize previous active <= contract.scale previous active
 
 /-- Long residual predicate at an active predecessor. -/
 def Long (previous : Previous) (active : focus.Active previous) : Prop :=
-  contract.scale.read previous active < contract.supportSize.read previous active
+  contract.scale previous active < contract.supportSize previous active
 
 /-- Core-owned route certificate for one active predecessor. -/
 inductive Certificate (previous : Previous)
@@ -104,8 +104,8 @@ def executeCounted (previous : Previous) : Counted contract.Stage :=
     (PolynomialCheckBudget.constant (fun _previous => 0) 1) previous
     (fun active _checks _exact =>
       if bounded :
-          contract.supportSize.read previous active <=
-            contract.scale.read previous active then
+          contract.supportSize previous active <=
+            contract.scale previous active then
         { value := Certificate.bounded bounded
           checks := 1 }
       else
@@ -113,8 +113,8 @@ def executeCounted (previous : Previous) : Counted contract.Stage :=
           checks := 1 })
     (fun _active _checks _exact => by
       by_cases bounded :
-          contract.supportSize.read previous _active <=
-            contract.scale.read previous _active <;>
+          contract.supportSize previous _active <=
+            contract.scale previous _active <;>
         simp [bounded, PolynomialCheckBudget.constant])
 
 /-- Uncounted public executor. -/
@@ -159,10 +159,10 @@ def boundedRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
       ∃ bounded : contract.Bounded stage.previous active,
-        contract.latestCertificate.read stage active =
+        contract.latestCertificate stage active =
           Certificate.bounded bounded)
     (fun stage active => Counted.pure (by
-      cases certificate : contract.latestCertificate.read stage active with
+      cases certificate : contract.latestCertificate stage active with
       | bounded bounded => exact isTrue ⟨bounded, rfl⟩
       | long _ =>
           exact isFalse (by
@@ -177,10 +177,10 @@ def longRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
       ∃ long : contract.Long stage.previous active,
-        contract.latestCertificate.read stage active =
+        contract.latestCertificate stage active =
           Certificate.long long)
     (fun stage active => Counted.pure (by
-      cases certificate : contract.latestCertificate.read stage active with
+      cases certificate : contract.latestCertificate stage active with
       | bounded _ =>
           exact isFalse (by
             intro witness
@@ -202,14 +202,14 @@ abbrev longFocus : Focus.Profile contract.Stage :=
 def boundedQuery :
     Focus.ActiveQuery contract.boundedFocus fun stage active =>
       contract.Bounded stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun _stage active =>
+  fun _stage active =>
     Classical.choose active.accepted
 
 /-- Read the long proof selected by Core. -/
 def longQuery :
     Focus.ActiveQuery contract.longFocus fun stage active =>
       contract.Long stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun _stage active =>
+  fun _stage active =>
     Classical.choose active.accepted
 
 /-- If the long branch is impossible in the problem contract, recover the
@@ -251,11 +251,11 @@ def Long (previous : Previous) (active : focus.Active previous)
   contract.scale previous active item < contract.supportSize previous active item
 
 def AnyLong (previous : Previous) (active : focus.Active previous) : Prop :=
-  ∃ item ∈ (contract.schedule.read previous active).values,
+  ∃ item ∈ (contract.schedule previous active).values,
     contract.Long previous active item
 
 def AllBounded (previous : Previous) (active : focus.Active previous) : Prop :=
-  ∀ item ∈ (contract.schedule.read previous active).values,
+  ∀ item ∈ (contract.schedule previous active).values,
     contract.Bounded previous active item
 
 inductive Certificate (previous : Previous)
@@ -271,7 +271,7 @@ abbrev Stage :=
 
 def executeCounted (previous : Previous) : Counted contract.Stage :=
   Focus.runCounted focus previous fun active _checks _exact =>
-    let schedule := contract.schedule.read previous active
+    let schedule := contract.schedule previous active
     let execution :=
       Search.run schedule (contract.Long previous active)
         (fun item => by
@@ -320,10 +320,10 @@ def longRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
       ∃ long : contract.AnyLong stage.previous active,
-        contract.latestCertificate.read stage active =
+        contract.latestCertificate stage active =
           Certificate.long long)
     (fun stage active => Counted.pure (by
-      cases certificate : contract.latestCertificate.read stage active with
+      cases certificate : contract.latestCertificate stage active with
       | long long => exact isTrue ⟨long, rfl⟩
       | allBounded _ =>
           exact isFalse (by
@@ -337,10 +337,10 @@ def allBoundedRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
       ∃ allBounded : contract.AllBounded stage.previous active,
-        contract.latestCertificate.read stage active =
+        contract.latestCertificate stage active =
           Certificate.allBounded allBounded)
     (fun stage active => Counted.pure (by
-      cases certificate : contract.latestCertificate.read stage active with
+      cases certificate : contract.latestCertificate stage active with
       | long _ =>
           exact isFalse (by
             intro witness
@@ -359,13 +359,13 @@ abbrev allBoundedFocus : Focus.Profile contract.Stage :=
 def longQuery :
     Focus.ActiveQuery contract.longFocus fun stage active =>
       contract.AnyLong stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun _stage active =>
+  fun _stage active =>
     Classical.choose active.accepted
 
 def allBoundedQuery :
     Focus.ActiveQuery contract.allBoundedFocus fun stage active =>
       contract.AllBounded stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun _stage active =>
+  fun _stage active =>
     Classical.choose active.accepted
 
 end FocusedScheduleContract

@@ -43,13 +43,13 @@ def residualQuery : Query Previous (fun _ => Residual) :=
 /-- Primitive target-relative dependence semantics for CT15. -/
 def dependenceSpec : CT15.Spec Previous where
   Coordinate := fun previous =>
-    profile.registration.Pair (profile.current.read previous)
+    profile.registration.Pair (profile.current previous)
   TargetDependent := fun previous pair =>
-    profile.registration.Dependent (profile.current.read previous) pair
+    profile.registration.Dependent (profile.current previous) pair
   charge := fun previous pair =>
-    profile.registration.pairCharge (profile.current.read previous) pair
+    profile.registration.pairCharge (profile.current previous) pair
   capacity := fun previous =>
-    profile.registration.pairCapacity (profile.current.read previous)
+    profile.registration.pairCapacity (profile.current previous)
 
 /-- The exact residual-owned pair schedule. -/
 def pairQuery :
@@ -65,7 +65,7 @@ def completeRoleQuery :
       Core.Finite.CompleteEnumeration
         (Role
           (profile.registration.BlockerKind
-            (profile.current.read previous))) :=
+            (profile.current previous))) :=
   profile.residualQuery.dependentMap fun _ residual =>
     profile.registration.completeRoles residual
 
@@ -75,9 +75,9 @@ def dependenceCapability : CT15.Capability profile.dependenceSpec where
   coordinates := profile.pairQuery
   targetDependentDecidable := fun previous pair =>
     profile.registration.dependentDecidable
-      (profile.current.read previous) pair
+      (profile.current previous) pair
   inputSize := fun previous =>
-    CT15.localCheckBound (profile.pairQuery.read previous)
+    CT15.localCheckBound (profile.pairQuery previous)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -103,7 +103,7 @@ def inheritedPairs :
     Query profile.AfterDependence fun stage =>
       Core.Finite.Enumeration
         (profile.registration.Pair
-          (profile.currentAfterDependence.read stage)) :=
+          (profile.currentAfterDependence stage)) :=
   profile.pairQuery.preserve
 
 /-- Transport the exact complete role schedule through the CT15 extension. -/
@@ -111,32 +111,32 @@ def inheritedRoles :
     Query profile.AfterDependence fun stage =>
       Core.Finite.CompleteEnumeration
         (Role (profile.registration.BlockerKind
-          (profile.currentAfterDependence.read stage))) :=
+          (profile.currentAfterDependence stage))) :=
   profile.completeRoleQuery.preserve
 
 /-- Primitive role-fibre semantics for CT9 on CT15's exact extension. -/
 def roleSpec : CT9.Spec profile.AfterDependence where
   Item := fun stage =>
-    profile.registration.Pair (profile.currentAfterDependence.read stage)
+    profile.registration.Pair (profile.currentAfterDependence stage)
   Label := fun stage =>
     Role (profile.registration.BlockerKind
-      (profile.currentAfterDependence.read stage))
+      (profile.currentAfterDependence stage))
   label := fun stage pair =>
     profile.registration.roleOf
-      (profile.currentAfterDependence.read stage) pair
+      (profile.currentAfterDependence stage) pair
   capacity := fun stage role =>
     profile.registration.roleCapacity
-      (profile.currentAfterDependence.read stage) role
+      (profile.currentAfterDependence stage) role
 
 /-- CT9 consumes only the two schedules preserved through CT15. -/
 def roleCapability : CT9.Capability profile.roleSpec where
   items := profile.inheritedPairs
   labels := fun stage =>
-    profile.inheritedRoles.read stage
+    profile.inheritedRoles stage
   inputSize := fun stage =>
     CT9.localCheckBound
-      (profile.inheritedPairs.read stage)
-      (profile.inheritedRoles.read stage).toEnumeration
+      (profile.inheritedPairs stage)
+      (profile.inheritedRoles stage).toEnumeration
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -174,7 +174,7 @@ noncomputable def dependenceOutput :
 entry.  Its predecessor is the literal CT15 extension retained in `output`. -/
 noncomputable def roleOutput :
     Query profile.AfterExecution fun stage =>
-      let output := profile.executionResult.read stage
+      let output := profile.executionResult stage
       profile.roleExecution.Output
         (Ledger.extend stage.previous output.fst) :=
   profile.executionResult.dependentMap fun stage output => output.snd

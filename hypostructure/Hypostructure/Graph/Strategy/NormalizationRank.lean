@@ -55,6 +55,24 @@ private noncomputable def liftedVertices (object : Graph.FiniteObject.{v}) :
     (((vertices object).nodup).map fun _ _ equal => by
       simpa using congrArg ULift.down equal)
 
+theorem liftedVertices_adjacency_count
+    (object : Graph.FiniteObject.{v}) (vertex : object.Vertex) :
+    ((liftedVertices object :
+      Core.Finite.Enumeration (ULift.{u} object.Vertex))).values.countP
+        (fun other => decide (object.graph.Adj vertex other.down)) =
+      object.degree vertex := by
+  rw [← object.orderedNeighbors_length vertex]
+  change (object.orderedVertices.map ULift.up).countP
+      (fun other => decide (object.graph.Adj vertex other.down)) =
+    (object.orderedVertices.filter fun other =>
+      decide (object.graph.Adj vertex other)).length
+  induction object.orderedVertices with
+  | nil => rfl
+  | cons head tail ih =>
+      simp only [List.map_cons, List.countP_cons, List.filter_cons,
+        ULift.down_up]
+      split <;> simp_all
+
 /-- Interpret CT9's exact complementary enumeration as the corresponding
 vertex support.  The support is a view of the CT output, not a second search
 or a reconstruction from the ambient graph. -/
@@ -134,16 +152,16 @@ noncomputable def inducedPathSupportComplementRegistration
       Residual Target (inducedPathPackingSemantics presentation) := by
   let windowCover : (residual : Residual) →
       Graph.InducedPathMaximalPacking.Window
-        (presentation.object.read residual)
-        (presentation.order.read residual) →
-        List (ULift.{u} (presentation.object.read residual).Vertex) :=
+        (presentation.object residual)
+        (presentation.order residual) →
+        List (ULift.{u} (presentation.object residual).Vertex) :=
     fun residual window =>
       ((Graph.InducedPathMaximalPacking.support
-        (presentation.object.read residual)
-        (presentation.order.read residual) window).toList).map ULift.up
+        (presentation.object residual)
+        (presentation.order residual) window).toList).map ULift.up
   let cover : (residual : Residual) →
       (inducedPathPackingSemantics presentation).Occurrence residual →
-        List (ULift.{u} (presentation.object.read residual).Vertex) :=
+        List (ULift.{u} (presentation.object residual).Vertex) :=
     fun residual window =>
       windowCover residual
         (_root_.Hypostructure.Graph.Strategy.ObstructionPackingClosure.inducedPathOccurrenceEquiv
@@ -154,10 +172,10 @@ noncomputable def inducedPathSupportComplementRegistration
       _root_.Hypostructure.Graph.Strategy.ObstructionPackingClosure.inducedPathOccurrenceEquiv
         presentation residual window
     have nonempty : (Graph.InducedPathMaximalPacking.support
-        (presentation.object.read residual)
-        (presentation.order.read residual) literalWindow).Nonempty := by
-      letI : DecidableEq (presentation.object.read residual).Vertex :=
-        (presentation.object.read residual).vertices.decEq
+        (presentation.object residual)
+        (presentation.order residual) literalWindow).Nonempty := by
+      letI : DecidableEq (presentation.object residual).Vertex :=
+        (presentation.object residual).vertices.decEq
       refine ⟨literalWindow ⟨0, presentation.order_pos residual⟩, ?_⟩
       exact Finset.mem_image.mpr
         ⟨⟨0, presentation.order_pos residual⟩, Finset.mem_univ _, rfl⟩
@@ -165,13 +183,13 @@ noncomputable def inducedPathSupportComplementRegistration
     unfold windowCover at nil
     have supportNil :
         (Graph.InducedPathMaximalPacking.support
-          (presentation.object.read residual)
-          (presentation.order.read residual) literalWindow).toList = [] :=
+          (presentation.object residual)
+          (presentation.order residual) literalWindow).toList = [] :=
       List.map_eq_nil_iff.mp nil
     have empty :
         Graph.InducedPathMaximalPacking.support
-          (presentation.object.read residual)
-          (presentation.order.read residual) literalWindow = ∅ :=
+          (presentation.object residual)
+          (presentation.order residual) literalWindow = ∅ :=
       Finset.toList_eq_nil.mp supportNil
     exact nonempty.ne_empty empty
   let conflict_iff_shared_item : ∀ (residual : Residual)
@@ -183,11 +201,11 @@ noncomputable def inducedPathSupportComplementRegistration
     intro residual left right
     change (¬ Disjoint
       (Graph.InducedPathMaximalPacking.support
-        (presentation.object.read residual)
-        (presentation.order.read residual) left.down)
+        (presentation.object residual)
+        (presentation.order residual) left.down)
       (Graph.InducedPathMaximalPacking.support
-        (presentation.object.read residual)
-        (presentation.order.read residual) right.down)) ↔ _
+        (presentation.object residual)
+        (presentation.order residual) right.down)) ↔ _
     constructor
     · intro overlap
       rw [Finset.not_disjoint_iff] at overlap
@@ -207,9 +225,9 @@ noncomputable def inducedPathSupportComplementRegistration
           Finset.mem_toList.mp rightFinset⟩
   exact {
     AmbientItem := fun residual =>
-      ULift.{u} (presentation.object.read residual).Vertex
+      ULift.{u} (presentation.object residual).Vertex
     ambientSupport := fun residual =>
-      liftedVertices (presentation.object.read residual)
+      liftedVertices (presentation.object residual)
     cover := cover
     coverNodup := by
       intro residual occurrence
@@ -220,8 +238,8 @@ noncomputable def inducedPathSupportComplementRegistration
       rcases List.mem_map.mp member with ⟨vertex, _, rfl⟩
       exact List.mem_map.mpr
         ⟨vertex,
-          (presentation.object.read residual).mem_orderedVertices vertex, rfl⟩
-    coverCard := fun residual => presentation.order.read residual
+          (presentation.object residual).mem_orderedVertices vertex, rfl⟩
+    coverCard := fun residual => presentation.order residual
     cover_card := by
       intro residual occurrence
       rw [List.length_map, Finset.length_toList,
@@ -231,63 +249,63 @@ noncomputable def inducedPathSupportComplementRegistration
     LocalPiece := fun residual exactComplement =>
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read residual)
+          (presentation.object residual)
           (supportOfComplement
-            (presentation.object.read residual) exactComplement))
+            (presentation.object residual) exactComplement))
     localPieces := fun residual exactComplement =>
       (_root_.Hypostructure.Graph.Strategy.componentSchedule
-        (presentation.object.read residual)
+        (presentation.object residual)
         (supportOfComplement
-          (presentation.object.read residual) exactComplement)).map
+          (presentation.object residual) exactComplement)).map
           ULift.up ULift.up_injective (Classical.decEq _)
     FailureData := fun residual exactComplement piece =>
       ULift.{max u v}
-        (PLift (HasInternalCore (presentation.object.read residual)
-          (presentation.baselineDegree.read residual)
+        (PLift (HasInternalCore (presentation.object residual)
+          (presentation.baselineDegree residual)
           (Graph.SupportComponents.Connected.members
-            (presentation.object.read residual)
+            (presentation.object residual)
             (supportOfComplement
-              (presentation.object.read residual) exactComplement)
+              (presentation.object residual) exactComplement)
             piece.down)))
     -- A piece fails when it carries a nonempty internal baseline core.
     Failure := fun residual exactComplement piece =>
-      HasInternalCore (presentation.object.read residual)
-        (presentation.baselineDegree.read residual)
+      HasInternalCore (presentation.object residual)
+        (presentation.baselineDegree residual)
         (Graph.SupportComponents.Connected.members
-          (presentation.object.read residual)
+          (presentation.object residual)
           (supportOfComplement
-            (presentation.object.read residual) exactComplement)
+            (presentation.object residual) exactComplement)
           piece.down)
     failureData := fun _residual _complement _piece failure =>
       ULift.up (PLift.up failure)
     failureDecidable := fun _residual _complement _piece => Classical.dec _
     contribution := fun residual exactComplement piece =>
       (Graph.SupportComponents.Connected.members
-        (presentation.object.read residual)
+        (presentation.object residual)
         (supportOfComplement
-          (presentation.object.read residual) exactComplement)
+          (presentation.object residual) exactComplement)
         piece.down).card
     failureForcesTarget := by
       intro residual exactComplement piece failure avoiding
       classical
-      letI : DecidableEq (presentation.object.read residual).Vertex :=
-        (presentation.object.read residual).vertices.decEq
+      letI : DecidableEq (presentation.object residual).Vertex :=
+        (presentation.object residual).vertices.decEq
       obtain ⟨core, core_subset, _core_nonempty, core_minDegree⟩ := failure
       let support :=
         supportOfComplement
-          (presentation.object.read residual) exactComplement
+          (presentation.object residual) exactComplement
       let members :=
         Graph.SupportComponents.Connected.members
-          (presentation.object.read residual) support piece.down
+          (presentation.object residual) support piece.down
       have member_in_exactComplement :
           ∀ vertex ∈ members,
             ULift.up vertex ∈ exactComplement.values := by
         intro vertex vertexMem
         apply (mem_supportOfComplement_iff
-          (presentation.object.read residual) exactComplement _).mp
+          (presentation.object residual) exactComplement _).mp
         exact
           ((Graph.SupportComponents.Connected.mem_members_iff
-            (presentation.object.read residual) support piece.down _).mp
+            (presentation.object residual) support piece.down _).mp
               vertexMem).1
       have core_in_exactComplement :
           ∀ vertex ∈ core,
@@ -298,10 +316,10 @@ noncomputable def inducedPathSupportComplementRegistration
       rintro ⟨window⟩
       let ambientWindow :
           Graph.InducedPathMaximalPacking.Window
-            (presentation.object.read residual)
-            (presentation.order.read residual) :=
+            (presentation.object residual)
+            (presentation.order residual) :=
         window.trans
-          ((presentation.object.read residual).induceEmbedding core)
+          ((presentation.object residual).induceEmbedding core)
       have absent := avoiding (ULift.up ambientWindow) (by
         intro item itemMem
         rcases List.mem_map.mp itemMem with
@@ -352,7 +370,7 @@ noncomputable def exactInducedPathComplement
       (inducedPathSupportComplement presentation packingQuery).ExactOutput
         previous) :
     Core.Finite.Enumeration
-      (ULift.{u} (presentation.object.read (residualOf previous)).Vertex) :=
+      (ULift.{u} (presentation.object (residualOf previous)).Vertex) :=
   let profile := inducedPathSupportComplement presentation packingQuery
   profile.partition.complementAtPrevious previous exact.output.fst.fst.fst
 
@@ -373,9 +391,9 @@ noncomputable def exactInducedPathComplementSupport
     (exact :
       (inducedPathSupportComplement presentation packingQuery).ExactOutput
         previous) :
-    Finset (presentation.object.read (residualOf previous)).Vertex :=
+    Finset (presentation.object (residualOf previous)).Vertex :=
   supportOfComplement
-    (presentation.object.read (residualOf previous))
+    (presentation.object (residualOf previous))
     (exactInducedPathComplement presentation packingQuery exact)
 
 /-- CT6's exact component schedule over the complementary support retained by
@@ -399,7 +417,7 @@ noncomputable def exactInducedPathComponents
     Core.Finite.Enumeration
       (ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact))) :=
   let profile := inducedPathSupportComplement presentation packingQuery
@@ -423,7 +441,7 @@ theorem exactInducedPathComponents_values
         previous) :
     (exactInducedPathComponents presentation packingQuery exact).values =
       (Graph.SupportComponents.Connected.order
-        (presentation.object.read (residualOf previous))
+        (presentation.object (residualOf previous))
         (exactInducedPathComplementSupport presentation packingQuery exact)).map
           ULift.up := by
   rfl
@@ -447,13 +465,13 @@ theorem exactInducedPathComponent_mem_order
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
     (member : piece ∈
       (exactInducedPathComponents presentation packingQuery exact).values) :
     piece.down ∈ Graph.SupportComponents.Connected.order
-      (presentation.object.read (residualOf previous))
+      (presentation.object (residualOf previous))
       (exactInducedPathComplementSupport presentation packingQuery exact) := by
   rw [exactInducedPathComponents_values] at member
   rcases List.mem_map.mp member with
@@ -480,13 +498,13 @@ theorem exactInducedPathComponent_nonempty
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
     (member : piece ∈
       (exactInducedPathComponents presentation packingQuery exact).values) :
     (Graph.SupportComponents.Connected.members
-      (presentation.object.read (residualOf previous))
+      (presentation.object (residualOf previous))
       (exactInducedPathComplementSupport presentation packingQuery exact)
       piece.down).Nonempty :=
   Graph.SupportComponents.Connected.member_nonempty _ _
@@ -513,15 +531,15 @@ noncomputable def exactInducedPathComponentDeficiency
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact))) : Nat :=
-  ((presentation.object.read (residualOf previous)).induce
+  ((presentation.object (residualOf previous)).induce
     (Graph.SupportComponents.Connected.members
-      (presentation.object.read (residualOf previous))
+      (presentation.object (residualOf previous))
       (exactInducedPathComplementSupport presentation packingQuery exact)
       piece.down)).deficiencyAt
-        (presentation.baselineDegree.read (residualOf previous))
+        (presentation.baselineDegree (residualOf previous))
 
 theorem exactInducedPathComponent_connected
     {Residual : Type u} {Target : Residual → Prop}
@@ -542,15 +560,15 @@ theorem exactInducedPathComponent_connected
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
     (member : piece ∈
       (exactInducedPathComponents presentation packingQuery exact).values) :
     Graph.SupportComponents.Connected.ConnectedOn
-      (presentation.object.read (residualOf previous))
+      (presentation.object (residualOf previous))
       (Graph.SupportComponents.Connected.members
-        (presentation.object.read (residualOf previous))
+        (presentation.object (residualOf previous))
         (exactInducedPathComplementSupport presentation packingQuery exact)
         piece.down) :=
   Graph.SupportComponents.Connected.connectedOn_of_mem_order _ _
@@ -576,17 +594,17 @@ theorem exactInducedPathComponent_subset_complement
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact))) :
     Graph.SupportComponents.Connected.members
-        (presentation.object.read (residualOf previous))
+        (presentation.object (residualOf previous))
         (exactInducedPathComplementSupport presentation packingQuery exact)
         piece.down ⊆
       exactInducedPathComplementSupport presentation packingQuery exact := by
   intro vertex vertexMember
   exact ((Graph.SupportComponents.Connected.mem_members_iff
-    (presentation.object.read (residualOf previous))
+    (presentation.object (residualOf previous))
     (exactInducedPathComplementSupport presentation packingQuery exact)
     piece.down vertex).mp vertexMember).1
 
@@ -610,21 +628,21 @@ theorem exactInducedPathSubset_free
         previous)
     (obstructionSelected : exact.output.fst.snd.terminal = .avoiding)
     (support : Finset
-      (presentation.object.read (residualOf previous)).Vertex)
+      (presentation.object (residualOf previous)).Vertex)
     (support_subset : support ⊆
       exactInducedPathComplementSupport presentation packingQuery exact) :
     Graph.InducedPathFree
-      ((presentation.object.read (residualOf previous)).induce
+      ((presentation.object (residualOf previous)).induce
         support)
-      (presentation.order.read (residualOf previous)) := by
+      (presentation.order (residualOf previous)) := by
   rintro ⟨window⟩
   classical
   letI : DecidableEq
-      (presentation.object.read (residualOf previous)).Vertex :=
-    (presentation.object.read (residualOf previous)).vertices.decEq
-  let object := presentation.object.read (residualOf previous)
+      (presentation.object (residualOf previous)).Vertex :=
+    (presentation.object (residualOf previous)).vertices.decEq
+  let object := presentation.object (residualOf previous)
   let ambientWindow : Graph.InducedPathMaximalPacking.Window object
-      (presentation.order.read (residualOf previous)) :=
+      (presentation.order (residualOf previous)) :=
     window.trans (object.induceEmbedding support)
   have scheduled : ULift.up ambientWindow ∈
       ((inducedPathPackingSemantics presentation).occurrences
@@ -668,16 +686,16 @@ theorem exactInducedPathComponent_free
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact))) :
     Graph.InducedPathFree
-      ((presentation.object.read (residualOf previous)).induce
+      ((presentation.object (residualOf previous)).induce
         (Graph.SupportComponents.Connected.members
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery exact)
           piece.down))
-      (presentation.order.read (residualOf previous)) :=
+      (presentation.order (residualOf previous)) :=
   exactInducedPathSubset_free presentation packingQuery exact
     obstructionSelected _
     (exactInducedPathComponent_subset_complement
@@ -704,11 +722,11 @@ theorem exactInducedPathSubset_minDegree_lt
     (obstructionSelected : exact.output.fst.snd.terminal = .avoiding)
     (targetAvoiding : ¬ Target (residualOf previous))
     (support : Finset
-      (presentation.object.read (residualOf previous)).Vertex)
+      (presentation.object (residualOf previous)).Vertex)
     (support_subset : support ⊆
       exactInducedPathComplementSupport presentation packingQuery exact) :
-    ((presentation.object.read (residualOf previous)).induce support).minDegree <
-      presentation.baselineDegree.read (residualOf previous) := by
+    ((presentation.object (residualOf previous)).induce support).minDegree <
+      presentation.baselineDegree (residualOf previous) := by
   apply Nat.lt_of_not_ge
   intro baseline
   apply targetAvoiding
@@ -740,18 +758,18 @@ theorem exactInducedPathComponent_allSubsets_minDegree_lt
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
     (support : Finset
-      (presentation.object.read (residualOf previous)).Vertex)
+      (presentation.object (residualOf previous)).Vertex)
     (support_subset : support ⊆
       Graph.SupportComponents.Connected.members
-        (presentation.object.read (residualOf previous))
+        (presentation.object (residualOf previous))
         (exactInducedPathComplementSupport presentation packingQuery exact)
         piece.down) :
-    ((presentation.object.read (residualOf previous)).induce support).minDegree <
-      presentation.baselineDegree.read (residualOf previous) :=
+    ((presentation.object (residualOf previous)).induce support).minDegree <
+      presentation.baselineDegree (residualOf previous) :=
   exactInducedPathSubset_minDegree_lt presentation packingQuery exact
     obstructionSelected targetAvoiding support
     (support_subset.trans
@@ -782,26 +800,26 @@ theorem exactInducedPathComponent_exists_degree_lt
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
     (support : Finset
-      (presentation.object.read (residualOf previous)).Vertex)
+      (presentation.object (residualOf previous)).Vertex)
     (support_nonempty : support.Nonempty)
     (support_subset : support ⊆
       Graph.SupportComponents.Connected.members
-        (presentation.object.read (residualOf previous))
+        (presentation.object (residualOf previous))
         (exactInducedPathComplementSupport presentation packingQuery exact)
         piece.down) :
-    ∃ vertex : (presentation.object.read
+    ∃ vertex : (presentation.object
         (residualOf previous)).Vertex,
       ∃ member : vertex ∈ support,
-        ((presentation.object.read (residualOf previous)).induce support).degree
+        ((presentation.object (residualOf previous)).induce support).degree
             ⟨vertex, member⟩ <
-          presentation.baselineDegree.read (residualOf previous) := by
+          presentation.baselineDegree (residualOf previous) := by
   classical
-  let object := presentation.object.read (residualOf previous)
-  let baseline := presentation.baselineDegree.read (residualOf previous)
+  let object := presentation.object (residualOf previous)
+  let baseline := presentation.baselineDegree (residualOf previous)
   have minimumDegreeLt : (object.induce support).minDegree < baseline :=
     exactInducedPathComponent_allSubsets_minDegree_lt presentation packingQuery
       exact obstructionSelected targetAvoiding piece support support_subset
@@ -846,15 +864,15 @@ theorem exactInducedPathComponent_emptyInternalCore
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
     (member : piece ∈
       (exactInducedPathComponents presentation packingQuery exact).values) :
-    ¬ HasInternalCore (presentation.object.read (residualOf previous))
-        (presentation.baselineDegree.read (residualOf previous))
+    ¬ HasInternalCore (presentation.object (residualOf previous))
+        (presentation.baselineDegree (residualOf previous))
         (Graph.SupportComponents.Connected.members
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery exact)
           piece.down) := by
   let profile := inducedPathSupportComplement presentation packingQuery
@@ -885,20 +903,20 @@ theorem exactInducedPathComponent_subset_minDegree_lt_of_active
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
     (member : piece ∈
       (exactInducedPathComponents presentation packingQuery exact).values)
-    (core : Finset (presentation.object.read (residualOf previous)).Vertex)
+    (core : Finset (presentation.object (residualOf previous)).Vertex)
     (core_nonempty : core.Nonempty)
     (core_subset : core ⊆
       Graph.SupportComponents.Connected.members
-        (presentation.object.read (residualOf previous))
+        (presentation.object (residualOf previous))
         (exactInducedPathComplementSupport presentation packingQuery exact)
         piece.down) :
-    ((presentation.object.read (residualOf previous)).induce core).minDegree <
-      presentation.baselineDegree.read (residualOf previous) := by
+    ((presentation.object (residualOf previous)).induce core).minDegree <
+      presentation.baselineDegree (residualOf previous) := by
   by_contra notBelow
   exact exactInducedPathComponent_emptyInternalCore presentation packingQuery
     exact selected piece member
@@ -924,26 +942,26 @@ theorem exactInducedPathComponent_exists_degree_lt_of_active
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
     (member : piece ∈
       (exactInducedPathComponents presentation packingQuery exact).values)
-    (core : Finset (presentation.object.read (residualOf previous)).Vertex)
+    (core : Finset (presentation.object (residualOf previous)).Vertex)
     (core_nonempty : core.Nonempty)
     (core_subset : core ⊆
       Graph.SupportComponents.Connected.members
-        (presentation.object.read (residualOf previous))
+        (presentation.object (residualOf previous))
         (exactInducedPathComplementSupport presentation packingQuery exact)
         piece.down) :
-    ∃ vertex : (presentation.object.read (residualOf previous)).Vertex,
+    ∃ vertex : (presentation.object (residualOf previous)).Vertex,
       ∃ member : vertex ∈ core,
-        ((presentation.object.read (residualOf previous)).induce core).degree
+        ((presentation.object (residualOf previous)).induce core).degree
             ⟨vertex, member⟩ <
-          presentation.baselineDegree.read (residualOf previous) :=
+          presentation.baselineDegree (residualOf previous) :=
   exists_degree_lt_of_minDegree_lt
-    (presentation.object.read (residualOf previous))
-    (presentation.baselineDegree.read (residualOf previous))
+    (presentation.object (residualOf previous))
+    (presentation.baselineDegree (residualOf previous))
     core core_nonempty
     (exactInducedPathComponent_subset_minDegree_lt_of_active presentation
       packingQuery exact selected piece member core core_nonempty core_subset)
@@ -971,21 +989,21 @@ theorem exactInducedPathComponent_minDegree_lt
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
     (member : piece ∈
       (exactInducedPathComponents presentation packingQuery exact).values) :
-    ((presentation.object.read (residualOf previous)).induce
+    ((presentation.object (residualOf previous)).induce
       (Graph.SupportComponents.Connected.members
-        (presentation.object.read (residualOf previous))
+        (presentation.object (residualOf previous))
         (exactInducedPathComplementSupport presentation packingQuery exact)
         piece.down)).minDegree <
-      presentation.baselineDegree.read (residualOf previous) :=
+      presentation.baselineDegree (residualOf previous) :=
   exactInducedPathComponent_subset_minDegree_lt_of_active presentation
     packingQuery exact selected piece member
     (Graph.SupportComponents.Connected.members
-      (presentation.object.read (residualOf previous))
+      (presentation.object (residualOf previous))
       (exactInducedPathComplementSupport presentation packingQuery exact)
       piece.down)
     (exactInducedPathComponent_nonempty presentation packingQuery exact piece
@@ -1046,43 +1064,43 @@ theorem exactInducedPathComponent_deficiency_le_boundaryIncidence
         ((inducedPathPackingSemantics presentation).conflict
           (residualOf previous)))
     {previous : Previous}
-    [DecidableEq (presentation.object.read
+    [DecidableEq (presentation.object
       (residualOf previous)).Vertex]
     (exact :
       (inducedPathSupportComplement presentation packingQuery).ExactOutput
         previous)
     (minimumDegree :
-      presentation.baselineDegree.read (residualOf previous) ≤
-        (presentation.object.read (residualOf previous)).minDegree)
+      presentation.baselineDegree (residualOf previous) ≤
+        (presentation.object (residualOf previous)).minDegree)
     (piece :
       ULift.{u}
         (Graph.SupportComponents.Connected.Component
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery
             exact)))
-    (vertex : (presentation.object.read
+    (vertex : (presentation.object
       (residualOf previous)).Vertex) :
-    presentation.baselineDegree.read (residualOf previous) -
+    presentation.baselineDegree (residualOf previous) -
         (Graph.Strategy.Official.Features.SupportIncidenceLedger.insideNeighbors
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (Graph.SupportComponents.Connected.members
-            (presentation.object.read (residualOf previous))
+            (presentation.object (residualOf previous))
             (exactInducedPathComplementSupport presentation packingQuery exact)
             piece.down)
           vertex).length ≤
       (Graph.Strategy.Official.Features.SupportIncidenceLedger.outsideNeighbors
-        (presentation.object.read (residualOf previous))
+        (presentation.object (residualOf previous))
         (Graph.SupportComponents.Connected.members
-          (presentation.object.read (residualOf previous))
+          (presentation.object (residualOf previous))
           (exactInducedPathComplementSupport presentation packingQuery exact)
         piece.down)
         vertex).length := by
   exact supportDeficiency_le_boundaryIncidence
-    (presentation.object.read (residualOf previous))
-    (presentation.baselineDegree.read (residualOf previous))
+    (presentation.object (residualOf previous))
+    (presentation.baselineDegree (residualOf previous))
     minimumDegree
     (Graph.SupportComponents.Connected.members
-      (presentation.object.read (residualOf previous))
+      (presentation.object (residualOf previous))
       (exactInducedPathComplementSupport presentation packingQuery exact)
       piece.down)
     vertex
@@ -1093,29 +1111,36 @@ degree. -/
 noncomputable def boundaryDemand
     {Residual : Type u}
     (object : Residual → Graph.FiniteObject.{v})
-    (baselineDegree : Residual → Nat) :
-    Core.Strategy.BoundaryDemandAccounting.Registration.{u, v, v, v, v}
-      Residual where
-  Demand := fun residual => (object residual).Vertex
-  Payer := fun residual => (object residual).Vertex
-  demands := fun residual => vertices (object residual)
-  payers := fun residual => vertices (object residual)
-  Eligible := fun residual demand payer =>
-    (object residual).degree demand ≤ (object residual).degree payer
-  eligibleDecidable := fun _ _ _ => inferInstance
-  demandWeight := fun residual demand =>
-    baselineDegree residual - (object residual).degree demand
-  payerCapacity := fun residual payer =>
-    (object residual).degree payer
-  Member := fun residual => (object residual).Vertex
-  Label := fun residual => (object residual).Vertex
-  members := fun residual => vertices (object residual)
-  memberLowerMass := fun residual member =>
-    baselineDegree residual - (object residual).degree member
-  memberCapacityRate := fun residual member =>
-    (object residual).degree member
-  memberLabel := fun _ member => member
-  labelDecidableEq := fun residual => (vertices (object residual)).decEq
+    (baselineDegree : Residual → Nat)
+    {AmbientItem : Residual → Type w}
+    {ambient : (residual : Residual) →
+      Core.Finite.Enumeration (AmbientItem residual)}
+    {Block : Residual → Type uPiece}
+    {cover : (residual : Residual) → Block residual →
+      List (AmbientItem residual)}
+    (toVertex : ∀ residual, AmbientItem residual →
+      (object residual).Vertex)
+    (ambientLoad : ∀ residual item,
+      ((ambient residual).values.countP fun other =>
+        decide ((object residual).graph.Adj (toVertex residual item)
+          (toVertex residual other))) =
+        (object residual).degree (toVertex residual item))
+    (minimumDegree : ∀ residual,
+      baselineDegree residual ≤ (object residual).minDegree) :
+    Core.Strategy.BoundaryDemandAccounting.Registration.{u, w, uPiece}
+      Residual AmbientItem ambient Block cover where
+  Interaction := fun residual left right =>
+    (object residual).graph.Adj (toVertex residual left)
+      (toVertex residual right)
+  interactionDecidable := fun _ _ _ => inferInstance
+  interactionSymmetric := fun _ _ _ adjacent => adjacent.symm
+  baseline := baselineDegree
+  minimumLoad := by
+    intro residual item itemMem
+    have lower := (minimumDegree residual).trans
+      ((object residual).minDegree_le_degree (toVertex residual item))
+    rw [ambientLoad]
+    exact lower
 
 /-- Incidences of a vertex that stay inside a declared support. -/
 noncomputable def supportIncidence
@@ -1505,15 +1530,15 @@ theorem localSupply_localCells_toFinset
       Core.Strategy.SupportComplementNormalization.ExactLedger.{
         u, w, max u v, uPiece}
         Previous Residual
-        (fun previous => ULift.{u} (object (current.read previous)).Vertex))
+        (fun previous => ULift.{u} (object (current previous)).Vertex))
     (accounting : Core.Residual.Query Previous fun _ =>
       ULift.{uBoundary} Core.Strategy.BoundaryDemandAccounting.Summary)
     (previous : Previous) :
     ((Core.Strategy.LocalSupplyLowerBound.Profile.ofRegistrationAt
         (localSupply object baselineDegree) current normalizedSupport
-        accounting).localCells.read previous).toFinset =
-      supportOfComplement (object (current.read previous))
-        (normalizedSupport.complement.read previous) :=
+        accounting).localCells previous).toFinset =
+      supportOfComplement (object (current previous))
+        (normalizedSupport.complement previous) :=
   localSupply_members_toFinset object baselineDegree _ _
 
 /-- **Tie equation 1.**  The published member count is `|R|`, the cardinality
@@ -1528,7 +1553,7 @@ theorem localSupply_summary_remainder_eq_card
       Core.Strategy.SupportComplementNormalization.ExactLedger.{
         u, w, max u v, uPiece}
         Previous Residual
-        (fun previous => ULift.{u} (object (current.read previous)).Vertex))
+        (fun previous => ULift.{u} (object (current previous)).Vertex))
     (accounting : Core.Residual.Query Previous fun _ =>
       ULift.{uBoundary} Core.Strategy.BoundaryDemandAccounting.Summary)
     {previous : Previous}
@@ -1541,8 +1566,8 @@ theorem localSupply_summary_remainder_eq_card
         accounting).summaryOfResidual
       capacity).netDeficiency.remainder =
       (supportOfComplement
-        (object (current.read capacity.result.stage.previous))
-        (normalizedSupport.complement.read
+        (object (current capacity.result.stage.previous))
+        (normalizedSupport.complement
           capacity.result.stage.previous)).card := by
   rw [Core.Strategy.LocalSupplyLowerBound.Profile.summaryOfResidual_remainder_eq_card,
     localSupply_localCells_toFinset object baselineDegree current
@@ -1559,7 +1584,7 @@ theorem localSupply_summary_requiredMass_eq_sum
       Core.Strategy.SupportComplementNormalization.ExactLedger.{
         u, w, max u v, uPiece}
         Previous Residual
-        (fun previous => ULift.{u} (object (current.read previous)).Vertex))
+        (fun previous => ULift.{u} (object (current previous)).Vertex))
     (accounting : Core.Residual.Query Previous fun _ =>
       ULift.{uBoundary} Core.Strategy.BoundaryDemandAccounting.Summary)
     {previous : Previous}
@@ -1572,14 +1597,14 @@ theorem localSupply_summary_requiredMass_eq_sum
         accounting).summaryOfResidual capacity).requiredMass =
       ∑ vertex ∈
         supportOfComplement
-          (object (current.read capacity.result.stage.previous))
-          (normalizedSupport.complement.read capacity.result.stage.previous),
-        (baselineDegree (current.read capacity.result.stage.previous) -
+          (object (current capacity.result.stage.previous))
+          (normalizedSupport.complement capacity.result.stage.previous),
+        (baselineDegree (current capacity.result.stage.previous) -
           supportIncidence
-            (object (current.read capacity.result.stage.previous))
+            (object (current capacity.result.stage.previous))
             (supportOfComplement
-              (object (current.read capacity.result.stage.previous))
-              (normalizedSupport.complement.read
+              (object (current capacity.result.stage.previous))
+              (normalizedSupport.complement
                 capacity.result.stage.previous))
             vertex) := by
   rw [Core.Strategy.LocalSupplyLowerBound.Profile.summaryOfResidual_requiredMass_eq_sum,
@@ -1600,7 +1625,7 @@ theorem localSupply_summary_assignedSurplus_eq_sum
       Core.Strategy.SupportComplementNormalization.ExactLedger.{
         u, w, max u v, uPiece}
         Previous Residual
-        (fun previous => ULift.{u} (object (current.read previous)).Vertex))
+        (fun previous => ULift.{u} (object (current previous)).Vertex))
     (accounting : Core.Residual.Query Previous fun _ =>
       ULift.{uBoundary} Core.Strategy.BoundaryDemandAccounting.Summary)
     {previous : Previous}
@@ -1613,10 +1638,10 @@ theorem localSupply_summary_assignedSurplus_eq_sum
         accounting).summaryOfResidual capacity).assignedSurplus =
       ∑ vertex ∈
         supportOfComplement
-          (object (current.read capacity.result.stage.previous))
-          (normalizedSupport.complement.read capacity.result.stage.previous),
-        ((object (current.read capacity.result.stage.previous)).degree vertex -
-          baselineDegree (current.read capacity.result.stage.previous)) := by
+          (object (current capacity.result.stage.previous))
+          (normalizedSupport.complement capacity.result.stage.previous),
+        ((object (current capacity.result.stage.previous)).degree vertex -
+          baselineDegree (current capacity.result.stage.previous)) := by
   rw [Core.Strategy.LocalSupplyLowerBound.Profile.summaryOfResidual_assignedSurplus_eq_sum,
     localSupply_localCells_toFinset object baselineDegree current
       normalizedSupport accounting]
@@ -1824,43 +1849,43 @@ theorem exists_exactInducedPathComponent_negativeSupport
         exactInducedPathComplementSupport presentation packingQuery exact,
         ((multiplier : Int) *
               (baseline -
-                supportIncidence (presentation.object.read (residualOf previous))
+                supportIncidence (presentation.object (residualOf previous))
                   (exactInducedPathComplementSupport presentation packingQuery
                     exact) vertex : Nat) -
             (multiplier : Int) *
-              (((presentation.object.read (residualOf previous)).degree vertex -
+              (((presentation.object (residualOf previous)).degree vertex -
                 baseline : Nat) : Int) - 1) < 0) :
     ∃ piece ∈
         (exactInducedPathComponents presentation packingQuery exact).values,
       ∃ negativeSupport :
           Graph.NegativeSupport.Support
-            (presentation.object.read (residualOf previous)),
+            (presentation.object (residualOf previous)),
         negativeSupport.core =
             Graph.SupportComponents.Connected.members
-              (presentation.object.read (residualOf previous))
+              (presentation.object (residualOf previous))
               (exactInducedPathComplementSupport presentation packingQuery
                 exact) piece.down ∧
           negativeSupport.charge = fun vertex =>
             (multiplier : Int) *
                 (baseline -
                   supportIncidence
-                    (presentation.object.read (residualOf previous))
+                    (presentation.object (residualOf previous))
                     (Graph.SupportComponents.Connected.members
-                      (presentation.object.read (residualOf previous))
+                      (presentation.object (residualOf previous))
                       (exactInducedPathComplementSupport presentation
                         packingQuery exact) piece.down) vertex : Nat) -
               (multiplier : Int) *
-                (((presentation.object.read (residualOf previous)).degree
+                (((presentation.object (residualOf previous)).degree
                   vertex - baseline : Nat) : Int) - 1 := by
   classical
   obtain ⟨component, componentMem, componentNegative⟩ :=
     exists_component_negative_netCharge
-      (presentation.object.read (residualOf previous))
+      (presentation.object (residualOf previous))
       (exactInducedPathComplementSupport presentation packingQuery exact)
       baseline multiplier negative
   obtain ⟨negativeSupport, coreEq, chargeEq⟩ :=
     exists_negativeSupport_of_component_negative
-      (presentation.object.read (residualOf previous))
+      (presentation.object (residualOf previous))
       (exactInducedPathComplementSupport presentation packingQuery exact)
       _ component componentMem componentNegative
   refine ⟨ULift.up component, ?_, negativeSupport, coreEq, chargeEq⟩

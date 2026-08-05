@@ -29,13 +29,13 @@ structure Capability {Previous : Type uPrevious}
   admissibleDecidable : (previous : Previous) ->
     (cell : spec.Cell previous) -> Decidable (spec.Admissible previous cell)
   negativeTotal : Core.Residual.Query Previous fun previous =>
-    ((cells.read previous).values.map
+    ((cells previous).values.map
       (spec.localBudget previous)).sum < 0
   inputSize : Previous -> Nat
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (cells.read previous) <=
+    localCheckBound (cells previous) <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -46,14 +46,14 @@ variable {Previous : Type uPrevious}
 /-- Exact residual-owned cell order at one predecessor. -/
 def cellsAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Cell previous) :=
-  capability.cells.read previous
+  capability.cells previous
 
 /-- Registered strict-negative total for the exact queried order. -/
 theorem negativeTotalAt (capability : Capability spec)
     (previous : Previous) :
     ((capability.cellsAt previous).values.map
       (spec.localBudget previous)).sum < 0 :=
-  capability.negativeTotal.read previous
+  capability.negativeTotal previous
 
 /-- Framework-visible polynomial envelope for the complete two-pass scan. -/
 def polynomialBudget (capability : Capability spec) :

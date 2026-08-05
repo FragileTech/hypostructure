@@ -35,16 +35,16 @@ structure Profile (Previous : Type u) where
     FiniteBarrierEnumeration.Summary
   ambientCapacity : Query Previous fun _ => Nat
   ambientCapacity_pos : Query Previous fun previous =>
-    0 < ambientCapacity.read previous
+    0 < ambientCapacity previous
   /-- The compared `Summary` is Core-derived, so its `binaryRateFloor` really is
   a `log₂` of its own columns.  Produced at the barrier node; never a field a
   registration could fill. -/
   barrierDerived : Query Previous fun previous =>
-    FiniteBarrierEnumeration.Summary.Derived (barrierSummary.read previous)
+    FiniteBarrierEnumeration.Summary.Derived (barrierSummary previous)
   /-- The compared `Summary`'s flat column is nonvanishing, as proved and
   published inside the sealed barrier strategy. -/
   barrierFlatPositive : Query Previous fun previous =>
-    0 < (barrierSummary.read previous).flatProduct
+    0 < (barrierSummary previous).flatProduct
   /-- **`def:near-cubic-spine`, the node-`[19]` at-or-below branch load and
   table value this node was entered under.**  Not a registration field: Core
   reads it off the literal `scaleThresholdDichotomy` branch payload that
@@ -54,7 +54,7 @@ structure Profile (Previous : Type u) where
   degreeSurplusThreshold : Query Previous fun _ => Nat
   /-- The node-`[19]` at-or-below comparison itself. -/
   nearCubic : Query Previous fun previous =>
-    degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous
+    degreeSurplusLoad previous ≤ degreeSurplusThreshold previous
 
 /-- Lift the sole inert residual observable while retaining the
 producer-owned ledger queries verbatim.  The barrier facts arrive together with
@@ -69,14 +69,14 @@ def Profile.ofRegistration
     (registration : Registration Residual)
     (degreeSurplusLoad degreeSurplusThreshold : Query Previous fun _ => Nat)
     (nearCubic : Query Previous fun previous =>
-      degreeSurplusLoad.read previous ≤ degreeSurplusThreshold.read previous) :
+      degreeSurplusLoad previous ≤ degreeSurplusThreshold previous) :
     Profile Previous where
   packingCount := packingCount
   barrierSummary := barrierRate.summary
   ambientCapacity :=
     (Query.residual (Source := Previous) (Residual := Residual)).map
       fun _ residual => registration.ambientCapacity residual
-  ambientCapacity_pos := Query.ofFunction fun previous =>
+  ambientCapacity_pos :=  fun previous =>
     registration.ambientCapacity_pos (residualOf previous)
   barrierDerived := barrierRate.derived
   barrierFlatPositive := barrierRate.flatPositive
@@ -89,20 +89,20 @@ namespace Profile
 variable (profile : Profile Previous)
 
 def stateDemand (previous : Previous) : Nat :=
-  let summary := profile.barrierSummary.read previous
-  summary.safeProduct ^ profile.packingCount.read previous
+  let summary := profile.barrierSummary previous
+  summary.safeProduct ^ profile.packingCount previous
 
 def representedCapacity (previous : Previous) : Nat :=
-  let summary := profile.barrierSummary.read previous
-  summary.flatProduct ^ profile.packingCount.read previous *
-    profile.ambientCapacity.read previous
+  let summary := profile.barrierSummary previous
+  summary.flatProduct ^ profile.packingCount previous *
+    profile.ambientCapacity previous
 
 def canonicalMembers : Core.Finite.Enumeration Unit :=
   Core.Finite.Enumeration.singleton ()
 
 def members (Previous : Type u) :
     Query Previous fun _ => Core.Finite.Enumeration Unit :=
-  Query.ofFunction fun _ => canonicalMembers
+   fun _ => canonicalMembers
 
 def spec : CT14.Spec Previous where
   Member := fun _ => Unit
@@ -119,10 +119,10 @@ def workDegree : Nat :=
   Fintype.card Unit
 
 theorem workBound (previous : Previous) :
-    CT14.localCheckBound ((members Previous).read previous) ≤
+    CT14.localCheckBound ((members Previous) previous) ≤
       workCoefficient *
-        (((members Previous).read previous).card + 1) ^ workDegree := by
-  simp only [members, Query.read_ofFunction, workCoefficient, workDegree,
+        (((members Previous) previous).card + 1) ^ workDegree := by
+  simp only [members, workCoefficient, workDegree,
     Fintype.card_unit, Nat.pow_one]
   exact Nat.le_mul_of_pos_right _
     (by omega : 0 < canonicalMembers.card + 1)
@@ -130,7 +130,7 @@ theorem workBound (previous : Previous) :
 def capability : CT14.Capability profile.spec where
   members := members Previous
   labelDecidableEq := fun _ => inferInstanceAs (DecidableEq Unit)
-  inputSize := fun previous => ((members Previous).read previous).card
+  inputSize := fun previous => ((members Previous) previous).card
   workCoefficient := workCoefficient
   workDegree := workDegree
   workBound := workBound
@@ -216,7 +216,7 @@ ambient state space; it does not inspect or reconstruct the packing. -/
 theorem OverflowResidual.packingCount_pos
     {previous : Previous}
     (residual : profile.OverflowResidual previous) :
-    0 < profile.packingCount.read previous := by
+    0 < profile.packingCount previous := by
   have overflow : profile.representedCapacity previous <
       profile.stateDemand previous := by
     cases outcomeEq : residual.outcome with
@@ -230,11 +230,13 @@ theorem OverflowResidual.packingCount_pos
           Core.Finite.Enumeration.singleton,
           Core.Finite.Enumeration.ofNodupList, spec] using exactComparison
   by_contra notPositive
-  have packingZero : profile.packingCount.read previous = 0 :=
+  have packingZero : profile.packingCount previous = 0 :=
     Nat.eq_zero_of_not_pos notPositive
-  have capacityPositive := profile.ambientCapacity_pos.read previous
-  simp [stateDemand, representedCapacity, packingZero] at overflow
-  omega
+  have capacityAtLeastOne : 1 ≤ profile.ambientCapacity previous :=
+    profile.ambientCapacity_pos previous
+  have capacityLessOne : profile.ambientCapacity previous < 1 := by
+    simpa [stateDemand, representedCapacity, packingZero] using overflow
+  exact (Nat.not_lt_of_ge capacityAtLeastOne) capacityLessOne
 
 /-- Query-only interface to the exact selected overflow ledger entry. -/
 noncomputable def overflowLedger (profile : Profile Previous) :
@@ -248,8 +250,8 @@ noncomputable def overflowLedger (profile : Profile Previous) :
     capacity := selected.map fun _ residual =>
       match residual.outcome with
       | .aggregate ledger _ => ledger.capacity.total
-    overflow := Query.ofFunction fun stage =>
-      let residual := selected.read stage
+    overflow :=  fun stage =>
+      let residual := selected stage
       match outcomeEq : residual.outcome with
       | .aggregate _ certificate => by
           simpa [residual, outcomeEq] using certificate }
@@ -312,25 +314,25 @@ theorem CapResidual.two_pow_rate_mul_packingCount_le_ambientCapacity
     {previous : Previous} (residual : profile.CapResidual previous)
     {rate : Nat}
     (rateFloor :
-      2 ^ rate * (profile.barrierSummary.read previous).flatProduct ≤
-        (profile.barrierSummary.read previous).safeProduct)
+      2 ^ rate * (profile.barrierSummary previous).flatProduct ≤
+        (profile.barrierSummary previous).safeProduct)
     (flatPositive :
-      0 < (profile.barrierSummary.read previous).flatProduct) :
-    2 ^ (rate * profile.packingCount.read previous) ≤
-      profile.ambientCapacity.read previous := by
+      0 < (profile.barrierSummary previous).flatProduct) :
+    2 ^ (rate * profile.packingCount previous) ≤
+      profile.ambientCapacity previous := by
   have cap := residual.stateDemand_le_representedCapacity
-  set packing := profile.packingCount.read previous with packingDef
-  set flat := (profile.barrierSummary.read previous).flatProduct with flatDef
-  set safe := (profile.barrierSummary.read previous).safeProduct with safeDef
+  set packing := profile.packingCount previous with packingDef
+  set flat := (profile.barrierSummary previous).flatProduct with flatDef
+  set safe := (profile.barrierSummary previous).safeProduct with safeDef
   have capExact : safe ^ packing ≤ flat ^ packing *
-      profile.ambientCapacity.read previous := by
+      profile.ambientCapacity previous := by
     simpa [stateDemand, representedCapacity, safeDef, flatDef, packingDef]
       using cap
   have raised : (2 ^ rate * flat) ^ packing ≤ safe ^ packing :=
     Nat.pow_le_pow_left rateFloor _
   rw [mul_pow, ← pow_mul] at raised
   have chain : 2 ^ (rate * packing) * flat ^ packing ≤
-      flat ^ packing * profile.ambientCapacity.read previous :=
+      flat ^ packing * profile.ambientCapacity previous :=
     le_trans raised capExact
   rw [mul_comm (flat ^ packing)] at chain
   exact Nat.le_of_mul_le_mul_right chain (Nat.pow_pos flatPositive)
@@ -354,21 +356,21 @@ noncomputable def capLedger (profile : Profile Previous) :
   { packingCount := profile.packingCount.preserve
     barrierSummary := profile.barrierSummary.preserve
     ambientCapacity := profile.ambientCapacity.preserve
-    cap := Query.ofFunction fun stage =>
-      (selected.read stage).stateDemand_le_representedCapacity
-    entropyCap := Query.ofFunction fun stage => by
-      change 2 ^ ((profile.barrierSummary.read stage.previous).binaryRateFloor *
-        profile.packingCount.read stage.previous) ≤
-        profile.ambientCapacity.read stage.previous
-      rcases (profile.barrierDerived.read stage.previous).two_pow_binaryRateFloor_mul_flatProduct_le_or_eq_zero with
+    cap :=  fun stage =>
+      (selected stage).stateDemand_le_representedCapacity
+    entropyCap :=  fun stage => by
+      change 2 ^ ((profile.barrierSummary stage.previous).binaryRateFloor *
+        profile.packingCount stage.previous) ≤
+        profile.ambientCapacity stage.previous
+      rcases (profile.barrierDerived stage.previous).two_pow_binaryRateFloor_mul_flatProduct_le_or_eq_zero with
         rateFloor | rateZero
       · simpa using
-          (selected.read stage).two_pow_rate_mul_packingCount_le_ambientCapacity
+          (selected stage).two_pow_rate_mul_packingCount_le_ambientCapacity
             (profile := profile) rateFloor
-            (profile.barrierFlatPositive.read stage.previous)
-      · have h := profile.ambientCapacity_pos.read stage.previous
+            (profile.barrierFlatPositive stage.previous)
+      · have h := profile.ambientCapacity_pos stage.previous
         simp only [rateZero, Nat.zero_mul, pow_zero]
-        omega
+        exact Nat.succ_le_iff.mpr h
     ambientCapacity_pos := profile.ambientCapacity_pos.preserve
     barrierDerived := profile.barrierDerived.preserve
     barrierFlatPositive := profile.barrierFlatPositive.preserve

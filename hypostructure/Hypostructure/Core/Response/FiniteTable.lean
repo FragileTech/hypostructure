@@ -370,14 +370,14 @@ def classificationNode [DecidableEq system.Value]
       (fun _previous => ExactSchedule system.Coordinate)) :
     Residual.Decision.Node Previous
       (fun previous => Distinguishes
-        (Table.build system representatives (scheduleQuery.read previous)))
+        (Table.build system representatives (scheduleQuery previous)))
       (fun previous => Neutrality
-        (Table.build system representatives (scheduleQuery.read previous))) :=
+        (Table.build system representatives (scheduleQuery previous))) :=
   Residual.Decision.Node.create
     (fun _previous => inferInstance)
     (fun previous absent =>
       (Table.build system representatives
-        (scheduleQuery.read previous)).neutralityOfNotDistinguishes absent)
+        (scheduleQuery previous)).neutralityOfNotDistinguishes absent)
 
 /-- Execute exact finite response classification while retaining the complete
 incoming ledger as the decision stage's literal predecessor. -/
@@ -388,9 +388,9 @@ def run [DecidableEq system.Value]
     (previous : Previous) :
     Residual.Decision.Stage
       (fun current => Distinguishes
-        (Table.build system representatives (scheduleQuery.read current)))
+        (Table.build system representatives (scheduleQuery current)))
       (fun current => Neutrality
-        (Table.build system representatives (scheduleQuery.read current))) :=
+        (Table.build system representatives (scheduleQuery current))) :=
   (classificationNode system representatives scheduleQuery).run previous
 
 end LedgerExecution

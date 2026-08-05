@@ -25,8 +25,8 @@ theorem supportProfile_netQuarterCharge_eq :
     supportNetQuarterCharge_eq_augmented_add_centers supportProfile
 
 noncomputable def energyProfile : DynamicProfile Unit ℝ where
-  value := Hypostructure.Core.Residual.Query.ofFunction fun _ => (3 : ℝ) / 2
-  budget := Hypostructure.Core.Residual.Query.ofFunction fun _ => (2 : ℝ)
+  value := fun _ => (3 : ℝ) / 2
+  budget := fun _ => (2 : ℝ)
   within := by
     intro _
     change (3 : ℝ) / 2 ≤ 2

@@ -115,7 +115,7 @@ abbrev FocusedNoSubobjectBaselineOutput
     (context : Core.Residual.Focus.ActiveQuery focus fun _previous _active =>
       Core.MinimalCounterexampleContext P Target progress)
     (stage : Previous) (active : focus.Active stage) :=
-  NoSubobjectBaselineCertificate profile (context.read stage active)
+  NoSubobjectBaselineCertificate profile (context stage active)
 
 /-- Exact accumulated stage after focused minimality registration. -/
 abbrev FocusedNoSubobjectBaselineStage
@@ -152,7 +152,7 @@ def executeFocusedNoSubobjectBaselineCounted
         (progress := progress) (Subobject := Subobject) focus profile context)
     previous
     (fun active _checks _exact =>
-      deriveNoSubobjectBaseline profile (context.read previous active))
+      deriveNoSubobjectBaseline profile (context previous active))
 
 @[simp] theorem executeFocusedNoSubobjectBaselineCounted_checks
     {P : Problem.{uAmbient, uBranch}}

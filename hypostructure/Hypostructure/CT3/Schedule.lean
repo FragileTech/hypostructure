@@ -123,7 +123,7 @@ variable (contract : FocusedContract focus)
 /-- Pure schedule contract seen at one active predecessor. -/
 def scheduleAt (previous : Previous) (active : focus.Active previous) :
     Contract contract.Item where
-  items := contract.items.read previous active
+  items := contract.items previous active
   terminal := contract.terminal previous active
 
 def AllGood (previous : Previous) (active : focus.Active previous) : Prop :=
@@ -133,7 +133,7 @@ def HasResidual (previous : Previous) (active : focus.Active previous) : Prop :=
   (contract.scheduleAt previous active).HasResidual
 
 def FirstResidual (previous : Previous) (active : focus.Active previous) : Type :=
-  Search.IndexedHit (contract.items.read previous active)
+  Search.IndexedHit (contract.items previous active)
     (contract.scheduleAt previous active).ResidualTerminal
 
 def FirstResidual.hasResidual {previous : Previous}
@@ -204,10 +204,10 @@ def allGoodRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
       ∃ allGood : contract.AllGood stage.previous active,
-        contract.latestCertificate.read stage active =
+        contract.latestCertificate stage active =
           Certificate.allGood allGood)
     (fun stage active => Counted.pure (by
-      cases certificate : contract.latestCertificate.read stage active with
+      cases certificate : contract.latestCertificate stage active with
       | allGood allGood => exact isTrue ⟨allGood, rfl⟩
       | hasResidual _ =>
           exact isFalse (by
@@ -221,10 +221,10 @@ def residualRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
       ∃ firstResidual : contract.FirstResidual stage.previous active,
-        contract.latestCertificate.read stage active =
+        contract.latestCertificate stage active =
           Certificate.hasResidual firstResidual)
     (fun stage active => Counted.pure (by
-      cases certificate : contract.latestCertificate.read stage active with
+      cases certificate : contract.latestCertificate stage active with
       | allGood _ =>
           exact isFalse (by
             intro witness
@@ -243,13 +243,13 @@ abbrev residualFocus : Focus.Profile contract.Stage :=
 def allGoodQuery :
     Focus.ActiveQuery contract.allGoodFocus fun stage active =>
       contract.AllGood stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun _stage active =>
+  fun _stage active =>
     Classical.choose active.accepted
 
 noncomputable def residualQuery :
     Focus.ActiveQuery contract.residualFocus fun stage active =>
       contract.FirstResidual stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun _stage active =>
+  fun _stage active =>
     Classical.choose active.accepted
 
 noncomputable def hasResidualQuery :
@@ -267,9 +267,9 @@ noncomputable def residualItemQuery :
 noncomputable def residualTerminalQuery :
     Focus.ActiveQuery contract.residualFocus fun stage active =>
       (contract.scheduleAt stage.previous active.parent).ResidualTerminal
-        (contract.residualItemQuery.read stage active) :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    (contract.residualQuery.read stage active).sound
+        (contract.residualItemQuery stage active) :=
+  fun stage active =>
+    (contract.residualQuery stage active).sound
 
 end FocusedContract
 

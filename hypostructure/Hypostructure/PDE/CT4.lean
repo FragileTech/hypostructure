@@ -29,12 +29,12 @@ def windowChargingSpec {Previous : Type uPrevious}
   Demand := Demand
   Payer := fun _previous => M.atlas.Window
   Eligible := fun previous demand window =>
-    Eligible previous (state.read previous) demand window
+    Eligible previous (state previous) demand window
   demandWeight := fun previous demand =>
-    demandWeight previous (state.read previous) demand
+    demandWeight previous (state previous) demand
   capacity := fun previous window =>
-    capacity previous (state.read previous) window
-  required := fun previous => required previous (state.read previous)
+    capacity previous (state previous) window
+  required := fun previous => required previous (state previous)
 
 /-- Build the PDE window-charging capability from two exact ledger queries,
 one primitive semantic decider, and a verifier-work envelope. -/
@@ -60,7 +60,7 @@ def windowChargingCapability {Previous : Type uPrevious}
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
       _root_.Hypostructure.CT4.localCheckBound
-          (demands.read previous) (windows.read previous) <=
+          (demands previous) (windows previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT4.Capability
       (windowChargingSpec M state Demand Eligible demandWeight capacity
@@ -68,7 +68,7 @@ def windowChargingCapability {Previous : Type uPrevious}
   demands := demands
   payers := windows
   eligibleDecidable := fun previous demand window =>
-    eligibleDecidable previous (state.read previous) demand window
+    eligibleDecidable previous (state previous) demand window
   inputSize := inputSize
   workCoefficient := workCoefficient
   workDegree := workDegree

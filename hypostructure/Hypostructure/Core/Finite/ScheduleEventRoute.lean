@@ -25,10 +25,10 @@ structure Seed {Previous : Type uPrevious} {focus : Focus.Profile Previous}
     (stage : contract.Stage) where
   active : contract.hitFocus.Active stage
   item : contract.Item
-  member : item ∈ (contract.schedule.read stage.previous active.parent).values
+  member : item ∈ (contract.schedule stage.previous active.parent).values
   output : contract.Output stage.previous active.parent item
   output_exact :
-    output = (contract.runner.read stage.previous active.parent) item
+    output = (contract.runner stage.previous active.parent) item
   event : contract.event stage.previous active.parent item output
 
 namespace Seed
@@ -42,7 +42,7 @@ variable
 noncomputable def ofActive (stage : contract.Stage)
     (active : contract.hitFocus.Active stage) :
     Seed stage := by
-  let hit := contract.hitQuery.read stage active
+  let hit := contract.hitQuery stage active
   let item := Classical.choose hit
   let rest := Classical.choose_spec hit
   let member := rest.1
@@ -51,14 +51,14 @@ noncomputable def ofActive (stage : contract.Stage)
     { active := active
       item := item
       member := member
-      output := (contract.runner.read stage.previous active.parent) item
+      output := (contract.runner stage.previous active.parent) item
       output_exact := rfl
       event := event }
 
 @[simp] theorem ofActive_output_exact (stage : contract.Stage)
     (active : contract.hitFocus.Active stage) :
     (ofActive stage active).output =
-      (contract.runner.read stage.previous active.parent)
+      (contract.runner stage.previous active.parent)
         (ofActive stage active).item :=
   (ofActive stage active).output_exact
 

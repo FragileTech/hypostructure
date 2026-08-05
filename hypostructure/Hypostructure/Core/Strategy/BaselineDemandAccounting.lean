@@ -47,19 +47,19 @@ variable (profile :
 def spec : CT5.Spec Previous where
   budget := profile.registration.budget
   Site := fun previous =>
-    profile.registration.Site (profile.current.read previous)
+    profile.registration.Site (profile.current previous)
   Witness := fun previous =>
-    profile.registration.Witness (profile.current.read previous)
+    profile.registration.Witness (profile.current previous)
   Active := fun previous =>
-    profile.registration.Active (profile.current.read previous)
+    profile.registration.Active (profile.current previous)
   Supports := fun previous =>
-    profile.registration.Supports (profile.current.read previous)
+    profile.registration.Supports (profile.current previous)
   contribution := fun previous =>
-    profile.registration.contribution (profile.current.read previous)
+    profile.registration.contribution (profile.current previous)
   required := fun previous =>
-    profile.registration.required (profile.current.read previous)
+    profile.registration.required (profile.current previous)
   capacity := fun previous =>
-    profile.registration.capacity (profile.current.read previous)
+    profile.registration.capacity (profile.current previous)
 
 def family : Query Previous fun previous =>
     Core.Finite.DependentEnumeration
@@ -70,9 +70,9 @@ def family : Query Previous fun previous =>
 def capability : CT5.Capability profile.spec where
   family := profile.family
   activeDecidable := fun previous =>
-    profile.registration.activeDecidable (profile.current.read previous)
+    profile.registration.activeDecidable (profile.current previous)
   supportsDecidable := fun previous =>
-    profile.registration.supportsDecidable (profile.current.read previous)
+    profile.registration.supportsDecidable (profile.current previous)
   resourceLEDecidable := profile.registration.resourceLEDecidable
 
 noncomputable def execution : CTExecution Previous :=

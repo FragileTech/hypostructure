@@ -19,12 +19,12 @@ structure OrderedNegativeBudgetProfile (Previous : Type uPrevious) where
   cells : Core.Residual.Query Previous fun previous =>
     Core.Finite.Enumeration (Cell previous)
   negativeTotal : Core.Residual.Query Previous fun previous =>
-    ((cells.read previous).values.map (localBudget previous)).sum < 0
+    ((cells previous).values.map (localBudget previous)).sum < 0
   inputSize : Previous -> Nat
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (cells.read previous) <=
+    localCheckBound (cells previous) <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace OrderedNegativeBudgetProfile

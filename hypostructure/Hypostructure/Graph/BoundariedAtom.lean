@@ -398,7 +398,7 @@ structure FocusedBoundariedAtomCertificate
           (lexicographicProgress Baseline BranchState)))
     (previous : Previous) (active : focus.Active previous) where
   private mk ::
-  registration : BoundariedAtomRegistration (context.read previous active)
+  registration : BoundariedAtomRegistration (context previous active)
   checks : Nat
   checks_eq_budget : checks = focus.selectionBudget.checks previous
 
@@ -492,7 +492,7 @@ def executeFocusedBoundariedAtomRegistrationCounted
     (previous : Previous) :
     Core.Counted (FocusedBoundariedAtomStage focus context) :=
   Core.Residual.Focus.runCounted focus previous fun active checks exact =>
-    .mk (deriveBoundariedAtomRegistration (context.read previous active))
+    .mk (deriveBoundariedAtomRegistration (context previous active))
       checks exact
 
 /-- Public focused successor; exact work remains stored in its private latest
@@ -620,7 +620,7 @@ def focusedBoundariedAtomRegistrationQuery
     Core.Residual.Focus.ActiveQuery
       (FocusedBoundariedAtomProfile focus context)
       (fun stage active =>
-        BoundariedAtomRegistration (context.read stage.previous active)) :=
+        BoundariedAtomRegistration (context stage.previous active)) :=
   (focusedBoundariedAtomCertificateQuery focus context).map
     fun _stage _active certificate => certificate.registration
 

@@ -449,16 +449,16 @@ def formQuery : Core.Residual.Query Budgets.NatStage
     (Added := fun _ => Core.ResourceTranscript.Transcript Budgets.natInput)
 
 def quotientAt (previous : Budgets.NatStage) :
-    RepresentedQuotient (formQuery.read previous) Real :=
-  representedQuotient (formQuery.read previous)
+    RepresentedQuotient (formQuery previous) Real :=
+  representedQuotient (formQuery previous)
 
 def matchingGeneratorAt (previous : Budgets.NatStage) :
-    QuotientGenerator (formQuery.read previous) (quotientAt previous) :=
-  matchingGenerator (formQuery.read previous)
+    QuotientGenerator (formQuery previous) (quotientAt previous) :=
+  matchingGenerator (formQuery previous)
 
 def zeroGeneratorAt (previous : Budgets.NatStage) :
-    QuotientGenerator (formQuery.read previous) (quotientAt previous) :=
-  zeroQuotientGenerator (formQuery.read previous)
+    QuotientGenerator (formQuery previous) (quotientAt previous) :=
+  zeroQuotientGenerator (formQuery previous)
 
 noncomputable def topGeometry : DefectGeometry Real where
   carrier := ⊤

@@ -143,7 +143,7 @@ end FiniteInteraction
 quantities are finite sums over the predecessor-owned item and block
 schedules.  In particular `blockCount` is the number of blocks, not the size
 of their union. -/
-structure SupplyLedger where
+structure SupplyAccount where
   positiveDeficiency : Nat
   boundarySupply : Nat
   blockBoundarySupply : Nat
@@ -167,7 +167,7 @@ structure SupplyLedger where
 their primitive interaction laws.  This operation performs no routing and
 accepts no advertised conclusion: each published inequality is derived here
 from the pointwise load split and the exact additive block account. -/
-def SupplyLedger.ofFiniteInteraction
+def SupplyAccount.ofFiniteInteraction
     {Item : Type uDemand} {Block : Type uPayer}
     (baseline order : Nat)
     (items : Core.Finite.Enumeration Item)
@@ -186,7 +186,7 @@ def SupplyLedger.ofFiniteInteraction
       blockInternal block = 2 * (order - 1))
     (stubRate : Nat)
     (stubRateExact : stubRate + 2 * (order - 1) = baseline * order) :
-    SupplyLedger := by
+    SupplyAccount := by
   let deficiency :=
     FiniteInteraction.positiveDeficiency baseline internal items
   let supply := FiniteInteraction.boundarySupply boundary items
@@ -280,26 +280,29 @@ not a registration field: Core constructs it as a typed ledger query from the
 actual producer entry and multiplies the registered capacity rate by its
 extensive selected count in the profile, exactly as `FiniteDensityBudget`
 combines its two producer queries with its one inert residual observable. -/
-structure Registration (Residual : Type uResidual) where
-  Demand : Residual → Type uDemand
-  Payer : Residual → Type uPayer
-  demands : (residual : Residual) → Core.Finite.Enumeration (Demand residual)
-  payers : (residual : Residual) → Core.Finite.Enumeration (Payer residual)
-  Eligible : (residual : Residual) → Demand residual → Payer residual → Prop
-  eligibleDecidable : (residual : Residual) →
-    (demand : Demand residual) → (payer : Payer residual) →
-      Decidable (Eligible residual demand payer)
-  demandWeight : (residual : Residual) → Demand residual → Nat
-  payerCapacity : (residual : Residual) → Payer residual → Nat
-  Member : Residual → Type uMember
-  Label : Residual → Type uLabel
-  members : (residual : Residual) → Core.Finite.Enumeration (Member residual)
-  /-- Per-member demand mass CT14 accumulates on the lower side. -/
-  memberLowerMass : (residual : Residual) → Member residual → Nat
-  /-- Per-member capacity *rate*.  Core multiplies it by the exact selected
-  count published by the preceding support-complement normalization. -/
-  memberCapacityRate : (residual : Residual) → Member residual → Nat
-  memberLabel : (residual : Residual) → Member residual → Label residual
-  labelDecidableEq : (residual : Residual) → DecidableEq (Label residual)
+structure Registration (Residual : Type uResidual)
+    (AmbientItem : Residual → Type uDemand)
+    (ambient : (residual : Residual) →
+      Core.Finite.Enumeration (AmbientItem residual))
+    (Block : Residual → Type uPayer)
+    (cover : (residual : Residual) → Block residual →
+      List (AmbientItem residual)) where
+  /-- Primitive finite interaction.  In the graph adapter this is adjacency;
+  Core only sees a decidable symmetric relation. -/
+  Interaction : (residual : Residual) →
+    AmbientItem residual → AmbientItem residual → Prop
+  interactionDecidable : (residual : Residual) →
+    (left right : AmbientItem residual) →
+      Decidable (Interaction residual left right)
+  interactionSymmetric : ∀ residual left right,
+    Interaction residual left right → Interaction residual right left
+  baseline : Residual → Nat
+  /-- The baseline is bounded by the literal ambient interaction load.  This
+  is an inherited residual invariant, not an accounting conclusion. -/
+  minimumLoad : ∀ residual item, item ∈ (ambient residual).values →
+    baseline residual ≤
+      ((ambient residual).values.countP fun other =>
+        @decide (Interaction residual item other)
+          (interactionDecidable residual item other))
 
 end Hypostructure.Core.Strategy.BoundaryDemandAccounting

@@ -46,10 +46,10 @@ def highSplit {Previous : Type uPrevious}
     (profile : Profile (M := M) (Previous := Previous))
     (previous : Previous) :
     Core.SupportSplit.HighSplit (profile.Carrier previous)
-      (profile.source.read previous) where
-  high := profile.high previous (profile.state.read previous)
+      (profile.source previous) where
+  high := profile.high previous (profile.state previous)
   high_decidable := fun carrier =>
-    profile.highDecidable previous (profile.state.read previous) carrier
+    profile.highDecidable previous (profile.state previous) carrier
 
 def highValues {Previous : Type uPrevious}
     {M : PDE.LocalModel.{uModel}}
@@ -100,7 +100,7 @@ abbrev Outcome {Previous : Type uPrevious}
     (profile : Profile (M := M) (Previous := Previous))
     (previous : Previous) :=
   Core.SupportSplit.Outcome (profile.Carrier previous)
-    (profile.source.read previous) (highSplit profile previous)
+    (profile.source previous) (highSplit profile previous)
 
 def execute {Previous : Type uPrevious}
     {M : PDE.LocalModel.{uModel}}

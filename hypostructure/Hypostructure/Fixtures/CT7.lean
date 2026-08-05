@@ -79,7 +79,7 @@ def capability : _root_.Hypostructure.CT7.Capability spec :=
       infer_instance)
     (fun previous coordinate =>
       realizesDecidable (Core.Residual.residualOf previous).mode
-        (representativesQuery.read previous).source coordinate)
+        (representativesQuery previous).source coordinate)
     (by
       intro previous context
       exact (Core.Residual.residualOf previous).contextsComplete context)

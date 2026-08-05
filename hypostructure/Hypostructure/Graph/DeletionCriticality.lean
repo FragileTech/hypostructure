@@ -305,20 +305,20 @@ def criticalModificationSemantics
       (profile := toCoreProfile minimality) Previous where
   context := context
   Atomic := fun previous =>
-    ULift.{max (u + 1) v, u} (context.read previous).G.graph.Dart
+    ULift.{max (u + 1) v, u} (context previous).G.graph.Dart
   Tight := fun previous =>
-    ULift.{max (u + 1) v, u} (profile.Carrier (context.read previous).G)
+    ULift.{max (u + 1) v, u} (profile.Carrier (context previous).G)
   Slack := fun previous =>
-    ULift.{max (u + 1) v, u} (profile.Carrier (context.read previous).G)
+    ULift.{max (u + 1) v, u} (profile.Carrier (context previous).G)
   Related := fun previous tight slack =>
-    (context.read previous).G.graph.Adj tight.down.1 slack.down.1
+    (context previous).G.graph.Adj tight.down.1 slack.down.1
   Critical := fun previous dart =>
-    profile.Critical (context.read previous).G dart.down
+    profile.Critical (context previous).G dart.down
   subobject := fun previous dart =>
-    ProperSubgraph.deleteEdge (context.read previous).G
-      ((context.read previous).G.edgeOfDart dart.down)
+    ProperSubgraph.deleteEdge (context previous).G
+      ((context previous).G.edgeOfDart dart.down)
   baseline_of_not_critical := fun previous dart noncritical =>
-    profile.baseline_of_not_critical (context.read previous).baseline
+    profile.baseline_of_not_critical (context previous).baseline
       dart.down noncritical
   atomic_of_related := fun _previous tight slack adjacent =>
     ULift.up ⟨(tight.down.1, slack.down.1), adjacent⟩
@@ -367,7 +367,7 @@ def deletionCriticalityOfLedger
     (incompatibility :
       Core.Strategy.CriticalModificationStructure.SlackIncompatibilityLedger
         (profile.criticalModificationSemantics minimality context) previous) :
-    DeletionCriticalityCertificate profile (context.read previous) where
+    DeletionCriticalityCertificate profile (context previous) where
   tightEndpoint := fun dart => criticality.critical (ULift.up dart)
   slackVerticesIndependent := fun leftSlack rightSlack adjacent =>
     incompatibility.incompatible (ULift.up ⟨_, leftSlack⟩)
@@ -470,14 +470,14 @@ def deletionCriticalityQuery
       fun stage =>
         DeletionCriticalityCertificate profile
           ((contextAfterDeletionCriticality profile minimality context
-            noSubobject).read stage) :=
-  Core.Residual.Query.ofFunction fun stage =>
+            noSubobject) stage) :=
+  fun stage =>
     deletionCriticalityOfLedger profile minimality context
       stage.previous.previous
       ((Core.Strategy.CriticalModificationStructure.criticalityQuery
         (profile.criticalModificationSemantics minimality context)
-        noSubobject).preserve.read stage)
-      (Core.Residual.Query.latest.read stage)
+        noSubobject).preserve stage)
+      (Core.Residual.Query.latest stage)
 
 /-! ## Pure minimum-degree convenience surface -/
 

@@ -62,7 +62,7 @@ noncomputable def inputs : Inputs () where
   package := ()
 
 noncomputable def profile : Profile Unit where
-  registration.inputs := Core.Residual.Query.ofFunction fun previous => by
+  registration.inputs := fun previous => by
     cases previous
     exact inputs
 
@@ -73,45 +73,45 @@ example : profile.execution.work () = 20 := by rfl
 
 /-! Every introduced fact is read from the final node-164 residual through
 the public ledger-query surface. -/
-example : inputs.interfaceAt164Query.read result = () := by rfl
+example : inputs.interfaceAt164Query result = () := by rfl
 example :
-    match inputs.decision146At164Query.read result with
+    match inputs.decision146At164Query result with
     | .yesBranch _ => False
     | .noBranch _ => True := by
   trivial
-example : inputs.routeAt164Query.read result = () := by rfl
-example : inputs.privateAt164Query.read result = () := by rfl
-example : inputs.auditAt164Query.read result = () := by rfl
-example : inputs.coldAt164Query.read result = () := by rfl
-example : inputs.filterAt164Query.read result = () := by rfl
-example : inputs.stubsAt164Query.read result = () := by rfl
-example : inputs.scanAt164Query.read result = () := by rfl
+example : inputs.routeAt164Query result = () := by rfl
+example : inputs.privateAt164Query result = () := by rfl
+example : inputs.auditAt164Query result = () := by rfl
+example : inputs.coldAt164Query result = () := by rfl
+example : inputs.filterAt164Query result = () := by rfl
+example : inputs.stubsAt164Query result = () := by rfl
+example : inputs.scanAt164Query result = () := by rfl
 example :
-    match inputs.decision154At164Query.read result with
+    match inputs.decision154At164Query result with
     | .yesBranch _ => False
     | .noBranch _ => True := by
   trivial
-example : inputs.certificateAt164Query.read result = () := by rfl
+example : inputs.certificateAt164Query result = () := by rfl
 example :
-    match inputs.decision156At164Query.read result with
+    match inputs.decision156At164Query result with
     | .yesBranch _ => True
     | .noBranch _ => False := by
   trivial
-example : inputs.germAt164Query.read result = () := by rfl
+example : inputs.germAt164Query result = () := by rfl
 example : True := by
-  have _bounded := inputs.bounded158At164Query.read result
+  have _bounded := inputs.bounded158At164Query result
   trivial
 example : True := by
-  have _witness := inputs.witness159At164Query.read result
+  have _witness := inputs.witness159At164Query result
   trivial
 example :
-    match inputs.decision160At164Query.read result with
+    match inputs.decision160At164Query result with
     | .yesBranch _ => True
     | .noBranch _ => False := by
   trivial
-example : inputs.evidenceAt164Query.read result = () := by rfl
-example : inputs.residual162At164Query.read result = () := by rfl
-example : inputs.package163At164Query.read result = () := by rfl
-example : inputs.package164At164Query.read result = () := by rfl
+example : inputs.evidenceAt164Query result = () := by rfl
+example : inputs.residual162At164Query result = () := by rfl
+example : inputs.package163At164Query result = () := by rfl
+example : inputs.package164At164Query result = () := by rfl
 
 end Hypostructure.Fixtures.ColdBranchAggregation

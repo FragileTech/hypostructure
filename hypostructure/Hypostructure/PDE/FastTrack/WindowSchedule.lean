@@ -50,7 +50,7 @@ def toOrderedWitnessScan
         Decidable (witness previous window))
     (exhaustive : (previous : Previous) ->
       (window : profile.Window previous) ->
-      window ∈ (profile.schedule.read previous).values ->
+      window ∈ (profile.schedule previous).values ->
       witness previous window ∨ ¬ witness previous window) :
     PDE.Strategy.OrderedWitnessScan Previous where
   Item := profile.Window
@@ -242,14 +242,14 @@ def activeValues (profile : Profile Previous) (previous : Previous) :
     List (profile.Window previous) := by
   letI : ∀ window, Decidable (profile.active previous window) :=
     profile.activeDecidable previous
-  exact (profile.schedule.read previous).values.filter
+  exact (profile.schedule previous).values.filter
     (fun window => decide (profile.active previous window))
 
 theorem activeValues_mem
     (profile : Profile Previous) (previous : Previous)
     {window : profile.Window previous}
     (membership : window ∈ activeValues profile previous) :
-    window ∈ (profile.schedule.read previous).values := by
+    window ∈ (profile.schedule previous).values := by
   classical
   simp [activeValues] at membership ⊢
   exact membership.1
@@ -258,7 +258,7 @@ theorem activeValues_nodup
     (profile : Profile Previous) (previous : Previous) :
     (activeValues profile previous).Nodup := by
   classical
-  exact (profile.schedule.read previous).nodup.filter _
+  exact (profile.schedule previous).nodup.filter _
 
 noncomputable def activeSchedule (profile : Profile Previous) :
     Core.Residual.Query Previous
@@ -272,38 +272,38 @@ noncomputable def activeSchedule (profile : Profile Previous) :
 theorem activeSchedule_mem
     (profile : Profile Previous) (previous : Previous)
     {window : profile.Window previous}
-    (index : Fin ((activeSchedule profile).read previous).card) :
-    (((activeSchedule profile).read previous).get index) ∈
-      (profile.schedule.read previous).values := by
+    (index : Fin ((activeSchedule profile) previous).card) :
+    (((activeSchedule profile) previous).get index) ∈
+      (profile.schedule previous).values := by
   have membership :
-      (((activeSchedule profile).read previous).get index) ∈
+      (((activeSchedule profile) previous).get index) ∈
         activeValues profile previous := by
-    change (((activeSchedule profile).read previous).get index) ∈
-      ((activeSchedule profile).read previous).values
-    exact ((activeSchedule profile).read previous).get_mem index
+    change (((activeSchedule profile) previous).get index) ∈
+      ((activeSchedule profile) previous).values
+    exact ((activeSchedule profile) previous).get_mem index
   exact activeValues_mem profile previous
     membership
 
 theorem activeSchedule_active
     (profile : Profile Previous) (previous : Previous)
-    (index : Fin ((activeSchedule profile).read previous).card) :
+    (index : Fin ((activeSchedule profile) previous).card) :
     profile.active previous
-      (((activeSchedule profile).read previous).get index) := by
+      (((activeSchedule profile) previous).get index) := by
   classical
   have membership :
-      (((activeSchedule profile).read previous).get index) ∈
+      (((activeSchedule profile) previous).get index) ∈
         activeValues profile previous :=
     by
-      change (((activeSchedule profile).read previous).get index) ∈
-        ((activeSchedule profile).read previous).values
-      exact ((activeSchedule profile).read previous).get_mem index
+      change (((activeSchedule profile) previous).get index) ∈
+        ((activeSchedule profile) previous).values
+      exact ((activeSchedule profile) previous).get_mem index
   simpa [activeValues] using (List.mem_filter.mp membership).2
 
 theorem mem_activeSchedule_iff
     (profile : Profile Previous) (previous : Previous)
     (window : profile.Window previous) :
-    window ∈ (activeSchedule profile |>.read previous).values ↔
-      window ∈ (profile.schedule.read previous).values ∧
+    window ∈ ((activeSchedule profile) previous).values ↔
+      window ∈ (profile.schedule previous).values ∧
         profile.active previous window := by
   classical
   change window ∈ activeValues profile previous ↔ _

@@ -27,9 +27,9 @@ def compactifiedSpec {Previous : Type uPrevious}
     _root_.Hypostructure.CT16.Spec Previous where
   Coordinate := fun _previous => Coordinate
   InSupport := fun previous coordinate =>
-    InSupport (object.read previous) coordinate
+    InSupport (object previous) coordinate
   ClosedCode := fun _previous => ClosedCode
-  closedCode := fun previous => closedCode (object.read previous)
+  closedCode := fun previous => closedCode (object previous)
   targetCode := fun _previous => targetCode
 
 /-- Build the PDE CT16 capability from the one residual-owned coordinate query,
@@ -51,7 +51,7 @@ def compactifiedCapability {Previous : Type uPrevious}
       (computeClosedCode object).value = closedCode object)
     (codeComputationBudget : Core.PolynomialCheckBudget Previous)
     (computeClosedCode_checks : forall previous,
-      (computeClosedCode (object.read previous)).checks =
+      (computeClosedCode (object previous)).checks =
         codeComputationBudget.checks previous)
     (inSupportDecidable : (selected : M.problem.Ambient) ->
       (coordinate : Coordinate) -> Decidable (InSupport selected coordinate))
@@ -61,11 +61,11 @@ def compactifiedCapability {Previous : Type uPrevious}
         closedCode targetCode) where
   coordinates := coordinates
   inSupportDecidable := fun previous coordinate =>
-    inSupportDecidable (object.read previous) coordinate
+    inSupportDecidable (object previous) coordinate
   codeComputation := {
-    run := fun previous => computeClosedCode (object.read previous)
+    run := fun previous => computeClosedCode (object previous)
     correct := fun previous =>
-      computeClosedCode_correct (object.read previous)
+      computeClosedCode_correct (object previous)
     budget := codeComputationBudget
     checks_eq := computeClosedCode_checks
   }

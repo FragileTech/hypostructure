@@ -311,7 +311,7 @@ structure AvoidingEvidence {Previous : Type uPrevious}
     (encoding : Encoding.{uPrevious, uCode} profile PublicTarget)
     (stage : Stage encoding) (active : encoding.SuccessorProfile.Active stage) where
   private mk ::
-  terminal_eq : (encoding.routeQuery.read stage active).terminal =
+  terminal_eq : (encoding.routeQuery stage active).terminal =
     _root_.Hypostructure.CT1.Terminal.avoiding
 
 namespace AvoidingEvidence
@@ -324,7 +324,7 @@ theorem avoids {Previous : Type uPrevious}
     {stage : Stage encoding} {active : encoding.SuccessorProfile.Active stage}
     (evidence : AvoidingEvidence encoding stage active) :
     Not (PublicTarget stage.previous active) :=
-  avoids_of_avoiding (encoding.routeQuery.read stage active)
+  avoids_of_avoiding (encoding.routeQuery stage active)
     evidence.terminal_eq
 
 /-- The retained avoiding route performs zero certificate checks. -/
@@ -334,8 +334,8 @@ theorem checks_eq_zero {Previous : Type uPrevious}
     {encoding : Encoding.{uPrevious, uCode} profile PublicTarget}
     {stage : Stage encoding} {active : encoding.SuccessorProfile.Active stage}
     (evidence : AvoidingEvidence encoding stage active) :
-    (encoding.routeQuery.read stage active).checks = 0 := by
-  rw [(encoding.routeQuery.read stage active).checks_eq_terminal,
+    (encoding.routeQuery stage active).checks = 0 := by
+  rw [(encoding.routeQuery stage active).checks_eq_terminal,
     evidence.terminal_eq]
 
 end AvoidingEvidence
@@ -347,7 +347,7 @@ structure C1Evidence {Previous : Type uPrevious}
     (encoding : Encoding.{uPrevious, uCode} profile PublicTarget)
     (stage : Stage encoding) (active : encoding.SuccessorProfile.Active stage) where
   private mk ::
-  terminal_eq : (encoding.routeQuery.read stage active).terminal =
+  terminal_eq : (encoding.routeQuery stage active).terminal =
     _root_.Hypostructure.CT1.Terminal.c1
 
 namespace C1Evidence
@@ -359,7 +359,7 @@ theorem target {Previous : Type uPrevious}
     {stage : Stage encoding} {active : encoding.SuccessorProfile.Active stage}
     (evidence : C1Evidence encoding stage active) :
     PublicTarget stage.previous active :=
-  target_of_c1 (encoding.routeQuery.read stage active) evidence.terminal_eq
+  target_of_c1 (encoding.routeQuery stage active) evidence.terminal_eq
 
 end C1Evidence
 
@@ -389,11 +389,11 @@ def Encoding.closeAvoidingContinueC1Counted {Previous : Type uPrevious}
     Core.Counted encoding.C1Stage :=
   Focus.runCounted encoding.SuccessorProfile
     (Output := C1Evidence encoding) stage fun active _checks _exact =>
-    let route := encoding.routeQuery.read stage active
+    let route := encoding.routeQuery stage active
     have notAvoiding : route.terminal ≠ _root_.Hypostructure.CT1.Terminal.avoiding := by
       intro avoiding
       exact (avoids_of_avoiding route avoiding)
-        (targetPossible.read stage active)
+        (targetPossible stage active)
     { terminal_eq := by
         cases terminal : route.terminal with
         | c1 => rfl
@@ -459,10 +459,10 @@ def Encoding.closeC1ContinueAvoidingCounted {Previous : Type uPrevious}
     Core.Counted encoding.AvoidingStage :=
   Focus.runCounted encoding.SuccessorProfile
     (Output := AvoidingEvidence encoding) stage fun active _checks _exact =>
-    let route := encoding.routeQuery.read stage active
+    let route := encoding.routeQuery stage active
     let impossibleTotal : Not (TotalTarget PublicTarget stage.previous) := by
       intro total
-      exact targetImpossible.read stage active (target_of_total total)
+      exact targetImpossible stage active (target_of_total total)
     { terminal_eq := route.terminal_avoiding_of_not_target impossibleTotal }
 
 /-- Public stage projection of the counted C1 closure. -/

@@ -4,7 +4,6 @@ import Hypostructure.Core.Strategy.Official.Availability
 import Hypostructure.Core.Strategy.Official.Syntax
 import Hypostructure.Core.Strategy.Official.FiniteTableKernel
 import Hypostructure.Core.Strategy.Official.Strategies.Dispatcher
-import Hypostructure.Core.Strategy.Official.CapabilityFlow
 import Hypostructure.Core.Strategy.Official.Strategies.MeasuredFiniteRouting
 import Hypostructure.Core.Strategy.Official.Features.DeletionFanAccounting
 import Hypostructure.Core.Strategy.Official.Features.ScaleDependentThreshold

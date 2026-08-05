@@ -27,10 +27,10 @@ def targetRelativeSpec {Previous : Type uPrevious}
     _root_.Hypostructure.CT15.Spec Previous where
   Coordinate := Coordinate
   TargetDependent := fun previous coordinate =>
-    TargetDependent previous (state.read previous) coordinate
+    TargetDependent previous (state previous) coordinate
   charge := fun previous coordinate =>
-    charge previous (state.read previous) coordinate
-  capacity := fun previous => capacity previous (state.read previous)
+    charge previous (state previous) coordinate
+  capacity := fun previous => capacity previous (state previous)
 
 /-- Supply only the residual-owned finite directions, primitive represented
 dependence decision, and work envelope to the common CT15 executor. -/
@@ -52,13 +52,13 @@ def targetRelativeCapability {Previous : Type uPrevious}
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
       _root_.Hypostructure.CT15.localCheckBound
-          (coordinates.read previous) <=
+          (coordinates previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT15.Capability
       (targetRelativeSpec M state Coordinate TargetDependent charge capacity) where
   coordinates := coordinates
   targetDependentDecidable := fun previous coordinate =>
-    targetDependentDecidable previous (state.read previous) coordinate
+    targetDependentDecidable previous (state previous) coordinate
   inputSize := inputSize
   workCoefficient := workCoefficient
   workDegree := workDegree

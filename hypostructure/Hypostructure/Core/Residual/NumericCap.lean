@@ -33,7 +33,7 @@ variable (contract : Contract profile)
 
 /-- The selected active predecessor is within the registered cap. -/
 def Within (previous : Previous) (active : profile.Active previous) : Prop :=
-  contract.load.read previous active <= contract.cap.read previous active
+  contract.load previous active <= contract.cap previous active
 
 /-- The complementary residual selected when the cap is exceeded. -/
 def Exceeds (previous : Previous) (active : profile.Active previous) : Prop :=
@@ -66,8 +66,8 @@ def decideCounted (previous : Previous) (active : profile.Active previous)
     (_exact : _selectionChecks = profile.selectionBudget.checks previous) :
     Counted (contract.Outcome previous active) :=
   if proof :
-      contract.load.read previous active <=
-        contract.cap.read previous active then
+      contract.load previous active <=
+        contract.cap previous active then
     ⟨.within (by
       unfold Within
       exact proof), 1⟩
@@ -83,8 +83,8 @@ def decideCounted (previous : Previous) (active : profile.Active previous)
       contract.comparisonBudget.checks previous := by
   unfold decideCounted comparisonBudget
   by_cases h :
-      contract.load.read previous active <=
-        contract.cap.read previous active <;>
+      contract.load previous active <=
+        contract.cap previous active <;>
     simp [h, PolynomialCheckBudget.constant]
 
 /-- Execute the cap split over the literal predecessor.  Inactive siblings
@@ -162,31 +162,31 @@ def outcomeQuery :
 def withinRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
-      match contract.outcomeQuery.read stage active with
+      match contract.outcomeQuery stage active with
       | .within _proof => True
       | .exceeds _proof => False)
     (fun stage active =>
-      match contract.outcomeQuery.read stage active with
+      match contract.outcomeQuery stage active with
       | .within _proof => ⟨.isTrue trivial, 1⟩
       | .exceeds _proof => ⟨.isFalse (by intro h; exact h), 1⟩)
     (PolynomialCheckBudget.constant (fun _stage => 0) 1)
     (fun stage active => by
-      cases contract.outcomeQuery.read stage active <;> rfl)
+      cases contract.outcomeQuery stage active <;> rfl)
 
 /-- Refine the successor focus to the exceeded-cap branch. -/
 def exceedsRefinement : Focus.Refinement contract.successor :=
   Focus.Refinement.ofDecision
     (fun stage active =>
-      match contract.outcomeQuery.read stage active with
+      match contract.outcomeQuery stage active with
       | .within _proof => False
       | .exceeds _proof => True)
     (fun stage active =>
-      match contract.outcomeQuery.read stage active with
+      match contract.outcomeQuery stage active with
       | .within _proof => ⟨.isFalse (by intro h; exact h), 1⟩
       | .exceeds _proof => ⟨.isTrue trivial, 1⟩)
     (PolynomialCheckBudget.constant (fun _stage => 0) 1)
     (fun stage active => by
-      cases contract.outcomeQuery.read stage active <;> rfl)
+      cases contract.outcomeQuery stage active <;> rfl)
 
 /-- Focus containing exactly the live within-cap successor branch. -/
 abbrev withinFocus : Focus.Profile contract.Stage :=
@@ -201,8 +201,8 @@ within branch. -/
 def withinProofQuery :
     Focus.ActiveQuery contract.withinFocus fun stage active =>
       contract.Within stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun stage active => by
-    cases outcome : contract.outcomeQuery.read stage active.parent with
+  fun stage active => by
+    cases outcome : contract.outcomeQuery stage active.parent with
     | within proof => exact proof
     | exceeds _proof =>
         have selected := active.accepted
@@ -213,8 +213,8 @@ exceeded branch. -/
 def exceedsProofQuery :
     Focus.ActiveQuery contract.exceedsFocus fun stage active =>
       contract.Exceeds stage.previous active.parent :=
-  Focus.ActiveQuery.ofFunction fun stage active => by
-    cases outcome : contract.outcomeQuery.read stage active.parent with
+  fun stage active => by
+    cases outcome : contract.outcomeQuery stage active.parent with
     | within _proof =>
         have selected := active.accepted
         simp [exceedsRefinement, Focus.Refinement.ofDecision, outcome] at selected

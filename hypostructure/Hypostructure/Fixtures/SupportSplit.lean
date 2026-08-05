@@ -43,7 +43,7 @@ def sourceQuery : Query Unit (fun _unit => Source Nat) :=
     (fun _unit _value => source)
 
 def splitQuery : Query Unit (fun _unit =>
-    HighSplit Nat (sourceQuery.read _unit)) :=
+    HighSplit Nat (sourceQuery _unit)) :=
   sourceQuery.map (fun _unit _value => split)
 
 def stage := QuerySurface.stageNode sourceQuery splitQuery

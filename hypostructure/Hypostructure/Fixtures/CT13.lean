@@ -440,7 +440,7 @@ theorem verified : _root_.Hypostructure.CT13.OutcomeClaim result.outcome :=
   result.verified
 
 theorem retained_object :
-    objectQuery.read result.stage.previous =
+    objectQuery result.stage.previous =
       Hypostructure.Fixtures.GraphBasics.k4 := rfl
 
 end GraphAdapter
@@ -497,7 +497,7 @@ theorem verified : _root_.Hypostructure.CT13.OutcomeClaim result.outcome :=
   result.verified
 
 theorem retained_state :
-    stateQuery.read result.stage.previous =
+    stateQuery result.stage.previous =
       Hypostructure.Fixtures.PDEBasics.FiniteRestriction.sample := rfl
 
 end PDEAdapter

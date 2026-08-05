@@ -140,30 +140,30 @@ abbrev ObjectQuery :=
   Query Previous (fun _previous => FiniteObject.{u})
 
 abbrev SupportQuery (object : ObjectQuery) :=
-  Query Previous (fun previous => Support (object.read previous))
+  Query Previous (fun previous => Support (object previous))
 
 def highCentersQuery (object : ObjectQuery)
     (support : SupportQuery object)
     (threshold : Query Previous (fun _previous => Nat)) :
     Query Previous (fun previous =>
-      Finset (object.read previous).Vertex) :=
-  support.map fun previous value => value.highCenters (threshold.read previous)
+      Finset (object previous).Vertex) :=
+  support.map fun previous value => value.highCenters (threshold previous)
 
 noncomputable def hasHighDecisionQuery (object : ObjectQuery)
     (support : SupportQuery object)
     (threshold : Query Previous (fun _previous => Nat)) :
     Query Previous (fun previous =>
-      Decidable ((support.read previous).HasHigh (threshold.read previous))) :=
+      Decidable ((support previous).HasHigh (threshold previous))) :=
   support.dependentMap fun previous value =>
-    Support.hasHighDecidable value (threshold.read previous)
+    Support.hasHighDecidable value (threshold previous)
 
 noncomputable def hasNoHighDecisionQuery (object : ObjectQuery)
     (support : SupportQuery object)
     (threshold : Query Previous (fun _previous => Nat)) :
     Query Previous (fun previous =>
-      Decidable ((support.read previous).HasNoHigh (threshold.read previous))) :=
+      Decidable ((support previous).HasNoHigh (threshold previous))) :=
   support.dependentMap fun previous value =>
-    Support.hasNoHighDecidable value (threshold.read previous)
+    Support.hasNoHighDecidable value (threshold previous)
 
 end QuerySurface
 

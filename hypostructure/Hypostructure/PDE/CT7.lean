@@ -82,8 +82,8 @@ noncomputable def targetCapabilityOfExactContexts
     (contexts : Core.Residual.Query Previous fun _previous =>
       Core.Finite.Enumeration Coordinate)
     (complete : (previous : Previous) -> (context : Context) ->
-      Exists fun index : Fin (contexts.read previous).card =>
-        context = decode ((contexts.read previous).get index)) :
+      Exists fun index : Fin (contexts previous).card =>
+        context = decode ((contexts previous).get index)) :
     _root_.Hypostructure.CT7.Capability
       (targetSpec Previous M Target decideTarget Context tail Coordinate
         decode) :=
@@ -92,7 +92,7 @@ noncomputable def targetCapabilityOfExactContexts
       change DecidableEq Bool
       infer_instance)
     (fun previous coordinate =>
-      decideTarget ((representatives.read previous).source +
+      decideTarget ((representatives previous).source +
         tail (decode coordinate)))
     complete
 
@@ -121,8 +121,8 @@ noncomputable def targetCapabilityOfEquationState
     (contexts : Core.Residual.Query Previous fun _ =>
       Core.Finite.Enumeration Coordinate)
     (complete : (previous : Previous) → (context : Context) →
-      ∃ index : Fin (contexts.read previous).card,
-        context = decode ((contexts.read previous).get index)) :
+      ∃ index : Fin (contexts previous).card,
+        context = decode ((contexts previous).get index)) :
     _root_.Hypostructure.CT7.Capability
       (targetSpec Previous M Target decideTarget Context tail Coordinate
         decode) :=

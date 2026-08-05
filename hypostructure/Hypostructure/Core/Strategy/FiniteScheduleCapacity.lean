@@ -38,31 +38,31 @@ def residualQuery (profile : Profile Previous Residual) :
 def failureOrder (profile : Profile Previous Residual) :
     Query Previous fun previous =>
       Core.Finite.Enumeration
-        (profile.registration.Index (profile.residualQuery.read previous)) :=
+        (profile.registration.Index (profile.residualQuery previous)) :=
   profile.residualQuery.dependentMap fun _ residual =>
     profile.registration.failureOrder residual
 
 def rowSpec (profile : Profile Previous Residual) : CT6.Spec Previous where
   Index := fun previous =>
-    profile.registration.Index (profile.residualQuery.read previous)
+    profile.registration.Index (profile.residualQuery previous)
   FailureData := fun previous =>
-    profile.registration.FailureData (profile.residualQuery.read previous)
+    profile.registration.FailureData (profile.residualQuery previous)
   Failure := fun previous =>
-    profile.registration.Failure (profile.residualQuery.read previous)
+    profile.registration.Failure (profile.residualQuery previous)
   failureData := fun previous index failure =>
     profile.registration.failureData
-      (profile.residualQuery.read previous) index failure
+      (profile.residualQuery previous) index failure
   contribution := fun previous index =>
     profile.registration.rowContribution
-      (profile.residualQuery.read previous) index
+      (profile.residualQuery previous) index
 
 def rowCapability (profile : Profile Previous Residual) :
     CT6.Capability profile.rowSpec where
   failureOrder := profile.failureOrder
   failureDecidable := fun previous index =>
     profile.registration.failureDecidable
-      (profile.residualQuery.read previous) index
-  inputSize := fun previous => (profile.failureOrder.read previous).card
+      (profile.residualQuery previous) index
+  inputSize := fun previous => (profile.failureOrder previous).card
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -96,20 +96,20 @@ def contributionSpec (profile : Profile Previous Residual) :
     CT5.Spec profile.AfterRows where
   budget := profile.registration.budget
   Site := fun stage =>
-    profile.registration.Site (profile.residualAfterRows.read stage)
+    profile.registration.Site (profile.residualAfterRows stage)
   Witness := fun stage =>
-    profile.registration.Witness (profile.residualAfterRows.read stage)
+    profile.registration.Witness (profile.residualAfterRows stage)
   Active := fun stage =>
-    profile.registration.Active (profile.residualAfterRows.read stage)
+    profile.registration.Active (profile.residualAfterRows stage)
   Supports := fun stage =>
-    profile.registration.Supports (profile.residualAfterRows.read stage)
+    profile.registration.Supports (profile.residualAfterRows stage)
   contribution := fun stage =>
     profile.registration.witnessContribution
-      (profile.residualAfterRows.read stage)
+      (profile.residualAfterRows stage)
   required := fun stage =>
-    profile.registration.required (profile.residualAfterRows.read stage)
+    profile.registration.required (profile.residualAfterRows stage)
   capacity := fun stage =>
-    profile.registration.capacity (profile.residualAfterRows.read stage)
+    profile.registration.capacity (profile.residualAfterRows stage)
 
 def contributionFamily (profile : Profile Previous Residual) :
     Query profile.AfterRows fun stage =>
@@ -124,10 +124,10 @@ def contributionCapability (profile : Profile Previous Residual) :
   family := profile.contributionFamily
   activeDecidable := fun stage site =>
     profile.registration.activeDecidable
-      (profile.residualAfterRows.read stage) site
+      (profile.residualAfterRows stage) site
   supportsDecidable := fun stage site witness =>
     profile.registration.supportsDecidable
-      (profile.residualAfterRows.read stage) site witness
+      (profile.residualAfterRows stage) site witness
   resourceLEDecidable := profile.registration.resourceLEDecidable
 
 noncomputable def contributionExecution
@@ -156,19 +156,19 @@ def aggregateSpec (profile : Profile Previous Residual) :
     CT14.Spec profile.AfterContributions where
   Member := fun stage =>
     profile.registration.Member
-      (profile.residualAfterContributions.read stage)
+      (profile.residualAfterContributions stage)
   Label := fun stage =>
     profile.registration.Label
-      (profile.residualAfterContributions.read stage)
+      (profile.residualAfterContributions stage)
   memberLowerMass := fun stage member =>
     profile.registration.memberLowerMass
-      (profile.residualAfterContributions.read stage) member
+      (profile.residualAfterContributions stage) member
   memberCapacity := fun stage member =>
     profile.registration.memberCapacity
-      (profile.residualAfterContributions.read stage) member
+      (profile.residualAfterContributions stage) member
   memberLabel := fun stage member =>
     profile.registration.memberLabel
-      (profile.residualAfterContributions.read stage) member
+      (profile.residualAfterContributions stage) member
 
 def aggregateMembers (profile : Profile Previous Residual) :
     Query profile.AfterContributions fun stage =>
@@ -181,9 +181,9 @@ def aggregateCapability (profile : Profile Previous Residual) :
   members := profile.aggregateMembers
   labelDecidableEq := fun stage =>
     profile.registration.labelDecidableEq
-      (profile.residualAfterContributions.read stage)
+      (profile.residualAfterContributions stage)
   inputSize := fun stage =>
-    CT14.localCheckBound (profile.aggregateMembers.read stage)
+    CT14.localCheckBound (profile.aggregateMembers stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by

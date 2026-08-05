@@ -22,6 +22,7 @@ import Hypostructure.Core.Strategy.BoundaryDemandAccounting
 import Hypostructure.Core.Strategy.LocalSupplyLowerBound
 import Hypostructure.Core.Strategy.TargetRelativeRankDichotomy
 import Hypostructure.Core.Strategy.Validate
+import Hypostructure.Core.Residual.ExactLedger
 import Hypostructure.Core.Context
 import Hypostructure.Core.Residual.Stage
 
@@ -350,7 +351,7 @@ inductive RouteScope where
 
 /-- Core-owned resolution of one targetless autoroute marker.  The source and
 destination are stable structural vertex IDs.  Candidate discovery is
-structural; capability-flow elaboration subsequently checks that the selected
+structural; manifest verification subsequently checks that the selected
 continuation can be instantiated from the literal source ledger. -/
 structure ResolvedRoute where
   private mk ::
@@ -992,9 +993,12 @@ def Blueprint.autoroute (dag : Blueprint data .authoring)
 /-! ### Compiler-owned typed capabilities
 
 The same key-only capability algebra is used both while resolving targetless
-routes and while constructing the proof-carrying capability flow. -/
+routes and while verifying the exact fact manifest. -/
 
 private inductive CapabilityKey where
+  /-- Distinguished branch-closure fact required by the canonical fact
+  vocabulary.  It is never a strategy production. -/
+  | closed
   | obstructionPacking (index : Nat)
   | exactFiniteLocalCode
   | finiteBarrierSummary
@@ -1003,6 +1007,7 @@ private inductive CapabilityKey where
   | localSupplyLedger (index : Nat)
   | targetRankDrop
   | fullRankExactCode
+  | fullRankCertificate
   | independentRank
   | finiteStateCapacityContinuation
   | finiteDensityOverflow
@@ -1078,6 +1083,7 @@ private def StrategyKey.requirements
   | .finiteStateCapacity index, resolved =>
       let supplyIndex := (data.finiteStateCapacities[index]'resolved).fst
       [.independentRank, .finiteBarrierSummary,
+        .fullRankCertificate,
         .localSupplyLedger supplyIndex]
   | .finiteStateNetChargeContinuation, _ =>
       [.finiteStateCapacityContinuation, .finiteDensityCap]
@@ -1169,12 +1175,12 @@ private def BinaryStrategyRef.rightProductions
   match strategy.view with
   | .inr (.inl index) => [.nearCubicSpine index]
   | .inr (.inr (.inr (.inl _))) =>
-      [.fullRankExactCode, .independentRank]
+      [.fullRankExactCode, .fullRankCertificate, .independentRank]
   | .inr (.inr (.inr (.inr (.inl _)))) => [.finiteDensityCap]
   | .inr (.inr (.inr (.inr (.inr (.inl _))))) =>
       [.finiteStateCapacityContinuation]
   | .inr (.inr (.inr (.inr (.inr (.inr (.inr (.inl _))))))) =>
-      [.fullRankExactCode, .independentRank]
+      [.fullRankExactCode, .fullRankCertificate, .independentRank]
   | _ => []
 
 private def StrategyKey.requirementsMet
@@ -1183,6 +1189,20 @@ private def StrategyKey.requirementsMet
     (available : List CapabilityKey) : Bool :=
   (key.requirements data resolved).all fun required =>
     available.contains required
+
+/-- Computable no-duplicate boundary for one atomic publication. -/
+private def CapabilityKey.fresh
+    (produced available : List CapabilityKey) : Bool :=
+  produced.all fun key => !available.contains key
+
+private theorem CapabilityKey.not_mem_of_fresh
+    {produced available : List CapabilityKey}
+    (fresh : CapabilityKey.fresh produced available = true)
+    {key : CapabilityKey} (member : key ∈ produced) : key ∉ available := by
+  simp only [CapabilityKey.fresh, List.all_eq_true] at fresh
+  intro present
+  have rejected := fresh key member
+  simp [present] at rejected
 
 /-- One public proof entry.  Shared continuations are expressed structurally;
 targetless branch routes are resolved to compatible continuation entries by
@@ -1380,7 +1400,7 @@ private noncomputable def authoredWorkFast :
     dag
 
 /-- Capability result of an authored continuation.  This is the exact
-key-only counterpart of `CapabilityFlow`: it reads no ledger value and is
+key-only counterpart of `VerifiedManifest`: it reads no ledger value and is
 used only to discard structurally visible sibling entries whose registered
 requirements are unavailable at the route source. -/
 private noncomputable def authoredCapabilityOutput?
@@ -1425,8 +1445,8 @@ private noncomputable def authoredCapabilityOutput?
     (fun {mode} _ index _ rest =>
       match mode with
       | .authoring => fun available => do
-          let current ← rest available
-          some (.minimalClosureAt index.val :: .minimalContext :: current)
+          let _current ← rest available
+          some [.minimalClosureAt index.val, .minimalContext]
       | .expanded => ⟨⟩)
     (fun {mode} _ _ rest =>
       match mode with | .authoring => rest | .expanded => ⟨⟩)
@@ -1829,7 +1849,7 @@ private def liftScan (scan : ScanData.{uAmbient, uBranch, uData} P)
     [HasResidual Stage (Strategy.ProblemInput P)] :
     Strategy.OrderedWitnessScan Stage where
   Item := fun stage => scan.Item (residualOf stage)
-  schedule := Query.ofFunction fun stage => scan.schedule (residualOf stage)
+  schedule :=  fun stage => scan.schedule (residualOf stage)
   witness := fun stage item => scan.witness (residualOf stage) item
   witnessDecidable := fun stage item =>
     scan.witnessDecidable (residualOf stage) item
@@ -1850,7 +1870,7 @@ private def liftResponse (response : ResponseData.{uAmbient, uBranch, uData} P)
     Strategy.ResponseClassifier Stage where
   Item := fun stage => response.Item (residualOf stage)
   Response := fun stage => response.Response (residualOf stage)
-  schedule := Query.ofFunction fun stage =>
+  schedule :=  fun stage =>
     response.schedule (residualOf stage)
   observe := fun stage item => response.observe (residualOf stage) item
   Class := fun stage => response.Class (residualOf stage)
@@ -1870,7 +1890,7 @@ private def liftCapacity (capacity : CapacityData.{uAmbient, uBranch, uData} P)
     Strategy.CapacityLedger Stage where
   Item := fun stage => capacity.Item (residualOf stage)
   Class := fun stage => capacity.Class (residualOf stage)
-  schedule := Query.ofFunction fun stage =>
+  schedule :=  fun stage =>
     capacity.schedule (residualOf stage)
   classify := fun stage item => capacity.classify (residualOf stage) item
   contribution := fun stage item =>
@@ -1892,7 +1912,7 @@ private def liftLocalization
     [HasResidual Stage (Strategy.ProblemInput P)] :
     Strategy.SupportLocalization Stage where
   Cell := fun stage => localization.Cell (residualOf stage)
-  schedule := Query.ofFunction fun stage =>
+  schedule :=  fun stage =>
     localization.schedule (residualOf stage)
   localBudget := fun stage cell =>
     localization.localBudget (residualOf stage) cell
@@ -1930,7 +1950,7 @@ private def liftClosedCode
     [HasResidual Stage (Strategy.ProblemInput P)] :
     Strategy.ClosedCodeExhaustion Stage where
   Code := fun stage => closedCode.Code (residualOf stage)
-  schedule := Query.ofFunction fun stage =>
+  schedule :=  fun stage =>
     closedCode.schedule (residualOf stage)
   targetCode := fun stage => closedCode.targetCode (residualOf stage)
   observedCode := fun stage code =>
@@ -1994,7 +2014,7 @@ def MinimalSelectionStage.contextQuery
     [HasResidual Stage (Strategy.ProblemInput P)] :
     Query (MinimalSelectionStage (T := T) selection Stage) fun _ =>
       MinimalCounterexampleContext P T.Predicate selection.progress :=
-  Query.ofFunction fun selected => selected.ledger.added.context
+   fun selected => selected.ledger.added.context
 
 /-! The selected ambient object is the active residual exposed by the sealed
 minimal-counterexample selector. Consumers use this query instead of
@@ -2012,7 +2032,7 @@ def MinimalSelectionStage.activeResidualQuery
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
     (selected : MinimalSelectionStage (T := T) selection Stage) :
-    (MinimalSelectionStage.contextQuery (T := T) selection).read selected =
+    (MinimalSelectionStage.contextQuery (T := T) selection) selected =
       selected.ledger.added.context :=
   rfl
 
@@ -2021,7 +2041,7 @@ def MinimalSelectionStage.activeResidualQuery
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
     (selected : MinimalSelectionStage (T := T) selection Stage) :
-    (MinimalSelectionStage.activeResidualQuery (T := T) selection).read selected =
+    (MinimalSelectionStage.activeResidualQuery (T := T) selection) selected =
       selected.ledger.added.context.G :=
   rfl
 
@@ -2453,7 +2473,7 @@ private noncomputable def obstructionPackingRecipe
     [HasResidual Stage (Strategy.ProblemInput P)]
     (current : Query Stage fun _ => Strategy.ProblemInput P)
     (targetToRoot : Query Stage fun stage =>
-      T.Predicate (current.read stage).object →
+      T.Predicate (current stage).object →
         T.Predicate (residualOf stage).object) : Recipe P T Stage :=
   let profile :
       Core.Strategy.ObstructionPackingClosure.Profile.{
@@ -2464,7 +2484,7 @@ private noncomputable def obstructionPackingRecipe
     certify := fun stage payload =>
       match payload.snd.down with
       | Sum.inl _ => none
-      | Sum.inr target => some ⟨(targetToRoot.read stage) target.down⟩
+      | Sum.inr target => some ⟨(targetToRoot stage) target.down⟩
   }
 
 /-- Sealed lowering of the literal CT9→CT16 composition.  Registration is
@@ -2543,6 +2563,7 @@ inference works for every sequential or branched DAG. -/
 private def CapabilityKey.Result
     {P : Core.Problem.{uAmbient, uBranch}} {T : Core.Target P}
     (data : StrategyData.{uAmbient, uBranch, uData} P T) : CapabilityKey → Type
+  | .closed => Core.Residual.ClosureEvidence
   | .obstructionPacking _ => Unit
   | .exactFiniteLocalCode => List Bool
   | .finiteBarrierSummary =>
@@ -2555,6 +2576,8 @@ private def CapabilityKey.Result
       Core.Strategy.LocalSupplyLowerBound.Summary
   | .targetRankDrop
   | .fullRankExactCode => Unit
+  | .fullRankCertificate =>
+      Core.Strategy.TargetRelativeRankDichotomy.FullRankCertificate
   | .independentRank => Nat
   | .finiteStateCapacityContinuation => Unit
   | .finiteDensityOverflow => Unit
@@ -2609,7 +2632,7 @@ private structure NormalizedSupportCapability
     Stage (Strategy.ProblemInput P)
     (fun stage =>
       data.supportComplementNormalizations[index].snd.AmbientItem
-        (current.read stage))
+        (current stage))
   densityCap : Core.Strategy.FiniteDensityBudget.CapLedger Stage
 
 /-- Provenance-bearing CT14 capability.  It retains the normalized support
@@ -2628,12 +2651,12 @@ private structure LocalSupplyCapability
       data.supportComplementNormalizations[
         data.boundaryDemandAccountings[
           data.localSupplyLowerBounds[index].fst].fst].snd.AmbientItem
-        (current.read stage))
+        (current stage))
   exact : Core.Strategy.LocalSupplyLowerBound.ExactLedger.{
     uStage, max uAmbient uBranch, uData}
     Stage (Strategy.ProblemInput P)
     (fun stage => data.localSupplyLowerBounds[index].snd.Member
-      (current.read stage))
+      (current stage))
 
 /-- Producer-owned coupled-pressure ledger together with its exact selected
 fibre reindexed by the compiler's one current-input query. -/
@@ -2645,7 +2668,7 @@ private structure HomogeneousPressureOverloadCapability
   ledger : Core.Strategy.CoupledHomogeneousFibrePressure.OverloadLedger
     Stage (Strategy.ProblemInput P)
     data.coupledHomogeneousFibrePressures[index]
-  current_eq : ∀ stage, ledger.current.read stage = current.read stage
+  current_eq : ∀ stage, ledger.current stage = current stage
 
 /-- Producer-owned CT6 separator ledger and the exact selected separator
 indexed by the same compiler current-input query. -/
@@ -2657,229 +2680,859 @@ private structure BottleneckSeparatorCapability
   ledger : Core.Strategy.FiniteBottleneckClassification.SeparatorLedger
     Stage (Strategy.ProblemInput P)
     data.finiteBottleneckClassifications[index].snd
-  current_eq : ∀ stage, ledger.current.read stage = current.read stage
+  current_eq : ∀ stage, ledger.current stage = current stage
 
-/-- Exact typed queries available at one literal compiled stage.  The index is
-the complete compiler-derived provenance list.  No capability value can be
-inserted without a query into the current Core ledger. -/
-private structure CapabilityStore
-    (data : StrategyData.{uAmbient, uBranch, uData} P T)
-    (Stage : Type uStage) [HasResidual Stage (Strategy.ProblemInput P)]
-    (available : List CapabilityKey) where
-  /-- The object the spine is currently arguing about.  It is `Query.residual`
-  until a minimal-counterexample selection rebases it onto the selected
-  minimal object; from then on every object-indexed capability below is
-  indexed by this query rather than by the untouched problem input. -/
+/-! ### Canonical compiler ledger domain
+
+The compiler changes dependent execution-stage types while it composes
+contracts.  `CapabilityCursor` packages that type and its two residual views
+as the residual indexed by the one canonical `Core.Residual.ExactLedger`.
+Facts below are one-key payloads; there is no aggregate capability store.
+-/
+
+private structure CapabilityCursor
+    (data : StrategyData.{uAmbient, uBranch, uData} P T) where
+  Stage : Type (max uAmbient uBranch uData)
+  stageResidual : HasResidual Stage (Strategy.ProblemInput P)
   activeInput : Query Stage fun _ => Strategy.ProblemInput P
-  /-- Discharge of an active-object target back to the root residual.  Before
-  any rebase this is the identity; after a minimal-counterexample selection the
-  active object is target-avoiding, so a target proof there is absurd. -/
   targetToRoot : Query Stage fun stage =>
-    T.Predicate (activeInput.read stage).object →
+    T.Predicate (activeInput stage).object →
+      T.Predicate (@residualOf Stage (Strategy.ProblemInput P)
+        stageResidual stage).object
+
+/-- Stage-indexed compiler state.  The stage and its canonical residual
+instance are parameters, so dependent contract composition never needs to
+cast an existential cursor or accept an alternative residual implementation. -/
+private structure CapabilityState
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (Stage : Type (max uAmbient uBranch uData))
+    [stageResidual : HasResidual Stage (Strategy.ProblemInput P)] where
+  activeInput : Query Stage fun _ => Strategy.ProblemInput P
+  targetToRoot : Query Stage fun stage =>
+    T.Predicate (activeInput stage).object →
       T.Predicate (residualOf stage).object
-  query : (key : CapabilityKey) → key ∈ available →
-    Query Stage fun _ => key.Result.{uAmbient, uBranch} data
-  packingQuery : (index : Fin data.obstructionPackingClosures.length) →
-    CapabilityKey.obstructionPacking index ∈ available →
-      Query Stage fun stage =>
-        Core.Strategy.ObstructionPackingClosure.NonemptyPacking
-          (data.obstructionPackingClosures[index].occurrences
-            (activeInput.read stage))
-          (data.obstructionPackingClosures[index].conflict
-            (activeInput.read stage))
-  packingIndexValid : (index : Nat) →
-    CapabilityKey.obstructionPacking index ∈ available →
-      index < data.obstructionPackingClosures.length
-  capacityLedger :
-    CapabilityKey.finiteStateCapacityContinuation ∈ available →
-      Core.Strategy.FiniteStateNetChargeContinuation.CapacityLedger Stage
-  overflowLedger :
-    CapabilityKey.finiteDensityOverflow ∈ available →
-      Core.Strategy.ColdBranchAggregation.OverflowLedger Stage
-  capLedger :
-    CapabilityKey.finiteDensityCap ∈ available →
-      Core.Strategy.FiniteDensityBudget.CapLedger Stage
-  /-- **The exact derived barrier table retained by its producer.**
 
-  `CapabilityKey.finiteBarrierSummary`'s payload is the bare `Summary` record,
-  which as data says nothing about how its three aggregation columns are
-  related.  Two facts about it are owned by the node that produced it and by no
-  one else -- that Core derived it by `ofRows`, so `binaryRateFloor` is a
-  genuine `log₂` of its own columns, and that its flat column is nonvanishing
-  by the producer's closed admissibility test.  They travel here in the
-  producer's own query-only record, exactly as the surviving density cap travels
-  in `FiniteDensityBudget.CapLedger`. -/
-  barrierRate :
-    CapabilityKey.finiteBarrierSummary ∈ available →
-      Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage
-  normalizedSupportExact :
-    (index : Fin data.supportComplementNormalizations.length) →
-    CapabilityKey.normalizedSupportLedger index ∈ available →
-      NormalizedSupportCapability data index Stage activeInput
-  localSupplyExact :
-    (index : Fin data.localSupplyLowerBounds.length) →
-    CapabilityKey.localSupplyLedger index ∈ available →
-      LocalSupplyCapability data index Stage activeInput
-  homogeneousPressureOverloadExact :
-    (index : Fin data.coupledHomogeneousFibrePressures.length) →
-    CapabilityKey.homogeneousPressureOverload index ∈ available →
-      HomogeneousPressureOverloadCapability data index Stage activeInput
-  bottleneckSeparatorExact :
-    (index : Fin data.finiteBottleneckClassifications.length) →
-    CapabilityKey.bottleneckSeparator index ∈ available →
-      BottleneckSeparatorCapability data index Stage activeInput
-  minimalContext :
-    CapabilityKey.minimalContext ∈ available →
-      Query Stage fun _ =>
-        Σ index : Fin data.counterexampleReductions.length,
-          Core.MinimalCounterexampleContext P T.Predicate
-            data.counterexampleReductions[index].selection.progress
-  minimalClosureAt :
-    (index : Fin data.counterexampleReductions.length) →
-    CapabilityKey.minimalClosureAt index ∈ available →
-      Core.Strategy.InterfaceReplacement.ExactClosureQueries
-        data.counterexampleReductions[index].interfaceReplacement Stage
-  /-- Provenance law tying together the two otherwise independent projections
-  above: every retained minimal-closure header speaks about the very object the
-  spine is currently arguing about.  It holds definitionally at
-  `ofMinimalClosure`, where the rebase reads `activeInput` off the exact
-  context that header publishes, and every constructor forwards it verbatim.
-  Without it a consumer that must build its profile at `activeInput` -- the
-  only query the normalized-support ledger is indexed by -- has no way to reach
-  the uncompressibility retained at the selected minimal object. -/
-  minimalClosureActiveObject :
-    (index : Fin data.counterexampleReductions.length) →
-    (member : CapabilityKey.minimalClosureAt index ∈ available) →
-    (stage : Stage) →
-      (activeInput.read stage).object =
-        ((minimalClosureAt index member).context.read stage).G
-  targetRankDropExact :
-    CapabilityKey.targetRankDrop ∈ available →
-      Query Stage fun stage => TargetRankDropCapability data (residualOf stage)
-  /-- Resolution law for the near-cubic key, the exact mirror of
-  `packingIndexValid`: the key can only be present because the `index`-th
-  registered scale-threshold family published it. -/
-  nearCubicIndexValid : (index : Nat) →
-    CapabilityKey.nearCubicSpine index ∈ available →
-      index < data.scaleThresholdDichotomies.length
-  /-- **`def:near-cubic-spine`, retained.**  The at-or-below arm's own CT14
-  capacity outcome in the registration's coordinates, stated at the object the
-  spine is arguing about -- `activeInput`, the same query the split itself was
-  run on -- so a consumer nested inside that arm reads the estimate rather than
-  assuming it. -/
-  nearCubicSpine :
-    (index : Fin data.scaleThresholdDichotomies.length) →
-    CapabilityKey.nearCubicSpine index ∈ available →
-      Query Stage fun stage =>
-        data.scaleThresholdDichotomies[index].load (activeInput.read stage) ≤
-          (data.scaleThresholdDichotomies[index].table
-            (activeInput.read stage)).threshold
-            (data.scaleThresholdDichotomies[index].size
-              (activeInput.read stage))
+private def CapabilityState.toCursor
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {Stage : Type (max uAmbient uBranch uData)}
+    [stageResidual : HasResidual Stage (Strategy.ProblemInput P)]
+    (state : CapabilityState data Stage) : CapabilityCursor data where
+  Stage := Stage
+  stageResidual := stageResidual
+  activeInput := state.activeInput
+  targetToRoot := state.targetToRoot
 
-/-- The packing cardinality is a view of the exact dependent packing payload,
-not an independently stored capability.  Consequently every preserved count
-is definitionally obtained from the same selected list consumed by later
-packing strategies. -/
-private def CapabilityStore.packingCountQuery
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (index : Nat)
-    (member : CapabilityKey.obstructionPacking index ∈ available) :
-    Query Stage fun _ => Nat :=
+private structure CapabilityProjection
+    (new old : CapabilityCursor data) where
+  project : new.Stage → old.Stage
+  residual_eq : ∀ stage,
+    @residualOf new.Stage (Strategy.ProblemInput P) new.stageResidual stage =
+      @residualOf old.Stage (Strategy.ProblemInput P) old.stageResidual
+        (project stage)
+  active_eq : ∀ stage,
+    new.activeInput stage = old.activeInput (project stage)
+
+private instance capabilityCursorHasResidual
+    (cursor : CapabilityCursor data) :
+    HasResidual cursor.Stage (Strategy.ProblemInput P) :=
+  cursor.stageResidual
+
+private instance capabilityRefinementSystem
+    (data : StrategyData.{uAmbient, uBranch, uData} P T) :
+    Core.Residual.RefinementSystem (CapabilityCursor data) where
+  Subject := Unit
+  subject := fun _ => ()
+  Refines new old := Nonempty (CapabilityProjection new old)
+  refl cursor := ⟨{
+    project := id
+    residual_eq := fun _ => rfl
+    active_eq := fun _ => rfl
+  }⟩
+  trans newMiddle middleOld := by
+    rcases newMiddle with ⟨newMiddle⟩
+    rcases middleOld with ⟨middleOld⟩
+    exact ⟨{
+      project := middleOld.project ∘ newMiddle.project
+      residual_eq := fun stage =>
+        (newMiddle.residual_eq stage).trans
+          (middleOld.residual_eq (newMiddle.project stage))
+      active_eq := fun stage =>
+        (newMiddle.active_eq stage).trans
+          (middleOld.active_eq (newMiddle.project stage))
+    }⟩
+  subject_eq := fun _ => rfl
+
+private structure ObstructionPackingFact
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (cursor : CapabilityCursor data) (index : Nat) where
+  indexValid : index < data.obstructionPackingClosures.length
+  packing : Query cursor.Stage fun stage =>
+    Core.Strategy.ObstructionPackingClosure.NonemptyPacking
+      ((data.obstructionPackingClosures[index]'indexValid).occurrences
+        (cursor.activeInput stage))
+      ((data.obstructionPackingClosures[index]'indexValid).conflict
+        (cursor.activeInput stage))
+
+private structure NormalizedSupportFact
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (cursor : CapabilityCursor data) (index : Nat) where
+  indexValid : index < data.supportComplementNormalizations.length
+  summary : Query cursor.Stage fun _ =>
+    Core.Strategy.SupportComplementNormalization.Summary
+  exact : @NormalizedSupportCapability P T data ⟨index, indexValid⟩
+    cursor.Stage cursor.stageResidual cursor.activeInput
+
+private structure LocalSupplyFact
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (cursor : CapabilityCursor data) (index : Nat) where
+  indexValid : index < data.localSupplyLowerBounds.length
+  summary : Query cursor.Stage fun _ =>
+    Core.Strategy.LocalSupplyLowerBound.Summary
+  exact : @LocalSupplyCapability P T data ⟨index, indexValid⟩
+    cursor.Stage cursor.stageResidual cursor.activeInput
+
+private structure HomogeneousPressureOverloadFact
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (cursor : CapabilityCursor data) (index : Nat) where
+  indexValid : index < data.coupledHomogeneousFibrePressures.length
+  terminal : Query cursor.Stage fun _ => CT9.Terminal
+  exact : @HomogeneousPressureOverloadCapability P T data
+    ⟨index, indexValid⟩ cursor.Stage cursor.stageResidual cursor.activeInput
+
+private structure BottleneckSeparatorFact
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (cursor : CapabilityCursor data) (index : Nat) where
+  indexValid : index < data.finiteBottleneckClassifications.length
+  terminal : Query cursor.Stage fun _ => CT6.Terminal
+  exact : @BottleneckSeparatorCapability P T data ⟨index, indexValid⟩
+    cursor.Stage cursor.stageResidual cursor.activeInput
+
+private structure MinimalClosureFact
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (cursor : CapabilityCursor data) (index : Nat) where
+  indexValid : index < data.counterexampleReductions.length
+  exact : Core.Strategy.InterfaceReplacement.ExactClosureQueries
+    (data.counterexampleReductions[index]'indexValid).interfaceReplacement
+      cursor.Stage
+  activeObject : ∀ stage,
+    (cursor.activeInput stage).object = (exact.context stage).G
+
+private structure NearCubicFact
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (cursor : CapabilityCursor data) (index : Nat) where
+  marker : Unit := ()
+  indexValid : index < data.scaleThresholdDichotomies.length
+  estimate : Query cursor.Stage fun stage =>
+    (data.scaleThresholdDichotomies[index]'indexValid).load
+        (cursor.activeInput stage) ≤
+      ((data.scaleThresholdDichotomies[index]'indexValid).table
+        (cursor.activeInput stage)).threshold
+        ((data.scaleThresholdDichotomies[index]'indexValid).size
+          (cursor.activeInput stage))
+
+private def CapabilityPayload
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (cursor : CapabilityCursor data) : CapabilityKey →
+      Type (max (uAmbient + 1) (uBranch + 1) (uData + 1))
+  | .closed => ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+      Core.Residual.ClosureEvidence
+  | .obstructionPacking index =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (ObstructionPackingFact data cursor index)
+  | .exactFiniteLocalCode =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => List Bool)
+  | .finiteBarrierSummary =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Core.Strategy.FiniteBarrierEnumeration.RateLedger cursor.Stage)
+  | .normalizedSupportLedger index =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (NormalizedSupportFact data cursor index)
+  | .boundaryAccountingLedger =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ =>
+          Core.Strategy.BoundaryDemandAccounting.Summary)
+  | .localSupplyLedger index =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (LocalSupplyFact data cursor index)
+  | .targetRankDrop =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun stage =>
+          TargetRankDropCapability data
+            (@residualOf cursor.Stage (Strategy.ProblemInput P)
+              cursor.stageResidual stage))
+  | .fullRankExactCode =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => Unit)
+  | .fullRankCertificate =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ =>
+          Core.Strategy.TargetRelativeRankDichotomy.FullRankCertificate)
+  | .independentRank =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => Nat)
+  | .finiteStateCapacityContinuation =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Core.Strategy.FiniteStateNetChargeContinuation.CapacityLedger
+          cursor.Stage)
+  | .finiteDensityOverflow =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Core.Strategy.ColdBranchAggregation.OverflowLedger cursor.Stage)
+  | .finiteDensityCap =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Core.Strategy.FiniteDensityBudget.CapLedger cursor.Stage)
+  | .minimalContext =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ =>
+          Σ index : Fin data.counterexampleReductions.length,
+            Core.MinimalCounterexampleContext P T.Predicate
+              data.counterexampleReductions[index].selection.progress)
+  | .minimalClosureAt index =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (MinimalClosureFact data cursor index)
+  | .canonicalPairDependence _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT15.Terminal)
+  | .canonicalPairRole _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT9.Terminal)
+  | .canonicalCapacityAssignment _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT4.Terminal)
+  | .canonicalCapacityFibre _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT9.Terminal)
+  | .canonicalCapacityAggregate _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT14.Terminal)
+  | .homogeneousPressureOverload index =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (HomogeneousPressureOverloadFact data cursor index)
+  | .homogeneousPressureReconciliation _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT13.Terminal)
+  | .homogeneousPressureAggregate _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT14.Terminal)
+  | .bottleneckCollision _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT9.Terminal)
+  | .bottleneckPressure _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT14.Terminal)
+  | .bottleneckClassification _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => CT10.Terminal)
+  | .bottleneckSeparator index =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (BottleneckSeparatorFact data cursor index)
+  | .homogeneousHandoff _ =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (Query cursor.Stage fun _ => Unit)
+  | .nearCubicSpine index =>
+      ULift.{max (uAmbient + 1) (uBranch + 1) (uData + 1)}
+        (NearCubicFact data cursor index)
+
+/-- One canonical fact value remembers the cursor where the fact was proved
+and a refinement lineage from the active cursor to that origin.  Refinement
+therefore updates only ancestry; it never copies, rewrites, or drops the
+producer-owned payload. -/
+private structure StoredCapability
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (key : CapabilityKey) (cursor : CapabilityCursor data) where
+  origin : CapabilityCursor data
+  payload : CapabilityPayload data origin key
+  lineage : Core.Residual.RefinementSystem.Refines cursor origin
+
+private def CapabilityKey.tag : CapabilityKey → Nat
+  | .closed => 0
+  | .obstructionPacking _ => 1
+  | .exactFiniteLocalCode => 2
+  | .finiteBarrierSummary => 3
+  | .normalizedSupportLedger _ => 4
+  | .boundaryAccountingLedger => 5
+  | .localSupplyLedger _ => 6
+  | .targetRankDrop => 7
+  | .fullRankExactCode => 8
+  | .fullRankCertificate => 9
+  | .independentRank => 10
+  | .finiteStateCapacityContinuation => 11
+  | .finiteDensityOverflow => 12
+  | .finiteDensityCap => 13
+  | .minimalContext => 14
+  | .minimalClosureAt _ => 15
+  | .canonicalPairDependence _ => 16
+  | .canonicalPairRole _ => 17
+  | .canonicalCapacityAssignment _ => 18
+  | .canonicalCapacityFibre _ => 19
+  | .canonicalCapacityAggregate _ => 20
+  | .homogeneousPressureOverload _ => 21
+  | .homogeneousPressureReconciliation _ => 22
+  | .homogeneousPressureAggregate _ => 23
+  | .bottleneckCollision _ => 24
+  | .bottleneckPressure _ => 25
+  | .bottleneckClassification _ => 26
+  | .bottleneckSeparator _ => 27
+  | .homogeneousHandoff _ => 28
+  | .nearCubicSpine _ => 29
+
+private def CapabilityKey.index : CapabilityKey → Nat
+  | .obstructionPacking index
+  | .normalizedSupportLedger index
+  | .localSupplyLedger index
+  | .minimalClosureAt index
+  | .canonicalPairDependence index
+  | .canonicalPairRole index
+  | .canonicalCapacityAssignment index
+  | .canonicalCapacityFibre index
+  | .canonicalCapacityAggregate index
+  | .homogeneousPressureOverload index
+  | .homogeneousPressureReconciliation index
+  | .homogeneousPressureAggregate index
+  | .bottleneckCollision index
+  | .bottleneckPressure index
+  | .bottleneckClassification index
+  | .bottleneckSeparator index
+  | .homogeneousHandoff index
+  | .nearCubicSpine index => index
+  | _ => 0
+
+private def CapabilityKey.factName : CapabilityKey → Lean.Name
+  | .closed => Core.Residual.closureFactName
+  | key => .num (.num `Hypostructure.Core.Strategy.capability key.tag) key.index
+
+private theorem CapabilityKey.factName_injective :
+    Function.Injective CapabilityKey.factName := by
+  intro left right equality
+  cases left <;> cases right <;>
+    simp_all [CapabilityKey.factName, CapabilityKey.tag, CapabilityKey.index,
+      Core.Residual.closureFactName]
+
+private noncomputable instance capabilityFactSystem
+    (data : StrategyData.{uAmbient, uBranch, uData} P T) :
+    Core.Residual.FactSystem (CapabilityCursor data) where
+  Key := CapabilityKey
+  keyDecidableEq := inferInstance
+  name := CapabilityKey.factName
+  name_injective := CapabilityKey.factName_injective
+  Value key cursor := StoredCapability data key cursor
+  transport refinement stored :=
+    { origin := stored.origin
+      payload := stored.payload
+      lineage := Core.Residual.RefinementSystem.trans refinement stored.lineage }
+  transport_refl := by
+    intro _ _ stored
+    cases stored
+    congr
+  transport_trans := by
+    intro _ _ _ _ _ _ stored
+    cases stored
+    congr
+  closureKey := .closed
+  closure_name := rfl
+  closureValue cursor evidence :=
+    { origin := cursor
+      payload := ⟨evidence⟩
+      lineage := Core.Residual.RefinementSystem.refl cursor }
+  closureEvidence _ stored := stored.payload.down
+
+private noncomputable def CapabilityPayload.comap
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    {new old : CapabilityCursor data}
+    (projection : CapabilityProjection new old) :
+    (key : CapabilityKey) → CapabilityPayload data old key →
+      CapabilityPayload data new key
+  | .closed, payload => ⟨payload.down⟩
+  | .obstructionPacking index, payload =>
+      let fact := payload.down
+      ⟨{
+        indexValid := fact.indexValid
+        packing := fun stage => by
+          change Core.Strategy.ObstructionPackingClosure.NonemptyPacking
+            ((data.obstructionPackingClosures[index]'fact.indexValid).occurrences
+              (new.activeInput stage))
+            ((data.obstructionPackingClosures[index]'fact.indexValid).conflict
+              (new.activeInput stage))
+          rw [projection.active_eq stage]
+          exact fact.packing (projection.project stage)
+      }⟩
+  | .exactFiniteLocalCode, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .finiteBarrierSummary, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .normalizedSupportLedger _, payload =>
+      let fact := payload.down
+      let index : Fin data.supportComplementNormalizations.length :=
+        ⟨_, fact.indexValid⟩
+      let registration := data.supportComplementNormalizations[index].snd
+      let exact := fact.exact
+      ⟨{
+        indexValid := fact.indexValid
+        summary := fact.summary.comap projection.project
+        exact := {
+          exact := exact.exact.comapTo projection.project
+            (fun stage => (projection.residual_eq stage).symm)
+            (fun stage => registration.AmbientItem (new.activeInput stage))
+            (fun stage => congrArg registration.AmbientItem
+              (projection.active_eq stage).symm)
+          densityCap := exact.densityCap.comap projection.project
+        }
+      }⟩
+  | .boundaryAccountingLedger, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .localSupplyLedger _, payload =>
+      let fact := payload.down
+      let index : Fin data.localSupplyLowerBounds.length :=
+        ⟨_, fact.indexValid⟩
+      let registration := data.localSupplyLowerBounds[index].snd
+      let supportIndex := data.boundaryDemandAccountings[
+        data.localSupplyLowerBounds[index].fst].fst
+      let supportRegistration :=
+        data.supportComplementNormalizations[supportIndex].snd
+      let exact := fact.exact
+      ⟨{
+        indexValid := fact.indexValid
+        summary := fact.summary.comap projection.project
+        exact := {
+          normalized := exact.normalized.comapTo projection.project
+            (fun stage => (projection.residual_eq stage).symm)
+            (fun stage => supportRegistration.AmbientItem
+              (new.activeInput stage))
+            (fun stage => congrArg supportRegistration.AmbientItem
+              (projection.active_eq stage).symm)
+          exact := exact.exact.comapTo projection.project
+            (fun stage => (projection.residual_eq stage).symm)
+            (fun stage => registration.Member (new.activeInput stage))
+            (fun stage => congrArg registration.Member
+              (projection.active_eq stage).symm)
+        }
+      }⟩
+  | .targetRankDrop, payload =>
+      ⟨fun stage =>
+        let capability := payload.down (projection.project stage)
+        { Source := capability.Source
+          sourceHasResidual := capability.sourceHasResidual
+          source := capability.source
+          source_residual_eq := capability.source_residual_eq.trans
+            (projection.residual_eq stage).symm
+          profile := capability.profile
+          result := capability.result }⟩
+  | .fullRankExactCode, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .fullRankCertificate, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .independentRank, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .finiteStateCapacityContinuation, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .finiteDensityOverflow, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .finiteDensityCap, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .minimalContext, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .minimalClosureAt index, payload =>
+      let fact := payload.down
+      let exact : Core.Strategy.InterfaceReplacement.ExactClosureQueries
+          (data.counterexampleReductions[index]'fact.indexValid).interfaceReplacement
+          new.Stage :=
+        { context := fact.exact.context.comap projection.project
+          closure := fact.exact.closure.comap projection.project }
+      ⟨{
+        indexValid := fact.indexValid
+        exact := exact
+        activeObject := fun stage => by
+          rw [projection.active_eq stage]
+          exact fact.activeObject (projection.project stage)
+      }⟩
+  | .canonicalPairDependence _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .canonicalPairRole _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .canonicalCapacityAssignment _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .canonicalCapacityFibre _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .canonicalCapacityAggregate _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .homogeneousPressureOverload _, payload =>
+      let fact := payload.down
+      let exact := fact.exact
+      ⟨{
+        indexValid := fact.indexValid
+        terminal := fact.terminal.comap projection.project
+        exact := {
+          ledger := exact.ledger.comap projection.project new.activeInput
+            (fun stage => (exact.current_eq (projection.project stage)).trans
+              (projection.active_eq stage).symm)
+          current_eq := fun _ => rfl
+        }
+      }⟩
+  | .homogeneousPressureReconciliation _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .homogeneousPressureAggregate _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .bottleneckCollision _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .bottleneckPressure _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .bottleneckClassification _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .bottleneckSeparator _, payload =>
+      let fact := payload.down
+      let exact := fact.exact
+      ⟨{
+        indexValid := fact.indexValid
+        terminal := fact.terminal.comap projection.project
+        exact := {
+          ledger := exact.ledger.comap projection.project new.activeInput
+            (fun stage => (exact.current_eq (projection.project stage)).trans
+              (projection.active_eq stage).symm)
+          current_eq := fun _ => rfl
+        }
+      }⟩
+  | .homogeneousHandoff _, payload =>
+      ⟨payload.down.comap projection.project⟩
+  | .nearCubicSpine _, payload =>
+      let fact := payload.down
+      ⟨{
+        marker := ()
+        indexValid := fact.indexValid
+        estimate := fun stage => by
+          simpa only [projection.active_eq stage] using
+            fact.estimate (projection.project stage)
+      }⟩
+
+private noncomputable def StoredCapability.atCurrent
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {key : CapabilityKey} {cursor : CapabilityCursor data}
+    (stored : StoredCapability data key cursor) :
+    CapabilityPayload data cursor key :=
+  CapabilityPayload.comap data (Classical.choice stored.lineage)
+    key stored.payload
+
+/-- The active object is an index of the canonical compiler ledger, never a
+second value travelling beside it. -/
+def _root_.Hypostructure.Core.Residual.ExactLedger.activeInput
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (_history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available) :=
+  cursor.activeInput
+
+def _root_.Hypostructure.Core.Residual.ExactLedger.targetToRoot
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (_history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available) :=
+  cursor.targetToRoot
+
+/-- Retrieve one compiler fact by semantic key.  Producer and execution order
+are deliberately absent from this API. -/
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.capability
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (key : CapabilityKey) (present : key ∈ available) :
+    CapabilityPayload data cursor key :=
+  (_root_.Hypostructure.Core.Residual.ExactLedger.getPresent history key present).atCurrent
+
+/-- Scalar view of a semantic fact.  Structured producer facts are projected
+from the same canonical value, never copied into a summary channel. -/
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.query
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (key : CapabilityKey) (present : key ∈ available) :
+    Query cursor.Stage fun _ => key.Result.{uAmbient, uBranch} data :=
+  match key with
+  | .closed => fun _ => (history.capability .closed present).down
+  | .obstructionPacking _ => fun _ => ()
+  | .exactFiniteLocalCode => (history.capability _ present).down
+  | .finiteBarrierSummary => (history.capability _ present).down.summary
+  | .normalizedSupportLedger _ => (history.capability _ present).down.summary
+  | .boundaryAccountingLedger => (history.capability _ present).down
+  | .localSupplyLedger _ => (history.capability _ present).down.summary
+  | .targetRankDrop => fun _ => ()
+  | .fullRankExactCode => (history.capability _ present).down
+  | .fullRankCertificate => (history.capability _ present).down
+  | .independentRank => (history.capability _ present).down
+  | .finiteStateCapacityContinuation => fun _ => ()
+  | .finiteDensityOverflow => fun _ => ()
+  | .finiteDensityCap => fun _ => ()
+  | .minimalContext => fun _ => ()
+  | .minimalClosureAt _ => fun _ => ()
+  | .canonicalPairDependence _ => (history.capability _ present).down
+  | .canonicalPairRole _ => (history.capability _ present).down
+  | .canonicalCapacityAssignment _ => (history.capability _ present).down
+  | .canonicalCapacityFibre _ => (history.capability _ present).down
+  | .canonicalCapacityAggregate _ => (history.capability _ present).down
+  | .homogeneousPressureOverload _ =>
+      (history.capability _ present).down.terminal
+  | .homogeneousPressureReconciliation _ =>
+      (history.capability _ present).down
+  | .homogeneousPressureAggregate _ => (history.capability _ present).down
+  | .bottleneckCollision _ => (history.capability _ present).down
+  | .bottleneckPressure _ => (history.capability _ present).down
+  | .bottleneckClassification _ => (history.capability _ present).down
+  | .bottleneckSeparator _ =>
+      (history.capability _ present).down.terminal
+  | .homogeneousHandoff _ => (history.capability _ present).down
+  | .nearCubicSpine _ => fun _ => ()
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.packingIndexValid
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Nat) (present : CapabilityKey.obstructionPacking index ∈ available) :
+    index < data.obstructionPackingClosures.length :=
+  (history.capability (.obstructionPacking index) present).down.indexValid
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.packingQuery
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.obstructionPackingClosures.length)
+    (present : CapabilityKey.obstructionPacking index ∈ available) :
+    Query cursor.Stage fun stage =>
+      Core.Strategy.ObstructionPackingClosure.NonemptyPacking
+        (data.obstructionPackingClosures[index].occurrences
+          (cursor.activeInput stage))
+        (data.obstructionPackingClosures[index].conflict
+          (cursor.activeInput stage)) :=
+  (history.capability (.obstructionPacking index) present).down.packing
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.packingCountQuery
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Nat) (present : CapabilityKey.obstructionPacking index ∈ available) :
+    Query cursor.Stage fun _ => Nat :=
   let packingIndex : Fin data.obstructionPackingClosures.length :=
-    ⟨index, store.packingIndexValid index member⟩
-  (store.packingQuery packingIndex member).map fun _ packed =>
+    ⟨index, history.packingIndexValid index present⟩
+  (history.packingQuery packingIndex present).map fun _ packed =>
     packed.packing.selected.length
 
-@[simp] private theorem CapabilityStore.packingCountQuery_read
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (index : Nat)
-    (member : CapabilityKey.obstructionPacking index ∈ available)
-    (stage : Stage) :
-    (store.packingCountQuery index member).read stage =
-      (fun packed => packed.packing.selected.length)
-        ((store.packingQuery
-          ⟨index, store.packingIndexValid index member⟩ member).read stage) := by
-  unfold CapabilityStore.packingCountQuery
-  exact Query.read_map _ _ _
-
-/-- Exact node-144 handoff schedule.  The carrier is fixed by the registered
-homogeneous producer chain.  Values come from the literal CT9-selected fibre
-only when the linked CT6 producer retained an actual first separator; the
-active-ledger/no-separator terminal contributes the empty schedule.  Thus a
-generic CT5/CT14 aggregate can never manufacture fan data. -/
-private noncomputable def CapabilityStore.homogeneousHandoffQuery
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
+noncomputable def
+    _root_.Hypostructure.Core.Residual.ExactLedger.homogeneousHandoffQuery
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
     (index : Fin data.homogeneousBottlenecks.length)
     (_handoff : CapabilityKey.homogeneousHandoff index ∈ available)
     (overload : CapabilityKey.homogeneousPressureOverload
       data.homogeneousBottlenecks[index].pressureIndex ∈ available)
     (separator : CapabilityKey.bottleneckSeparator
       data.homogeneousBottlenecks[index].fst ∈ available) :
-    Query Stage fun stage =>
+    Query cursor.Stage fun stage =>
       Core.Finite.Enumeration
         (data.homogeneousBottlenecks[index].HandoffSupport
-          (store.activeInput.read stage)) :=
-  Query.ofFunction fun stage =>
-      let separatorCapability := store.bottleneckSeparatorExact
-        data.homogeneousBottlenecks[index].fst separator
-      let overloadCapability := store.homogeneousPressureOverloadExact
-        data.homogeneousBottlenecks[index].pressureIndex overload
-      match separatorCapability.current_eq stage ▸
-          separatorCapability.ledger.selected.read stage with
-      | some _ =>
-          overloadCapability.current_eq stage ▸
-            overloadCapability.ledger.selectedEnumeration.read stage
-      | none =>
-          let registration :=
-            data.coupledHomogeneousFibrePressures[
-              data.homogeneousBottlenecks[index].pressureIndex]
-          letI : DecidableEq
-              (registration.Item (store.activeInput.read stage)) :=
-            (registration.items (store.activeInput.read stage)).decEq
-          Core.Finite.Enumeration.empty _
+          (cursor.activeInput stage)) :=
+  fun stage =>
+    let separatorCapability :=
+      (history.capability
+        (.bottleneckSeparator data.homogeneousBottlenecks[index].fst)
+        separator).down.exact
+    let overloadCapability :=
+      (history.capability
+        (.homogeneousPressureOverload
+          data.homogeneousBottlenecks[index].pressureIndex)
+        overload).down.exact
+    let selected : Option
+        (data.finiteBottleneckClassifications[
+          data.homogeneousBottlenecks[index].fst].snd.SeparatorIndex
+            (cursor.activeInput stage)) :=
+      Eq.mp
+        (congrArg
+          (fun input => Option
+            (data.finiteBottleneckClassifications[
+              data.homogeneousBottlenecks[index].fst].snd.SeparatorIndex input))
+          (separatorCapability.current_eq stage))
+        (separatorCapability.ledger.selected stage)
+    match selected with
+    | some _ =>
+        Eq.mp
+          (congrArg
+            (fun input => Core.Finite.Enumeration
+              (data.homogeneousBottlenecks[index].HandoffSupport input))
+            (overloadCapability.current_eq stage))
+          (overloadCapability.ledger.selectedEnumeration stage)
+    | none =>
+        let registration := data.coupledHomogeneousFibrePressures[
+          data.homogeneousBottlenecks[index].pressureIndex]
+        letI : DecidableEq (registration.Item (cursor.activeInput stage)) :=
+          (registration.items (cursor.activeInput stage)).decEq
+        Core.Finite.Enumeration.empty _
 
-private def CapabilityStore.empty
-    (data : StrategyData.{uAmbient, uBranch, uData} P T)
-    (Stage : Type uStage) [HasResidual Stage (Strategy.ProblemInput P)] :
-    CapabilityStore data Stage [] where
-  activeInput := Query.residual
-  targetToRoot := Query.ofFunction fun _ proof => proof
-  query := fun _ impossible => nomatch impossible
-  packingQuery := fun _ impossible => nomatch impossible
-  packingIndexValid := fun _ impossible => nomatch impossible
-  capacityLedger := fun impossible => nomatch impossible
-  overflowLedger := fun impossible => nomatch impossible
-  capLedger := fun impossible => nomatch impossible
-  barrierRate := fun impossible => nomatch impossible
-  normalizedSupportExact := fun _ impossible => nomatch impossible
-  localSupplyExact := fun _ impossible => nomatch impossible
-  homogeneousPressureOverloadExact := fun _ impossible => nomatch impossible
-  bottleneckSeparatorExact := fun _ impossible => nomatch impossible
-  minimalContext := fun impossible => nomatch impossible
-  minimalClosureAt := fun _ impossible => nomatch impossible
-  minimalClosureActiveObject := fun _ impossible => nomatch impossible
-  nearCubicIndexValid := fun _ impossible => nomatch impossible
-  nearCubicSpine := fun _ impossible => nomatch impossible
-  targetRankDropExact := fun impossible => nomatch impossible
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.capacityLedger
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (present : CapabilityKey.finiteStateCapacityContinuation ∈ available) :=
+  (history.capability .finiteStateCapacityContinuation present).down
 
-private def CapabilityStore.cons
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.overflowLedger
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (present : CapabilityKey.finiteDensityOverflow ∈ available) :=
+  (history.capability .finiteDensityOverflow present).down
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.capLedger
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (present : CapabilityKey.finiteDensityCap ∈ available) :=
+  (history.capability .finiteDensityCap present).down
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.barrierRate
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (present : CapabilityKey.finiteBarrierSummary ∈ available) :=
+  (history.capability .finiteBarrierSummary present).down
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.normalizedSupportExact
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.supportComplementNormalizations.length)
+    (present : CapabilityKey.normalizedSupportLedger index ∈ available) :
+    NormalizedSupportCapability data index cursor.Stage cursor.activeInput :=
+  (history.capability (.normalizedSupportLedger index) present).down.exact
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.localSupplyExact
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.localSupplyLowerBounds.length)
+    (present : CapabilityKey.localSupplyLedger index ∈ available) :
+    LocalSupplyCapability data index cursor.Stage cursor.activeInput :=
+  (history.capability (.localSupplyLedger index) present).down.exact
+
+private noncomputable def
+    _root_.Hypostructure.Core.Residual.ExactLedger.homogeneousPressureOverloadExact
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.coupledHomogeneousFibrePressures.length)
+    (present : CapabilityKey.homogeneousPressureOverload index ∈ available) :
+    HomogeneousPressureOverloadCapability data index cursor.Stage
+      cursor.activeInput :=
+  (history.capability (.homogeneousPressureOverload index) present).down.exact
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.bottleneckSeparatorExact
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.finiteBottleneckClassifications.length)
+    (present : CapabilityKey.bottleneckSeparator index ∈ available) :
+    BottleneckSeparatorCapability data index cursor.Stage cursor.activeInput :=
+  (history.capability (.bottleneckSeparator index) present).down.exact
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.minimalContext
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (present : CapabilityKey.minimalContext ∈ available) :=
+  (history.capability .minimalContext present).down
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.minimalClosureAt
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.counterexampleReductions.length)
+    (present : CapabilityKey.minimalClosureAt index ∈ available) :
+    Core.Strategy.InterfaceReplacement.ExactClosureQueries
+      data.counterexampleReductions[index].interfaceReplacement cursor.Stage :=
+  (history.capability (.minimalClosureAt index) present).down.exact
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.minimalClosureActiveObject
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.counterexampleReductions.length)
+    (present : CapabilityKey.minimalClosureAt index ∈ available) :=
+  (history.capability (.minimalClosureAt index) present).down.activeObject
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.targetRankDropExact
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (present : CapabilityKey.targetRankDrop ∈ available) :=
+  (history.capability .targetRankDrop present).down
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.nearCubicIndexValid
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Nat) (present : CapabilityKey.nearCubicSpine index ∈ available) :=
+  (history.capability (.nearCubicSpine index) present).down.indexValid
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.nearCubicSpine
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.scaleThresholdDichotomies.length)
+    (present : CapabilityKey.nearCubicSpine index ∈ available) :
+    Query cursor.Stage fun stage =>
+      data.scaleThresholdDichotomies[index].load (cursor.activeInput stage) ≤
+        (data.scaleThresholdDichotomies[index].table
+          (cursor.activeInput stage)).threshold
+          (data.scaleThresholdDichotomies[index].size
+            (cursor.activeInput stage)) :=
+  (history.capability (.nearCubicSpine index) present).down.estimate
+
+/-- Append one semantic value to the one canonical history. -/
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.publishCapability
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (key : CapabilityKey) (payload : CapabilityPayload data cursor key)
+    (fresh : key ∉ available)
+    (producer : Lean.Name := key.factName) :
+    Core.Residual.ExactLedger (CapabilityCursor data) cursor
+      (key :: available) :=
+  _root_.Hypostructure.Core.Residual.ExactLedger.publishFact exactLedgerInternal% history key
+    { origin := cursor
+      payload := payload
+      lineage := Core.Residual.RefinementSystem.refl cursor }
+    fresh producer
+
+/-- Generic scalar publication.  Structured facts have dedicated methods, so
+they cannot be published from a summary with their exact witness omitted. -/
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.cons
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
     (key : CapabilityKey)
-    (query : Query Stage fun _ => key.Result.{uAmbient, uBranch} data)
+    (query : Query cursor.Stage fun _ => key.Result.{uAmbient, uBranch} data)
     (notPacking : ∀ index : Nat, key ≠ .obstructionPacking index)
     (notCapacity : key ≠ .finiteStateCapacityContinuation)
     (notOverflow : key ≠ .finiteDensityOverflow)
-    (notCap : key ≠ .finiteDensityCap := by
-      intro equality; cases equality)
+    (notCap : key ≠ .finiteDensityCap := by intro equality; cases equality)
     (notBarrier : key ≠ .finiteBarrierSummary := by
       intro equality; cases equality)
     (notNormalized : ∀ index, key ≠ .normalizedSupportLedger index := by
@@ -2895,1562 +3548,458 @@ private def CapabilityStore.cons
       intro equality; cases equality)
     (notMinimalClosureAt : ∀ index, key ≠ .minimalClosureAt index := by
       intro index equality; cases equality)
-    (notRankDrop : key ≠ .targetRankDrop := by
+    (notTargetRankDrop : key ≠ .targetRankDrop := by
       intro equality; cases equality)
     (notNearCubic : ∀ index, key ≠ .nearCubicSpine index := by
-      intro index equality; cases equality) :
-    CapabilityStore data Stage (key :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = key
-    · subst requested
-      exact query
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      cases member with
-      | head => exact (notPacking index rfl).elim
-      | tail _ member => exact member)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      cases member with
-      | head => exact (notPacking index rfl).elim
-      | tail _ member => exact member)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      cases member with
-      | head => exact (notCapacity rfl).elim
-      | tail _ member => exact member)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      cases member with
-      | head => exact (notOverflow rfl).elim
-      | tail _ member => exact member)
-  capLedger := fun member =>
-    store.capLedger (by
-      cases member with
-      | head => exact (notCap rfl).elim
-      | tail _ member => exact member)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      cases member with
-      | head => exact (notBarrier rfl).elim
-      | tail _ member => exact member)
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      cases member with
-      | head => exact (notNormalized index rfl).elim
-      | tail _ member => exact member)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      cases member with
-      | head => exact (notLocalSupply index rfl).elim
-      | tail _ member => exact member)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      cases member with
-      | head => exact (notHomogeneousPressureOverload index rfl).elim
-      | tail _ member => exact member)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      cases member with
-      | head => exact (notBottleneck index rfl).elim
-      | tail _ member => exact member)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      cases member with
-      | head => exact (notMinimalContext rfl).elim
-      | tail _ member => exact member)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      cases member with
-      | head => exact (notMinimalClosureAt index rfl).elim
-      | tail _ member => exact member)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      cases member with
-      | head => exact (notMinimalClosureAt index rfl).elim
-      | tail _ member => exact member)
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      cases member with
-      | head => exact (notNearCubic index rfl).elim
-      | tail _ member => exact member)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      cases member with
-      | head => exact (notNearCubic index rfl).elim
-      | tail _ member => exact member)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      cases member with
-      | head => exact (notRankDrop rfl).elim
-      | tail _ member => exact member)
+      intro index equality; cases equality)
+    (notClosed : key ≠ .closed := by intro equality; cases equality)
+    (fresh : key ∉ available := by decide) :
+    Core.Residual.ExactLedger (CapabilityCursor data) cursor
+      (key :: available) :=
+  history.publishCapability key (by
+    cases key with
+    | closed => exact (notClosed rfl).elim
+    | obstructionPacking index => exact (notPacking index rfl).elim
+    | exactFiniteLocalCode => exact ⟨query⟩
+    | finiteBarrierSummary => exact (notBarrier rfl).elim
+    | normalizedSupportLedger index => exact (notNormalized index rfl).elim
+    | boundaryAccountingLedger => exact ⟨query⟩
+    | localSupplyLedger index => exact (notLocalSupply index rfl).elim
+    | targetRankDrop => exact (notTargetRankDrop rfl).elim
+    | fullRankExactCode => exact ⟨query⟩
+    | fullRankCertificate => exact ⟨query⟩
+    | independentRank => exact ⟨query⟩
+    | finiteStateCapacityContinuation => exact (notCapacity rfl).elim
+    | finiteDensityOverflow => exact (notOverflow rfl).elim
+    | finiteDensityCap => exact (notCap rfl).elim
+    | minimalContext => exact (notMinimalContext rfl).elim
+    | minimalClosureAt index => exact (notMinimalClosureAt index rfl).elim
+    | canonicalPairDependence _ => exact ⟨query⟩
+    | canonicalPairRole _ => exact ⟨query⟩
+    | canonicalCapacityAssignment _ => exact ⟨query⟩
+    | canonicalCapacityFibre _ => exact ⟨query⟩
+    | canonicalCapacityAggregate _ => exact ⟨query⟩
+    | homogeneousPressureOverload index =>
+        exact (notHomogeneousPressureOverload index rfl).elim
+    | homogeneousPressureReconciliation _ => exact ⟨query⟩
+    | homogeneousPressureAggregate _ => exact ⟨query⟩
+    | bottleneckCollision _ => exact ⟨query⟩
+    | bottleneckPressure _ => exact ⟨query⟩
+    | bottleneckClassification _ => exact ⟨query⟩
+    | bottleneckSeparator index => exact (notBottleneck index rfl).elim
+    | homogeneousHandoff _ => exact ⟨query⟩
+    | nearCubicSpine index => exact (notNearCubic index rfl).elim)
+    fresh
 
-/-- Publish the scalar rank-drop marker and its exact dependent CT15 result
-from the same literal left-branch ledger extension. -/
-private def CapabilityStore.consTargetRankDrop
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (exact : Query Stage fun stage =>
-      TargetRankDropCapability data (residualOf stage)) :
-    CapabilityStore data Stage (.targetRankDrop :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .targetRankDrop
-    · subst requested
-      exact Query.ofFunction fun _ => ()
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun _ => exact
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consTargetRankDrop
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (exact : Query cursor.Stage fun stage =>
+      TargetRankDropCapability data (residualOf stage))
+    (fresh : CapabilityKey.targetRankDrop ∉ available := by decide) :=
+  history.publishCapability .targetRankDrop ⟨exact⟩ fresh
 
-private def CapabilityStore.consCapacity
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (ledger :
-      Core.Strategy.FiniteStateNetChargeContinuation.CapacityLedger Stage) :
-    CapabilityStore data Stage
-      (.finiteStateCapacityContinuation :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .finiteStateCapacityContinuation
-    · subst requested
-      exact Query.ofFunction fun _ => ()
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun _ => ledger
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consCapacity
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (value : Core.Strategy.FiniteStateNetChargeContinuation.CapacityLedger
+      cursor.Stage)
+    (fresh : CapabilityKey.finiteStateCapacityContinuation ∉ available := by
+      decide) :=
+  history.publishCapability .finiteStateCapacityContinuation ⟨value⟩ fresh
 
-private def CapabilityStore.consOverflow
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (ledger : Core.Strategy.ColdBranchAggregation.OverflowLedger Stage) :
-    CapabilityStore data Stage (.finiteDensityOverflow :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .finiteDensityOverflow
-    · subst requested
-      exact Query.ofFunction fun _ => ()
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun _ => ledger
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consOverflow
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (value : Core.Strategy.ColdBranchAggregation.OverflowLedger cursor.Stage)
+    (fresh : CapabilityKey.finiteDensityOverflow ∉ available := by decide) :=
+  history.publishCapability .finiteDensityOverflow ⟨value⟩ fresh
 
-/-- Publish the retained cap of the surviving multiplicative density
-alternative.  The exact mirror of `consOverflow` on the complementary
-terminal: the ledger value is the producer's own `Profile.capLedger`, and the
-scalar marker is the routed key. -/
-private def CapabilityStore.consCap
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (ledger : Core.Strategy.FiniteDensityBudget.CapLedger Stage) :
-    CapabilityStore data Stage (.finiteDensityCap :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .finiteDensityCap
-    · subst requested
-      exact Query.ofFunction fun _ => ()
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun _ => ledger
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consCap
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (value : Core.Strategy.FiniteDensityBudget.CapLedger cursor.Stage)
+    (fresh : CapabilityKey.finiteDensityCap ∉ available := by decide) :=
+  history.publishCapability .finiteDensityCap ⟨value⟩ fresh
 
-/-- **Publish the near-cubic spine estimate retained by the at-or-below arm.**
-
-The exact mirror of `consCap` on the complementary split: `consCap` retains the
-literal cap the surviving density alternative certified, and this one retains
-the literal `load ≤ table(size)` the surviving scale-threshold alternative
-certified.  Both are the producer's own CT14 capacity outcome, republished in
-the registration's coordinates at `activeInput`, with the scalar marker as the
-routed key. -/
-private def CapabilityStore.consNearCubicSpine
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consNearCubicSpine
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
     (index : Fin data.scaleThresholdDichotomies.length)
-    (spine : Query Stage fun stage =>
-      data.scaleThresholdDichotomies[index].load
-          (store.activeInput.read stage) ≤
+    (spine : Query cursor.Stage fun stage =>
+      data.scaleThresholdDichotomies[index].load (cursor.activeInput stage) ≤
         (data.scaleThresholdDichotomies[index].table
-          (store.activeInput.read stage)).threshold
+          (cursor.activeInput stage)).threshold
           (data.scaleThresholdDichotomies[index].size
-            (store.activeInput.read stage))) :
-    CapabilityStore data Stage (.nearCubicSpine index :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .nearCubicSpine index
-    · subst requested
-      exact Query.ofFunction fun _ => ()
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun requested member stage =>
-    store.minimalClosureActiveObject requested (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail) stage
-  nearCubicIndexValid := fun requested member => by
-    by_cases equal : requested = (index : Nat)
-    · subst requested
-      exact index.isLt
-    · exact store.nearCubicIndexValid requested (by
-        rcases List.mem_cons.mp member with head | tail
-        · exact (equal (CapabilityKey.nearCubicSpine.inj head)).elim
-        · exact tail)
-  nearCubicSpine := fun requested member => by
-    by_cases equal : requested = index
-    · subst requested
-      exact spine
-    · exact store.nearCubicSpine requested (by
-        rcases List.mem_cons.mp member with head | tail
-        · exact (equal (Fin.ext
-            (CapabilityKey.nearCubicSpine.inj head))).elim
-        · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+            (cursor.activeInput stage)))
+    (fresh : CapabilityKey.nearCubicSpine index ∉ available := by decide) :=
+  history.publishCapability (.nearCubicSpine index)
+    ⟨{ indexValid := index.isLt, estimate := spine }⟩ fresh
 
-/-- **Publish the derived barrier `Summary` together with the two facts its
-producer owns about it.**
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consBarrierRate
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (value : Core.Strategy.FiniteBarrierEnumeration.RateLedger cursor.Stage)
+    (fresh : CapabilityKey.finiteBarrierSummary ∉ available := by decide) :=
+  history.publishCapability .finiteBarrierSummary ⟨value⟩ fresh
 
-The scalar payload is unchanged -- consumers that only need the record still
-read it through `query .finiteBarrierSummary`.  What the generic `cons` could
-not carry is that the record is Core-derived and that its flat column is
-nonvanishing; both are proofs about the very query being published, so they
-travel beside it in `FiniteBarrierEnumeration.RateLedger` rather than being
-restated by whoever needs a rate. -/
-private def CapabilityStore.consBarrierRate
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (ledger : Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage) :
-    CapabilityStore data Stage (.finiteBarrierSummary :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .finiteBarrierSummary
-    · subst requested
-      exact ledger.summary
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun _ => ledger
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-
-/-- Publish the scalar view and the exact structural query interface from the
-same normalization recipe.  Neither value is accepted from a registration;
-both are projections of the producer's literal live ledger. -/
-private def CapabilityStore.consNormalizedSupport
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (producerIndex : Fin data.supportComplementNormalizations.length)
-    (summary : Query Stage fun _ =>
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consNormalizedSupport
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.supportComplementNormalizations.length)
+    (summary : Query cursor.Stage fun _ =>
       Core.Strategy.SupportComplementNormalization.Summary)
-    (exact :
-      NormalizedSupportCapability data producerIndex Stage store.activeInput) :
-    CapabilityStore data Stage
-      (.normalizedSupportLedger producerIndex :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .normalizedSupportLedger producerIndex
-    · subst requested
-      exact summary
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun requested member => by
-    by_cases same : requested = producerIndex
-    · subst requested
-      exact exact
-    · exact store.normalizedSupportExact requested (by
-        rcases List.mem_cons.mp member with head | tail
-        · have values : requested.val = producerIndex.val :=
-            CapabilityKey.normalizedSupportLedger.inj head
-          exact (same (Fin.ext values)).elim
-        · exact tail)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+    (exact : NormalizedSupportCapability data index cursor.Stage
+      cursor.activeInput)
+    (fresh : CapabilityKey.normalizedSupportLedger index ∉ available := by
+      decide) :=
+  history.publishCapability (.normalizedSupportLedger index)
+    ⟨{ indexValid := index.isLt, summary, exact }⟩ fresh
 
-/-- Publish CT14's scalar view and its exact dependent member carrier from
-the same literal local-supply execution. -/
-private def CapabilityStore.consLocalSupply
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (producerIndex : Fin data.localSupplyLowerBounds.length)
-    (summary : Query Stage fun _ =>
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consLocalSupply
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.localSupplyLowerBounds.length)
+    (summary : Query cursor.Stage fun _ =>
       Core.Strategy.LocalSupplyLowerBound.Summary)
-    (exact :
-      LocalSupplyCapability data producerIndex Stage store.activeInput) :
-    CapabilityStore data Stage
-      (.localSupplyLedger producerIndex :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .localSupplyLedger producerIndex
-    · subst requested
-      exact summary
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun requested member => by
-    by_cases same : requested = producerIndex
-    · subst requested
-      exact exact
-    · exact store.localSupplyExact requested (by
-        rcases List.mem_cons.mp member with head | tail
-        · have values : requested.val = producerIndex.val :=
-            CapabilityKey.localSupplyLedger.inj head
-          exact (same (Fin.ext values)).elim
-        · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+    (exact : LocalSupplyCapability data index cursor.Stage cursor.activeInput)
+    (fresh : CapabilityKey.localSupplyLedger index ∉ available := by decide) :=
+  history.publishCapability (.localSupplyLedger index)
+    ⟨{ indexValid := index.isLt, summary, exact }⟩ fresh
 
-/-- Publish CT9's terminal together with the exact selected overloaded label,
-literal fibre, schedule membership, and strict capacity inequality read from
-the same coupled-pressure output. -/
-private def CapabilityStore.consHomogeneousPressureOverload
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (producerIndex : Fin data.coupledHomogeneousFibrePressures.length)
-    (terminal : Query Stage fun _ => CT9.Terminal)
-    (exact :
-      Core.Strategy.CoupledHomogeneousFibrePressure.OverloadLedger
-        Stage (Strategy.ProblemInput P)
-        data.coupledHomogeneousFibrePressures[producerIndex])
-    (current_eq :
-      ∀ stage, exact.current.read stage = store.activeInput.read stage) :
-    CapabilityStore data Stage
-      (.homogeneousPressureOverload producerIndex :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .homogeneousPressureOverload producerIndex
-    · subst requested
-      exact terminal
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun requested member => by
-    by_cases same : requested = producerIndex
-    · subst requested
-      exact { ledger := exact, current_eq }
-    · exact store.homogeneousPressureOverloadExact requested (by
-        rcases List.mem_cons.mp member with head | tail
-        · have values : requested.val = producerIndex.val :=
-            CapabilityKey.homogeneousPressureOverload.inj head
-          exact (same (Fin.ext values)).elim
-        · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+private noncomputable def
+    _root_.Hypostructure.Core.Residual.ExactLedger.consHomogeneousPressureOverload
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.coupledHomogeneousFibrePressures.length)
+    (terminal : Query cursor.Stage fun _ => CT9.Terminal)
+    (exact : Core.Strategy.CoupledHomogeneousFibrePressure.OverloadLedger
+      cursor.Stage (Strategy.ProblemInput P)
+      data.coupledHomogeneousFibrePressures[index])
+    (current_eq : ∀ stage, exact.current stage = cursor.activeInput stage)
+    (fresh : CapabilityKey.homogeneousPressureOverload index ∉ available := by
+      decide) :=
+  history.publishCapability (.homogeneousPressureOverload index)
+    ⟨{ indexValid := index.isLt
+       terminal
+       exact := { ledger := exact, current_eq } }⟩ fresh
 
-/-- Publish CT6's terminal together with the exact selected-separator,
-membership, and failure queries derived from the same live composed output. -/
-private def CapabilityStore.consBottleneckSeparator
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    (producerIndex : Fin data.finiteBottleneckClassifications.length)
-    (terminal : Query Stage fun _ => CT6.Terminal)
-    (exact :
-      Core.Strategy.FiniteBottleneckClassification.SeparatorLedger
-        Stage (Strategy.ProblemInput P)
-        data.finiteBottleneckClassifications[producerIndex].snd)
-    (current_eq :
-      ∀ stage, exact.current.read stage = store.activeInput.read stage) :
-    CapabilityStore data Stage
-      (.bottleneckSeparator producerIndex :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .bottleneckSeparator producerIndex
-    · subst requested
-      exact terminal
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun index member =>
-    store.packingQuery index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  packingIndexValid := fun index member =>
-    store.packingIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun index member =>
-    store.normalizedSupportExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun index member =>
-    store.localSupplyExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun requested member => by
-    by_cases same : requested = producerIndex
-    · subst requested
-      exact { ledger := exact, current_eq }
-    · exact store.bottleneckSeparatorExact requested (by
-        rcases List.mem_cons.mp member with head | tail
-        · have values : requested.val = producerIndex.val :=
-            CapabilityKey.bottleneckSeparator.inj head
-          exact (same (Fin.ext values)).elim
-        · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consBottleneckSeparator
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
+    (index : Fin data.finiteBottleneckClassifications.length)
+    (terminal : Query cursor.Stage fun _ => CT6.Terminal)
+    (exact : Core.Strategy.FiniteBottleneckClassification.SeparatorLedger
+      cursor.Stage (Strategy.ProblemInput P)
+      data.finiteBottleneckClassifications[index].snd)
+    (current_eq : ∀ stage, exact.current stage = cursor.activeInput stage)
+    (fresh : CapabilityKey.bottleneckSeparator index ∉ available := by
+      decide) :=
+  history.publishCapability (.bottleneckSeparator index)
+    ⟨{ indexValid := index.isLt
+       terminal
+       exact := { ledger := exact, current_eq } }⟩ fresh
 
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-
-private def CapabilityStore.consPacking
-    {Stage : Type uStage} {available : List CapabilityKey}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.consPacking
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {cursor : CapabilityCursor data} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) cursor available)
     (index : Fin data.obstructionPackingClosures.length)
-    (packing : Query Stage fun stage =>
+    (packing : Query cursor.Stage fun stage =>
       Core.Strategy.ObstructionPackingClosure.NonemptyPacking
         (data.obstructionPackingClosures[index].occurrences
-          (store.activeInput.read stage))
+          (cursor.activeInput stage))
         (data.obstructionPackingClosures[index].conflict
-          (store.activeInput.read stage))) :
-    CapabilityStore data Stage
-      (.obstructionPacking index :: available) where
-  activeInput := store.activeInput
-  targetToRoot := store.targetToRoot
-  query := fun requested member => by
-    by_cases same : requested = .obstructionPacking index
-    · subst requested
-      exact Query.ofFunction fun _ => ()
-    · exact store.query requested (by simpa [same] using member)
-  packingQuery := fun requested member => by
-    by_cases same : requested = index
-    · subst requested
-      exact packing
-    · exact store.packingQuery requested (by
-        rcases List.mem_cons.mp member with head | tail
-        · have values : requested.val = index.val :=
-            CapabilityKey.obstructionPacking.inj head
-          exact (same (Fin.ext values)).elim
-        · exact tail)
-  packingIndexValid := fun requested member => by
-    by_cases same : requested = index.val
-    · simpa [same] using index.isLt
-    · exact store.packingIndexValid requested (by
-        rcases List.mem_cons.mp member with head | tail
-        · have values : requested = index.val :=
-            CapabilityKey.obstructionPacking.inj head
-          exact (same values).elim
-        · exact tail)
-  capacityLedger := fun member =>
-    store.capacityLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  overflowLedger := fun member =>
-    store.overflowLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  capLedger := fun member =>
-    store.capLedger (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  barrierRate := fun member =>
-    store.barrierRate (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  normalizedSupportExact := fun supportIndex member =>
-    store.normalizedSupportExact supportIndex (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  localSupplyExact := fun supplyIndex member =>
-    store.localSupplyExact supplyIndex (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  homogeneousPressureOverloadExact := fun index member =>
-    store.homogeneousPressureOverloadExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  bottleneckSeparatorExact := fun index member =>
-    store.bottleneckSeparatorExact index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalContext := fun member =>
-    store.minimalContext (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureAt := fun index member =>
-    store.minimalClosureAt index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  minimalClosureActiveObject := fun index member =>
-    store.minimalClosureActiveObject index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+          (cursor.activeInput stage)))
+    (fresh : CapabilityKey.obstructionPacking index ∉ available := by decide) :=
+  history.publishCapability (.obstructionPacking index)
+    ⟨{ indexValid := index.isLt, packing }⟩ fresh
 
-  nearCubicIndexValid := fun index member =>
-    store.nearCubicIndexValid index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  nearCubicSpine := fun index member =>
-    store.nearCubicSpine index (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
-  targetRankDropExact := fun member =>
-    store.targetRankDropExact (by
-      rcases List.mem_cons.mp member with head | tail
-      · cases head
-      · exact tail)
+private def CapabilityCursor.root
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (Stage : Type (max uAmbient uBranch uData))
+    [stageInstance : HasResidual Stage (Strategy.ProblemInput P)] :
+    CapabilityCursor data where
+  Stage := Stage
+  stageResidual := stageInstance
+  activeInput := Query.residual
+  targetToRoot := fun _ proof => proof
 
-private def CapabilityStore.comap
-    {Stage : Type uStage} {NewStage : Type uPayload}
-    {available : List CapabilityKey}
+private def CapabilityState.root
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (Stage : Type (max uAmbient uBranch uData))
+    [HasResidual Stage (Strategy.ProblemInput P)] :
+    CapabilityState data Stage where
+  activeInput := Query.residual
+  targetToRoot := fun _ proof => proof
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.emptyCapabilities
+    (data : StrategyData.{uAmbient, uBranch, uData} P T)
+    (Stage : Type (max uAmbient uBranch uData))
+    [HasResidual Stage (Strategy.ProblemInput P)] :
+    Core.Residual.ExactLedger (CapabilityCursor data)
+      (CapabilityState.toCursor (CapabilityState.root data Stage)) [] :=
+  _root_.Hypostructure.Core.Residual.ExactLedger.root exactLedgerInternal%
+    (CapabilityState.toCursor (CapabilityState.root data Stage))
+
+private def CapabilityCursor.comap
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    (old : CapabilityCursor data)
+    (NewStage : Type (max uAmbient uBranch uData))
+    [newResidual : HasResidual NewStage (Strategy.ProblemInput P)]
+    (project : NewStage → old.Stage)
+    (residual_eq : ∀ stage,
+      @residualOf NewStage (Strategy.ProblemInput P) newResidual stage =
+        @residualOf old.Stage (Strategy.ProblemInput P) old.stageResidual
+          (project stage)) : CapabilityCursor data where
+  Stage := NewStage
+  stageResidual := newResidual
+  activeInput := old.activeInput.comap project
+  targetToRoot := fun stage proof => by
+    rw [residual_eq stage]
+    exact old.targetToRoot (project stage) proof
+
+private def CapabilityState.comap
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {Stage NewStage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
     [HasResidual NewStage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available) (project : NewStage → Stage)
+    (old : CapabilityState data Stage) (project : NewStage → Stage)
     (residual_eq : ∀ stage : NewStage,
       residualOf stage = residualOf (project stage)) :
-    CapabilityStore data NewStage available where
-  activeInput := store.activeInput.comap project
-  targetToRoot := Query.ofFunction fun stage proof => by
+    CapabilityState data NewStage where
+  activeInput := old.activeInput.comap project
+  targetToRoot := fun stage proof => by
     rw [residual_eq stage]
-    exact (store.targetToRoot.read (project stage)) proof
-  query := fun key member => (store.query key member).comap project
-  packingQuery := fun index member =>
-    (store.packingQuery index member).comap project
-  packingIndexValid := store.packingIndexValid
-  capacityLedger := fun member =>
-    (store.capacityLedger member).comap project
-  overflowLedger := fun member =>
-    (store.overflowLedger member).comap project
-  capLedger := fun member =>
-    (store.capLedger member).comap project
-  barrierRate := fun member =>
-    (store.barrierRate member).comap project
-  normalizedSupportExact := fun index member =>
-    let capability := store.normalizedSupportExact index member
-    { exact := capability.exact.comap project
-        (fun stage => (residual_eq stage).symm)
-      densityCap := capability.densityCap.comap project }
-  localSupplyExact := fun index member =>
-    let capability := store.localSupplyExact index member
-    { normalized := capability.normalized.comap project
-        (fun stage => (residual_eq stage).symm)
-      exact := capability.exact.comap project
-        (fun stage => (residual_eq stage).symm) }
-  homogeneousPressureOverloadExact := fun index member =>
-    let capability := store.homogeneousPressureOverloadExact index member
-    { ledger := capability.ledger.comap project
-        (store.activeInput.comap project)
-        (fun stage => capability.current_eq (project stage))
-      current_eq := fun _ => rfl }
-  bottleneckSeparatorExact := fun index member =>
-    let capability := store.bottleneckSeparatorExact index member
-    { ledger := capability.ledger.comap project
-        (store.activeInput.comap project)
-        (fun stage => capability.current_eq (project stage))
-      current_eq := fun _ => rfl }
-  minimalContext := fun member =>
-    (store.minimalContext member).comap project
-  minimalClosureAt := fun index member =>
-    let exact := store.minimalClosureAt index member
-    { context := exact.context.comap project
-      closure := exact.closure.comap project }
-  minimalClosureActiveObject := fun index member stage =>
-    store.minimalClosureActiveObject index member (project stage)
-  nearCubicIndexValid := store.nearCubicIndexValid
-  nearCubicSpine := fun index member =>
-    (store.nearCubicSpine index member).comap project
-  targetRankDropExact := fun member =>
-    Query.ofFunction fun stage =>
-      let capability := (store.targetRankDropExact member).read (project stage)
-      { Source := capability.Source
-        sourceHasResidual := capability.sourceHasResidual
-        source := capability.source
-        source_residual_eq :=
-          capability.source_residual_eq.trans (residual_eq stage).symm
-        profile := capability.profile
-        result := capability.result }
+    exact old.targetToRoot (project stage) proof
 
-private def CapabilityStore.preserveLedger
-    {Stage : Type uStage} {available : List CapabilityKey}
+private def CapabilityState.extension
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
-    (store : CapabilityStore data Stage available)
-    {Added : Stage → Type uPayload} :
-    CapabilityStore data (Ledger.Extension Stage Added) available :=
-  store.comap Ledger.Extension.previous (fun _ => rfl)
+    (state : CapabilityState data Stage)
+    (Added : Stage → Type (max uAmbient uBranch uData)) :
+    CapabilityState data (Ledger.Extension Stage Added) :=
+  state.comap Ledger.Extension.previous (fun _ => rfl)
 
-private def CapabilityStore.preserveLive
-    {Stage : Type uStage}
+private def CapabilityState.live
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
-    {available : List CapabilityKey}
-    (store : CapabilityStore data Stage available)
+    (state : CapabilityState data Stage) (recipe : Recipe P T Stage) :
+    CapabilityState data
+      (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify) :=
+  state.comap (fun live => live.toLedger.previous) (fun _ => rfl)
+
+private def CapabilityCursor.extension
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    (cursor : CapabilityCursor data)
+    (Added : cursor.Stage → Type (max uAmbient uBranch uData)) :
+    CapabilityCursor data :=
+  cursor.comap (Ledger.Extension cursor.Stage Added)
+    Ledger.Extension.previous (fun _ => rfl)
+
+private def CapabilityCursor.live
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    (cursor : CapabilityCursor data) (recipe : Recipe P T cursor.Stage) :
+    CapabilityCursor data :=
+  cursor.comap
+    (HaltingProgram.LiveExtension T cursor.Stage recipe.contract recipe.certify)
+    (fun live => live.toLedger.previous) (fun _ => rfl)
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.comapState
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {Stage NewStage : Type (max uAmbient uBranch uData)}
+    [HasResidual Stage (Strategy.ProblemInput P)]
+    [HasResidual NewStage (Strategy.ProblemInput P)]
+    {state : CapabilityState data Stage} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) state.toCursor available)
+    (project : NewStage → Stage)
+    (residual_eq : ∀ stage : NewStage,
+      residualOf stage = residualOf (project stage)) :
+    Core.Residual.ExactLedger (CapabilityCursor data)
+      (state.comap project residual_eq).toCursor available :=
+  _root_.Hypostructure.Core.Residual.ExactLedger.refine exactLedgerInternal% history ⟨{
+    project := project
+    residual_eq := residual_eq
+    active_eq := fun _ => rfl
+  }⟩
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.preserveLedger
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {Stage : Type (max uAmbient uBranch uData)}
+    [HasResidual Stage (Strategy.ProblemInput P)]
+    {state : CapabilityState data Stage} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) state.toCursor available)
+    {Added : Stage → Type (max uAmbient uBranch uData)} :
+    Core.Residual.ExactLedger (CapabilityCursor data)
+      (state.extension Added).toCursor available :=
+  history.comapState Ledger.Extension.previous (fun _ => rfl)
+
+noncomputable def _root_.Hypostructure.Core.Residual.ExactLedger.preserveLive
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {Stage : Type (max uAmbient uBranch uData)}
+    [HasResidual Stage (Strategy.ProblemInput P)]
+    {state : CapabilityState data Stage} {available : List CapabilityKey}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) state.toCursor available)
     (recipe : Recipe P T Stage) :
-    CapabilityStore data
-      (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify)
-      available where
-  activeInput := HaltingProgram.LiveExtension.preserveQuery
-    (T := T) store.activeInput
-  targetToRoot := HaltingProgram.LiveExtension.preserveQuery
-    (T := T) store.targetToRoot
-  query := fun key member =>
-    HaltingProgram.LiveExtension.preserveQuery
-      (T := T) (store.query key member)
-  packingQuery := fun index member =>
-    HaltingProgram.LiveExtension.preserveQuery
-      (T := T) (store.packingQuery index member)
-  packingIndexValid := store.packingIndexValid
-  capacityLedger := fun member =>
-    (store.capacityLedger member).comap
-      (fun live => live.toLedger.previous)
-  overflowLedger := fun member =>
-    (store.overflowLedger member).comap
-      (fun live => live.toLedger.previous)
-  capLedger := fun member =>
-    (store.capLedger member).comap
-      (fun live => live.toLedger.previous)
-  barrierRate := fun member =>
-    (store.barrierRate member).comap
-      (fun live => live.toLedger.previous)
-  normalizedSupportExact := fun index member =>
-    let capability := store.normalizedSupportExact index member
-    { exact := capability.exact.comap
-        (fun live : HaltingProgram.LiveExtension T Stage
-          recipe.contract recipe.certify => live.toLedger.previous)
+    Core.Residual.ExactLedger (CapabilityCursor data)
+      (state.live recipe).toCursor available :=
+  by
+    simpa only [CapabilityState.live] using
+      history.comapState
+        (fun live : HaltingProgram.LiveExtension T Stage recipe.contract
+            recipe.certify => live.toLedger.previous)
         (fun _ => rfl)
-      densityCap := capability.densityCap.comap
-        (fun live : HaltingProgram.LiveExtension T Stage
-          recipe.contract recipe.certify => live.toLedger.previous) }
-  localSupplyExact := fun index member =>
-    let capability := store.localSupplyExact index member
-    { normalized := capability.normalized.comap
-        (fun live : HaltingProgram.LiveExtension T Stage
-          recipe.contract recipe.certify => live.toLedger.previous)
-        (fun _ => rfl)
-      exact := capability.exact.comap
-        (fun live : HaltingProgram.LiveExtension T Stage
-          recipe.contract recipe.certify => live.toLedger.previous)
-        (fun _ => rfl) }
-  homogeneousPressureOverloadExact := fun index member =>
-    let capability := store.homogeneousPressureOverloadExact index member
-    { ledger := capability.ledger.comap
-        (fun live : HaltingProgram.LiveExtension T Stage
-          recipe.contract recipe.certify => live.toLedger.previous)
-        (HaltingProgram.LiveExtension.preserveQuery (T := T) store.activeInput)
-        (fun live => capability.current_eq live.previous)
-      current_eq := fun _ => rfl }
-  bottleneckSeparatorExact := fun index member =>
-    let capability := store.bottleneckSeparatorExact index member
-    { ledger := capability.ledger.comap
-        (fun live : HaltingProgram.LiveExtension T Stage
-          recipe.contract recipe.certify => live.toLedger.previous)
-        (HaltingProgram.LiveExtension.preserveQuery (T := T) store.activeInput)
-        (fun live => capability.current_eq live.previous)
-      current_eq := fun _ => rfl }
-  minimalContext := fun member =>
-    HaltingProgram.LiveExtension.preserveQuery
-      (T := T) (store.minimalContext member)
-  minimalClosureAt := fun index member =>
-    let exact := store.minimalClosureAt index member
-    { context := HaltingProgram.LiveExtension.preserveQuery
-        (T := T) exact.context
-      closure := HaltingProgram.LiveExtension.preserveQuery
-        (T := T) exact.closure }
-  minimalClosureActiveObject := fun index member live =>
-    store.minimalClosureActiveObject index member live.toLedger.previous
-  nearCubicIndexValid := store.nearCubicIndexValid
-  nearCubicSpine := fun index member =>
-    (store.nearCubicSpine index member).comap
-      (fun live : HaltingProgram.LiveExtension T Stage
-        recipe.contract recipe.certify => live.toLedger.previous)
-  targetRankDropExact := fun member =>
-    Query.ofFunction fun live =>
-      let capability := (store.targetRankDropExact member).read
-        live.toLedger.previous
-      { Source := capability.Source
-        sourceHasResidual := capability.sourceHasResidual
-        source := capability.source
-        source_residual_eq := capability.source_residual_eq
-        profile := capability.profile
-        result := capability.result }
 
-private theorem CapabilityStore.minimalHeadersOnly
-    {index : Nat} {key : CapabilityKey}
-    (member : key ∈ [CapabilityKey.minimalClosureAt index, .minimalContext])
-    (notExact : key ≠ .minimalClosureAt index)
-    (notContext : key ≠ .minimalContext) : False := by
-  rcases List.mem_cons.mp member with head | tail
-  · exact notExact head
-  · rcases List.mem_cons.mp tail with head | tail
-    · exact notContext head
-    · exact absurd tail (List.not_mem_nil)
-
-/-- The rebase performed by a minimal-counterexample selection.  From this
-vertex on, the spine argues about the selected minimal object `ctx.G` and not
-about the untouched problem input, so `activeInput` is retargeted onto the
-selected context.  The selected object avoids the target by construction, so
-any target proof obtained there is absurd and discharges the root obligation.
-
-Every object-indexed capability accumulated before the rebase spoke about the
-previous object and is therefore *not* carried across: the output capability
-list is exactly the two headers published by this vertex. -/
-private def CapabilityStore.ofMinimalClosure
-    (data : StrategyData.{uAmbient, uBranch, uData} P T)
-    {Stage : Type uStage}
-    [HasResidual Stage (Strategy.ProblemInput P)]
-    (index : Fin data.counterexampleReductions.length)
+private def CapabilityCursor.minimalScope
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    (cursor : CapabilityCursor data) (index : Fin data.counterexampleReductions.length)
+    (recipe : Recipe P T cursor.Stage)
     (exact : Core.Strategy.InterfaceReplacement.ExactClosureQueries
-      data.counterexampleReductions[index].interfaceReplacement Stage) :
-    CapabilityStore data Stage
-      [.minimalClosureAt index, .minimalContext] where
+      data.counterexampleReductions[index].interfaceReplacement
+      (HaltingProgram.LiveExtension T cursor.Stage recipe.contract
+        recipe.certify)) : CapabilityCursor data where
+  Stage := HaltingProgram.LiveExtension T cursor.Stage recipe.contract
+    recipe.certify
+  stageResidual := inferInstance
   activeInput := exact.context.map fun _ context =>
     { object := context.G
       baseline := context.baseline
       branchState := context.state }
-  targetToRoot := Query.ofFunction fun stage proof =>
-    absurd proof (exact.context.read stage).avoids
-  query := fun requested member => by
-    by_cases exactSame : requested = .minimalClosureAt index
-    · subst requested
-      exact Query.ofFunction fun _ => ()
-    · by_cases contextSame : requested = .minimalContext
-      · subst requested
-        exact Query.ofFunction fun _ => ()
-      · exact (minimalHeadersOnly member exactSame contextSame).elim
-  packingQuery := fun _ member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  packingIndexValid := fun _ member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  capacityLedger := fun member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  overflowLedger := fun member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  capLedger := fun member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  barrierRate := fun member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  normalizedSupportExact := fun _ member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  localSupplyExact := fun _ member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  homogeneousPressureOverloadExact := fun _ member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  bottleneckSeparatorExact := fun _ member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  minimalContext := fun _ =>
-    exact.context.map fun _ context => ⟨index, context⟩
-  minimalClosureAt := fun requested member => by
-    by_cases equal : requested = index
-    · subst requested
-      exact exact
-    · exact (minimalHeadersOnly member
-        (by
-          intro head
-          exact equal (Fin.ext (CapabilityKey.minimalClosureAt.inj head)))
-        (by intro head; cases head)).elim
-  minimalClosureActiveObject := fun requested member stage => by
-    by_cases equal : requested = index
-    · subst requested
-      rw [dif_pos (rfl : index = index)]
-      rfl
-    · exact (minimalHeadersOnly member
-        (by
-          intro head
-          exact equal (Fin.ext (CapabilityKey.minimalClosureAt.inj head)))
-        (by intro head; cases head)).elim
-  nearCubicIndexValid := fun _ member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  nearCubicSpine := fun _ member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
-  targetRankDropExact := fun member =>
-    (minimalHeadersOnly member
-      (by intro equality; cases equality)
-      (by intro equality; cases equality)).elim
+  targetToRoot := fun stage proof => absurd proof (exact.context stage).avoids
+
+private def CapabilityState.minimalScope
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {Stage : Type (max uAmbient uBranch uData)}
+    [HasResidual Stage (Strategy.ProblemInput P)]
+    (state : CapabilityState data Stage)
+    (index : Fin data.counterexampleReductions.length)
+    (recipe : Recipe P T Stage)
+    (exact : Core.Strategy.InterfaceReplacement.ExactClosureQueries
+      data.counterexampleReductions[index].interfaceReplacement
+      (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify)) :
+    CapabilityState data
+      (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify) where
+  activeInput := exact.context.map fun _ context =>
+    { object := context.G
+      baseline := context.baseline
+      branchState := context.state }
+  targetToRoot := fun stage proof => absurd proof (exact.context stage).avoids
+
+noncomputable def
+    _root_.Hypostructure.Core.Residual.ExactLedger.initializeMinimalClosure
+    {data : StrategyData.{uAmbient, uBranch, uData} P T}
+    {Stage : Type (max uAmbient uBranch uData)}
+    [HasResidual Stage (Strategy.ProblemInput P)]
+    {state : CapabilityState data Stage}
+    (history : Core.Residual.ExactLedger
+      (CapabilityCursor data) state.toCursor [])
+    (index : Fin data.counterexampleReductions.length)
+    (recipe : Recipe P T Stage)
+    (exact : Core.Strategy.InterfaceReplacement.ExactClosureQueries
+      data.counterexampleReductions[index].interfaceReplacement
+      (HaltingProgram.LiveExtension T Stage recipe.contract
+        recipe.certify))
+    :
+    Core.Residual.ExactLedger (CapabilityCursor data)
+      (state.minimalScope index recipe exact).toCursor
+      [CapabilityKey.minimalClosureAt index, CapabilityKey.minimalContext] :=
+  let next := (state.minimalScope index recipe exact).toCursor
+  let closureValue : StoredCapability data
+      (CapabilityKey.minimalClosureAt index) next :=
+    { origin := next
+      payload := ⟨{
+        indexValid := index.isLt
+        exact := exact
+        activeObject := fun _ => rfl
+      }⟩
+      lineage := Core.Residual.RefinementSystem.refl next }
+  let contextValue : StoredCapability data CapabilityKey.minimalContext next :=
+    { origin := next
+      payload := ⟨fun stage => ⟨index, exact.context stage⟩⟩
+      lineage := Core.Residual.RefinementSystem.refl next }
+  _root_.Hypostructure.Core.Residual.ExactLedger.initializeScope exactLedgerInternal%
+    history next (.cons closureValue (.cons contextValue .nil))
+    (by simp) (by simp)
+    { producer := `Hypostructure.Core.Strategy.minimalCounterexampleScope }
 
 /-- Generic proof that every Strategy consumer is reached with all its typed
 ledger requirements.  The output capability list is computed uniformly as
 `productions ++ input`; no constructor encodes a particular Strategy chain.
 Branch-local capabilities are checked within that branch and are not leaked
 through its enclosing routed join. -/
-private inductive CapabilityFlow
+private inductive VerifiedManifest
     {data : StrategyData.{uAmbient, uBranch, uData} P T} :
     Blueprint data .expanded →
       List CapabilityKey → List CapabilityKey →
       Type (max (uAmbient + 1) (uBranch + 1) (uData + 1)) where
   | root :
-      CapabilityFlow (.root : Blueprint data .expanded) available available
+      VerifiedManifest (.root : Blueprint data .expanded) available available
   | step
       (strategy : StrategyRef data)
-      (restFlow : CapabilityFlow rest input current)
+      (restFlow : VerifiedManifest rest input current)
       (valid :
-        strategy.key.requirementsMet data strategy.resolved current = true) :
-      CapabilityFlow (.step rest strategy) input
+        strategy.key.requirementsMet data strategy.resolved current = true)
+      (fresh : CapabilityKey.fresh
+        (strategy.key.productions data strategy.resolved) current = true) :
+      VerifiedManifest (.step rest strategy) input
         (strategy.key.productions data strategy.resolved ++ current)
   | binaryBranch
       (strategy : BinaryStrategyRef data)
-      (restFlow : CapabilityFlow rest input current)
+      (restFlow : VerifiedManifest rest input current)
       (valid :
         strategy.key.requirementsMet data strategy.resolved current = true)
+      (leftFresh : CapabilityKey.fresh strategy.leftProductions current = true)
+      (rightFresh : CapabilityKey.fresh strategy.rightProductions current = true)
       (leftFlow :
-        CapabilityFlow left
+        VerifiedManifest left
           (strategy.leftProductions ++ current) leftOutput)
       (rightFlow :
-        CapabilityFlow right
+        VerifiedManifest right
           (strategy.rightProductions ++ current) rightOutput) :
-      CapabilityFlow (.binaryBranch rest strategy left right)
+      VerifiedManifest (.binaryBranch rest strategy left right)
         input current
   | homogeneousBottleneckBranches
       (index : Fin data.homogeneousBottlenecks.length)
-      (restFlow : CapabilityFlow rest input current)
+      (restFlow : VerifiedManifest rest input current)
       (valid :
         (StrategyKey.homogeneousBottleneck index).requirementsMet
           data index.isLt current = true)
+      (handoffFresh : CapabilityKey.fresh
+        [.homogeneousHandoff index] current = true)
       (exceptionalFlow :
-        CapabilityFlow exceptional current exceptionalOutput)
+        VerifiedManifest exceptional current exceptionalOutput)
       (structuredFlow :
-        CapabilityFlow structured
+        VerifiedManifest structured
           (.homogeneousHandoff index :: current) structuredOutput)
       (boundedFlow :
-        CapabilityFlow bounded current boundedOutput) :
-      CapabilityFlow
+        VerifiedManifest bounded current boundedOutput) :
+      VerifiedManifest
         (.homogeneousBottleneckBranches rest index exceptional structured
           bounded)
         input current
@@ -4458,31 +4007,31 @@ private inductive CapabilityFlow
       (rest : Blueprint data .expanded)
       (index : Fin data.counterexampleReductions.length)
       (metadata : CounterexampleContinuationMetadata)
-      (restFlow : CapabilityFlow rest input current) :
-      CapabilityFlow (.minimalCounterexample rest index metadata) input
+      (restFlow : VerifiedManifest rest input []) :
+      VerifiedManifest (.minimalCounterexample rest index metadata) input
         [.minimalClosureAt index, .minimalContext]
-  | annotate (restFlow : CapabilityFlow rest input output) :
-      CapabilityFlow (.annotate rest label) input output
-  | labelled (restFlow : CapabilityFlow rest input output) :
-      CapabilityFlow (.labelled rest name) input output
-  | documented (restFlow : CapabilityFlow rest input output) :
-      CapabilityFlow (.documented rest metadata) input output
+  | annotate (restFlow : VerifiedManifest rest input output) :
+      VerifiedManifest (.annotate rest label) input output
+  | labelled (restFlow : VerifiedManifest rest input output) :
+      VerifiedManifest (.labelled rest name) input output
+  | documented (restFlow : VerifiedManifest rest input output) :
+      VerifiedManifest (.documented rest metadata) input output
   | resolvedRoute (route : ResolvedRoute) (metadata : RouteMetadata)
-      (restFlow : CapabilityFlow rest input output) :
-      CapabilityFlow (.resolvedRoute rest route metadata) input output
+      (restFlow : VerifiedManifest rest input output) :
+      VerifiedManifest (.resolvedRoute rest route metadata) input output
   | siblingRoute (route : ResolvedRoute) (metadata : RouteMetadata)
-      (restFlow : CapabilityFlow rest input output)
+      (restFlow : VerifiedManifest rest input output)
       {destination : Blueprint data .expanded}
       {destinationOutput : List CapabilityKey}
       (destinationFlow :
-        CapabilityFlow destination output destinationOutput) :
-      CapabilityFlow (.resolvedRoute rest route metadata) input output
+        VerifiedManifest destination output destinationOutput) :
+      VerifiedManifest (.resolvedRoute rest route metadata) input output
 
 private structure CheckedBlueprint
     (data : StrategyData.{uAmbient, uBranch, uData} P T) where
   output : List CapabilityKey
   dag : Blueprint data .expanded
-  flow : CapabilityFlow (data := data) dag [] output
+  verified : VerifiedManifest (data := data) dag [] output
 
 private noncomputable def obstructionPackingQuery
     (semantics : Core.Strategy.ObstructionPackingClosure.Semantics.{
@@ -4492,7 +4041,7 @@ private noncomputable def obstructionPackingQuery
     [HasResidual Stage (Strategy.ProblemInput P)]
     (current : Query Stage fun _ => Strategy.ProblemInput P)
     (targetToRoot : Query Stage fun stage =>
-      T.Predicate (current.read stage).object →
+      T.Predicate (current stage).object →
         T.Predicate (residualOf stage).object) :
     let recipe := obstructionPackingRecipe (T := T) semantics (Stage := Stage)
       current targetToRoot
@@ -4501,9 +4050,9 @@ private noncomputable def obstructionPackingQuery
       (fun live =>
         Core.Strategy.ObstructionPackingClosure.NonemptyPacking
           (semantics.occurrences
-            ((HaltingProgram.LiveExtension.preserveQuery (T := T) current).read live))
+            ((HaltingProgram.LiveExtension.preserveQuery (T := T) current) live))
           (semantics.conflict
-            ((HaltingProgram.LiveExtension.preserveQuery (T := T) current).read live))) := by
+            ((HaltingProgram.LiveExtension.preserveQuery (T := T) current) live))) := by
   let recipe := obstructionPackingRecipe (T := T) semantics (Stage := Stage)
     current targetToRoot
   let Live :=
@@ -4520,7 +4069,7 @@ private noncomputable def obstructionPackingQuery
         False.elim (by
           have certified :
               recipe.certify live.ledger.previous live.ledger.added =
-                some ⟨(targetToRoot.read live.ledger.previous) target.down⟩ := by
+                some ⟨(targetToRoot live.ledger.previous) target.down⟩ := by
             dsimp [recipe, obstructionPackingRecipe]
             rw [outcomeEq]
           have rejected := live.isLive
@@ -4591,7 +4140,7 @@ private noncomputable def finiteDensityBudgetSplit
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
     (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
     (nearCubic : Query Stage fun stage =>
-      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
+      degreeSurplusLoad stage ≤ degreeSurplusThreshold stage) :
     Strategy.Dichotomy.{uStage, uStage, uStage} Stage :=
   let profile :
       Core.Strategy.FiniteDensityBudget.Profile Stage :=
@@ -4611,7 +4160,7 @@ private theorem finiteDensityBudgetSplit_leftPayload_eq
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
     (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
     (nearCubic : Query Stage fun stage =>
-      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
+      degreeSurplusLoad stage ≤ degreeSurplusThreshold stage) :
     (finiteDensityBudgetSplit registration packingCount barrierRate
       degreeSurplusLoad degreeSurplusThreshold nearCubic).LeftPayload =
       (let profile :=
@@ -4631,7 +4180,7 @@ private theorem finiteDensityBudgetSplit_leftBranchStage_eq
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
     (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
     (nearCubic : Query Stage fun stage =>
-      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
+      degreeSurplusLoad stage ≤ degreeSurplusThreshold stage) :
     Ledger.Extension Stage
         (finiteDensityBudgetSplit registration
           packingCount barrierRate
@@ -4655,7 +4204,7 @@ private theorem finiteDensityBudgetSplit_rightPayload_eq
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
     (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
     (nearCubic : Query Stage fun stage =>
-      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
+      degreeSurplusLoad stage ≤ degreeSurplusThreshold stage) :
     (finiteDensityBudgetSplit registration packingCount barrierRate
       degreeSurplusLoad degreeSurplusThreshold nearCubic).RightPayload =
       (let profile :=
@@ -4675,7 +4224,7 @@ private theorem finiteDensityBudgetSplit_rightBranchStage_eq
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
     (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
     (nearCubic : Query Stage fun stage =>
-      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
+      degreeSurplusLoad stage ≤ degreeSurplusThreshold stage) :
     Ledger.Extension Stage
         (finiteDensityBudgetSplit registration
           packingCount barrierRate
@@ -4699,7 +4248,7 @@ private noncomputable def finiteDensityBudgetSplit_classifiedTerminalTypeCheck
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
     (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
     (nearCubic : Query Stage fun stage =>
-      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage)
+      degreeSurplusLoad stage ≤ degreeSurplusThreshold stage)
     (stage : Stage) :
     (let profile :=
       Core.Strategy.FiniteDensityBudget.Profile.ofRegistration
@@ -4721,7 +4270,7 @@ private noncomputable def finiteDensityBudgetRecipe
       Core.Strategy.FiniteBarrierEnumeration.RateLedger Stage)
     (degreeSurplusLoad degreeSurplusThreshold : Query Stage fun _ => Nat)
     (nearCubic : Query Stage fun stage =>
-      degreeSurplusLoad.read stage ≤ degreeSurplusThreshold.read stage) :
+      degreeSurplusLoad stage ≤ degreeSurplusThreshold stage) :
     Recipe P T Stage :=
   let split :=
     finiteDensityBudgetSplit registration packingCount barrierRate
@@ -4797,8 +4346,10 @@ private structure BinaryResolution
     (strategy : BinaryStrategyRef data)
     (Stage : Type (max uAmbient uBranch uData))
     [HasResidual Stage (Strategy.ProblemInput P)]
+    (state : CapabilityState data Stage)
     {available : List CapabilityKey}
-    (capabilities : CapabilityStore data Stage available) where
+    (capabilities : Core.Residual.ExactLedger
+      (CapabilityCursor data) state.toCursor available) where
   split : Strategy.Dichotomy.{
     max uAmbient uBranch uData,
     max uAmbient uBranch uData,
@@ -4813,17 +4364,14 @@ private structure BinaryResolution
   rightProduced : List CapabilityKey
   leftProduced_eq : leftProduced = strategy.leftProductions
   rightProduced_eq : rightProduced = strategy.rightProductions
-  /-- The capabilities published on each arm are built from the very store the
-  vertex resolved against, not from an arbitrary one.  A branch fact stated in
-  that store's `activeInput` coordinates -- the near-cubic spine estimate is
-  one -- can only be republished if the two stores are the same store. -/
+  /-- Each arm refines and appends to the literal incoming canonical ledger. -/
   leftCapabilities :
-    CapabilityStore data
-      (Ledger.Extension Stage split.LeftPayload)
+    Core.Residual.ExactLedger (CapabilityCursor data)
+      (state.extension split.LeftPayload).toCursor
       (leftProduced ++ available)
   rightCapabilities :
-    CapabilityStore data
-      (Ledger.Extension Stage split.RightPayload)
+    Core.Residual.ExactLedger (CapabilityCursor data)
+      (state.extension split.RightPayload).toCursor
       (rightProduced ++ available)
 
 universe uPrevious uResidual uResponse uSupply uDatum uClass uPromotion
@@ -4836,7 +4384,7 @@ arguing about, pointwise on the coordinate schedule.
 This is not a registration statement.  A registration sees only its own
 residual, and the fact that refutes the predicate is produced at the
 minimal-counterexample node and retained in the closure ledger; it is read
-back here through `CapabilityStore.minimalClosureAt` and its provenance law.
+back here through `ExactLedger.minimalClosureAt` and its provenance law.
 The two remaining ledger arguments are kept in the signature so that this
 statement is pinned to the very composition Core builds. -/
 private abbrev TargetRelativeRankCoreExclusions
@@ -4852,12 +4400,12 @@ private abbrev TargetRelativeRankCoreExclusions
     (_normalizedSupport :
       Core.Strategy.SupportComplementNormalization.ExactLedger.{
         uResidual, uPrevious, uAmbientItem, uPiece} Previous Residual
-        (fun previous => AmbientItem (current.read previous)))
+        (fun previous => AmbientItem (current previous)))
     (_localSupply : Query Previous fun _ =>
       ULift.{uSupply} Core.Strategy.LocalSupplyLowerBound.Summary) : Prop :=
-  ∀ (previous : Previous) (coordinate : Coordinate (current.read previous)),
-    ¬ registration.TargetDependent (current.read previous)
-        (registration.response (current.read previous)) coordinate
+  ∀ (previous : Previous) (coordinate : Coordinate (current previous)),
+    ¬ registration.TargetDependent (current previous)
+        (registration.response (current previous)) coordinate
 
 open Core.Strategy.TargetRelativeRankDichotomy in
 /-- Every rank-drop alternative of a registration-built target-relative rank
@@ -4896,7 +4444,7 @@ private theorem targetRelativeRankDrop_false
     (normalizedSupport :
       Core.Strategy.SupportComplementNormalization.ExactLedger.{
         uResidual, uPrevious, uAmbientItem, uPiece} Previous Residual
-        (fun previous => AmbientItem (current.read previous)))
+        (fun previous => AmbientItem (current previous)))
     (localSupply : Query Previous fun _ =>
       ULift.{uSupply} Core.Strategy.LocalSupplyLowerBound.Summary)
     (exhaustive : registration.toBaseRegistration.ClassificationExhaustive)
@@ -4935,11 +4483,15 @@ private noncomputable def resolveBinary
     (strategy : BinaryStrategyRef data)
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
+    {state : CapabilityState data Stage}
     {available : List CapabilityKey}
-    (capabilities : CapabilityStore data Stage available)
+    (capabilities : Core.Residual.ExactLedger
+      (CapabilityCursor data) state.toCursor available)
     (valid :
-      strategy.key.requirementsMet data strategy.resolved available = true) :
-    BinaryResolution data strategy Stage capabilities := by
+      strategy.key.requirementsMet data strategy.resolved available = true)
+    (leftFresh : CapabilityKey.fresh strategy.leftProductions available = true)
+    (rightFresh : CapabilityKey.fresh strategy.rightProductions available = true) :
+    BinaryResolution data strategy Stage state capabilities := by
   rcases strategy with ⟨terminal⟩
   exact match view_eq : terminal with
   | .inl index =>
@@ -4973,6 +4525,10 @@ private noncomputable def resolveBinary
         rightCapabilities := capabilities.preserveLedger }
   | .inr (.inl index) =>
       let registration := data.scaleThresholdDichotomies[index]
+      have rightFresh' : CapabilityKey.fresh
+          [.nearCubicSpine index] available = true := by
+        simpa [BinaryStrategyRef.rightProductions, BinaryStrategyRef.view,
+          view_eq] using rightFresh
       /- The comparison is run at the object the spine is arguing about, the
       same query every other registered family in this file is lowered at.
       Before a minimal-counterexample selection that is the problem input; after
@@ -5013,10 +4569,11 @@ private noncomputable def resolveBinary
         arm records the complementary comparison and publishes nothing new. -/
         rightCapabilities :=
           capabilities.preserveLedger.consNearCubicSpine index
-            (Query.ofFunction fun stage =>
+            ( fun stage =>
               (Core.Strategy.ScaleThresholdDichotomy.Profile.AtOrBelowResidual.registeredComparisonAt
                 registration capabilities.activeInput
-                stage.added.down)) }
+                stage.added.down))
+            (fresh := CapabilityKey.not_mem_of_fresh rightFresh' (by simp)) }
   | .inr (.inr (.inl index)) => by
       let registered := data.atomContextObstructionDichotomies[index]
       exact
@@ -5033,6 +4590,21 @@ private noncomputable def resolveBinary
         leftCapabilities := capabilities.preserveLedger
         rightCapabilities := capabilities.preserveLedger }
   | .inr (.inr (.inr (.inl index))) => by
+      have leftFresh' : CapabilityKey.fresh [.targetRankDrop] available = true := by
+        simpa [BinaryStrategyRef.leftProductions, BinaryStrategyRef.view,
+          view_eq] using leftFresh
+      have rightFresh' : CapabilityKey.fresh
+          [.fullRankExactCode, .fullRankCertificate, .independentRank]
+          available = true := by
+        simpa [BinaryStrategyRef.rightProductions, BinaryStrategyRef.view,
+          view_eq] using rightFresh
+      have fullRankExactFresh : CapabilityKey.fullRankExactCode ∉ available :=
+        CapabilityKey.not_mem_of_fresh rightFresh' (by simp)
+      have fullRankCertificateFresh :
+          CapabilityKey.fullRankCertificate ∉ available :=
+        CapabilityKey.not_mem_of_fresh rightFresh' (by simp)
+      have independentRankFresh : CapabilityKey.independentRank ∉ available :=
+        CapabilityKey.not_mem_of_fresh rightFresh' (by simp)
       let packed := data.targetRelativeRankDichotomies[index]
       let supplyIndex := packed.snd.fst
       let boundaryIndex := data.localSupplyLowerBounds[supplyIndex].fst
@@ -5084,7 +4656,7 @@ private noncomputable def resolveBinary
       let exactRankDrop :
           Query (Ledger.Extension Stage split.LeftPayload) fun branch =>
             TargetRankDropCapability data (residualOf branch) :=
-        Query.ofFunction fun branch =>
+         fun branch =>
           { Source := Stage
             sourceHasResidual := inferInstance
             source := branch.previous
@@ -5098,6 +4670,17 @@ private noncomputable def resolveBinary
           let fullRank := payload.down
           let routed := fullRank.exact.output.fst.snd.stage.added
           (routed.fullRankLedgerOutput fullRank.rankSelected).rank.value
+      let fullRankCertificate :
+          Query (Ledger.Extension Stage split.RightPayload) fun _ =>
+            Core.Strategy.TargetRelativeRankDichotomy.FullRankCertificate :=
+        rightPayload.map fun _ payload =>
+          let fullRank := payload.down
+          { rank := profile.code.fullRankValue fullRank
+            coordinateCard :=
+              (profile.rank.rankCapability.coordinatesAt
+                fullRank.exact.output.fst.snd.stage.previous).values.length
+            rank_eq_coordinateCard :=
+              profile.code.fullRankValue_eq_coordinateCard fullRank }
       /- No rank-drop closure is available on the unlinked key.  Its
       `TargetDependent` predicate is an opaque registration field, so the
       minimal-counterexample closure retained in the ledger says nothing about
@@ -5109,23 +4692,40 @@ private noncomputable def resolveBinary
         leftDirect := none
         rightDirect := none
         leftProduced := [.targetRankDrop]
-        rightProduced := [.fullRankExactCode, .independentRank]
+        rightProduced :=
+          [.fullRankExactCode, .fullRankCertificate, .independentRank]
         leftProduced_eq := rfl
         rightProduced_eq := rfl
         leftCapabilities :=
           capabilities.preserveLedger.consTargetRankDrop exactRankDrop
+            (fresh := CapabilityKey.not_mem_of_fresh leftFresh' (by simp))
         rightCapabilities :=
-          ((capabilities.preserveLedger.cons
+          (((capabilities.preserveLedger.cons
               .independentRank independentRank
               (by intro packingIndex equality; cases equality)
               (by intro equality; cases equality)
-              (by intro equality; cases equality)).cons
+              (by intro equality; cases equality)
+              (fresh := by simpa using independentRankFresh)).cons
+              .fullRankCertificate fullRankCertificate
+              (by intro packingIndex equality; cases equality)
+              (by intro equality; cases equality)
+              (by intro equality; cases equality)
+              (fresh := by simpa using fullRankCertificateFresh)).cons
             .fullRankExactCode fullRankMarker
             (by intro packingIndex equality; cases equality)
             (by intro equality; cases equality)
-            (by intro equality; cases equality))
+            (by intro equality; cases equality)
+            (fresh := by simpa using fullRankExactFresh))
       }
   | .inr (.inr (.inr (.inr (.inl index)))) => by
+      have leftFresh' : CapabilityKey.fresh
+          [.finiteDensityOverflow] available = true := by
+        simpa [BinaryStrategyRef.leftProductions, BinaryStrategyRef.view,
+          view_eq] using leftFresh
+      have rightFresh' : CapabilityKey.fresh
+          [.finiteDensityCap] available = true := by
+        simpa [BinaryStrategyRef.rightProductions, BinaryStrategyRef.view,
+          view_eq] using rightFresh
       have required :
           CapabilityKey.obstructionPacking 0 ∈ available ∧
             CapabilityKey.finiteBarrierSummary ∈ available ∧
@@ -5135,15 +4735,15 @@ private noncomputable def resolveBinary
       let nearCubicIndex : Fin data.scaleThresholdDichotomies.length :=
         ⟨0, capabilities.nearCubicIndexValid 0 required.2.2⟩
       let degreeSurplusLoad : Query Stage fun _ => Nat :=
-        Query.ofFunction fun stage =>
+         fun stage =>
           data.scaleThresholdDichotomies[nearCubicIndex].load
-            (capabilities.activeInput.read stage)
+            (capabilities.activeInput stage)
       let degreeSurplusThreshold : Query Stage fun _ => Nat :=
-        Query.ofFunction fun stage =>
+         fun stage =>
           (data.scaleThresholdDichotomies[nearCubicIndex].table
-            (capabilities.activeInput.read stage)).threshold
+            (capabilities.activeInput stage)).threshold
             (data.scaleThresholdDichotomies[nearCubicIndex].size
-              (capabilities.activeInput.read stage))
+              (capabilities.activeInput stage))
       let profile :=
         Core.Strategy.FiniteDensityBudget.Profile.ofRegistration
           (capabilities.packingCountQuery 0 required.1)
@@ -5161,10 +4761,20 @@ private noncomputable def resolveBinary
         rightProduced_eq := rfl
         leftCapabilities :=
           capabilities.preserveLedger.consOverflow profile.overflowLedger
+            (fresh := CapabilityKey.not_mem_of_fresh leftFresh' (by simp))
         rightCapabilities :=
           capabilities.preserveLedger.consCap profile.capLedger
+            (fresh := CapabilityKey.not_mem_of_fresh rightFresh' (by simp))
       }
   | .inr (.inr (.inr (.inr (.inr (.inl index))))) => by
+      have leftFresh' : CapabilityKey.fresh
+          [.finiteStateCapacityContinuation] available = true := by
+        simpa [BinaryStrategyRef.leftProductions, BinaryStrategyRef.view,
+          view_eq] using leftFresh
+      have rightFresh' : CapabilityKey.fresh
+          [.finiteStateCapacityContinuation] available = true := by
+        simpa [BinaryStrategyRef.rightProductions, BinaryStrategyRef.view,
+          view_eq] using rightFresh
       let entry := data.finiteStateCapacities[index]
       let supplyIndex := entry.fst
       change StrategyKey.requirementsMet data
@@ -5177,9 +4787,12 @@ private noncomputable def resolveBinary
       have requiredBarrier :
           CapabilityKey.finiteBarrierSummary ∈ available :=
         requiredRaw.2.1
+      have requiredFullRank :
+          CapabilityKey.fullRankCertificate ∈ available :=
+        requiredRaw.2.2.1
       have requiredSupply :
           CapabilityKey.localSupplyLedger supplyIndex ∈ available := by
-        simpa [entry, supplyIndex] using requiredRaw.2.2
+        simpa [entry, supplyIndex] using requiredRaw.2.2.2
       let supplyCapability :=
         capabilities.localSupplyExact supplyIndex requiredSupply
       let profile :
@@ -5189,6 +4802,8 @@ private noncomputable def resolveBinary
           registration := entry.snd
           current := capabilities.activeInput
           complement := supplyCapability.normalized.complement
+          fullRankCertificate :=
+            capabilities.query .fullRankCertificate requiredFullRank
           independentRank := capabilities.query .independentRank requiredRank
           finiteBarrierSummary :=
             capabilities.query .finiteBarrierSummary requiredBarrier
@@ -5207,7 +4822,7 @@ private noncomputable def resolveBinary
             (profile.nonCapacityResidual_false closure.down stage witness).elim
       let resolution :
           BinaryResolution data ⟨.inr (.inr (.inr (.inr (.inr (.inl index)))))⟩
-            Stage capabilities :=
+            Stage state capabilities :=
         { split := profile.dichotomy
           leftDirect := nonCapacityDirect
           rightDirect := none
@@ -5219,8 +4834,10 @@ private noncomputable def resolveBinary
             capabilities.preserveLedger.consCapacity
               (profile.inheritedContinuationLedger.preserve
                 (Added := profile.dichotomy.LeftPayload))
+              (fresh := CapabilityKey.not_mem_of_fresh leftFresh' (by simp))
           rightCapabilities :=
-            capabilities.preserveLedger.consCapacity profile.continuationLedger }
+            capabilities.preserveLedger.consCapacity profile.continuationLedger
+              (fresh := CapabilityKey.not_mem_of_fresh rightFresh' (by simp)) }
       exact resolution
   | .inr (.inr (.inr (.inr (.inr (.inr (.inl index)))))) =>
       let profile :
@@ -5239,6 +4856,21 @@ private noncomputable def resolveBinary
         leftCapabilities := capabilities.preserveLedger
         rightCapabilities := capabilities.preserveLedger }
   | .inr (.inr (.inr (.inr (.inr (.inr (.inr (.inl index))))))) => by
+      have leftFresh' : CapabilityKey.fresh [.targetRankDrop] available = true := by
+        simpa [BinaryStrategyRef.leftProductions, BinaryStrategyRef.view,
+          view_eq] using leftFresh
+      have rightFresh' : CapabilityKey.fresh
+          [.fullRankExactCode, .fullRankCertificate, .independentRank]
+          available = true := by
+        simpa [BinaryStrategyRef.rightProductions, BinaryStrategyRef.view,
+          view_eq] using rightFresh
+      have fullRankExactFresh : CapabilityKey.fullRankExactCode ∉ available :=
+        CapabilityKey.not_mem_of_fresh rightFresh' (by simp)
+      have fullRankCertificateFresh :
+          CapabilityKey.fullRankCertificate ∉ available :=
+        CapabilityKey.not_mem_of_fresh rightFresh' (by simp)
+      have independentRankFresh : CapabilityKey.independentRank ∉ available :=
+        CapabilityKey.not_mem_of_fresh rightFresh' (by simp)
       let packed := data.compressionLinkedTargetRelativeRankDichotomies[index]
       let supplyIndex := packed.snd.fst
       let boundaryIndex := data.localSupplyLowerBounds[supplyIndex].fst
@@ -5314,10 +4946,21 @@ private noncomputable def resolveBinary
           let fullRank := payload.down
           let routed := fullRank.exact.output.fst.snd.stage.added
           (routed.fullRankLedgerOutput fullRank.rankSelected).rank.value
+      let fullRankCertificate :
+          Query (Ledger.Extension Stage split.RightPayload) fun _ =>
+            Core.Strategy.TargetRelativeRankDichotomy.FullRankCertificate :=
+        rightPayload.map fun _ payload =>
+          let fullRank := payload.down
+          { rank := profile.code.fullRankValue fullRank
+            coordinateCard :=
+              (profile.rank.rankCapability.coordinatesAt
+                fullRank.exact.output.fst.snd.stage.previous).values.length
+            rank_eq_coordinateCard :=
+              profile.code.fullRankValue_eq_coordinateCard fullRank }
       let exactRankDrop :
           Query (Ledger.Extension Stage split.LeftPayload) fun branch =>
             TargetRankDropCapability data (residualOf branch) :=
-        Query.ofFunction fun branch =>
+         fun branch =>
           { Source := Stage
             sourceHasResidual := inferInstance
             source := branch.previous
@@ -5347,9 +4990,11 @@ private noncomputable def resolveBinary
           generalize sited.1 = site
           clear sited
           revert site
+          simp only [
+            _root_.Hypostructure.Core.Residual.ExactLedger.activeInput] at *
           rw [objectEq]
           intro site candidate
-          exact (closureQueries.closure.read stage).noCompressionCandidate _
+          exact (closureQueries.closure stage).noCompressionCandidate _
             site ⟨candidate⟩
       /- The registered rank-drop closure, read as Core's ordinary direct
       branch closure.  This is the same mechanism `DichotomyData.closeLeft`
@@ -5369,21 +5014,30 @@ private noncomputable def resolveBinary
           leftDirect := none
           rightDirect := none
           leftProduced := [.targetRankDrop]
-          rightProduced := [.fullRankExactCode, .independentRank]
+          rightProduced :=
+            [.fullRankExactCode, .fullRankCertificate, .independentRank]
           leftProduced_eq := rfl
           rightProduced_eq := rfl
           leftCapabilities :=
             capabilities.preserveLedger.consTargetRankDrop exactRankDrop
+              (fresh := CapabilityKey.not_mem_of_fresh leftFresh' (by simp))
           rightCapabilities :=
-            ((capabilities.preserveLedger.cons
+            (((capabilities.preserveLedger.cons
                 .independentRank independentRank
                 (by intro packingIndex equality; cases equality)
                 (by intro equality; cases equality)
-                (by intro equality; cases equality)).cons
+                (by intro equality; cases equality)
+                (fresh := by simpa using independentRankFresh)).cons
+                .fullRankCertificate fullRankCertificate
+                (by intro packingIndex equality; cases equality)
+                (by intro equality; cases equality)
+                (by intro equality; cases equality)
+                (fresh := by simpa using fullRankCertificateFresh)).cons
               .fullRankExactCode fullRankMarker
               (by intro packingIndex equality; cases equality)
               (by intro equality; cases equality)
-              (by intro equality; cases equality)) }
+              (by intro equality; cases equality)
+              (fresh := by simpa using fullRankExactFresh)) }
   | .inr (.inr (.inr (.inr (.inr (.inr (.inr (.inr (.inl index)))))))) =>
       let profile :
           Core.Strategy.Route8CarrierClosure.Profile
@@ -5605,7 +5259,7 @@ private noncomputable def homogeneousBottleneckRecipe
     [HasResidual Stage (Strategy.ProblemInput P)]
     (current : Query Stage fun _ => Strategy.ProblemInput P)
     (targetToRoot : Query Stage fun stage =>
-      T.Predicate (current.read stage).object →
+      T.Predicate (current stage).object →
         T.Predicate (residualOf stage : Strategy.ProblemInput P).object)
     (continuation : HomogeneousBottleneckContinuation
       (T := T) pressureRegistration bottleneckRegistration Stage) :
@@ -5619,7 +5273,7 @@ private noncomputable def homogeneousBottleneckRecipe
     certify := fun stage payload =>
       match payload with
       | ⟨_, .target _ proof⟩ =>
-          some (PLift.up (targetToRoot.read stage proof))
+          some (PLift.up (targetToRoot stage proof))
       | ⟨_, .exceptional _ _ identified⟩ =>
           match continuation.registration.exceptionalImpossible with
           | some impossible =>
@@ -5670,7 +5324,7 @@ private noncomputable def homogeneousBottleneckBranchesRecipe
         Stage (Strategy.ProblemInput P) bottleneckRegistration)
     (current : Query Stage fun _ => Strategy.ProblemInput P)
     (targetToRoot : Query Stage fun stage =>
-      T.Predicate (current.read stage).object →
+      T.Predicate (current stage).object →
         T.Predicate (residualOf stage : Strategy.ProblemInput P).object)
     (exceptional : Option (Recipe P T
       (HomogeneousBottleneckBranchStage registration Stage current
@@ -5744,7 +5398,7 @@ private noncomputable def homogeneousBottleneckBranchesRecipe
     fun stage payload =>
       match payload with
       | ⟨.target, .target _ proof⟩ =>
-          some (PLift.up (targetToRoot.read stage proof))
+          some (PLift.up (targetToRoot stage proof))
       | ⟨.exceptional, branchPayload⟩ =>
           sideCertificate ExceptionalWitness exceptionalDirect exceptional
             stage branchPayload
@@ -5765,7 +5419,7 @@ private noncomputable def homogeneousBottleneckBranchesRecipe
           | target =>
               cases payload with
               | target _ proof =>
-                  exact ⟨PLift.up (targetToRoot.read stage proof), rfl⟩
+                  exact ⟨PLift.up (targetToRoot stage proof), rfl⟩
           | exceptional =>
               obtain ⟨proof, certified⟩ :=
                 closesExceptional.down stage payload
@@ -5801,8 +5455,8 @@ private noncomputable def supportComplementProfile
     (current : Query Stage fun _ => Strategy.ProblemInput P)
     (packingQuery : Query Stage fun stage =>
       Core.Strategy.ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read stage))
-        (packingSemantics.conflict (current.read stage))) :
+        (packingSemantics.occurrences (current stage))
+        (packingSemantics.conflict (current stage))) :
     Core.Strategy.SupportComplementNormalization.Profile.{
       max uAmbient uBranch uData, max uAmbient uBranch}
       Stage (Strategy.ProblemInput P) :=
@@ -5826,8 +5480,8 @@ private noncomputable def supportComplementSemantics
     (current : Query Stage fun _ => Strategy.ProblemInput P)
     (packingQuery : Query Stage fun stage =>
       Core.Strategy.ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read stage))
-        (packingSemantics.conflict (current.read stage))) :
+        (packingSemantics.occurrences (current stage))
+        (packingSemantics.conflict (current stage))) :
     (supportComplementProfile (T := T) registration Stage current
       packingQuery).Semantics :=
   Core.Strategy.SupportComplementNormalization.Profile.semanticsOfRegistrationAt
@@ -5852,10 +5506,10 @@ private noncomputable def supportComplementNormalizationRecipe
     (current : Query Stage fun _ => Strategy.ProblemInput P)
     (packingQuery : Query Stage fun stage =>
       Core.Strategy.ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read stage))
-        (packingSemantics.conflict (current.read stage)))
+        (packingSemantics.occurrences (current stage))
+        (packingSemantics.conflict (current stage)))
     (targetToRoot : Query Stage fun stage =>
-      T.Predicate (current.read stage).object →
+      T.Predicate (current stage).object →
         T.Predicate (residualOf stage).object) :
     Recipe P T Stage :=
   { contract :=
@@ -5865,7 +5519,7 @@ private noncomputable def supportComplementNormalizationRecipe
           packingQuery)
     certify := fun stage payload =>
       match payload.snd with
-      | .target _ proof => some (PLift.up ((targetToRoot.read stage) proof))
+      | .target _ proof => some (PLift.up ((targetToRoot stage) proof))
       | .normalized _ _ _ _ _ => none }
 
 private noncomputable def normalizedSupportLedgerQuery
@@ -5885,10 +5539,10 @@ private noncomputable def normalizedSupportLedgerQuery
     (current : Query Stage fun _ => Strategy.ProblemInput P)
     (packingQuery : Query Stage fun stage =>
       Core.Strategy.ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read stage))
-        (packingSemantics.conflict (current.read stage)))
+        (packingSemantics.occurrences (current stage))
+        (packingSemantics.conflict (current stage)))
     (targetToRoot : Query Stage fun stage =>
-      T.Predicate (current.read stage).object →
+      T.Predicate (current stage).object →
         T.Predicate (residualOf stage).object) :
     let recipe :=
       supportComplementNormalizationRecipe (T := T) registration
@@ -5932,10 +5586,10 @@ private noncomputable def normalizedSupportExactLedger
     (current : Query Stage fun _ => Strategy.ProblemInput P)
     (packingQuery : Query Stage fun stage =>
       Core.Strategy.ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read stage))
-        (packingSemantics.conflict (current.read stage)))
+        (packingSemantics.occurrences (current stage))
+        (packingSemantics.conflict (current stage)))
     (targetToRoot : Query Stage fun stage =>
-      T.Predicate (current.read stage).object →
+      T.Predicate (current stage).object →
         T.Predicate (residualOf stage).object) :
     let recipe :=
       supportComplementNormalizationRecipe (T := T) registration
@@ -5944,7 +5598,7 @@ private noncomputable def normalizedSupportExactLedger
       (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify)
       (Strategy.ProblemInput P)
       (fun live => registration.AmbientItem
-        ((HaltingProgram.LiveExtension.preserveQuery (T := T) current).read live)) := by
+        ((HaltingProgram.LiveExtension.preserveQuery (T := T) current) live)) := by
   let profile := supportComplementProfile (T := T) registration Stage current
     packingQuery
   let recipe := supportComplementNormalizationRecipe (T := T) registration
@@ -5954,7 +5608,7 @@ private noncomputable def normalizedSupportExactLedger
   let routedAt (live : Live) := live.ledger.added.snd
   let targetImpossible (live : Live)
       {exact : profile.ExactOutput live.previous}
-      {proof : T.Predicate (current.read live.previous).object}
+      {proof : T.Predicate (current live.previous).object}
       (selected : routedAt live = .target exact proof) : False := by
     have rejected := live.isLive
     change recipe.certify live.previous live.ledger.added = none at rejected
@@ -5976,106 +5630,166 @@ private noncomputable def normalizedSupportExactLedger
     (exactActiveAt live).2
   exact {
     Block := fun live =>
-      packingSemantics.Occurrence (current.read live.previous)
+      packingSemantics.Occurrence (current live.previous)
     LocalPiece := fun live =>
       profile.core.LocalPiece live.previous (exactAt live).output.fst
     Failure := fun live =>
       profile.core.Failure live.previous (exactAt live).output.fst
-    summary := Query.ofFunction fun live =>
+    summary :=  fun live =>
       profile.summaryOfExact (exactAt live)
-    partitionExact := Query.ofFunction fun live =>
+    partitionExact :=  fun live =>
       profile.summaryOfExact_selectedCount_add_complementCount_eq_ambientCount
         (exactAt live)
-    selectedUniform := Query.ofFunction fun live =>
+    selectedUniform :=  fun live =>
       Core.Strategy.SupportComplementNormalization.Profile.selectedCount_eq_coverCard_mul_packingCount
         registration current packingQuery (exactAt live)
-    complementExact := Query.ofFunction fun live =>
+    complementExact :=  fun live =>
       Core.Strategy.SupportComplementNormalization.Profile.coverCard_mul_packingCount_add_complementCount_eq_ambientCount
         registration current packingQuery (exactAt live)
-    ambient := Query.ofFunction fun live =>
-      registration.ambientSupport (current.read live.previous)
-    selected := Query.ofFunction fun live =>
+    ambient :=  fun live =>
+      registration.ambientSupport (current live.previous)
+    selected :=  fun live =>
       profile.partition.selectedAtPrevious live.previous
         (exactAt live).output.fst.fst.fst
-    blocks := Query.ofFunction fun live => by
-      let packing := packingQuery.read live.previous
+    blocks :=  fun live => by
+      let packing := packingQuery live.previous
       letI := (packingSemantics.occurrences
-        (current.read live.previous)).decEq
+        (current live.previous)).decEq
       exact Core.Finite.Enumeration.ofNodupList
         packing.selected packing.selected_nodup
     cover := fun live block => registration.cover
-      (current.read live.previous) block
-    coverNodup := Query.ofFunction fun live block =>
-      registration.coverNodup (current.read live.previous) block
-    coverCardExact := Query.ofFunction fun live block => by
-      change (registration.cover (current.read live.previous) block).length =
-        profile.coverCard.read
+      (current live.previous) block
+    selectedMembership := fun live item => by
+      exact
+        Core.Strategy.SupportComplementNormalization.Profile.ofRegistrationAt_mem_selectedAtPrevious_iff
+          registration current packingQuery live.previous
+          (exactAt live).output.fst.fst.fst item
+    coverNodup :=  fun live block =>
+      registration.coverNodup (current live.previous) block
+    coverCardExact :=  fun live block => by
+      change (registration.cover (current live.previous) block).length =
+        profile.coverCard
           (exactAt live).output.fst.fst.fst.stage.previous
       rw [(exactAt live).output.fst.fst.fst.previous_eq]
-      exact registration.cover_card (current.read live.previous) block
-    complement := Query.ofFunction fun live =>
+      exact registration.cover_card (current live.previous) block
+    coverDisjoint := fun live left leftMem right rightMem different => by
+      apply List.disjoint_left.mpr
+      intro item itemLeft itemRight
+      have conflict := (registration.conflict_iff_shared_item
+        (current live.previous) left right).mpr
+          ⟨item, itemLeft, itemRight⟩
+      exact (packingQuery live.previous).pairwiseCompatible
+        leftMem rightMem different conflict
+    complement :=  fun live =>
       profile.partition.complementAtPrevious live.previous
         (exactAt live).output.fst.fst.fst
     complementMembership := fun live item => by
-      simpa [Query.read_ofFunction,
-        Core.Strategy.SupportComplementNormalization.PartitionProfile.selectedAtPrevious,
-        Core.Strategy.SupportComplementNormalization.PartitionProfile.selectedFibre,
-        Core.Strategy.SupportComplementNormalization.PartitionProfile.fibre,
-        Core.Strategy.SupportComplementNormalization.PartitionProfile.Selected] using
-        (Core.Strategy.SupportComplementNormalization.PartitionProfile.mem_complementAtPrevious_iff
-          profile.partition live.previous
-          (exactAt live).output.fst.fst.fst item)
-    localPieces := Query.ofFunction fun live =>
+      constructor
+      · intro complementMem
+        have characterized :=
+          (Core.Strategy.SupportComplementNormalization.PartitionProfile.mem_complementAtPrevious_iff
+            profile.partition live.previous
+            (exactAt live).output.fst.fst.fst item).mp complementMem
+        refine ⟨characterized.1, ?_⟩
+        intro selectedMem
+        have selected :=
+          (Core.Strategy.SupportComplementNormalization.PartitionProfile.mem_selectedAtPrevious_iff
+            profile.partition live.previous
+            (exactAt live).output.fst.fst.fst item).mp selectedMem
+        exact characterized.2 selected.2
+      · rintro ⟨ambientMem, notSelectedMem⟩
+        apply
+          (Core.Strategy.SupportComplementNormalization.PartitionProfile.mem_complementAtPrevious_iff
+            profile.partition live.previous
+            (exactAt live).output.fst.fst.fst item).mpr
+        refine ⟨ambientMem, ?_⟩
+        intro selected
+        apply notSelectedMem
+        exact
+          (Core.Strategy.SupportComplementNormalization.PartitionProfile.mem_selectedAtPrevious_iff
+            profile.partition live.previous
+            (exactAt live).output.fst.fst.fst item).mpr ⟨ambientMem, selected⟩
+    localPieces :=  fun live =>
       profile.core.localPieces live.previous (exactAt live).output.fst
-    active := Query.ofFunction fun live piece member =>
+    active :=  fun live piece member =>
       Core.Strategy.SupportComplementNormalization.Profile.ExactOutput.noFailureAt
         (profile := profile) (exactAt live) (activeAt live) piece member }
 
 /-- CT4 → CT14 over the exact normalized-support ledger. -/
 private noncomputable def boundaryDemandAccountingRecipe
+    {ResidualAmbient : Strategy.ProblemInput P →
+      Type (max uAmbient uBranch uData)}
+    {ambient : (input : Strategy.ProblemInput P) →
+      Core.Finite.Enumeration (ResidualAmbient input)}
+    {Block : Strategy.ProblemInput P →
+      Type (max uAmbient uBranch uData)}
+    {cover : (input : Strategy.ProblemInput P) → Block input →
+      List (ResidualAmbient input)}
     (registration :
       Core.Strategy.BoundaryDemandAccounting.Registration.{
-        max uAmbient uBranch, uData, uData, uData, uData}
-        (Strategy.ProblemInput P))
+        max uAmbient uBranch, max uAmbient uBranch uData,
+        max uAmbient uBranch uData}
+        (Strategy.ProblemInput P) ResidualAmbient ambient Block cover)
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
     (current : Query Stage fun _ => Strategy.ProblemInput P)
-    {AmbientItem : Stage → Type (max uAmbient uBranch uData)}
     (normalizedSupportExact :
-      Core.Strategy.SupportComplementNormalization.ExactLedger
-        Stage (Strategy.ProblemInput P) AmbientItem) :
+      Core.Strategy.SupportComplementNormalization.ExactLedger.{
+        max uAmbient uBranch, max uAmbient uBranch uData,
+        max uAmbient uBranch uData, max uAmbient uBranch uData}
+        Stage (Strategy.ProblemInput P)
+          (fun stage => ResidualAmbient (current stage))) :
     Recipe P T Stage :=
-  { contract :=
-      (Core.Strategy.BoundaryDemandAccounting.Profile.ofRegistrationAt
-        (Previous := Stage) (Residual := Strategy.ProblemInput P) registration
-        current
-        (normalizedSupportExact.summary.map fun _ summary =>
-          ULift.up.{uData} summary)).contract
+  let profile :
+      Core.Strategy.BoundaryDemandAccounting.Profile.{
+        max uAmbient uBranch uData, max uAmbient uBranch,
+        max uAmbient uBranch uData, max uAmbient uBranch uData,
+        max uAmbient uBranch uData, max uAmbient uBranch uData,
+        max uAmbient uBranch uData}
+        Stage (Strategy.ProblemInput P) :=
+    Core.Strategy.BoundaryDemandAccounting.Profile.ofRegistrationAt
+      registration current normalizedSupportExact
+  { contract := profile.contract
     certify := fun _ _ => none }
 
 private noncomputable def boundaryAccountingLedgerQuery
+    {ResidualAmbient : Strategy.ProblemInput P →
+      Type (max uAmbient uBranch uData)}
+    {ambient : (input : Strategy.ProblemInput P) →
+      Core.Finite.Enumeration (ResidualAmbient input)}
+    {Block : Strategy.ProblemInput P →
+      Type (max uAmbient uBranch uData)}
+    {cover : (input : Strategy.ProblemInput P) → Block input →
+      List (ResidualAmbient input)}
     (registration :
       Core.Strategy.BoundaryDemandAccounting.Registration.{
-        max uAmbient uBranch, uData, uData, uData, uData}
-        (Strategy.ProblemInput P))
+        max uAmbient uBranch, max uAmbient uBranch uData,
+        max uAmbient uBranch uData}
+        (Strategy.ProblemInput P) ResidualAmbient ambient Block cover)
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
     (current : Query Stage fun _ => Strategy.ProblemInput P)
-    {AmbientItem : Stage → Type (max uAmbient uBranch uData)}
     (normalizedSupportExact :
-      Core.Strategy.SupportComplementNormalization.ExactLedger
-        Stage (Strategy.ProblemInput P) AmbientItem) :
+      Core.Strategy.SupportComplementNormalization.ExactLedger.{
+        max uAmbient uBranch, max uAmbient uBranch uData,
+        max uAmbient uBranch uData, max uAmbient uBranch uData}
+        Stage (Strategy.ProblemInput P)
+          (fun stage => ResidualAmbient (current stage))) :
     let recipe :=
       boundaryDemandAccountingRecipe (T := T) registration current
         normalizedSupportExact
     Query
       (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify)
       (fun _ => Core.Strategy.BoundaryDemandAccounting.Summary) := by
-  let profile :=
+  let profile :
+      Core.Strategy.BoundaryDemandAccounting.Profile.{
+        max uAmbient uBranch uData, max uAmbient uBranch,
+        max uAmbient uBranch uData, max uAmbient uBranch uData,
+        max uAmbient uBranch uData, max uAmbient uBranch uData,
+        max uAmbient uBranch uData}
+        Stage (Strategy.ProblemInput P) :=
     Core.Strategy.BoundaryDemandAccounting.Profile.ofRegistrationAt
-      (Previous := Stage) (Residual := Strategy.ProblemInput P) registration
-      current
-      (normalizedSupportExact.summary.map fun _ summary => ULift.up.{uData} summary)
+      registration current normalizedSupportExact
   let recipe :=
     boundaryDemandAccountingRecipe (T := T) registration current
       normalizedSupportExact
@@ -6086,7 +5800,7 @@ private noncomputable def boundaryAccountingLedgerQuery
     (Query.latest (Previous := Stage)
       (Added := fun stage => Sigma (recipe.contract.Payload stage))).comap
       (fun live : Live => live.toLedger)
-  exact latest.map fun _ payload => profile.summaryOfRouted payload.snd
+  exact latest.map fun _ payload => profile.summaryOfOutput payload.snd
 
 /-- The single CT14 local-supply bound over the exact accounting ledger. -/
 private noncomputable def localSupplyLowerBoundRecipe
@@ -6104,7 +5818,7 @@ private noncomputable def localSupplyLowerBoundRecipe
         max uAmbient uBranch, max uAmbient uBranch uData,
         max uAmbient uBranch uData, max uAmbient uBranch uData}
         Stage (Strategy.ProblemInput P)
-        (fun stage => AmbientItem (current.read stage)))
+        (fun stage => AmbientItem (current stage)))
     (boundaryAccounting : Query Stage fun _ =>
       Core.Strategy.BoundaryDemandAccounting.Summary) :
     Recipe P T Stage :=
@@ -6131,7 +5845,7 @@ private noncomputable def localSupplyLedgerQuery
         max uAmbient uBranch, max uAmbient uBranch uData,
         max uAmbient uBranch uData, max uAmbient uBranch uData}
         Stage (Strategy.ProblemInput P)
-        (fun stage => AmbientItem (current.read stage)))
+        (fun stage => AmbientItem (current stage)))
     (boundaryAccounting : Query Stage fun _ =>
       Core.Strategy.BoundaryDemandAccounting.Summary) :
     let recipe :=
@@ -6175,7 +5889,7 @@ private noncomputable def localSupplyExactLedger
         max uAmbient uBranch, max uAmbient uBranch uData,
         max uAmbient uBranch uData, max uAmbient uBranch uData}
         Stage (Strategy.ProblemInput P)
-        (fun stage => AmbientItem (current.read stage)))
+        (fun stage => AmbientItem (current stage)))
     (boundaryAccounting : Query Stage fun _ =>
       Core.Strategy.BoundaryDemandAccounting.Summary) :
     let recipe :=
@@ -6187,7 +5901,7 @@ private noncomputable def localSupplyExactLedger
       (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify)
       (Strategy.ProblemInput P)
       (fun live => registration.Member
-        ((HaltingProgram.LiveExtension.preserveQuery (T := T) current).read live)) := by
+        ((HaltingProgram.LiveExtension.preserveQuery (T := T) current) live)) := by
   let profile :=
     Core.Strategy.LocalSupplyLowerBound.Profile.ofRegistrationAt
       (Previous := Stage) (Residual := Strategy.ProblemInput P) registration
@@ -6223,7 +5937,7 @@ private noncomputable def targetRelativeRankDichotomyRecipe
         max uAmbient uBranch, max uAmbient uBranch uData,
         max uAmbient uBranch uData, max uAmbient uBranch uData}
         Stage (Strategy.ProblemInput P)
-        (fun stage => AmbientItem (current.read stage)))
+        (fun stage => AmbientItem (current stage)))
     (localSupply : Query Stage fun _ =>
       Core.Strategy.LocalSupplyLowerBound.Summary) :
     Recipe P T Stage :=
@@ -6251,23 +5965,29 @@ available on its live output.  Both fields are derived by Core. -/
 private structure ResolvedVertex
     (P : Core.Problem.{uAmbient, uBranch}) (T : Core.Target P)
     (data : StrategyData.{uAmbient, uBranch, uData} P T)
-    (Stage : Type uStage)
+    (Stage : Type (max uAmbient uBranch uData))
     [HasResidual Stage (Strategy.ProblemInput P)]
+    (state : CapabilityState data Stage)
     (output : List CapabilityKey) where
   recipe : Recipe P T Stage
-  capabilities : CapabilityStore data
-    (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify)
-    output
+  nextState : CapabilityState data
+    (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify) :=
+      state.live recipe
+  capabilities : Core.Residual.ExactLedger (CapabilityCursor data)
+    nextState.toCursor output
 
-private def preservingVertex
+private noncomputable def preservingVertex
     (data : StrategyData.{uAmbient, uBranch, uData} P T)
-    {Stage : Type uStage}
+    {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
+    {state : CapabilityState data Stage}
     {available : List CapabilityKey}
-    (capabilities : CapabilityStore data Stage available)
+    (capabilities : Core.Residual.ExactLedger
+      (CapabilityCursor data) state.toCursor available)
     (recipe : Recipe P T Stage) :
-    ResolvedVertex P T data Stage available :=
+    ResolvedVertex P T data Stage state available :=
   { recipe
+    nextState := state.live recipe
     capabilities := capabilities.preserveLive recipe }
 
 private noncomputable def counterexampleLocalizationRecipe
@@ -6290,9 +6010,9 @@ private noncomputable def counterexampleLocalizationRecipe
               (MinimalCounterexampleContext P T.Predicate
                 registration.selection.progress)
           produce := fun selected =>
-            ⟨.completed, ULift.up (context.read selected)⟩
+            ⟨.completed, ULift.up (context selected)⟩
           exhaustive := fun selected =>
-            ⟨⟨.completed, ULift.up (context.read selected)⟩⟩ }
+            ⟨⟨.completed, ULift.up (context selected)⟩⟩ }
       certify := fun _ _ => none }
   minimalCounterexampleRecipe registration.selection data.targetDecidable
     stateOf continuation
@@ -6313,9 +6033,9 @@ private noncomputable def coldBranchAggregationRecipe
     (packed : Query Stage fun stage =>
       Core.Strategy.ObstructionPackingClosure.NonemptyPacking
         (data.obstructionPackingClosures[packingIndex].occurrences
-          (current.read stage))
+          (current stage))
         (data.obstructionPackingClosures[packingIndex].conflict
-          (current.read stage)))
+          (current stage)))
     (barrierSummary : Query Stage fun _ =>
       Core.Strategy.FiniteBarrierEnumeration.Summary)
     (overflow : Core.Strategy.ColdBranchAggregation.OverflowLedger Stage)
@@ -6324,13 +6044,13 @@ private noncomputable def coldBranchAggregationRecipe
         data.counterexampleReductions[reductionIndex].interfaceReplacement Stage)
     (handoffSupports : Query Stage fun stage =>
       Core.Finite.Enumeration
-        (HandoffSupport (current.read stage)))
-    (handoffAbsent : Option (Query Stage fun stage =>
-      (handoffSupports.read stage).values = []))
+        (HandoffSupport (current stage)))
+    (handoffAbsent : Option (PLift (∀ stage,
+      (handoffSupports stage).values = [])))
     (activeObject : Query Stage fun stage =>
-      (current.read stage).object = (exactClosure.context.read stage).G)
+      (current stage).object = (exactClosure.context stage).G)
     (targetToRoot : Query Stage fun stage =>
-      T.Predicate (current.read stage).object →
+      T.Predicate (current stage).object →
         T.Predicate (residualOf stage).object) :
     Recipe P T Stage :=
   let packing := packed.map fun _ value => value.packing
@@ -6356,7 +6076,7 @@ private noncomputable def coldBranchAggregationRecipe
         ULift.{uData}
           (Core.Strategy.InterfaceReplacement.ClosurePayload
             data.counterexampleReductions[reductionIndex].interfaceReplacement
-            (exactClosure.context.read stage))
+            (exactClosure.context stage))
       closure := exactClosure.closure.map fun _ value => ULift.up value
       storedF1ForcesTarget := familyCapability.storedF1ForcesTarget
       classifiedStateForcesTarget := familyCapability.classifiedStateForcesTarget }
@@ -6367,7 +6087,7 @@ private noncomputable def coldBranchAggregationRecipe
     certify := fun stage payload =>
       match payload.snd with
       | Sum.inl _ => none
-      | Sum.inr target => some ⟨(targetToRoot.read stage) target.down⟩ }
+      | Sum.inr target => some ⟨(targetToRoot stage) target.down⟩ }
 
 private noncomputable def finiteStateNetChargeContinuationRecipe
     (registration :
@@ -6400,7 +6120,7 @@ private noncomputable def minimalCounterexampleStep
   let context : Query Selected fun _ =>
       MinimalCounterexampleContext P T.Predicate
         reduction.selection.progress :=
-    Query.ofFunction fun selected => selected.ledger.added.context
+     fun selected => selected.ledger.added.context
   let ContextPayload :=
     MinimalCounterexampleContext P T.Predicate reduction.selection.progress
   let ClosurePayload :=
@@ -6416,7 +6136,7 @@ private noncomputable def minimalCounterexampleStep
           produce := fun selected =>
             ⟨.completed,
               ULift.up
-                ⟨context.read selected,
+                ⟨context selected,
                   InterfaceReplacement.closure reduction.interfaceReplacement
                     (Strategy.CounterexampleReduction.contextAfterCritical
                       reduction context)
@@ -6425,7 +6145,7 @@ private noncomputable def minimalCounterexampleStep
           exhaustive := fun selected =>
             ⟨⟨.completed,
               ULift.up
-                ⟨context.read selected,
+                ⟨context selected,
                   InterfaceReplacement.closure reduction.interfaceReplacement
                     (Strategy.CounterexampleReduction.contextAfterCritical
                       reduction context)
@@ -6444,34 +6164,38 @@ private noncomputable def resolveVertex
     (stateOf : (object : P.Ambient) → P.BranchState object)
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
+    {state : CapabilityState data Stage}
     {input : List CapabilityKey}
-    (capabilities : CapabilityStore data Stage input) :
+    (capabilities : Core.Residual.ExactLedger
+      (CapabilityCursor data) state.toCursor input) :
     (key : StrategyKey) → (resolved : key.ResolvedIn data) →
       key.requirementsMet data resolved input = true →
-      ResolvedVertex P T data Stage (key.productions data resolved ++ input)
+      CapabilityKey.fresh (key.productions data resolved) input = true →
+      ResolvedVertex P T data Stage state
+        (key.productions data resolved ++ input)
   | .orderedWitnessScan index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (scanRecipe (data.scans[index]'resolved))
   | .responseClassifier index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (responseRecipe (data.responses[index]'resolved))
   | .capacityLedger index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (capacityRecipe (data.capacities[index]'resolved))
   | .supportLocalization index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (localizationRecipe (data.localizations[index]'resolved))
   | .rankBudget index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (rankBudgetRecipe (data.rankBudgets[index]'resolved))
   | .closedCode index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (closedCodeRecipe (data.closedCodes[index]'resolved))
   | .dichotomy index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (routedRecipe (data.dichotomies[index]'resolved) none none)
   | .obstructionPackingClosure index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       let packingIndex : Fin data.obstructionPackingClosures.length :=
         ⟨index, resolved⟩
       let semantics := data.obstructionPackingClosures[packingIndex]
@@ -6481,14 +6205,18 @@ private noncomputable def resolveVertex
       let targetToRoot := capabilities.targetToRoot
       let recipe := obstructionPackingRecipe (T := T) semantics current
         targetToRoot
+      have factFresh : CapabilityKey.obstructionPacking index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
       {
         recipe
         capabilities :=
           (capabilities.preserveLive recipe).consPacking packingIndex
             (obstructionPackingQuery (T := T) semantics current targetToRoot)
+            (fresh := by simpa [packingIndex] using factFresh)
       }
   | .exactFiniteLocalAlgebra index, resolved =>
-      fun _ =>
+      fun _ fresh =>
       let registration := data.exactFiniteLocalAlgebras[index]'resolved
       let recipe := exactFiniteLocalAlgebraRecipe (T := T) registration
       {
@@ -6499,24 +6227,30 @@ private noncomputable def resolveVertex
             (by intro _ equality; cases equality)
             (by intro equality; cases equality)
             (by intro equality; cases equality)
+            (fresh := CapabilityKey.not_mem_of_fresh fresh (by
+              simp [StrategyKey.productions]))
       }
   | .finiteBarrierEnumeration index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       have required : CapabilityKey.exactFiniteLocalCode ∈ input := by
         simpa [StrategyKey.requirementsMet, StrategyKey.requirements] using valid
       let registration := data.finiteBarrierEnumerations[index]'resolved
       let sourceCode := capabilities.query .exactFiniteLocalCode required
       let recipe := finiteBarrierEnumerationRecipe (T := T) registration
         sourceCode capabilities.activeInput
+      have factFresh : CapabilityKey.finiteBarrierSummary ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
       {
         recipe
         capabilities :=
           (capabilities.preserveLive recipe).consBarrierRate
             (finiteBarrierRateLedger (T := T) registration
               sourceCode capabilities.activeInput)
+            (fresh := factFresh)
       }
   | .finiteDensityBudget index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       have required :
           CapabilityKey.obstructionPacking 0 ∈ input ∧
             CapabilityKey.finiteBarrierSummary ∈ input ∧
@@ -6525,15 +6259,15 @@ private noncomputable def resolveVertex
       let nearCubicIndex : Fin data.scaleThresholdDichotomies.length :=
         ⟨0, capabilities.nearCubicIndexValid 0 required.2.2⟩
       let degreeSurplusLoad : Query Stage fun _ => Nat :=
-        Query.ofFunction fun stage =>
+         fun stage =>
           data.scaleThresholdDichotomies[nearCubicIndex].load
-            (capabilities.activeInput.read stage)
+            (capabilities.activeInput stage)
       let degreeSurplusThreshold : Query Stage fun _ => Nat :=
-        Query.ofFunction fun stage =>
+         fun stage =>
           (data.scaleThresholdDichotomies[nearCubicIndex].table
-            (capabilities.activeInput.read stage)).threshold
+            (capabilities.activeInput stage)).threshold
             (data.scaleThresholdDichotomies[nearCubicIndex].size
-              (capabilities.activeInput.read stage))
+              (capabilities.activeInput stage))
       let recipe := finiteDensityBudgetRecipe
         (T := T) (data.finiteDensityBudgets[index]'resolved)
         (capabilities.packingCountQuery 0 required.1)
@@ -6542,17 +6276,18 @@ private noncomputable def resolveVertex
         (capabilities.nearCubicSpine nearCubicIndex required.2.2)
       preservingVertex data capabilities recipe
   | .finiteStateCapacity index, resolved =>
-      fun valid =>
+      fun valid fresh =>
         let entry := data.finiteStateCapacities[index]'resolved
         let supplyIndex := entry.fst
         have required :
             CapabilityKey.independentRank ∈ input ∧
               CapabilityKey.finiteBarrierSummary ∈ input ∧
-            CapabilityKey.localSupplyLedger supplyIndex ∈ input := by
+              CapabilityKey.fullRankCertificate ∈ input ∧
+              CapabilityKey.localSupplyLedger supplyIndex ∈ input := by
           simpa [StrategyKey.requirementsMet, StrategyKey.requirements,
             entry, supplyIndex] using valid
       let supplyCapability :=
-        capabilities.localSupplyExact supplyIndex required.2.2
+        capabilities.localSupplyExact supplyIndex required.2.2.2
       let profile :
           Core.Strategy.FiniteStateCapacity.Profile
             Stage (Strategy.ProblemInput P) :=
@@ -6560,15 +6295,17 @@ private noncomputable def resolveVertex
           registration := entry.snd
           current := capabilities.activeInput
           complement := supplyCapability.normalized.complement
+          fullRankCertificate :=
+            capabilities.query .fullRankCertificate required.2.2.1
           independentRank := capabilities.query .independentRank required.1
           finiteBarrierSummary :=
             capabilities.query .finiteBarrierSummary required.2.1
           localSupply :=
-            capabilities.query (.localSupplyLedger supplyIndex) required.2.2 }
+            capabilities.query (.localSupplyLedger supplyIndex) required.2.2.2 }
       preservingVertex data capabilities
         (routedDichotomyRecipe profile.dichotomy none none none none)
   | .finiteScheduleCapacity index, resolved =>
-      fun _ =>
+      fun _ _ =>
       let profile :
           Core.Strategy.FiniteScheduleCapacity.Profile
             Stage (Strategy.ProblemInput P) :=
@@ -6577,7 +6314,7 @@ private noncomputable def resolveVertex
       preservingVertex data capabilities
         (routedDichotomyRecipe profile.dichotomy none none none none)
   | .route8CarrierClosure index, resolved =>
-      fun _ =>
+      fun _ _ =>
       let profile :
           Core.Strategy.Route8CarrierClosure.Profile
             Stage (Strategy.ProblemInput P) _ :=
@@ -6597,26 +6334,26 @@ private noncomputable def resolveVertex
                   payload).elim)
           none none)
   | .scaleThresholdDichotomy index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (scaleThresholdRecipe
           (data.scaleThresholdDichotomies[index]'resolved))
   | .atomContextObstructionDichotomy index, resolved =>
-      fun _ =>
+      fun _ _ =>
       let registered := data.atomContextObstructionDichotomies[index]'resolved
       preservingVertex data capabilities
         (atomContextObstructionRecipe registered.registration)
   | .orderedSurplusActivation index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (orderedSurplusActivationRecipe
           (data.orderedSurplusActivations[index]'resolved)
           capabilities.activeInput)
   | .baselineDemandAccounting index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (baselineDemandAccountingRecipe
           (data.baselineDemandAccountings[index]'resolved)
           capabilities.activeInput)
   | .canonicalPairResponseAccounting index, resolved =>
-      fun _ =>
+      fun _ fresh =>
       let registration := data.canonicalPairResponseAccountings[index]'resolved
       let profile :
           Core.Strategy.CanonicalPairResponseAccounting.Profile
@@ -6630,6 +6367,12 @@ private noncomputable def resolveVertex
       let dependence := output.map fun _ result => result.fst.terminal
       let role := output.map fun _ result => result.snd.terminal
       let inherited := capabilities.preserveLive recipe
+      have dependenceFresh : CapabilityKey.canonicalPairDependence index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
+      have roleFresh : CapabilityKey.canonicalPairRole index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
       {
         recipe
         capabilities :=
@@ -6639,7 +6382,8 @@ private noncomputable def resolveVertex
             (by intro equality; cases equality)
             (notNormalized := by simp)
             (notLocalSupply := by simp)
-            (notMinimalContext := by simp)).cons
+            (notMinimalContext := by simp)
+            (fresh := by simpa using roleFresh)).cons
               (.canonicalPairDependence index) dependence
               (by intro packingIndex equality; cases equality)
               (by intro equality; cases equality)
@@ -6647,9 +6391,10 @@ private noncomputable def resolveVertex
               (notNormalized := by simp)
               (notLocalSupply := by simp)
               (notMinimalContext := by simp)
+              (fresh := by simpa using dependenceFresh)
       }
   | .canonicalCapacityTokenAccounting index, resolved =>
-      fun _ =>
+      fun _ fresh =>
       let registration := data.canonicalCapacityTokenAccountings[index]'resolved
       let profile :
           Core.Strategy.CanonicalCapacityTokenAccounting.Profile
@@ -6664,6 +6409,17 @@ private noncomputable def resolveVertex
       let fibre := output.map fun _ result => result.snd.fst.terminal
       let aggregate := output.map fun _ result => result.snd.snd.terminal
       let inherited := capabilities.preserveLive recipe
+      have assignmentFresh :
+          CapabilityKey.canonicalCapacityAssignment index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
+      have fibreFresh : CapabilityKey.canonicalCapacityFibre index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
+      have aggregateFresh :
+          CapabilityKey.canonicalCapacityAggregate index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
       {
         recipe
         capabilities :=
@@ -6673,14 +6429,16 @@ private noncomputable def resolveVertex
             (by intro equality; cases equality)
             (notNormalized := by simp)
             (notLocalSupply := by simp)
-            (notMinimalContext := by simp)).cons
+            (notMinimalContext := by simp)
+            (fresh := by simpa using aggregateFresh)).cons
               (.canonicalCapacityFibre index) fibre
               (by intro packingIndex equality; cases equality)
               (by intro equality; cases equality)
               (by intro equality; cases equality)
               (notNormalized := by simp)
               (notLocalSupply := by simp)
-              (notMinimalContext := by simp)).cons
+              (notMinimalContext := by simp)
+              (fresh := by simpa using fibreFresh)).cons
                 (.canonicalCapacityAssignment index) assignment
                 (by intro packingIndex equality; cases equality)
                 (by intro equality; cases equality)
@@ -6688,9 +6446,10 @@ private noncomputable def resolveVertex
                 (notNormalized := by simp)
                 (notLocalSupply := by simp)
                 (notMinimalContext := by simp)
+                (fresh := by simpa using assignmentFresh)
       }
   | .coupledHomogeneousFibrePressure index, resolved =>
-      fun _ =>
+      fun _ fresh =>
       let producerIndex : Fin data.coupledHomogeneousFibrePressures.length :=
         ⟨index, resolved⟩
       let registration := data.coupledHomogeneousFibrePressures[producerIndex]
@@ -6709,6 +6468,17 @@ private noncomputable def resolveVertex
       let reconciliation := output.map fun _ result => result.snd.fst.terminal
       let pressure := output.map fun _ result => result.snd.snd.terminal
       let inherited := capabilities.preserveLive recipe
+      have overloadFresh : CapabilityKey.homogeneousPressureOverload index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
+      have reconciliationFresh :
+          CapabilityKey.homogeneousPressureReconciliation index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
+      have aggregateFresh :
+          CapabilityKey.homogeneousPressureAggregate index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
       {
         recipe
         capabilities :=
@@ -6718,18 +6488,21 @@ private noncomputable def resolveVertex
             (by intro equality; cases equality)
             (notNormalized := by simp)
             (notLocalSupply := by simp)
-            (notMinimalContext := by simp)).cons
+            (notMinimalContext := by simp)
+            (fresh := by simpa using aggregateFresh)).cons
               (.homogeneousPressureReconciliation index) reconciliation
               (by intro packingIndex equality; cases equality)
               (by intro equality; cases equality)
               (by intro equality; cases equality)
               (notNormalized := by simp)
             (notLocalSupply := by simp)
-            (notMinimalContext := by simp)).consHomogeneousPressureOverload
+            (notMinimalContext := by simp)
+            (fresh := by simpa using reconciliationFresh)).consHomogeneousPressureOverload
                 producerIndex overload overloadExact (fun _ => rfl)
+                (fresh := by simpa [producerIndex] using overloadFresh)
       }
   | .finiteBottleneckClassification index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       let producerIndex : Fin data.finiteBottleneckClassifications.length :=
         ⟨index, resolved⟩
       let entry := data.finiteBottleneckClassifications[producerIndex]
@@ -6760,26 +6533,42 @@ private noncomputable def resolveVertex
       let separator := output.map fun _ result => result.snd.snd.snd.terminal
       let separatorExact := profile.separatorLedgerLive recipe.certify
       let inherited := capabilities.preserveLive recipe
+      have collisionFresh : CapabilityKey.bottleneckCollision index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
+      have pressureFresh : CapabilityKey.bottleneckPressure index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
+      have classificationFresh :
+          CapabilityKey.bottleneckClassification index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
+      have separatorFresh : CapabilityKey.bottleneckSeparator index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
       {
         recipe
         capabilities :=
           (((inherited.consBottleneckSeparator producerIndex separator
             separatorExact
-              (fun live => overloadCapability.current_eq live.previous)).cons
+              (fun live => overloadCapability.current_eq live.previous)
+              (fresh := by simpa [producerIndex] using separatorFresh)).cons
               (.bottleneckClassification index) classification
               (by intro packingIndex equality; cases equality)
               (by intro equality; cases equality)
               (by intro equality; cases equality)
               (notNormalized := by simp)
               (notLocalSupply := by simp)
-              (notMinimalContext := by simp)).cons
+              (notMinimalContext := by simp)
+              (fresh := by simpa using classificationFresh)).cons
                 (.bottleneckPressure index) pressure
                 (by intro packingIndex equality; cases equality)
                 (by intro equality; cases equality)
                 (by intro equality; cases equality)
                 (notNormalized := by simp)
                 (notLocalSupply := by simp)
-                (notMinimalContext := by simp)).cons
+                (notMinimalContext := by simp)
+                (fresh := by simpa using pressureFresh)).cons
                   (.bottleneckCollision index) collision
                   (by intro packingIndex equality; cases equality)
                   (by intro equality; cases equality)
@@ -6787,9 +6576,10 @@ private noncomputable def resolveVertex
                   (notNormalized := by simp)
                   (notLocalSupply := by simp)
                   (notMinimalContext := by simp)
+                  (fresh := by simpa using collisionFresh)
       }
   | .homogeneousBottleneck index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       let producerIndex : Fin data.homogeneousBottlenecks.length :=
         ⟨index, resolved⟩
       let entry := data.homogeneousBottlenecks[producerIndex]
@@ -6826,7 +6616,7 @@ private noncomputable def resolveVertex
             overload := overloadExact
             separator := separatorExact })
   | .supportComplementNormalization index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       let producerIndex : Fin data.supportComplementNormalizations.length :=
         ⟨index, resolved⟩
       let packed := data.supportComplementNormalizations[index]'producerIndex.isLt
@@ -6848,6 +6638,9 @@ private noncomputable def resolveVertex
       let recipe :=
         supportComplementNormalizationRecipe (T := T) registration current
           packing targetToRoot
+      have factFresh : CapabilityKey.normalizedSupportLedger index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
       {
         recipe
         capabilities :=
@@ -6860,9 +6653,10 @@ private noncomputable def resolveVertex
               densityCap := (capabilities.capLedger required.2).comap
                 (fun live : HaltingProgram.LiveExtension T Stage
                   recipe.contract recipe.certify => live.toLedger.previous) }
+            (fresh := by simpa [producerIndex] using factFresh)
       }
   | .boundaryDemandAccounting index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       let packed := data.boundaryDemandAccountings[index]'resolved
       let supportIndex := packed.fst
       have required :
@@ -6874,19 +6668,21 @@ private noncomputable def resolveVertex
       let recipe :=
         boundaryDemandAccountingRecipe (T := T) registration
           capabilities.activeInput supportCapability.exact
-      {
-        recipe
+      have factFresh : CapabilityKey.boundaryAccountingLedger ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
+      { recipe
         capabilities :=
-          { (capabilities.preserveLive recipe).cons
-              .boundaryAccountingLedger
-              (boundaryAccountingLedgerQuery (T := T) registration
-                capabilities.activeInput supportCapability.exact)
-              (by intro packingIndex equality; cases equality)
-              (by intro equality; cases equality)
-              (by intro equality; cases equality) with }
-      }
+          (capabilities.preserveLive recipe).cons
+            .boundaryAccountingLedger
+            (boundaryAccountingLedgerQuery (T := T) registration
+              capabilities.activeInput supportCapability.exact)
+            (by intro packingIndex equality; cases equality)
+            (by intro equality; cases equality)
+            (by intro equality; cases equality)
+            (fresh := factFresh) }
   | .localSupplyLowerBound index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       let producerIndex : Fin data.localSupplyLowerBounds.length :=
         ⟨index, resolved⟩
       let packed := data.localSupplyLowerBounds[index]'producerIndex.isLt
@@ -6911,6 +6707,9 @@ private noncomputable def resolveVertex
       let recipe :=
         localSupplyLowerBoundRecipe (T := T) registration
           capabilities.activeInput support.exact accounting
+      have factFresh : CapabilityKey.localSupplyLedger index ∉ input :=
+        CapabilityKey.not_mem_of_fresh fresh (by
+          simp [StrategyKey.productions])
       {
         recipe
         capabilities :=
@@ -6924,9 +6723,10 @@ private noncomputable def resolveVertex
                 (fun _ => rfl)
               exact := localSupplyExactLedger (T := T) registration
                 capabilities.activeInput support.exact accounting }
+            (fresh := by simpa [producerIndex] using factFresh)
       }
   | .targetRelativeRankDichotomy index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       let producerIndex : Fin data.targetRelativeRankDichotomies.length :=
         ⟨index, resolved⟩
       let packed := data.targetRelativeRankDichotomies[index]'producerIndex.isLt
@@ -6959,7 +6759,7 @@ private noncomputable def resolveVertex
           capabilities.activeInput supplyCapability.normalized
           (capabilities.query (.localSupplyLedger supplyIndex) requiredSupply))
   | .compressionLinkedTargetRelativeRankDichotomy index, resolved =>
-      fun valid =>
+      fun valid fresh =>
       let producerIndex :
           Fin data.compressionLinkedTargetRelativeRankDichotomies.length :=
         ⟨index, resolved⟩
@@ -7002,11 +6802,11 @@ private noncomputable def resolveVertex
           capabilities.activeInput supplyCapability.normalized
           (capabilities.query (.localSupplyLedger supplyIndex) requiredSupply))
   | .counterexampleLocalization index, resolved =>
-      fun _ => preservingVertex data capabilities
+      fun _ _ => preservingVertex data capabilities
         (counterexampleLocalizationRecipe data
           (data.counterexampleLocalizations[index]'resolved) stateOf)
   | .coldBranchAggregation index, resolved =>
-      fun valid =>
+      fun valid fresh =>
         let packed := data.coldBranchAggregations[index]'resolved
         let reductionIndex := packed.reductionIndex
         let packingIndex := packed.fst
@@ -7041,7 +6841,7 @@ private noncomputable def resolveVertex
               schedule handed over is that producer's own selected fibre, so
               the compiler has no emptiness to carry across. -/
               none
-              (Query.ofFunction (capabilities.minimalClosureActiveObject
+              ( (capabilities.minimalClosureActiveObject
                 reductionIndex full.2.2.2.1))
               capabilities.targetToRoot)
         else
@@ -7065,25 +6865,25 @@ private noncomputable def resolveVertex
               (capabilities.query .finiteBarrierSummary base.2.1)
               (capabilities.overflowLedger base.2.2.1)
               (capabilities.minimalClosureAt reductionIndex base.2.2.2)
-              (Query.ofFunction fun stage =>
+              ( fun stage =>
                 letI : DecidableEq
                     (data.homogeneousBottlenecks[handoffIndex].HandoffSupport
-                      (capabilities.activeInput.read stage)) :=
+                      (capabilities.activeInput stage)) :=
                   (data.coupledHomogeneousFibrePressures[
                       data.homogeneousBottlenecks[handoffIndex].pressureIndex].items
-                    (capabilities.activeInput.read stage)).decEq
+                    (capabilities.activeInput stage)).decEq
                 Core.Finite.Enumeration.empty _)
               /- `def:surviving-cold-branch` (iv)-(v): the schedule just
               constructed *is* the empty one, so the compiler carries its own
               proof across instead of leaving the continuation to re-derive
               it.  This is the (F4) counterpart of `minimalClosureActiveObject`
               below. -/
-              (some (Query.ofFunction fun _stage => rfl))
-              (Query.ofFunction (capabilities.minimalClosureActiveObject
+              (some (PLift.up (fun _stage => rfl)))
+              ( (capabilities.minimalClosureActiveObject
                 reductionIndex base.2.2.2))
               capabilities.targetToRoot)
   | .finiteStateNetChargeContinuation, _ =>
-      fun valid =>
+      fun valid fresh =>
         have required :
             CapabilityKey.finiteStateCapacityContinuation ∈ input ∧
               CapabilityKey.finiteDensityCap ∈ input := by
@@ -7095,14 +6895,14 @@ private noncomputable def resolveVertex
             (capabilities.capacityLedger required.1)
             (capabilities.capLedger required.2))
   | .minimalCounterexampleSelection _, _ =>
-      fun _ => preservingVertex data capabilities (targetRecipe data)
+      fun _ _ => preservingVertex data capabilities (targetRecipe data)
   | .targetAlgebraReduction _, impossible
   | .minimalSubobjectExclusion _, impossible
   | .criticalModificationStructure _, impossible
   | .interfaceReplacementClosure _, impossible =>
       False.elim impossible
   | .targetOrAvoid, _ =>
-      fun _ => preservingVertex data capabilities (targetRecipe data)
+      fun _ _ => preservingVertex data capabilities (targetRecipe data)
 
 /-- The proof-carrying ledger fact appended by a resolved semantic route.
 The source stage is retained literally by `Ledger.Extension`; the equality
@@ -7145,26 +6945,30 @@ private inductive CompiledFragment
     (P : Core.Problem.{uAmbient, uBranch}) (T : Core.Target P)
     (data : StrategyData.{uAmbient, uBranch, uData} P T)
     (Stage : Type (max uAmbient uBranch uData))
-    [HasResidual Stage (Strategy.ProblemInput P)] :
-    List CapabilityKey → Type (max (max uAmbient uBranch uData)
-      (uAmbient + 1) (uBranch + 1) (uData + 1)) where
+    [HasResidual Stage (Strategy.ProblemInput P)]
+    (state : CapabilityState data Stage) :
+    List CapabilityKey → Type (max (uAmbient + 4) (uBranch + 4)
+      (uData + 4)) where
   | empty {available : List CapabilityKey}
-      (capabilities : CapabilityStore data Stage available) :
-      CompiledFragment P T data Stage available
+      (capabilities : Core.Residual.ExactLedger
+        (CapabilityCursor data) state.toCursor available) :
+      CompiledFragment P T data Stage state available
   | nonempty (recipe : Recipe P T Stage)
+      (nextState : CapabilityState data
+        (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify))
       {available : List CapabilityKey}
-      (capabilities : CapabilityStore data
-        (HaltingProgram.LiveExtension T Stage recipe.contract recipe.certify)
-        available) :
-      CompiledFragment P T data Stage available
+      (capabilities : Core.Residual.ExactLedger
+        (CapabilityCursor data) nextState.toCursor available) :
+      CompiledFragment P T data Stage state available
 
 private def CompiledFragment.recipe?
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
+    {state : CapabilityState data Stage}
     {available : List CapabilityKey} :
-    CompiledFragment P T data Stage available → Option (Recipe P T Stage)
+    CompiledFragment P T data Stage state available → Option (Recipe P T Stage)
   | .empty _ => none
-  | .nonempty recipe _ => some recipe
+  | .nonempty recipe _ _ => some recipe
 
 /-- Append one sealed vertex to a compiled fragment.  The only projection
 used after composition is Core's canonical live-continuation projection;
@@ -7172,24 +6976,23 @@ typed facts move through it with `Query.comap`. -/
 private noncomputable def CompiledFragment.append
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
+    {state : CapabilityState data Stage}
     {current output : List CapabilityKey}
-    (fragment : CompiledFragment P T data Stage current)
+    (fragment : CompiledFragment P T data Stage state current)
     (vertex :
-      (Current : Type (max uAmbient uBranch uData)) →
-      (instCurrent :
-        HasResidual Current (Strategy.ProblemInput P)) →
-      CapabilityStore data Current current →
-      ResolvedVertex P T data Current output) :
-    CompiledFragment P T data Stage output :=
+      {Current : Type (max uAmbient uBranch uData)} →
+      [HasResidual Current (Strategy.ProblemInput P)] →
+      (currentState : CapabilityState data Current) →
+      Core.Residual.ExactLedger (CapabilityCursor data)
+          currentState.toCursor current →
+        ResolvedVertex P T data Current currentState output) :
+    CompiledFragment P T data Stage state output :=
   match fragment with
   | .empty capabilities =>
-      let resolved := vertex Stage inferInstance capabilities
-      .nonempty resolved.recipe resolved.capabilities
-  | .nonempty first firstCapabilities =>
-      let second :=
-        vertex
-          (HaltingProgram.LiveExtension T Stage first.contract first.certify)
-          inferInstance firstCapabilities
+      let resolved := vertex state capabilities
+      .nonempty resolved.recipe resolved.nextState resolved.capabilities
+  | .nonempty first firstState firstCapabilities =>
+      let second := vertex firstState firstCapabilities
       let composed := composeRecipe first second.recipe
       let project :
           HaltingProgram.LiveExtension T Stage
@@ -7201,13 +7004,13 @@ private noncomputable def CompiledFragment.append
         HaltingProgram.LiveContractComposition.liveContinuation
           first.contract first.certify second.recipe.contract
             second.recipe.certify
-      .nonempty composed
-        (second.capabilities.comap project (by
-          intro stage
-          exact
-            (HaltingProgram.LiveContractComposition.liveContinuation_residual
-              first.contract first.certify second.recipe.contract
-                second.recipe.certify stage).symm))
+      let residual_eq := fun stage =>
+        (HaltingProgram.LiveContractComposition.liveContinuation_residual
+          first.contract first.certify second.recipe.contract
+            second.recipe.certify stage).symm
+      let nextState := second.nextState.comap project residual_eq
+      .nonempty composed nextState
+        (second.capabilities.comapState project residual_eq)
 
 /-- A sealed continuation compiled from key-only syntax.  Its private field
 accepts only the literal predecessor and compiler-owned typed queries; an
@@ -7219,16 +7022,19 @@ private structure SharedContinuation
   instantiate :
     {Stage : Type (max uAmbient uBranch uData)} →
     [HasResidual Stage (Strategy.ProblemInput P)] →
-    CapabilityStore data Stage input →
-    CompiledFragment P T data Stage output
+    (state : CapabilityState data Stage) →
+    Core.Residual.ExactLedger (CapabilityCursor data) state.toCursor input →
+    CompiledFragment P T data Stage state output
 
 private noncomputable def SharedContinuation.at
     (continuation : SharedContinuation P T data input output)
     {Stage : Type (max uAmbient uBranch uData)}
     [HasResidual Stage (Strategy.ProblemInput P)]
-    (capabilities : CapabilityStore data Stage input) :
-    CompiledFragment P T data Stage output :=
-  continuation.instantiate capabilities
+    (state : CapabilityState data Stage)
+    (capabilities : Core.Residual.ExactLedger
+      (CapabilityCursor data) state.toCursor input) :
+    CompiledFragment P T data Stage state output :=
+  continuation.instantiate state capabilities
 
 private noncomputable def minimalCounterexampleClosureQuery
     (data : StrategyData.{uAmbient, uBranch, uData} P T)
@@ -7245,11 +7051,11 @@ private noncomputable def minimalCounterexampleClosureQuery
           data.counterexampleReductions[index].interfaceReplacement
           (CounterexampleReduction.contextAfterCritical
             data.counterexampleReductions[index]
-            (Query.ofFunction fun selected :
+            ( fun selected :
               MinimalSelectionStage (T := T)
                 data.counterexampleReductions[index].selection Stage =>
               selected.ledger.added.context))) :=
-  Query.ofFunction fun live =>
+   fun live =>
     match h : live.added.2 with
     | .inl _ =>
         False.elim (by
@@ -7278,14 +7084,14 @@ private noncomputable def exactMinimalClosureCapabilityQuery
   let selectedContext : Query Selected (fun _ =>
       Core.MinimalCounterexampleContext P T.Predicate
         reduction.selection.progress) :=
-    Query.ofFunction fun selected => selected.ledger.added.context
+     fun selected => selected.ledger.added.context
   let closureContext :=
     CounterexampleReduction.contextAfterCritical reduction selectedContext
   let closureStage :=
     minimalCounterexampleClosureQuery (Stage := Stage) data stateOf index
   let context := closureStage.map fun _ stage =>
     (InterfaceReplacement.contextAfterClosure
-      reduction.interfaceReplacement closureContext).read stage
+      reduction.interfaceReplacement closureContext) stage
   exact
     { context := context
       closure := closureStage.dependentMap fun _ stage =>
@@ -7301,45 +7107,44 @@ private noncomputable def sharedContinuation
     (stateOf : (G : P.Ambient) -> P.BranchState G)
     {dag : Blueprint data .expanded}
     {input output : List CapabilityKey}
-    (flow : CapabilityFlow (data := data) dag input output) :
+    (verified : VerifiedManifest (data := data) dag input output) :
     SharedContinuation P T data input output :=
-  match flow with
-  | .root => ⟨fun {_} _ capabilities => .empty capabilities⟩
-  | .step strategy restFlow valid =>
+  match verified with
+  | .root => ⟨fun {_} _ state capabilities => .empty capabilities⟩
+  | .step strategy restFlow valid fresh =>
       let preceding := sharedContinuation data stateOf restFlow
-      ⟨fun {_} instStage capabilities =>
-        letI : HasResidual _ (Strategy.ProblemInput P) := instStage
-        let compiledPrefix := preceding.at capabilities
-        compiledPrefix.append fun (Current : Type (max uAmbient uBranch uData))
-            instCurrent currentCapabilities => by
-          letI := instCurrent
+      ⟨fun {_} _ state capabilities =>
+        let compiledPrefix := preceding.at state capabilities
+        compiledPrefix.append fun currentState currentCapabilities => by
           exact resolveVertex data stateOf currentCapabilities strategy.key
-            strategy.resolved valid⟩
-  | .binaryBranch strategy restFlow valid leftFlow rightFlow =>
+            strategy.resolved valid fresh⟩
+  | .binaryBranch strategy restFlow valid leftFresh rightFresh leftFlow
+      rightFlow =>
       let preceding := sharedContinuation data stateOf restFlow
       let leftContinuation := sharedContinuation data stateOf leftFlow
       let rightContinuation := sharedContinuation data stateOf rightFlow
-      ⟨fun {_} instStage capabilities =>
-        letI : HasResidual _ (Strategy.ProblemInput P) := instStage
-        let compiledPrefix := preceding.at capabilities
-        compiledPrefix.append fun Current instCurrent currentCapabilities => by
-          letI := instCurrent
+      ⟨fun {_} _ state capabilities =>
+        let compiledPrefix := preceding.at state capabilities
+        compiledPrefix.append fun currentState currentCapabilities => by
           let resolved :=
             resolveBinary data strategy currentCapabilities valid
+              leftFresh rightFresh
           let leftPublished :=
             resolved.leftCapabilities
           let rightPublished :=
             resolved.rightCapabilities
-          let leftFragment := leftContinuation.at (by
+          let leftFragment := leftContinuation.at
+            (currentState.extension resolved.split.LeftPayload) (by
             simpa [← resolved.leftProduced_eq] using leftPublished)
-          let rightFragment := rightContinuation.at (by
+          let rightFragment := rightContinuation.at
+            (currentState.extension resolved.split.RightPayload) (by
             simpa [← resolved.rightProduced_eq] using rightPublished)
           let recipe := routedDichotomyRecipe
             resolved.split resolved.leftDirect resolved.rightDirect
             leftFragment.recipe? rightFragment.recipe?
           exact preservingVertex data currentCapabilities recipe⟩
-  | .homogeneousBottleneckBranches index restFlow valid exceptionalFlow
-      structuredFlow boundedFlow =>
+  | .homogeneousBottleneckBranches index restFlow valid handoffFresh
+      exceptionalFlow structuredFlow boundedFlow =>
       let preceding := sharedContinuation data stateOf restFlow
       let exceptionalContinuation :=
         sharedContinuation data stateOf exceptionalFlow
@@ -7347,11 +7152,10 @@ private noncomputable def sharedContinuation
         sharedContinuation data stateOf structuredFlow
       let boundedContinuation :=
         sharedContinuation data stateOf boundedFlow
-      ⟨fun {_} instStage capabilities =>
-        letI : HasResidual _ (Strategy.ProblemInput P) := instStage
-        let compiledPrefix := preceding.at capabilities
-        compiledPrefix.append fun Current instCurrent currentCapabilities => by
-          letI := instCurrent
+      ⟨fun {_} _ state capabilities =>
+        let compiledPrefix := preceding.at state capabilities
+        compiledPrefix.append fun {Current} _ currentState
+            currentCapabilities => by
           let entry := data.homogeneousBottlenecks[index]
           let bottleneckIndex := entry.fst
           let pressureIndex :=
@@ -7380,24 +7184,30 @@ private noncomputable def sharedContinuation
               required.2.2.2.2.2.2.2.2.2.2.2 |>.ledger
           let profile :=
             Core.Strategy.HomogeneousBottleneck.Profile.ofRegistrationAt
-              (Previous := Current) registration currentCapabilities.activeInput
+              (Previous := Current) registration
+                currentCapabilities.activeInput
           let semantics :=
             Core.Strategy.HomogeneousBottleneck.Profile.semanticsOfProfile
               profile
           let Witness := profile.RoutedResidual semantics
           let exceptionalFragment := exceptionalContinuation.at
+            (currentState.extension (fun stage => Witness stage .exceptional))
             (currentCapabilities.preserveLedger
               (Added := fun stage => Witness stage .exceptional))
           let handoffCapabilities :=
             currentCapabilities.cons (.homogeneousHandoff index)
-              (Query.ofFunction fun _ => ())
+              ( fun _ => ())
               (by intro packingIndex equality; cases equality)
               (by intro equality; cases equality)
               (by intro equality; cases equality)
+              (fresh := CapabilityKey.not_mem_of_fresh handoffFresh (by simp))
           let structuredFragment := structuredContinuation.at
+            ((currentState.extension
+              (fun stage => Witness stage .structured)))
             (handoffCapabilities.preserveLedger
               (Added := fun stage => Witness stage .structured))
           let boundedFragment := boundedContinuation.at
+            (currentState.extension (fun stage => Witness stage .bounded))
             (currentCapabilities.preserveLedger
               (Added := fun stage => Witness stage .bounded))
           let recipe := homogeneousBottleneckBranchesRecipe
@@ -7410,12 +7220,10 @@ private noncomputable def sharedContinuation
           exact preservingVertex data currentCapabilities recipe⟩
   | .minimalCounterexample _rest index _metadata restFlow =>
       let preceding := sharedContinuation data stateOf restFlow
-      ⟨fun {_} instStage capabilities =>
-        letI : HasResidual _ (Strategy.ProblemInput P) := instStage
-        let compiledPrefix := preceding.at capabilities
-        compiledPrefix.append fun (Current : Type (max uAmbient uBranch uData))
-            instCurrent currentCapabilities => by
-          letI := instCurrent
+      ⟨fun {_} _ state capabilities =>
+        let compiledPrefix := preceding.at state capabilities
+        compiledPrefix.append fun {Current} _ currentState
+            currentCapabilities => by
           let recipe := minimalCounterexampleStep (Stage := Current)
             data stateOf index
           let closureQuery :=
@@ -7423,32 +7231,32 @@ private noncomputable def sharedContinuation
               data stateOf index
           exact
             { recipe
+              nextState := currentState.minimalScope index recipe closureQuery
               capabilities :=
-                CapabilityStore.ofMinimalClosure data index closureQuery }⟩
+                currentCapabilities.initializeMinimalClosure index recipe
+                  closureQuery }⟩
   | .annotate restFlow
   | .labelled restFlow
   | .documented restFlow =>
       sharedContinuation data stateOf restFlow
   | .resolvedRoute resolved _metadata restFlow =>
       let preceding := sharedContinuation data stateOf restFlow
-      ⟨fun {_} instStage capabilities =>
-        letI : HasResidual _ (Strategy.ProblemInput P) := instStage
-        let compiledPrefix := preceding.at capabilities
-        compiledPrefix.append fun _ instCurrent currentCapabilities => by
-          letI := instCurrent
+      ⟨fun {_} _ state capabilities =>
+        let compiledPrefix := preceding.at state capabilities
+        compiledPrefix.append fun _ currentCapabilities => by
           exact preservingVertex data currentCapabilities
             (bridgeRecipe resolved)⟩
   | .siblingRoute resolved _metadata restFlow destinationFlow =>
       let preceding := sharedContinuation data stateOf restFlow
       let destination := sharedContinuation data stateOf destinationFlow
-      ⟨fun {_} instStage capabilities =>
-        letI : HasResidual _ (Strategy.ProblemInput P) := instStage
-        let compiledPrefix := preceding.at capabilities
-        compiledPrefix.append fun Current instCurrent currentCapabilities => by
-          letI := instCurrent
+      ⟨fun {_} _ state capabilities =>
+        let compiledPrefix := preceding.at state capabilities
+        compiledPrefix.append fun {Current} _ currentState
+            currentCapabilities => by
           let bridge : Recipe P T Current := bridgeRecipe resolved
           let destinationFragment :=
-            destination.at (currentCapabilities.preserveLive bridge)
+            destination.at (currentState.live bridge)
+              (currentCapabilities.preserveLive bridge)
           match destinationFragment.recipe? with
           | none =>
               exact preservingVertex data currentCapabilities bridge
@@ -7510,12 +7318,13 @@ private noncomputable def compileFrom
     { program := HaltingProgram.root definition.data
       closes := none }
   let compiled :=
-    (sharedContinuation definition.data definition.initialState checked.flow).at
-      (Stage := root.program.Stage)
-      (CapabilityStore.empty definition.data root.program.Stage)
+    (sharedContinuation definition.data definition.initialState checked.verified).at
+      (CapabilityState.root definition.data root.program.Stage)
+      (_root_.Hypostructure.Core.Residual.ExactLedger.emptyCapabilities
+        definition.data root.program.Stage)
   match compiled with
   | .empty _ => root
-  | .nonempty recipe _ => root.append recipe
+  | .nonempty recipe _ _ => root.append recipe
 
 /-! ## Compile trace
 
@@ -9195,7 +9004,7 @@ private partial def collectSiblingContinuationEntries
         "Core found a non-expanded constructor while collecting sibling \
         continuations.")
 
-private structure ElaboratedCapabilityFlow where
+private structure ElaboratedManifest where
   output : Lean.Expr
   proof : Lean.Expr
 
@@ -9210,7 +9019,7 @@ private def applyConstructorAtType
     | 0 =>
         throwError (Validate.rejection
           "Core exhausted the constructor arity derived from the sealed \
-          capability-flow constructor.")
+          manifest-verification constructor.")
     | fuel + 1 =>
         let type ← whnf type
         match type with
@@ -9244,7 +9053,7 @@ private def applyConstructorAtType
                 lowering the expanded DAG.")
             unless ← isDefEq expected type do
               throwError (Validate.rejection
-                "Core could not construct the typed capability-flow proof for \
+                "Core could not construct the typed manifest proof for \
                 the expanded DAG.\n"
                 ++ s!"actual: {type}\nexpected: {expected}")
             Term.synthesizeSyntheticMVarsNoPostponing
@@ -9253,10 +9062,10 @@ private def applyConstructorAtType
   applyArguments (initialType.getForallArity + 1) initial initialType 0
 
 open Lean Lean.Elab Lean.Elab.Term Lean.Meta in
-private def elaborateCapabilityFlowStep
+private def elaborateVerifiedManifestStep
     (siblings : Array SiblingContinuationEntry)
-    (recurse : Expr → Expr → TermElabM ElaboratedCapabilityFlow)
-    (dagE inputE : Expr) : TermElabM ElaboratedCapabilityFlow := do
+    (recurse : Expr → Expr → TermElabM ElaboratedManifest)
+    (dagE inputE : Expr) : TermElabM ElaboratedManifest := do
   let dagE ← withTransparency .all <| whnf dagE
   let args := dagE.getAppArgs
   let argumentFromEnd (offset : Nat) : TermElabM Expr := do
@@ -9268,8 +9077,8 @@ private def elaborateCapabilityFlowStep
         execution lowering.")
   match dagE.getAppFn.constName? with
   | some ``Blueprint.root =>
-      let expected ← mkAppM ``CapabilityFlow #[dagE, inputE, inputE]
-      let proof ← applyConstructorAtType ``CapabilityFlow.root #[] expected
+      let expected ← mkAppM ``VerifiedManifest #[dagE, inputE, inputE]
+      let proof ← applyConstructorAtType ``VerifiedManifest.root #[] expected
       pure { output := inputE, proof }
   | some ``Blueprint.step =>
       let strategyE ← argumentFromEnd 0
@@ -9279,12 +9088,12 @@ private def elaborateCapabilityFlowStep
       unless strategyType.getAppFn.constName? == some ``StrategyRef do
         throwError (Validate.rejection
           "Core found a malformed scalar Strategy reference while lowering \
-          capability flow.")
+          fact manifest.")
       let strategyTypeArgs := strategyType.getAppArgs
       if strategyTypeArgs.isEmpty then
         throwError (Validate.rejection
           "Core could not recover the registered Strategy data while \
-          lowering capability flow.")
+          lowering the fact manifest.")
       let dataE := strategyTypeArgs[strategyTypeArgs.size - 1]!
       let keyE ← mkAppM ``StrategyRef.keyView #[strategyE]
       let resolvedE ← mkAppM ``StrategyRef.resolved #[strategyE]
@@ -9299,10 +9108,18 @@ private def elaborateCapabilityFlowStep
       let valid ← mkEqRefl (mkConst ``Bool.true)
       let produced ←
         mkAppM ``StrategyKey.productions #[dataE, keyE, resolvedE]
+      let freshTest ←
+        mkAppM ``CapabilityKey.fresh #[produced, preceding.output]
+      let freshResult ← withTransparency .all <| reduce freshTest
+      unless freshResult.isConstOf ``Bool.true do
+        throwError (Validate.rejection
+          "sealed Strategy execution attempted to publish a semantic fact \
+          already present on this branch.")
+      let fresh ← mkEqRefl (mkConst ``Bool.true)
       let output ← mkAppM ``List.append #[produced, preceding.output]
-      let expected ← mkAppM ``CapabilityFlow #[dagE, inputE, output]
-      let proof ← applyConstructorAtType ``CapabilityFlow.step
-        #[strategyE, preceding.proof, valid] expected
+      let expected ← mkAppM ``VerifiedManifest #[dagE, inputE, output]
+      let proof ← applyConstructorAtType ``VerifiedManifest.step
+        #[strategyE, preceding.proof, valid, fresh] expected
       pure { output, proof }
   | some ``Blueprint.binaryBranch =>
       let rightE ← argumentFromEnd 0
@@ -9314,12 +9131,12 @@ private def elaborateCapabilityFlowStep
       unless strategyType.getAppFn.constName? == some ``BinaryStrategyRef do
         throwError (Validate.rejection
           "Core found a malformed binary Strategy reference while lowering \
-          capability flow.")
+          fact manifest.")
       let strategyTypeArgs := strategyType.getAppArgs
       if strategyTypeArgs.isEmpty then
         throwError (Validate.rejection
           "Core could not recover the registered Strategy data while \
-          lowering binary capability flow.")
+          lowering the binary fact manifest.")
       let dataE := strategyTypeArgs[strategyTypeArgs.size - 1]!
       let keyE ← mkAppM ``BinaryStrategyRef.keyView #[strategyE]
       let resolvedE ← mkAppM ``BinaryStrategyRef.resolved #[strategyE]
@@ -9336,14 +9153,31 @@ private def elaborateCapabilityFlowStep
         mkAppM ``BinaryStrategyRef.leftProductions #[strategyE]
       let rightProduced ←
         mkAppM ``BinaryStrategyRef.rightProductions #[strategyE]
+      let leftFreshTest ←
+        mkAppM ``CapabilityKey.fresh #[leftProduced, preceding.output]
+      let leftFreshResult ← withTransparency .all <| reduce leftFreshTest
+      unless leftFreshResult.isConstOf ``Bool.true do
+        throwError (Validate.rejection
+          "sealed binary Strategy left arm attempted to republish a semantic \
+          fact already present on this branch.")
+      let rightFreshTest ←
+        mkAppM ``CapabilityKey.fresh #[rightProduced, preceding.output]
+      let rightFreshResult ← withTransparency .all <| reduce rightFreshTest
+      unless rightFreshResult.isConstOf ``Bool.true do
+        throwError (Validate.rejection
+          "sealed binary Strategy right arm attempted to republish a semantic \
+          fact already present on this branch.")
+      let leftFresh ← mkEqRefl (mkConst ``Bool.true)
+      let rightFresh ← mkEqRefl (mkConst ``Bool.true)
       let leftInput ← mkAppM ``List.append #[leftProduced, preceding.output]
       let rightInput ← mkAppM ``List.append #[rightProduced, preceding.output]
       let left ← recurse leftE leftInput
       let right ← recurse rightE rightInput
       let expected ←
-        mkAppM ``CapabilityFlow #[dagE, inputE, preceding.output]
-      let proof ← applyConstructorAtType ``CapabilityFlow.binaryBranch
-        #[strategyE, preceding.proof, valid, left.proof, right.proof] expected
+        mkAppM ``VerifiedManifest #[dagE, inputE, preceding.output]
+      let proof ← applyConstructorAtType ``VerifiedManifest.binaryBranch
+        #[strategyE, preceding.proof, valid, leftFresh, rightFresh,
+          left.proof, right.proof] expected
       pure {
         output := preceding.output
         proof
@@ -9360,12 +9194,12 @@ private def elaborateCapabilityFlowStep
       if restTypeArgs.size < 2 then
         throwError (Validate.rejection
           "Core could not recover the registered Strategy data while \
-          lowering homogeneous-bottleneck capability flow.")
+          lowering the homogeneous-bottleneck fact manifest.")
       let dataE := restTypeArgs[restTypeArgs.size - 2]!
       -- Both `StrategyKey.homogeneousBottleneck` and
       -- `CapabilityKey.homogeneousHandoff` below take a `Nat`; `indexE` is the
       -- constructor's `Fin` and `mkAppM` inserts no coercion.  The typed
-      -- `CapabilityFlow.homogeneousBottleneckBranches` publishes `↑index`.
+      -- `VerifiedManifest.homogeneousBottleneckBranches` publishes `↑index`.
       let indexNatE ← mkAppM ``Fin.val #[indexE]
       let keyE ← mkAppM ``StrategyKey.homogeneousBottleneck #[indexNatE]
       let resolvedE ← mkAppM ``Fin.isLt #[indexE]
@@ -9383,14 +9217,26 @@ private def elaborateCapabilityFlowStep
         mkAppM ``List.cons
           #[← mkAppM ``CapabilityKey.homogeneousHandoff #[indexNatE],
             preceding.output]
+      let handoffProduced ← mkAppM ``List.cons
+        #[← mkAppM ``CapabilityKey.homogeneousHandoff #[indexNatE],
+          ← mkAppM ``List.nil #[mkConst ``CapabilityKey]]
+      let handoffFreshTest ←
+        mkAppM ``CapabilityKey.fresh #[handoffProduced, preceding.output]
+      let handoffFreshResult ←
+        withTransparency .all <| reduce handoffFreshTest
+      unless handoffFreshResult.isConstOf ``Bool.true do
+        throwError (Validate.rejection
+          "sealed homogeneous handoff attempted to republish a semantic fact \
+          already present on this branch.")
+      let handoffFresh ← mkEqRefl (mkConst ``Bool.true)
       let structured ← recurse structuredE structuredInput
       let bounded ← recurse boundedE preceding.output
       let expected ←
-        mkAppM ``CapabilityFlow #[dagE, inputE, preceding.output]
+        mkAppM ``VerifiedManifest #[dagE, inputE, preceding.output]
       let proof ← applyConstructorAtType
-        ``CapabilityFlow.homogeneousBottleneckBranches
-        #[indexE, preceding.proof, valid, exceptional.proof, structured.proof,
-          bounded.proof] expected
+        ``VerifiedManifest.homogeneousBottleneckBranches
+        #[indexE, preceding.proof, valid, handoffFresh, exceptional.proof,
+          structured.proof, bounded.proof] expected
       pure {
         output := preceding.output
         proof
@@ -9402,17 +9248,24 @@ private def elaborateCapabilityFlowStep
       let preceding ← recurse restE inputE
       -- `CapabilityKey.minimalClosureAt` takes a `Nat`; `indexE` is the
       -- constructor's `Fin`, and `mkAppM` inserts no coercion.  The typed
-      -- `CapabilityFlow.minimalCounterexample` publishes `↑index`, so the flow
+      -- `VerifiedManifest.minimalCounterexample` publishes `↑index`, so the manifest
       -- key has to be built from `Fin.val` to agree with it.
       let exactKey ← mkAppM ``CapabilityKey.minimalClosureAt
         #[← mkAppM ``Fin.val #[indexE]]
       let withContext ← mkAppM ``List.cons
-        #[mkConst ``CapabilityKey.minimalContext, preceding.output]
+        #[mkConst ``CapabilityKey.minimalContext,
+          ← mkAppM ``List.nil #[mkConst ``CapabilityKey]]
       let output ← mkAppM ``List.cons #[exactKey, withContext]
+      let empty ← mkAppM ``List.nil #[mkConst ``CapabilityKey]
+      let precedingIsEmpty ← withTransparency .all <| isDefEq preceding.output empty
+      unless precedingIsEmpty do
+        throwError (Validate.rejection
+          "minimal-counterexample scope initialization must precede every \
+          fact-producing Strategy; committed facts can never be rebased away.")
       let expected ←
-        mkAppM ``CapabilityFlow #[dagE, inputE, output]
+        mkAppM ``VerifiedManifest #[dagE, inputE, output]
       let proof ←
-        applyConstructorAtType ``CapabilityFlow.minimalCounterexample
+        applyConstructorAtType ``VerifiedManifest.minimalCounterexample
           #[restE, indexE, metadataE, preceding.proof] expected
       pure {
         output := output
@@ -9422,8 +9275,8 @@ private def elaborateCapabilityFlowStep
       let restE ← argumentFromEnd 1
       let preceding ← recurse restE inputE
       let expected ←
-        mkAppM ``CapabilityFlow #[dagE, inputE, preceding.output]
-      let proof ← applyConstructorAtType ``CapabilityFlow.annotate
+        mkAppM ``VerifiedManifest #[dagE, inputE, preceding.output]
+      let proof ← applyConstructorAtType ``VerifiedManifest.annotate
         #[preceding.proof] expected
       pure {
         output := preceding.output
@@ -9433,8 +9286,8 @@ private def elaborateCapabilityFlowStep
       let restE ← argumentFromEnd 1
       let preceding ← recurse restE inputE
       let expected ←
-        mkAppM ``CapabilityFlow #[dagE, inputE, preceding.output]
-      let proof ← applyConstructorAtType ``CapabilityFlow.labelled
+        mkAppM ``VerifiedManifest #[dagE, inputE, preceding.output]
+      let proof ← applyConstructorAtType ``VerifiedManifest.labelled
         #[preceding.proof] expected
       pure {
         output := preceding.output
@@ -9444,8 +9297,8 @@ private def elaborateCapabilityFlowStep
       let restE ← argumentFromEnd 1
       let preceding ← recurse restE inputE
       let expected ←
-        mkAppM ``CapabilityFlow #[dagE, inputE, preceding.output]
-      let proof ← applyConstructorAtType ``CapabilityFlow.documented
+        mkAppM ``VerifiedManifest #[dagE, inputE, preceding.output]
+      let proof ← applyConstructorAtType ``VerifiedManifest.documented
         #[preceding.proof] expected
       pure {
         output := preceding.output
@@ -9457,7 +9310,7 @@ private def elaborateCapabilityFlowStep
       let restE ← argumentFromEnd 2
       let preceding ← recurse restE inputE
       let expected ←
-        mkAppM ``CapabilityFlow #[dagE, inputE, preceding.output]
+        mkAppM ``VerifiedManifest #[dagE, inputE, preceding.output]
       let siblingTest ← mkAppM ``ResolvedRoute.routesToSibling #[routeE]
       let siblingResult ← withTransparency .all <| reduce siblingTest
       let proof ←
@@ -9476,11 +9329,11 @@ private def elaborateCapabilityFlowStep
             | throwError (Validate.rejection
                 "Core could not recover the selected sibling continuation.")
           let destinationFlow ← recurse destination.dag preceding.output
-          applyConstructorAtType ``CapabilityFlow.siblingRoute
+          applyConstructorAtType ``VerifiedManifest.siblingRoute
             #[routeE, metadataE, preceding.proof, destinationFlow.proof]
             expected
         else
-          applyConstructorAtType ``CapabilityFlow.resolvedRoute
+          applyConstructorAtType ``VerifiedManifest.resolvedRoute
             #[routeE, metadataE, preceding.proof] expected
       pure {
         output := preceding.output
@@ -9491,22 +9344,22 @@ private def elaborateCapabilityFlowStep
         "sealed execution accepts only Core-expanded DAG constructors.")
 
 open Lean Lean.Elab Lean.Elab.Term Lean.Meta in
-private def elaborateCapabilityFlowWithFuel :
+private def elaborateVerifiedManifestWithFuel :
     Array SiblingContinuationEntry →
-      Nat → Expr → Expr → TermElabM ElaboratedCapabilityFlow
+      Nat → Expr → Expr → TermElabM ElaboratedManifest
   | _, 0, _, _ =>
       throwError (Validate.rejection
         "Core exhausted the exact expanded-DAG size while lowering sealed \
         Strategy execution.")
   | siblings, fuel + 1, dagE, inputE =>
-      elaborateCapabilityFlowStep siblings
-        (elaborateCapabilityFlowWithFuel siblings fuel) dagE inputE
+      elaborateVerifiedManifestStep siblings
+        (elaborateVerifiedManifestWithFuel siblings fuel) dagE inputE
 
 open Lean Lean.Elab Lean.Elab.Term Lean.Meta in
-private def elaborateCapabilityFlow
-    (dagE inputE : Expr) : TermElabM ElaboratedCapabilityFlow := do
+private def elaborateVerifiedManifest
+    (dagE inputE : Expr) : TermElabM ElaboratedManifest := do
   let (siblings, _) ← collectSiblingContinuationEntries dagE 0
-  elaborateCapabilityFlowWithFuel siblings
+  elaborateVerifiedManifestWithFuel siblings
     (dagE.sizeWithoutSharing + 1) dagE inputE
 
 open Lean Lean.Elab Lean.Elab.Term Lean.Meta in
@@ -9514,7 +9367,7 @@ private def elaborateCheckedBlueprint (dagE : Expr) :
     TermElabM Expr := do
   let empty :=
     mkApp (mkConst ``List.nil [0]) (mkConst ``CapabilityKey)
-  let result ← elaborateCapabilityFlow dagE empty
+  let result ← elaborateVerifiedManifest dagE empty
   mkAppM ``CheckedBlueprint.mk #[result.output, dagE, result.proof]
 
 open Lean Lean.Elab Lean.Elab.Term Lean.Meta in

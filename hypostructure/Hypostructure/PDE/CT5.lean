@@ -33,13 +33,13 @@ def localWitnessSpec {Previous : Type uPrevious}
   budget := budget
   Site := Site
   Witness := Witness
-  Active := fun previous site => Active previous (state.read previous) site
+  Active := fun previous site => Active previous (state previous) site
   Supports := fun previous site witness =>
-    Supports previous (state.read previous) site witness
+    Supports previous (state previous) site witness
   contribution := fun previous site witness =>
-    contribution previous (state.read previous) site witness
-  required := fun previous => required previous (state.read previous)
-  capacity := fun previous => capacity previous (state.read previous)
+    contribution previous (state previous) site witness
+  required := fun previous => required previous (state previous)
+  capacity := fun previous => capacity previous (state previous)
 
 /-- Build the common CT5 capability from one residual-owned dependent family
 and primitive represented-state decisions. -/
@@ -73,9 +73,9 @@ def localWitnessCapability {Previous : Type uPrevious}
         required capacity) where
   family := family
   activeDecidable := fun previous site =>
-    activeDecidable previous (state.read previous) site
+    activeDecidable previous (state previous) site
   supportsDecidable := fun previous site witness =>
-    supportsDecidable previous (state.read previous) site witness
+    supportsDecidable previous (state previous) site witness
   resourceLEDecidable := resourceLEDecidable
 
 end Hypostructure.PDE.CT5

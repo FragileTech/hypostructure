@@ -34,19 +34,19 @@ structure Capability {Previous : Type uPrevious}
   realizesDecidable : (previous : Previous) ->
     (coordinate : spec.system.Coordinate) ->
       Decidable (spec.Realizes previous
-        (representatives.read previous).source
+        (representatives previous).source
         (spec.system.decode coordinate))
   realizationCoverage : (previous : Previous) ->
     (context : spec.system.Context) ->
-      spec.Realizes previous (representatives.read previous).source context ->
-        Exists fun index : Fin (contexts.read previous).card =>
-          spec.Realizes previous (representatives.read previous).source
-            (spec.system.decode ((contexts.read previous).get index))
+      spec.Realizes previous (representatives previous).source context ->
+        Exists fun index : Fin (contexts previous).card =>
+          spec.Realizes previous (representatives previous).source
+            (spec.system.decode ((contexts previous).get index))
   responseCoverage : (previous : Previous) ->
     Core.Response.FiniteTable.SymbolicCoverage spec.system
-      (representatives.read previous)
+      (representatives previous)
       (Core.Response.FiniteTable.ExactSchedule.ofList
-        (contexts.read previous).values)
+        (contexts previous).values)
 
 namespace Capability
 
@@ -69,11 +69,11 @@ def ofExactContexts
     (realizesDecidable : (previous : Previous) ->
       (coordinate : spec.system.Coordinate) ->
         Decidable (spec.Realizes previous
-          (representatives.read previous).source
+          (representatives previous).source
           (spec.system.decode coordinate)))
     (complete : (previous : Previous) -> (context : spec.system.Context) ->
-      Exists fun index : Fin (contexts.read previous).card =>
-        context = spec.system.decode ((contexts.read previous).get index)) :
+      Exists fun index : Fin (contexts previous).card =>
+        context = spec.system.decode ((contexts previous).get index)) :
     Capability spec where
   representatives := representatives
   contexts := contexts
@@ -104,8 +104,8 @@ def ofSubsingletonSingletonContexts
     (valueDecEq : DecidableEq spec.system.Value)
     (realizesDecidable : (previous : Previous) ->
       Decidable (spec.Realizes previous
-        (representatives.read previous).source
-        (spec.system.decode (coordinate.read previous)))) :
+        (representatives previous).source
+        (spec.system.decode (coordinate previous)))) :
     Capability spec :=
   ofExactContexts representatives
     (coordinate.map fun _previous value =>
@@ -115,7 +115,7 @@ def ofSubsingletonSingletonContexts
       by
         have equal :
             spec.system.decode coordinateValue =
-              spec.system.decode (coordinate.read previous) :=
+              spec.system.decode (coordinate previous) :=
           Subsingleton.elim _ _
         rw [equal]
         exact realizesDecidable previous)
@@ -130,12 +130,12 @@ def ofSubsingletonSingletonContexts
 /-- Exact representative pair retrieved from the predecessor ledger. -/
 def representativesAt (capability : Capability spec) (previous : Previous) :
     Core.Response.Representatives spec.Representative :=
-  capability.representatives.read previous
+  capability.representatives previous
 
 /-- Exact ordered context-coordinate schedule retrieved from the predecessor. -/
 def contextsAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration spec.system.Coordinate :=
-  capability.contexts.read previous
+  capability.contexts previous
 
 @[simp] theorem contextsAt_ofSubsingletonSingletonContexts
     [Subsingleton spec.system.Context] [DecidableEq spec.system.Coordinate]
@@ -146,12 +146,12 @@ def contextsAt (capability : Capability spec) (previous : Previous) :
     (valueDecEq : DecidableEq spec.system.Value)
     (realizesDecidable : (previous : Previous) ->
       Decidable (spec.Realizes previous
-        (representatives.read previous).source
-        (spec.system.decode (coordinate.read previous))))
+        (representatives previous).source
+        (spec.system.decode (coordinate previous))))
     (previous : Previous) :
     (ofSubsingletonSingletonContexts representatives coordinate valueDecEq
       realizesDecidable).contextsAt previous =
-      Core.Finite.Enumeration.singleton (coordinate.read previous) :=
+      Core.Finite.Enumeration.singleton (coordinate previous) :=
   rfl
 
 @[simp] theorem localCheckBound_ofSubsingletonSingletonContexts
@@ -163,8 +163,8 @@ def contextsAt (capability : Capability spec) (previous : Previous) :
     (valueDecEq : DecidableEq spec.system.Value)
     (realizesDecidable : (previous : Previous) ->
       Decidable (spec.Realizes previous
-        (representatives.read previous).source
-        (spec.system.decode (coordinate.read previous))))
+        (representatives previous).source
+        (spec.system.decode (coordinate previous))))
     (previous : Previous) :
     localCheckBound
       ((ofSubsingletonSingletonContexts representatives coordinate valueDecEq

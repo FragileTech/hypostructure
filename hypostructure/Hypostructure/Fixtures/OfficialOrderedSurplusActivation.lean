@@ -18,7 +18,7 @@ abbrev activitySpec : CT6.Spec Previous where
 
 def activity : CT6.Capability activitySpec where
   failureOrder :=
-    Query.ofFunction fun _ => Core.Finite.Enumeration.singleton ()
+     fun _ => Core.Finite.Enumeration.singleton ()
   failureDecidable := fun _ _ => isFalse id
   inputSize := fun _ => Fintype.card Unit
   workCoefficient := Fintype.card Unit
@@ -42,7 +42,7 @@ abbrev accountingSpec : CT5.Spec ActivityStage where
   capacity := fun _ => Fintype.card Unit
 
 def accounting : CT5.Capability accountingSpec where
-  family := Query.ofFunction fun _ =>
+  family :=  fun _ =>
     { indices := Core.Finite.Enumeration.singleton ()
       fibres := fun _ => Core.Finite.Enumeration.singleton () }
   activeDecidable := fun _ _ => isTrue trivial

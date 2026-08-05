@@ -44,18 +44,18 @@ variable (contract : PackageContract schedule)
 noncomputable def goodWitnessAt
     (stage : schedule.Stage) (active : schedule.allGoodFocus.Active stage)
     (item : schedule.Item)
-    (member : item ∈ (schedule.items.read stage.previous active.parent).values) :
+    (member : item ∈ (schedule.items stage.previous active.parent).values) :
     (contract.evidence stage.previous active.parent).GoodWitness item :=
   (contract.evidence stage.previous active.parent).goodWitnessOfGood
-    ((schedule.allGoodQuery.read stage active) item member)
+    ((schedule.allGoodQuery stage active) item member)
 
 /-- Read all good-terminal witnesses on the all-good branch. -/
 noncomputable def allGoodWitnessQuery :
     Focus.ActiveQuery schedule.allGoodFocus fun stage active =>
       (item : schedule.Item) ->
-        item ∈ (schedule.items.read stage.previous active.parent).values ->
+        item ∈ (schedule.items stage.previous active.parent).values ->
           (contract.evidence stage.previous active.parent).GoodWitness item :=
-  Focus.ActiveQuery.ofFunction fun stage active item member =>
+  fun stage active item member =>
     contract.goodWitnessAt stage active item member
 
 /-- Core same-interface registration contract generated from the CT3
@@ -64,10 +64,10 @@ residual and installed as one framework-owned ledger extension. -/
 noncomputable def verifiedSameInterfaceContract :
     SameInterface.VerifiedContract schedule.allGoodFocus where
   Item := schedule.Item
-  items := Focus.ActiveQuery.ofFunction fun stage active =>
-    (schedule.items.read stage.previous active.parent).values
-  package := Focus.ActiveQuery.ofFunction fun stage active item member =>
-    let good := (schedule.allGoodQuery.read stage active) item member
+  items := fun stage active =>
+    (schedule.items stage.previous active.parent).values
+  package := fun stage active item member =>
+    let good := (schedule.allGoodQuery stage active) item member
     let witness : (contract.evidence stage.previous active.parent).GoodWitness
         item :=
       contract.goodWitnessAt stage active item member

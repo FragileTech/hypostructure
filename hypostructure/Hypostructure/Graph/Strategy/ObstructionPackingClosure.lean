@@ -24,21 +24,21 @@ noncomputable def inducedPathSemantics
     (object : Core.Residual.Query Input fun _ => FiniteObject.{uVertex})
     (order : Core.Residual.Query Input fun _ => Nat)
     (freeForcesTarget : ∀ input,
-      InducedPathFree (object.read input) (order.read input) → Target input) :
+      InducedPathFree (object input) (order input) → Target input) :
     Core.Strategy.ObstructionPackingClosure.Semantics
       Input Target where
   Occurrence := fun input =>
     InducedPathMaximalPacking.Window
-      (object.read input) (order.read input)
+      (object input) (order input)
   occurrences := fun input =>
     InducedPathMaximalPacking.windowSchedule
-      (object.read input) (order.read input)
+      (object input) (order input)
   conflict := fun input left right =>
     ¬ Disjoint
       (InducedPathMaximalPacking.support
-        (object.read input) (order.read input) left)
+        (object input) (order input) left)
       (InducedPathMaximalPacking.support
-        (object.read input) (order.read input) right)
+        (object input) (order input) right)
   conflictDecidable := fun _ => Classical.decRel _
   conflictSymmetric := by
     intro input left right overlaps disjoint
@@ -50,7 +50,7 @@ noncomputable def inducedPathSemantics
     have member :
         embedding ∈
           (InducedPathMaximalPacking.windowSchedule
-            (object.read input) (order.read input)).values := by
+            (object input) (order input)).values := by
       simp [InducedPathMaximalPacking.windowSchedule]
     rw [empty] at member
     simp at member
@@ -66,18 +66,18 @@ noncomputable def inducedPathSemanticsOfPresentation
   Occurrence := fun input =>
     ULift.{uInput}
       (InducedPathMaximalPacking.Window
-        (presentation.object.read input) (presentation.order.read input))
+        (presentation.object input) (presentation.order input))
   occurrences := fun input =>
     (InducedPathMaximalPacking.windowSchedule
-      (presentation.object.read input) (presentation.order.read input)).map
+      (presentation.object input) (presentation.order input)).map
         ULift.up ULift.up_injective (Classical.decEq _)
   conflict := fun input left right =>
     ¬ Disjoint
       (InducedPathMaximalPacking.support
-        (presentation.object.read input) (presentation.order.read input)
+        (presentation.object input) (presentation.order input)
         left.down)
       (InducedPathMaximalPacking.support
-        (presentation.object.read input) (presentation.order.read input)
+        (presentation.object input) (presentation.order input)
         right.down)
   conflictDecidable := fun _ => Classical.decRel _
   conflictSymmetric := by
@@ -90,13 +90,13 @@ noncomputable def inducedPathSemanticsOfPresentation
     have member :
         ULift.up window ∈
           ((InducedPathMaximalPacking.windowSchedule
-            (presentation.object.read input)
-            (presentation.order.read input)).map
+            (presentation.object input)
+            (presentation.order input)).map
               ULift.up ULift.up_injective (Classical.decEq _)).values := by
       apply (Core.Finite.Enumeration.mem_map_values
         (InducedPathMaximalPacking.windowSchedule
-          (presentation.object.read input)
-          (presentation.order.read input))
+          (presentation.object input)
+          (presentation.order input))
         ULift.up ULift.up_injective (Classical.decEq _)
         (ULift.up window)).mpr
       exact ⟨window, by
@@ -113,7 +113,7 @@ def inducedPathOccurrenceEquiv
     (input : Input) :
     (inducedPathSemanticsOfPresentation presentation).Occurrence input ≃
       InducedPathMaximalPacking.Window
-        (presentation.object.read input) (presentation.order.read input) :=
+        (presentation.object input) (presentation.order input) :=
   Equiv.ulift
 
 /-- Every literal induced-path window has the canonical lifted occurrence in
@@ -124,13 +124,13 @@ theorem inducedPathOccurrence_mem
       Graph.Strategy.InducedPathPresentation.{uInput, uVertex} Input Target)
     (input : Input)
     (window : InducedPathMaximalPacking.Window
-      (presentation.object.read input) (presentation.order.read input)) :
+      (presentation.object input) (presentation.order input)) :
     ULift.up window ∈
       ((inducedPathSemanticsOfPresentation presentation).occurrences
         input).values := by
   apply (Core.Finite.Enumeration.mem_map_values
     (InducedPathMaximalPacking.windowSchedule
-      (presentation.object.read input) (presentation.order.read input))
+      (presentation.object input) (presentation.order input))
     ULift.up ULift.up_injective (Classical.decEq _) (ULift.up window)).mpr
   exact ⟨window, by
     simp [InducedPathMaximalPacking.windowSchedule], rfl⟩
@@ -148,7 +148,7 @@ noncomputable def inducedPathProfileOfPacking
       ((inducedPathSemanticsOfPresentation presentation).occurrences input)
       ((inducedPathSemanticsOfPresentation presentation).conflict input)) :
     InducedPathMaximalPacking.Profile
-      (presentation.object.read input) (presentation.order.read input) := by
+      (presentation.object input) (presentation.order input) := by
   classical
   exact {
     selected := packing.selected.map ULift.down
@@ -209,16 +209,16 @@ noncomputable def inducedPathProfileQueryAt
     (packing : Core.Residual.Query Previous fun previous =>
       Core.Strategy.ObstructionPackingClosure.Packing
         ((inducedPathSemanticsOfPresentation presentation).occurrences
-          (current.read previous))
+          (current previous))
         ((inducedPathSemanticsOfPresentation presentation).conflict
-          (current.read previous))) :
+          (current previous))) :
     Core.Residual.Query Previous fun previous =>
       InducedPathMaximalPacking.Profile
-        (presentation.object.read (current.read previous))
-        (presentation.order.read (current.read previous)) :=
+        (presentation.object (current previous))
+        (presentation.order (current previous)) :=
   packing.dependentMap fun previous exactPacking =>
     inducedPathProfileOfPacking presentation
-      (current.read previous) exactPacking
+      (current previous) exactPacking
 
 noncomputable def inducedPathProfileQuery
     {Input : Type uInput} {Target : Input → Prop}
@@ -234,8 +234,8 @@ noncomputable def inducedPathProfileQuery
           (Core.Residual.residualOf previous))) :
     Core.Residual.Query Previous fun previous =>
       InducedPathMaximalPacking.Profile
-        (presentation.object.read (Core.Residual.residualOf previous))
-        (presentation.order.read (Core.Residual.residualOf previous)) :=
+        (presentation.object (Core.Residual.residualOf previous))
+        (presentation.order (Core.Residual.residualOf previous)) :=
   inducedPathProfileQueryAt presentation Core.Residual.Query.residual packing
 
 end Hypostructure.Graph.Strategy.ObstructionPackingClosure

@@ -1,4 +1,4 @@
 interface:
   display_name: "EG Proof Expansion"
-  short_description: "Expand EG nodes through framework-native Lean"
-  default_prompt: "Use $eg-proof-expansion to make the requested EG StrategyDag node fully paper- and framework-compliant."
+  short_description: "Expand EG nodes through canonical ExactLedger Lean"
+  default_prompt: "Use $eg-proof-expansion to make the requested EG StrategyDag node fully paper-compliant using only the canonical ExactLedger and sealed Strategy/CT API."

@@ -34,7 +34,7 @@ def totalCharge {Previous : Type uPrevious}
     {M : PDE.LocalModel.{uModel}}
     (profile : Profile (M := M) (Previous := Previous))
     (previous : Previous) : Int :=
-  (profile.items.read previous).values.map
+  (profile.items previous).values.map
     (profile.charge previous) |>.sum
 
 def admissibleItems {Previous : Type uPrevious}
@@ -42,11 +42,11 @@ def admissibleItems {Previous : Type uPrevious}
     (profile : Profile (M := M) (Previous := Previous))
     (previous : Previous) : List (profile.Item previous) := by
   letI : ∀ item, Decidable (profile.admissible previous
-      (profile.state.read previous) item) :=
+      (profile.state previous) item) :=
     fun item => profile.admissibleDecidable previous
-      (profile.state.read previous) item
-  exact (profile.items.read previous).values.filter
+      (profile.state previous) item
+  exact (profile.items previous).values.filter
     (fun item => decide (profile.admissible previous
-      (profile.state.read previous) item))
+      (profile.state previous) item))
 
 end Hypostructure.PDE.AssignedSupportCharge

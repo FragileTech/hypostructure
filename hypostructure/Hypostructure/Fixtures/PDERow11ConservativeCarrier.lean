@@ -126,7 +126,7 @@ def cellQuery :
 
 def negativeTotalQuery :
     Residual.Query CapacityStage fun previous =>
-      ((cellQuery.read previous).values.map (fun _cell : Unit => (-1 : Int))).sum <
+      ((cellQuery previous).values.map (fun _cell : Unit => (-1 : Int))).sum <
         0 :=
   Residual.Query.residual.map fun (_previous : CapacityStage) _root => by
     change (([()].map (fun _cell : Unit => (-1 : Int))).sum < 0)

@@ -90,13 +90,13 @@ variable (contract : FocusedContract focus)
 
 /-- Pure flattening result seen at one active predecessor. -/
 def resultAt (previous : Previous) (active : focus.Active previous) :
-    Result (contract.schedule.read previous active) :=
-  run (contract.schedule.read previous active)
+    Result (contract.schedule previous active) :=
+  run (contract.schedule previous active)
 
 /-- Focused stage carrying exactly one Core-owned flattening result. -/
 abbrev Stage :=
   Focus.Stage focus fun previous active =>
-    Result (contract.schedule.read previous active)
+    Result (contract.schedule previous active)
 
 /-- Execute dependent flattening and register the flattened exact schedule. -/
 def executeCounted (previous : Previous) : Counted contract.Stage :=
@@ -126,12 +126,12 @@ theorem executeCounted_checks (previous : Previous) :
 
 abbrev successor : Focus.Profile contract.Stage :=
   Focus.successor focus fun previous active =>
-    Result (contract.schedule.read previous active)
+    Result (contract.schedule previous active)
 
 /-- Read the complete flattening result from the newest ledger extension. -/
 def latestResult :
     Focus.ActiveQuery contract.successor fun stage active =>
-      Result (contract.schedule.read stage.previous active) :=
+      Result (contract.schedule stage.previous active) :=
   Focus.ActiveQuery.latest
 
 /-- Read the flattened exact schedule from the newest ledger extension. -/
@@ -144,27 +144,27 @@ def latestFlattened :
 /-- Read the exact sum-cardinality formula from the newest ledger extension. -/
 def latestCardEqSum :
     Focus.ActiveQuery contract.successor fun stage active =>
-      (contract.latestFlattened.read stage active).card =
-        (((contract.schedule.preserve).read stage active).indices.values.map
-          fun i => (((contract.schedule.preserve).read stage active).fibres i).card).sum :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    (contract.latestResult.read stage active).card_eq_sum
+      (contract.latestFlattened stage active).card =
+        (((contract.schedule.preserve) stage active).indices.values.map
+          fun i => (((contract.schedule.preserve) stage active).fibres i).card).sum :=
+  fun stage active =>
+    (contract.latestResult stage active).card_eq_sum
 
 /-- If every active fibre has the same size, read the constant-contribution
 cardinality formula for the latest flattened schedule. -/
 def latestCardEqContributionMul
     (contribution : Nat)
     (all_fibres : Focus.ActiveQuery contract.successor fun stage active =>
-      ∀ index ∈ ((contract.schedule.preserve).read stage active).indices.values,
-        (((contract.schedule.preserve).read stage active).fibres index).card =
+      ∀ index ∈ ((contract.schedule.preserve) stage active).indices.values,
+        (((contract.schedule.preserve) stage active).fibres index).card =
           contribution) :
     Focus.ActiveQuery contract.successor fun stage active =>
-      (contract.latestFlattened.read stage active).card =
+      (contract.latestFlattened stage active).card =
         contribution *
-          ((contract.schedule.preserve).read stage active).indices.card :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    (contract.latestResult.read stage active).card_eq_contribution_mul
-      contribution (all_fibres.read stage active)
+          ((contract.schedule.preserve) stage active).indices.card :=
+  fun stage active =>
+    (contract.latestResult stage active).card_eq_contribution_mul
+      contribution (all_fibres stage active)
 
 end FocusedContract
 

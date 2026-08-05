@@ -255,22 +255,25 @@ nested tower.  Both are read off the stage, so the accounting is exact.
 /-- **The registered boundary demand accounting.** -/
 noncomputable def boundaryDemand :
     Core.Strategy.BoundaryDemandAccounting.Registration
-      (Core.Strategy.ProblemInput M.problem) where
-  Demand := fun _ => PUnit
-  Payer := fun _ => PUnit
-  demands := fun input => windowSchedule system input
-  payers := fun input => windowSchedule system input
-  Eligible := fun input _ _ => system.stageReached input ≠ .gradientClosed
-  eligibleDecidable := fun input _ _ =>
+      (Core.Strategy.ProblemInput M.problem)
+      (fun _ => PUnit)
+      (windowSchedule system)
+      (fun _ => PUnit)
+      (fun _ _ => [PUnit.unit]) where
+  Interaction := fun input _ _ =>
+    system.stageReached input ≠ .gradientClosed
+  interactionDecidable := fun input _ _ =>
     inferInstanceAs (Decidable (system.stageReached input ≠ .gradientClosed))
-  demandWeight := fun input _ => (system.stageReached input).rank
-  payerCapacity := fun _ _ => Stage.gradientClosed.rank
-  Member := fun _ => PUnit
-  Label := fun _ => PUnit
-  members := fun input => windowSchedule system input
-  memberLowerMass := fun input _ => (system.stageReached input).rank
-  memberCapacityRate := fun _ _ => Stage.gradientClosed.rank
-  memberLabel := fun _ _ => PUnit.unit
-  labelDecidableEq := fun _ => inferInstance
+  interactionSymmetric := by
+    intro _ _ _ interaction
+    exact interaction
+  baseline := fun input =>
+    if system.stageReached input = .gradientClosed then 0 else 1
+  minimumLoad := by
+    intro input item member
+    have active : system.stageReached input ≠ .gradientClosed :=
+      (mem_windowSchedule_iff system input item).mp member
+    classical
+    simp [windowSchedule, active]
 
 end Hypostructure.PDE.Strategy.RegularityRegistry

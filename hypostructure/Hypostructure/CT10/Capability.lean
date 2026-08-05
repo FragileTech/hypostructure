@@ -23,8 +23,8 @@ def localCheckBound {Previous : Type uPrevious}
     (classes : Core.Residual.Query Previous fun previous =>
       Core.Finite.CompleteEnumeration (spec.Class previous))
     (previous : Previous) : Nat :=
-  let classCount := (classes.read previous).toEnumeration.card
-  let datumCount := (data.read previous).card
+  let classCount := (classes previous).toEnumeration.card
+  let datumCount := (data previous).card
   classCount + classCount * datumCount
 
 /-- Minimal author surface for executable CT10 classification. -/
@@ -50,14 +50,14 @@ def dataAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uDatum, uClass, uPromotion} Previous}
     (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Datum previous) :=
-  capability.data.read previous
+  capability.data previous
 
 /-- Exact residual-owned complete class schedule. -/
 def completeClassesAt {Previous : Type uPrevious}
     {spec : Spec.{uPrevious, uDatum, uClass, uPromotion} Previous}
     (capability : Capability spec) (previous : Previous) :
     Core.Finite.CompleteEnumeration (spec.Class previous) :=
-  capability.classes.read previous
+  capability.classes previous
 
 /-- Ordered class scan extracted without changing the residual-owned table. -/
 def classesAt {Previous : Type uPrevious}

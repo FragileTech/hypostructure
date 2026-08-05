@@ -37,13 +37,13 @@ def boundedTargetSpec {Previous : Type uPrevious}
   Position := Position
   Value := Value
   targetValue := fun previous target =>
-    targetValue previous (object.read previous) target
+    targetValue previous (object previous) target
   blockValue := fun previous scale position offset =>
-    blockValue previous (object.read previous) scale position offset
+    blockValue previous (object previous) scale position offset
   orbitValue := fun previous scale offset =>
-    orbitValue previous (object.read previous) scale offset
+    orbitValue previous (object previous) scale offset
   Compatible := fun previous target offset =>
-    Compatible previous (object.read previous) target offset
+    Compatible previous (object previous) target offset
 
 /-- Assemble the common CT17 capability from predecessor-owned graph
 schedules and primitive graph-semantic decisions. -/
@@ -71,7 +71,7 @@ def boundedTargetCapability {Previous : Type uPrevious}
       Core.Finite.Enumeration Nat)
     (selectedScale : Core.Residual.Query Previous fun _previous => Nat)
     (selectedScale_mem : forall previous,
-      selectedScale.read previous ∈ (scales.read previous).values)
+      selectedScale previous ∈ (scales previous).values)
     (positions : (scale : Nat) -> Core.Residual.Query Previous fun previous =>
       Core.Finite.Enumeration (Position previous scale))
     (finiteScaleLimit : Core.Residual.Query Previous fun _previous => Nat)
@@ -84,8 +84,8 @@ def boundedTargetCapability {Previous : Type uPrevious}
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
       _root_.Hypostructure.CT17.localCheckBound
-          (targets.read previous) (offsets.read previous)
-          ((positions (selectedScale.read previous)).read previous) <=
+          (targets previous) (offsets previous)
+          ((positions (selectedScale previous)) previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT17.Capability
       (boundedTargetSpec object Target Offset Position Value targetValue
@@ -98,7 +98,7 @@ def boundedTargetCapability {Previous : Type uPrevious}
   positions := positions
   finiteScaleLimit := finiteScaleLimit
   compatibleDecidable := fun previous target offset =>
-    compatibleDecidable previous (object.read previous) target offset
+    compatibleDecidable previous (object previous) target offset
   valueDecidableEq := valueDecidableEq
   inputSize := inputSize
   workCoefficient := workCoefficient

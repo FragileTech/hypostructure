@@ -382,8 +382,14 @@ structure BoundaryAccountingEntry
       P T packings)) where
   fst : Fin supports.length
   snd : Strategy.BoundaryDemandAccounting.Registration.{
-    max uAmbient uBranch, uData, uData, uData, uData}
+    max uAmbient uBranch, max uAmbient uBranch uData,
+    max uAmbient uBranch uData}
     (Strategy.ProblemInput P)
+    supports[fst].snd.AmbientItem
+    supports[fst].snd.ambientSupport
+    (fun input =>
+      packings[supports[fst].fst].Occurrence input)
+    supports[fst].snd.cover
 
 /-- One local-supply registration indexed by its boundary predecessor.  Its
 ambient member carrier is definitionally the carrier of that predecessor's
@@ -425,7 +431,7 @@ predecessor.  Its ambient item carrier is definitionally the carrier of that
 predecessor's normalized-support ledger, so `def:remainder-entropy`'s vertex
 set `V(R)` reaches the registration as the inherited complement instead of as a
 `Nat`.  `fst` is the `Fin localSupplyLowerBounds.length` that makes
-`CapabilityStore.localSupplyExact` callable at this branch. -/
+  the canonical `ExactLedger.localSupplyExact` accessor available at this branch. -/
 structure FiniteStateCapacityEntry
     (P : Core.Problem.{uAmbient, uBranch}) (T : Core.Target P)
     (packings : List (Strategy.ObstructionPackingClosure.Semantics.{
@@ -738,7 +744,7 @@ structure StrategyData (P : Core.Problem.{uAmbient, uBranch})
   /-- Defect closed.  An entry now carries the index of the local-supply
   producer it reads, mirroring `targetRelativeRankDichotomies`' shape, so
   `entry.fst` is the `Fin localSupplyLowerBounds.length` that makes
-  `CapabilityStore.localSupplyExact` callable at the finite-state-capacity
+  the canonical `ExactLedger.localSupplyExact` accessor available at the finite-state-capacity
   branch.  The exact carriers the local-supply capability bundles -- in
   particular the normalized support complement, i.e. the vertex set
   `def:remainder-entropy`'s `\mathcal G(R)` is indexed by -- therefore reach

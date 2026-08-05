@@ -39,7 +39,7 @@ structure Capability {Previous : Type uPrevious}
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (demands.read previous) (payers.read previous) <=
+    localCheckBound (demands previous) (payers previous) <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -50,12 +50,12 @@ variable {Previous : Type uPrevious}
 /-- Exact residual-owned demand schedule. -/
 def demandsAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Demand previous) :=
-  capability.demands.read previous
+  capability.demands previous
 
 /-- Exact residual-owned payer schedule. -/
 def payersAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Payer previous) :=
-  capability.payers.read previous
+  capability.payers previous
 
 /-- Framework-visible polynomial envelope for the complete CT4 schedule. -/
 def polynomialBudget (capability : Capability spec) :

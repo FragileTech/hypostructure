@@ -187,7 +187,7 @@ abbrev FocusedNoProperBaselineOutput
         (problem Baseline BranchState) Target
         (lexicographicProgress Baseline BranchState))
     (previous : Previous) (active : focus.Active previous) :=
-  NoProperBaselineCertificate (context.read previous active)
+  NoProperBaselineCertificate (context previous active)
 
 /-- Exact accumulated stage after focused proper-subgraph closure. -/
 abbrev FocusedNoProperBaselineStage
@@ -223,7 +223,7 @@ def executeFocusedNoProperBaselineCounted
     (Output := FocusedNoProperBaselineOutput focus context)
     previous
     (fun active _checks _exact =>
-      deriveNoProperBaseline profile (context.read previous active))
+      deriveNoProperBaseline profile (context previous active))
 
 /-- Public stage projection of counted proper-subgraph minimality. -/
 def executeFocusedNoProperBaseline

@@ -82,29 +82,29 @@ example :
 section LocalTail
 
 def wholeQuery : Core.Residual.Query Unit fun _ => Nat :=
-  Core.Residual.Query.ofFunction fun _ => 5
+  fun _ => 5
 
 def splitQuery :
     Core.Residual.Query Unit fun previous =>
-      PDE.ExactLocalTail Nat (wholeQuery.read previous) :=
-  Core.Residual.Query.ofFunction fun _ => {
+      PDE.ExactLocalTail Nat (wholeQuery previous) :=
+  fun _ => {
     localPart := 2
     tailPart := 3
     exact_reconstruction := rfl
   }
 
 example :
-    (PDE.ExactLocalTail.localQuery wholeQuery splitQuery).read () = 2 :=
+    (PDE.ExactLocalTail.localQuery wholeQuery splitQuery) () = 2 :=
   rfl
 
 example :
-    (PDE.ExactLocalTail.tailQuery wholeQuery splitQuery).read () = 3 :=
+    (PDE.ExactLocalTail.tailQuery wholeQuery splitQuery) () = 3 :=
   rfl
 
 example :
-    (PDE.ExactLocalTail.localQuery wholeQuery splitQuery).read () +
-        (PDE.ExactLocalTail.tailQuery wholeQuery splitQuery).read () =
-      wholeQuery.read () :=
+    (PDE.ExactLocalTail.localQuery wholeQuery splitQuery) () +
+        (PDE.ExactLocalTail.tailQuery wholeQuery splitQuery) () =
+      wholeQuery () :=
   PDE.ExactLocalTail.queries_reconstruct wholeQuery splitQuery ()
 
 def sameOn (_ : Unit) (left right : Nat) : Prop :=
@@ -113,8 +113,8 @@ def sameOn (_ : Unit) (left right : Nat) : Prop :=
 def localSplitQuery :
     Core.Residual.Query Unit fun previous =>
       PDE.ExactLocalTailOn Nat (sameOn previous)
-        (wholeQuery.read previous) :=
-  Core.Residual.Query.ofFunction fun _ => {
+        (wholeQuery previous) :=
+  fun _ => {
     localPart := 2
     tailPart := 3
     exact_reconstruction := rfl
@@ -123,10 +123,10 @@ def localSplitQuery :
 example :
     sameOn ()
       ((PDE.ExactLocalTailOn.localQuery wholeQuery sameOn
-          localSplitQuery).read () +
+          localSplitQuery) () +
         (PDE.ExactLocalTailOn.tailQuery wholeQuery sameOn
-          localSplitQuery).read ())
-      (wholeQuery.read ()) :=
+          localSplitQuery) ())
+      (wholeQuery ()) :=
   PDE.ExactLocalTailOn.queries_reconstruct wholeQuery sameOn localSplitQuery ()
 
 end LocalTail
@@ -163,7 +163,7 @@ def tailFocus : PDE.TailFocus model () :=
     (some ⟨identityRescaling, ()⟩)
 
 def representedTail :
-    PDE.RepresentedTail model (wholeQuery.read ()) (splitQuery.read ()) where
+    PDE.RepresentedTail model (wholeQuery ()) (splitQuery ()) where
   sourceWindow := ()
   interpretTail := id
   equationState := outerEquationState
@@ -173,19 +173,19 @@ def representedTail :
 
 def localClosedQuery :
     Core.Residual.Query Unit fun _ => PUnit :=
-  Core.Residual.Query.ofFunction fun _ => PUnit.unit
+  fun _ => PUnit.unit
 
 def representedTailQuery :
     Core.Residual.Query Unit fun previous =>
-      PDE.RepresentedTail model (wholeQuery.read previous)
-        (splitQuery.read previous) :=
-  Core.Residual.Query.ofFunction fun _ => representedTail
+      PDE.RepresentedTail model (wholeQuery previous)
+        (splitQuery previous) :=
+  fun _ => representedTail
 
 def tailFocusQuery :
     Core.Residual.Query Unit fun previous =>
       PDE.TailFocus model
-        (representedTailQuery.read previous).sourceWindow :=
-  Core.Residual.Query.ofFunction fun _ => tailFocus
+        (representedTailQuery previous).sourceWindow :=
+  fun _ => tailFocus
 
 def tailProfile :
     PDE.TailContinuation.Profile Unit model (fun _ => Nat) wholeQuery where
@@ -196,15 +196,15 @@ def tailProfile :
   focusQuery := tailFocusQuery
 
 example :
-    (tailProfile.recenteredEquationQuery.read ()).object =
-      (tailProfile.tailQuery.read ()) :=
+    (tailProfile.recenteredEquationQuery ()).object =
+      (tailProfile.tailQuery ()) :=
   by
     change (3 : Nat) = 3
     rfl
 
 example :
-    (tailProfile.originalReconstructionQuery.read ()) =
-      (splitQuery.read ()).exact_reconstruction :=
+    (tailProfile.originalReconstructionQuery ()) =
+      (splitQuery ()).exact_reconstruction :=
   rfl
 
 example :
@@ -239,7 +239,7 @@ root or from a local tail handoff.
 def candidateSchedule :
     Core.Residual.Query Unit fun _ =>
       Core.Finite.Enumeration Unit :=
-  Core.Residual.Query.ofFunction fun _ =>
+  fun _ =>
     Core.Finite.Enumeration.singleton ()
 
 noncomputable def recenteredCT1Capability :=
@@ -259,7 +259,7 @@ noncomputable def recenteredCT1Capability :=
 #check _root_.Hypostructure.CT1.execute
   (PDE.CT1.targetSpec model (fun _ : Unit => Unit)
     (fun previous _ =>
-      (tailProfile.recenteredEquationQuery.read previous).object)
+      (tailProfile.recenteredEquationQuery previous).object)
     (fun _ _ _ => True))
   recenteredCT1Capability
   ()
@@ -267,7 +267,7 @@ noncomputable def recenteredCT1Capability :=
 def contextSchedule :
     Core.Residual.Query Unit fun _ =>
       Core.Finite.Enumeration Unit :=
-  Core.Residual.Query.ofFunction fun _ =>
+  fun _ =>
     Core.Finite.Enumeration.singleton ()
 
 noncomputable def recenteredCT7Capability :=
@@ -310,7 +310,7 @@ def threeLocal (window : model.atlas.Window) :
   exact 3
 
 def globalRealization : PDE.GlobalEquationRealization model Unit where
-  object := Core.Residual.Query.ofFunction fun _ => threeAmbient
+  object := fun _ => threeAmbient
   state := fun _ _ => {
     object := threeLocal _
     data := ()
@@ -344,7 +344,7 @@ def activeResidual : PDE.ActiveResidual model where
 
 def activeResidualQuery :
     Core.Residual.Query Unit fun _ => PDE.ActiveResidual model :=
-  Core.Residual.Query.ofFunction fun _ => activeResidual
+  fun _ => activeResidual
 
 def publicPresentation : PDE.PublicPresentation model where
   localization := pointLocalization
@@ -415,7 +415,7 @@ def currentEllipticQuery :
     Core.Residual.Query Unit fun _ =>
       PDE.CurrentLocalEllipticResidual model model (fun _ _ => True) Unit
       (fun _ => Int) (fun _ => Int) elliptic :=
-  Core.Residual.Query.ofFunction fun _ => currentElliptic
+  fun _ => currentElliptic
 
 def publicCurrentElliptic :
     PDE.CurrentLocalEllipticResidual model model (fun _ _ => True) Unit
@@ -434,7 +434,7 @@ def publicCurrentEllipticQuery :
     (Carrier := fun _ => Int) (Source := fun _ => Int) (elliptic := elliptic)
     publicPresentation activeResidualQuery (fun _ => trivial)
 
-example : publicCurrentEllipticQuery.read () = publicCurrentElliptic :=
+example : publicCurrentEllipticQuery () = publicCurrentElliptic :=
   rfl
 
 example : publicCurrentElliptic.ambient = threeAmbient :=
@@ -453,10 +453,10 @@ def localClosure :
 
 def ellipticLocalClosedQuery :
     Core.Residual.Query Unit (fun previous =>
-      PLift (localClosure.closes (currentEllipticQuery.read previous)
-        ((PDE.CurrentLocalEllipticResidual.splitQuery currentEllipticQuery).read
+      PLift (localClosure.closes (currentEllipticQuery previous)
+        ((PDE.CurrentLocalEllipticResidual.splitQuery currentEllipticQuery)
           previous).localPart)) :=
-  Core.Residual.Query.ofFunction fun _ => ⟨by
+  fun _ => ⟨by
     show (_ : Int) = 3
     rfl⟩
 
@@ -464,8 +464,8 @@ def ellipticFocusQuery :
     Core.Residual.Query Unit (fun previous =>
       PDE.TailFocus model
         (PDE.CurrentLocalEllipticResidual.representedTail
-          (currentEllipticQuery.read previous)).sourceWindow) :=
-  Core.Residual.Query.ofFunction fun _ => tailFocus
+          (currentEllipticQuery previous)).sourceWindow) :=
+  fun _ => tailFocus
 
 noncomputable def ellipticTailProfile :=
   PDE.Strategy.LocalTailObstructionDichotomy.Presentation.tailContinuationProfile
@@ -481,7 +481,7 @@ noncomputable def publicDichotomyProfile :=
     publicPresentation localClosure activeResidualQuery (fun _ => trivial)
 
 example :
-    (publicDichotomyProfile.presentation.read ()).object = threeAmbient :=
+    (publicDichotomyProfile.presentation ()).object = threeAmbient :=
   rfl
 
 /-- The framework derives the focus; the fixture supplies no `NestedFocus`. -/
@@ -493,7 +493,7 @@ noncomputable def ellipticProfile :=
     currentEllipticQuery localClosure
 
 example :
-    ellipticProfile.presentation.read () =
+    ellipticProfile.presentation () =
       PDE.Strategy.LocalTailObstructionDichotomy.Presentation.currentLocalEllipticToCore
         localClosure currentElliptic :=
   rfl
@@ -577,8 +577,8 @@ example (object : model.problem.Ambient)
 /-- The same closure appended to an ordinary Core ledger, again by Core. -/
 noncomputable def globalNode :=
   Core.AtomContextAssembly.LocalToGlobalProfile.globalize globalProfile
-    (Previous := Unit) (Core.Residual.Query.ofFunction fun _ => threeAmbient)
-    (Core.Residual.Query.ofFunction fun _ => pointwise threeAmbient)
+    (Previous := Unit) (fun _ => threeAmbient)
+    (fun _ => pointwise threeAmbient)
 
 end LocalToGlobal
 

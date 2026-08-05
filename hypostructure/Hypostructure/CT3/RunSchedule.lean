@@ -38,7 +38,7 @@ noncomputable def focused {Previous : Sort uPrevious}
   Item := Item
   items := items
   terminal := fun previous active item =>
-    (execute spec capability ((input.read previous active) item)).terminal
+    (execute spec capability ((input previous active) item)).terminal
 
 /-- Query the exact CT3 execution result for one scheduled item.  This keeps
 the per-item CT3 run behind the same residual-query surface as the derived
@@ -55,8 +55,8 @@ noncomputable def resultAt {Previous : Sort uPrevious}
         Item -> CTPrevious) :
     Focus.ActiveQuery focus fun _previous _active =>
       Item -> ExecutionResult spec capability :=
-  Focus.ActiveQuery.ofFunction fun previous active item =>
-    execute spec capability ((input.read previous active) item)
+  fun previous active item =>
+    execute spec capability ((input previous active) item)
 
 /-- The terminal schedule reads exactly the terminal of the per-item CT3
 execution result. -/
@@ -76,7 +76,7 @@ theorem focused_terminal_eq_resultAt {Previous : Sort uPrevious}
     (previous : Previous) (active : focus.Active previous)
     (item : Item) :
     (focused spec capability Item items input).terminal previous active item =
-      ((resultAt spec capability Item input).read previous active item).terminal :=
+      ((resultAt spec capability Item input) previous active item).terminal :=
   rfl
 
 /-- Execute the scheduled CT3 terminal classifier directly.  This is the

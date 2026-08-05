@@ -75,6 +75,6 @@ def toStrategyResponseProfile
   Coordinate := fun _ => interface.Coordinate
   schedule := coverage.schedule
   observe := fun previous coordinate =>
-    observe previous (context.read previous) coordinate
+    observe previous (context previous) coordinate
 
 end Hypostructure.PDE.Response

@@ -39,7 +39,7 @@ noncomputable def executeCounted
     (previous : Previous) : Core.Counted contract.Stage :=
   let result := contract.encoding.runPublicTarget previous
   { value := contract.encoding.continueAvoiding result.stage
-      (contract.avoids.read previous)
+      (contract.avoids previous)
     checks := result.checks }
 
 /-- Uncounted projection of the exact accumulated successor. -/

@@ -60,18 +60,18 @@ def response
       (source : spec.Representative) -> (candidate : spec.Candidate) ->
         Decidable (spec.StrictlySmaller previous source candidate))
     (candidateCoverage : (previous : Previous) -> (candidate : spec.Candidate) ->
-      candidate ∈ (candidates.read previous).values ->
+      candidate ∈ (candidates previous).values ->
         Core.Response.FiniteTable.SymbolicCoverage spec.system
-          (spec.representatives (source.read previous)
+          (spec.representatives (source previous)
             (spec.candidatePiece candidate))
           (Core.Response.FiniteTable.ExactSchedule.ofList
-            (coordinates.read previous).values))
+            (coordinates previous).values))
     (rowCoverage : (previous : Previous) -> (row : spec.Row) ->
-      row ∈ (rows.read previous).values ->
+      row ∈ (rows previous).values ->
         Core.Response.FiniteTable.SymbolicCoverage spec.system
-          (spec.representatives (source.read previous) (spec.rowPiece row))
+          (spec.representatives (source previous) (spec.rowPiece row))
           (Core.Response.FiniteTable.ExactSchedule.ofList
-            (coordinates.read previous).values)) :
+            (coordinates previous).values)) :
     _root_.Hypostructure.CT3.Capability spec where
   source := source
   coordinates := coordinates
@@ -83,8 +83,8 @@ def response
   candidateCoverage := candidateCoverage
   rowCoverage := rowCoverage
   inputSize := fun previous =>
-    _root_.Hypostructure.CT3.localCheckBound (coordinates.read previous)
-      (candidates.read previous) (rows.read previous)
+    _root_.Hypostructure.CT3.localCheckBound (coordinates previous)
+      (candidates previous) (rows previous)
   workCoefficient := 1
   workDegree := 1
   workBound := by
@@ -105,7 +105,7 @@ def dyadic
   members := members
   labelDecidableEq := labelDecidableEq
   inputSize := fun previous =>
-    _root_.Hypostructure.CT14.localCheckBound (members.read previous)
+    _root_.Hypostructure.CT14.localCheckBound (members previous)
   workCoefficient := 1
   workDegree := 1
   workBound := by
@@ -127,7 +127,7 @@ def gaugeRank
   coordinates := coordinates
   targetDependentDecidable := targetDependentDecidable
   inputSize := fun previous =>
-    _root_.Hypostructure.CT15.localCheckBound (coordinates.read previous)
+    _root_.Hypostructure.CT15.localCheckBound (coordinates previous)
   workCoefficient := 1
   workDegree := 1
   workBound := by
@@ -160,8 +160,8 @@ def fallback
   eligibleDecidable := eligibleDecidable
   resourceDecidableEq := resourceDecidableEq
   inputSize := fun previous =>
-    _root_.Hypostructure.CT13.localCheckBound (payers.read previous)
-      (obstructions.read previous) (tierTwo.read previous)
+    _root_.Hypostructure.CT13.localCheckBound (payers previous)
+      (obstructions previous) (tierTwo previous)
   workCoefficient := 1
   workDegree := 1
   workBound := by

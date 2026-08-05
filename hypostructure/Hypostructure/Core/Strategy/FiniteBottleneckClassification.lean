@@ -86,7 +86,7 @@ structure SeparatorLedger (Stage : Type uPrevious) (Residual : Type uResidual)
   private mk ::
   current : Query Stage fun _ => Residual
   private claim : Query Stage fun stage =>
-    SeparatorClaim registration (current.read stage)
+    SeparatorClaim registration (current stage)
 
 namespace SeparatorLedger
 
@@ -102,49 +102,49 @@ variable {registration : Registration.{
 private def ofClaim
     (current : Query Stage fun _ => Residual)
     (claim : Query Stage fun stage =>
-      SeparatorClaim registration (current.read stage)) :
+      SeparatorClaim registration (current stage)) :
     SeparatorLedger Stage Residual registration :=
   .mk current claim
 
 /-- Exact CT6-selected separator, or `none` on the active-ledger terminal. -/
 def selected (ledger : SeparatorLedger Stage Residual registration) :
     Query Stage fun stage =>
-      Option (registration.SeparatorIndex (ledger.current.read stage)) :=
+      Option (registration.SeparatorIndex (ledger.current stage)) :=
   ledger.claim.map fun _ value => value.map Sigma.fst
 
 /-- Schedule membership indexed by the exact selected separator. -/
 def member (ledger : SeparatorLedger Stage Residual registration) :
     Query Stage fun stage =>
-      match ledger.selected.read stage with
+      match ledger.selected stage with
       | none => PUnit
       | some separator =>
           PLift (separator ∈
-            (registration.separatorOrder (ledger.current.read stage)).values) :=
-  Query.ofFunction fun stage => by
-    change match (ledger.claim.read stage).map Sigma.fst with
+            (registration.separatorOrder (ledger.current stage)).values) :=
+   fun stage => by
+    change match (ledger.claim stage).map Sigma.fst with
       | none => PUnit
       | some separator =>
           PLift (separator ∈
-            (registration.separatorOrder (ledger.current.read stage)).values)
-    cases value_eq : ledger.claim.read stage with
+            (registration.separatorOrder (ledger.current stage)).values)
+    cases value_eq : ledger.claim stage with
     | none => exact PUnit.unit
     | some selected => exact PLift.up selected.snd.down.1
 
 /-- Failure soundness indexed by the exact selected separator. -/
 def failure (ledger : SeparatorLedger Stage Residual registration) :
     Query Stage fun stage =>
-      match ledger.selected.read stage with
+      match ledger.selected stage with
       | none => PUnit
       | some separator =>
           PLift (registration.SeparatorFailure
-            (ledger.current.read stage) separator) :=
-  Query.ofFunction fun stage => by
-    change match (ledger.claim.read stage).map Sigma.fst with
+            (ledger.current stage) separator) :=
+   fun stage => by
+    change match (ledger.claim stage).map Sigma.fst with
       | none => PUnit
       | some separator =>
           PLift (registration.SeparatorFailure
-            (ledger.current.read stage) separator)
-    cases value_eq : ledger.claim.read stage with
+            (ledger.current stage) separator)
+    cases value_eq : ledger.claim stage with
     | none => exact PUnit.unit
     | some selected => exact PLift.up selected.snd.down.2
 
@@ -155,11 +155,11 @@ def comap {NewStage : Type uNew} [HasResidual NewStage Residual]
     (project : NewStage → Stage)
     (current : Query NewStage fun _ => Residual)
     (current_eq : ∀ stage,
-      ledger.current.read (project stage) = current.read stage) :
+      ledger.current (project stage) = current stage) :
     SeparatorLedger NewStage Residual registration :=
-  ofClaim current (Query.ofFunction fun stage =>
+  ofClaim current ( fun stage =>
     Eq.mp (congrArg (SeparatorClaim registration) (current_eq stage))
-      (ledger.claim.read (project stage)))
+      (ledger.claim (project stage)))
 
 end SeparatorLedger
 
@@ -177,50 +177,50 @@ def residualQuery : Query Previous fun _ => Residual :=
 
 def patternItemQuery : Query Previous fun previous =>
     Core.Finite.Enumeration
-      (profile.registration.PatternItem (profile.current.read previous)) :=
+      (profile.registration.PatternItem (profile.current previous)) :=
   profile.residualQuery.dependentMap fun _ residual =>
     profile.registration.patternItems residual
 
 def coarseCodeQuery : Query Previous fun previous =>
     Core.Finite.CompleteEnumeration
-      (profile.registration.CoarseCode (profile.current.read previous)) :=
+      (profile.registration.CoarseCode (profile.current previous)) :=
   profile.residualQuery.dependentMap fun _ residual =>
     profile.registration.completeCoarseCodes residual
 
 def dataQuery : Query Previous fun previous =>
     Core.Finite.Enumeration
-      (profile.registration.Datum (profile.current.read previous)) :=
+      (profile.registration.Datum (profile.current previous)) :=
   profile.residualQuery.dependentMap fun _ residual =>
     profile.registration.data residual
 
 def semanticTagQuery : Query Previous fun previous =>
     Core.Finite.CompleteEnumeration
-      (profile.registration.SemanticTag (profile.current.read previous)) :=
+      (profile.registration.SemanticTag (profile.current previous)) :=
   profile.residualQuery.dependentMap fun _ residual =>
     profile.registration.completeSemanticTags residual
 
 def separatorOrderQuery : Query Previous fun previous =>
     Core.Finite.Enumeration
-      (profile.registration.SeparatorIndex (profile.current.read previous)) :=
+      (profile.registration.SeparatorIndex (profile.current previous)) :=
   profile.residualQuery.dependentMap fun _ residual =>
     profile.registration.separatorOrder residual
 
 def collisionSpec : CT9.Spec Previous where
   Item := fun previous =>
-    profile.registration.PatternItem (profile.current.read previous)
+    profile.registration.PatternItem (profile.current previous)
   Label := fun previous =>
-    profile.registration.CoarseCode (profile.current.read previous)
+    profile.registration.CoarseCode (profile.current previous)
   label := fun previous item =>
-    profile.registration.coarseCodeOf (profile.current.read previous) item
+    profile.registration.coarseCodeOf (profile.current previous) item
   capacity := fun _previous _code => Fintype.card Unit
 
 def collisionCapability : CT9.Capability profile.collisionSpec where
   items := profile.patternItemQuery
-  labels := fun previous => profile.coarseCodeQuery.read previous
+  labels := fun previous => profile.coarseCodeQuery previous
   inputSize := fun previous =>
     CT9.localCheckBound
-      (profile.patternItemQuery.read previous)
-      (profile.coarseCodeQuery.read previous).toEnumeration
+      (profile.patternItemQuery previous)
+      (profile.coarseCodeQuery previous).toEnumeration
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -244,7 +244,7 @@ def collisionResult :
 
 def collisionPartition :
     Query profile.AfterCollision fun stage =>
-      let result := profile.collisionResult.read stage
+      let result := profile.collisionResult stage
       CT9.Partition profile.collisionCapability result.stage.previous :=
   profile.collisionResult.dependentMap fun _stage result =>
     match result.terminal, result.outcome with
@@ -253,7 +253,7 @@ def collisionPartition :
 
 def pressureMembers :
     Query profile.AfterCollision fun stage =>
-      let result := profile.collisionResult.read stage
+      let result := profile.collisionResult stage
       Core.Finite.Enumeration
         (profile.collisionSpec.Label result.stage.previous) :=
   profile.collisionResult.dependentMap fun _stage result =>
@@ -262,30 +262,30 @@ def pressureMembers :
 def pressureSpec : CT14.Spec profile.AfterCollision where
   Member := fun stage =>
     profile.collisionSpec.Label
-      (profile.collisionResult.read stage).stage.previous
+      (profile.collisionResult stage).stage.previous
   Label := fun stage =>
-    let result := profile.collisionResult.read stage
+    let result := profile.collisionResult stage
     profile.registration.PressureLabel
-      (profile.current.read result.stage.previous)
+      (profile.current result.stage.previous)
   memberLowerMass := fun stage code =>
-    (profile.collisionPartition.read stage).count code
+    (profile.collisionPartition stage).count code
   memberCapacity := fun stage code =>
-    let result := profile.collisionResult.read stage
+    let result := profile.collisionResult stage
     profile.registration.pressureCapacity
-      (profile.current.read result.stage.previous) code
+      (profile.current result.stage.previous) code
   memberLabel := fun stage code =>
-    let result := profile.collisionResult.read stage
+    let result := profile.collisionResult stage
     profile.registration.pressureLabel
-      (profile.current.read result.stage.previous) code
+      (profile.current result.stage.previous) code
 
 def pressureCapability : CT14.Capability profile.pressureSpec where
   members := profile.pressureMembers
   labelDecidableEq := fun stage =>
-    let result := profile.collisionResult.read stage
+    let result := profile.collisionResult stage
     profile.registration.pressureLabelDecidableEq
-      (profile.current.read result.stage.previous)
+      (profile.current result.stage.previous)
   inputSize := fun stage =>
-    CT14.localCheckBound (profile.pressureMembers.read stage)
+    CT14.localCheckBound (profile.pressureMembers stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -305,28 +305,28 @@ def currentAfterPressure : Query profile.AfterPressure fun _ => Residual :=
 
 def dataAfterPressure : Query profile.AfterPressure fun stage =>
     Core.Finite.Enumeration
-      (profile.registration.Datum (profile.currentAfterPressure.read stage)) :=
+      (profile.registration.Datum (profile.currentAfterPressure stage)) :=
   profile.dataQuery.preserve.preserve
 
 def semanticTagsAfterPressure : Query profile.AfterPressure fun stage =>
     Core.Finite.CompleteEnumeration
       (profile.registration.SemanticTag
-        (profile.currentAfterPressure.read stage)) :=
+        (profile.currentAfterPressure stage)) :=
   profile.semanticTagQuery.preserve.preserve
 
 def classificationSpec : CT10.Spec profile.AfterPressure where
   Datum := fun stage =>
-    profile.registration.Datum (profile.currentAfterPressure.read stage)
+    profile.registration.Datum (profile.currentAfterPressure stage)
   Class := fun stage =>
-    profile.registration.SemanticTag (profile.currentAfterPressure.read stage)
+    profile.registration.SemanticTag (profile.currentAfterPressure stage)
   Promotion := fun stage =>
-    profile.registration.Promotion (profile.currentAfterPressure.read stage)
+    profile.registration.Promotion (profile.currentAfterPressure stage)
   classOf := fun stage datum =>
-    profile.registration.classOf (profile.currentAfterPressure.read stage) datum
+    profile.registration.classOf (profile.currentAfterPressure stage) datum
   Direct := fun stage tag =>
-    profile.registration.Direct (profile.currentAfterPressure.read stage) tag
+    profile.registration.Direct (profile.currentAfterPressure stage) tag
   promote := fun stage tag =>
-    profile.registration.promote (profile.currentAfterPressure.read stage) tag
+    profile.registration.promote (profile.currentAfterPressure stage) tag
 
 def classificationCapability :
     CT10.Capability profile.classificationSpec where
@@ -334,7 +334,7 @@ def classificationCapability :
   classes := profile.semanticTagsAfterPressure
   directDecidable := fun stage tag =>
     profile.registration.directDecidable
-      (profile.currentAfterPressure.read stage) tag
+      (profile.currentAfterPressure stage) tag
   inputSize := fun stage =>
     CT10.localCheckBound profile.classificationSpec
       profile.dataAfterPressure profile.semanticTagsAfterPressure stage
@@ -361,34 +361,34 @@ def separatorOrderAfterClassification :
     Query profile.AfterClassification fun stage =>
       Core.Finite.Enumeration
         (profile.registration.SeparatorIndex
-          (profile.currentAfterClassification.read stage)) :=
+          (profile.currentAfterClassification stage)) :=
   profile.separatorOrderQuery.preserve.preserve.preserve
 
 def separatorSpec : CT6.Spec profile.AfterClassification where
   Index := fun stage =>
     profile.registration.SeparatorIndex
-      (profile.currentAfterClassification.read stage)
+      (profile.currentAfterClassification stage)
   FailureData := fun stage =>
     profile.registration.SeparatorData
-      (profile.currentAfterClassification.read stage)
+      (profile.currentAfterClassification stage)
   Failure := fun stage =>
     profile.registration.SeparatorFailure
-      (profile.currentAfterClassification.read stage)
+      (profile.currentAfterClassification stage)
   failureData := fun stage =>
     profile.registration.separatorFailureData
-      (profile.currentAfterClassification.read stage)
+      (profile.currentAfterClassification stage)
   contribution := fun stage =>
     profile.registration.separatorContribution
-      (profile.currentAfterClassification.read stage)
+      (profile.currentAfterClassification stage)
 
 def separatorCapability : CT6.Capability profile.separatorSpec where
   failureOrder := profile.separatorOrderAfterClassification
   failureDecidable := fun stage =>
     profile.registration.separatorFailureDecidable
-      (profile.currentAfterClassification.read stage)
+      (profile.currentAfterClassification stage)
   inputSize := fun stage =>
     CT6.localCheckBound
-      (profile.separatorOrderAfterClassification.read stage)
+      (profile.separatorOrderAfterClassification stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -425,7 +425,7 @@ noncomputable def collisionOutput :
 /-- Exact CT14 payload projected from the composed ledger entry. -/
 noncomputable def pressureOutput :
     Query profile.AfterExecution fun stage =>
-      let output := profile.executionResult.read stage
+      let output := profile.executionResult stage
       profile.pressureExecution.Output
         (Ledger.extend stage.previous output.fst) :=
   profile.executionResult.dependentMap fun _ output => output.snd.fst
@@ -433,7 +433,7 @@ noncomputable def pressureOutput :
 /-- Exact CT10 payload projected from the composed ledger entry. -/
 noncomputable def classificationOutput :
     Query profile.AfterExecution fun stage =>
-      let output := profile.executionResult.read stage
+      let output := profile.executionResult stage
       let collisionStage := Ledger.extend stage.previous output.fst
       profile.classificationExecution.Output
         (Ledger.extend collisionStage output.snd.fst) :=
@@ -442,7 +442,7 @@ noncomputable def classificationOutput :
 /-- Exact CT6 payload projected from the composed ledger entry. -/
 noncomputable def separatorOutput :
     Query profile.AfterExecution fun stage =>
-      let output := profile.executionResult.read stage
+      let output := profile.executionResult stage
       let collisionStage := Ledger.extend stage.previous output.fst
       let pressureStage := Ledger.extend collisionStage output.snd.fst
       profile.separatorExecution.Output
@@ -491,18 +491,18 @@ private noncomputable def selectedSeparatorClaimLive
         Option (Σ separator :
             profile.registration.SeparatorIndex
               ((Core.Strategy.HaltingProgram.LiveExtension.preserveQuery
-                (T := T) profile.current).read live),
+                (T := T) profile.current) live),
           PLift
             (separator ∈
                 (profile.registration.separatorOrder
                   ((Core.Strategy.HaltingProgram.LiveExtension.preserveQuery
-                    (T := T) profile.current).read live)).values ∧
+                    (T := T) profile.current) live)).values ∧
               profile.registration.SeparatorFailure
                 ((Core.Strategy.HaltingProgram.LiveExtension.preserveQuery
-                  (T := T) profile.current).read live) separator))) :=
-  Query.ofFunction fun live => by
+                  (T := T) profile.current) live) separator))) :=
+   fun live => by
     let composed :=
-      (profile.execution.liveOutputQuery certify).read live
+      (profile.execution.liveOutputQuery certify) live
     let collisionOutput := composed.fst
     let collisionStage := Ledger.extend live.previous collisionOutput
     let pressureOutput := composed.snd.fst
@@ -526,10 +526,10 @@ private noncomputable def selectedSeparatorClaimLive
         outcome : separatorOutput.outcome with
     | .firstFailure, .firstFailure failure =>
         have current_eq :
-            profile.currentAfterClassification.read
+            profile.currentAfterClassification
                 separatorOutput.stage.previous =
               (Core.Strategy.HaltingProgram.LiveExtension.preserveQuery
-                (T := T) profile.current).read live := by
+                (T := T) profile.current) live := by
           rw [previous_eq]
           rfl
         exact Eq.mp

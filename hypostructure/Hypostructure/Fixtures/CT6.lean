@@ -64,7 +64,7 @@ abbrev spec := Graph.CT6.orderedActivitySpec objectQuery Site FailureData
 def capability := Graph.CT6.orderedActivityCapability objectQuery Site
   FailureData failure failureData contribution siteQuery
   (fun _previous object site => Nat.decLe object.vertices.card site.1)
-  (fun previous => (siteQuery.read previous).card) 1 1 (by
+  (fun previous => (siteQuery previous).card) 1 1 (by
     intro previous
     simp only [_root_.Hypostructure.CT6.localCheckBound, one_mul, Nat.pow_one]
     omega)
@@ -110,12 +110,12 @@ abbrev corridorFocus : Core.Residual.Focus.Profile Unit :=
 def corridorObject :
     Core.Residual.Focus.ActiveQuery corridorFocus
       fun _previous _active => Graph.FiniteObject :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active => object
+  fun _previous _active => object
 
 def corridorItems :
     Core.Residual.Focus.ActiveQuery corridorFocus
       fun _previous _active => Core.Finite.Enumeration (Fin 3) :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     Core.Finite.Enumeration.ofNodupList [0, 1, 2] (by decide)
 
 def corridorStages :
@@ -123,8 +123,8 @@ def corridorStages :
       fun previous active =>
         (item : Fin 3) ->
           Core.Finite.Enumeration
-            ((corridorObject.read previous active).Vertex) :=
-  Core.Residual.Focus.ActiveQuery.ofFunction fun _previous _active _item =>
+            ((corridorObject previous active).Vertex) :=
+  fun _previous _active _item =>
     Core.Finite.Enumeration.ofFinEnum object.vertices
 
 def corridorEvent (_previous : Unit)
@@ -226,7 +226,7 @@ abbrev spec := PDE.CT6.orderedActivitySpec model stateQuery Row FailureData
 def capability := PDE.CT6.orderedActivityCapability model stateQuery Row
   FailureData failure failureData contribution rowQuery
   (fun _previous state row => Nat.decLe state row.1)
-  (fun previous => (rowQuery.read previous).card) 1 1 (by
+  (fun previous => (rowQuery previous).card) 1 1 (by
     intro previous
     simp only [_root_.Hypostructure.CT6.localCheckBound, one_mul, Nat.pow_one]
     omega)

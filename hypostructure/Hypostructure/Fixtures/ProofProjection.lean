@@ -23,7 +23,7 @@ def baseValueQuery : Query BasePrevious fun _previous => Nat :=
   Query.latest
 
 abbrev ActiveProperty (previous : BasePrevious) : Prop :=
-  residualOf previous = true /\ baseValueQuery.read previous = 7
+  residualOf previous = true /\ baseValueQuery previous = 7
 
 def activePropertyDecidable (previous : BasePrevious) :
     Decidable (ActiveProperty previous) :=
@@ -53,7 +53,7 @@ abbrev focus : Focus.Profile Previous :=
 
 /-- The dependent proposition appended on the active branch. -/
 abbrev Claim (previous : Previous) (_active : focus.Active previous) : Prop :=
-  valueQuery.read previous = 7
+  valueQuery previous = 7
 
 /-- Build the claim only by transforming an active query on the literal
 predecessor. -/
@@ -133,11 +133,11 @@ theorem inactive_predecessor_retained :
 /-- An ordinary predecessor query remains available through the complete
 extension, with its exact old value. -/
 theorem active_ledger_value_preserved :
-    (valueQuery.preserve.read activeStage : Nat) = 7 :=
+    (valueQuery.preserve activeStage : Nat) = 7 :=
   rfl
 
 theorem inactive_ledger_value_preserved :
-    (valueQuery.preserve.read inactiveStage : Nat) = 11 :=
+    (valueQuery.preserve inactiveStage : Nat) = 11 :=
   rfl
 
 theorem active_residual_preserved :
@@ -151,17 +151,17 @@ theorem inactive_residual_preserved :
 /-- The newest query proves the claim at the literal predecessor, not at a
 copied or reconstructed state. -/
 theorem exact_projected_query :
-    valueQuery.read activeStage.previous = 7 :=
-  claimQuery.read activeStage projectedActive
+    valueQuery activeStage.previous = 7 :=
+  claimQuery activeStage projectedActive
 
 theorem active_checks_eq_one :
-    (certificateQuery.read activeStage projectedActive).checks = 1 := by
+    (certificateQuery activeStage projectedActive).checks = 1 := by
   exact
-    (certificateQuery.read activeStage projectedActive).checks_eq_budget.trans
+    (certificateQuery activeStage projectedActive).checks_eq_budget.trans
       rfl
 
 theorem active_certificate_matches_execution_count :
-    (certificateQuery.read activeStage projectedActive).checks =
+    (certificateQuery activeStage projectedActive).checks =
       (projectCounted activePrevious).checks :=
   Core.Residual.ProofProjection.latest_checks_eq_execution
     focus Claim projection activePrevious activeProof

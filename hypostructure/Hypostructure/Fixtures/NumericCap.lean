@@ -20,10 +20,10 @@ abbrev rootFocus : Focus.Profile Input :=
   Focus.always Input
 
 def loadQuery : Focus.ActiveQuery rootFocus fun _previous _active => Nat :=
-  Focus.ActiveQuery.ofFunction fun previous _active => previous.load
+  fun previous _active => previous.load
 
 def capQuery : Focus.ActiveQuery rootFocus fun _previous _active => Nat :=
-  Focus.ActiveQuery.ofFunction fun previous _active => previous.cap
+  fun previous _active => previous.cap
 
 def capContract : NumericCap.Contract rootFocus where
   load := loadQuery

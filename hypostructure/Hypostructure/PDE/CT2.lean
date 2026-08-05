@@ -42,9 +42,9 @@ def capability {Previous : Type uPrevious}
     (context : Core.Residual.Query Previous fun _previous =>
       Core.MinimalCounterexampleContext M.problem Target progress)
     (pieces : Core.Residual.Query Previous fun previous =>
-      Core.Finite.Enumeration (Piece (context.read previous).G))
+      Core.Finite.Enumeration (Piece (context previous).G))
     (selectedIndex : Core.Residual.Query Previous fun previous =>
-      Fin (pieces.read previous).card)
+      Fin (pieces previous).card)
     (properDecidable : {object : M.problem.Ambient} ->
       (piece : Piece object) -> Decidable (Proper piece))
     (admissibleDecidable : {object : M.problem.Ambient} ->

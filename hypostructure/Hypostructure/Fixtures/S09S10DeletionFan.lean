@@ -10,7 +10,7 @@ def residual :
     Residual (minimumDegreeDeletionCriticalityProfile 1)
       GraphDeletionCriticality.context :=
   deriveResidual
-    (GraphDeletionCriticality.certificateQuery.read
+    (GraphDeletionCriticality.certificateQuery
       GraphDeletionCriticality.stage)
 
 /-- The threshold is inherited from the deletion profile.  Nothing in the

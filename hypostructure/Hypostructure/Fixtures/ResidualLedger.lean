@@ -78,10 +78,10 @@ def rootFactAtFinalQuery :
   inheritedPositiveQuery.preserve
 
 theorem root_fact_retrieved_at_final : RootPositive rootStage :=
-  rootFactAtFinalQuery.read finalStage
+  rootFactAtFinalQuery finalStage
 
 theorem prior_query_preserved :
-    rootFactAtFinalQuery.read finalStage = positiveStage.added :=
+    rootFactAtFinalQuery finalStage = positiveStage.added :=
   rfl
 
 theorem literal_three_step_predecessor :
@@ -165,7 +165,7 @@ def rootFactAtAdvancedQuery :
   rootFactAtDecisionQuery.preserve
 
 theorem sibling_fact_retrieved_after_advancement : RootPositive rootStage :=
-  rootFactAtAdvancedQuery.read advancedDecision
+  rootFactAtAdvancedQuery advancedDecision
 
 structure BranchLabel (_previous : FinalStage) where
   label : Bool
@@ -199,16 +199,16 @@ def labelAtJoinQuery :
     (Query.latest (Previous := FinalStage) (Added := BranchLabel))
 
 theorem join_preserves_left_query :
-    rootFactAtJoinQuery.read joinedStage =
-      rootFactAtAdvancedQuery.read advancedDecision :=
+    rootFactAtJoinQuery joinedStage =
+      rootFactAtAdvancedQuery advancedDecision :=
   rfl
 
 theorem join_preserves_right_query :
-    labelAtJoinQuery.read joinedStage = labelStage.added :=
+    labelAtJoinQuery joinedStage = labelStage.added :=
   rfl
 
 theorem joined_root_fact : RootPositive rootStage :=
-  rootFactAtJoinQuery.read joinedStage
+  rootFactAtJoinQuery joinedStage
 
 theorem joined_residuals_are_exact :
     residualOf joinedStage.left = residualOf joinedStage.right :=

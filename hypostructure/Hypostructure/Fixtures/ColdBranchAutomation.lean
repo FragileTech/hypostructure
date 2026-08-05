@@ -47,12 +47,12 @@ abbrev focusedEventFocus : Focus.Profile Unit :=
 def focusedScheduleQuery :
     Focus.ActiveQuery focusedEventFocus fun _previous _active =>
       Enumeration Nat :=
-  Focus.ActiveQuery.ofFunction fun _previous _active => items
+  fun _previous _active => items
 
 def focusedRunnerQuery :
     Focus.ActiveQuery focusedEventFocus fun _previous _active =>
       (item : Nat) -> Nat :=
-  Focus.ActiveQuery.ofFunction fun _previous _active item => item + 1
+  fun _previous _active item => item + 1
 
 def focusedEventContract :
     ScheduleEvents.FocusedContract.{1, 0, 0} focusedEventFocus where
@@ -84,7 +84,7 @@ def focusedHitStage :
 theorem focusedHitEntry :
     ∃ item ∈ items.values, isThree item (item + 1) :=
   (@ScheduleEvents.FocusedContract.hitQuery.{1, 0, 0, 0, 0} Unit focusedEventFocus
-    focusedEventContract).read focusedEventStage focusedHitStage
+    focusedEventContract) focusedEventStage focusedHitStage
 
 def eventRouteTarget :
     Execution.Spec focusedEventContract.Stage where
@@ -183,13 +183,13 @@ def noHitEventActive :
 theorem noHit_pointwise_absent :
     ∀ item ∈ items.values, Not (item = 5 ∧ item + 1 = 6) :=
   (@ScheduleEvents.FocusedContract.pointwiseAbsentQuery.{1, 0, 0, 0, 0} Unit
-    focusedEventFocus noHitEventContract).read noHitEventStage
+    focusedEventFocus noHitEventContract) noHitEventStage
       noHitEventActive
 
 theorem noHit_pointwise_absent_output :
     ∀ item, (member : item ∈ items.values) ->
       (((@ScheduleEvents.FocusedContract.pointwiseAbsentOutputQuery.{1, 0, 0, 0, 0}
-        Unit focusedEventFocus noHitEventContract).read noHitEventStage
+        Unit focusedEventFocus noHitEventContract) noHitEventStage
           noHitEventActive item member).1 = item + 1) := by
   intro item member
   rfl
@@ -205,7 +205,7 @@ theorem noHit_pointwise_remaining :
       (fun _previous _active item output => noHitRemaining item output)
       (fun _previous _active item _output _absent => by
         unfold noHitRemaining
-        trivial)).read noHitEventStage noHitEventActive
+        trivial)) noHitEventStage noHitEventActive
 
 def scaleContract : ScaleRoute.Contract Nat where
   supportSize := fun item => item
@@ -222,9 +222,9 @@ def focusedScaleFocus : Focus.Profile Unit :=
 def boundedScaleContract :
     ScaleRoute.FocusedContract.{1, 0} focusedScaleFocus where
   Item := Nat
-  item := Focus.ActiveQuery.ofFunction fun _previous _active => 2
-  supportSize := Focus.ActiveQuery.ofFunction fun _previous _active => 2
-  scale := Focus.ActiveQuery.ofFunction fun _previous _active => 3
+  item := fun _previous _active => 2
+  supportSize := fun _previous _active => 2
+  scale := fun _previous _active => 3
 
 def boundedScaleStage : boundedScaleContract.Stage :=
   boundedScaleContract.runStage ()
@@ -240,15 +240,15 @@ def boundedScaleActive :
 theorem boundedScale_read :
     boundedScaleContract.Bounded boundedScaleStage.previous trivial :=
   (@ScaleRoute.FocusedContract.boundedQuery.{1, 0} Unit
-    focusedScaleFocus boundedScaleContract).read boundedScaleStage
+    focusedScaleFocus boundedScaleContract) boundedScaleStage
       boundedScaleActive
 
 def longScaleContract :
     ScaleRoute.FocusedContract.{1, 0} focusedScaleFocus where
   Item := Nat
-  item := Focus.ActiveQuery.ofFunction fun _previous _active => 5
-  supportSize := Focus.ActiveQuery.ofFunction fun _previous _active => 5
-  scale := Focus.ActiveQuery.ofFunction fun _previous _active => 3
+  item := fun _previous _active => 5
+  supportSize := fun _previous _active => 5
+  scale := fun _previous _active => 3
 
 def longScaleStage : longScaleContract.Stage :=
   longScaleContract.runStage ()
@@ -264,7 +264,7 @@ def longScaleActive :
 theorem longScale_read :
     longScaleContract.Long longScaleStage.previous trivial :=
   (@ScaleRoute.FocusedContract.longQuery.{1, 0} Unit
-    focusedScaleFocus longScaleContract).read longScaleStage longScaleActive
+    focusedScaleFocus longScaleContract) longScaleStage longScaleActive
 
 theorem focusedScale_bounded_of_long_impossible
     (notLong : Not (boundedScaleContract.Long () trivial)) :
@@ -301,14 +301,14 @@ def scheduleScaleAllBoundedActive :
 theorem scheduleScale_allBounded :
     scheduleScaleContract.AllBounded scheduleScaleStage.previous trivial :=
   (@ScaleRoute.FocusedScheduleContract.allBoundedQuery.{1, 0} Unit
-    focusedScaleFocus scheduleScaleContract).read scheduleScaleStage
+    focusedScaleFocus scheduleScaleContract) scheduleScaleStage
       scheduleScaleAllBoundedActive
 
 def scheduleLongScaleContract :
     ScaleRoute.FocusedScheduleContract.{1, 0} focusedScaleFocus where
   Item := Nat
   schedule :=
-    Focus.ActiveQuery.ofFunction fun _previous _active =>
+    fun _previous _active =>
       ({ values := [0, 5]
          nodup := by decide
          decEq := inferInstance } : Enumeration Nat)
@@ -331,7 +331,7 @@ def scheduleLongScaleActive :
 theorem scheduleLongScale_hasLong :
     scheduleLongScaleContract.AnyLong scheduleLongScaleStage.previous trivial :=
   (@ScaleRoute.FocusedScheduleContract.longQuery.{1, 0} Unit
-    focusedScaleFocus scheduleLongScaleContract).read scheduleLongScaleStage
+    focusedScaleFocus scheduleLongScaleContract) scheduleLongScaleStage
       scheduleLongScaleActive
 
 def ct3Contract : Hypostructure.CT3.Schedule.Contract Nat where

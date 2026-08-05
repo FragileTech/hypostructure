@@ -48,7 +48,7 @@ variable
 noncomputable def ofActive (stage : schedule.Stage)
     (active : schedule.residualFocus.Active stage) :
     Seed evidence stage := by
-  let hit := schedule.residualQuery.read stage active
+  let hit := schedule.residualQuery stage active
   exact
     { active := active
       hit := hit
@@ -60,7 +60,7 @@ noncomputable def ofActive (stage : schedule.Stage)
 @[simp] theorem ofActive_hit (stage : schedule.Stage)
     (active : schedule.residualFocus.Active stage) :
     (ofActive evidence stage active).hit =
-      schedule.residualQuery.read stage active :=
+      schedule.residualQuery stage active :=
   rfl
 
 end Seed

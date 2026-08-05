@@ -26,7 +26,7 @@ structure Profile (Previous : Type uPrevious) where
 structure Certificate (profile : Profile Previous) (previous : Previous) where
   values : List (profile.Event previous)
   scheduled : ∀ value, value ∈ values ->
-    value ∈ (profile.schedule.read previous).values
+    value ∈ (profile.schedule previous).values
   nodup : values.Nodup
   chain : values.Pairwise (profile.adjacent previous)
   induced : ∀ {left right}, left ∈ values -> right ∈ values ->
@@ -45,7 +45,7 @@ theorem values_are_scheduled
     (profile : Profile Previous) (previous : Previous)
     (certificate : Certificate profile previous) :
     ∀ value ∈ certificate.values,
-      value ∈ (profile.schedule.read previous).values :=
+      value ∈ (profile.schedule previous).values :=
   certificate.scheduled
 
 theorem chain_pair

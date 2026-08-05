@@ -1799,7 +1799,7 @@ def storedFirstNonF5Query
       (fun stage => Search.Execution family.owners.attach
         (fun owner => ¬ Contract.Classification.IsFailure
           (family.contractAt owner.1)
-          ((family.storedClassificationQuery.read stage).classify owner) .f5)) :=
+          ((family.storedClassificationQuery stage).classify owner) .f5)) :=
   family.classifiedStateQuery.dependentMap fun _ state => state.firstNonF5
 
 /-- Eliminate the no-hit branch of the exact first-non-F5 search read from
@@ -1807,30 +1807,30 @@ the active ledger. -/
 theorem storedAllOwnersF5OfNoFirstNonF5
     {Previous : Type uPrevious}
     (stage : family.ClassifiedStateStage Previous)
-    (absent : ¬ (family.storedFirstNonF5Query.read stage).HasHit)
+    (absent : ¬ (family.storedFirstNonF5Query stage).HasHit)
     (owner : {owner : Owner // owner ∈ family.owners.values}) :
     Contract.Classification.IsFailure (family.contractAt owner.1)
-      ((family.storedClassificationQuery.read stage).classify owner) .f5 :=
+      ((family.storedClassificationQuery stage).classify owner) .f5 :=
   ClassifiedState.all_f5_of_no_firstNonF5 family
-    (family.classifiedStateQuery.read stage) absent owner
+    (family.classifiedStateQuery stage) absent owner
 
 /-- Eliminate the hit branch of the exact first-non-F5 search read from the
 active ledger.  The result is the typed F1--F4 partition for the stored hit. -/
 theorem storedFirstNonF5Partition
     {Previous : Type uPrevious}
     (stage : family.ClassifiedStateStage Previous)
-    (found : (family.storedFirstNonF5Query.read stage).HasHit) :
-    let owner := (family.storedFirstNonF5Query.read stage).hitOfHasHit found |>.value
+    (found : (family.storedFirstNonF5Query stage).HasHit) :
+    let owner := (family.storedFirstNonF5Query stage).hitOfHasHit found |>.value
     Contract.Classification.IsFailure (family.contractAt owner.1)
-        ((family.storedClassificationQuery.read stage).classify owner) .f1 ∨
+        ((family.storedClassificationQuery stage).classify owner) .f1 ∨
       Contract.Classification.IsFailure (family.contractAt owner.1)
-        ((family.storedClassificationQuery.read stage).classify owner) .f2 ∨
+        ((family.storedClassificationQuery stage).classify owner) .f2 ∨
       Contract.Classification.IsFailure (family.contractAt owner.1)
-        ((family.storedClassificationQuery.read stage).classify owner) .f3 ∨
+        ((family.storedClassificationQuery stage).classify owner) .f3 ∨
       Contract.Classification.IsFailure (family.contractAt owner.1)
-        ((family.storedClassificationQuery.read stage).classify owner) .f4 :=
+        ((family.storedClassificationQuery stage).classify owner) .f4 :=
   ClassifiedState.firstNonF5_partition family
-    (family.classifiedStateQuery.read stage) found
+    (family.classifiedStateQuery stage) found
 
 /-- Project the exact F5-owner schedule with its dependency on the stored
 classification preserved in the result type. -/
@@ -1838,7 +1838,7 @@ def storedSurvivingOwnersQuery
     {Previous : Type uPrevious} :
     Query (family.ClassifiedStateStage Previous)
       (fun stage => Enumeration
-        (family.F5Owner (family.storedClassificationQuery.read stage))) :=
+        (family.F5Owner (family.storedClassificationQuery stage))) :=
   family.classifiedStateQuery.dependentMap fun stage state => by
     simpa using state.survivingOwners
 
@@ -1849,7 +1849,7 @@ noncomputable def storedRepeatedF5OwnersQuery
     {Previous : Type uPrevious} :
     Query (family.ClassifiedStateStage Previous)
       (fun stage => Enumeration
-        (family.RepeatedF5Owner (family.classifiedStateQuery.read stage))) :=
+        (family.RepeatedF5Owner (family.classifiedStateQuery stage))) :=
   family.classifiedStateQuery.dependentMap fun _ state =>
     state.repeatedF5Owners family
 
@@ -1860,7 +1860,7 @@ noncomputable def storedTerminalF5OwnersQuery
     {Previous : Type uPrevious} :
     Query (family.ClassifiedStateStage Previous)
       (fun stage => Enumeration
-        (family.TerminalF5Owner (family.classifiedStateQuery.read stage))) :=
+        (family.TerminalF5Owner (family.classifiedStateQuery stage))) :=
   family.classifiedStateQuery.dependentMap fun _ state =>
     state.terminalF5Owners family
 
@@ -1868,28 +1868,28 @@ noncomputable def storedTerminalF5OwnersQuery
 def storedF1OwnersQuery {Previous : Type uPrevious} :
     Query (family.ClassifiedStateStage Previous)
       (fun stage => Enumeration (family.FailureOwner
-        (family.storedClassificationQuery.read stage) .f1)) :=
+        (family.storedClassificationQuery stage) .f1)) :=
   family.classifiedStateQuery.dependentMap fun _ state => state.f1Owners
 
 /-- Project the exact F2 owner schedule from the stored partition. -/
 def storedF2OwnersQuery {Previous : Type uPrevious} :
     Query (family.ClassifiedStateStage Previous)
       (fun stage => Enumeration (family.FailureOwner
-        (family.storedClassificationQuery.read stage) .f2)) :=
+        (family.storedClassificationQuery stage) .f2)) :=
   family.classifiedStateQuery.dependentMap fun _ state => state.f2Owners
 
 /-- Project the exact F3 owner schedule from the stored partition. -/
 def storedF3OwnersQuery {Previous : Type uPrevious} :
     Query (family.ClassifiedStateStage Previous)
       (fun stage => Enumeration (family.FailureOwner
-        (family.storedClassificationQuery.read stage) .f3)) :=
+        (family.storedClassificationQuery stage) .f3)) :=
   family.classifiedStateQuery.dependentMap fun _ state => state.f3Owners
 
 /-- Project the exact F4 owner schedule from the stored partition. -/
 def storedF4OwnersQuery {Previous : Type uPrevious} :
     Query (family.ClassifiedStateStage Previous)
       (fun stage => Enumeration (family.FailureOwner
-        (family.storedClassificationQuery.read stage) .f4)) :=
+        (family.storedClassificationQuery stage) .f4)) :=
   family.classifiedStateQuery.dependentMap fun _ state => state.f4Owners
 
 /-- Project one scheduled owner's classification from the stored family
@@ -1941,12 +1941,12 @@ theorem storedAllF5
     {Previous : Type uPrevious}
     (stage : family.ClassifiedStateStage Previous)
     (owner : family.F5Owner
-      (family.storedClassificationQuery.read stage)) :
+      (family.storedClassificationQuery stage)) :
     ∀ item ∈ (family.contractAt owner.1.1).schedule.values,
       (family.contractAt owner.1.1).f5 item
         ((family.contractAt owner.1.1).run item) :=
   ClassifiedState.allF5 family
-    (family.classifiedStateQuery.read stage) owner
+    (family.classifiedStateQuery stage) owner
 
 /-- Read Core's bounded-trace alternative for an F5 owner from the same
 newest ledger entry that selected that owner. -/
@@ -1954,11 +1954,11 @@ noncomputable def storedF5BoundedOutcome
     {Previous : Type uPrevious}
     (stage : family.ClassifiedStateStage Previous)
     (owner : family.F5Owner
-      (family.storedClassificationQuery.read stage)) :
+      (family.storedClassificationQuery stage)) :
     @Contract.StateTrace.BoundedOutcome
       (family.Item owner.1.1) (family.State owner.1.1)
       (family.stateFintype owner.1.1) (family.traceAt owner.1.1) :=
-  (family.classifiedStateQuery.read stage).boundedOutcomes owner
+  (family.classifiedStateQuery stage).boundedOutcomes owner
 
 /-- Recover the exact repeated-state witness selected by the repeated F5
 subschedule in the newest ledger entry. -/
@@ -1966,11 +1966,11 @@ noncomputable def storedRepeatedF5Witness
     {Previous : Type uPrevious}
     (stage : family.ClassifiedStateStage Previous)
     (owner : family.RepeatedF5Owner
-      (family.classifiedStateQuery.read stage)) :
+      (family.classifiedStateQuery stage)) :
     @Contract.StateTrace.BoundedRepeat
       (family.Item owner.1.1.1) (family.State owner.1.1.1)
       (family.stateFintype owner.1.1.1) (family.traceAt owner.1.1.1) :=
-  (family.classifiedStateQuery.read stage).repeatedF5Witness family owner
+  (family.classifiedStateQuery stage).repeatedF5Witness family owner
 
 /-- Recover the exact schedule bound selected by a terminal F5 owner in the
 newest ledger entry. -/
@@ -1978,14 +1978,14 @@ def storedTerminalF5Bound
     {Previous : Type uPrevious}
     (stage : family.ClassifiedStateStage Previous)
     (owner : family.TerminalF5Owner
-      (family.classifiedStateQuery.read stage)) :
+      (family.classifiedStateQuery stage)) :
     (@Contract.StateTrace.schedule
       (family.Item owner.1.1.1) (family.State owner.1.1.1)
       (family.stateFintype owner.1.1.1)
       (family.traceAt owner.1.1.1)).card ≤
       @Fintype.card (family.State owner.1.1.1)
         (family.stateFintype owner.1.1.1) :=
-  (family.classifiedStateQuery.read stage).terminalF5Bound family owner
+  (family.classifiedStateQuery stage).terminalF5Bound family owner
 
 /-- Read and eliminate one non-F5 owner from the newest family ledger entry.
 The owner remains indexed by the classification read from that same entry. -/
@@ -1994,14 +1994,14 @@ noncomputable def storedFailureEvent
     (stage : family.ClassifiedStateStage Previous)
     (failure : Failure) (notF5 : failure ≠ .f5)
     (owner : family.FailureOwner
-      (family.storedClassificationQuery.read stage) failure) :
+      (family.storedClassificationQuery stage) failure) :
     (family.contractAt owner.1.1).EventWitness failure :=
   ClassifiedState.failureEvent family
-    (family.classifiedStateQuery.read stage) failure notF5 owner
+    (family.classifiedStateQuery stage) failure notF5 owner
 
 @[simp] theorem classifiedStateQuery_read_classifyStateIntoLedger
     {Previous : Type uPrevious} (previous : Previous) :
-    family.classifiedStateQuery.read (family.classifyStateIntoLedger previous) =
+    family.classifiedStateQuery (family.classifyStateIntoLedger previous) =
       family.classifiedState := rfl
 
 /-- The family classification is one ordinary dependent ledger extension. -/
@@ -2065,7 +2065,7 @@ noncomputable def firstClassifiedEventQuery
 
 @[simp] theorem classificationQuery_read_classifyIntoLedger
     {Previous : Type uPrevious} (previous : Previous) :
-    family.classificationQuery.read (family.classifyIntoLedger previous) =
+    family.classificationQuery (family.classifyIntoLedger previous) =
       family.classification := rfl
 
 end FamilyProducer
@@ -2073,7 +2073,7 @@ end FamilyProducer
 @[simp] theorem classificationQuery_read_classifyIntoLedger
     {Previous : Type uPrevious}
     (producer : Producer Item State) (previous : Previous) :
-    (classificationQuery producer).read (classifyIntoLedger producer previous) =
+    (classificationQuery producer) (classifyIntoLedger producer previous) =
       Contract.classification (contract producer) := rfl
 
 def bounds (producer : Producer Item State) (interfaceBudget overlapBudget : Nat) :

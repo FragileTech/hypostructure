@@ -36,13 +36,13 @@ def boundedScaleSpec {Previous : Type uPrevious}
   Position := Position
   Value := Value
   targetValue := fun previous target =>
-    targetValue previous (state.read previous) target
+    targetValue previous (state previous) target
   blockValue := fun previous scale position offset =>
-    blockValue previous (state.read previous) scale position offset
+    blockValue previous (state previous) scale position offset
   orbitValue := fun previous scale offset =>
-    orbitValue previous (state.read previous) scale offset
+    orbitValue previous (state previous) scale offset
   Compatible := fun previous target offset =>
-    Compatible previous (state.read previous) target offset
+    Compatible previous (state previous) target offset
 
 /-- Assemble shared CT17 from residual-owned finite PDE schedules and
 primitive represented-state decisions. -/
@@ -70,7 +70,7 @@ def boundedScaleCapability {Previous : Type uPrevious}
       Core.Finite.Enumeration Nat)
     (selectedScale : Core.Residual.Query Previous fun _previous => Nat)
     (selectedScale_mem : forall previous,
-      selectedScale.read previous ∈ (scales.read previous).values)
+      selectedScale previous ∈ (scales previous).values)
     (positions : (scale : Nat) -> Core.Residual.Query Previous fun previous =>
       Core.Finite.Enumeration (Position previous scale))
     (finiteScaleLimit : Core.Residual.Query Previous fun _previous => Nat)
@@ -83,8 +83,8 @@ def boundedScaleCapability {Previous : Type uPrevious}
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
       _root_.Hypostructure.CT17.localCheckBound
-          (targets.read previous) (offsets.read previous)
-          ((positions (selectedScale.read previous)).read previous) <=
+          (targets previous) (offsets previous)
+          ((positions (selectedScale previous)) previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT17.Capability
       (boundedScaleSpec M state Target Offset Position Value targetValue
@@ -97,7 +97,7 @@ def boundedScaleCapability {Previous : Type uPrevious}
   positions := positions
   finiteScaleLimit := finiteScaleLimit
   compatibleDecidable := fun previous target offset =>
-    compatibleDecidable previous (state.read previous) target offset
+    compatibleDecidable previous (state previous) target offset
   valueDecidableEq := valueDecidableEq
   inputSize := inputSize
   workCoefficient := workCoefficient

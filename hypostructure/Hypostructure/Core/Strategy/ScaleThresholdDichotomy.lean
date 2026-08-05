@@ -65,14 +65,14 @@ namespace Profile
 variable (profile : Profile Previous)
 
 def thresholdInput (previous : Previous) : ScaleDependentThreshold.Input :=
-  profile.input.read previous
+  profile.input previous
 
 @[simp] theorem ofComparisonQuery_thresholdInput
     (comparison : Query Previous fun _ =>
       Core.OrderThresholdSplit.Profile Nat)
     (previous : Previous) :
     ((Profile.ofComparisonQuery comparison).thresholdInput previous).threshold =
-      (comparison.read previous).threshold := by
+      (comparison previous).threshold := by
   simp [Profile.ofComparisonQuery, thresholdInput,
     ScaleDependentThreshold.Input.threshold,
     ScaleDependentThreshold.Table.threshold,
@@ -83,7 +83,7 @@ def thresholdInput (previous : Previous) : ScaleDependentThreshold.Input :=
       Core.OrderThresholdSplit.Profile Nat)
     (previous : Previous) :
     ((Profile.ofComparisonQuery comparison).thresholdInput previous).load =
-      (comparison.read previous).value := by
+      (comparison previous).value := by
   rfl
 
 def canonicalMembers : Core.Finite.Enumeration Unit :=
@@ -92,7 +92,7 @@ def canonicalMembers : Core.Finite.Enumeration Unit :=
 def memberQuery
     (_profile : Profile Previous) :
     Query Previous fun _ => Core.Finite.Enumeration Unit :=
-  Query.ofFunction fun _ => canonicalMembers
+   fun _ => canonicalMembers
 
 def spec : CT14.Spec Previous where
   Member := fun _ => Unit
@@ -119,13 +119,13 @@ def capability : CT14.Capability profile.spec where
   members := memberQuery profile
   labelDecidableEq := fun _ => inferInstanceAs (DecidableEq Unit)
   inputSize := fun previous =>
-    ((memberQuery profile).read previous).card +
+    ((memberQuery profile) previous).card +
       (profile.thresholdInput previous).table.work
   workCoefficient := workCoefficient
   workDegree := workDegree
   workBound := by
     intro previous
-    simp only [memberQuery, Query.read_ofFunction, workCoefficient,
+    simp only [memberQuery, workCoefficient,
       workDegree]
     rw [Fintype.card_congr workNestingEquiv]
     simp only [Fintype.card_unit, Nat.pow_one]
@@ -275,9 +275,9 @@ theorem AboveResidual.registeredComparisonAt
     (residual :
       (Profile.ofRegistrationAt (Previous := Previous)
         registration current).AboveResidual previous) :
-    (registration.table (current.read previous)).threshold
-        (registration.size (current.read previous)) <
-      registration.load (current.read previous) :=
+    (registration.table (current previous)).threshold
+        (registration.size (current previous)) <
+      registration.load (current previous) :=
   residual.threshold_lt_load
 
 theorem AboveResidual.registeredComparison
@@ -304,9 +304,9 @@ theorem AtOrBelowResidual.registeredComparisonAt
     (residual :
       (Profile.ofRegistrationAt (Previous := Previous)
         registration current).AtOrBelowResidual previous) :
-    registration.load (current.read previous) ≤
-      (registration.table (current.read previous)).threshold
-        (registration.size (current.read previous)) :=
+    registration.load (current previous) ≤
+      (registration.table (current previous)).threshold
+        (registration.size (current previous)) :=
   residual.load_le_threshold
 
 theorem AtOrBelowResidual.registeredComparison
@@ -328,8 +328,8 @@ theorem AboveResidual.comparison
     {previous : Previous}
     (residual :
       (Profile.ofComparisonQuery comparison).AboveResidual previous) :
-    (comparison.read previous).threshold <
-      (comparison.read previous).value := by
+    (comparison previous).threshold <
+      (comparison previous).value := by
   have certificate := residual.threshold_lt_load
   rwa [ofComparisonQuery_thresholdInput, ofComparisonQuery_load] at certificate
 
@@ -341,8 +341,8 @@ theorem AtOrBelowResidual.comparison
     {previous : Previous}
     (residual :
       (Profile.ofComparisonQuery comparison).AtOrBelowResidual previous) :
-    (comparison.read previous).value ≤
-      (comparison.read previous).threshold := by
+    (comparison previous).value ≤
+      (comparison previous).threshold := by
   have certificate := residual.load_le_threshold
   rwa [ofComparisonQuery_thresholdInput, ofComparisonQuery_load] at certificate
 

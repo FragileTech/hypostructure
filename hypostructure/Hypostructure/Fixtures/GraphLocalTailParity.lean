@@ -36,19 +36,19 @@ def splitQuery :
 
 def localPieceQuery :
     Core.Residual.Query SplitStage fun previous =>
-      BoundaryPiece (splitQuery.read previous).interface :=
+      BoundaryPiece (splitQuery previous).interface :=
   splitQuery.dependentMap fun _ site => site.piece
 
 def outsideContextQuery :
     Core.Residual.Query SplitStage fun previous =>
-      OutsideContext (splitQuery.read previous).interface :=
+      OutsideContext (splitQuery previous).interface :=
   splitQuery.dependentMap fun _ site => site.outside
 
 /-- Exact gluing reconstruction stays attached to the original split. -/
 noncomputable def reconstructionQuery :
     Core.Residual.Query SplitStage fun previous =>
-      (glue (splitQuery.read previous).piece
-        (splitQuery.read previous).outside).Isomorphic ambient :=
+      (glue (splitQuery previous).piece
+        (splitQuery previous).outside).Isomorphic ambient :=
   splitQuery.dependentMap
     (Output := fun _ site =>
       (glue site.piece site.outside).Isomorphic ambient)
@@ -60,20 +60,20 @@ outside context is not activated before this stage exists.
 -/
 abbrev LocalClosedStage :=
   Core.Residual.Ledger.Extension SplitStage fun previous =>
-    (localPieceQuery.read previous).graph.Connected
+    (localPieceQuery previous).graph.Connected
 
 noncomputable def localClosedStage : LocalClosedStage :=
   Core.Residual.Ledger.extend splitStage piece_connected
 
 def localClosedQuery :
     Core.Residual.Query LocalClosedStage fun stage =>
-      (localPieceQuery.preserve.read stage).graph.Connected :=
+      (localPieceQuery.preserve stage).graph.Connected :=
   Core.Residual.Query.latest
 
 def outsideOnClosedQuery :
     Core.Residual.Query LocalClosedStage fun stage =>
       OutsideContext
-        (splitQuery.preserve.read stage).interface :=
+        (splitQuery.preserve stage).interface :=
   outsideContextQuery.preserve
 
 /--
@@ -83,8 +83,8 @@ stage.  This is the graph counterpart of tail activation.
 def handoffInputs :
     Core.Residual.Query LocalClosedStage fun stage =>
       PProd
-        (OutsideContext (splitQuery.preserve.read stage).interface)
-        ((localPieceQuery.preserve.read stage).graph.Connected) :=
+        (OutsideContext (splitQuery.preserve stage).interface)
+        ((localPieceQuery.preserve stage).graph.Connected) :=
   outsideOnClosedQuery.and localClosedQuery
 
 /--
@@ -95,8 +95,8 @@ noncomputable def outsidePathQuery :
     Core.Residual.Query LocalClosedStage fun stage =>
       Core.CoordinatePath
         (Graph.coordinateSystem Baseline BranchState)
-        (outsideOnClosedQuery.read stage).pack
-        (outsideOnClosedQuery.read stage).pack :=
+        (outsideOnClosedQuery stage).pack
+        (outsideOnClosedQuery stage).pack :=
   handoffInputs.dependentMap fun _ _ =>
     Core.CoordinatePath.cons
       (CoordinatePrimitive.relabel SimpleGraph.Iso.refl)
@@ -105,23 +105,23 @@ noncomputable def outsidePathQuery :
 /-- Original gluing reconstruction is still queryable after local closure. -/
 noncomputable def reconstructionOnClosedQuery :
     Core.Residual.Query LocalClosedStage fun stage =>
-      (glue (splitQuery.preserve.read stage).piece
-        (splitQuery.preserve.read stage).outside).Isomorphic ambient :=
+      (glue (splitQuery.preserve stage).piece
+        (splitQuery.preserve stage).outside).Isomorphic ambient :=
   reconstructionQuery.preserve
 
 example :
-    outsideOnClosedQuery.read localClosedStage = outside :=
+    outsideOnClosedQuery localClosedStage = outside :=
   rfl
 
 example :
-    (outsidePathQuery.read localClosedStage).run () = () :=
+    (outsidePathQuery localClosedStage).run () = () :=
   rfl
 
 example :
-    (glue (splitQuery.preserve.read localClosedStage).piece
-      (splitQuery.preserve.read localClosedStage).outside).Isomorphic
+    (glue (splitQuery.preserve localClosedStage).piece
+      (splitQuery.preserve localClosedStage).outside).Isomorphic
         ambient :=
-  reconstructionOnClosedQuery.read localClosedStage
+  reconstructionOnClosedQuery localClosedStage
 
 end Source
 

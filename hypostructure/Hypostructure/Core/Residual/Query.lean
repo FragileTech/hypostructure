@@ -1,44 +1,36 @@
 import Hypostructure.Core.Residual.Stage
 
 /-!
-# Typed residual-ledger queries
+# Temporary direct-reader migration surface
 
-A query is a typed read from one exact ledger shape.  Its constructor is
-private: public queries start from the residual or an actual extension entry,
-then move through predecessors and compose.  Repeated entry types are
-unambiguous because `latest` and each use of `preserve` name a concrete
-occurrence in the predecessor chain.
+This module no longer defines a data wrapper.  `Query` is definitionally the
+dependent function it used to contain.  The remaining namespace operations
+exist only while call sites are migrated to `ExactLedger.get` and
+`FactInputs.get`; this module is deleted at the end of that migration.
 -/
 
 namespace Hypostructure.Core.Residual
 
 universe uSource uResult uOutput uPrevious uAdded uResidual
 
-/-- A typed read from one accumulated ledger stage. -/
-structure Query (Source : Sort uSource) (Result : Source -> Sort uResult) where
-  private mk ::
-  read : (source : Source) -> Result source
+/-- Temporary source-compatible spelling for a direct dependent function.
+It has no constructor, field, storage, or runtime representation of its own. -/
+abbrev Query (Source : Sort uSource) (Result : Source -> Sort uResult) :=
+  (source : Source) -> Result source
 
 namespace Query
-
-/-- Build a query from a direct source-indexed function.  This is the public
-constructor-shaped entry point for query values that do not need ledger
-composition. -/
-def ofFunction {Source : Sort uSource} {Result : Source -> Sort uResult}
-    (read : (source : Source) -> Result source) : Query Source Result :=
-  .mk read
 
 /-- Read the stable residual, independently of the depth of the ledger. -/
 def residual {Source : Sort uSource} {Residual : Type uResidual}
     [HasResidual Source Residual] :
     Query Source (fun _source => Residual) :=
-  .mk residualOf
+  residualOf
 
 /-- Read the value introduced by the newest extension. -/
 def latest {Previous : Sort uPrevious} {Added : Previous -> Sort uAdded} :
     Query (Ledger.Extension Previous Added)
       (fun stage => Added stage.previous) :=
-  .mk Ledger.Extension.added
+  Ledger.Extension.added
 
 /-- Lift an existing query through one no-copy extension.  This is the
 canonical operation for retrieving an inherited fact or stage. -/
@@ -46,7 +38,7 @@ def preserve {Previous : Sort uPrevious} {Result : Previous -> Sort uResult}
     (query : Query Previous Result) {Added : Previous -> Sort uAdded} :
     Query (Ledger.Extension Previous Added)
       (fun stage => Result stage.previous) :=
-  .mk fun stage => query.read stage.previous
+  fun stage => query stage.previous
 
 /-- Pull a query back along a framework-owned projection such as a typed join
 projection. -/
@@ -54,14 +46,14 @@ def comap {Source : Sort uSource} {Result : Source -> Sort uResult}
     (query : Query Source Result) {NewSource : Sort uPrevious}
     (project : NewSource -> Source) :
     Query NewSource (fun source => Result (project source)) :=
-  .mk fun source => query.read (project source)
+  fun source => query (project source)
 
 /-- Transform one queried value without another ledger read. -/
 def map {Source : Sort uSource} {Input : Source -> Sort uResult}
     (query : Query Source Input) {Output : Source -> Sort uOutput}
     (transform : (source : Source) -> Input source -> Output source) :
     Query Source Output :=
-  .mk fun source => transform source (query.read source)
+  fun source => transform source (query source)
 
 /-- Transform one queried value into a result whose type depends on that exact
 queried value. -/
@@ -70,33 +62,27 @@ def dependentMap {Source : Sort uSource} {Input : Source -> Sort uResult}
     {Output : (source : Source) -> Input source -> Sort uOutput}
     (transform : (source : Source) -> (input : Input source) ->
       Output source input) :
-    Query Source (fun source => Output source (query.read source)) :=
-  .mk fun source => transform source (query.read source)
+    Query Source (fun source => Output source (query source)) :=
+  fun source => transform source (query source)
 
 /-- Read two inherited values from the identical source stage. -/
 def and {Source : Sort uSource}
     {Left : Source -> Sort uResult} {Right : Source -> Sort uOutput}
     (left : Query Source Left) (right : Query Source Right) :
     Query Source (fun source => PProd (Left source) (Right source)) :=
-  .mk fun source => ⟨left.read source, right.read source⟩
+  fun source => ⟨left source, right source⟩
 
 @[simp] theorem read_residual
     {Source : Sort uSource} {Residual : Type uResidual}
     [HasResidual Source Residual] (source : Source) :
-    (residual (Source := Source) (Residual := Residual)).read source =
+    (residual (Source := Source) (Residual := Residual)) source =
       residualOf source :=
-  rfl
-
-@[simp] theorem read_ofFunction
-    {Source : Sort uSource} {Result : Source -> Sort uResult}
-    (read : (source : Source) -> Result source) (source : Source) :
-    (ofFunction read).read source = read source :=
   rfl
 
 @[simp] theorem read_latest
     {Previous : Sort uPrevious} {Added : Previous -> Sort uAdded}
     (previous : Previous) (added : Added previous) :
-    (latest (Previous := Previous) (Added := Added)).read
+    (latest (Previous := Previous) (Added := Added))
         (Ledger.extend previous added) = added :=
   rfl
 
@@ -105,15 +91,15 @@ def and {Source : Sort uSource}
     {Previous : Sort uPrevious} {Result : Previous -> Sort uResult}
     (query : Query Previous Result) {Added : Previous -> Sort uAdded}
     (previous : Previous) (added : Added previous) :
-    (query.preserve (Added := Added)).read (Ledger.extend previous added) =
-      query.read previous :=
+    (query.preserve (Added := Added)) (Ledger.extend previous added) =
+      query previous :=
   rfl
 
 @[simp] theorem read_comap
     {Source : Sort uSource} {Result : Source -> Sort uResult}
     (query : Query Source Result) {NewSource : Sort uPrevious}
     (project : NewSource -> Source) (source : NewSource) :
-    (query.comap project).read source = query.read (project source) :=
+    (query.comap project) source = query (project source) :=
   rfl
 
 @[simp] theorem read_map
@@ -121,7 +107,7 @@ def and {Source : Sort uSource}
     (query : Query Source Input) {Output : Source -> Sort uOutput}
     (transform : (source : Source) -> Input source -> Output source)
     (source : Source) :
-    (query.map transform).read source = transform source (query.read source) :=
+    (query.map transform) source = transform source (query source) :=
   rfl
 
 @[simp] theorem read_dependentMap
@@ -131,15 +117,15 @@ def and {Source : Sort uSource}
     (transform : (source : Source) -> (input : Input source) ->
       Output source input)
     (source : Source) :
-    (query.dependentMap transform).read source =
-      transform source (query.read source) :=
+    (query.dependentMap transform) source =
+      transform source (query source) :=
   rfl
 
 @[simp] theorem read_and
     {Source : Sort uSource}
     {Left : Source -> Sort uResult} {Right : Source -> Sort uOutput}
     (left : Query Source Left) (right : Query Source Right) (source : Source) :
-    (left.and right).read source = ⟨left.read source, right.read source⟩ :=
+    (left.and right) source = ⟨left source, right source⟩ :=
   rfl
 
 end Query
@@ -152,7 +138,7 @@ def derive {Previous : Sort uPrevious} {Input : Previous -> Sort uResult}
     (query : Query Previous Input) {Property : Previous -> Prop}
     (prove : (previous : Previous) -> Input previous -> Property previous) :
     Node Previous Property :=
-  Node.create fun previous => prove previous (query.read previous)
+  Node.create fun previous => prove previous (query previous)
 
 end Node
 
@@ -163,7 +149,7 @@ def derive {Previous : Sort uPrevious} {Input : Previous -> Sort uResult}
     (query : Query Previous Input) {Output : Previous -> Sort uOutput}
     (produce : (previous : Previous) -> Input previous -> Output previous) :
     StageNode Previous Output :=
-  StageNode.create fun previous => produce previous (query.read previous)
+  StageNode.create fun previous => produce previous (query previous)
 
 /-- Produce an output whose type depends on the exact value returned by a
 typed predecessor query. -/
@@ -172,8 +158,8 @@ def dependent {Previous : Sort uPrevious}
     {Output : (previous : Previous) -> Input previous -> Sort uOutput}
     (produce : (previous : Previous) -> (input : Input previous) ->
       Output previous input) :
-    StageNode Previous (fun previous => Output previous (query.read previous)) :=
-  StageNode.create fun previous => produce previous (query.read previous)
+    StageNode Previous (fun previous => Output previous (query previous)) :=
+  StageNode.create fun previous => produce previous (query previous)
 
 end StageNode
 

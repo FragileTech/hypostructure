@@ -125,7 +125,7 @@ def rightQuery
     {spec : Spec Residual Left Right}
     {Output : Left -> Sort uLeftResult} (query : Query Left Output)
     (joined : Result spec) :
-    (leftQuery query).read joined = query.read joined.left :=
+    (leftQuery query) joined = query joined.left :=
   rfl
 
 /-- Joining preserves every query from the right predecessor. -/
@@ -135,7 +135,7 @@ def rightQuery
     {spec : Spec Residual Left Right}
     {Output : Right -> Sort uRightResult} (query : Query Right Output)
     (joined : Result spec) :
-    (rightQuery query).read joined = query.read joined.right :=
+    (rightQuery query) joined = query joined.right :=
   rfl
 
 end Hypostructure.Core.Residual.Join

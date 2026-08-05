@@ -36,7 +36,7 @@ structure Capability {Previous : Type uPrevious}
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    maximumChecks (initial.read previous).load <=
+    maximumChecks (initial previous).load <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -47,7 +47,7 @@ variable {Previous : Type uPrevious}
 /-- Exact indexed state queried from one predecessor. -/
 def initialAt (capability : Capability spec) (previous : Previous) :
     InitialState spec previous :=
-  capability.initial.read previous
+  capability.initial previous
 
 /-- Polynomial budget for the complete CT12 execution. -/
 def polynomialBudget (capability : Capability spec) :

@@ -302,11 +302,11 @@ def successor {Previous : Sort uPrevious} (profile : Profile Previous)
 
 /-! ## Typed reads on an active branch -/
 
-/-- A typed inherited read available only when the source lies on the focus. -/
-structure ActiveQuery {Previous : Sort uPrevious} (profile : Profile Previous)
-    (Result : (previous : Previous) -> profile.Active previous -> Sort uResult) where
-  private mk ::
-  read : (previous : Previous) -> (proof : profile.Active previous) ->
+/-- Temporary source-compatible spelling of a direct dependent function on an
+active branch.  It has no constructor, field, or storage of its own. -/
+abbrev ActiveQuery {Previous : Sort uPrevious} (profile : Profile Previous)
+    (Result : (previous : Previous) -> profile.Active previous -> Sort uResult) :=
+  (previous : Previous) -> (proof : profile.Active previous) ->
     Result previous proof
 
 /-! ## Counted refinement of an existing focus -/
@@ -334,7 +334,14 @@ def ofFunction {Previous : Sort uPrevious} {profile : Profile Previous}
     (read : (previous : Previous) -> (proof : profile.Active previous) ->
       Result previous proof) :
     ActiveQuery profile Result :=
-  .mk read
+  read
+
+/-- Temporary call-site bridge.  It is ordinary function application. -/
+abbrev read {Previous : Sort uPrevious} {profile : Profile Previous}
+    {Result : (previous : Previous) -> profile.Active previous -> Sort uResult}
+    (query : ActiveQuery profile Result) (previous : Previous)
+    (proof : profile.Active previous) : Result previous proof :=
+  query previous proof
 
 @[simp] theorem read_ofFunction {Previous : Sort uPrevious}
     {profile : Profile Previous}
@@ -342,7 +349,7 @@ def ofFunction {Previous : Sort uPrevious} {profile : Profile Previous}
     (read : (previous : Previous) -> (proof : profile.Active previous) ->
       Result previous proof)
     (previous : Previous) (proof : profile.Active previous) :
-    (ofFunction read).read previous proof = read previous proof :=
+    (ofFunction read) previous proof = read previous proof :=
   rfl
 
 /-- Refine a focus by comparing a finite tag projected from one inherited
@@ -356,7 +363,7 @@ def tagEqualTo {Previous : Sort uPrevious} {profile : Profile Previous}
       Input previous active -> Value)
     (expected : Value) [DecidableEq Value] : Refinement profile where
   Predicate := fun previous active =>
-    tag previous active (query.read previous active) = expected
+    tag previous active (query previous active) = expected
   decide := fun _previous _active =>
     { value := inferInstance
       checks := 1 }
@@ -541,22 +548,22 @@ def onView {Previous : Type uPrevious} {profile : Profile Previous}
       (fun view => Result view.previous view.proof) :=
   (Query.residual (Source := ActiveView profile)
     (Residual := ActiveView profile)).map fun view _root =>
-      query.read view.previous view.proof
+      query view.previous view.proof
 
 @[simp] theorem read_onView {Previous : Type uPrevious}
     {profile : Profile Previous}
     {Result : (previous : Previous) -> profile.Active previous -> Sort uResult}
     (query : ActiveQuery profile Result) (previous : Previous)
     (proof : profile.Active previous) :
-    query.onView.read (ActiveView.of previous proof) =
-      query.read previous proof :=
+    query.onView (ActiveView.of previous proof) =
+      query previous proof :=
   rfl
 
 /-- Read an ordinary accumulated-ledger query under any active branch proof. -/
 def ofQuery {Previous : Sort uPrevious} {profile : Profile Previous}
     {Result : Previous -> Sort uResult} (query : Query Previous Result) :
     ActiveQuery profile fun previous _proof => Result previous :=
-  .mk fun previous _proof => query.read previous
+  fun previous _proof => query previous
 
 /-- Transform one active query without another ledger read. -/
 def map {Previous : Sort uPrevious} {profile : Profile Previous}
@@ -566,7 +573,7 @@ def map {Previous : Sort uPrevious} {profile : Profile Previous}
     (transform : (previous : Previous) -> (proof : profile.Active previous) ->
       Input previous proof -> Output previous proof) :
     ActiveQuery profile Output :=
-  .mk fun previous proof => transform previous proof (query.read previous proof)
+  fun previous proof => transform previous proof (query previous proof)
 
 /-- Transform one active query into a result whose type depends on the exact
 queried value. -/
@@ -578,9 +585,9 @@ def dependentMap {Previous : Sort uPrevious} {profile : Profile Previous}
     (transform : (previous : Previous) -> (proof : profile.Active previous) ->
       (input : Input previous proof) -> Output previous proof input) :
     ActiveQuery profile
-      (fun previous proof => Output previous proof (query.read previous proof)) :=
-  .mk fun previous proof =>
-    transform previous proof (query.read previous proof)
+      (fun previous proof => Output previous proof (query previous proof)) :=
+  fun previous proof =>
+    transform previous proof (query previous proof)
 
 @[simp] theorem read_map {Previous : Sort uPrevious}
     {profile : Profile Previous}
@@ -590,8 +597,8 @@ def dependentMap {Previous : Sort uPrevious} {profile : Profile Previous}
     (transform : (previous : Previous) -> (proof : profile.Active previous) ->
       Input previous proof -> Output previous proof)
     (previous : Previous) (proof : profile.Active previous) :
-    (query.map transform).read previous proof =
-      transform previous proof (query.read previous proof) :=
+    (query.map transform) previous proof =
+      transform previous proof (query previous proof) :=
   rfl
 
 @[simp] theorem read_dependentMap {Previous : Sort uPrevious}
@@ -603,8 +610,8 @@ def dependentMap {Previous : Sort uPrevious} {profile : Profile Previous}
     (transform : (previous : Previous) -> (proof : profile.Active previous) ->
       (input : Input previous proof) -> Output previous proof input)
     (previous : Previous) (proof : profile.Active previous) :
-    (query.dependentMap transform).read previous proof =
-      transform previous proof (query.read previous proof) :=
+    (query.dependentMap transform) previous proof =
+      transform previous proof (query previous proof) :=
   rfl
 
 /-- Read two active values from the identical predecessor and activity proof. -/
@@ -614,8 +621,8 @@ def and {Previous : Sort uPrevious} {profile : Profile Previous}
     (left : ActiveQuery profile Left) (right : ActiveQuery profile Right) :
     ActiveQuery profile fun previous proof =>
       PProd (Left previous proof) (Right previous proof) :=
-  .mk fun previous proof =>
-    ⟨left.read previous proof, right.read previous proof⟩
+  fun previous proof =>
+    ⟨left previous proof, right previous proof⟩
 
 /-- Lift an inherited active query through one focused extension. -/
 def preserve {Previous : Sort uPrevious} {profile : Profile Previous}
@@ -624,7 +631,7 @@ def preserve {Previous : Sort uPrevious} {profile : Profile Previous}
     {Output : (previous : Previous) -> profile.Active previous -> Sort uOutput} :
     ActiveQuery (successor profile Output) fun stage proof =>
       Result stage.previous proof :=
-  .mk fun stage proof => query.read stage.previous proof
+  fun stage proof => query stage.previous proof
 
 /-- Reuse a parent-owned active query under a counted refinement without
 copying its value into a child payload. -/
@@ -634,14 +641,14 @@ def narrow {Previous : Sort uPrevious} {profile : Profile Previous}
     (query : ActiveQuery profile Result) :
     ActiveQuery (refine profile refinement) fun previous active =>
       Result previous active.parent :=
-  .mk fun previous active => query.read previous active.parent
+  fun previous active => query previous active.parent
 
 /-- Retrieve the exact child-predicate proof selected by a refined focus. -/
 def refinementProof {Previous : Sort uPrevious}
     {profile : Profile Previous} (refinement : Refinement profile) :
     ActiveQuery (refine profile refinement) fun previous active =>
       refinement.Predicate previous active.parent :=
-  .mk fun _previous active => active.accepted
+  fun _previous active => active.accepted
 
 /-- Read the exact inherited value and its selected tag equality together.
 The value is read once; the equality is the proof retained by the refined
@@ -656,8 +663,8 @@ def selectedTag {Previous : Sort uPrevious} {profile : Profile Previous}
       fun previous active =>
         { value : Input previous active.parent //
           tag previous active.parent value = expected } :=
-  .mk fun previous active =>
-    ⟨query.read previous active.parent, active.accepted⟩
+  fun previous active =>
+    ⟨query previous active.parent, active.accepted⟩
 
 /-- Retrieve the selected equality from a framework-owned equality
 refinement, without exposing the raw refinement constructor. -/
@@ -666,8 +673,8 @@ def equalToProof {Previous : Sort uPrevious} {profile : Profile Previous}
     (query : ActiveQuery profile fun _previous _active => Value)
     (expected : Value) [DecidableEq Value] :
     ActiveQuery (refine profile (query.equalTo expected)) fun previous active =>
-      query.read previous active.parent = expected :=
-  .mk fun _previous active => active.accepted
+      query previous active.parent = expected :=
+  fun _previous active => active.accepted
 
 @[simp] theorem read_preserve_at {Previous : Sort uPrevious}
     {profile : Profile Previous}
@@ -676,8 +683,8 @@ def equalToProof {Previous : Sort uPrevious} {profile : Profile Previous}
     {Output : (previous : Previous) -> profile.Active previous -> Sort uOutput}
     (stage : Stage profile Output)
     (proof : (successor profile Output).Active stage) :
-    (query.preserve (Output := Output)).read stage proof =
-      query.read stage.previous proof :=
+    (query.preserve (Output := Output)) stage proof =
+      query stage.previous proof :=
   rfl
 
 /-- Read the value introduced by the latest focused extension.  Proof
@@ -687,7 +694,7 @@ def latest {Previous : Sort uPrevious} {profile : Profile Previous}
     {Output : (previous : Previous) -> profile.Active previous -> Sort uOutput} :
     ActiveQuery (successor profile Output) fun stage proof =>
       Output stage.previous proof :=
-  .mk fun stage proof => by
+  fun stage proof => by
     cases added : stage.added with
     | active stored output =>
         have equal : stored = proof := Subsingleton.elim _ _
@@ -703,9 +710,9 @@ def latest {Previous : Sort uPrevious} {profile : Profile Previous}
     {Output : (previous : Previous) -> profile.Active previous -> Sort uOutput}
     (previous : Previous) (proof : profile.Active previous)
     (output : Output previous proof) :
-    (preserve query (Output := Output)).read
+    (preserve query (Output := Output))
         (Ledger.extend previous (.active proof output)) proof =
-      query.read previous proof :=
+      query previous proof :=
   rfl
 
 end ActiveQuery
@@ -749,7 +756,7 @@ def yesActiveOfComplement {Previous : Sort uPrevious} {Yes : Previous -> Prop}
 def yesProof {Previous : Sort uPrevious} {Yes No : Previous -> Prop} :
     ActiveQuery (yes (Yes := Yes) (No := No)) fun stage _active =>
       Yes stage.previous :=
-  .mk fun _stage active => active.proof
+  fun _stage active => active.proof
 
 /-- Proof that a decision stage contains its exact no constructor. -/
 structure NoActive {Previous : Sort uPrevious} {Yes No : Previous -> Prop}
@@ -788,6 +795,6 @@ def noActiveOfComplement {Previous : Sort uPrevious} {Yes : Previous -> Prop}
 def noProof {Previous : Sort uPrevious} {Yes No : Previous -> Prop} :
     ActiveQuery (no (Yes := Yes) (No := No)) fun stage _active =>
       No stage.previous :=
-  .mk fun _stage active => active.proof
+  fun _stage active => active.proof
 
 end Hypostructure.Core.Residual.Focus

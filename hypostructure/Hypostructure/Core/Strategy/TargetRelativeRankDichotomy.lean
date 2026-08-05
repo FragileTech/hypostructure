@@ -95,13 +95,13 @@ def classificationSpec : CT10.Spec Previous where
   Promotion := profile.Promotion
   classOf := fun previous datum =>
     profile.classOf previous
-      (profile.exactResponsePresentation.read previous) datum
+      (profile.exactResponsePresentation previous) datum
   Direct := fun previous cls =>
     profile.Direct previous
-      (profile.exactResponsePresentation.read previous) cls
+      (profile.exactResponsePresentation previous) cls
   promote := fun previous cls =>
     profile.promote previous
-      (profile.exactResponsePresentation.read previous) cls
+      (profile.exactResponsePresentation previous) cls
 
 /-- Canonical CT10 capability. Its polynomial envelope is derived uniformly
 from CT10's own exact local check schedule. -/
@@ -111,7 +111,7 @@ def classificationCapability :
   classes := profile.classes
   directDecidable := fun previous cls =>
     profile.directDecidable previous
-      (profile.exactResponsePresentation.read previous) cls
+      (profile.exactResponsePresentation previous) cls
   inputSize := fun previous =>
     CT10.localCheckBound profile.classificationSpec
       profile.observations profile.classes previous
@@ -231,14 +231,14 @@ preserved response/supply context plus CT10's newest entry. -/
 def rankSpec : CT15.Spec classification.AfterClassification where
   Coordinate := fun stage => profile.Coordinate stage.previous
   TargetDependent := fun stage coordinate =>
-    let context := profile.rankContext.read stage
+    let context := profile.rankContext stage
     profile.TargetDependent stage.previous context.fst.snd context.snd
       coordinate
   charge := fun stage coordinate =>
-    let context := profile.rankContext.read stage
+    let context := profile.rankContext stage
     profile.charge stage.previous context.fst.snd context.snd coordinate
   capacity := fun stage =>
-    let context := profile.rankContext.read stage
+    let context := profile.rankContext stage
     profile.capacity stage.previous context.fst.fst context.fst.snd
       context.snd
 
@@ -247,11 +247,11 @@ CT15's own local check schedule. -/
 def rankCapability : CT15.Capability profile.rankSpec where
   coordinates := profile.rankCoordinates
   targetDependentDecidable := fun stage coordinate =>
-    let context := profile.rankContext.read stage
+    let context := profile.rankContext stage
     profile.targetDependentDecidable stage.previous context.fst.snd
       context.snd coordinate
   inputSize := fun stage =>
-    CT15.localCheckBound (profile.rankCoordinates.read stage)
+    CT15.localCheckBound (profile.rankCoordinates stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -448,7 +448,7 @@ structure ExactOutput (previous : Previous) where
   classificationPrevious :
     output.fst.fst.stage.previous = previous
   rankInput :
-    classification.classificationResult.read
+    classification.classificationResult
       output.fst.snd.stage.previous = output.fst.fst
   /-- CT15 ran on the literal CT10 extension of *this* predecessor.  The
   composition builds its middle stage as `Ledger.extend previous _`, so this
@@ -458,7 +458,7 @@ structure ExactOutput (previous : Previous) where
   rankPrevious :
     output.fst.snd.stage.previous.previous = previous
   codeInput :
-    rank.throughRankResult.read output.snd.stage.previous = output.fst
+    rank.throughRankResult output.snd.stage.previous = output.fst
 
 /-- Exact rank-side alternatives retained from CT15 and CT16.  The complete
 composed output is stored in every constructor, so no terminal evidence or
@@ -549,7 +549,7 @@ theorem properSupport_impossible
     (codeSelected : exact.output.snd.terminal = .properSupport)
     (whole : ∀ (stage : rank.AfterRank)
       (coordinate : rank.Coordinate stage.previous),
-        coordinate ∈ ((codeCoordinates (rank := rank)).read stage).values →
+        coordinate ∈ ((codeCoordinates (rank := rank)) stage).values →
           profile.InSupport stage coordinate) : False :=
   let missing :=
     (exact.output.snd.stage.added.properSupportResidual codeSelected).residual
@@ -619,6 +619,30 @@ def fullRankValue {previous : Previous}
     (fullRank : profile.FullRankResidual previous) : Nat :=
   (fullRank.exact.output.fst.snd.stage.added.fullRankLedgerOutput
     fullRank.rankSelected).rank.value
+
+/-- The finite form of `lem:full-rank`: on the literal CT15 full-rank
+terminal, the published rank is exactly the cardinality of CT15's coordinate
+schedule.  This is deliberately exposed separately from the capacity
+comparison below, so downstream rows can combine it with their own
+rank-loss/curvature lower bound without reconstructing the schedule. -/
+theorem fullRankValue_eq_coordinateCard {previous : Previous}
+    (fullRank : profile.FullRankResidual previous) :
+    profile.fullRankValue fullRank =
+      (rank.rankCapability.coordinatesAt
+    fullRank.exact.output.fst.snd.stage.previous).values.length := by
+  simpa [fullRankValue, CT15.targetRank, Core.Finite.Enumeration.card] using
+    (fullRank.exact.output.fst.snd.stage.added.fullRankLedgerOutput
+      fullRank.rankSelected).full.full
+
+theorem fullRankValue_ge_coordinateLowerBound {previous : Previous}
+    (fullRank : profile.FullRankResidual previous)
+    {coordinateLowerBound : Nat}
+    (lowerBound : coordinateLowerBound ≤
+      (rank.rankCapability.coordinatesAt
+        fullRank.exact.output.fst.snd.stage.previous).values.length) :
+    coordinateLowerBound ≤ profile.fullRankValue fullRank := by
+  rw [profile.fullRankValue_eq_coordinateCard fullRank]
+  exact lowerBound
 
 /-- The retained rank is dominated by the capacity CT15 fitted its generated
 charge ledger under.
@@ -763,7 +787,7 @@ noncomputable def Profile.ofRegistrationAt
     (normalizedSupport :
       SupportComplementNormalization.ExactLedger.{
         uResidual, uPrevious, uAmbient, uPiece} Previous Residual
-        (fun previous => AmbientItem (current.read previous)))
+        (fun previous => AmbientItem (current previous)))
     (localSupply : Query Previous fun _ =>
       ULift.{uSupply} LocalSupplyLowerBound.Summary) :
     Profile.{uPrevious, uResidual, uResponse, uSupply, uDatum, uClass,
@@ -773,42 +797,42 @@ noncomputable def Profile.ofRegistrationAt
       ClassificationProfile.{
         uPrevious, uResidual, uResponse, uDatum, uClass, uPromotion}
         Previous Residual :=
-    { Response := fun previous => registration.Response (current.read previous)
+    { Response := fun previous => registration.Response (current previous)
       exactResponsePresentation := residual.dependentMap fun _ residual =>
         registration.response residual
-      Datum := fun previous => registration.Datum (current.read previous)
-      Class := fun previous => registration.Class (current.read previous)
-      Promotion := fun previous => registration.Promotion (current.read previous)
+      Datum := fun previous => registration.Datum (current previous)
+      Class := fun previous => registration.Class (current previous)
+      Promotion := fun previous => registration.Promotion (current previous)
       observationData := residual.dependentMap fun _ residual =>
         registration.observationData residual
       completeClasses := residual.dependentMap fun _ residual =>
         registration.completeClasses residual
-      classOf := fun previous => registration.classOf (current.read previous)
-      Direct := fun previous => registration.Direct (current.read previous)
-      promote := fun previous => registration.promote (current.read previous)
+      classOf := fun previous => registration.classOf (current previous)
+      Direct := fun previous => registration.Direct (current previous)
+      promote := fun previous => registration.promote (current previous)
       directDecidable := fun previous =>
-        registration.directDecidable (current.read previous) }
+        registration.directDecidable (current previous) }
   -- The exact CT9-complement coordinate schedule, defined once and read
   -- through the framework query in both places that need it: the profile
   -- publishes it as `coordinateSchedule`, and the rank budget below reads the
   -- same query.  No second copy of the schedule is stored anywhere.
   let coordinateSchedule :
       Query Previous fun previous =>
-        Core.Finite.Enumeration (Coordinate (current.read previous)) :=
+        Core.Finite.Enumeration (Coordinate (current previous)) :=
     normalizedSupport.complement.dependentMap fun previous complement =>
-      registration.coordinates (current.read previous) complement
+      registration.coordinates (current previous) complement
   let rank :
       RankProfile.{uPrevious, uResidual, uResponse, uSupply, uDatum, uClass,
         uPromotion, uCoordinate} classification :=
     { Supply := fun _ => ULift.{uSupply} LocalSupplyLowerBound.Summary
       localSupply := localSupply
       Coordinate := fun previous =>
-        Coordinate (current.read previous)
+        Coordinate (current previous)
       coordinateSchedule := coordinateSchedule
       TargetDependent := fun previous response _ coordinate =>
-        registration.TargetDependent (current.read previous) response coordinate
+        registration.TargetDependent (current previous) response coordinate
       charge := fun previous response _ coordinate =>
-        registration.charge (current.read previous) response coordinate
+        registration.charge (current previous) response coordinate
       -- Manuscript node [32] compares the target-relative rank against
       -- `W₂(R)`, the count of raw curvature coordinates.  That count is not a
       -- supply observation: it is the exact coordinate schedule the
@@ -824,30 +848,30 @@ noncomputable def Profile.ofRegistrationAt
       -- CT15's context and to every later Strategy; it simply is not this
       -- budget.
       capacity := fun previous _supply response _ =>
-        ((coordinateSchedule.read previous).values.map
-            (registration.charge (current.read previous) response)).sum +
-          registration.capacitySlack (current.read previous) response
+        ((coordinateSchedule previous).values.map
+            (registration.charge (current previous) response)).sum +
+          registration.capacitySlack (current previous) response
       targetDependentDecidable := fun previous response _ coordinate =>
-        registration.targetDependentDecidable (current.read previous)
+        registration.targetDependentDecidable (current previous)
           response coordinate }
-  { SupportAmbient := fun previous => AmbientItem (current.read previous)
+  { SupportAmbient := fun previous => AmbientItem (current previous)
     normalizedSupport
     classification
     rank
     code :=
       { InSupport := fun stage coordinate =>
-          coordinate ∈ (rank.coordinateSchedule.read stage.previous).values
+          coordinate ∈ (rank.coordinateSchedule stage.previous).values
         ClosedCode := fun _ => ULift.{uCode} CT10.Terminal
         closedCode := fun stage =>
-          ULift.up ((rank.ct10ResultAfterRank.read stage).terminal)
+          ULift.up ((rank.ct10ResultAfterRank stage).terminal)
         targetCode := fun _ => ULift.up CT10.Terminal.exhaustive
         inSupportDecidable := fun stage _coordinate =>
-          letI : DecidableEq (Coordinate (current.read stage.previous)) :=
-            (rank.coordinateSchedule.read stage.previous).decEq
+          letI : DecidableEq (Coordinate (current stage.previous)) :=
+            (rank.coordinateSchedule stage.previous).decEq
           inferInstance
         computeCode := fun stage =>
           Core.Counted.pure
-            (ULift.up ((rank.ct10ResultAfterRank.read stage).terminal))
+            (ULift.up ((rank.ct10ResultAfterRank stage).terminal))
         computeCodeBudget := Core.PolynomialCheckBudget.constant (fun _ => 0) 0
         computeCodeCorrect := fun _ => rfl
         computeCodeChecks := fun _ => rfl
@@ -911,7 +935,7 @@ theorem Profile.ofRegistrationAt_fullRankValue_le_chargeTotal
     (normalizedSupport :
       SupportComplementNormalization.ExactLedger.{
         uResidual, uPrevious, uAmbient, uPiece} Previous Residual
-        (fun previous => AmbientItem (current.read previous)))
+        (fun previous => AmbientItem (current previous)))
     (localSupply : Query Previous fun _ =>
       ULift.{uSupply} LocalSupplyLowerBound.Summary)
     {previous : Previous}
@@ -924,23 +948,23 @@ theorem Profile.ofRegistrationAt_fullRankValue_le_chargeTotal
       uDatum, uClass, uPromotion, uCoordinate, uCode, uAmbient, uPiece}
       registration current normalizedSupport localSupply).code.fullRankValue
         fullRank ≤
-      ((registration.coordinates (current.read previous)
-            (normalizedSupport.complement.read previous)).values.map
-          (registration.charge (current.read previous)
-            (registration.response (current.read previous)))).sum +
-        registration.capacitySlack (current.read previous)
-          (registration.response (current.read previous)) := by
+      ((registration.coordinates (current previous)
+            (normalizedSupport.complement previous)).values.map
+          (registration.charge (current previous)
+            (registration.response (current previous)))).sum +
+        registration.capacitySlack (current previous)
+          (registration.response (current previous)) := by
   refine (CodeProfile.fullRankValue_le_capacity _ fullRank ?_).trans ?_
   · intro stage coordinate
     exact registration.charge_pos _ _ coordinate
   · exact le_of_eq (congrArg
       (fun source =>
-        ((registration.coordinates (current.read source)
-              (normalizedSupport.complement.read source)).values.map
-            (registration.charge (current.read source)
-              (registration.response (current.read source)))).sum +
-          registration.capacitySlack (current.read source)
-            (registration.response (current.read source)))
+        ((registration.coordinates (current source)
+              (normalizedSupport.complement source)).values.map
+            (registration.charge (current source)
+              (registration.response (current source)))).sum +
+          registration.capacitySlack (current source)
+            (registration.response (current source)))
       fullRank.exact.rankPrevious)
 
 /-- Every registration-built composition hands CT16 exactly the coordinate
@@ -960,7 +984,7 @@ theorem Profile.ofRegistrationAt_properSupport_impossible
     (normalizedSupport :
       SupportComplementNormalization.ExactLedger.{
         uResidual, uPrevious, uAmbient, uPiece} Previous Residual
-        (fun previous => AmbientItem (current.read previous)))
+        (fun previous => AmbientItem (current previous)))
     (localSupply : Query Previous fun _ =>
       ULift.{uSupply} LocalSupplyLowerBound.Summary)
     {previous : Previous}
@@ -1000,7 +1024,7 @@ theorem Profile.ofRegistrationAt_capacity_impossible
     (normalizedSupport :
       SupportComplementNormalization.ExactLedger.{
         uResidual, uPrevious, uAmbient, uPiece} Previous Residual
-        (fun previous => AmbientItem (current.read previous)))
+        (fun previous => AmbientItem (current previous)))
     (localSupply : Query Previous fun _ =>
       ULift.{uSupply} LocalSupplyLowerBound.Summary)
     {previous : Previous}
@@ -1031,7 +1055,7 @@ theorem Profile.ofRegistrationAt_ct10_terminal
     (normalizedSupport :
       SupportComplementNormalization.ExactLedger.{
         uResidual, uPrevious, uAmbient, uPiece} Previous Residual
-        (fun previous => AmbientItem (current.read previous)))
+        (fun previous => AmbientItem (current previous)))
     (localSupply : Query Previous fun _ =>
       ULift.{uSupply} LocalSupplyLowerBound.Summary)
     (exhaustive : registration.toBaseRegistration.ClassificationExhaustive)
@@ -1050,7 +1074,7 @@ theorem Profile.ofRegistrationAt_ct10_terminal
     (fun cls => exhaustive.1 _ cls)
     (fun cls => by
       obtain ⟨datum, member, classified⟩ :=
-        exhaustive.2 (current.read result.stage.previous) cls
+        exhaustive.2 (current result.stage.previous) cls
       exact ⟨datum, member, classified⟩)
 
 /-- The CT16 closed-code mismatch terminal of a `Profile.ofRegistrationAt`
@@ -1070,7 +1094,7 @@ theorem Profile.ofRegistrationAt_mismatch_impossible
     (normalizedSupport :
       SupportComplementNormalization.ExactLedger.{
         uResidual, uPrevious, uAmbient, uPiece} Previous Residual
-        (fun previous => AmbientItem (current.read previous)))
+        (fun previous => AmbientItem (current previous)))
     (localSupply : Query Previous fun _ =>
       ULift.{uSupply} LocalSupplyLowerBound.Summary)
     (exhaustive : registration.toBaseRegistration.ClassificationExhaustive)

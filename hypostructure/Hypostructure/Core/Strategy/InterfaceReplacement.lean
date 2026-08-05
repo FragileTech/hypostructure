@@ -326,12 +326,12 @@ variable (context : Query Previous fun _ =>
 
 abbrev InterfaceSupportStage :=
   Ledger.Extension Previous fun previous =>
-    profile.Registration (context.read previous)
+    profile.Registration (context previous)
 
 def interfaceSupportDecomposition (previous : Previous) :
     InterfaceSupportStage profile context :=
   (StageNode.create fun previous =>
-    profile.registration (context.read previous)).run previous
+    profile.registration (context previous)).run previous
 
 def contextAfterInterfaceSupport :
     Query (InterfaceSupportStage profile context) fun _ =>
@@ -340,22 +340,22 @@ def contextAfterInterfaceSupport :
 
 def registrationQuery :
     Query (InterfaceSupportStage profile context) fun stage =>
-      profile.Registration (context.read stage.previous) :=
+      profile.Registration (context stage.previous) :=
   Query.latest
 
 abbrev ContextUniversalStage :=
   Ledger.Extension (InterfaceSupportStage profile context) fun stage =>
     profile.UniversalReplacement
-      ((contextAfterInterfaceSupport profile context).read stage)
-      ((registrationQuery profile context).read stage)
+      ((contextAfterInterfaceSupport profile context) stage)
+      ((registrationQuery profile context) stage)
 
 def contextUniversalReplacement
     (previous : InterfaceSupportStage profile context) :
     ContextUniversalStage profile context :=
   (StageNode.create fun stage =>
     profile.universalReplacement
-      ((contextAfterInterfaceSupport profile context).read stage)
-      ((registrationQuery profile context).read stage)).run previous
+      ((contextAfterInterfaceSupport profile context) stage)
+      ((registrationQuery profile context) stage)).run previous
 
 def contextAfterUniversal :
     Query (ContextUniversalStage profile context) fun _ =>
@@ -365,22 +365,22 @@ def contextAfterUniversal :
 def registrationAfterUniversal :
     Query (ContextUniversalStage profile context) fun stage =>
       profile.Registration
-        ((contextAfterUniversal profile context).read stage) :=
+        ((contextAfterUniversal profile context) stage) :=
   (registrationQuery profile context).preserve
 
 def universalReplacementQuery :
     Query (ContextUniversalStage profile context) fun stage =>
       profile.UniversalReplacement
-        ((contextAfterUniversal profile context).read stage)
-        ((registrationAfterUniversal profile context).read stage) :=
+        ((contextAfterUniversal profile context) stage)
+        ((registrationAfterUniversal profile context) stage) :=
   Query.latest
 
 abbrev UncompressibleStage :=
   Ledger.Extension (ContextUniversalStage profile context) fun stage =>
     profile.Uncompressible
-      ((contextAfterUniversal profile context).read stage)
-      ((registrationAfterUniversal profile context).read stage)
-      ((universalReplacementQuery profile context).read stage)
+      ((contextAfterUniversal profile context) stage)
+      ((registrationAfterUniversal profile context) stage)
+      ((universalReplacementQuery profile context) stage)
 
 /-- Stable, stage-shape-free view of the three dependent facts produced by
 `closure`.  This is a projection of the literal accumulated ledger, not a
@@ -410,7 +410,7 @@ structure ExactClosureQueries
   context : Query Stage fun _ =>
     Core.MinimalCounterexampleContext P T.Predicate progress
   closure : Query Stage fun stage =>
-    ClosurePayload profile (context.read stage)
+    ClosurePayload profile (context stage)
 
 /-- The retained closure ledger rejects every context-free compression
 candidate at the exact selected object.  Downstream CTs need only recover the
@@ -453,7 +453,7 @@ ledger. -/
 def registrationAfterClosure :
     Query (UncompressibleStage profile context) fun stage =>
       profile.Registration
-        ((contextAfterClosure profile context).read stage) :=
+        ((contextAfterClosure profile context) stage) :=
   (registrationAfterUniversal profile context).preserve
 
 /-- Project the exact universal-replacement theorem already present in the
@@ -461,40 +461,40 @@ closure ledger. -/
 def universalAfterClosure :
     Query (UncompressibleStage profile context) fun stage =>
       profile.UniversalReplacement
-        ((contextAfterClosure profile context).read stage)
-        ((registrationAfterClosure profile context).read stage) :=
+        ((contextAfterClosure profile context) stage)
+        ((registrationAfterClosure profile context) stage) :=
   (universalReplacementQuery profile context).preserve
 
 /-- Project hereditary uncompressibility from the newest closure entry. -/
 def uncompressibleAfterClosure :
     Query (UncompressibleStage profile context) fun stage =>
       profile.Uncompressible
-        ((contextAfterClosure profile context).read stage)
-        ((registrationAfterClosure profile context).read stage)
-        ((universalAfterClosure profile context).read stage) :=
+        ((contextAfterClosure profile context) stage)
+        ((registrationAfterClosure profile context) stage)
+        ((universalAfterClosure profile context) stage) :=
   Query.latest
 
 /-- Collapse the dependent closure ledger into one typed capability payload.
 All four values are read at the same literal stage. -/
 def closurePayload (stage : UncompressibleStage profile context) :
-    ClosurePayload profile ((contextAfterClosure profile context).read stage) :=
-  { registration := (registrationAfterClosure profile context).read stage
-    universal := (universalAfterClosure profile context).read stage
-    uncompressible := (uncompressibleAfterClosure profile context).read stage }
+    ClosurePayload profile ((contextAfterClosure profile context) stage) :=
+  { registration := (registrationAfterClosure profile context) stage
+    universal := (universalAfterClosure profile context) stage
+    uncompressible := (uncompressibleAfterClosure profile context) stage }
 
 def closurePayloadQuery :
     Query (UncompressibleStage profile context) fun stage =>
-      ClosurePayload profile ((contextAfterClosure profile context).read stage) :=
-  Query.ofFunction (closurePayload profile context)
+      ClosurePayload profile ((contextAfterClosure profile context) stage) :=
+   (closurePayload profile context)
 
 def hereditaryTargetUncompressibility
     (previous : ContextUniversalStage profile context) :
     UncompressibleStage profile context :=
   (StageNode.create fun stage =>
     profile.uncompressible
-      ((contextAfterUniversal profile context).read stage)
-      ((registrationAfterUniversal profile context).read stage)
-      ((universalReplacementQuery profile context).read stage)).run previous
+      ((contextAfterUniversal profile context) stage)
+      ((registrationAfterUniversal profile context) stage)
+      ((universalReplacementQuery profile context) stage)).run previous
 
 /-- Sealed high-level Strategy combining interface registration, universal
 replacement, and hereditary uncompressibility.  The implementation is

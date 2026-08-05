@@ -62,7 +62,7 @@ theorem storedF2Defect
       let family := canonicalFamilyProducer profile CycleLengthOK
         cycleLengthDecidable (Graph.HasCycleWithLength CycleLengthOK)
         decideTarget handoffItems handoffSupport
-      family.FailureOwner (family.storedClassificationQuery.read stage) .f2) :
+      family.FailureOwner (family.storedClassificationQuery stage) .f2) :
     let event := ColdBranchFailureRouting.storedF2Event profile CycleLengthOK
       cycleLengthDecidable (Graph.HasCycleWithLength CycleLengthOK) decideTarget
       handoffItems handoffSupport stage owner

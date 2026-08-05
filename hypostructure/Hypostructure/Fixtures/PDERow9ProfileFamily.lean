@@ -79,7 +79,7 @@ def selectedScaleQuery :
   Residual.Query.residual.map fun _previous _root => 0
 
 theorem selectedScale_mem_query (previous : RowNineView) :
-    selectedScaleQuery.read previous ∈ (scaleQuery.read previous).values := by
+    selectedScaleQuery previous ∈ (scaleQuery previous).values := by
   simp [selectedScaleQuery, scaleQuery, Core.Finite.Enumeration.singleton,
     Core.Finite.Enumeration.ofNodupList]
 
@@ -112,9 +112,9 @@ def thickeningCapability : CT17.Capability thickeningSpec where
   workBound := by
     intro previous
     change
-      CT17.localCheckBound (targetQuery.read previous)
-          (offsetQuery.read previous)
-          ((emptyPositionQuery (selectedScaleQuery.read previous)).read previous) <=
+      CT17.localCheckBound (targetQuery previous)
+          (offsetQuery previous)
+          ((emptyPositionQuery (selectedScaleQuery previous)) previous) <=
         5 * (0 + 1) ^ 0
     norm_num [CT17.localCheckBound, targetQuery, offsetQuery,
       selectedScaleQuery, emptyPositionQuery,
@@ -151,7 +151,7 @@ def cellQuery :
 
 def negativeTotalQuery :
     Residual.Query PeelingStage fun previous =>
-      ((cellQuery.read previous).values.map (fun _cell : Unit => (-1 : Int))).sum <
+      ((cellQuery previous).values.map (fun _cell : Unit => (-1 : Int))).sum <
         0 :=
   Residual.Query.residual.map fun (_previous : PeelingStage) _root => by
     change (([()].map (fun _cell : Unit => (-1 : Int))).sum < 0)

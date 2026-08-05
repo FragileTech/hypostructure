@@ -32,7 +32,7 @@ def observableSpec {Previous : Type uPrevious}
   Class := Class
   Promotion := Promotion
   classOf := fun previous index =>
-    classify previous index (observables.observe (object.read previous) index)
+    classify previous index (observables.observe (object previous) index)
   Direct := Direct
   promote := promote
 

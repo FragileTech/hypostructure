@@ -354,10 +354,23 @@ private noncomputable def supportComplementNormalization :
 
 noncomputable def boundaryDemandAccounting :
     Core.Strategy.BoundaryDemandAccounting.Registration
-      (Core.Strategy.ProblemInput problem) :=
-  Graph.Strategy.NormalizationRank.boundaryDemand
-    (fun input => input.object)
-    (fun _ => erdosReceiverLoadProfile.baselineDegree)
+      (Core.Strategy.ProblemInput problem)
+      supportComplementNormalization.snd.AmbientItem
+      supportComplementNormalization.snd.ambientSupport
+      (fun input =>
+        baseDefinition.data.obstructionPackingClosures[
+          supportComplementNormalization.fst].Occurrence input)
+      supportComplementNormalization.snd.cover := by
+  apply Graph.Strategy.NormalizationRank.boundaryDemand
+    (fun input => inducedPathPresentation.object input)
+    (fun input => inducedPathPresentation.baselineDegree input)
+    (fun _ item => item.down)
+  · intro input item
+    exact
+      Graph.Strategy.NormalizationRank.liftedVertices_adjacency_count
+        (inducedPathPresentation.object input) item.down
+  · intro input
+    exact Graph.Strategy.minimumDegreeThresholdQuery_le_minDegree input
 
 noncomputable def localSupplyLowerBound :
     Core.Strategy.LocalSupplyLowerBound.Registration

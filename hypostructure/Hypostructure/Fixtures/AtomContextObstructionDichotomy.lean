@@ -119,11 +119,11 @@ theorem context_selected : contextBranch = .inr contextStage :=
   rfl
 
 theorem atom_latest_is_selected :
-    (Core.Residual.Query.latest.read atomStage) = atomStage.added :=
+    (Core.Residual.Query.latest atomStage) = atomStage.added :=
   rfl
 
 theorem context_latest_is_selected :
-    (Core.Residual.Query.latest.read contextStage) = contextStage.added :=
+    (Core.Residual.Query.latest contextStage) = contextStage.added :=
   rfl
 
 theorem atom_literal_predecessor : atomStage.previous = atomRoot :=
@@ -259,7 +259,7 @@ theorem atom_compiled_latest :
     match atomReduction.outcome input with
     | .inl _ => True
     | .inr live =>
-        Core.Residual.Query.latest.read live.stage.toLedger =
+        Core.Residual.Query.latest live.stage.toLedger =
           live.stage.added := by
   rfl
 
@@ -267,7 +267,7 @@ theorem context_compiled_latest :
     match contextReduction.outcome input with
     | .inl _ => True
     | .inr live =>
-        Core.Residual.Query.latest.read live.stage.toLedger =
+        Core.Residual.Query.latest live.stage.toLedger =
           live.stage.added := by
   rfl
 

@@ -34,7 +34,7 @@ def firstSpec : CT15.Spec Input where
   capacity := fun _ => 0
 
 def firstCapability : CT15.Capability firstSpec where
-  coordinates := Query.ofFunction fun input => by
+  coordinates :=  fun input => by
     change Core.Finite.Enumeration Unit
     exact Core.Finite.Enumeration.singleton ()
   targetDependentDecidable := fun input _ => by
@@ -60,7 +60,7 @@ def secondSpec : CT15.Spec Middle where
   capacity := fun _ => 0
 
 def secondCapability : CT15.Capability secondSpec where
-  coordinates := Query.ofFunction fun previous => by
+  coordinates :=  fun previous => by
     change Core.Finite.Enumeration Unit
     exact Core.Finite.Enumeration.singleton ()
   targetDependentDecidable := fun _ _ => by

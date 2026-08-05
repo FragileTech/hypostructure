@@ -96,7 +96,7 @@ def budgetCellQuery :
 
 def negativeTotalQuery :
     Residual.Query ClassificationStage fun previous =>
-      ((budgetCellQuery.read previous).values.map
+      ((budgetCellQuery previous).values.map
         (fun _cell : Unit => (-1 : Int))).sum < 0 :=
   Residual.Query.residual.map fun (_previous : ClassificationStage) _root => by
     change (([()].map (fun _cell : Unit => (-1 : Int))).sum < 0)

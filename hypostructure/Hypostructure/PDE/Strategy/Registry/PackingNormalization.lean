@@ -82,7 +82,7 @@ filters the schedule with it.
 noncomputable def windowProfile :
     PDE.InducedPathCold.Profile (Core.Strategy.ProblemInput M.problem) where
   Window := fun _ => PUnit
-  schedule := Core.Residual.Query.ofFunction fun _ =>
+  schedule := fun _ =>
     Core.Finite.Enumeration.singleton PUnit.unit
   cold := fun input _ => ¬ system.GradientClosed input
   coldDecidable := fun input _ =>
@@ -94,7 +94,7 @@ the packing needs, and it is what makes "the cold schedule is empty" equivalent
 to "alternative 6 is reached". -/
 theorem unit_mem_schedule (input : Core.Strategy.ProblemInput M.problem) :
     PUnit.unit ∈
-      (((windowProfile system).schedule).read input).values := by
+      (((windowProfile system).schedule) input).values := by
   show PUnit.unit ∈ [PUnit.unit]
   exact List.Mem.head _
 

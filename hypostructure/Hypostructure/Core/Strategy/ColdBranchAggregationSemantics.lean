@@ -17,7 +17,7 @@ structure OverflowLedger (Stage : Type uStage) where
   lowerMass : Query Stage (fun _ => Nat)
   capacity : Query Stage (fun _ => Nat)
   overflow : Query Stage fun stage =>
-    capacity.read stage < lowerMass.read stage
+    capacity stage < lowerMass stage
 
 namespace OverflowLedger
 
@@ -52,12 +52,12 @@ structure FamilyCapability (Previous : Type uStage) (Target : Previous → Prop)
     Core.Finite.ColdCorridor.Producer.FamilyProducer.{
       uOwner, uItem, uState, uOutput} (Owner previous)
   storedF1ForcesTarget : (previous : Previous) →
-    (stage : (family.read previous).ClassifiedStateStage Previous) →
-    (family.read previous).FailureOwner
-        ((family.read previous).storedClassificationQuery.read stage) .f1 →
+    (stage : (family previous).ClassifiedStateStage Previous) →
+    (family previous).FailureOwner
+        ((family previous).storedClassificationQuery stage) .f1 →
       Target previous
   classifiedStateForcesTarget : (previous : Previous) →
-    (stage : (family.read previous).ClassifiedStateStage Previous) →
+    (stage : (family previous).ClassifiedStateStage Previous) →
       Option (PLift (Target previous))
 
 /-- Stage-polymorphic registration of the exact family capability consumed by
@@ -84,22 +84,22 @@ structure LedgerRegistration
     (current : Query Previous fun _ => Core.Strategy.ProblemInput P) →
     /- The provenance law of the retained minimal-closure header, read at this
     stage: the object the spine is arguing about is the object that header
-    publishes.  It is `CapabilityStore.minimalClosureActiveObject`
-    (`Core/Strategy/Dag.lean:2666`), already proved for this very reduction
-    index, and it is what makes `exact.closure.read` speak about the active
+    publishes.  It is read by the canonical
+    `ExactLedger.minimalClosureActiveObject` accessor, already proved for this reduction
+    index, and it is what makes `exact.closure` speak about the active
     object rather than about an unrelated one. -/
     (activeObject : Query Previous fun previous =>
-      (current.read previous).object = (exact.context.read previous).G) →
+      (current previous).object = (exact.context previous).G) →
     (packing : Query Previous fun previous =>
       ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read previous))
-        (packingSemantics.conflict (current.read previous))) →
+        (packingSemantics.occurrences (current previous))
+        (packingSemantics.conflict (current previous))) →
     (handoffSupports : Query Previous (fun previous =>
       Core.Finite.Enumeration
-        (HandoffSupport (current.read previous)))) →
-    (handoffAbsent : Option (Query Previous fun previous =>
-      (handoffSupports.read previous).values = [])) →
+        (HandoffSupport (current previous)))) →
+    (handoffAbsent : Option (PLift (∀ previous,
+      (handoffSupports previous).values = []))) →
     FamilyCapability.{uStage, uOwner, uItem, uState, uOutput} Previous
-      (fun previous => T.Predicate (current.read previous).object)
+      (fun previous => T.Predicate (current previous).object)
 
 end Hypostructure.Core.Strategy.ColdBranchAggregation

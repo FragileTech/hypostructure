@@ -24,7 +24,7 @@ abbrev focus : Focus.Profile Nat :=
 
 def scheduleQuery : Focus.ActiveQuery focus fun _previous _active =>
     Enumeration Nat :=
-  Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     Enumeration.ofNodupList [0, 1] (by decide)
 
 def selectedContract : SelectedSchedule.Contract focus where
@@ -38,13 +38,13 @@ theorem selected_preserves_previous :
   selectedContract.execute_previous 0
 
 theorem selected_latest_card :
-    selectedContract.latestCard.read selectedStage trivial = 2 := by
+    selectedContract.latestCard selectedStage trivial = 2 := by
   rfl
 
 theorem selected_latest_card_exact :
-    selectedContract.latestCard.read selectedStage trivial =
-      (scheduleQuery.read 0 trivial).card :=
-  selectedContract.latestCardExact.read selectedStage trivial
+    selectedContract.latestCard selectedStage trivial =
+      (scheduleQuery 0 trivial).card :=
+  selectedContract.latestCardExact selectedStage trivial
 
 def ct3Schedule : Hypostructure.CT3.Schedule.Contract Nat where
   items := Enumeration.ofNodupList [0, 1] (by decide)
@@ -88,7 +88,7 @@ theorem ct3_first_residual_witness
 
 def focusedAllGoodSchedule :
     Focus.ActiveQuery focus fun _previous _active => Enumeration Nat :=
-  Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     Enumeration.ofNodupList [0, 1] (by decide)
 
 def focusedAllGoodContract :
@@ -105,10 +105,10 @@ def focusedAllGoodStage := focusedAllGoodContract.runStage 0
 theorem focused_allGood_query_reads
     (active : focusedAllGoodContract.allGoodFocus.Active
       focusedAllGoodStage) :
-    ∀ item ∈ (focusedAllGoodSchedule.read 0 trivial).values,
+    ∀ item ∈ (focusedAllGoodSchedule 0 trivial).values,
       Hypostructure.CT3.Schedule.Contract.GoodTerminal
         (focusedAllGoodContract.scheduleAt 0 trivial) item :=
-  focusedAllGoodContract.allGoodQuery.read focusedAllGoodStage
+  focusedAllGoodContract.allGoodQuery focusedAllGoodStage
     active
 
 def focusedAllGoodEvidence (previous : Nat) (active : focus.Active previous) :
@@ -148,16 +148,16 @@ noncomputable def focusedAllGoodPackageItem :
     Focus.ActiveQuery
       (focusedAllGoodPackageContract.sameInterfaceContract).successor
         fun _stage _active => Nat :=
-  Focus.ActiveQuery.ofFunction fun _stage _active => 0
+  fun _stage _active => 0
 
 noncomputable def focusedAllGoodPackageMember :
     Focus.ActiveQuery
       (focusedAllGoodPackageContract.sameInterfaceContract).successor
         fun stage active =>
-          focusedAllGoodPackageItem.read stage active ∈
-            (focusedAllGoodPackageContract.sameInterfaceContract).items.read
+          focusedAllGoodPackageItem stage active ∈
+            (focusedAllGoodPackageContract.sameInterfaceContract).items
               stage.previous active :=
-  Focus.ActiveQuery.ofFunction fun stage active => by
+  fun stage active => by
     change 0 ∈ (Enumeration.ofNodupList [0, 1] (by decide)).values
     decide
 
@@ -166,12 +166,12 @@ theorem focused_allGood_package_target_complete
       (focusedAllGoodPackageContract.sameInterfaceContract).successor.Active
         focusedAllGoodPackageStage) :
     (((focusedAllGoodPackageContract.sameInterfaceContract).latestPackageAt
-      focusedAllGoodPackageItem focusedAllGoodPackageMember).read
+      focusedAllGoodPackageItem focusedAllGoodPackageMember)
         focusedAllGoodPackageStage active).targetComplete :=
   ((focusedAllGoodPackageContract.sameInterfaceContract).latestPackageProof
     focusedAllGoodPackageItem focusedAllGoodPackageMember
     (fun package => package.targetComplete)
-    (fun package => package.targetCompleteProof)).read
+    (fun package => package.targetCompleteProof))
       focusedAllGoodPackageStage active
 
 theorem focused_allGood_verified_target_complete
@@ -179,15 +179,15 @@ theorem focused_allGood_verified_target_complete
       (focusedAllGoodPackageContract.verifiedSameInterfaceContract).successor.Active
         focusedAllGoodPackageStage) :
     (((focusedAllGoodPackageContract.verifiedSameInterfaceContract).latestPackageAt
-      focusedAllGoodPackageItem focusedAllGoodPackageMember).read
+      focusedAllGoodPackageItem focusedAllGoodPackageMember)
         focusedAllGoodPackageStage active).targetComplete :=
   ((focusedAllGoodPackageContract.verifiedSameInterfaceContract).latestTargetComplete
-    focusedAllGoodPackageItem focusedAllGoodPackageMember).read
+    focusedAllGoodPackageItem focusedAllGoodPackageMember)
       focusedAllGoodPackageStage active
 
 def focusedResidualSchedule :
     Focus.ActiveQuery focus fun _previous _active => Enumeration Nat :=
-  Focus.ActiveQuery.ofFunction fun _previous _active =>
+  fun _previous _active =>
     Enumeration.ofNodupList [0, 1] (by decide)
 
 def focusedResidualContract :
@@ -204,10 +204,10 @@ def focusedResidualStage := focusedResidualContract.runStage 0
 theorem focused_residual_query_reads
     (active : focusedResidualContract.residualFocus.Active
       focusedResidualStage) :
-    ∃ item ∈ (focusedResidualSchedule.read 0 trivial).values,
+    ∃ item ∈ (focusedResidualSchedule 0 trivial).values,
       Hypostructure.CT3.Schedule.Contract.ResidualTerminal
         (focusedResidualContract.scheduleAt 0 trivial) item :=
-  focusedResidualContract.hasResidualQuery.read focusedResidualStage
+  focusedResidualContract.hasResidualQuery focusedResidualStage
     active
 
 theorem focused_residual_terminal_query_reads
@@ -215,9 +215,9 @@ theorem focused_residual_terminal_query_reads
       focusedResidualStage) :
     Hypostructure.CT3.Schedule.Contract.ResidualTerminal
       (focusedResidualContract.scheduleAt 0 trivial)
-      (focusedResidualContract.residualItemQuery.read focusedResidualStage
+      (focusedResidualContract.residualItemQuery focusedResidualStage
         active) :=
-  focusedResidualContract.residualTerminalQuery.read focusedResidualStage
+  focusedResidualContract.residualTerminalQuery focusedResidualStage
     active
 
 def focusedResidualEvidence (previous : Nat) (active : focus.Active previous) :
@@ -308,11 +308,11 @@ theorem focused_residual_route_enabled :
     focusedResidualStage active
 
 def packageItems : Focus.ActiveQuery focus fun _previous _active => List Nat :=
-  Focus.ActiveQuery.ofFunction fun _previous _active => [0, 1]
+  fun _previous _active => [0, 1]
 
 def packageQuery : Focus.ActiveQuery focus fun previous active =>
-    (item : Nat) -> item ∈ packageItems.read previous active -> String :=
-  Focus.ActiveQuery.ofFunction fun _previous _active item _member =>
+    (item : Nat) -> item ∈ packageItems previous active -> String :=
+  fun _previous _active item _member =>
     toString item
 
 def sameInterfaceContract : Response.SameInterface.Contract focus where
@@ -330,18 +330,18 @@ theorem package_preserves_previous :
 def selectedPackageItem :
     Focus.ActiveQuery sameInterfaceContract.successor fun _stage _active =>
       Nat :=
-  Focus.ActiveQuery.ofFunction fun _stage _active => 1
+  fun _stage _active => 1
 
 def selectedPackageMember :
     Focus.ActiveQuery sameInterfaceContract.successor fun stage active =>
-      selectedPackageItem.read stage active ∈
-        packageItems.read stage.previous active :=
-  Focus.ActiveQuery.ofFunction fun stage active => by
+      selectedPackageItem stage active ∈
+        packageItems stage.previous active :=
+  fun stage active => by
     simp [selectedPackageItem, packageItems]
 
 theorem package_at_reads :
     (sameInterfaceContract.latestPackageAt selectedPackageItem
-      selectedPackageMember).read packageStage trivial = "1" :=
+      selectedPackageMember) packageStage trivial = "1" :=
   rfl
 
 #print axioms selected_preserves_previous

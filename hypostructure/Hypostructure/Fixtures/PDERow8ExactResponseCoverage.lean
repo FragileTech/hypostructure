@@ -37,7 +37,7 @@ def rowSevenPositiveActive :
       rowSevenStage := by
   refine ⟨PDERow7CapacityTargetCompactification.positiveStageActive, ?_⟩
   change
-    (CapacityProfile.terminalQuery PositiveRowSevenProfile).read rowSevenStage
+    (CapacityProfile.terminalQuery PositiveRowSevenProfile) rowSevenStage
       PDERow7CapacityTargetCompactification.positiveStageActive = .c1
   exact PDERow7CapacityTargetCompactification.positiveOutput_terminal
 
@@ -104,18 +104,18 @@ def responseCoverage
     (previous : ResponseView) (replacement : Unit) :
     Core.Response.FiniteTable.SymbolicCoverage responseSystem
       (responseSpec.representatives
-        (responseSourceQuery.read previous) replacement)
+        (responseSourceQuery previous) replacement)
       (Core.Response.FiniteTable.ExactSchedule.ofList
-        (responseCoordinatesQuery.read previous).values) := by
+        (responseCoordinatesQuery previous).values) := by
   change
     Core.Response.FiniteTable.SymbolicCoverage responseSystem
       (responseSpec.representatives
-        (responseSourceQuery.read previous) replacement)
+        (responseSourceQuery previous) replacement)
       (Core.Response.FiniteTable.ExactSchedule.ofList [()])
   exact Core.Response.FiniteTable.SymbolicCoverage.ofSubsingletonSingleton
     responseSystem
     (responseSpec.representatives
-      (responseSourceQuery.read previous) replacement) ()
+      (responseSourceQuery previous) replacement) ()
 
 def responseCapability : CT3.Capability responseSpec where
   source := responseSourceQuery

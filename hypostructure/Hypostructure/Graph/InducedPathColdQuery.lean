@@ -27,31 +27,31 @@ abbrev ObjectQuery :=
 noncomputable def selectedWindowsQuery {order : Nat}
     (object : ObjectQuery)
     (packing : Query Previous
-      (fun previous => Profile (object.read previous) order)) :
+      (fun previous => Profile (object previous) order)) :
     Query Previous (fun previous =>
-      Enumeration (Window (object.read previous) order)) :=
+      Enumeration (Window (object previous) order)) :=
   packing.map fun previous profile => by
-    letI : DecidableEq (Window (object.read previous) order) :=
+    letI : DecidableEq (Window (object previous) order) :=
       Classical.decEq _
     exact Enumeration.ofNodupList profile.selected profile.selected_nodup
 
 noncomputable def tokenScheduleQuery {order : Nat}
     (object : ObjectQuery)
     (window : Query Previous (fun previous =>
-      Window (object.read previous) order)) :
+      Window (object previous) order)) :
     Query Previous (fun previous =>
-      Enumeration (Token (object.read previous) order (window.read previous))) :=
+      Enumeration (Token (object previous) order (window previous))) :=
   window.dependentMap fun _previous activeWindow => tokenSchedule activeWindow
 
 noncomputable def branchExcessQuery {order : Nat}
     (object : ObjectQuery)
     (window : Query Previous (fun previous =>
-      Window (object.read previous) order))
+      Window (object previous) order))
     (transit : Query Previous (fun _previous => Nat)) :
     Query Previous (fun previous =>
-      List (Token (object.read previous) order (window.read previous))) :=
+      List (Token (object previous) order (window previous))) :=
   window.dependentMap fun previous activeWindow =>
-    branchExcess activeWindow (transit.read previous)
+    branchExcess activeWindow (transit previous)
 
 /-! The aggregate cold schedule is likewise a dependent query.  The packing
 profile is read from the predecessor ledger; Core's query map then computes
@@ -61,18 +61,18 @@ noncomputable def selectedBranchExcessQuery
     (object : ObjectQuery)
     (packing : Query Previous
       (fun previous =>
-        Profile (object.read previous) 13)) :
+        Profile (object previous) 13)) :
     Query Previous (fun previous =>
-      List (BranchExcessOccurrence (object.read previous) 13)) :=
+      List (BranchExcessOccurrence (object previous) 13)) :=
   packing.dependentMap fun _previous profile => selectedBranchExcess profile
 
 noncomputable def selectedBranchExcessScheduleQuery
     (object : ObjectQuery)
     (packing : Query Previous
       (fun previous =>
-        Profile (object.read previous) 13)) :
+        Profile (object previous) 13)) :
     Query Previous (fun previous =>
-      Enumeration (BranchExcessOccurrence (object.read previous) 13)) :=
+      Enumeration (BranchExcessOccurrence (object previous) 13)) :=
   packing.dependentMap fun _previous profile => selectedBranchExcessSchedule profile
 
 /-- Restrict the exact predecessor-owned packing schedule to its
@@ -83,10 +83,10 @@ noncomputable def ambientCubicScheduledExteriorBranchesQuery
     (object : ObjectQuery)
     (packing : Query Previous
       (fun previous =>
-        Profile (object.read previous) 13)) :
+        Profile (object previous) 13)) :
     Query Previous (fun previous =>
       Enumeration
-        (AmbientCubicScheduledExteriorBranch (packing.read previous))) :=
+        (AmbientCubicScheduledExteriorBranch (packing previous))) :=
   packing.dependentMap fun _previous profile =>
     ambientCubicScheduledExteriorBranches profile
 
@@ -96,10 +96,10 @@ ledger, not a registered scalar or a copied count. -/
 noncomputable def ambientCubicExternalStubCountQuery
     (object : ObjectQuery)
     (packing : Query Previous
-      (fun previous => Profile (object.read previous) 13)) :
+      (fun previous => Profile (object previous) 13)) :
     Query Previous (fun previous =>
       ∀ owner : AmbientCubicScheduledExteriorBranch
-          (packing.read previous),
+          (packing previous),
         externalStubCount owner.1.1.1.1 = 15) :=
   packing.dependentMap fun _previous _profile owner =>
     ambientCubicOwner_externalStubCount owner
@@ -110,10 +110,10 @@ proved by the graph backend and remain indexed by the literal packing. -/
 noncomputable def ambientCubicBranchExcessLengthQuery
     (object : ObjectQuery)
     (packing : Query Previous
-      (fun previous => Profile (object.read previous) 13)) :
+      (fun previous => Profile (object previous) 13)) :
     Query Previous (fun previous =>
       ∀ owner : AmbientCubicScheduledExteriorBranch
-          (packing.read previous),
+          (packing previous),
         (branchExcess owner.1.1.1.1 2).length = 13) :=
   packing.dependentMap fun _previous _profile owner =>
     ambientCubicOwner_branchExcessLength owner
@@ -121,7 +121,7 @@ noncomputable def ambientCubicBranchExcessLengthQuery
 noncomputable def branchExcessChecksQuery {order : Nat}
     (object : ObjectQuery)
     (window : Query Previous (fun previous =>
-      Window (object.read previous) order)) :
+      Window (object previous) order)) :
     Query Previous (fun _previous => Nat) :=
   window.map fun _previous activeWindow =>
     branchExcessChecks activeWindow
@@ -129,10 +129,10 @@ noncomputable def branchExcessChecksQuery {order : Nat}
 noncomputable def regularityDecisionQuery {order baseline : Nat}
     (object : ObjectQuery)
     (window : Query Previous (fun previous =>
-      Window (object.read previous) order)) :
+      Window (object previous) order)) :
     Query Previous (fun previous =>
-      Decidable (Regularity (object.read previous) order baseline
-        (window.read previous))) :=
+      Decidable (Regularity (object previous) order baseline
+        (window previous))) :=
   window.dependentMap fun _previous activeWindow =>
     regularityDecidable (baseline := baseline) activeWindow
 
@@ -142,7 +142,7 @@ later strategy cannot substitute a detached window or occurrence list. -/
 noncomputable def canonicalFamilyProducerQuery {order : Nat}
     (object : ObjectQuery)
     (packing : Query Previous
-      (fun previous => Profile (object.read previous) order))
+      (fun previous => Profile (object previous) order))
     (CycleLengthOK : Nat → Prop)
     (cycleLengthDecidable : DecidablePred CycleLengthOK)
     (Target : FiniteObject.{u} → Prop)
@@ -150,13 +150,13 @@ noncomputable def canonicalFamilyProducerQuery {order : Nat}
     {Handoff : Type u}
     (handoffItems : Query Previous fun _ => Enumeration Handoff)
     (handoffSupport : (previous : Previous) → Handoff →
-      Finset (object.read previous).Vertex) :
+      Finset (object previous).Vertex) :
     Query Previous (fun previous =>
       Core.Finite.ColdCorridor.Producer.FamilyProducer
-        (AmbientCubicScheduledExteriorBranch (packing.read previous))) :=
+        (AmbientCubicScheduledExteriorBranch (packing previous))) :=
   packing.dependentMap fun previous activePacking =>
     canonicalFamilyProducer activePacking CycleLengthOK
       cycleLengthDecidable Target decideTarget
-      (handoffItems.read previous) (handoffSupport previous)
+      (handoffItems previous) (handoffSupport previous)
 
 end Hypostructure.Graph.InducedPathCold.QuerySurface

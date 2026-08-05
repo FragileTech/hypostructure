@@ -73,7 +73,7 @@ def selectedCarrier
     (stage : RowFiveStage rowFive)
     (active : rowFive.TargetVisibleFocus.Active stage) :
     rowFive.closureProfile.Carrier :=
-  (rowFive.targetVisibleBoundaryQuery.read stage active).closure.residual.hit.value
+  (rowFive.targetVisibleBoundaryQuery stage active).closure.residual.hit.value
 
 /-- Evaluate the exact represented row-4 defect operator at the coordinate of
 the exact row-5 selected boundary class. -/
@@ -95,9 +95,9 @@ def exactDefect
     (stage : RowFiveStage rowFive)
     (active : rowFive.TargetVisibleFocus.Active stage) :
     rowFive.closureProfile.Carrier :=
-  let registered := registration.read stage active
+  let registered := registration stage active
   registered.defect
-    ((coordinate.read stage active) (selectedCarrier rowFive stage active))
+    ((coordinate stage active) (selectedCarrier rowFive stage active))
 
 /-- Exact exhaustive source classification at one active predecessor. -/
 structure RoutingCompleteAt
@@ -147,15 +147,15 @@ structure Profile
   resistanceContract : Residual.Focus.ActiveQuery rowFive.TargetVisibleFocus
     fun stage active =>
       DirectResistanceContract rowFive.closureProfile.Carrier
-        (defectRegistration.read stage active).geometry
+        (defectRegistration stage active).geometry
         (exactDefect rowFive defectRegistration boundaryCoordinate stage active)
         ResistancePotential
   harmonicZeroDecidable : Residual.Focus.ActiveQuery rowFive.TargetVisibleFocus
     fun stage active =>
-      Decidable ((resistanceContract.read stage active).harmonic = 0)
+      Decidable ((resistanceContract stage active).harmonic = 0)
   harmonicLedgerDecidable :
     Residual.Focus.ActiveQuery rowFive.TargetVisibleFocus fun stage active =>
-      Decidable ((resistanceContract.read stage active).harmonic ∈
+      Decidable ((resistanceContract stage active).harmonic ∈
         (CurrentLedgerAt rowFive stage active).classes)
   zeroClosed : Residual.Focus.ActiveQuery rowFive.TargetVisibleFocus
     fun stage active =>
@@ -163,7 +163,7 @@ structure Profile
         (CurrentLedgerAt rowFive stage active).classes
   routingComplete : Residual.Focus.ActiveQuery rowFive.TargetVisibleFocus
     fun stage active =>
-      RoutingCompleteAt rowFive (resistanceContract.read stage active)
+      RoutingCompleteAt rowFive (resistanceContract stage active)
         stage active
 
 namespace Profile
@@ -181,7 +181,7 @@ variable [CompleteSpace rowFive.closureProfile.Carrier]
 abbrev resistanceAt
     (profile : Profile rowFive M DefectQuotient)
     (view : ActiveView rowFive) :=
-  profile.resistanceContract.read view.previous view.proof
+  profile.resistanceContract view.previous view.proof
 
 /-- Exact harmonic component read from the predecessor-owned contract. -/
 def harmonicAt
@@ -211,10 +211,10 @@ def conditionDecidable
   letI : Decidable ((profile.resistanceAt view).Finite) :=
     (profile.resistanceAt view).finiteDecidable
   letI : Decidable (profile.harmonicAt view = 0) :=
-    profile.harmonicZeroDecidable.read view.previous view.proof
+    profile.harmonicZeroDecidable view.previous view.proof
   letI : Decidable (profile.harmonicAt view ∈
       (CurrentLedgerAt rowFive view.previous view.proof).classes) :=
-    profile.harmonicLedgerDecidable.read view.previous view.proof
+    profile.harmonicLedgerDecidable view.previous view.proof
   letI : Decidable (rowFive.closureProfile.IsTargetVisible
       (parentView rowFive view.previous view.proof)
       (profile.harmonicAt view)) :=
@@ -260,7 +260,7 @@ theorem targetVisibleEvidence
     TargetVisibleEvidence profile view := by
   have nonzero : profile.harmonicAt view ≠ 0 := by
     intro equalZero
-    have zeroClosed := profile.zeroClosed.read view.previous view.proof
+    have zeroClosed := profile.zeroClosed view.previous view.proof
     exact (profile.targetVisible_not_closed view visible)
       (equalZero ▸ zeroClosed)
   exact {
@@ -280,14 +280,14 @@ theorem condition_functional
   cases left <;> cases right
   · rfl
   · exact (rightCondition.2.1 leftCondition.2).elim
-  · have zeroClosed := profile.zeroClosed.read view.previous view.proof
+  · have zeroClosed := profile.zeroClosed view.previous view.proof
     exact (profile.targetVisible_not_closed view rightCondition)
       (leftCondition.2 ▸ zeroClosed) |>.elim
   · exact (leftCondition.2.1 rightCondition.2).elim
   · rfl
   · exact (profile.targetVisible_not_closed view rightCondition
       leftCondition.2.2).elim
-  · have zeroClosed := profile.zeroClosed.read view.previous view.proof
+  · have zeroClosed := profile.zeroClosed view.previous view.proof
     exact (profile.targetVisible_not_closed view leftCondition)
       (rightCondition.2 ▸ zeroClosed) |>.elim
   · exact (profile.targetVisible_not_closed view leftCondition
@@ -367,7 +367,7 @@ def toRaw
   alignmentRegistration := profile.routingComplete.map fun stage active complete =>
     .available (profile.alignmentAt
       (Residual.Focus.ActiveView.of stage active)
-      (rowFive.targetVisibleBoundaryQuery.read stage active) complete)
+      (rowFive.targetVisibleBoundaryQuery stage active) complete)
 
 /-- Exact evaluated defect as a typed query on the active row-6 predecessor. -/
 def exactDefectQuery
@@ -406,10 +406,10 @@ alignment at the exact predecessor. -/
 theorem alignmentRegistration_is_available
     (profile : Profile rowFive M DefectQuotient)
     (view : ActiveView rowFive) :
-    (profile.toRaw).alignmentRegistration.read view.previous view.proof =
+    (profile.toRaw).alignmentRegistration view.previous view.proof =
       .available (profile.alignmentAt view
-        (rowFive.targetVisibleBoundaryQuery.read view.previous view.proof)
-        (profile.routingComplete.read view.previous view.proof)) :=
+        (rowFive.targetVisibleBoundaryQuery view.previous view.proof)
+        (profile.routingComplete view.previous view.proof)) :=
   rfl
 
 /-- A proved strict source condition determines the framework-selected
@@ -474,18 +474,18 @@ theorem generateActiveCounted_checks_of_condition
         (Hypostructure.CT7.generateCounted
           profile.contextCapability view).checks) + tag.prefixChecks := by
   rw [DefectRouting.generateActiveCounted_checks_of_available profile.toRaw view
-    (profile.alignmentAt view (rowFive.targetVisibleBoundaryQuery.read
+    (profile.alignmentAt view (rowFive.targetVisibleBoundaryQuery
       view.previous view.proof)
-      (profile.routingComplete.read view.previous view.proof))
+      (profile.routingComplete view.previous view.proof))
     (profile.alignmentRegistration_is_available view)]
   rw [DefectRouting.scanAlignmentCounted_checks]
   congr 1
   exact
     (DefectRouting.scanAlignmentCounted profile.toRaw view
       (DefectRouting.generateRawCounted profile.toRaw view).value
-      (profile.alignmentAt view (rowFive.targetVisibleBoundaryQuery.read
+      (profile.alignmentAt view (rowFive.targetVisibleBoundaryQuery
         view.previous view.proof)
-        (profile.routingComplete.read view.previous view.proof))).value
+        (profile.routingComplete view.previous view.proof))).value
       |>.checks_eq_prefix_of_relates tag condition
 
 /-- Literal accumulated stage emitted by the strict row-6 executor. -/
@@ -550,7 +550,7 @@ def resistanceContractQueryAtSuccessor
     (profile : Profile rowFive M DefectQuotient) :
     Residual.Focus.ActiveQuery profile.SuccessorFocus fun stage active =>
       DirectResistanceContract rowFive.closureProfile.Carrier
-        (profile.defectRegistration.read stage.previous active).geometry
+        (profile.defectRegistration stage.previous active).geometry
         (exactDefect rowFive profile.defectRegistration
           profile.boundaryCoordinate stage.previous active)
         profile.ResistancePotential :=

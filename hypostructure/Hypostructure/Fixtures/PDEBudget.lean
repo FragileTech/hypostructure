@@ -12,8 +12,8 @@ namespace Hypostructure.Fixtures.PDEBudget
 open Hypostructure.PDE.Budget
 
 noncomputable def energyProfile : Profile Unit ℝ where
-  value := Hypostructure.Core.Residual.Query.ofFunction fun _ => (3 : ℝ) / 2
-  budget := Hypostructure.Core.Residual.Query.ofFunction fun _ => (2 : ℝ)
+  value := fun _ => (3 : ℝ) / 2
+  budget := fun _ => (2 : ℝ)
   within := by
     intro _
     change (3 : ℝ) / 2 ≤ 2

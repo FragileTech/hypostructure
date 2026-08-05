@@ -467,7 +467,7 @@ of unfolding the focused executor. -/
 theorem outputQuery_run_of_active
     (profile : Profile rowSix) (previous : RowSixStage rowSix)
     (active : rowSix.CapacityReadyFocus.Active previous) :
-    (outputQuery profile).read (run profile previous).value
+    (outputQuery profile) (run profile previous).value
         (runActiveProof profile previous active) =
       (generateActiveCounted profile
         (Residual.Focus.ActiveView.of previous active)).value := by

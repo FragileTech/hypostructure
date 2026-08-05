@@ -34,13 +34,13 @@ noncomputable def registration :
 noncomputable def profile :
     Core.Strategy.FiniteBarrierEnumeration.Profile Previous Residual where
   registration := registration
-  sourceCode := Query.ofFunction fun _ => [true]
+  sourceCode :=  fun _ => [true]
   current := Query.residual
 
 noncomputable def zeroProfile :
     Core.Strategy.FiniteBarrierEnumeration.Profile Previous Residual where
   registration := registration
-  sourceCode := Query.ofFunction fun _ => [false]
+  sourceCode :=  fun _ => [false]
   current := Query.residual
 
 theorem incoming_code_controls_flat_count :

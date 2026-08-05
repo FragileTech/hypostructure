@@ -32,7 +32,7 @@ variable (contract : Contract focus)
 /-- One framework-owned selected schedule certificate. -/
 structure Certificate (previous : Previous) (active : focus.Active previous) where
   schedule : Enumeration contract.Item
-  exact : schedule = contract.selected.read previous active
+  exact : schedule = contract.selected previous active
 
 /-- Focused stage carrying only the selected schedule certificate. -/
 abbrev Stage :=
@@ -42,7 +42,7 @@ abbrev Stage :=
 charged beyond the inherited focus selection. -/
 def executeCounted (previous : Previous) : Counted contract.Stage :=
   Focus.runCounted focus previous fun active _checks _exact =>
-    { schedule := contract.selected.read previous active
+    { schedule := contract.selected previous active
       exact := rfl }
 
 def execute (previous : Previous) : contract.Stage :=
@@ -80,10 +80,10 @@ def latestSchedule :
 selected schedule. -/
 def latestScheduleExact :
     Focus.ActiveQuery contract.successor fun stage active =>
-      contract.latestSchedule.read stage active =
-        contract.selected.read stage.previous active :=
-  Focus.ActiveQuery.ofFunction fun _stage active =>
-    (Focus.ActiveQuery.latest.read _stage active).exact
+      contract.latestSchedule stage active =
+        contract.selected stage.previous active :=
+  fun _stage active =>
+    (Focus.ActiveQuery.latest _stage active).exact
 
 /-- Read the selected schedule cardinality from the newest framework
 extension.  Downstream nodes should use this query rather than rebuild or
@@ -97,21 +97,21 @@ def latestCard :
 selected schedule cardinality. -/
 def latestCardExact :
     Focus.ActiveQuery contract.successor fun stage active =>
-      contract.latestCard.read stage active =
-        (contract.selected.read stage.previous active).card :=
-  Focus.ActiveQuery.ofFunction fun stage active => by
+      contract.latestCard stage active =
+        (contract.selected stage.previous active).card :=
+  fun stage active => by
     exact congrArg Enumeration.card
-      (Focus.ActiveQuery.latest.read stage active).exact
+      (Focus.ActiveQuery.latest stage active).exact
 
 /-- Transfer membership in the latest selected schedule back to the exact
 predecessor-owned selected schedule. -/
 def latestMemberExact :
     Focus.ActiveQuery contract.successor fun stage active =>
       ∀ item,
-        item ∈ (contract.latestSchedule.read stage active).values ->
-          item ∈ (contract.selected.read stage.previous active).values :=
-  Focus.ActiveQuery.ofFunction fun stage active item member => by
-    rw [contract.latestScheduleExact.read stage active] at member
+        item ∈ (contract.latestSchedule stage active).values ->
+          item ∈ (contract.selected stage.previous active).values :=
+  fun stage active item member => by
+    rw [contract.latestScheduleExact stage active] at member
     exact member
 
 /-- Read the selected entries as a schedule of membership-carrying values.
@@ -121,60 +121,60 @@ def latestAttached :
     Focus.ActiveQuery contract.successor fun stage active =>
       Enumeration
         { item : contract.Item //
-          item ∈ (contract.selected.read stage.previous active).values } :=
-  Focus.ActiveQuery.ofFunction fun stage active =>
-    (contract.latestSchedule.read stage active).attach.map
+          item ∈ (contract.selected stage.previous active).values } :=
+  fun stage active =>
+    (contract.latestSchedule stage active).attach.map
       (fun item =>
-        ⟨item.1, contract.latestMemberExact.read stage active item.1 item.2⟩)
+        ⟨item.1, contract.latestMemberExact stage active item.1 item.2⟩)
       (by
         intro left right equal
         have value_eq : left.1 = right.1 :=
           congrArg
             (fun output :
               { item : contract.Item //
-                item ∈ (contract.selected.read stage.previous active).values } =>
+                item ∈ (contract.selected stage.previous active).values } =>
               output.1)
             equal
         exact Subtype.ext value_eq)
       (by
         letI : DecidableEq contract.Item :=
-          (contract.selected.read stage.previous active).decEq
+          (contract.selected stage.previous active).decEq
         exact inferInstance)
 
 /-- The attached selected-entry schedule has exactly the selected schedule
 cardinality. -/
 def latestAttachedCardExact :
     Focus.ActiveQuery contract.successor fun stage active =>
-      (contract.latestAttached.read stage active).card =
-        (contract.selected.read stage.previous active).card :=
-  Focus.ActiveQuery.ofFunction fun stage active => by
+      (contract.latestAttached stage active).card =
+        (contract.selected stage.previous active).card :=
+  fun stage active => by
     simpa [latestAttached, Enumeration.map, Enumeration.attach,
       Enumeration.card] using
       congrArg Enumeration.card
-        (contract.latestScheduleExact.read stage active)
+        (contract.latestScheduleExact stage active)
 
 @[simp] theorem latestSchedule_read_active (previous : Previous)
     (active : focus.Active previous) :
-    contract.latestSchedule.read
+    contract.latestSchedule
         (Ledger.extend previous
           (.active active
-            ({ schedule := contract.selected.read previous active
+            ({ schedule := contract.selected previous active
                exact := rfl } :
               contract.Certificate previous active)))
         active =
-      contract.selected.read previous active :=
+      contract.selected previous active :=
   rfl
 
 @[simp] theorem latestCard_read_active (previous : Previous)
     (active : focus.Active previous) :
-    contract.latestCard.read
+    contract.latestCard
         (Ledger.extend previous
           (.active active
-            ({ schedule := contract.selected.read previous active
+            ({ schedule := contract.selected previous active
                exact := rfl } :
               contract.Certificate previous active)))
         active =
-      (contract.selected.read previous active).card :=
+      (contract.selected previous active).card :=
   rfl
 
 end Contract

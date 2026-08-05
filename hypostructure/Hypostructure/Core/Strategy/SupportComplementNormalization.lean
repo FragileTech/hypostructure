@@ -39,16 +39,16 @@ structure ExactLedger (Stage : Type uStage)
   Failure : (stage : Stage) → LocalPiece stage → Prop
   summary : Query Stage fun _ => Summary
   partitionExact : Query Stage fun stage =>
-    (summary.read stage).selectedCount +
-        (summary.read stage).complementCount =
-      (summary.read stage).ambientCount
+    (summary stage).selectedCount +
+        (summary stage).complementCount =
+      (summary stage).ambientCount
   selectedUniform : Query Stage fun stage =>
-    (summary.read stage).selectedCount =
-      (summary.read stage).coverCard * (summary.read stage).packingCount
+    (summary stage).selectedCount =
+      (summary stage).coverCard * (summary stage).packingCount
   complementExact : Query Stage fun stage =>
-    (summary.read stage).coverCard * (summary.read stage).packingCount +
-        (summary.read stage).complementCount =
-      (summary.read stage).ambientCount
+    (summary stage).coverCard * (summary stage).packingCount +
+        (summary stage).complementCount =
+      (summary stage).ambientCount
   ambient : Query Stage fun stage =>
     Core.Finite.Enumeration (AmbientItem stage)
   selected : Query Stage fun stage =>
@@ -56,23 +56,32 @@ structure ExactLedger (Stage : Type uStage)
   blocks : Query Stage fun stage =>
     Core.Finite.Enumeration (Block stage)
   cover : (stage : Stage) → Block stage → List (AmbientItem stage)
+  /-- CT9's true fibre is exactly the union of the selected block covers. -/
+  selectedMembership : (stage : Stage) → ∀ item,
+    item ∈ (selected stage).values ↔
+      ∃ block ∈ (blocks stage).values, item ∈ cover stage block
   coverNodup : Query Stage fun stage =>
     ∀ block, (cover stage block).Nodup
   coverCardExact : Query Stage fun stage =>
-    ∀ block, (cover stage block).length = (summary.read stage).coverCard
+    ∀ block, (cover stage block).length = (summary stage).coverCard
+  /-- Distinct selected blocks retain disjoint covers. -/
+  coverDisjoint : (stage : Stage) → ∀ left,
+    left ∈ (blocks stage).values → ∀ right,
+      right ∈ (blocks stage).values → left ≠ right →
+        List.Disjoint (cover stage left) (cover stage right)
   complement : Query Stage fun stage =>
     Core.Finite.Enumeration (AmbientItem stage)
   /-- CT9's literal false-label characterization, retained with the
   normalized-support ledger so downstream nodes can identify the remainder
   without rebuilding the packing or the partition. -/
   complementMembership : (stage : Stage) → ∀ item,
-    item ∈ (complement.read stage).values ↔
-      item ∈ (ambient.read stage).values ∧
-        item ∉ (selected.read stage).values
+    item ∈ (complement stage).values ↔
+      item ∈ (ambient stage).values ∧
+        item ∉ (selected stage).values
   localPieces : Query Stage fun stage =>
     Core.Finite.Enumeration (LocalPiece stage)
   active : Query Stage fun stage =>
-    ∀ piece, piece ∈ (localPieces.read stage).values →
+    ∀ piece, piece ∈ (localPieces stage).values →
       ¬ Failure stage piece
   sourceResidual : Query Stage fun _ => Residual := Query.residual
 
@@ -82,6 +91,23 @@ universe uNew
 
 variable {Stage : Type uStage} {Residual : Type uResidual}
 variable [HasResidual Stage Residual]
+
+/-- A selected item belongs to at most one selected block.  This is derived
+from the producer's retained disjoint-cover theorem, not supplied by a
+consumer. -/
+theorem uniqueCoverBlock
+    (ledger : ExactLedger Stage Residual AmbientItem)
+    (stage : Stage) {item : AmbientItem stage}
+    {left right : ledger.Block stage}
+    (leftMem : left ∈ (ledger.blocks stage).values)
+    (rightMem : right ∈ (ledger.blocks stage).values)
+    (itemLeft : item ∈ ledger.cover stage left)
+    (itemRight : item ∈ ledger.cover stage right) :
+    left = right := by
+  by_contra different
+  exact (List.disjoint_left.mp
+    (ledger.coverDisjoint stage left leftMem right rightMem different))
+      itemLeft itemRight
 
 /-- Transport the exact structural queries through a framework-owned stage
 projection.  The residual law records that the projection is a genuine
@@ -103,8 +129,11 @@ def comap {NewStage : Type uNew} [HasResidual NewStage Residual]
   selected := ledger.selected.comap project
   blocks := ledger.blocks.comap project
   cover := fun stage => ledger.cover (project stage)
+  selectedMembership := fun stage item =>
+    ledger.selectedMembership (project stage) item
   coverNodup := ledger.coverNodup.comap project
   coverCardExact := ledger.coverCardExact.comap project
+  coverDisjoint := fun stage => ledger.coverDisjoint (project stage)
   complement := ledger.complement.comap project
   complementMembership := fun stage item =>
     ledger.complementMembership (project stage) item
@@ -122,46 +151,11 @@ def comapTo {NewStage : Type uNew} [HasResidual NewStage Residual]
       residualOf (project stage) = (residualOf stage : Residual))
     (NewAmbient : NewStage → Type uAmbient)
     (ambient_eq : ∀ stage, AmbientItem (project stage) = NewAmbient stage) :
-    ExactLedger NewStage Residual NewAmbient where
-  Block := fun stage => ledger.Block (project stage)
-  LocalPiece := fun stage => ledger.LocalPiece (project stage)
-  Failure := fun stage => ledger.Failure (project stage)
-  summary := ledger.summary.comap project
-  partitionExact := ledger.partitionExact.comap project
-  selectedUniform := ledger.selectedUniform.comap project
-  complementExact := ledger.complementExact.comap project
-  ambient := Query.ofFunction fun stage =>
-    ambient_eq stage ▸ ledger.ambient.read (project stage)
-  selected := Query.ofFunction fun stage =>
-    ambient_eq stage ▸ ledger.selected.read (project stage)
-  blocks := ledger.blocks.comap project
-  cover := fun stage block =>
-    List.map (cast (ambient_eq stage)) (ledger.cover (project stage) block)
-  coverNodup := Query.ofFunction fun stage block => by
-    have injective : Function.Injective (cast (ambient_eq stage)) := by
-      intro left right equal
-      have returned := congrArg (cast (ambient_eq stage).symm) equal
-      simpa using returned
-    exact (ledger.coverNodup.read (project stage) block).map injective
-  coverCardExact := Query.ofFunction fun stage block => by
-    rw [List.length_map]
-    exact ledger.coverCardExact.read (project stage) block
-  complement := Query.ofFunction fun stage =>
-    ambient_eq stage ▸ ledger.complement.read (project stage)
-  complementMembership := fun stage item => by
-    have castMem {α β : Type uAmbient} (e : α = β) (x : β)
-        (s : Core.Finite.Enumeration α) :
-        x ∈ (e ▸ s).values ↔ cast e.symm x ∈ s.values := by
-      cases e
-      rfl
-    let oldItem := cast (ambient_eq stage).symm item
-    have h := ledger.complementMembership (project stage) oldItem
-    simp only [Query.read_ofFunction]
-    rw [castMem, castMem, castMem]
-    exact h
-  localPieces := ledger.localPieces.comap project
-  active := ledger.active.comap project
-  sourceResidual := ledger.sourceResidual.comap project
+    ExactLedger NewStage Residual NewAmbient := by
+  have familyEq : (fun stage => AmbientItem (project stage)) = NewAmbient :=
+    funext ambient_eq
+  cases familyEq
+  exact ledger.comap project _residual_eq
 
 def preserve {Added : Stage → Type uNew}
     (ledger : ExactLedger Stage Residual AmbientItem) :
@@ -217,12 +211,12 @@ def spec : CT9.Spec Previous where
   Item := profile.AmbientItem
   Label := fun _ => Bool
   label := fun previous item =>
-    let values := profile.inputs.read previous
+    let values := profile.inputs previous
     letI : Decidable (profile.Selected previous values.fst item) :=
       profile.selectedDecidable previous values.fst item
     decide (profile.Selected previous values.fst item)
   capacity := fun previous _ =>
-    (profile.inputs.read previous).snd.card
+    (profile.inputs previous).snd.card
 
 /-- CT9 capability derived only from the exact queried ambient schedule. -/
 def capability : CT9.Capability profile.spec where
@@ -230,7 +224,7 @@ def capability : CT9.Capability profile.spec where
   labels := fun _ => completeMembershipLabels
   inputSize := fun previous =>
     CT9.localCheckBound
-      (profile.ambientSupport.read previous)
+      (profile.ambientSupport previous)
       completeMembershipLabels.toEnumeration
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
@@ -275,7 +269,7 @@ def result :
 /-- The exact generated partition on either exhaustive CT9 terminal. -/
 def generatedPartition :
     Query profile.AfterPartition fun stage =>
-      let result := profile.result.read stage
+      let result := profile.result stage
       CT9.Partition profile.capability result.stage.previous :=
   profile.result.dependentMap fun _ result =>
     match result.terminal, result.outcome with
@@ -285,11 +279,11 @@ def generatedPartition :
 /-- Project one literal CT9 fibre without rebuilding its members. -/
 def fibre (label : Bool) :
     Query profile.AfterPartition fun stage =>
-      let result := profile.result.read stage
+      let result := profile.result stage
       Core.Finite.Enumeration
         (profile.spec.Item result.stage.previous) :=
   profile.generatedPartition.dependentMap fun stage partition => by
-    let result := profile.result.read stage
+    let result := profile.result stage
     letI : DecidableEq
         (profile.spec.Item result.stage.previous) :=
       (profile.capability.itemsAt result.stage.previous).decEq
@@ -299,7 +293,7 @@ def fibre (label : Bool) :
 
 /-- The newest ledger entry is the literal CT9 result. -/
 @[simp] theorem result_read (stage : profile.AfterPartition) :
-    profile.result.read stage = stage.added := rfl
+    profile.result stage = stage.added := rfl
 
 /-- Exact selected fibre generated by CT9. -/
 def selectedFibre := profile.fibre true
@@ -318,7 +312,7 @@ def complementAtPrevious (previous : Previous)
       (fun predecessor =>
         Core.Finite.Enumeration (profile.AmbientItem predecessor))
       result.previous_eq)
-    (profile.complementFibre.read (Ledger.extend previous result))
+    (profile.complementFibre (Ledger.extend previous result))
 
 /-- Read CT9's literal selected fibre at the predecessor retained by the
 exact CT9 result. -/
@@ -330,7 +324,7 @@ def selectedAtPrevious (previous : Previous)
       (fun predecessor =>
         Core.Finite.Enumeration (profile.AmbientItem predecessor))
       result.previous_eq)
-    (profile.selectedFibre.read (Ledger.extend previous result))
+    (profile.selectedFibre (Ledger.extend previous result))
 
 private theorem mem_castEnumeration_iff
     (source target : Previous) (equal : source = target)
@@ -357,15 +351,15 @@ theorem mem_complementAtPrevious_iff (previous : Previous)
     (result : profile.execution.Output previous)
     (item : profile.AmbientItem previous) :
     item ∈ (profile.complementAtPrevious previous result).values ↔
-      item ∈ (profile.ambientSupport.read previous).values ∧
+      item ∈ (profile.ambientSupport previous).values ∧
         ¬ profile.Selected previous
-          (profile.selectedPacking.read previous) item := by
+          (profile.selectedPacking previous) item := by
   let Property : (predecessor : Previous) →
       profile.AmbientItem predecessor → Prop :=
     fun predecessor candidate =>
-      candidate ∈ (profile.ambientSupport.read predecessor).values ∧
+      candidate ∈ (profile.ambientSupport predecessor).values ∧
         ¬ profile.Selected predecessor
-          (profile.selectedPacking.read predecessor) candidate
+          (profile.selectedPacking predecessor) candidate
   have fibreCharacterization (predecessor : Previous)
       (sourceItem : profile.AmbientItem predecessor) :
       sourceItem ∈
@@ -383,18 +377,18 @@ theorem mem_complementAtPrevious_iff (previous : Previous)
   have sourceCharacterization
       (sourceItem : profile.AmbientItem result.stage.previous) :
       sourceItem ∈
-          (profile.complementFibre.read
+          (profile.complementFibre
             (Ledger.extend previous result)).values ↔
         Property result.stage.previous sourceItem := by
     change sourceItem ∈
-        (profile.generatedPartition.read
+        (profile.generatedPartition
           (Ledger.extend previous result)).fibres false ↔ _
-    rw [(profile.generatedPartition.read
+    rw [(profile.generatedPartition
       (Ledger.extend previous result)).fibres_exact false]
     exact fibreCharacterization result.stage.previous sourceItem
   exact mem_castEnumeration_iff profile
     result.stage.previous previous result.previous_eq
-    (profile.complementFibre.read (Ledger.extend previous result))
+    (profile.complementFibre (Ledger.extend previous result))
     Property sourceCharacterization item
 
 /-- Membership in the transported exact selected fibre is CT9's own true-label
@@ -403,13 +397,15 @@ theorem mem_selectedAtPrevious_iff (previous : Previous)
     (result : profile.execution.Output previous)
     (item : profile.AmbientItem previous) :
     item ∈ (profile.selectedAtPrevious previous result).values ↔
-      profile.Selected previous
-        (profile.selectedPacking.read previous) item := by
+      item ∈ (profile.ambientSupport previous).values ∧
+        profile.Selected previous
+          (profile.selectedPacking previous) item := by
   let Property : (predecessor : Previous) →
       profile.AmbientItem predecessor → Prop :=
     fun predecessor candidate =>
-      profile.Selected predecessor
-        (profile.selectedPacking.read predecessor) candidate
+      candidate ∈ (profile.ambientSupport predecessor).values ∧
+        profile.Selected predecessor
+          (profile.selectedPacking predecessor) candidate
   have fibreCharacterization (predecessor : Previous)
       (sourceItem : profile.AmbientItem predecessor) :
       sourceItem ∈
@@ -420,37 +416,36 @@ theorem mem_selectedAtPrevious_iff (previous : Previous)
       PartitionProfile.inputs, Property]
     constructor
     · intro member
-      exact (List.mem_filter.mp member).2
-    · intro selected
-      exact List.mem_filter.mpr ⟨by
-        exact (profile.ambientSupport.read predecessor).mem_toList.mp
-          (by simpa using selected), by simpa [selected]⟩
+      have filtered := List.mem_filter.mp member
+      exact ⟨filtered.1, by simpa using filtered.2⟩
+    · rintro ⟨ambient, selected⟩
+      exact List.mem_filter.mpr ⟨ambient, by simpa [selected]⟩
   have sourceCharacterization
       (sourceItem : profile.AmbientItem result.stage.previous) :
       sourceItem ∈
-          (profile.selectedFibre.read
+          (profile.selectedFibre
             (Ledger.extend previous result)).values ↔
         Property result.stage.previous sourceItem := by
     change sourceItem ∈
-        (profile.generatedPartition.read
+        (profile.generatedPartition
           (Ledger.extend previous result)).fibres true ↔ _
-    rw [(profile.generatedPartition.read
+    rw [(profile.generatedPartition
       (Ledger.extend previous result)).fibres_exact true]
     exact fibreCharacterization result.stage.previous sourceItem
   exact mem_castEnumeration_iff profile
     result.stage.previous previous result.previous_eq
-    (profile.selectedFibre.read (Ledger.extend previous result))
+    (profile.selectedFibre (Ledger.extend previous result))
     Property sourceCharacterization item
 
 /-- The retained complementary fibre is exactly CT9's own generated fibre for
 the unselected label.  Nothing is re-enumerated: the identity is CT9's
 `Partition.fibres_exact`. -/
 theorem complementFibre_card (stage : profile.AfterPartition) :
-    (profile.complementFibre.read stage).card =
+    (profile.complementFibre stage).card =
       (CT9.fibre profile.capability
-        (profile.result.read stage).stage.previous false).length := by
+        (profile.result stage).stage.previous false).length := by
   have exactFibres :=
-    (profile.generatedPartition.read stage).fibres_exact false
+    (profile.generatedPartition stage).fibres_exact false
   simp [complementFibre, fibre, Core.Finite.Enumeration.card,
     Core.Finite.Enumeration.ofNodupList, exactFibres]
 
@@ -481,7 +476,7 @@ def inputs :=
 def members (partition : PartitionProfile Previous) :
     Query partition.AfterPartition fun _ =>
       Core.Finite.Enumeration Unit :=
-  Query.ofFunction fun _ => Core.Finite.Enumeration.singleton ()
+   fun _ => Core.Finite.Enumeration.singleton ()
 
 /-- CT14 compares the inherited lower mass with CT9's literal complement
 cardinality. -/
@@ -489,10 +484,10 @@ def spec : CT14.Spec partition.AfterPartition where
   Member := fun _ => Unit
   Label := fun _ => Unit
   memberLowerMass := fun stage _ =>
-    let values := profile.inputs.read stage
+    let values := profile.inputs stage
     profile.lowerMass stage.previous values.fst values.snd
   memberCapacity := fun stage _ =>
-    some (partition.complementFibre.read stage).card
+    some (partition.complementFibre stage).card
   memberLabel := fun _ _ => some ()
 
 /-- CT14 capability derived from the exact singleton schedule. -/
@@ -500,7 +495,7 @@ def capability : CT14.Capability profile.spec where
   members := members partition
   labelDecidableEq := fun _ => inferInstanceAs (DecidableEq Unit)
   inputSize := fun stage =>
-    CT14.localCheckBound ((members partition).read stage)
+    CT14.localCheckBound ((members partition) stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -562,8 +557,8 @@ schedule is exactly the inherited density-cap observation. -/
 theorem lowerMass_eq (stage : partition.AfterPartition) :
     CT14.lowerMass profile.capability stage =
       profile.lowerMass stage.previous
-        (profile.densityCap.read stage.previous)
-        (partition.result.read stage) := by
+        (profile.densityCap stage.previous)
+        (partition.result stage) := by
   simp [CT14.lowerMass, CT14.lowerMassEntries, CT14.Capability.membersAt,
     capability, members, spec, inputs, Core.Finite.Enumeration.singleton,
     Core.Finite.Enumeration.ofNodupList]
@@ -573,7 +568,7 @@ theorem lowerMass_eq (stage : partition.AfterPartition) :
 complementary fibre cardinality. -/
 theorem upperCapacity_eq (stage : partition.AfterPartition) :
     CT14.upperCapacity profile.capability stage =
-      (partition.complementFibre.read stage).card := by
+      (partition.complementFibre stage).card := by
   simp [CT14.upperCapacity, CT14.capacityEntries, CT14.Capability.membersAt,
     capability, members, spec, Core.Finite.Enumeration.singleton,
     Core.Finite.Enumeration.ofNodupList]
@@ -648,7 +643,7 @@ def candidates :
       Core.Finite.Enumeration
         {obstruction : profile.Obstruction stage.previous //
           profile.SupportedByComplement stage.previous
-            ((massResult partition mass).read stage) obstruction} :=
+            ((massResult partition mass) stage) obstruction} :=
   profile.inputs.dependentMap fun stage inputs =>
     inputs.fst.subtype
       (profile.SupportedByComplement stage.previous inputs.snd)
@@ -659,17 +654,17 @@ def spec : CT1.Spec (AfterMass partition mass) where
   Candidate := fun stage =>
     {obstruction : profile.Obstruction stage.previous //
       profile.SupportedByComplement stage.previous
-        ((massResult partition mass).read stage) obstruction}
+        ((massResult partition mass) stage) obstruction}
   Realizes := fun stage obstruction =>
     profile.Realizes stage.previous
-      ((massResult partition mass).read stage) obstruction.1
+      ((massResult partition mass) stage) obstruction.1
 
 /-- CT1 capability derived from the exact filtered query. -/
 def capability : CT1.Capability profile.spec where
   schedule := profile.candidates
   realizesDecidable := fun stage obstruction =>
     profile.realizesDecidable stage.previous
-      ((massResult partition mass).read stage) obstruction.1
+      ((massResult partition mass) stage) obstruction.1
   inputSize := fun stage =>
     CT1.searchCheckBound profile.spec profile.candidates stage
   workCoefficient := Fintype.card Unit
@@ -777,7 +772,7 @@ def localPieceSchedule :
     Query (AfterAvoidance (obstruction := obstruction)) fun stage =>
       Core.Finite.Enumeration
         (profile.LocalPiece stage.previous
-          ((avoidanceResult obstruction).read stage)) :=
+          ((avoidanceResult obstruction) stage)) :=
   (avoidanceResult obstruction).dependentMap fun stage output =>
     profile.localPieces stage.previous output
 
@@ -785,28 +780,28 @@ def localPieceSchedule :
 def spec : CT6.Spec (AfterAvoidance (obstruction := obstruction)) where
   Index := fun stage =>
     profile.LocalPiece stage.previous
-      ((avoidanceResult obstruction).read stage)
+      ((avoidanceResult obstruction) stage)
   FailureData := fun stage piece =>
     profile.FailureData stage.previous
-      ((avoidanceResult obstruction).read stage) piece
+      ((avoidanceResult obstruction) stage) piece
   Failure := fun stage piece =>
     profile.Failure stage.previous
-      ((avoidanceResult obstruction).read stage) piece
+      ((avoidanceResult obstruction) stage) piece
   failureData := fun stage piece failure =>
     profile.failureData stage.previous
-      ((avoidanceResult obstruction).read stage) piece failure
+      ((avoidanceResult obstruction) stage) piece failure
   contribution := fun stage piece =>
     profile.contribution stage.previous
-      ((avoidanceResult obstruction).read stage) piece
+      ((avoidanceResult obstruction) stage) piece
 
 /-- CT6 capability derived from the exact local-piece schedule. -/
 def capability : CT6.Capability profile.spec where
   failureOrder := profile.localPieceSchedule
   failureDecidable := fun stage piece =>
     profile.failureDecidable stage.previous
-      ((avoidanceResult obstruction).read stage) piece
+      ((avoidanceResult obstruction) stage) piece
   inputSize := fun stage =>
-    CT6.localCheckBound (profile.localPieceSchedule.read stage)
+    CT6.localCheckBound (profile.localPieceSchedule stage)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -910,7 +905,7 @@ def localPiecesAfterNormalization :
     Query profile.AfterNormalization fun stage =>
       Core.Finite.Enumeration
         (profile.core.LocalPiece stage.previous
-          (profile.avoidanceResultAfterNormalization.read stage)) :=
+          (profile.avoidanceResultAfterNormalization stage)) :=
   profile.result.dependentMap fun stage output =>
     profile.core.localPieces stage.previous output.fst
 
@@ -984,7 +979,7 @@ theorem ExactOutput.noObstructionAt
     (selected : exact.output.fst.snd.terminal = .avoiding)
     (obstruction : profile.obstruction.Obstruction previous)
     (scheduled : obstruction ∈
-      (profile.obstruction.obstructionSchedule.read previous).values)
+      (profile.obstruction.obstructionSchedule previous).values)
     (supported : profile.obstruction.SupportedByComplement previous
       exact.output.fst.fst obstruction)
     (realizes : profile.obstruction.Realizes previous
@@ -1007,7 +1002,7 @@ theorem ExactOutput.noObstructionAt
   apply avoided
   refine ⟨candidate, ?_, realizes⟩
   exact (Core.Finite.Enumeration.mem_subtype_values
-    (profile.obstruction.obstructionSchedule.read previous)
+    (profile.obstruction.obstructionSchedule previous)
     (profile.obstruction.SupportedByComplement previous exact.output.fst.fst)
     (profile.obstruction.supportedDecidable previous exact.output.fst.fst)
     candidate).mpr scheduled
@@ -1106,9 +1101,9 @@ def summaryOfExact {previous : Previous}
   { ambientCount :=
       (profile.partition.capability.itemsAt
         exact.output.fst.fst.fst.stage.previous).card
-    packingCount := profile.packingCount.read
+    packingCount := profile.packingCount
       exact.output.fst.fst.fst.stage.previous
-    coverCard := profile.coverCard.read
+    coverCard := profile.coverCard
       exact.output.fst.fst.fst.stage.previous
     selectedCount :=
       CT9.fibreCount profile.partition.capability
@@ -1235,83 +1230,118 @@ noncomputable def Profile.ofRegistrationAt
     (current : Query Previous fun _ => Residual)
     (packingQuery : Query Previous fun previous =>
       ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read previous))
-        (packingSemantics.conflict (current.read previous))) :
+        (packingSemantics.occurrences (current previous))
+        (packingSemantics.conflict (current previous))) :
     Profile.{u, uResidual} Previous Residual :=
   let residual := current
   let selected : (previous : Previous) →
-      List (packingSemantics.Occurrence (current.read previous)) :=
-    fun previous => (packingQuery.read previous).selected
+      List (packingSemantics.Occurrence (current previous)) :=
+    fun previous => (packingQuery previous).selected
   let covers : (residual : Residual) →
       List (packingSemantics.Occurrence residual) →
         registration.AmbientItem residual → Prop :=
     fun residual selected item =>
       ∃ occurrence ∈ selected, item ∈ registration.cover residual occurrence
   let coveredItems : (previous : Previous) →
-      List (registration.AmbientItem (current.read previous)) :=
+      List (registration.AmbientItem (current previous)) :=
     fun previous =>
       (selected previous).flatMap
-        (registration.cover (current.read previous))
+        (registration.cover (current previous))
   let partition : PartitionProfile Previous :=
     { AmbientItem := fun previous =>
-        registration.AmbientItem (current.read previous)
+        registration.AmbientItem (current previous)
       ambientSupport := residual.dependentMap fun _ residual =>
         registration.ambientSupport residual
       SelectedPacking := fun previous =>
-        List (packingSemantics.Occurrence (current.read previous))
-      selectedPacking := Query.ofFunction selected
-      Selected := fun previous => covers (current.read previous)
+        List (packingSemantics.Occurrence (current previous))
+      selectedPacking :=  selected
+      Selected := fun previous => covers (current previous)
       selectedDecidable := fun _ _ _ => Classical.dec _ }
   let mass : MassProfile partition :=
     { DensityCap := fun _ => PUnit
       densityCap := residual.dependentMap fun _ _ => PUnit.unit
       -- The unselected fibre misses at most the covered items.
       lowerMass := fun previous _ _ =>
-        (registration.ambientSupport (current.read previous)).card -
+        (registration.ambientSupport (current previous)).card -
           (coveredItems previous).length }
   let obstruction : ObstructionProfile partition mass :=
     { Obstruction := fun previous =>
-        packingSemantics.Occurrence (current.read previous)
+        packingSemantics.Occurrence (current previous)
       obstructionSchedule := residual.dependentMap fun _ residual =>
         packingSemantics.occurrences residual
       SupportedByComplement := fun previous output obstruction =>
-        ∀ item ∈ registration.cover (current.read previous) obstruction,
+        ∀ item ∈ registration.cover (current previous) obstruction,
           item ∈
             (partition.complementAtPrevious previous output.fst).values
       supportedDecidable := fun _ _ _ => Classical.dec _
       Realizes := fun previous _ obstruction =>
         obstruction ∈
-          (packingSemantics.occurrences (current.read previous)).values
+          (packingSemantics.occurrences (current previous)).values
       realizesDecidable := fun _ _ _ => Classical.dec _ }
-  { packingCount := Query.ofFunction fun previous =>
-      (packingQuery.read previous).selected.length
+  { packingCount :=  fun previous =>
+      (packingQuery previous).selected.length
     coverCard := current.map fun _ residual => registration.coverCard residual
     partition
     mass
     obstruction
     core :=
       { LocalPiece := fun previous output =>
-          registration.LocalPiece (current.read previous)
+          registration.LocalPiece (current previous)
             (partition.complementAtPrevious previous output.fst.fst)
         localPieces := fun previous output =>
-          registration.localPieces (current.read previous)
+          registration.localPieces (current previous)
             (partition.complementAtPrevious previous output.fst.fst)
         FailureData := fun previous output piece =>
-          registration.FailureData (current.read previous)
+          registration.FailureData (current previous)
             (partition.complementAtPrevious previous output.fst.fst) piece
         Failure := fun previous output piece =>
-          registration.Failure (current.read previous)
+          registration.Failure (current previous)
             (partition.complementAtPrevious previous output.fst.fst) piece
         failureData := fun previous output piece failure =>
-          registration.failureData (current.read previous)
+          registration.failureData (current previous)
             (partition.complementAtPrevious previous output.fst.fst)
             piece failure
         failureDecidable := fun previous output piece =>
-          registration.failureDecidable (current.read previous)
+          registration.failureDecidable (current previous)
             (partition.complementAtPrevious previous output.fst.fst) piece
         contribution := fun previous output piece =>
-          registration.contribution (current.read previous)
+          registration.contribution (current previous)
             (partition.complementAtPrevious previous output.fst.fst) piece } }
+
+theorem Profile.ofRegistrationAt_mem_selectedAtPrevious_iff
+    {Previous : Type u} {Residual : Type uResidual}
+    [HasResidual Previous Residual] {Target : Residual → Prop}
+    {packingSemantics :
+      ObstructionPackingClosure.Semantics.{uResidual, u} Residual Target}
+    (registration : Registration Residual Target packingSemantics)
+    (current : Query Previous fun _ => Residual)
+    (packingQuery : Query Previous fun previous =>
+      ObstructionPackingClosure.Packing
+        (packingSemantics.occurrences (current previous))
+        (packingSemantics.conflict (current previous)))
+    (previous : Previous)
+    (result : CTExecution.Output (PartitionProfile.execution
+      (Profile.ofRegistrationAt registration current packingQuery).partition)
+        previous)
+    (item : registration.AmbientItem (current previous)) :
+    item ∈ ((Profile.ofRegistrationAt registration current packingQuery).partition
+      |>.selectedAtPrevious previous result).values ↔
+      ∃ block ∈ (packingQuery previous).selected,
+        item ∈ registration.cover (current previous) block := by
+  constructor
+  · intro selected
+    have characterized :=
+      (PartitionProfile.mem_selectedAtPrevious_iff
+        (Profile.ofRegistrationAt registration current packingQuery).partition
+        previous result item).mp selected
+    exact characterized.2
+  · rintro selected
+    rcases selected with ⟨block, _blockMem, itemMem⟩
+    have ambient :=
+      registration.coverSupported (current previous) block itemMem
+    exact (PartitionProfile.mem_selectedAtPrevious_iff
+      (Profile.ofRegistrationAt registration current packingQuery).partition
+      previous result item).mpr ⟨ambient, ⟨block, _blockMem, itemMem⟩⟩
 
 /-- Stable-residual specialization of the query-native constructor. -/
 noncomputable def Profile.ofRegistration
@@ -1454,8 +1484,8 @@ theorem selectedCount_eq_coverCard_mul_packingCount
     (current : Query Previous fun _ => Residual)
     (packingQuery : Query Previous fun previous =>
       ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read previous))
-        (packingSemantics.conflict (current.read previous)))
+        (packingSemantics.occurrences (current previous))
+        (packingSemantics.conflict (current previous)))
     {previous : Previous}
     (exact : (Profile.ofRegistrationAt registration current packingQuery).ExactOutput
       previous) :
@@ -1466,37 +1496,36 @@ theorem selectedCount_eq_coverCard_mul_packingCount
       ((Profile.ofRegistrationAt registration current packingQuery).summaryOfExact
         exact).packingCount := by
   letI := Classical.decEq
-    (packingSemantics.Occurrence (current.read previous))
-  letI := Classical.decEq (registration.AmbientItem (current.read previous))
+    (packingSemantics.Occurrence (current previous))
+  letI := Classical.decEq (registration.AmbientItem (current previous))
   have covered := covered_card_eq_sum_cover_length
-    (registration.ambientSupport (current.read previous))
-    (packingQuery.read previous)
-    (registration.cover (current.read previous))
-    (registration.coverNodup (current.read previous))
-    (registration.coverSupported (current.read previous))
-    (registration.conflict_iff_shared_item (current.read previous))
+    (registration.ambientSupport (current previous))
+    (packingQuery previous)
+    (registration.cover (current previous))
+    (registration.coverNodup (current previous))
+    (registration.coverSupported (current previous))
+    (registration.conflict_iff_shared_item (current previous))
   change CT9.fibreCount
       (Profile.ofRegistrationAt registration current packingQuery).partition.capability
       exact.output.fst.fst.fst.stage.previous true =
         registration.coverCard
-            (current.read exact.output.fst.fst.fst.stage.previous) *
-          (packingQuery.read
+            (current exact.output.fst.fst.fst.stage.previous) *
+          (packingQuery
             exact.output.fst.fst.fst.stage.previous).selected.length
   rw [exact.partitionPrevious]
   unfold CT9.fibreCount CT9.fibre
   simp only [PartitionProfile.capability, CT9.Capability.itemsAt,
     PartitionProfile.spec, PartitionProfile.inputs,
-    Profile.ofRegistrationAt, Query.read_dependentMap, Query.read_and,
-    decide_eq_true_eq]
+    Profile.ofRegistrationAt, decide_eq_true_eq]
   change
     (List.filter (fun item => decide
-      (∃ occurrence ∈ (packingQuery.read previous).selected,
-        item ∈ registration.cover (current.read previous) occurrence))
-      (registration.ambientSupport (current.read previous)).values).length =
-        registration.coverCard (current.read previous) *
-          (packingQuery.read previous).selected.length
+      (∃ occurrence ∈ (packingQuery previous).selected,
+        item ∈ registration.cover (current previous) occurrence))
+      (registration.ambientSupport (current previous)).values).length =
+        registration.coverCard (current previous) *
+          (packingQuery previous).selected.length
   rw [covered]
-  simp_rw [registration.cover_card (current.read previous)]
+  simp_rw [registration.cover_card (current previous)]
   simp [Nat.mul_comm]
 
 theorem coverCard_mul_packingCount_add_complementCount_eq_ambientCount
@@ -1508,8 +1537,8 @@ theorem coverCard_mul_packingCount_add_complementCount_eq_ambientCount
     (current : Query Previous fun _ => Residual)
     (packingQuery : Query Previous fun previous =>
       ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read previous))
-        (packingSemantics.conflict (current.read previous)))
+        (packingSemantics.occurrences (current previous))
+        (packingSemantics.conflict (current previous)))
     {previous : Previous}
     (exact : (Profile.ofRegistrationAt registration current packingQuery).ExactOutput
       previous) :
@@ -1541,11 +1570,11 @@ noncomputable def semanticsOfRegistrationAt
     (current : Query Previous fun _ => Residual)
     (packingQuery : Query Previous fun previous =>
       ObstructionPackingClosure.Packing
-        (packingSemantics.occurrences (current.read previous))
-        (packingSemantics.conflict (current.read previous))) :
+        (packingSemantics.occurrences (current previous))
+        (packingSemantics.conflict (current previous))) :
     (Profile.ofRegistrationAt (Previous := Previous)
       registration current packingQuery).Semantics where
-  Target := fun previous => Target (current.read previous)
+  Target := fun previous => Target (current previous)
   massAggregateImpossible := by
     intro previous exact _partitionTerminal massTerminal
     have outcome := exact.output.fst.fst.snd.outcome
@@ -1561,19 +1590,18 @@ noncomputable def semanticsOfRegistrationAt
         simp only [Ledger.extend]
         rw [exact.partitionPrevious]
         refine coveredComplement_length
-          (registration.ambientSupport (current.read previous)) _
-          (registration.cover (current.read previous))
+          (registration.ambientSupport (current previous)) _
+          (registration.cover (current previous))
           (CT9.fibre
             (ofRegistrationAt registration current packingQuery).partition.capability
             previous false) ?_
         intro item
         simp only [CT9.fibre, CT9.Capability.itemsAt,
           PartitionProfile.capability, PartitionProfile.spec,
-          PartitionProfile.inputs, Profile.ofRegistrationAt, List.mem_filter,
-          Query.read_residual, Query.read_dependentMap, Query.read_and,
-          Bool.not_eq_true', decide_eq_true_eq, decide_eq_false_iff_not,
+          PartitionProfile.inputs, Profile.ofRegistrationAt,
+          Query.dependentMap, Query.and, List.mem_filter,
+          decide_eq_true_eq, decide_eq_false_iff_not,
           not_exists, not_and]
-        tauto
   obstructionHitImpossible := by
     intro previous exact _partitionTerminal _massTerminal obstructionTerminal
     cases branch : exact.output.fst.snd.stage.added.added with
@@ -1589,13 +1617,13 @@ noncomputable def semanticsOfRegistrationAt
         have supported :
             ∀ item ∈
                 registration.cover
-                  (current.read exact.output.fst.snd.stage.previous.previous)
+                  (current exact.output.fst.snd.stage.previous.previous)
                   hit.value.1,
               ¬ ∃ selected ∈
-                  (packingQuery.read
+                  (packingQuery
                     exact.output.fst.snd.stage.previous.previous).selected,
                 item ∈ registration.cover
-                  (current.read exact.output.fst.snd.stage.previous.previous)
+                  (current exact.output.fst.snd.stage.previous.previous)
                   selected := by
           intro item itemMem
           exact
@@ -1606,16 +1634,16 @@ noncomputable def semanticsOfRegistrationAt
                 (hit.value.2 item itemMem)).2
         exact packing_no_free_occurrence
           (packingSemantics.occurrences
-            (current.read exact.output.fst.snd.stage.previous.previous))
+            (current exact.output.fst.snd.stage.previous.previous))
           (packingSemantics.conflict
-            (current.read exact.output.fst.snd.stage.previous.previous))
-          (packingQuery.read exact.output.fst.snd.stage.previous.previous)
+            (current exact.output.fst.snd.stage.previous.previous))
+          (packingQuery exact.output.fst.snd.stage.previous.previous)
           (registration.cover
-            (current.read exact.output.fst.snd.stage.previous.previous))
+            (current exact.output.fst.snd.stage.previous.previous))
           (registration.conflict_iff_shared_item
-            (current.read exact.output.fst.snd.stage.previous.previous))
+            (current exact.output.fst.snd.stage.previous.previous))
           (registration.cover_ne
-            (current.read exact.output.fst.snd.stage.previous.previous))
+            (current exact.output.fst.snd.stage.previous.previous))
           hit.value.1 supported hit.sound
   coreFailureTarget := by
     intro previous exact _partitionTerminal _massTerminal obstructionTerminal
@@ -1633,7 +1661,7 @@ noncomputable def semanticsOfRegistrationAt
         | firstFailure failure =>
             rw [exact.corePrevious] at failure
             refine registration.failureForcesTarget
-              (current.read previous)
+              (current previous)
               (PartitionProfile.complementAtPrevious
                 (Profile.ofRegistrationAt registration current packingQuery).partition
                 previous exact.output.fst.fst.fst)
@@ -1641,8 +1669,8 @@ noncomputable def semanticsOfRegistrationAt
             intro occurrence supported realized
             let candidate :
                 {obstruction :
-                    packingSemantics.Occurrence (current.read previous) //
-                  ∀ item ∈ registration.cover (current.read previous) obstruction,
+                    packingSemantics.Occurrence (current previous) //
+                  ∀ item ∈ registration.cover (current previous) obstruction,
                     item ∈
                       (PartitionProfile.complementAtPrevious
                         (Profile.ofRegistrationAt registration current packingQuery).partition
@@ -1652,30 +1680,29 @@ noncomputable def semanticsOfRegistrationAt
                 candidate ∈
                   (ObstructionProfile.candidates
                     (Profile.ofRegistrationAt registration current packingQuery).obstruction
-                    |>.read
-                      (Ledger.extend previous exact.output.fst.fst)).values := by
+                    (Ledger.extend previous exact.output.fst.fst)).values := by
               change candidate ∈
-                ((packingSemantics.occurrences (current.read previous)).subtype
+                ((packingSemantics.occurrences (current previous)).subtype
                   _ _).values
               exact
                 (Core.Finite.Enumeration.mem_subtype_values
-                  (packingSemantics.occurrences (current.read previous))
+                  (packingSemantics.occurrences (current previous))
                   _ _ candidate).mpr realized
             obtain ⟨index, indexValue⟩ :=
               (Core.Finite.Enumeration.mem_iff_exists_index
                 (ObstructionProfile.candidates
                   (Profile.ofRegistrationAt registration current packingQuery).obstruction
-                  |>.read (Ledger.extend previous exact.output.fst.fst))
+                  (Ledger.extend previous exact.output.fst.fst))
                 candidate).mp candidateMem
             rw [exact.obstructionPrevious] at avoiding
             exact (avoiding index) (by
               change
                 ((ObstructionProfile.candidates
                     (Profile.ofRegistrationAt registration current packingQuery).obstruction
-                    |>.read (Ledger.extend previous exact.output.fst.fst)).get
+                    (Ledger.extend previous exact.output.fst.fst)).get
                     index).1 ∈
                   (packingSemantics.occurrences
-                    (current.read previous)).values
+                    (current previous)).values
               rw [indexValue]
               exact realized)
 

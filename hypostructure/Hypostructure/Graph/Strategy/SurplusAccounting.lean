@@ -472,7 +472,7 @@ noncomputable def homogeneousBottleneck
     (fun input =>
       (Graph.Strategy.minimumDegreeThresholdQuery
         (k := k) (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)).read input)
+        (Presentation := Presentation) (presentation := presentation)) input)
     (fun input =>
       Graph.Strategy.minimumDegreeThresholdQuery_le_minDegree input)
     LengthOK lengthDecidable (fun _ cycle => cycle)
@@ -502,7 +502,7 @@ noncomputable def homogeneousBottleneckOr
     (fun input =>
       (Graph.Strategy.minimumDegreeThresholdQuery
         (k := k) (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)).read input)
+        (Presentation := Presentation) (presentation := presentation)) input)
     (fun input =>
       Graph.Strategy.minimumDegreeThresholdQuery_le_minDegree input)
     LengthOK lengthDecidable (fun _ cycle => Or.inl cycle)
@@ -648,18 +648,18 @@ theorem boundedRoute_degreeSurplus_le
         LengthOK lengthDecidable cycleToTarget)
     {semantics : profile.Semantics} {previous : Previous}
     (witness : profile.RoutedResidual semantics previous .bounded) :
-    (object (profile.current.read previous)).degreeSurplus
-        (baselineDegree (profile.current.read previous)) ≤
+    (object (profile.current previous)).degreeSurplus
+        (baselineDegree (profile.current previous)) ≤
       1 + Nat.sqrt
-        (homogeneousTokenCap (baselineDegree (profile.current.read previous)) *
-          (object (profile.current.read previous)).vertexCount) := by
+        (homogeneousTokenCap (baselineDegree (profile.current previous)) *
+          (object (profile.current previous)).vertexCount) := by
   have certificate :=
     Core.Strategy.HomogeneousBottleneck.Profile.bounded_load_le_cap
       profile witness
   rw [registered] at certificate
   exact homogeneousBottleneckOfLowerBound_degreeSurplus_le_of_bounded object
     baselineDegree minimumDegree LengthOK lengthDecidable cycleToTarget
-    (profile.current.read previous) certificate
+    (profile.current previous) certificate
 
 end BoundedCaps
 
@@ -750,7 +750,7 @@ private theorem homogeneousBottleneck_eq
           (Graph.Strategy.minimumDegreeThresholdQuery
             (k := k) (BranchState := BranchState)
             (Presentation := Presentation)
-            (presentation := presentation)).read input)
+            (presentation := presentation)) input)
         (fun input =>
           Graph.Strategy.minimumDegreeThresholdQuery_le_minDegree input)
         LengthOK lengthDecidable (fun _ cycle => cycle) :=
@@ -782,7 +782,7 @@ private theorem homogeneousBottleneckOr_eq
           (Graph.Strategy.minimumDegreeThresholdQuery
             (k := k) (BranchState := BranchState)
             (Presentation := Presentation)
-            (presentation := presentation)).read input)
+            (presentation := presentation)) input)
         (fun input =>
           Graph.Strategy.minimumDegreeThresholdQuery_le_minDegree input)
         LengthOK lengthDecidable (fun _ cycle => Or.inl cycle) :=
@@ -822,7 +822,7 @@ theorem homogeneousBottleneck_degreeSurplus_le_of_bounded
     (fun input =>
       (Graph.Strategy.minimumDegreeThresholdQuery
         (k := k) (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)).read input)
+        (Presentation := Presentation) (presentation := presentation)) input)
     (fun input =>
       Graph.Strategy.minimumDegreeThresholdQuery_le_minDegree input)
     LengthOK lengthDecidable (fun _ cycle => cycle) input certificate
@@ -864,7 +864,7 @@ theorem homogeneousBottleneckOr_degreeSurplus_le_of_bounded
     (fun input =>
       (Graph.Strategy.minimumDegreeThresholdQuery
         (k := k) (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)).read input)
+        (Presentation := Presentation) (presentation := presentation)) input)
     (fun input =>
       Graph.Strategy.minimumDegreeThresholdQuery_le_minDegree input)
     LengthOK lengthDecidable (fun _ cycle => Or.inl cycle) input certificate

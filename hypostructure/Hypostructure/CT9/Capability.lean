@@ -34,7 +34,7 @@ structure Capability {Previous : Type uPrevious}
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (items.read previous) (labels previous).toEnumeration <=
+    localCheckBound (items previous) (labels previous).toEnumeration <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace Capability
@@ -45,7 +45,7 @@ variable {Previous : Type uPrevious}
 /-- Exact residual-owned item schedule. -/
 def itemsAt (capability : Capability spec) (previous : Previous) :
     Core.Finite.Enumeration (spec.Item previous) :=
-  capability.items.read previous
+  capability.items previous
 
 /-- Exact complete label search order. -/
 def labelsAt (capability : Capability spec) (previous : Previous) :

@@ -279,7 +279,7 @@ def objectQuery : Core.Residual.Query Previous fun _previous =>
 
 def scheduleQuery : Core.Residual.Query Previous fun previous =>
     Core.Finite.Enumeration
-      (Graph.CycleCertificate (objectQuery.read previous) LengthOK) :=
+      (Graph.CycleCertificate (objectQuery previous) LengthOK) :=
   (Core.Residual.Query.residual
     (Source := Previous) (Residual := Residual object)).map
     fun _current residual => by
@@ -372,7 +372,7 @@ theorem hit_previous : hitResult.stage.previous = K4.previous := rfl
 
 theorem hit_target :
     Graph.HasCycleWithLength K4.LengthOK
-      (K4.objectQuery.read K4.previous) := by
+      (K4.objectQuery K4.previous) := by
   change Graph.HasCycleWithLength K4.LengthOK K4.object
   exact ⟨K4.certificate⟩
 
@@ -401,7 +401,7 @@ theorem hit_trace :
 the existing public cycle target. -/
 theorem accepted_return_decodes :
     Graph.HasCycleWithLength K4.LengthOK
-      (K4.objectQuery.read hitResult.stage.previous) :=
+      (K4.objectQuery hitResult.stage.previous) :=
   encoding.decode (hitResult.acceptedCode hit_terminal).accepted
 
 def NeverLength (_length : Nat) : Prop := False
@@ -421,7 +421,7 @@ theorem avoiding_previous :
 
 theorem avoids_target :
     Not (Graph.HasCycleWithLength NeverLength
-      (K4.objectQuery.read K4.previous)) := by
+      (K4.objectQuery K4.previous)) := by
   rintro ⟨certificate⟩
   exact certificate.length_ok
 
@@ -441,10 +441,10 @@ theorem avoiding_trace :
 
 theorem avoiding_verified :
     Not (Graph.HasCycleWithLength NeverLength
-      (K4.objectQuery.read K4.previous)) := by
+      (K4.objectQuery K4.previous)) := by
   have avoids :
       Not (Graph.HasCycleWithLength NeverLength
-        (K4.objectQuery.read avoidingResult.stage.previous)) := by
+        (K4.objectQuery avoidingResult.stage.previous)) := by
     simpa [_root_.Hypostructure.CT1.CertificateEncoding.OutcomeClaim,
       avoiding_terminal] using avoidingResult.verified
   simpa [avoiding_previous] using avoids

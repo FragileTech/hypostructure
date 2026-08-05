@@ -40,6 +40,19 @@ def empty (α : Type u) [DecidableEq α] : Enumeration α :=
 def singleton {α : Type u} [DecidableEq α] (value : α) : Enumeration α :=
   ofNodupList [value] (by simp)
 
+@[simp] theorem ofNodupList_values {α : Type u} [DecidableEq α]
+    (values : List α) (nodup : values.Nodup) :
+    (ofNodupList values nodup).values = values :=
+  rfl
+
+@[simp] theorem empty_values {α : Type u} [DecidableEq α] :
+    (empty α).values = [] :=
+  rfl
+
+@[simp] theorem singleton_values {α : Type u} [DecidableEq α] (value : α) :
+    (singleton value).values = [value] :=
+  rfl
+
 /-- Number of scheduled members. -/
 def card {α : Type u} (schedule : Enumeration α) : Nat :=
   schedule.values.length

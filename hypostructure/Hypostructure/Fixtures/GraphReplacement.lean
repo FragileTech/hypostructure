@@ -131,7 +131,7 @@ theorem claim_available
     Graph.FocusedNormalizedAtomReplacementClaim
       (focus Baseline BranchState Target)
       (contextQuery Baseline BranchState Target) profile previous trivial :=
-  (claimQuery profile).read
+  (claimQuery profile)
     (run profile baselineInvariant targetInvariant previous) trivial
 
 #print axioms runCounted

@@ -29,11 +29,11 @@ def aggregateSpec {Previous : Type uPrevious}
   Member := Member
   Label := Label
   memberLowerMass := fun previous member =>
-    lowerMass previous (state.read previous) member
+    lowerMass previous (state previous) member
   memberCapacity := fun previous member =>
-    capacity previous (state.read previous) member
+    capacity previous (state previous) member
   memberLabel := fun previous member =>
-    label previous (state.read previous) member
+    label previous (state previous) member
 
 /-- Supply only the residual-owned profiles, primitive represented semantics,
 label equality, and work envelope to the common CT14 executor. -/
@@ -53,7 +53,7 @@ def aggregateCapability {Previous : Type uPrevious}
     (labelDecidableEq : (previous : Previous) -> DecidableEq (Label previous))
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
-      _root_.Hypostructure.CT14.localCheckBound (members.read previous) <=
+      _root_.Hypostructure.CT14.localCheckBound (members previous) <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT14.Capability
       (aggregateSpec M state Member Label lowerMass capacity label) where

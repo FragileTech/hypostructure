@@ -124,18 +124,18 @@ def responseCoverage
     (previous : RowTwelveView) (replacement : Unit) :
     Core.Response.FiniteTable.SymbolicCoverage responseSystem
       (responseSpec.representatives
-        (responseSourceQuery.read previous) replacement)
+        (responseSourceQuery previous) replacement)
       (Core.Response.FiniteTable.ExactSchedule.ofList
-        (responseCoordinatesQuery.read previous).values) := by
+        (responseCoordinatesQuery previous).values) := by
   change
     Core.Response.FiniteTable.SymbolicCoverage responseSystem
       (responseSpec.representatives
-        (responseSourceQuery.read previous) replacement)
+        (responseSourceQuery previous) replacement)
       (Core.Response.FiniteTable.ExactSchedule.ofList [()])
   exact Core.Response.FiniteTable.SymbolicCoverage.ofSubsingletonSingleton
     responseSystem
     (responseSpec.representatives
-      (responseSourceQuery.read previous) replacement) ()
+      (responseSourceQuery previous) replacement) ()
 
 def responseCapability : CT3.Capability responseSpec :=
   EllipticConstraintTail.CanonicalCapability.response

@@ -27,7 +27,7 @@ structure Profile (Previous : Type uPrevious) where
   ledger : Residual.Query Previous fun _previous =>
     ClosedClassLedger closure TargetNull
   quotient : (previous : Previous) ->
-    LedgerQuotient.{uCarrier, uQuotient} (ledger.read previous)
+    LedgerQuotient.{uCarrier, uQuotient} (ledger previous)
   Saturation : Previous -> Type uSaturation
   saturation : Residual.Query Previous Saturation
   Separator : Previous -> Type uSeparator
@@ -36,15 +36,15 @@ structure Profile (Previous : Type uPrevious) where
     Option (Separator previous) -> (quotient previous).Quotient -> Prop
   rigidityVisibleDecidable : (previous : Previous) ->
     (quotientClass : (quotient previous).Quotient) ->
-      Decidable (RigidityVisible previous (saturation.read previous)
-        (separator.read previous) quotientClass)
+      Decidable (RigidityVisible previous (saturation previous)
+        (separator previous) quotientClass)
   visibleNonzero : forall (previous : Previous) {carrier : Carrier},
-    RigidityVisible previous (saturation.read previous)
-        (separator.read previous) ((quotient previous).project carrier) ->
+    RigidityVisible previous (saturation previous)
+        (separator previous) ((quotient previous).project carrier) ->
       Not ((quotient previous).project carrier = (quotient previous).null)
   nullOfNotVisible : forall (previous : Previous) (carrier : Carrier),
-    Not (RigidityVisible previous (saturation.read previous)
-      (separator.read previous) ((quotient previous).project carrier)) ->
+    Not (RigidityVisible previous (saturation previous)
+      (separator previous) ((quotient previous).project carrier)) ->
       (quotient previous).project carrier = (quotient previous).null
   targetNullOfNull : forall (previous : Previous) (carrier : Carrier),
     (quotient previous).project carrier = (quotient previous).null ->
@@ -67,8 +67,8 @@ def toClassClosure :
   ledger := profile.ledger
   quotient := profile.quotient
   TargetVisible := fun previous quotientClass =>
-    profile.RigidityVisible previous (profile.saturation.read previous)
-      (profile.separator.read previous) quotientClass
+    profile.RigidityVisible previous (profile.saturation previous)
+      (profile.separator previous) quotientClass
   targetVisibleDecidable := profile.rigidityVisibleDecidable
   visibleNonzero := profile.visibleNonzero
   nullOfNotVisible := profile.nullOfNotVisible

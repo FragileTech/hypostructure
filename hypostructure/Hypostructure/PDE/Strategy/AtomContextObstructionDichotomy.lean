@@ -155,18 +155,18 @@ noncomputable def tailContinuationProfile
         Source elliptic))
     (closure : LocalEllipticClosure M N Admissible Interface Carrier Source elliptic)
     (localClosed : Core.Residual.Query Previous (fun previous =>
-      PLift (closure.closes (current.read previous)
-        ((PDE.CurrentLocalEllipticResidual.splitQuery current).read
+      PLift (closure.closes (current previous)
+        ((PDE.CurrentLocalEllipticResidual.splitQuery current)
           previous).localPart)))
     (focus : Core.Residual.Query Previous (fun previous =>
       PDE.TailFocus N
         (PDE.CurrentLocalEllipticResidual.representedTail
-          (current.read previous)).sourceWindow)) :
+          (current previous)).sourceWindow)) :
     PDE.TailContinuation.Profile Previous N
-      (fun previous => Carrier (current.read previous).interface)
+      (fun previous => Carrier (current previous).interface)
       (current.dependentMap fun _ residual => residual.whole) where
   LocalClosed := fun previous split =>
-    PLift (closure.closes (current.read previous) split.localPart)
+    PLift (closure.closes (current previous) split.localPart)
   splitQuery := PDE.CurrentLocalEllipticResidual.splitQuery current
   localClosedQuery := localClosed
   representedTailQuery := current.dependentMap fun _ residual =>
@@ -306,8 +306,8 @@ noncomputable def profileFromCurrentLocalElliptic
         Source elliptic))
     (closure : LocalEllipticClosure M N Admissible Interface Carrier Source elliptic)
     (previous : Previous) :
-    (fromCurrentLocalElliptic current closure).read previous =
-      currentLocalEllipticToCore closure (current.read previous) :=
+    (fromCurrentLocalElliptic current closure) previous =
+      currentLocalEllipticToCore closure (current previous) :=
   rfl
 
 end Presentation
@@ -484,8 +484,8 @@ def query
     (registration : Registration P semantics assembly Residual)
     (residual : Core.Residual.Query Previous (fun _ => Residual))
     (previous : Previous) :
-    (registration.query residual).read previous =
-      (registration.presentation (residual.read previous)).toCore :=
+    (registration.query residual) previous =
+      (registration.presentation (residual previous)).toCore :=
   rfl
 
 end Registration

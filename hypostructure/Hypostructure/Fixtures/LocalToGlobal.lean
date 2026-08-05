@@ -47,7 +47,7 @@ def objectQuery : Core.Residual.Query (Core.Residual.Ledger Nat)
 
 def certificateQuery : Core.Residual.Query (Core.Residual.Ledger Nat)
     (fun previous => assembly.PointwiseCertificate localPair
-      (objectQuery.read previous)) :=
+      (objectQuery previous)) :=
   objectQuery.dependentMap fun _ object => certificate object
 
 def globalizeNode := profile.globalize objectQuery certificateQuery

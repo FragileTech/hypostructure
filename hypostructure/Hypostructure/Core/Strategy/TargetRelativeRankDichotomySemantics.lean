@@ -18,6 +18,13 @@ universe uResidual uAmbient uResponse uDatum uClass uPromotion uCoordinate
 
 open Hypostructure.Core.Strategy
 
+/-! Stage-shape-free theorem payloads used by downstream capability stores. -/
+
+structure FullRankCertificate where
+  rank : Nat
+  coordinateCard : Nat
+  rank_eq_coordinateCard : rank = coordinateCard
+
 /-- Residual-owned response, classification, and rank presentation. Rank-side
 capacity is additionally indexed by the exact local-supply ledger published
 by a completed `LocalSupplyLowerBound`; closed-code routing is derived by Core

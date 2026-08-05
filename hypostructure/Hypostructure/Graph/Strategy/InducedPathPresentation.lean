@@ -24,17 +24,17 @@ structure InducedPathPresentation
     (Residual : Type uResidual) (Target : Residual → Prop) where
   object : Core.Residual.Query Residual fun _ => FiniteObject.{uVertex}
   order : Core.Residual.Query Residual fun _ => Nat
-  order_pos : ∀ residual, 0 < order.read residual
+  order_pos : ∀ residual, 0 < order residual
   baselineDegree : Core.Residual.Query Residual fun _ => Nat
   freeForcesTarget : ∀ residual,
-    InducedPathFree (object.read residual) (order.read residual) →
+    InducedPathFree (object residual) (order residual) →
       Target residual
   componentFreeForcesTarget : ∀ residual
-    (support : Finset (object.read residual).Vertex),
-      baselineDegree.read residual ≤
-          ((object.read residual).induce support).minDegree →
-        InducedPathFree ((object.read residual).induce support)
-          (order.read residual) →
+    (support : Finset (object residual).Vertex),
+      baselineDegree residual ≤
+          ((object residual).induce support).minDegree →
+        InducedPathFree ((object residual).induce support)
+          (order residual) →
           Target residual
 
 end Hypostructure.Graph.Strategy

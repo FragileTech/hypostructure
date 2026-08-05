@@ -43,9 +43,9 @@ def edgeDeletionCapability
         (lexicographicProgress Baseline BranchState))
     (pieces : Core.Residual.Query Previous fun previous =>
       Core.Finite.Enumeration
-        ((context.read previous).G.graph.edgeSet))
+        ((context previous).G.graph.edgeSet))
     (selectedIndex : Core.Residual.Query Previous fun previous =>
-      Fin (pieces.read previous).card)
+      Fin (pieces previous).card)
     (admissibleDecidable : (object : FiniteObject.{uVertex}) ->
       (state : BranchState object) -> (edge : object.graph.edgeSet) ->
         Decidable (Admissible object state edge))

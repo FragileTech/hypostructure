@@ -31,7 +31,7 @@ structure FunctionalCardinalityProfile (Previous : Type uPrevious) where
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (demands.read previous) (payers.read previous) <=
+    localCheckBound (demands previous) (payers previous) <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace FunctionalCardinalityProfile
@@ -201,8 +201,8 @@ missing terminal. -/
 theorem run_terminal_eq_missing
     (profile : FunctionalCardinalityProfile.{uPrevious, uDemand, uPayer}
       Previous) (previous : Previous)
-    (cardLt : (profile.payers.read previous).card <
-      (profile.demands.read previous).card) :
+    (cardLt : (profile.payers previous).card <
+      (profile.demands previous).card) :
     (profile.run previous).terminal = .missingPayer := by
   apply ExecutionResult.terminal_eq_missing_of_card_lt
   · exact profile.functional previous
@@ -213,8 +213,8 @@ cardinality gap. -/
 def missingCertificate
     (profile : FunctionalCardinalityProfile.{uPrevious, uDemand, uPayer}
       Previous) (previous : Previous)
-    (cardLt : (profile.payers.read previous).card <
-      (profile.demands.read previous).card) :
+    (cardLt : (profile.payers previous).card <
+      (profile.demands previous).card) :
     MissingCertificate profile.capability previous :=
   (profile.run previous).missingCertificate
     (profile.run_terminal_eq_missing previous cardLt)

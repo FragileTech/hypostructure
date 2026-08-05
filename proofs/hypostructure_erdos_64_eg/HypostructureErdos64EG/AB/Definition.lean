@@ -167,8 +167,8 @@ noncomputable def inducedPathPresentation :
     Graph.Strategy.InducedPathPresentation.{1, 0}
       (Core.Strategy.ProblemInput problem)
       (fun input => abPredicate input.object) where
-  object := Core.Residual.Query.ofFunction fun input => input.object
-  order := Core.Residual.Query.ofFunction fun _ =>
+  object := fun input => input.object
+  order := fun _ =>
     Graph.External.HegdeSandeepShashank.inducedPathOrder
   order_pos := by
     intro _

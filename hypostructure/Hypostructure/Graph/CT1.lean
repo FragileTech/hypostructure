@@ -19,7 +19,7 @@ def cycleSpec {Previous : Type uPrevious}
     (LengthOK : Nat -> Prop) :
     _root_.Hypostructure.CT1.Spec Previous where
   Candidate := fun previous =>
-    CycleCertificate (object.read previous) LengthOK
+    CycleCertificate (object previous) LengthOK
   Realizes := fun _previous _certificate => True
 
 /-- Build the executable CT1 capability while Graph discharges the trivial
@@ -30,10 +30,10 @@ def cycleCapability {Previous : Type uPrevious}
     (LengthOK : Nat -> Prop)
     (schedule : Core.Residual.Query Previous fun previous =>
       Core.Finite.Enumeration
-        (CycleCertificate (object.read previous) LengthOK))
+        (CycleCertificate (object previous) LengthOK))
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
-      (schedule.read previous).card <=
+      (schedule previous).card <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT1.Capability (cycleSpec object LengthOK) where
   schedule := schedule
@@ -51,10 +51,10 @@ theorem publicTarget_of_target {Previous : Type uPrevious}
       FiniteObject.{uVertex}}
     {LengthOK : Nat -> Prop} {previous : Previous}
     {schedule : Core.Finite.Enumeration
-      (CycleCertificate (object.read previous) LengthOK)}
+      (CycleCertificate (object previous) LengthOK)}
     (target : _root_.Hypostructure.CT1.Target
       (cycleSpec object LengthOK) previous schedule) :
-    HasCycleWithLength LengthOK (object.read previous) := by
+    HasCycleWithLength LengthOK (object previous) := by
   rcases target with ⟨certificate, _member, _realizes⟩
   exact ⟨certificate⟩
 
@@ -67,11 +67,11 @@ def cycleTargetBridge {Previous : Type uPrevious}
     (capability : _root_.Hypostructure.CT1.Capability
       (cycleSpec object LengthOK))
     (complete : forall previous,
-      HasCycleWithLength LengthOK (object.read previous) ->
+      HasCycleWithLength LengthOK (object previous) ->
         Exists fun certificate =>
           certificate ∈ (capability.scheduleAt previous).values) :
     _root_.Hypostructure.CT1.TargetBridge (cycleSpec object LengthOK) capability
-      (fun previous => HasCycleWithLength LengthOK (object.read previous)) where
+      (fun previous => HasCycleWithLength LengthOK (object previous)) where
   equivalent := by
     intro previous
     constructor
@@ -95,17 +95,17 @@ def rootedReturnEncoding {Previous : Type uPrevious}
     (LengthOK : Nat -> Prop)
     (algebra : RootedReturnTargetAlgebra LengthOK) :
     _root_.Hypostructure.CT1.CertificateEncoding Previous
-      (fun previous => HasCycleWithLength LengthOK (object.read previous)) where
-  Code := fun previous => algebra.RootedReturn (object.read previous)
+      (fun previous => HasCycleWithLength LengthOK (object previous)) where
+  Code := fun previous => algebra.RootedReturn (object previous)
   Accepts := fun _previous _certificate => True
   encode := by
     intro previous target
     obtain ⟨certificate⟩ :=
-      (algebra.target_iff_hasRootedReturn (object.read previous)).mp target
+      (algebra.target_iff_hasRootedReturn (object previous)).mp target
     exact ⟨certificate, trivial⟩
   decode := by
     intro previous certificate _accepted
-    exact (algebra.target_iff_hasRootedReturn (object.read previous)).mpr
+    exact (algebra.target_iff_hasRootedReturn (object previous)).mpr
       ⟨certificate⟩
   acceptsDecidable := fun _previous _certificate => .isTrue trivial
 
@@ -132,20 +132,20 @@ def focusedRootedReturnEncoding {Previous : Type uPrevious}
     (algebra : RootedReturnTargetAlgebra LengthOK) :
     _root_.Hypostructure.CT1.FocusedCertificateEncoding.Encoding profile
       (fun previous active =>
-        HasCycleWithLength LengthOK (object.read previous active)) where
+        HasCycleWithLength LengthOK (object previous active)) where
   Code := fun previous active =>
-    algebra.RootedReturn (object.read previous active)
+    algebra.RootedReturn (object previous active)
   Accepts := fun _previous _active _certificate => True
   encode := by
     intro previous active target
     obtain ⟨certificate⟩ :=
       (algebra.target_iff_hasRootedReturn
-        (object.read previous active)).mp target
+        (object previous active)).mp target
     exact ⟨certificate, trivial⟩
   decode := by
     intro previous active certificate _accepted
     exact (algebra.target_iff_hasRootedReturn
-      (object.read previous active)).mpr ⟨certificate⟩
+      (object previous active)).mpr ⟨certificate⟩
   acceptsDecidable := fun _previous _active _certificate => .isTrue trivial
 
 /-- Counted rooted-return CT1 execution on the exact focused graph branch. -/

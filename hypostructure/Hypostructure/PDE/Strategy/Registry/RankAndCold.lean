@@ -233,11 +233,11 @@ noncomputable def coldBranchLedgerRegistration
       -- event witness *is* alternative 6 at this residual, so the registered
       -- target is read off it; nothing is decided or reproved here.
       storedF1ForcesTarget := fun previous stage owner =>
-        system.target_of_gradientClosed (current.read previous)
+        system.target_of_gradientClosed (current previous)
           (Registry.FibrePressure.gradientClosed_of_stageReached system
-            (current.read previous)
+            (current previous)
             ((coldWindowFamily system
-                (current.read previous)).storedFailureEvent
+                (current previous)).storedFailureEvent
               stage Core.Finite.ColdCorridor.Failure.f1
               (by decide) owner).sound)
       classifiedStateForcesTarget := fun _previous _stage => none }
@@ -269,7 +269,7 @@ noncomputable def coldBranchAggregation
     [Core.Residual.HasResidual Previous
       (Core.Strategy.ProblemInput M.problem)] :
     Core.Strategy.ColdBranchAggregation.Registration Previous where
-  inputs := Core.Residual.Query.ofFunction fun _previous =>
+  inputs := fun _previous =>
     { Interface := fun _ => PUnit
       interface := PUnit.unit
       contract146 :=

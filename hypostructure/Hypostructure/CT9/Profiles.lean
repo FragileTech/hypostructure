@@ -40,7 +40,7 @@ structure ParityCapacityOneProfile (Previous : Type uPrevious) where
   workCoefficient : Nat
   workDegree : Nat
   workBound : forall previous,
-    localCheckBound (items.read previous) parityLabels.toEnumeration <=
+    localCheckBound (items previous) parityLabels.toEnumeration <=
       workCoefficient * (inputSize previous + 1) ^ workDegree
 
 namespace ParityCapacityOneProfile

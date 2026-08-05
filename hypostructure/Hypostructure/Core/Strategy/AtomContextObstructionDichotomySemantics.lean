@@ -75,8 +75,8 @@ def query
     (registration : Registration P Residual)
     (residual : Core.Residual.Query Previous (fun _ => Residual))
     (previous : Previous) :
-    (registration.query residual).read previous =
-      registration.presentation (residual.read previous) :=
+    (registration.query residual) previous =
+      registration.presentation (residual previous) :=
   rfl
 
 end Registration

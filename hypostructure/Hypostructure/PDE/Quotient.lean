@@ -196,16 +196,16 @@ def defectRegistrationNode {Previous : Sort uPrevious}
       (fun _previous => GeneratorForm M State))
     {Quotient : Type w} [AddCommGroup Quotient] [Module Real Quotient]
     (quotient : (previous : Previous) ->
-      RepresentedQuotient (form.read previous) Quotient)
+      RepresentedQuotient (form previous) Quotient)
     (quotientGenerator : (previous : Previous) ->
-      QuotientGenerator (form.read previous) (quotient previous))
+      QuotientGenerator (form previous) (quotient previous))
     (geometry : Previous -> DefectGeometry State) :
     Core.Residual.StageNode Previous
       (fun _ => QuotientDefectRegistration M State Quotient) :=
   Core.Residual.StageNode.create fun previous =>
-    .mk (form.read previous) (quotient previous)
+    .mk (form previous) (quotient previous)
       (quotientGenerator previous) (geometry previous)
-      (intertwiningDefect (form.read previous) (quotient previous)
+      (intertwiningDefect (form previous) (quotient previous)
         (quotientGenerator previous)) rfl
 
 /-- Compute and register the exact defect in the complete predecessor ledger. -/
@@ -217,9 +217,9 @@ def registerDefect {Previous : Sort uPrevious}
       (fun _previous => GeneratorForm M State))
     {Quotient : Type w} [AddCommGroup Quotient] [Module Real Quotient]
     (quotient : (previous : Previous) ->
-      RepresentedQuotient (form.read previous) Quotient)
+      RepresentedQuotient (form previous) Quotient)
     (quotientGenerator : (previous : Previous) ->
-      QuotientGenerator (form.read previous) (quotient previous))
+      QuotientGenerator (form previous) (quotient previous))
     (geometry : Previous -> DefectGeometry State)
     (previous : Previous) :=
   (defectRegistrationNode form quotient quotientGenerator geometry).run
@@ -365,9 +365,9 @@ theorem registerDefect_previous {Previous : Sort uPrevious}
       (fun _previous => GeneratorForm M State))
     {Quotient : Type w} [AddCommGroup Quotient] [Module Real Quotient]
     (quotient : (previous : Previous) ->
-      RepresentedQuotient (form.read previous) Quotient)
+      RepresentedQuotient (form previous) Quotient)
     (quotientGenerator : (previous : Previous) ->
-      QuotientGenerator (form.read previous) (quotient previous))
+      QuotientGenerator (form previous) (quotient previous))
     (geometry : Previous -> DefectGeometry State)
     (previous : Previous) :
     (registerDefect form quotient quotientGenerator geometry previous).previous =
@@ -383,13 +383,13 @@ theorem registerDefect_added {Previous : Sort uPrevious}
       (fun _previous => GeneratorForm M State))
     {Quotient : Type w} [AddCommGroup Quotient] [Module Real Quotient]
     (quotient : (previous : Previous) ->
-      RepresentedQuotient (form.read previous) Quotient)
+      RepresentedQuotient (form previous) Quotient)
     (quotientGenerator : (previous : Previous) ->
-      QuotientGenerator (form.read previous) (quotient previous))
+      QuotientGenerator (form previous) (quotient previous))
     (geometry : Previous -> DefectGeometry State)
     (previous : Previous) :
     (registerDefect form quotient quotientGenerator geometry previous).added.defect =
-      intertwiningDefect (form.read previous) (quotient previous)
+      intertwiningDefect (form previous) (quotient previous)
         (quotientGenerator previous) :=
   rfl
 
@@ -402,9 +402,9 @@ theorem registerDefect_added_geometry {Previous : Sort uPrevious}
       (fun _previous => GeneratorForm M State))
     {Quotient : Type w} [AddCommGroup Quotient] [Module Real Quotient]
     (quotient : (previous : Previous) ->
-      RepresentedQuotient (form.read previous) Quotient)
+      RepresentedQuotient (form previous) Quotient)
     (quotientGenerator : (previous : Previous) ->
-      QuotientGenerator (form.read previous) (quotient previous))
+      QuotientGenerator (form previous) (quotient previous))
     (geometry : Previous -> DefectGeometry State)
     (previous : Previous) :
     (registerDefect form quotient quotientGenerator geometry previous).added.geometry =

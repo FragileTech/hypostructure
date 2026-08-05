@@ -52,15 +52,15 @@ variable (profile :
 
 def activitySpec : CT6.Spec Previous where
   Index := fun previous =>
-    profile.registration.Index (profile.current.read previous)
+    profile.registration.Index (profile.current previous)
   FailureData := fun previous =>
-    profile.registration.FailureData (profile.current.read previous)
+    profile.registration.FailureData (profile.current previous)
   Failure := fun previous =>
-    profile.registration.Failure (profile.current.read previous)
+    profile.registration.Failure (profile.current previous)
   failureData := fun previous =>
-    profile.registration.failureData (profile.current.read previous)
+    profile.registration.failureData (profile.current previous)
   contribution := fun previous =>
-    profile.registration.contribution (profile.current.read previous)
+    profile.registration.contribution (profile.current previous)
 
 def activityOrder : Query Previous fun previous =>
     Core.Finite.Enumeration (profile.activitySpec.Index previous) :=
@@ -70,8 +70,8 @@ def activityOrder : Query Previous fun previous =>
 def activityCapability : CT6.Capability profile.activitySpec where
   failureOrder := profile.activityOrder
   failureDecidable := fun previous =>
-    profile.registration.failureDecidable (profile.current.read previous)
-  inputSize := fun previous => (profile.activityOrder.read previous).card
+    profile.registration.failureDecidable (profile.current previous)
+  inputSize := fun previous => (profile.activityOrder previous).card
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by

@@ -61,7 +61,7 @@ def activeLocalQuery
     (whole : Core.Residual.Focus.ActiveQuery focus Carrier)
     (split : Core.Residual.Focus.ActiveQuery focus fun previous active =>
       ExactLocalTail (Carrier previous active)
-        (whole.read previous active)) :
+        (whole previous active)) :
     Core.Residual.Focus.ActiveQuery focus Carrier :=
   split.map fun _previous _active decomposition =>
     decomposition.localPart
@@ -76,7 +76,7 @@ def activeTailQuery
     (whole : Core.Residual.Focus.ActiveQuery focus Carrier)
     (split : Core.Residual.Focus.ActiveQuery focus fun previous active =>
       ExactLocalTail (Carrier previous active)
-        (whole.read previous active)) :
+        (whole previous active)) :
     Core.Residual.Focus.ActiveQuery focus Carrier :=
   split.map fun _previous _active decomposition =>
     decomposition.tailPart
@@ -91,12 +91,12 @@ theorem activeQueries_reconstruct
     (whole : Core.Residual.Focus.ActiveQuery focus Carrier)
     (split : Core.Residual.Focus.ActiveQuery focus fun previous active =>
       ExactLocalTail (Carrier previous active)
-        (whole.read previous active))
+        (whole previous active))
     (previous : Previous) (active : focus.Active previous) :
-    (activeLocalQuery whole split).read previous active +
-        (activeTailQuery whole split).read previous active =
-      whole.read previous active :=
-  (split.read previous active).exact_reconstruction
+    (activeLocalQuery whole split) previous active +
+        (activeTailQuery whole split) previous active =
+      whole previous active :=
+  (split previous active).exact_reconstruction
 
 /-- Read the local summand from an exact split on the current residual. -/
 def localQuery
@@ -105,7 +105,7 @@ def localQuery
     [∀ previous, Add (Carrier previous)]
     (whole : Core.Residual.Query Previous Carrier)
     (split : Core.Residual.Query Previous fun previous =>
-      ExactLocalTail (Carrier previous) (whole.read previous)) :
+      ExactLocalTail (Carrier previous) (whole previous)) :
     Core.Residual.Query Previous Carrier :=
   split.map fun _ decomposition => decomposition.localPart
 
@@ -116,7 +116,7 @@ def tailQuery
     [∀ previous, Add (Carrier previous)]
     (whole : Core.Residual.Query Previous Carrier)
     (split : Core.Residual.Query Previous fun previous =>
-      ExactLocalTail (Carrier previous) (whole.read previous)) :
+      ExactLocalTail (Carrier previous) (whole previous)) :
     Core.Residual.Query Previous Carrier :=
   split.map fun _ decomposition => decomposition.tailPart
 
@@ -131,12 +131,12 @@ theorem queries_reconstruct
     [∀ previous, Add (Carrier previous)]
     (whole : Core.Residual.Query Previous Carrier)
     (split : Core.Residual.Query Previous fun previous =>
-      ExactLocalTail (Carrier previous) (whole.read previous))
+      ExactLocalTail (Carrier previous) (whole previous))
     (previous : Previous) :
-    (localQuery whole split).read previous +
-        (tailQuery whole split).read previous =
-      whole.read previous :=
-  (split.read previous).exact_reconstruction
+    (localQuery whole split) previous +
+        (tailQuery whole split) previous =
+      whole previous :=
+  (split previous).exact_reconstruction
 
 end ExactLocalTail
 
@@ -169,7 +169,7 @@ def activeLocalQuery
       Carrier previous active -> Carrier previous active -> Prop)
     (split : Core.Residual.Focus.ActiveQuery focus fun previous active =>
       ExactLocalTailOn (Carrier previous active)
-        (SameOn previous active) (whole.read previous active)) :
+        (SameOn previous active) (whole previous active)) :
     Core.Residual.Focus.ActiveQuery focus Carrier :=
   split.map fun _previous _active decomposition =>
     decomposition.localPart
@@ -186,7 +186,7 @@ def activeTailQuery
       Carrier previous active -> Carrier previous active -> Prop)
     (split : Core.Residual.Focus.ActiveQuery focus fun previous active =>
       ExactLocalTailOn (Carrier previous active)
-        (SameOn previous active) (whole.read previous active)) :
+        (SameOn previous active) (whole previous active)) :
     Core.Residual.Focus.ActiveQuery focus Carrier :=
   split.map fun _previous _active decomposition =>
     decomposition.tailPart
@@ -203,13 +203,13 @@ theorem activeQueries_reconstruct
       Carrier previous active -> Carrier previous active -> Prop)
     (split : Core.Residual.Focus.ActiveQuery focus fun previous active =>
       ExactLocalTailOn (Carrier previous active)
-        (SameOn previous active) (whole.read previous active))
+        (SameOn previous active) (whole previous active))
     (previous : Previous) (active : focus.Active previous) :
     SameOn previous active
-      ((activeLocalQuery whole SameOn split).read previous active +
-        (activeTailQuery whole SameOn split).read previous active)
-      (whole.read previous active) :=
-  (split.read previous active).exact_reconstruction
+      ((activeLocalQuery whole SameOn split) previous active +
+        (activeTailQuery whole SameOn split) previous active)
+      (whole previous active) :=
+  (split previous active).exact_reconstruction
 
 /-- Read the local child of a residual-indexed germ decomposition. -/
 def localQuery
@@ -221,7 +221,7 @@ def localQuery
       Carrier previous → Carrier previous → Prop)
     (split : Core.Residual.Query Previous fun previous =>
       ExactLocalTailOn (Carrier previous) (SameOn previous)
-        (whole.read previous)) :
+        (whole previous)) :
     Core.Residual.Query Previous Carrier :=
   split.map fun _ decomposition => decomposition.localPart
 
@@ -235,7 +235,7 @@ def tailQuery
       Carrier previous → Carrier previous → Prop)
     (split : Core.Residual.Query Previous fun previous =>
       ExactLocalTailOn (Carrier previous) (SameOn previous)
-        (whole.read previous)) :
+        (whole previous)) :
     Core.Residual.Query Previous Carrier :=
   split.map fun _ decomposition => decomposition.tailPart
 
@@ -249,13 +249,13 @@ theorem queries_reconstruct
       Carrier previous → Carrier previous → Prop)
     (split : Core.Residual.Query Previous fun previous =>
       ExactLocalTailOn (Carrier previous) (SameOn previous)
-        (whole.read previous))
+        (whole previous))
     (previous : Previous) :
     SameOn previous
-      ((localQuery whole SameOn split).read previous +
-        (tailQuery whole SameOn split).read previous)
-      (whole.read previous) :=
-  (split.read previous).exact_reconstruction
+      ((localQuery whole SameOn split) previous +
+        (tailQuery whole SameOn split) previous)
+      (whole previous) :=
+  (split previous).exact_reconstruction
 
 end ExactLocalTailOn
 

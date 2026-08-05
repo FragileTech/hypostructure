@@ -61,11 +61,11 @@ structure FullRankToGap
   fromC4 : forall (view : ActiveView focus),
     Hypostructure.CT15.C4Output rankCapability view ->
       StructuralGradient.PositiveStructuralGap
-        (gradient.read view.previous view.proof)
+        (gradient view.previous view.proof)
   fromFullRankLedger : forall (view : ActiveView focus),
     Hypostructure.CT15.FullRankLedgerOutput rankCapability view ->
       StructuralGradient.PositiveStructuralGap
-        (gradient.read view.previous view.proof)
+        (gradient view.previous view.proof)
 
 /-- Semantic alignment between the finite CT15/CT16 audit and the exact
 boundary quotient executor.  A rank drop is the only CT15 branch admitted to
@@ -106,7 +106,7 @@ structure Profile
   gradient : Hypostructure.Core.Residual.Focus.ActiveQuery focus fun _previous _proof =>
     StructuralGradient Potential Current
   closedRangeCriterion : Hypostructure.Core.Residual.Focus.ActiveQuery focus fun previous proof =>
-    StructuralGradient.ClosedRangeCriterion (gradient.read previous proof)
+    StructuralGradient.ClosedRangeCriterion (gradient previous proof)
   rankSpec : Hypostructure.CT15.Spec.{uPrevious, uRankCoordinate}
     (ActiveView focus)
   rankCapability : Hypostructure.CT15.Capability rankSpec
@@ -156,11 +156,11 @@ structure PositiveGapOutput
     (view : ActiveView focus) where
   private mk ::
   gap : StructuralGradient.PositiveStructuralGap
-    (profile.gradient.read view.previous view.proof)
+    (profile.gradient view.previous view.proof)
   closedRange : StructuralGradient.ClosedRangeCertificate
-    (profile.gradient.read view.previous view.proof)
+    (profile.gradient view.previous view.proof)
   directed : StructuralGradient.DirectedExhaustivenessCertificate
-    (profile.gradient.read view.previous view.proof)
+    (profile.gradient view.previous view.proof)
 
 /-- Target-complete closed terminal.  `boundaryZero` concerns every class of
 the represented quotient, not merely the finite family inspected by Core. -/
@@ -309,10 +309,10 @@ private def positiveGapOfC4
     (view : ActiveView focus)
     (output : Hypostructure.CT15.C4Output profile.rankCapability view) :
     PositiveGapOutput profile view := by
-  let gap := (profile.fullRankToGap.read view.previous view.proof).fromC4
+  let gap := (profile.fullRankToGap view.previous view.proof).fromC4
     view output
   let closedRange :=
-    (profile.closedRangeCriterion.read view.previous view.proof).closedRangeOfGap
+    (profile.closedRangeCriterion view.previous view.proof).closedRangeOfGap
       gap
   exact {
     gap := gap
@@ -329,10 +329,10 @@ private def positiveGapOfFullRankLedger
     (output : Hypostructure.CT15.FullRankLedgerOutput
       profile.rankCapability view) : PositiveGapOutput profile view := by
   let gap :=
-    (profile.fullRankToGap.read view.previous view.proof).fromFullRankLedger
+    (profile.fullRankToGap view.previous view.proof).fromFullRankLedger
       view output
   let closedRange :=
-    (profile.closedRangeCriterion.read view.previous view.proof).closedRangeOfGap
+    (profile.closedRangeCriterion view.previous view.proof).closedRangeOfGap
       gap
   exact {
     gap := gap
@@ -351,7 +351,7 @@ private def zeroBoundaryOfClosure
   {
     closure := output
     boundaryZero := output.boundaryZero
-      (profile.targetComplete.read view.previous view.proof)
+      (profile.targetComplete view.previous view.proof)
   }
 
 private def targetVisibleOfClosure
@@ -458,7 +458,7 @@ def generateActiveCounted
     {focus : Hypostructure.Core.Residual.Focus.Profile Previous}
     (profile : Profile Previous focus Potential Current)
     (view : ActiveView focus) : Counted (Generated profile view) :=
-  let alignment := profile.codeClosureAlignment.read view.previous view.proof
+  let alignment := profile.codeClosureAlignment view.previous view.proof
   (Hypostructure.CT15.generateCounted profile.rankCapability view).bind
     fun rank =>
       match isRank : rank.terminal with
@@ -544,7 +544,7 @@ private theorem closureGeneration_checks_eq_value
     (generateActiveCounted profile view).checks =
       (generateActiveCounted profile view).value.checks :=
   by
-    let alignment := profile.codeClosureAlignment.read view.previous view.proof
+    let alignment := profile.codeClosureAlignment view.previous view.proof
     unfold generateActiveCounted
     simp only [Counted.bind, Counted.map, Counted.pure]
     split
@@ -758,7 +758,7 @@ theorem outputQuery_run_of_active
     {focus : Hypostructure.Core.Residual.Focus.Profile Previous}
     (profile : Profile Previous focus Potential Current)
     (previous : Previous) (active : focus.Active previous) :
-    profile.outputQuery.read (run profile previous).value
+    profile.outputQuery (run profile previous).value
         (runActiveProof profile previous active) =
       generateActive profile
         (Hypostructure.Core.Residual.Focus.ActiveView.of previous active) := by

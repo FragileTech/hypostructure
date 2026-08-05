@@ -58,7 +58,7 @@ def boundaryAt
     {focus : Hypostructure.Core.Residual.Focus.Profile Previous}
     (rowFive : DirectedExhaustiveness.Profile Previous focus Potential Current)
     (view : ActiveView rowFive) : BoundaryAt rowFive view :=
-  rowFive.targetVisibleBoundaryQuery.read view.previous view.proof
+  rowFive.targetVisibleBoundaryQuery view.previous view.proof
 
 /-- Source-neutral transcript of the two exact output-only CT generations.
 CT7 is indexed by the same active row-5 view and runs for every CT13 outcome. -/
@@ -280,7 +280,7 @@ structure Profile
         AlignmentRegistration rowFive tieredCapability contextCapability
           FiniteResistance HarmonicZero HarmonicLedgerMember
           NonroutableTargetVisible view
-          (rowFive.targetVisibleBoundaryQuery.read stage active)
+          (rowFive.targetVisibleBoundaryQuery stage active)
 
 namespace Profile
 
@@ -541,8 +541,8 @@ def interpretCounted
     (profile : Profile rowFive) (view : ActiveView rowFive)
     (raw : profile.Raw view) :
     Counted (Interpretation profile view raw
-      (profile.alignmentRegistration.read view.previous view.proof)) :=
-  match profile.alignmentRegistration.read view.previous view.proof with
+      (profile.alignmentRegistration view.previous view.proof)) :=
+  match profile.alignmentRegistration view.previous view.proof with
   | .unavailable missing => Counted.pure (.unaligned missing)
   | .available alignment =>
       (scanAlignmentCounted profile view raw alignment).map fun selection =>
@@ -558,7 +558,7 @@ def interpretCounted
       (interpretCounted profile view raw).value.checks := by
   unfold interpretCounted
   cases registered :
-      profile.alignmentRegistration.read view.previous view.proof with
+      profile.alignmentRegistration view.previous view.proof with
   | unavailable missing => rfl
   | available alignment =>
       exact scanAlignmentCounted_checks profile view raw alignment
@@ -572,7 +572,7 @@ theorem interpretCounted_checks_le_three
     (interpretCounted profile view raw).checks <= 3 := by
   unfold interpretCounted
   cases registered :
-      profile.alignmentRegistration.read view.previous view.proof with
+      profile.alignmentRegistration view.previous view.proof with
   | unavailable missing => simp [Counted.pure]
   | available alignment =>
       simpa [Counted.map] using
@@ -585,7 +585,7 @@ theorem interpretCounted_checks_of_unavailable
     (profile : Profile rowFive) (view : ActiveView rowFive)
     (raw : profile.Raw view) (missing : profile.MissingAlignmentAt view)
     (registered :
-      profile.alignmentRegistration.read view.previous view.proof =
+      profile.alignmentRegistration view.previous view.proof =
         .unavailable missing) :
     (interpretCounted profile view raw).checks = 0 := by
   unfold interpretCounted
@@ -599,7 +599,7 @@ theorem interpretCounted_checks_of_available
     (profile : Profile rowFive) (view : ActiveView rowFive)
     (raw : profile.Raw view) (alignment : profile.AlignmentAt view)
     (registered :
-      profile.alignmentRegistration.read view.previous view.proof =
+      profile.alignmentRegistration view.previous view.proof =
         .available alignment) :
     (interpretCounted profile view raw).checks =
       (scanAlignmentCounted profile view raw alignment).checks := by
@@ -616,7 +616,7 @@ structure Generated
   private mk ::
   raw : profile.Raw view
   interpretation : Interpretation profile view raw
-    (profile.alignmentRegistration.read view.previous view.proof)
+    (profile.alignmentRegistration view.previous view.proof)
 
 namespace Generated
 
@@ -675,7 +675,7 @@ theorem generateActiveCounted_checks_of_unavailable
     (profile : Profile rowFive) (view : ActiveView rowFive)
     (missing : profile.MissingAlignmentAt view)
     (registered :
-      profile.alignmentRegistration.read view.previous view.proof =
+      profile.alignmentRegistration view.previous view.proof =
         .unavailable missing) :
     (generateActiveCounted profile view).checks =
       (Hypostructure.CT13.generateCounted
@@ -696,7 +696,7 @@ theorem generateActiveCounted_checks_of_available
     (profile : Profile rowFive) (view : ActiveView rowFive)
     (alignment : profile.AlignmentAt view)
     (registered :
-      profile.alignmentRegistration.read view.previous view.proof =
+      profile.alignmentRegistration view.previous view.proof =
         .available alignment) :
     (generateActiveCounted profile view).checks =
       ((Hypostructure.CT13.generateCounted
@@ -1047,7 +1047,7 @@ theorem run_checks_of_active_unavailable
     (missing : profile.MissingAlignmentAt
       (Hypostructure.Core.Residual.Focus.ActiveView.of previous active))
     (registered :
-      profile.alignmentRegistration.read previous active =
+      profile.alignmentRegistration previous active =
         .unavailable missing) :
     (run profile previous).checks =
       rowFive.TargetVisibleFocus.selectionBudget.checks previous +
@@ -1072,7 +1072,7 @@ theorem run_checks_of_active_available
     (alignment : profile.AlignmentAt
       (Hypostructure.Core.Residual.Focus.ActiveView.of previous active))
     (registered :
-      profile.alignmentRegistration.read previous active =
+      profile.alignmentRegistration previous active =
         .available alignment) :
     (run profile previous).checks =
       rowFive.TargetVisibleFocus.selectionBudget.checks previous +

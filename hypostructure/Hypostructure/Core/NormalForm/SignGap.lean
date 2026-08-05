@@ -37,14 +37,14 @@ structure Data {P : Problem.{uAmbient, uBranch}}
   gap : (previous : Previous) -> extraction.Sequence -> budget.Resource
   Normalized : (previous : Previous) -> extraction.Sequence -> Prop
   normalized : forall previous,
-    Normalized previous (family.read previous)
+    Normalized previous (family previous)
   lossNonnegative : forall previous,
-    budget.le budget.zero (loss previous (family.read previous))
+    budget.le budget.zero (loss previous (family previous))
   readoutPositive : forall previous,
     StrictlyBelow budget budget.zero
-      (readout previous (family.read previous))
+      (readout previous (family previous))
   gapNonnegative : forall previous,
-    budget.le budget.zero (gap previous (family.read previous))
+    budget.le budget.zero (gap previous (family previous))
 
 namespace Data
 
@@ -56,7 +56,7 @@ variable {P : Problem.{uAmbient, uBranch}}
 
 /-- The exact represented family queried from the predecessor ledger. -/
 abbrev familyAt (previous : Previous) : extraction.Sequence :=
-  data.family.read previous
+  data.family previous
 
 /-- Canonical scalar evidence for a strict/subcritical comparison. -/
 def SubcriticalScalarEvidence (previous : Previous) : Prop :=

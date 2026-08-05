@@ -98,12 +98,12 @@ def firstQuery : Focus.ActiveQuery firstFocus fun stage proof =>
 
 abbrev secondOutput (stage : Focus.Stage branchFocus firstOutput)
     (active : firstFocus.Active stage) :=
-  { value : Nat // value = firstQuery.read stage active + 1 }
+  { value : Nat // value = firstQuery stage active + 1 }
 
 def secondCounted (stage : Focus.Stage branchFocus firstOutput) :
     Core.Counted (Focus.Stage firstFocus secondOutput) :=
   Focus.runCounted firstFocus stage fun active _checks _exact =>
-    ⟨firstQuery.read stage active + 1, rfl⟩
+    ⟨firstQuery stage active + 1, rfl⟩
 
 def second (stage : Focus.Stage branchFocus firstOutput) :
     Focus.Stage firstFocus secondOutput :=
@@ -141,18 +141,18 @@ def focusedBooleanOnView : Query (Focus.ActiveView branchFocus)
   focusedBoolean.onView
 
 theorem active_view_reads_exact_predecessor :
-    focusedBooleanOnView.read yesView = true :=
+    focusedBooleanOnView yesView = true :=
   rfl
 
 theorem active_view_is_only_a_query_root :
     residualOf yesView = yesView :=
   rfl
 
-theorem yes_first_value : firstQuery.read yesFirst yesActive = 2 :=
+theorem yes_first_value : firstQuery yesFirst yesActive = 2 :=
   rfl
 
 theorem yes_second_value :
-    (Focus.ActiveQuery.latest.read yesSecond yesActive).1 = 3 :=
+    (Focus.ActiveQuery.latest yesSecond yesActive).1 = 3 :=
   rfl
 
 theorem second_retains_first : yesSecond.previous = yesFirst :=
@@ -181,7 +181,7 @@ theorem branch_focus_checks_no :
   rfl
 
 theorem active_payload_value :
-    payloadQuery.read yesPayload yesActive = 7 :=
+    payloadQuery yesPayload yesActive = 7 :=
   rfl
 
 theorem active_payload_exact_total :
@@ -349,12 +349,12 @@ theorem refined_dynamic_budget_is_exact (decision) :
   refinedFocus.select_checks decision
 
 theorem refined_query_reads_parent_ledger :
-    refinedBoolean.read yesDecision refinedYesActive = true :=
+    refinedBoolean yesDecision refinedYesActive = true :=
   rfl
 
 theorem refined_query_exposes_selected_child_proof :
-    focusedBoolean.read yesDecision refinedYesActive.parent = true :=
-  (focusedBoolean.equalToProof true).read yesDecision refinedYesActive
+    focusedBoolean yesDecision refinedYesActive.parent = true :=
+  (focusedBoolean.equalToProof true) yesDecision refinedYesActive
 
 theorem refined_execution_retains_literal_predecessor :
     refinedCounted.value.previous = yesDecision := by

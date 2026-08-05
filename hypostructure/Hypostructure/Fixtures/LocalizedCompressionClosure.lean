@@ -60,10 +60,10 @@ def coverage (input : Input) (c : Unit) (replacement : Bool) :
 
 def capability (input : Input) (c : Unit) :
     Hypostructure.CT3.Capability (spec input c) where
-  source := Query.ofFunction fun (i : Input) => i.object
-  coordinates := Query.ofFunction fun _ => boolCoordinates
-  candidates := Query.ofFunction fun _ => Core.Finite.Enumeration.singleton false
-  rows := Query.ofFunction fun _ => Core.Finite.Enumeration.empty Row
+  source :=  fun (i : Input) => i.object
+  coordinates :=  fun _ => boolCoordinates
+  candidates :=  fun _ => Core.Finite.Enumeration.singleton false
+  rows :=  fun _ => Core.Finite.Enumeration.empty Row
   valueDecEq := by change DecidableEq Bool; infer_instance
   admissibleDecidable := fun _ _ _ => .isTrue trivial
   smallerDecidable := fun _ _ _ => .isTrue trivial
@@ -75,7 +75,6 @@ def capability (input : Input) (c : Unit) :
   workCoefficient := 8
   workDegree := 0
   workBound := fun _ => by
-    simp only [Query.read_ofFunction]
     decide
 
 noncomputable def testDichotomy : Core.DichotomyData problem target :=
@@ -144,8 +143,8 @@ borrowed response semantics that could conflict with them. -/
 
 def capability (input : Input) (c : Unit) :
     Hypostructure.CT3.Capability (spec input c) where
-  source := Query.ofFunction fun (i : Input) => i.object
-  coordinates := Query.ofFunction fun _ =>
+  source :=  fun (i : Input) => i.object
+  coordinates :=  fun _ =>
     ({ values := [()], nodup := by simp, decEq := fun _ _ => .isTrue rfl } :
       Core.Finite.Enumeration (spec input c).system.Coordinate)
   -- Constant, input-independent schedule: `false` is always scheduled, but
@@ -153,8 +152,8 @@ def capability (input : Input) (c : Unit) :
   -- search still correctly finds no compression when `input.object = false`,
   -- just via admissibility rather than an empty schedule, which keeps the
   -- coverage/work-bound obligations input-independent too.
-  candidates := Query.ofFunction fun _ => Core.Finite.Enumeration.singleton false
-  rows := Query.ofFunction fun _ => Core.Finite.Enumeration.empty PEmpty
+  candidates :=  fun _ => Core.Finite.Enumeration.singleton false
+  rows :=  fun _ => Core.Finite.Enumeration.empty PEmpty
   valueDecEq := by change DecidableEq Bool; infer_instance
   admissibleDecidable := fun input _ candidate => inferInstance
   smallerDecidable := fun input _ _ => inferInstance
@@ -162,7 +161,7 @@ def capability (input : Input) (c : Unit) :
     letI : Subsingleton (spec input c).system.Context := inferInstanceAs (Subsingleton Unit)
     Core.Response.FiniteTable.SymbolicCoverage.ofSubsingletonSingleton
       (spec input c).system
-      ((spec input c).representatives ((Query.ofFunction fun i : Input => i.object).read previous)
+      ((spec input c).representatives (( fun i : Input => i.object) previous)
         ((spec input c).candidatePiece candidate))
       ()
   rowCoverage := fun _ row _ => row.elim
@@ -170,7 +169,7 @@ def capability (input : Input) (c : Unit) :
   workCoefficient := 8
   workDegree := 0
   workBound := fun _ => by
-    simp only [Query.read_ofFunction, Core.Finite.Enumeration.card,
+    simp only [Core.Finite.Enumeration.card,
       Core.Finite.Enumeration.singleton, Core.Finite.Enumeration.ofNodupList,
       Core.Finite.Enumeration.empty, Hypostructure.CT3.localCheckBound]
     decide

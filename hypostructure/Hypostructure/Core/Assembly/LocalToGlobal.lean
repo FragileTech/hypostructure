@@ -74,10 +74,10 @@ def globalize {A : AtomContextAssembly P E} {Local : A.LocalProperty}
     {Previous : Sort uPrevious}
     (object : Residual.Query Previous (fun _ => P.Ambient))
     (certificate : Residual.Query Previous fun previous =>
-      A.PointwiseCertificate Local (object.read previous)) :
-    Residual.Node Previous (fun previous => Global (object.read previous)) :=
+      A.PointwiseCertificate Local (object previous)) :
+    Residual.Node Previous (fun previous => Global (object previous)) :=
   Residual.Node.derive certificate fun previous pointwise =>
-    profile.run (object.read previous) pointwise
+    profile.run (object previous) pointwise
 
 /-- Apply the same assembly theorem to an arbitrary live result emitted by a
 framework strategy program.  The terminal family is unrestricted.  The only
@@ -97,7 +97,7 @@ def globalizeOpenResult
     (result : Strategy.HaltingProgram.OpenResult P Stage TerminalResidual input) :
     Global input.object := by
   have assembled := profile.run (Residual.residualOf result.stage).object
-    (certificate.read result.stage)
+    (certificate result.stage)
   rw [result.residual_eq] at assembled
   exact assembled
 

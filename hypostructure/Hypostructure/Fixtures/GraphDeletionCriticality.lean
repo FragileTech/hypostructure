@@ -147,7 +147,7 @@ def rootContextQuery : Query Root (fun _root =>
 accumulated ledger, with its type indexed by the context already registered. -/
 abbrev Previous := Ledger.Extension Root (fun root =>
   Core.Minimality.NoSubobjectBaselineCertificate
-    (toCoreProfile minimalityProfile) (rootContextQuery.read root))
+    (toCoreProfile minimalityProfile) (rootContextQuery root))
 
 def previous : Previous :=
   Ledger.extend root noSubobject
@@ -184,13 +184,13 @@ theorem executor_preserves_previous : stage.previous.previous = previous :=
 
 theorem generated_tight_endpoint :
     k2.degree dart.fst = 1 ∨ k2.degree dart.snd = 1 := by
-  exact (certificateQuery.read stage).tightEndpoint dart
+  exact (certificateQuery stage).tightEndpoint dart
 
 theorem generated_slack_independence {left right : k2.Vertex}
     (leftSlack : 2 ≤ k2.degree left)
     (rightSlack : 2 ≤ k2.degree right) :
     Not (k2.graph.Adj left right) := by
-  exact (certificateQuery.read stage).slackVerticesIndependent
+  exact (certificateQuery stage).slackVerticesIndependent
     leftSlack rightSlack
 
 #print axioms FiniteObject.deleteEdge_preserves_minDegree

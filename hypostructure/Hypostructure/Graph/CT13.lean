@@ -34,14 +34,14 @@ def tieredSpec {Previous : Type uPrevious}
   Obstruction := Obstruction
   Resource := Resource
   Eligible := fun previous payer =>
-    eligible previous (object.read previous) payer
+    eligible previous (object previous) payer
   obstructionCost := fun previous obstruction =>
-    obstructionCost previous (object.read previous) obstruction
+    obstructionCost previous (object previous) obstruction
   payerResource := fun previous payer =>
-    payerResource previous (object.read previous) payer
+    payerResource previous (object previous) payer
   charge := fun previous payer =>
-    charge previous (object.read previous) payer
-  demand := fun previous => demand previous (object.read previous)
+    charge previous (object previous) payer
+  demand := fun previous => demand previous (object previous)
 
 /-- Supply only inherited schedules, primitive graph decisions, and a work
 envelope to the common CT13 executor. -/
@@ -76,8 +76,8 @@ def tieredCapability {Previous : Type uPrevious}
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
       _root_.Hypostructure.CT13.localCheckBound
-        (payers.read previous) (obstructions.read previous)
-        (tierTwo.read previous) <=
+        (payers previous) (obstructions previous)
+        (tierTwo previous) <=
           workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT13.Capability
       (tieredSpec object Payer Obstruction Resource eligible obstructionCost
@@ -86,7 +86,7 @@ def tieredCapability {Previous : Type uPrevious}
   obstructions := obstructions
   tierTwo := tierTwo
   eligibleDecidable := fun previous payer =>
-    eligibleDecidable previous (object.read previous) payer
+    eligibleDecidable previous (object previous) payer
   resourceDecidableEq := resourceDecidableEq
   inputSize := inputSize
   workCoefficient := workCoefficient

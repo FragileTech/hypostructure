@@ -784,9 +784,9 @@ inductive Phase
 noncomputable def execution : Core.Strategy.CTExecution Previous where
   Terminal := Core.Strategy.CompletedTerminal
   Output := fun previous => Stage164
-    (Stage163 (profile.registration.inputs.read previous).contract163)
-    (profile.registration.inputs.read previous).Package
-  run := fun previous => (profile.registration.inputs.read previous).stage164
+    (Stage163 (profile.registration.inputs previous).contract163)
+    (profile.registration.inputs previous).Package
+  run := fun previous => (profile.registration.inputs previous).stage164
   terminal := fun _ _ => .completed
   checks := fun _ => Fintype.card Phase
   work := fun _ => Fintype.card Phase
@@ -794,7 +794,7 @@ noncomputable def execution : Core.Strategy.CTExecution Previous where
 /-- The literal predecessor consumed by this residual-producing strategy. -/
 def inputResidualQuery :
     Core.Residual.Query Previous (fun _ => Previous) :=
-  Core.Residual.Query.ofFunction id
+  id
 
 /- The exact node-164-shaped residual returned by the execution. -/
 noncomputable def outputResidual (profile : Profile Previous)
@@ -805,7 +805,7 @@ noncomputable def outputResidual (profile : Profile Previous)
 def residualQuery :
     Core.Residual.Query (profile.execution.Output previous)
       (fun _ => profile.execution.Output previous) :=
-  Core.Residual.Query.ofFunction id
+  id
 
 end Profile
 
@@ -830,10 +830,10 @@ structure LedgerProfile (Previous : Type u) (Residual : Type uResidual)
     Core.Residual.Query.residual
   packing : Core.Residual.Query Previous fun previous =>
     Core.Strategy.ObstructionPackingClosure.Packing
-      (packingSemantics.occurrences (current.read previous))
-      (packingSemantics.conflict (current.read previous))
+      (packingSemantics.occurrences (current previous))
+      (packingSemantics.conflict (current previous))
   packing_nonempty : Core.Residual.Query Previous fun previous =>
-    (packing.read previous).selected ≠ []
+    (packing previous).selected ≠ []
   barrierSummary : Core.Residual.Query Previous fun _ =>
     Core.Strategy.FiniteBarrierEnumeration.Summary
   overflow : OverflowLedger Previous
@@ -847,15 +847,15 @@ structure LedgerProfile (Previous : Type u) (Residual : Type uResidual)
   never inspects it; it only decides, by reading that same stored partition,
   whether the hypothesis is inhabited. -/
   storedF1ForcesTarget : (previous : Previous) →
-    (stage : (family.read previous).ClassifiedStateStage Previous) →
-    (family.read previous).FailureOwner
-        ((family.read previous).storedClassificationQuery.read stage) .f1 →
-      Target (current.read previous)
+    (stage : (family previous).ClassifiedStateStage Previous) →
+    (family previous).FailureOwner
+        ((family previous).storedClassificationQuery stage) .f1 →
+      Target (current previous)
   /-- The germ trichotomy on a branch whose stored (F1) partition is empty.
   Core reads that partition first and only then consults this field. -/
   classifiedStateForcesTarget : (previous : Previous) →
-    (stage : (family.read previous).ClassifiedStateStage Previous) →
-      Option (PLift (Target (current.read previous)))
+    (stage : (family previous).ClassifiedStateStage Previous) →
+      Option (PLift (Target (current previous)))
 
 inductive Terminal
   | familyScan
@@ -884,7 +884,7 @@ noncomputable def familyQuery :
   profile.family
 
 noncomputable def familyAt (previous : Previous) :=
-  profile.familyQuery.read previous
+  profile.familyQuery previous
 
 /-- The newest ledger entry stores the exact finite corridor classification
 and its dependent F5-owner schedule together. -/
@@ -906,7 +906,7 @@ target.  The target therefore lives in the payload type, so the compiler's
 `certify` is a projection. -/
 abbrev Outcome (previous : Previous) :=
   Sum (profile.CorridorStateStage previous)
-    (PLift (Target (profile.current.read previous)))
+    (PLift (Target (profile.current previous)))
 
 /-- Follows `ObstructionPackingClosure.Profile.outcomeAt` at
 `Core/Strategy/ObstructionPackingClosure.lean:258`, and consumes
@@ -916,7 +916,7 @@ wrote.  A nonempty stored partition is exactly the registered forcing
 implication's hypothesis, so the outcome is the target; otherwise the
 classified entry is retained unchanged. -/
 noncomputable def outcome (previous : Previous) : profile.Outcome previous :=
-  match ((profile.familyAt previous).storedF1OwnersQuery.read
+  match ((profile.familyAt previous).storedF1OwnersQuery
       (profile.classifiedStage previous)).values with
   | owner :: _ =>
       Sum.inr (PLift.up (profile.storedF1ForcesTarget previous
@@ -951,10 +951,10 @@ newest ordinary ledger entry.  This query never repeats an event test: it
 only inspects the five dependent owner partitions in that entry. -/
 noncomputable def terminalQuery {previous : Previous} :
     Core.Residual.Query (profile.execution.Output previous) (fun _ => Terminal) :=
-  Core.Residual.Query.ofFunction (profile.execution.terminal previous)
+  (profile.execution.terminal previous)
 
 @[simp] theorem terminalQuery_read_run (previous : Previous) :
-    profile.terminalQuery.read (profile.execution.run previous) =
+    profile.terminalQuery (profile.execution.run previous) =
       profile.execution.terminal previous (profile.execution.run previous) :=
   rfl
 
@@ -973,16 +973,16 @@ def inheritedPackingQuery {previous : Previous} :
       (fun stage =>
         Core.Strategy.ObstructionPackingClosure.Packing
           (packingSemantics.occurrences
-            (profile.current.read stage.previous))
+            (profile.current stage.previous))
           (packingSemantics.conflict
-            (profile.current.read stage.previous))) :=
+            (profile.current stage.previous))) :=
   profile.preserveIncoming profile.packing
 
 /-- Preserve the nonemptiness proof attached to that same packing value. -/
 def inheritedPackingNonemptyQuery {previous : Previous} :
     Core.Residual.Query (profile.CorridorStateStage previous)
       (fun stage =>
-        (profile.inheritedPackingQuery.read stage).selected ≠ []) := by
+        (profile.inheritedPackingQuery stage).selected ≠ []) := by
   exact profile.preserveIncoming profile.packing_nonempty
 
 /-- Cardinality is a view of the preserved packing, never an independently
@@ -995,7 +995,7 @@ def inheritedPackingCountQuery {previous : Previous} :
 preserved packing value. -/
 def inheritedPackingCountPositiveQuery {previous : Previous} :
     Core.Residual.Query (profile.CorridorStateStage previous)
-      (fun stage => 0 < profile.inheritedPackingCountQuery.read stage) :=
+      (fun stage => 0 < profile.inheritedPackingCountQuery stage) :=
   profile.inheritedPackingNonemptyQuery.dependentMap fun _ nonempty =>
     List.length_pos_iff.mpr nonempty
 
@@ -1024,34 +1024,34 @@ def inheritedClosureQuery {previous : Previous} :
     (profile.classifiedStage previous).previous = previous := rfl
 
 @[simp] theorem inheritedPackingQuery_read_run (previous : Previous) :
-    profile.inheritedPackingQuery.read (profile.classifiedStage previous) =
-      profile.packing.read previous := rfl
+    profile.inheritedPackingQuery (profile.classifiedStage previous) =
+      profile.packing previous := rfl
 
 @[simp] theorem inheritedPackingNonemptyQuery_read_run (previous : Previous) :
-    profile.inheritedPackingNonemptyQuery.read (profile.classifiedStage previous) =
-      profile.packing_nonempty.read previous := rfl
+    profile.inheritedPackingNonemptyQuery (profile.classifiedStage previous) =
+      profile.packing_nonempty previous := rfl
 
 @[simp] theorem inheritedPackingCountQuery_read_run (previous : Previous) :
-    profile.inheritedPackingCountQuery.read (profile.classifiedStage previous) =
-      (profile.packing.read previous).selected.length := rfl
+    profile.inheritedPackingCountQuery (profile.classifiedStage previous) =
+      (profile.packing previous).selected.length := rfl
 
 @[simp] theorem inheritedBarrierSummaryQuery_read_run (previous : Previous) :
-    profile.inheritedBarrierSummaryQuery.read (profile.classifiedStage previous) =
-      profile.barrierSummary.read previous := rfl
+    profile.inheritedBarrierSummaryQuery (profile.classifiedStage previous) =
+      profile.barrierSummary previous := rfl
 
 @[simp] theorem inheritedOverflowLowerMass_read_run (previous : Previous) :
-    profile.inheritedOverflowLedger.lowerMass.read
+    profile.inheritedOverflowLedger.lowerMass
         (profile.classifiedStage previous) =
-      profile.overflow.lowerMass.read previous := rfl
+      profile.overflow.lowerMass previous := rfl
 
 @[simp] theorem inheritedOverflowCapacity_read_run (previous : Previous) :
-    profile.inheritedOverflowLedger.capacity.read
+    profile.inheritedOverflowLedger.capacity
         (profile.classifiedStage previous) =
-      profile.overflow.capacity.read previous := rfl
+      profile.overflow.capacity previous := rfl
 
 @[simp] theorem inheritedClosureQuery_read_run (previous : Previous) :
-    profile.inheritedClosureQuery.read (profile.classifiedStage previous) =
-      profile.closure.read previous := rfl
+    profile.inheritedClosureQuery (profile.classifiedStage previous) =
+      profile.closure previous := rfl
 
 /-- Read the complete Core-produced corridor-family classification from the
 newest ledger entry. -/
@@ -1069,19 +1069,19 @@ noncomputable def firstNonF5Query {previous : Previous} :
         (profile.familyAt previous).owners.attach
         (fun owner => ¬ Core.Finite.ColdCorridor.Contract.Classification.IsFailure
           ((profile.familyAt previous).contractAt owner.1)
-          ((profile.familyClassificationQuery.read stage).classify owner) .f5)) :=
+          ((profile.familyClassificationQuery stage).classify owner) .f5)) :=
   (profile.familyAt previous).storedFirstNonF5Query
 
 /-- In the no-hit branch of the stored ordered exhaustion, every exact owner
 is selected by the F5 partition of that same ledger entry. -/
 theorem allOwnersF5OfNoFirstNonF5 {previous : Previous}
     (stage : profile.CorridorStateStage previous)
-    (absent : ¬ (profile.firstNonF5Query.read stage).HasHit)
+    (absent : ¬ (profile.firstNonF5Query stage).HasHit)
     (owner : {owner : profile.Owner previous //
       owner ∈ (profile.familyAt previous).owners.values}) :
     Core.Finite.ColdCorridor.Contract.Classification.IsFailure
       ((profile.familyAt previous).contractAt owner.1)
-      ((profile.familyClassificationQuery.read stage).classify owner) .f5 :=
+      ((profile.familyClassificationQuery stage).classify owner) .f5 :=
   (profile.familyAt previous).storedAllOwnersF5OfNoFirstNonF5
     stage absent owner
 
@@ -1089,10 +1089,10 @@ theorem allOwnersF5OfNoFirstNonF5 {previous : Previous}
 scheduled owner together with its exhaustive F1--F4 classification. -/
 theorem firstNonF5Partition {previous : Previous}
     (stage : profile.CorridorStateStage previous)
-    (found : (profile.firstNonF5Query.read stage).HasHit) :
-    let owner := (profile.firstNonF5Query.read stage).hitOfHasHit found |>.value
+    (found : (profile.firstNonF5Query stage).HasHit) :
+    let owner := (profile.firstNonF5Query stage).hitOfHasHit found |>.value
     let family := profile.familyAt previous
-    let classification := profile.familyClassificationQuery.read stage
+    let classification := profile.familyClassificationQuery stage
     Core.Finite.ColdCorridor.Contract.Classification.IsFailure
         (family.contractAt owner.1) (classification.classify owner) .f1 ∨
       Core.Finite.ColdCorridor.Contract.Classification.IsFailure
@@ -1133,9 +1133,9 @@ search. -/
 theorem firstNonF5HasHitOfActive {previous : Previous}
     (view : Core.Residual.Focus.ActiveView
       (profile.firstNonF5HitFocus (previous := previous))) :
-    (profile.firstNonF5Query.read view.previous).HasHit := by
+    (profile.firstNonF5Query view.previous).HasHit := by
   rcases view.proof with ⟨_trivial, selected⟩
-  change (profile.firstNonF5Query.read view.previous).hit?.isSome = true at selected
+  change (profile.firstNonF5Query view.previous).hit?.isSome = true at selected
   simpa [Core.Finite.Search.Execution.HasHit] using selected
 
 /-- An all-F5 focused view carries the exact no-hit proof for the retained
@@ -1143,9 +1143,9 @@ search. -/
 theorem noFirstNonF5OfAllF5Active {previous : Previous}
     (view : Core.Residual.Focus.ActiveView
       (profile.allF5Focus (previous := previous))) :
-    ¬ (profile.firstNonF5Query.read view.previous).HasHit := by
+    ¬ (profile.firstNonF5Query view.previous).HasHit := by
   rcases view.proof with ⟨_trivial, selected⟩
-  change (profile.firstNonF5Query.read view.previous).hit?.isSome = false at selected
+  change (profile.firstNonF5Query view.previous).hit?.isSome = false at selected
   simpa [Core.Finite.Search.Execution.HasHit] using selected
 
 /-- Read the exact F1-owner schedule from the newest stored partition. -/
@@ -1153,7 +1153,7 @@ noncomputable def f1OwnersQuery {previous : Previous} :
     Core.Residual.Query (profile.CorridorStateStage previous)
       (fun stage => Core.Finite.Enumeration
         ((profile.familyAt previous).FailureOwner
-          (profile.familyClassificationQuery.read stage) .f1)) :=
+          (profile.familyClassificationQuery stage) .f1)) :=
   (profile.familyAt previous).storedF1OwnersQuery
 
 /-- Read the exact F2-owner schedule from the newest stored partition. -/
@@ -1161,7 +1161,7 @@ noncomputable def f2OwnersQuery {previous : Previous} :
     Core.Residual.Query (profile.CorridorStateStage previous)
       (fun stage => Core.Finite.Enumeration
         ((profile.familyAt previous).FailureOwner
-          (profile.familyClassificationQuery.read stage) .f2)) :=
+          (profile.familyClassificationQuery stage) .f2)) :=
   (profile.familyAt previous).storedF2OwnersQuery
 
 /-- Read the exact F3-owner schedule from the newest stored partition. -/
@@ -1169,7 +1169,7 @@ noncomputable def f3OwnersQuery {previous : Previous} :
     Core.Residual.Query (profile.CorridorStateStage previous)
       (fun stage => Core.Finite.Enumeration
         ((profile.familyAt previous).FailureOwner
-          (profile.familyClassificationQuery.read stage) .f3)) :=
+          (profile.familyClassificationQuery stage) .f3)) :=
   (profile.familyAt previous).storedF3OwnersQuery
 
 /-- Read the exact F4-owner schedule from the newest stored partition. -/
@@ -1177,7 +1177,7 @@ noncomputable def f4OwnersQuery {previous : Previous} :
     Core.Residual.Query (profile.CorridorStateStage previous)
       (fun stage => Core.Finite.Enumeration
         ((profile.familyAt previous).FailureOwner
-          (profile.familyClassificationQuery.read stage) .f4)) :=
+          (profile.familyClassificationQuery stage) .f4)) :=
   (profile.familyAt previous).storedF4OwnersQuery
 
 /-- Read the exact F5-owner schedule from the newest cold ledger entry. -/
@@ -1185,7 +1185,7 @@ noncomputable def survivingOwnersQuery {previous : Previous} :
     Core.Residual.Query (profile.CorridorStateStage previous)
       (fun stage => Core.Finite.Enumeration
         ((profile.familyAt previous).F5Owner
-          (profile.familyClassificationQuery.read stage))) :=
+          (profile.familyClassificationQuery stage))) :=
   (profile.familyAt previous).storedSurvivingOwnersQuery
 
 /-- Read the exact repeated-state F5 subschedule from the newest cold ledger
@@ -1195,7 +1195,7 @@ noncomputable def repeatedSurvivingOwnersQuery {previous : Previous} :
     Core.Residual.Query (profile.CorridorStateStage previous)
       (fun stage => Core.Finite.Enumeration
         ((profile.familyAt previous).RepeatedF5Owner
-          ((profile.familyAt previous).classifiedStateQuery.read stage))) :=
+          ((profile.familyAt previous).classifiedStateQuery stage))) :=
   (profile.familyAt previous).storedRepeatedF5OwnersQuery
 
 /-- Read the exact terminal F5 subschedule from the newest cold ledger entry.
@@ -1205,7 +1205,7 @@ noncomputable def terminalSurvivingOwnersQuery {previous : Previous} :
     Core.Residual.Query (profile.CorridorStateStage previous)
       (fun stage => Core.Finite.Enumeration
         ((profile.familyAt previous).TerminalF5Owner
-          ((profile.familyAt previous).classifiedStateQuery.read stage))) :=
+          ((profile.familyAt previous).classifiedStateQuery stage))) :=
   (profile.familyAt previous).storedTerminalF5OwnersQuery
 
 /-- Read one scheduled corridor's typed F1--F5 event directly from the
@@ -1226,7 +1226,7 @@ theorem ownerPartition {previous : Previous}
     (owner : {owner : profile.Owner previous //
       owner ∈ (profile.familyAt previous).owners.values}) :
     let family := profile.familyAt previous
-    let classification := profile.familyClassificationQuery.read stage
+    let classification := profile.familyClassificationQuery stage
     Core.Finite.ColdCorridor.Contract.Classification.IsFailure
         (family.contractAt owner.1) (classification.classify owner) .f1 ∨
       Core.Finite.ColdCorridor.Contract.Classification.IsFailure
@@ -1241,7 +1241,7 @@ theorem ownerPartition {previous : Previous}
   exact
     Core.Finite.ColdCorridor.Producer.FamilyProducer.ClassifiedState.owner_partition
       (family := profile.familyAt previous)
-      ((profile.familyAt previous).classifiedStateQuery.read stage) owner
+      ((profile.familyAt previous).classifiedStateQuery stage) owner
 
 /-- Eliminate one owner from an F1--F4 partition into the exact event stored
 in the active cold residual.  The dependent owner and its classification are
@@ -1252,7 +1252,7 @@ noncomputable def failureEvent {previous : Previous}
     (failure : Core.Finite.ColdCorridor.Failure)
     (notF5 : failure ≠ .f5)
     (owner : (profile.familyAt previous).FailureOwner
-      (profile.familyClassificationQuery.read stage) failure) :
+      (profile.familyClassificationQuery stage) failure) :
     ((profile.familyAt previous).contractAt owner.1.1).EventWitness failure :=
   (profile.familyAt previous).storedFailureEvent stage failure notF5 owner
 
@@ -1261,7 +1261,7 @@ active cold residual. -/
 theorem survivingAllF5 {previous : Previous}
     (stage : profile.CorridorStateStage previous)
     (owner : (profile.familyAt previous).F5Owner
-      (profile.familyClassificationQuery.read stage)) :
+      (profile.familyClassificationQuery stage)) :
     ∀ item ∈ ((profile.familyAt previous).contractAt owner.1.1).schedule.values,
       ((profile.familyAt previous).contractAt owner.1.1).f5 item
         (((profile.familyAt previous).contractAt owner.1.1).run item) :=
@@ -1272,7 +1272,7 @@ same newest ledger entry. -/
 noncomputable def survivingBoundedOutcome {previous : Previous}
     (stage : profile.CorridorStateStage previous)
     (owner : (profile.familyAt previous).F5Owner
-      (profile.familyClassificationQuery.read stage)) :
+      (profile.familyClassificationQuery stage)) :
     @Core.Finite.ColdCorridor.Contract.StateTrace.BoundedOutcome
       ((profile.familyAt previous).Item owner.1.1)
       ((profile.familyAt previous).State owner.1.1)
@@ -1285,7 +1285,7 @@ repeated-F5 query on this active residual. -/
 noncomputable def repeatedSurvivingWitness {previous : Previous}
     (stage : profile.CorridorStateStage previous)
     (owner : (profile.familyAt previous).RepeatedF5Owner
-      ((profile.familyAt previous).classifiedStateQuery.read stage)) :
+      ((profile.familyAt previous).classifiedStateQuery stage)) :
     @Core.Finite.ColdCorridor.Contract.StateTrace.BoundedRepeat
       ((profile.familyAt previous).Item owner.1.1.1)
       ((profile.familyAt previous).State owner.1.1.1)
@@ -1298,7 +1298,7 @@ F5 query on this active residual. -/
 def terminalSurvivingBound {previous : Previous}
     (stage : profile.CorridorStateStage previous)
     (owner : (profile.familyAt previous).TerminalF5Owner
-      ((profile.familyAt previous).classifiedStateQuery.read stage)) :
+      ((profile.familyAt previous).classifiedStateQuery stage)) :
     (@Core.Finite.ColdCorridor.Contract.StateTrace.schedule
       ((profile.familyAt previous).Item owner.1.1.1)
       ((profile.familyAt previous).State owner.1.1.1)

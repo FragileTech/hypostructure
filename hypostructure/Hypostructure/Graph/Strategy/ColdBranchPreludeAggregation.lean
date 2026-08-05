@@ -110,19 +110,19 @@ structure ComponentContract (Previous : Type u)
     (Vertex : Previous → Type v) where
   object : Core.Residual.Query Previous (fun _ => Graph.FiniteObject.{v})
   support : Core.Residual.Query Previous (fun previous =>
-    Finset (object.read previous).Vertex)
+    Finset (object previous).Vertex)
 
 abbrev Components (contract : ComponentContract Previous Vertex)
     (previous : Previous) :=
   List (Graph.SupportComponents.Connected.Component
-    (contract.object.read previous) (contract.support.read previous))
+    (contract.object previous) (contract.support previous))
 
 noncomputable def components
     (contract : ComponentContract Previous Vertex) (previous : Previous) :
     Core.Residual.Ledger.Extension Previous (Components contract) :=
   Core.Residual.Ledger.extend previous
     (Graph.SupportComponents.Connected.order
-      (contract.object.read previous) (contract.support.read previous))
+      (contract.object previous) (contract.support previous))
 
 abbrev Stage61 (Previous : Type u) (Component : Previous → Type v) :=
   Core.Residual.Ledger.Extension Previous Component
@@ -143,7 +143,7 @@ structure Contract62 (Previous : Type u) where
 def Contract62.comparison (contract : Contract62 Previous) :
     Core.Residual.Query Previous fun _ =>
       Core.OrderThresholdSplit.Profile Nat :=
-  Core.Residual.Query.ofFunction contract.profile
+  contract.profile
 
 def Contract62.ctProfile (contract : Contract62 Previous) :
     Core.Strategy.ScaleThresholdDichotomy.Profile Previous :=
@@ -354,11 +354,11 @@ inductive Phase
 noncomputable def execution : Core.Strategy.CTExecution Previous where
   Terminal := Core.Strategy.CompletedTerminal
   Output := fun previous =>
-    let input := profile.registration.inputs.read previous
+    let input := profile.registration.inputs previous
     Stage64
       (Stage63 (Stage62 input.contract62) input.Handoff)
       input.Residual
-  run := fun previous => (profile.registration.inputs.read previous).stage64
+  run := fun previous => (profile.registration.inputs previous).stage64
   terminal := fun _ _ => .completed
   checks := fun _ => Fintype.card Phase
   work := fun _ => Fintype.card Phase
@@ -367,7 +367,7 @@ noncomputable def execution : Core.Strategy.CTExecution Previous where
 query, so the strategy cannot be run against a reconstructed stage. -/
 def inputResidualQuery :
     Core.Residual.Query Previous (fun _ => Previous) :=
-  Core.Residual.Query.ofFunction id
+  id
 
 /- The exact residual-producing output of the registered execution. -/
 noncomputable def outputResidual (profile : Profile Previous)
@@ -377,7 +377,7 @@ noncomputable def outputResidual (profile : Profile Previous)
 def residualQuery :
     Core.Residual.Query (profile.execution.Output previous)
       (fun _ => profile.execution.Output previous) :=
-  Core.Residual.Query.ofFunction id
+  id
 
 end Profile
 
@@ -430,13 +430,13 @@ variable (profile : CombinedProfile Previous)
 noncomputable def execution : Core.Strategy.CTExecution Previous where
   Terminal := Core.Strategy.CompletedTerminal
   Output := fun previous =>
-    let input := profile.registration.inputs.read previous
+    let input := profile.registration.inputs previous
     Hypostructure.Core.Strategy.ColdBranchAggregation.Stage164
       (Hypostructure.Core.Strategy.ColdBranchAggregation.Stage163
         input.cold.contract163)
       input.cold.Package
   run := fun previous =>
-    (profile.registration.inputs.read previous).cold.stage164
+    (profile.registration.inputs previous).cold.stage164
   terminal := fun _ _ => .completed
   checks := fun _ =>
     Fintype.card Profile.Phase +
@@ -449,7 +449,7 @@ noncomputable def execution : Core.Strategy.CTExecution Previous where
 
 def inputResidualQuery :
     Core.Residual.Query Previous (fun _ => Previous) :=
-  Core.Residual.Query.ofFunction id
+  id
 
 noncomputable def outputResidual (profile : CombinedProfile Previous)
     (previous : Previous) : profile.execution.Output previous :=
@@ -458,121 +458,121 @@ noncomputable def outputResidual (profile : CombinedProfile Previous)
 def residualQuery :
     Core.Residual.Query (profile.execution.Output previous)
       (fun _ => profile.execution.Output previous) :=
-  Core.Residual.Query.ofFunction id
+  id
 
 /-- Read the literal node-62 decision retained inside the final node-164
 ledger.  This is the framework-native replacement for reconstructing the
 named node chain in the application. -/
 noncomputable def threshold62Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.preservePrevious input.toInputs.node62At64Query
 
 noncomputable def netQuery {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.preservePrevious input.toInputs.netAt64Query
 
 noncomputable def chargeQuery {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.preservePrevious input.toInputs.chargeAt64Query
 
 noncomputable def node59Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.preservePrevious input.toInputs.node59At64Query
 
 noncomputable def closedQuery {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.preservePrevious input.toInputs.closedAt64Query
 
 noncomputable def componentQuery {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.preservePrevious input.toInputs.componentAt64Query
 
 noncomputable def handoffQuery {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.preservePrevious input.toInputs.handoffAt64Query
 
 noncomputable def node64ResidualQuery {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.preservePrevious input.toInputs.residualAt64Query
 
 noncomputable def interface145Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.interfaceAt164Query
 
 noncomputable def decision146Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.decision146At164Query
 
 noncomputable def route147Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.routeAt164Query
 
 noncomputable def private148Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.privateAt164Query
 
 noncomputable def audit149Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.auditAt164Query
 
 noncomputable def cold150Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.coldAt164Query
 
 noncomputable def filter151Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.filterAt164Query
 
 noncomputable def stubs152Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.stubsAt164Query
 
 noncomputable def scan153Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.scanAt164Query
 
 noncomputable def decision154Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.decision154At164Query
 
 noncomputable def certificate155Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.certificateAt164Query
 
 noncomputable def decision156Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.decision156At164Query
 
 noncomputable def germ157Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.germAt164Query
 
 noncomputable def bounded158Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.bounded158At164Query
 
 noncomputable def witness159Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.witness159At164Query
 
 noncomputable def decision160Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.decision160At164Query
 
 noncomputable def evidence161Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.evidenceAt164Query
 
 noncomputable def residual162Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.residual162At164Query
 
 noncomputable def package163Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.package163At164Query
 
 noncomputable def package164Query {previous : Previous} :=
-  let input := profile.registration.inputs.read previous
+  let input := profile.registration.inputs previous
   input.cold.package164At164Query
 
 inductive TypeABTerminal
@@ -600,12 +600,12 @@ noncomputable def typeABDichotomy (previous : Previous) :
     Core.Strategy.Dichotomy (profile.execution.Output previous) where
   LeftPayload := fun final =>
     Core.Strategy.ProofPayload
-      (profile.typeABClassificationQuery.read final = .typeA)
+      (profile.typeABClassificationQuery final = .typeA)
   RightPayload := fun final =>
     Core.Strategy.ProofPayload
-      (profile.typeABClassificationQuery.read final = .typeB)
+      (profile.typeABClassificationQuery final = .typeB)
   classify final :=
-    match profile.typeABClassificationQuery.read final with
+    match profile.typeABClassificationQuery final with
     | .typeA => .inl ⟨rfl⟩
     | .typeB => .inr ⟨rfl⟩
 
@@ -632,7 +632,7 @@ noncomputable def typeABExecution :
 def typeABOutcomeQuery :
     Core.Residual.Query (profile.typeABExecution.Output previous)
       (fun _ => TypeABTerminal) :=
-  Core.Residual.Query.ofFunction fun output =>
+  fun output =>
     match output with
     | Sum.inl _ => .typeA
     | Sum.inr _ => .typeB
@@ -648,10 +648,10 @@ def preserveThroughTypeAB
         match output with
         | Sum.inl stage => Result stage.previous
         | Sum.inr stage => Result stage.previous) :=
-  Core.Residual.Query.ofFunction fun output =>
+  fun output =>
     match output with
-    | Sum.inl stage => query.preserve.read stage
-    | Sum.inr stage => query.preserve.read stage
+    | Sum.inl stage => query.preserve stage
+    | Sum.inr stage => query.preserve stage
 
 noncomputable def node62AtTypeABQuery {previous : Previous} :=
   profile.preserveThroughTypeAB
@@ -769,8 +769,8 @@ def typeAProofQuery? :
     Core.Residual.Query (profile.typeABExecution.Output previous)
       (fun output =>
         Option (Core.Strategy.ProofPayload
-          (profile.typeABOutcomeQuery.read output = .typeA))) :=
-  Core.Residual.Query.ofFunction fun output =>
+          (profile.typeABOutcomeQuery output = .typeA))) :=
+  fun output =>
     match output with
     | Sum.inl _ => some ⟨rfl⟩
     | Sum.inr _ => none
@@ -779,8 +779,8 @@ def typeBProofQuery? :
     Core.Residual.Query (profile.typeABExecution.Output previous)
       (fun output =>
         Option (Core.Strategy.ProofPayload
-          (profile.typeABOutcomeQuery.read output = .typeB))) :=
-  Core.Residual.Query.ofFunction fun output =>
+          (profile.typeABOutcomeQuery output = .typeB))) :=
+  fun output =>
     match output with
     | Sum.inl _ => none
     | Sum.inr _ => some ⟨rfl⟩

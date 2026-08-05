@@ -52,8 +52,8 @@ noncomputable def hegdeSandeepShashankInducedPathPresentation
         (problemWithPresentation (MinimumDegreeAtLeast.{u} k) BranchState
           Presentation presentation))
       (fun input => T.Predicate input.object) where
-  object := Core.Residual.Query.ofFunction fun input => input.object
-  order := Core.Residual.Query.ofFunction fun _ =>
+  object := fun input => input.object
+  order := fun _ =>
     External.HegdeSandeepShashank.inducedPathOrder
   order_pos := fun _ => by
     norm_num [External.HegdeSandeepShashank.inducedPathOrder]

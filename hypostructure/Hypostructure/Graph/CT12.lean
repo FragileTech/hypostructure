@@ -19,9 +19,9 @@ def vertexSchedule
     (object : Core.Residual.Query Previous fun _previous =>
       FiniteObject.{uVertex}) :
     Core.Residual.Query Previous fun previous =>
-      Core.Finite.Enumeration (object.read previous).Vertex :=
+      Core.Finite.Enumeration (object previous).Vertex :=
   object.map fun previous _object =>
-    Core.Finite.Enumeration.ofFinEnum (object.read previous).vertices
+    Core.Finite.Enumeration.ofFinEnum (object previous).vertices
 
 /-- Canonical CT12 list-peeling profile for residual-owned graph vertices. -/
 def vertexPeelingProfile
@@ -29,7 +29,7 @@ def vertexPeelingProfile
     (object : Core.Residual.Query Previous fun _previous =>
       FiniteObject.{uVertex}) :
     _root_.Hypostructure.CT12.ListPeeling.Profile Previous where
-  Value := fun previous => (object.read previous).Vertex
+  Value := fun previous => (object previous).Vertex
   schedule := vertexSchedule object
 
 /-- Framework-owned graph-vertex peeling execution. -/

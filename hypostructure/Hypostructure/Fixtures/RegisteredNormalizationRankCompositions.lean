@@ -15,8 +15,8 @@ targetRelativeRankDichotomy    : CT10 → CT15 → CT16
 
 are instantiated over one closed `StrategyData` family and compiled twice.
 The second blueprint interleaves an unrelated registered Strategy between
-them and reorders the independent prefix, so the compiler's capability flow —
-not a hardcoded Strategy order in the DAG — is what sequences these vertices.
+them and reorders the independent prefix, so the compiler's verified exact-key
+manifest—not a hardcoded Strategy order in the DAG—is what sequences these vertices.
 -/
 
 namespace Hypostructure.Fixtures.RegisteredNormalizationRankCompositions

@@ -48,7 +48,7 @@ This stage therefore adds one value: the manuscript's `def⁺(X) < |V(X)|/4`. -/
 abbrev summaryAt {previous : Previous}
     (residual : profile.TypeAResidual previous) :
     Core.Strategy.LocalSupplyLowerBound.Summary :=
-  profile.capacity62.localSupply.read residual.stage
+  profile.capacity62.localSupply residual.stage
 
 /-- **Manuscript node `[86]`.**  `def⁺(X) - σ(X) < |V(X)|/4`, with the quarter
 cleared, in the published ledger coordinates.  This is `def:net-charge`'s

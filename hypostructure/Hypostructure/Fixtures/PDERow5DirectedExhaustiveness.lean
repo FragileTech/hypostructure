@@ -508,15 +508,15 @@ def visibleBoundaryRun :=
 
 def fullRankStageOutput :
     DirectedExhaustiveness.Output fullRankProfile previous active :=
-  fullRankProfile.outputQuery.read fullRankRun.value active
+  fullRankProfile.outputQuery fullRankRun.value active
 
 def zeroBoundaryStageOutput :
     DirectedExhaustiveness.Output zeroBoundaryProfile previous active :=
-  zeroBoundaryProfile.outputQuery.read zeroBoundaryRun.value active
+  zeroBoundaryProfile.outputQuery zeroBoundaryRun.value active
 
 def visibleBoundaryStageOutput :
     DirectedExhaustiveness.Output visibleBoundaryProfile previous active :=
-  visibleBoundaryProfile.outputQuery.read visibleBoundaryRun.value active
+  visibleBoundaryProfile.outputQuery visibleBoundaryRun.value active
 
 def fullRankGeneration :=
   DirectedExhaustiveness.generateActiveCounted fullRankProfile view
@@ -571,7 +571,7 @@ def zeroBoundaryRefinedInactive : Not
   cases terminal
 
 def refinedTargetVisibleOutput :=
-  visibleBoundaryProfile.targetVisibleBoundaryQuery.read
+  visibleBoundaryProfile.targetVisibleBoundaryQuery
     visibleBoundaryRun.value visibleBoundaryRefinedActive
 
 theorem target_visible_refinement_costs_one_check :
@@ -672,7 +672,7 @@ def targetVisibleOutput :
   visibleBoundaryStageOutput.targetVisibleOutput visibleBoundary_terminal
 
 theorem fullRank_gradient_is_identity :
-    fullRankProfile.gradient.read previous active =
+    fullRankProfile.gradient previous active =
       PDEStructuralGradient.identityGradient :=
   rfl
 

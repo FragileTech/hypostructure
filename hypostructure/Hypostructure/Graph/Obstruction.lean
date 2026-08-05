@@ -37,9 +37,9 @@ def focusedInducedObstructionEncoding {Previous : Type uPrevious}
     (pattern : SimpleGraph PatternVertex) :
     _root_.Hypostructure.CT1.FocusedCertificateEncoding.Encoding profile
       (fun previous active =>
-        HasInducedObstruction pattern (object.read previous active)) where
+        HasInducedObstruction pattern (object previous active)) where
   Code := fun previous active =>
-    pattern ↪g (object.read previous active).graph
+    pattern ↪g (object previous active).graph
   Accepts := fun _previous _active _certificate => True
   encode := by
     intro previous active target

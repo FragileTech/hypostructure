@@ -40,7 +40,7 @@ def orderedRecurrenceSpec {Previous : Type uPrevious}
   exactType := exactType
   response := response
   StrictlySmaller := fun previous candidate =>
-    progress.Smaller candidate (object.read previous)
+    progress.Smaller candidate (object previous)
 
 /-- Supply only predecessor-owned schedules, primitive graph recurrence
 semantics, a certified graph removal, and the work envelope. -/
@@ -80,12 +80,12 @@ def orderedRecurrenceCapability {Previous : Type uPrevious}
         response previous first context = response previous second context) ->
       progress.Smaller
         (remove previous first second sameType equalResponses)
-        (object.read previous))
+        (object previous))
     (inputSize : Previous -> Nat) (workCoefficient workDegree : Nat)
     (workBound : forall previous,
       _root_.Hypostructure.CT8.localCheckBound
-          (sequence.read previous)
-          (responseContexts.read previous).toEnumeration <=
+          (sequence previous)
+          (responseContexts previous).toEnumeration <=
         workCoefficient * (inputSize previous + 1) ^ workDegree) :
     _root_.Hypostructure.CT8.Capability
       (orderedRecurrenceSpec Baseline BranchState progress object State

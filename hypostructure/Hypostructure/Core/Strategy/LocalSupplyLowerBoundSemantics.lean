@@ -94,7 +94,18 @@ node-[62] split consumes: on the graph adapter it is
 support by its own high-degree members. -/
 structure Summary where
   requiredMass : Nat
+  /-- Raw observed term before CT14 adds the registered correction.  At paper
+  row 39 this is the literal aggregate `W₂(R)`. -/
+  observedTerm : Nat
+  /-- Registered correction added to the raw term.  At paper row 39 this is
+  `2 def⁺(R)`. -/
+  defectCorrection : Nat
   observedSupply : Nat
+  /-- CT14's capacity column is exactly the raw term plus its correction. -/
+  observedSupply_decomposition :
+    observedSupply = observedTerm + defectCorrection
+  /-- The aggregated pointwise theorem before any asymptotic specialization. -/
+  rawLowerBound : requiredMass ≤ observedTerm + defectCorrection
   assignedSurplus : Nat
   /-- Size of the *atom part* of CT14's own exact member schedule: the members
   on which the registered `surplus` observation vanishes.
@@ -172,6 +183,78 @@ structure Summary where
   the normalization's own count of the remainder; `netDeficiency.remainder` is
   this Strategy's own count of the member schedule it aggregated over. -/
   complementCount : Nat
+
+/-- Exact finite form of an asymptotic substitution.  If the required mass is
+`baseline · |R|` and the correction has scaled density at most
+`correctionCoefficient / scale` up to `error`, then the raw observed term has
+the complementary lower density, with the same explicit error. -/
+theorem Summary.scaledObservedLowerBound (summary : Summary)
+    {mass baseline scale correctionCoefficient error : Nat}
+    (requiredExact :
+      summary.requiredMass = baseline * mass)
+    (correctionCap :
+      scale * summary.defectCorrection ≤
+        correctionCoefficient * mass + error) :
+    (scale * baseline - correctionCoefficient) *
+        mass ≤
+      scale * summary.observedTerm + error := by
+  have scaledRaw := Nat.mul_le_mul_left scale summary.rawLowerBound
+  rw [requiredExact] at scaledRaw
+  have combined :
+      scale * (baseline * mass) ≤
+        scale * summary.observedTerm +
+          correctionCoefficient * mass + error :=
+    calc
+      scale * (baseline * mass)
+          ≤ scale * (summary.observedTerm + summary.defectCorrection) :=
+        scaledRaw
+      _ = scale * summary.observedTerm +
+            scale * summary.defectCorrection := by ring
+      _ ≤ scale * summary.observedTerm +
+            (correctionCoefficient * mass + error) :=
+        Nat.add_le_add_left correctionCap _
+      _ = scale * summary.observedTerm +
+            correctionCoefficient * mass + error := by
+        omega
+  rw [Nat.sub_mul]
+  apply Nat.sub_le_iff_le_add.mpr
+  simpa [Nat.mul_assoc, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+    combined
+
+/-- Paper `lem:wedge-lower`'s asymptotic substitution in exact finite form.
+
+At row 39, `requiredMass = 3 |R|`, `defectCorrection = 2 def⁺(R)`, and the
+incoming row-38 fact has the division-free form
+
+`scale * def⁺(R) ≤ capNumerator * |R| + error`.
+
+The conclusion is exactly
+
+`(3 * scale - 2 * capNumerator) |R| ≤ scale * W₂(R) + 2 * error`.
+
+Thus the row computes both paper consequences from whichever certified cap is
+present in the canonical ledger.  For the window-only cap the coefficient is
+`2.54365026308…`; for the sharper high-entropy cap it is
+`2.57407357888…`.  The theorem does not hardcode either branch constant: its
+output coefficient is forced arithmetically by the incoming exact numerator. -/
+theorem Summary.wedgeLowerBoundOfDeficiencyCap (summary : Summary)
+    {mass deficiency scale capNumerator error : Nat}
+    (requiredExact : summary.requiredMass = 3 * mass)
+    (correctionExact : summary.defectCorrection = 2 * deficiency)
+    (deficiencyCap :
+      scale * deficiency ≤ capNumerator * mass + error) :
+    (scale * 3 - 2 * capNumerator) * mass ≤
+      scale * summary.observedTerm + 2 * error := by
+  apply summary.scaledObservedLowerBound
+    (mass := mass) (baseline := 3) (scale := scale)
+    (correctionCoefficient := 2 * capNumerator) (error := 2 * error)
+    requiredExact
+  rw [correctionExact]
+  calc
+    scale * (2 * deficiency) = 2 * (scale * deficiency) := by ring
+    _ ≤ 2 * (capNumerator * mass + error) :=
+      Nat.mul_le_mul_left 2 deficiencyCap
+    _ = (2 * capNumerator) * mass + 2 * error := by ring
 
 /-- Density form of the published net-deficiency cap: the positive net
 deficiency per member is at most the supply per member.

@@ -30,7 +30,7 @@ noncomputable def coldWindowSemantics
       Input Target where
   Occurrence := profile.Window
   occurrences := fun input =>
-    (InducedPathCold.QuerySurface.coldWindowScheduleQuery profile).read input
+    (InducedPathCold.QuerySurface.coldWindowScheduleQuery profile) input
   conflict := fun input left right =>
     ¬ Disjoint (support input left) (support input right)
   conflictDecidable := fun _ => Classical.decRel _

@@ -107,7 +107,7 @@ def localCells :
     Query Previous fun previous =>
       Core.Finite.Enumeration
         (profile.interpretation.Member previous
-          (profile.boundaryAccounting.read previous)) :=
+          (profile.boundaryAccounting previous)) :=
   profile.boundaryAccounting.dependentMap
     fun previous accounting =>
       profile.interpretation.members previous accounting
@@ -120,7 +120,7 @@ def accountingAndCells :
         (profile.BoundaryAccounting previous)
         (Core.Finite.Enumeration
           (profile.interpretation.Member previous
-            (profile.boundaryAccounting.read previous))) :=
+            (profile.boundaryAccounting previous))) :=
   profile.boundaryAccounting.and profile.localCells
 
 /-- CT14 primitive semantics over the exact predecessor-owned accounting
@@ -129,20 +129,20 @@ the registered pointwise observations. -/
 def spec : CT14.Spec Previous where
   Member := fun previous =>
     profile.interpretation.Member previous
-      (profile.boundaryAccounting.read previous)
+      (profile.boundaryAccounting previous)
   Label := fun previous =>
     profile.interpretation.Label previous
-      (profile.boundaryAccounting.read previous)
+      (profile.boundaryAccounting previous)
   memberLowerMass := fun previous member =>
-    let accounting := (profile.accountingAndCells.read previous).fst
+    let accounting := (profile.accountingAndCells previous).fst
     profile.interpretation.requiredMass previous accounting member
   memberCapacity := fun previous member =>
-    let accounting := (profile.accountingAndCells.read previous).fst
+    let accounting := (profile.accountingAndCells previous).fst
     some
       (profile.interpretation.observedSupply previous accounting member +
         profile.interpretation.defectCorrection previous accounting member)
   memberLabel := fun previous member =>
-    let accounting := (profile.accountingAndCells.read previous).fst
+    let accounting := (profile.accountingAndCells previous).fst
     some (profile.interpretation.label previous accounting member)
 
 /-- CT14 capability on the exact dependent member schedule.  Its polynomial
@@ -152,9 +152,9 @@ def capability : CT14.Capability profile.spec where
   members := profile.localCells
   labelDecidableEq := fun previous =>
     profile.interpretation.labelDecidableEq previous
-      (profile.boundaryAccounting.read previous)
+      (profile.boundaryAccounting previous)
   inputSize := fun previous =>
-    CT14.localCheckBound (profile.localCells.read previous)
+    CT14.localCheckBound (profile.localCells previous)
   workCoefficient := Fintype.card Unit
   workDegree := Fintype.card Unit
   workBound := by
@@ -190,7 +190,7 @@ theorem lowerMass_le_upperCapacity (previous : Previous) :
   apply List.sum_le_sum
   intro member _member
   exact profile.interpretation.pointwise
-    previous (profile.boundaryAccounting.read previous) member
+    previous (profile.boundaryAccounting previous) member
 
 private theorem noAggregate (previous : Previous)
     (ledger : CT14.AggregateLedger profile.capability previous)
@@ -305,8 +305,9 @@ def comapTo {Stage' : Type uBoundary} [HasResidual Stage' Residual]
     (NewMember : Stage' → Type uMember)
     (member_eq : ∀ stage, Member (f stage) = NewMember stage) :
     ExactLedger.{uBoundary, uResidual, uMember} Stage' Residual NewMember where
-  members := Query.ofFunction fun stage =>
-    member_eq stage ▸ ledger.members.read (f stage)
+  members :=  fun stage =>
+    cast (congrArg Core.Finite.Enumeration (member_eq stage))
+      (ledger.members (f stage))
   sourceResidual := ledger.sourceResidual.comap f
 
 /-- Preserve the exact CT14 carrier through an ordinary ledger extension. -/
@@ -341,7 +342,7 @@ literal successor without rebuilding it from the stable residual. -/
 def exactLedger :
     ExactLedger profile.AfterLocalSupply Residual (fun stage =>
       profile.interpretation.Member stage.previous
-        (profile.boundaryAccounting.read stage.previous)) where
+        (profile.boundaryAccounting stage.previous)) where
   members := profile.localCells.preserve
   sourceResidual := Query.residual
 
@@ -369,18 +370,18 @@ def CapacityResidual.aggregateLedger
 own exact member schedule.  It is the same list CT14 sums for its lower-mass
 and capacity ledgers, so no member family is rebuilt. -/
 def assignedSurplusTotal (previous : Previous) : Nat :=
-  ((profile.localCells.read previous).values.map
+  ((profile.localCells previous).values.map
     (profile.interpretation.surplus previous
-      (profile.boundaryAccounting.read previous))).sum
+      (profile.boundaryAccounting previous))).sum
 
 /-- Aggregate of the registered per-member observed supply over the same exact
 member schedule.  On the graph adapter the members are the normalized support
 and the observation is the count of incidences leaving it, so this is literally
 `e(R, W)`. -/
 def observedSupplyTotal (previous : Previous) : Nat :=
-  ((profile.localCells.read previous).values.map
+  ((profile.localCells previous).values.map
     (profile.interpretation.observedSupply previous
-      (profile.boundaryAccounting.read previous))).sum
+      (profile.boundaryAccounting previous))).sum
 
 /-- Aggregate of the registered per-member defect correction over the same
 exact member schedule.  On the graph adapter the observation is the *ambient*
@@ -389,9 +390,9 @@ deficiency carried by the members; it is not the manuscript's `def⁺(R)`, which
 is the *internal* deficiency `∑_v max(0, baseline - d_R(v))` and is aggregated
 by CT14 itself as `lowerMass`. -/
 def assignedDefectTotal (previous : Previous) : Nat :=
-  ((profile.localCells.read previous).values.map
+  ((profile.localCells previous).values.map
     (profile.interpretation.defectCorrection previous
-      (profile.boundaryAccounting.read previous))).sum
+      (profile.boundaryAccounting previous))).sum
 
 private theorem sum_map_add {Item : Type uMember} (items : List Item)
     (left right : Item → Nat) :
@@ -412,11 +413,11 @@ theorem upperCapacity_eq_observedSupplyTotal_add_assignedDefectTotal
   unfold CT14.upperCapacity CT14.capacityEntries CT14.Capability.membersAt
     observedSupplyTotal assignedDefectTotal
   simp only [List.map_map]
-  exact sum_map_add (profile.localCells.read previous).values
+  exact sum_map_add (profile.localCells previous).values
     (profile.interpretation.observedSupply previous
-      (profile.boundaryAccounting.read previous))
+      (profile.boundaryAccounting previous))
     (profile.interpretation.defectCorrection previous
-      (profile.boundaryAccounting.read previous))
+      (profile.boundaryAccounting previous))
 
 /-- The aggregated pointwise law in the manuscript's own variables: the
 internal deficiency of the member schedule is covered by its external supply
@@ -436,7 +437,7 @@ theorem lowerMass_le_observedSupplyTotal_add_assignedDefectTotal
 /-- Cardinality of CT14's exact member schedule.  On the graph adapter the
 members are the normalized support, so this is literally `|R|`. -/
 def remainderCard (previous : Previous) : Nat :=
-  (profile.localCells.read previous).card
+  (profile.localCells previous).card
 
 /-- An empty member schedule carries no required mass.
 
@@ -446,11 +447,11 @@ residual: this is a fact about one and the same `localCells` read. -/
 theorem lowerMass_eq_zero_of_remainderCard_eq_zero (previous : Previous)
     (empty : profile.remainderCard previous = 0) :
     CT14.lowerMass profile.capability previous = 0 := by
-  have lengthZero : (profile.localCells.read previous).values.length = 0 := by
+  have lengthZero : (profile.localCells previous).values.length = 0 := by
     have card := empty
     unfold remainderCard at card
     rwa [Core.Finite.Enumeration.card_eq_length] at card
-  have nil : (profile.localCells.read previous).values = [] :=
+  have nil : (profile.localCells previous).values = [] :=
     List.eq_nil_of_length_eq_zero lengthZero
   unfold CT14.lowerMass CT14.lowerMassEntries CT14.Capability.membersAt
   simp only [capability]
@@ -468,7 +469,7 @@ two agree because the schedule is an `Enumeration`, hence duplicate-free
 
 Nothing is recomputed and no member family is rebuilt: both sides range over
 the same literal `localCells` read.  A domain adapter finishes the tie by
-identifying `(profile.localCells.read previous).toFinset` with its own support
+identifying `(profile.localCells previous).toFinset` with its own support
 (on the graph adapter that is
 `Graph.Strategy.NormalizationRank.localSupply_members_toFinset`). -/
 
@@ -476,21 +477,21 @@ identifying `(profile.localCells.read previous).toFinset` with its own support
 member schedule's underlying finite set. -/
 theorem lowerMass_eq_sum_toFinset (previous : Previous) :
     CT14.lowerMass profile.capability previous =
-      ∑ member ∈ (profile.localCells.read previous).toFinset,
+      ∑ member ∈ (profile.localCells previous).toFinset,
         profile.interpretation.requiredMass previous
-          (profile.boundaryAccounting.read previous) member := by
+          (profile.boundaryAccounting previous) member := by
   letI : DecidableEq
       (profile.interpretation.Member previous
-        (profile.boundaryAccounting.read previous)) :=
-    (profile.localCells.read previous).decEq
+        (profile.boundaryAccounting previous)) :=
+    (profile.localCells previous).decEq
   have bridge :
-      ∑ member ∈ (profile.localCells.read previous).toFinset,
+      ∑ member ∈ (profile.localCells previous).toFinset,
           profile.interpretation.requiredMass previous
-            (profile.boundaryAccounting.read previous) member =
-        ((profile.localCells.read previous).values.map
+            (profile.boundaryAccounting previous) member =
+        ((profile.localCells previous).values.map
           (profile.interpretation.requiredMass previous
-            (profile.boundaryAccounting.read previous))).sum :=
-    List.sum_toFinset _ (profile.localCells.read previous).nodup
+            (profile.boundaryAccounting previous))).sum :=
+    List.sum_toFinset _ (profile.localCells previous).nodup
   rw [bridge]
   unfold CT14.lowerMass CT14.lowerMassEntries CT14.Capability.membersAt
   simp only [List.map_map]
@@ -500,36 +501,36 @@ theorem lowerMass_eq_sum_toFinset (previous : Previous) :
 coordinates. -/
 theorem assignedSurplusTotal_eq_sum_toFinset (previous : Previous) :
     profile.assignedSurplusTotal previous =
-      ∑ member ∈ (profile.localCells.read previous).toFinset,
+      ∑ member ∈ (profile.localCells previous).toFinset,
         profile.interpretation.surplus previous
-          (profile.boundaryAccounting.read previous) member := by
+          (profile.boundaryAccounting previous) member := by
   letI : DecidableEq
       (profile.interpretation.Member previous
-        (profile.boundaryAccounting.read previous)) :=
-    (profile.localCells.read previous).decEq
+        (profile.boundaryAccounting previous)) :=
+    (profile.localCells previous).decEq
   unfold assignedSurplusTotal
-  exact (List.sum_toFinset _ (profile.localCells.read previous).nodup).symm
+  exact (List.sum_toFinset _ (profile.localCells previous).nodup).symm
 
 /-- The published observed-supply aggregate, in the same `Finset`
 coordinates. -/
 theorem observedSupplyTotal_eq_sum_toFinset (previous : Previous) :
     profile.observedSupplyTotal previous =
-      ∑ member ∈ (profile.localCells.read previous).toFinset,
+      ∑ member ∈ (profile.localCells previous).toFinset,
         profile.interpretation.observedSupply previous
-          (profile.boundaryAccounting.read previous) member := by
+          (profile.boundaryAccounting previous) member := by
   letI : DecidableEq
       (profile.interpretation.Member previous
-        (profile.boundaryAccounting.read previous)) :=
-    (profile.localCells.read previous).decEq
+        (profile.boundaryAccounting previous)) :=
+    (profile.localCells previous).decEq
   unfold observedSupplyTotal
-  exact (List.sum_toFinset _ (profile.localCells.read previous).nodup).symm
+  exact (List.sum_toFinset _ (profile.localCells previous).nodup).symm
 
 /-- The published member count is the cardinality of that same finite set.
 `Core.Finite.Enumeration.card_toFinset` is exactly the duplicate-freedom of
 the schedule. -/
 theorem remainderCard_eq_card_toFinset (previous : Previous) :
     profile.remainderCard previous =
-      (profile.localCells.read previous).toFinset.card :=
+      (profile.localCells previous).toFinset.card :=
   (Core.Finite.Enumeration.card_toFinset _).symm
 
 /-- Size of the *atom part* of CT14's own exact member schedule: the members
@@ -543,9 +544,9 @@ members of the normalized support `R` whose ambient degree does not exceed the
 presentation's baseline degree.  That is the subcubicity coordinate of
 `def:remainder-entropy`; the manuscript's `3` is the registered baseline. -/
 def subcubicAtomCard (previous : Previous) : Nat :=
-  (profile.localCells.read previous).values.countP fun member =>
+  (profile.localCells previous).values.countP fun member =>
     decide (profile.interpretation.surplus previous
-      (profile.boundaryAccounting.read previous) member = 0)
+      (profile.boundaryAccounting previous) member = 0)
 
 private theorem length_le_countP_zero_add_sum {Item : Type uMember}
     (items : List Item) (value : Item → Nat) :
@@ -589,9 +590,9 @@ theorem remainderCard_le_subcubicAtomCard_add_assignedSurplusTotal
   rw [Core.Finite.Enumeration.card_eq_length]
   exact
     length_le_countP_zero_add_sum
-      (profile.localCells.read previous).values
+      (profile.localCells previous).values
       (profile.interpretation.surplus previous
-        (profile.boundaryAccounting.read previous))
+        (profile.boundaryAccounting previous))
 
 private theorem countP_le_length {Item : Type uMember} (items : List Item)
     (predicate : Item → Bool) :
@@ -670,14 +671,14 @@ converts the two).  No numeral appears here; the baseline enters only through
 the registration that defines `surplus`. -/
 theorem exists_surplus_member_of_assignedSurplusTotal_pos (previous : Previous)
     (positive : 0 < profile.assignedSurplusTotal previous) :
-    ∃ member ∈ (profile.localCells.read previous).values,
+    ∃ member ∈ (profile.localCells previous).values,
       0 < profile.interpretation.surplus previous
-        (profile.boundaryAccounting.read previous) member := by
+        (profile.boundaryAccounting previous) member := by
   have expanded :
       0 <
-        ((profile.localCells.read previous).values.map
+        ((profile.localCells previous).values.map
           (profile.interpretation.surplus previous
-            (profile.boundaryAccounting.read previous))).sum := positive
+            (profile.boundaryAccounting previous))).sum := positive
   exact exists_pos_of_sum_pos _ _ expanded
 
 /-- The same extraction in the two published aggregates: a positive assigned
@@ -691,9 +692,9 @@ theorem subcubicAtomCard_lt_remainderCard_of_assignedSurplusTotal_pos
     profile.subcubicAtomCard previous < profile.remainderCard previous := by
   have expanded :
       0 <
-        ((profile.localCells.read previous).values.map
+        ((profile.localCells previous).values.map
           (profile.interpretation.surplus previous
-            (profile.boundaryAccounting.read previous))).sum := positive
+            (profile.boundaryAccounting previous))).sum := positive
   unfold subcubicAtomCard remainderCard
   rw [Core.Finite.Enumeration.card_eq_length]
   exact countP_zero_lt_length_of_sum_pos _ _ expanded
@@ -836,7 +837,13 @@ def summaryOfResidual {previous : Previous}
   let required := CT14.lowerMass profile.capability stage
   let observed := CT14.upperCapacity profile.capability stage
   { requiredMass := required
+    observedTerm := profile.observedSupplyTotal stage
+    defectCorrection := profile.assignedDefectTotal stage
     observedSupply := observed
+    observedSupply_decomposition :=
+      profile.upperCapacity_eq_observedSupplyTotal_add_assignedDefectTotal stage
+    rawLowerBound :=
+      profile.lowerMass_le_observedSupplyTotal_add_assignedDefectTotal stage
     assignedSurplus := profile.assignedSurplusTotal stage
     subcubicAtomCard := profile.subcubicAtomCard stage
     netDeficiency :=
@@ -873,13 +880,13 @@ def summaryOfResidual {previous : Previous}
       profile.lowerMass_le_upperCapacity_add_assignedSurplusTotal stage
     ambientCount :=
       (profile.accountingSummary stage
-        (profile.boundaryAccounting.read stage)).ambientCount
+        (profile.boundaryAccounting stage)).ambientCount
     selectedCount :=
       (profile.accountingSummary stage
-        (profile.boundaryAccounting.read stage)).selectedCount
+        (profile.boundaryAccounting stage)).selectedCount
     complementCount :=
       (profile.accountingSummary stage
-        (profile.boundaryAccounting.read stage)).complementCount }
+        (profile.boundaryAccounting stage)).complementCount }
 
 /-- **CT9's partition, transported onto the local-supply entry.**
 
@@ -898,13 +905,13 @@ theorem summaryOfResidual_selectedCount_add_complementCount_eq_ambientCount
     {previous : Previous} (capacity : profile.CapacityResidual previous)
     (partition :
       (profile.accountingSummary capacity.result.stage.previous
-          (profile.boundaryAccounting.read
+          (profile.boundaryAccounting
             capacity.result.stage.previous)).selectedCount +
         (profile.accountingSummary capacity.result.stage.previous
-          (profile.boundaryAccounting.read
+          (profile.boundaryAccounting
             capacity.result.stage.previous)).complementCount =
       (profile.accountingSummary capacity.result.stage.previous
-        (profile.boundaryAccounting.read
+        (profile.boundaryAccounting
           capacity.result.stage.previous)).ambientCount) :
     (profile.summaryOfResidual capacity).selectedCount +
         (profile.summaryOfResidual capacity).complementCount =
@@ -922,7 +929,7 @@ theorem summaryOfResidual_remainder_eq_complementCount {previous : Previous}
     (schedule :
       profile.remainderCard capacity.result.stage.previous =
         (profile.accountingSummary capacity.result.stage.previous
-          (profile.boundaryAccounting.read
+          (profile.boundaryAccounting
             capacity.result.stage.previous)).complementCount) :
     (profile.summaryOfResidual capacity).netDeficiency.remainder =
       (profile.summaryOfResidual capacity).complementCount := schedule
@@ -970,16 +977,16 @@ three projections immediately preceding.  No support is recomputed: the
 theorem summaryOfResidual_remainder_eq_card {previous : Previous}
     (capacity : profile.CapacityResidual previous) :
     (profile.summaryOfResidual capacity).netDeficiency.remainder =
-      (profile.localCells.read capacity.result.stage.previous).toFinset.card :=
+      (profile.localCells capacity.result.stage.previous).toFinset.card :=
   profile.remainderCard_eq_card_toFinset _
 
 theorem summaryOfResidual_requiredMass_eq_sum {previous : Previous}
     (capacity : profile.CapacityResidual previous) :
     (profile.summaryOfResidual capacity).requiredMass =
       ∑ member ∈
-        (profile.localCells.read capacity.result.stage.previous).toFinset,
+        (profile.localCells capacity.result.stage.previous).toFinset,
         profile.interpretation.requiredMass capacity.result.stage.previous
-          (profile.boundaryAccounting.read capacity.result.stage.previous)
+          (profile.boundaryAccounting capacity.result.stage.previous)
           member :=
   profile.lowerMass_eq_sum_toFinset _
 
@@ -987,9 +994,9 @@ theorem summaryOfResidual_assignedSurplus_eq_sum {previous : Previous}
     (capacity : profile.CapacityResidual previous) :
     (profile.summaryOfResidual capacity).assignedSurplus =
       ∑ member ∈
-        (profile.localCells.read capacity.result.stage.previous).toFinset,
+        (profile.localCells capacity.result.stage.previous).toFinset,
         profile.interpretation.surplus capacity.result.stage.previous
-          (profile.boundaryAccounting.read capacity.result.stage.previous)
+          (profile.boundaryAccounting capacity.result.stage.previous)
           member :=
   profile.assignedSurplusTotal_eq_sum_toFinset _
 
@@ -1010,7 +1017,7 @@ def Profile.ofRegistrationAt
     (normalizedSupport :
       SupportComplementNormalization.ExactLedger.{
         uResidual, uPrevious, uAmbient, uPiece}
-        Previous Residual (fun previous => AmbientItem (current.read previous)))
+        Previous Residual (fun previous => AmbientItem (current previous)))
     (accounting : Query Previous fun _ =>
       ULift.{uBoundary} BoundaryDemandAccounting.Summary) :
     Profile.{uPrevious, uResidual, uBoundary, uMember, uLabel}
@@ -1021,32 +1028,32 @@ def Profile.ofRegistrationAt
   accountingSummary := fun _ summary => summary.down
   interpretation :=
     { Member := fun previous _ =>
-        registration.Member (current.read previous)
+        registration.Member (current previous)
       Label := fun previous _ =>
-        registration.Label (current.read previous)
+        registration.Label (current previous)
       members := fun previous _ =>
-        registration.members (current.read previous)
-          (normalizedSupport.complement.read previous)
+        registration.members (current previous)
+          (normalizedSupport.complement previous)
       requiredMass := fun previous _ =>
-        registration.requiredMass (current.read previous)
-          (normalizedSupport.complement.read previous)
+        registration.requiredMass (current previous)
+          (normalizedSupport.complement previous)
       observedSupply := fun previous _ =>
-        registration.observedSupply (current.read previous)
-          (normalizedSupport.complement.read previous)
+        registration.observedSupply (current previous)
+          (normalizedSupport.complement previous)
       defectCorrection := fun previous _ member =>
-        registration.defectCorrection (current.read previous)
-          (normalizedSupport.complement.read previous) member
+        registration.defectCorrection (current previous)
+          (normalizedSupport.complement previous) member
       surplus := fun previous _ member =>
-        registration.surplus (current.read previous)
-          (normalizedSupport.complement.read previous) member
+        registration.surplus (current previous)
+          (normalizedSupport.complement previous) member
       label := fun previous _ =>
-        registration.label (current.read previous)
-          (normalizedSupport.complement.read previous)
+        registration.label (current previous)
+          (normalizedSupport.complement previous)
       labelDecidableEq := fun previous _ =>
-        registration.labelDecidableEq (current.read previous)
+        registration.labelDecidableEq (current previous)
       pointwise := fun previous _ member =>
-        registration.pointwise (current.read previous)
-          (normalizedSupport.complement.read previous) member }
+        registration.pointwise (current previous)
+          (normalizedSupport.complement previous) member }
 
 /-- Stable-residual specialization of the query-native constructor. -/
 def Profile.ofRegistration

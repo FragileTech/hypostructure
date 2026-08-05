@@ -81,15 +81,15 @@ def capability : _root_.Hypostructure.CT4.Capability spec where
   eligibleDecidable := eligibleDecidable
   inputSize := fun previous =>
     _root_.Hypostructure.CT4.localCheckBound
-      (demandQuery.read previous) (payerQuery.read previous)
+      (demandQuery previous) (payerQuery previous)
   workCoefficient := 1
   workDegree := 1
   workBound := by
     intro previous
     change _root_.Hypostructure.CT4.localCheckBound
-        (demandQuery.read previous) (payerQuery.read previous) <=
+        (demandQuery previous) (payerQuery previous) <=
       1 * (_root_.Hypostructure.CT4.localCheckBound
-        (demandQuery.read previous) (payerQuery.read previous) + 1) ^ 1
+        (demandQuery previous) (payerQuery previous) + 1) ^ 1
     simp only [one_mul, Nat.pow_one]
     omega
 
@@ -228,23 +228,23 @@ def profile : _root_.Hypostructure.CT4.FunctionalCardinalityProfile Previous whe
     exact leftEligible.trans rightEligible.symm
   inputSize := fun previous =>
     _root_.Hypostructure.CT4.localCheckBound
-      ((residualQuery.map fun _previous residual => residual.demands).read
+      ((residualQuery.map fun _previous residual => residual.demands)
         previous)
-      ((residualQuery.map fun _previous residual => residual.payers).read
+      ((residualQuery.map fun _previous residual => residual.payers)
         previous)
   workCoefficient := 1
   workDegree := 1
   workBound := by
     intro previous
     change _root_.Hypostructure.CT4.localCheckBound
-        ((residualQuery.map fun _previous residual => residual.demands).read
+        ((residualQuery.map fun _previous residual => residual.demands)
           previous)
-        ((residualQuery.map fun _previous residual => residual.payers).read
+        ((residualQuery.map fun _previous residual => residual.payers)
           previous) <=
       1 * (_root_.Hypostructure.CT4.localCheckBound
-        ((residualQuery.map fun _previous residual => residual.demands).read
+        ((residualQuery.map fun _previous residual => residual.demands)
           previous)
-        ((residualQuery.map fun _previous residual => residual.payers).read
+        ((residualQuery.map fun _previous residual => residual.payers)
           previous) + 1) ^ 1
     simp only [one_mul, Nat.pow_one]
     omega
@@ -290,7 +290,7 @@ theorem missing_is_two : missing.demand = (2 : Fin 3) := by
   omega
 
 theorem missing_has_no_payer : forall payer,
-    payer ∈ (profile.payers.read previous).values ->
+    payer ∈ (profile.payers previous).values ->
       Not (profile.Eligible previous missing.demand payer) :=
   missing.noEligible
 
@@ -345,7 +345,7 @@ def capability := Graph.CT4.vertexChargingCapability objectQuery Demand Eligible
   demandWeight capacity required demandQuery
   (fun _previous _selected _demand _payer => .isTrue trivial)
   (fun previous => _root_.Hypostructure.CT4.localCheckBound
-    (demandQuery.read previous) (Graph.CT4.vertexPayers objectQuery |>.read previous))
+    (demandQuery previous) (Graph.CT4.vertexPayers objectQuery |> previous))
   1 1 (by
     intro previous
     simp only [one_mul, Nat.pow_one]
@@ -450,7 +450,7 @@ def capability := PDE.CT4.windowChargingCapability model stateQuery Demand
   Eligible demandWeight capacity required demandQuery windowQuery
   (fun _previous _state _demand _window => .isTrue trivial)
   (fun previous => _root_.Hypostructure.CT4.localCheckBound
-    (demandQuery.read previous) (windowQuery.read previous))
+    (demandQuery previous) (windowQuery previous))
   1 1 (by
     intro previous
     simp only [one_mul, Nat.pow_one]
