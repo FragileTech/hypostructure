@@ -1,5 +1,6 @@
 import Hypostructure.CT3.ScheduleWitness
 import Hypostructure.Core.Routing
+import Hypostructure.Core.RoutingFocus
 
 /-!
 # CT3 residual routing bridge

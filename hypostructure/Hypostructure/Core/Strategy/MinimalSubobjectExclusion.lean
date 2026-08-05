@@ -1,4 +1,5 @@
 import Hypostructure.Core.Minimality
+import Hypostructure.Core.MinimalityFocus
 
 /-!
 # Minimal-subobject exclusion strategy

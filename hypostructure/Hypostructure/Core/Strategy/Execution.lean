@@ -1,4 +1,3 @@
-import Hypostructure.Core.Residual.Ledger
 
 /-!
 # Minimal Strategy execution boundary

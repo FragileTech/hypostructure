@@ -4,6 +4,7 @@ import Hypostructure.Core.Strategy.ProblemInput
 import Hypostructure.Core.Strategy.ObstructionPackingData
 import Hypostructure.Core.Strategy.ObstructionPackingSemantics
 import Hypostructure.Core.Strategy.InterfaceReplacement
+import Hypostructure.Core.Strategy.InterfaceReplacementStage
 
 namespace Hypostructure.Core.Strategy.ColdBranchAggregation
 

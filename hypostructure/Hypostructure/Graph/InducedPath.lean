@@ -44,41 +44,4 @@ theorem inducedPathFree_iff_graph (object : FiniteObject.{uVertex})
 abbrev inducedPathObstruction (order : Nat) :=
   SimpleGraph.pathGraph order
 
-namespace CT1
-
-/-- Focused proof-carrying CT1 encoding for induced paths in a graph read from
-the active residual. -/
-def focusedInducedPathEncoding {Previous : Type uPrevious}
-    (profile : Core.Residual.Focus.Profile Previous)
-    (object : Core.Residual.Focus.ActiveQuery profile fun _previous _active =>
-      FiniteObject.{uVertex})
-    (order : Nat) :
-    _root_.Hypostructure.CT1.FocusedCertificateEncoding.Encoding profile
-      (fun previous active =>
-        HasInducedPath (object previous active) order) :=
-  focusedInducedObstructionEncoding profile object (inducedPathObstruction order)
-
-/-- Counted focused CT1 execution for an induced-path certificate target. -/
-noncomputable def executeFocusedInducedPathCounted {Previous : Type uPrevious}
-    (profile : Core.Residual.Focus.Profile Previous)
-    (object : Core.Residual.Focus.ActiveQuery profile fun _previous _active =>
-      FiniteObject.{uVertex})
-    (order : Nat) (previous : Previous) :
-    Core.Counted
-      (_root_.Hypostructure.CT1.FocusedCertificateEncoding.Stage
-        (focusedInducedPathEncoding profile object order)) :=
-  (focusedInducedPathEncoding profile object order).runCounted previous
-
-/-- Public focused CT1 stage for an induced-path certificate target. -/
-noncomputable def executeFocusedInducedPath {Previous : Type uPrevious}
-    (profile : Core.Residual.Focus.Profile Previous)
-    (object : Core.Residual.Focus.ActiveQuery profile fun _previous _active =>
-      FiniteObject.{uVertex})
-    (order : Nat) (previous : Previous) :
-    _root_.Hypostructure.CT1.FocusedCertificateEncoding.Stage
-      (focusedInducedPathEncoding profile object order) :=
-  (executeFocusedInducedPathCounted profile object order previous).value
-
-end CT1
-
 end Hypostructure.Graph

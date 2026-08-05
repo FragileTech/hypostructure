@@ -1,6 +1,5 @@
 import Hypostructure.Core.FiniteBitRelationBarrier
 import Hypostructure.Core.Finite.Enumeration
-import Hypostructure.Core.Residual.Query
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!

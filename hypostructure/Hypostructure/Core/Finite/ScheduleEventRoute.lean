@@ -1,5 +1,6 @@
 import Hypostructure.Core.Finite.ScheduleEvents
 import Hypostructure.Core.Routing
+import Hypostructure.Core.RoutingFocus
 
 /-!
 # Schedule-event route bridge
