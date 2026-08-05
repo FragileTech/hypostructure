@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **201**.
+Compiled declarations: **252**.
 
-Category counts: **Canonical execution** 29, **Canonical ledger** 94, **Canonical manifest** 32, **Sealed topology** 46.
+Category counts: **Canonical execution** 29, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 94, **Canonical manifest** 32, **Canonical residual domain** 17, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 4, **Minimum-degree cycle spine vocabulary** 19, **Sealed topology** 46.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -2441,6 +2441,84 @@ Type
                           optParam String "" → optParam String "" → Core.Strategy.Dag.Blueprint data mode
 ```
 
+### `Hypostructure.Core.Strategy.FactOnlyStrategy`
+
+#### `Hypostructure.Core.Strategy.Decision`
+
+- Category: Canonical fact-only steps and branch decisions
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/FactOnlyStrategy.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      {current : Residual} →
+        {known : Core.Residual.FactKeys Residual} →
+          Core.Residual.FactKey Residual →
+            Core.Residual.FactKey Residual →
+              Core.Residual.ExactLedger Residual current known → Type (max (max (uKey + 1) uResidual) (uValue + 2))
+```
+
+#### `Hypostructure.Core.Strategy.Decision.left`
+
+- Category: Canonical fact-only steps and branch decisions
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Strategy/FactOnlyStrategy.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      {current : Residual} →
+        {known : Core.Residual.FactKeys Residual} →
+          {left right : Core.Residual.FactKey Residual} →
+            {_previous : Core.Residual.ExactLedger Residual current known} →
+              Core.Residual.ExactLedger Residual current (left :: known) → Core.Strategy.Decision left right _previous
+```
+
+#### `Hypostructure.Core.Strategy.Decision.right`
+
+- Category: Canonical fact-only steps and branch decisions
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Strategy/FactOnlyStrategy.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      {current : Residual} →
+        {known : Core.Residual.FactKeys Residual} →
+          {left right : Core.Residual.FactKey Residual} →
+            {_previous : Core.Residual.ExactLedger Residual current known} →
+              Core.Residual.ExactLedger Residual current (right :: known) → Core.Strategy.Decision left right _previous
+```
+
+#### `Hypostructure.Core.Strategy.Decision.run`
+
+- Category: Canonical fact-only steps and branch decisions
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/FactOnlyStrategy.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      {current : Residual} →
+        {known : Core.Residual.FactKeys Residual} →
+          (previous : Core.Residual.ExactLedger Residual current known) →
+            (left right : Core.Residual.FactKey Residual) →
+              Name →
+                left.At current ⊕ right.At current →
+                  autoParam (left ∉ known) Core.Strategy.Decision.run._auto_1 →
+                    autoParam (right ∉ known) Core.Strategy.Decision.run._auto_3 →
+                      Core.Strategy.Decision left right previous
+```
+
 ### `Hypostructure.Core.Strategy.ExactExecution`
 
 #### `Hypostructure.Core.Strategy.EmptinessOracle`
@@ -2769,6 +2847,197 @@ Type
   [inst_1 : Core.Residual.FactSystem Residual] (self : Core.Strategy.FactManifest Residual), List.Nodup self.Requires
 ```
 
+### `Hypostructure.Core.Strategy.ProblemResidual`
+
+#### `Hypostructure.Core.Strategy.FactVocabulary`
+
+- Category: Canonical residual domain
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+Core.Problem → Type (max (max (max uAmbient uBranch) (uKey + 1)) (uValue + 1))
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.Key`
+
+- Category: Canonical residual domain
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} → Core.Strategy.FactVocabulary P → Type uKey
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.Value`
+
+- Category: Canonical residual domain
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} → (self : Core.Strategy.FactVocabulary P) → self.Key → Core.Strategy.ProblemInput P → Type uValue
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.WithClosure`
+
+- Category: Canonical residual domain
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} → Core.Strategy.FactVocabulary P → Type uKey
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.WithClosure.closed`
+
+- Category: Canonical residual domain
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} → {vocabulary : Core.Strategy.FactVocabulary P} → vocabulary.WithClosure
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.WithClosure.fact`
+
+- Category: Canonical residual domain
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} → {vocabulary : Core.Strategy.FactVocabulary P} → vocabulary.Key → vocabulary.WithClosure
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.instDecidableEqWithClosure`
+
+- Category: Canonical residual domain
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} → (vocabulary : Core.Strategy.FactVocabulary P) → DecidableEq vocabulary.WithClosure
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.keyDecidableEq`
+
+- Category: Canonical residual domain
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} → (self : Core.Strategy.FactVocabulary P) → DecidableEq self.Key
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.mk`
+
+- Category: Canonical residual domain
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  (Key : Type uKey) →
+    DecidableEq Key →
+      (name : Key → Name) →
+        Function.Injective name →
+          (∀ (key : Key), name key ≠ Core.Residual.closureFactName) →
+            (Value : Key → Core.Strategy.ProblemInput P → Type uValue) →
+              (transport :
+                  {key : Key} →
+                    {new old : Core.Strategy.ProblemInput P} →
+                      new.object = old.object → Value key old → Value key new) →
+                (∀ (key : Key) (input : Core.Strategy.ProblemInput P) (value : Value key input),
+                    transport ⋯ value = value) →
+                  (∀ (key : Key) {new middle old : Core.Strategy.ProblemInput P}
+                      (new_middle : new.object = middle.object) (middle_old : middle.object = old.object)
+                      (value : Value key old), transport ⋯ value = transport new_middle (transport middle_old value)) →
+                    Core.Strategy.FactVocabulary P
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.name`
+
+- Category: Canonical residual domain
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} → (self : Core.Strategy.FactVocabulary P) → self.Key → Name
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.name_injective`
+
+- Category: Canonical residual domain
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+∀ {P : Core.Problem} (self : Core.Strategy.FactVocabulary P), Function.Injective self.name
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.name_ne_closure`
+
+- Category: Canonical residual domain
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+∀ {P : Core.Problem} (self : Core.Strategy.FactVocabulary P) (key : self.Key),
+  self.name key ≠ Core.Residual.closureFactName
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.transport`
+
+- Category: Canonical residual domain
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  (self : Core.Strategy.FactVocabulary P) →
+    {key : self.Key} →
+      {new old : Core.Strategy.ProblemInput P} → new.object = old.object → self.Value key old → self.Value key new
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.transport_refl`
+
+- Category: Canonical residual domain
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+∀ {P : Core.Problem} (self : Core.Strategy.FactVocabulary P) (key : self.Key) (input : Core.Strategy.ProblemInput P)
+  (value : self.Value key input), self.transport ⋯ value = value
+```
+
+#### `Hypostructure.Core.Strategy.FactVocabulary.transport_trans`
+
+- Category: Canonical residual domain
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+∀ {P : Core.Problem} (self : Core.Strategy.FactVocabulary P) (key : self.Key)
+  {new middle old : Core.Strategy.ProblemInput P} (new_middle : new.object = middle.object)
+  (middle_old : middle.object = old.object) (value : self.Value key old),
+  self.transport ⋯ value = self.transport new_middle (self.transport middle_old value)
+```
+
 ### `Hypostructure.Core.Strategy.ExactExecution`
 
 #### `Hypostructure.Core.Strategy.Incompatible`
@@ -2811,6 +3080,66 @@ Type
   [inst_1 : Core.Residual.FactSystem Residual] {left right : Core.Residual.FactKey Residual},
   (∀ (residual : Residual) (a : left.At residual) (a : right.At residual), False) →
     Core.Strategy.Incompatible Residual left right
+```
+
+### `Hypostructure.Core.Strategy.MinimalCounterexampleScope`
+
+#### `Hypostructure.Core.Strategy.OpenedScope`
+
+- Category: Canonical scope initialization
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/MinimalCounterexampleScope.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  [inst : Core.Residual.FactSystem (Core.Strategy.ProblemInput P)] →
+    Core.Residual.FactKey (Core.Strategy.ProblemInput P) →
+      Type (max (max (max uAmbient uBranch) (uKey + 1)) (uValue + 2))
+```
+
+#### `Hypostructure.Core.Strategy.OpenedScope.history`
+
+- Category: Canonical scope initialization
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/MinimalCounterexampleScope.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  [inst : Core.Residual.FactSystem (Core.Strategy.ProblemInput P)] →
+    {key : Core.Residual.FactKey (Core.Strategy.ProblemInput P)} →
+      (self : Core.Strategy.OpenedScope key) →
+        Core.Residual.ExactLedger (Core.Strategy.ProblemInput P) self.selected [key]
+```
+
+#### `Hypostructure.Core.Strategy.OpenedScope.mk`
+
+- Category: Canonical scope initialization
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Strategy/MinimalCounterexampleScope.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  [inst : Core.Residual.FactSystem (Core.Strategy.ProblemInput P)] →
+    {key : Core.Residual.FactKey (Core.Strategy.ProblemInput P)} →
+      (selected : Core.Strategy.ProblemInput P) →
+        Core.Residual.ExactLedger (Core.Strategy.ProblemInput P) selected [key] → Core.Strategy.OpenedScope key
+```
+
+#### `Hypostructure.Core.Strategy.OpenedScope.selected`
+
+- Category: Canonical scope initialization
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/MinimalCounterexampleScope.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  [inst : Core.Residual.FactSystem (Core.Strategy.ProblemInput P)] →
+    {key : Core.Residual.FactKey (Core.Strategy.ProblemInput P)} →
+      Core.Strategy.OpenedScope key → Core.Strategy.ProblemInput P
 ```
 
 ### `Hypostructure.Core.Strategy.FactManifest`
@@ -3091,5 +3420,428 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
   [Core.Residual.FactKeys.Has key known] (Target : Core.Residual.RefinementSystem.Subject Residual → Prop),
   (∀ (residual : Residual) (a : key.At residual), Target (Core.Residual.RefinementSystem.subject residual)) →
     Target (Core.Residual.RefinementSystem.subject current)
+```
+
+### `Hypostructure.Core.Strategy.FactOnlyStrategy`
+
+#### `Hypostructure.Core.Strategy.factOnly`
+
+- Category: Canonical fact-only steps and branch decisions
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/FactOnlyStrategy.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      Name →
+        (manifest : Core.Strategy.FactManifest Residual) →
+          ((inputs : Core.Strategy.FactInputs manifest) →
+              Core.Residual.FactKeys.Values inputs.current manifest.Produces) →
+            optParam ℕ 0 → optParam ℕ 0 → Core.Strategy.AtomicStrategy Residual
+```
+
+### `Hypostructure.Core.Strategy.MinimalCounterexampleScope`
+
+#### `Hypostructure.Core.Strategy.openMinimalCounterexampleScope`
+
+- Category: Canonical scope initialization
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/MinimalCounterexampleScope.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  [inst : Core.Residual.FactSystem (Core.Strategy.ProblemInput P)] →
+    (T : Core.Target P) →
+      (progress : Core.Progress P) →
+        ((G : P.Ambient) → P.BranchState G) →
+          (key : Core.Residual.FactKey (Core.Strategy.ProblemInput P)) →
+            ((context : Core.MinimalCounterexampleContext P T.Predicate progress) →
+                key.At (Core.Strategy.selectedInput context)) →
+              (input : Core.Strategy.ProblemInput P) → ¬T.Predicate input.object → Core.Strategy.OpenedScope key
+```
+
+### `Hypostructure.Core.Strategy.ProblemResidual`
+
+#### `Hypostructure.Core.Strategy.problemInputFactSystem`
+
+- Category: Canonical residual domain
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} → Core.Strategy.FactVocabulary P → Core.Residual.FactSystem (Core.Strategy.ProblemInput P)
+```
+
+#### `Hypostructure.Core.Strategy.problemInputRefinement`
+
+- Category: Canonical residual domain
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ProblemResidual.lean`
+- Compiled type:
+
+```lean
+(P : Core.Problem) → Core.Residual.RefinementSystem (Core.Strategy.ProblemInput P)
+```
+
+### `Hypostructure.Core.Strategy.MinimalCounterexampleScope`
+
+#### `Hypostructure.Core.Strategy.selectedInput`
+
+- Category: Canonical scope initialization
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/MinimalCounterexampleScope.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  {Target : P.Ambient → Prop} →
+    {progress : Core.Progress P} → Core.MinimalCounterexampleContext P Target progress → Core.Strategy.ProblemInput P
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.Holds`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(Graph.FiniteObject → Type v) →
+  (Presentation : Type) → Presentation → ℕ → (ℕ → Prop) → Graph.Strategy.Spine.Key → Graph.FiniteObject → Prop
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.Input`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+(Graph.FiniteObject → Type v) → (Presentation : Type) → Presentation → ℕ → Type (max (u + 1) v)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.Key`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `inductive`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Type
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.noProperBaseline`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.ofNat`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+ℕ → Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.ofNat_ctorIdx`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (x : Graph.Strategy.Spine.Key), Graph.Strategy.Spine.Key.ofNat x.ctorIdx = x
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.returnAvoidance`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.selection`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.slackIndependent`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.tightEndpoint`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.toCtorIdx`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Value`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(BranchState : Graph.FiniteObject → Type v) →
+  (Presentation : Type) →
+    (presentation : Presentation) →
+      (threshold : ℕ) →
+        (ℕ → Prop) →
+          Graph.Strategy.Spine.Key →
+            Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold) →
+              Type
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.factSystem`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(BranchState : Graph.FiniteObject → Type v) →
+  (Presentation : Type) →
+    (presentation : Presentation) →
+      (threshold : ℕ) →
+        (ℕ → Prop) →
+          Core.Residual.FactSystem
+            (Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold))
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.instDecidableEqKey`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+DecidableEq Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.key`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(BranchState : Graph.FiniteObject → Type v) →
+  (Presentation : Type) →
+    (presentation : Presentation) →
+      (threshold : ℕ) →
+        (LengthOK : ℕ → Prop) →
+          Graph.Strategy.Spine.Key →
+            Core.Residual.FactKey
+              (Core.Strategy.ProblemInput
+                (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold))
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.name`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key → Name
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.name_injective`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Function.Injective Graph.Strategy.Spine.name
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.noProperBaselineRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {threshold : ℕ} →
+        {LengthOK : ℕ → Prop} →
+          [inst :
+              Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
+            (selection noProperBaseline :
+                Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
+              selection ≠ noProperBaseline →
+                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+                    (a : selection.At input), ¬Graph.HasCycleWithLength LengthOK input.object) →
+                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+                      (a : selection.At input) (smaller : Graph.FiniteObject),
+                      smaller.LexicographicallySmaller input.object →
+                        Graph.MinimumDegreeAtLeast threshold smaller → Graph.HasCycleWithLength LengthOK smaller) →
+                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
+                        (∀ (subgraph : Graph.ProperSubgraph input.object),
+                            ¬Graph.MinimumDegreeAtLeast threshold subgraph.value) →
+                          noProperBaseline.At input) →
+                      Core.Strategy.AtomicStrategy
+                        (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.problem`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(Graph.FiniteObject → Type v) → (Presentation : Type) → Presentation → ℕ → Core.Problem
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.progress`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(BranchState : Graph.FiniteObject → Type v) →
+  (Presentation : Type) →
+    (presentation : Presentation) →
+      (threshold : ℕ) → Core.Progress (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.returnAvoidanceRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {threshold : ℕ} →
+        {LengthOK : ℕ → Prop} →
+          [inst :
+              Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
+            (selection returnAvoidance :
+                Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
+              selection ≠ returnAvoidance →
+                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+                    (a : selection.At input), ¬Graph.HasCycleWithLength LengthOK input.object) →
+                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation threshold) →
+                      (∀ (dart : input.object.graph.Dart),
+                          Disjoint (Graph.returnLengthSet input.object dart) (Graph.shiftedAcceptedSet LengthOK)) →
+                        returnAvoidance.At input) →
+                    Core.Strategy.AtomicStrategy
+                      (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.rowManifest`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {threshold : ℕ} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)] →
+          (required produced :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)) →
+            required ≠ produced →
+              Core.Strategy.FactManifest (Graph.Strategy.Spine.Input BranchState Presentation presentation threshold)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.vocabulary`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(BranchState : Graph.FiniteObject → Type v) →
+  (Presentation : Type) →
+    (presentation : Presentation) →
+      (threshold : ℕ) →
+        (ℕ → Prop) →
+          Core.Strategy.FactVocabulary (Graph.Strategy.Spine.problem BranchState Presentation presentation threshold)
 ```
 <!-- END GENERATED API -->

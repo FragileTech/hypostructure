@@ -62,9 +62,15 @@ import Hypostructure.Core.Closure
 import Hypostructure.Core.Metadata
 import Hypostructure.Core.Strategy
 import Hypostructure.Core.Strategy.ExactExecution
+import Hypostructure.Core.Strategy.ProblemResidual
+import Hypostructure.Core.Strategy.FactOnlyStrategy
+import Hypostructure.Core.Strategy.MinimalCounterexampleScope
+import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Strategy.SpineRows
 import Hypostructure.Core.Strategy.FactManifest
 import Hypostructure.Fixtures.ExactLedger
 import Hypostructure.Fixtures.ExactExecution
+import Hypostructure.Fixtures.MinimalCounterexampleScope
 import Hypostructure.Fixtures.DerivedFactPublication
 import Hypostructure.Fixtures.AutomaticLedgerClosure
 import Hypostructure.Fixtures.ExactLedgerEmptinessClosure

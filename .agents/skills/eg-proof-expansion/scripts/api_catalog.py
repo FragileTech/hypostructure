@@ -22,6 +22,15 @@ CANONICAL_MODULES = {
     "Hypostructure.Core.Residual.ExactLedger": "Canonical ledger",
     "Hypostructure.Core.Strategy.FactManifest": "Canonical manifest",
     "Hypostructure.Core.Strategy.ExactExecution": "Canonical execution",
+    "Hypostructure.Core.Strategy.ProblemResidual": "Canonical residual domain",
+    "Hypostructure.Core.Strategy.MinimalCounterexampleScope":
+        "Canonical scope initialization",
+    "Hypostructure.Core.Strategy.FactOnlyStrategy":
+        "Canonical fact-only steps and branch decisions",
+    "Hypostructure.Graph.Strategy.SpineVocabulary":
+        "Minimum-degree cycle spine vocabulary",
+    "Hypostructure.Graph.Strategy.SpineRows":
+        "Minimum-degree cycle spine rows",
 }
 
 SEALED_TOPOLOGY_PREFIXES = (
