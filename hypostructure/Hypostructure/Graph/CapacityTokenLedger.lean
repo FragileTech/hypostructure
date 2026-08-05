@@ -93,7 +93,11 @@ def fibre (token : ledger.Token) : Finset (Sym2 ledger.Demand) :=
   TokenLoad.fibre ledger.blocked ledger.charge token
 
 /-- `ℓ_cap(t) = e(H_t)`. -/
-def load (token : ledger.Token) : Nat := (ledger.fibre token).card
+def load (token : ledger.Token) : Nat :=
+  TokenLoad.load ledger.blocked ledger.charge token
+
+theorem load_eq_card_fibre (token : ledger.Token) :
+    ledger.load token = (ledger.fibre token).card := rfl
 
 /-- `H_{t,r}` of `def:same-token-blocker-roles`: the role fibre at a token. -/
 def roleFibre (token : ledger.Token) (value : Role) : Finset (Sym2 ledger.Demand) :=
@@ -144,6 +148,9 @@ theorem exists_high_load :
     TokenLoad.exists_load_ge ledger.blocked ledger.tokens ledger.charge
       ledger.tokensNonempty ledger.chargeDeclared
   refine ⟨token, tokenMem, ?_⟩
+  show demandCount.choose 2 ≤
+    ledger.entropyBudget +
+      ledger.tokens.card * TokenLoad.load ledger.blocked ledger.charge token
   have splitEq := ledger.split
   have sandwichLe := ledger.sandwich
   omega

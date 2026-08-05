@@ -201,4 +201,61 @@ each port.  Clause (b) -- the return path `R_p` in `G − c(p)x(p)` -- rests on
                 (shoulders right |>.2 (Or.inr rfl)) adjacent⟩)
         .nil)
 
+/-! ## Node `[129]`: the baseline spine demand -/
+
+/-- `def:baseline-spine-demand`'s common baseline, with
+`lem:incremental-skeleton-room`.
+
+The manuscript fixes `N = C(n,2)`, `m₀ = ⌈(3/2)n⌉` and `B₀(n) = log₂ C(N,m₀)`,
+and bounds the room a larger edge count buys by `s·log₂ n`.  Both displays are
+committed with the logarithms cleared -- `C(N,m₀+s) ≤ C(N,m₀)·n^s` -- so the
+branch carries the estimate as an exact `Nat` inequality rather than an
+asymptotic one; the second output is that estimate spent at the object's own
+edge count.
+
+`m₀ = ⌈δn/2⌉` is the least edge count a `δ`-regular object can carry, so the
+only thing consumed is the registered baseline's own `2 ≤ δ`, which
+`three_le_threshold` supplies.  The row reads no fact: both statements are
+theorems about the object's two counting observables, and declaring a
+prerequisite it does not read would claim a dependency it does not have. -/
+@[reducible] noncomputable def baselineSpineDemandRow
+    (baselineSpineDemand :
+      FactKey (Input BranchState Presentation presentation data))
+    (encode : (input : Input BranchState Presentation presentation data) →
+      ((∀ increment : Nat,
+          Graph.cubicBaselineEdgeCount input.object.vertexCount
+              data.threshold + increment ≤ 2 * input.object.vertexCount - 2 →
+          (input.object.vertexCount.choose 2).choose
+              (Graph.cubicBaselineEdgeCount input.object.vertexCount
+                data.threshold + increment) ≤
+            (input.object.vertexCount.choose 2).choose
+                (Graph.cubicBaselineEdgeCount input.object.vertexCount
+                  data.threshold) *
+              input.object.vertexCount ^ increment) ∧
+        (Graph.cubicBaselineEdgeCount input.object.vertexCount
+              data.threshold ≤ input.object.edgeCount →
+          Graph.skeletonBudget input.object ≤
+            Graph.cubicBaselineBudget input.object.vertexCount
+                data.threshold *
+              input.object.vertexCount ^
+                (input.object.edgeCount -
+                  Graph.cubicBaselineEdgeCount input.object.vertexCount
+                    data.threshold))) →
+      baselineSpineDemand.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
+    (sourceFreeManifest baselineSpineDemand)
+    (fun inputs =>
+      let baseline : 2 ≤ data.threshold :=
+        le_trans (by omega) data.three_le_threshold
+      .cons (key := baselineSpineDemand)
+        (encode inputs.current
+          ⟨fun increment _envelope =>
+              Graph.incremental_skeleton_room inputs.current.object.vertexCount
+                baseline increment,
+            fun above =>
+              Graph.skeletonBudget_le_cubicBaselineBudget_mul_pow
+                inputs.current.object baseline above⟩)
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

@@ -1551,6 +1551,270 @@ theorem typeBOverlapObstruction_audit_facts
         `Hypostructure.Graph.Strategy.Spine.returnAvoidance ::
         [`Hypostructure.Graph.Strategy.Spine.selection] := rfl
 
+/-- **Node `[76]`, the heavy arm's exclusion cursor.**  Step 1 of
+`lem:typeB-exclusion` sits on the whole B1 history: the hybrid entry, B2's
+disjoint assignment, and the certificate-marked fan-window ledger beneath
+them. -/
+theorem typeBExclusionCharge_audit_facts
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBExclusionChargeKeys) :
+    (ExactLedger.audit history).facts =
+      `Hypostructure.Graph.Strategy.Spine.typeBExclusionCharge ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHybridEntry ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDisjointAssignment ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDirectCycleFree ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateMarked ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateCap ::
+        `Hypostructure.Graph.Strategy.Spine.typeBLocalDichotomy ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHeavyCentre ::
+        `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHighSurplus ::
+        `Hypostructure.Graph.Strategy.Spine.negativeSupport ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeNegative ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeLocalization ::
+        `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap ::
+        `Hypostructure.Graph.Strategy.Spine.largeOrderResidual ::
+        `Hypostructure.Graph.Strategy.Spine.largeBudgetResidual ::
+        `Hypostructure.Graph.Strategy.Spine.remainderEntropyLow ::
+        `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCost ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureFullRank ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank ::
+        `Hypostructure.Graph.Strategy.Spine.wedgeSupply ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureDemandFloor ::
+        `Hypostructure.Graph.Strategy.Spine.boundaryDemand ::
+        `Hypostructure.Graph.Strategy.Spine.stubSupply ::
+        `Hypostructure.Graph.Strategy.Spine.remainderNormalized ::
+        `Hypostructure.Graph.Strategy.Spine.densityCap ::
+        `Hypostructure.Graph.Strategy.Spine.barrierCap ::
+        `Hypostructure.Graph.Strategy.Spine.windowPackageSeparated ::
+        `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow ::
+        `Hypostructure.Graph.Strategy.Spine.localAlgebra ::
+        `Hypostructure.Graph.Strategy.Spine.maximalPacking ::
+        `Hypostructure.Graph.Strategy.Spine.uncompressible ::
+        `Hypostructure.Graph.Strategy.Spine.tightEndpoint ::
+        `Hypostructure.Graph.Strategy.Spine.slackIndependent ::
+        `Hypostructure.Graph.Strategy.Spine.noProperBaseline ::
+        `Hypostructure.Graph.Strategy.Spine.returnAvoidance ::
+        [`Hypostructure.Graph.Strategy.Spine.selection] := rfl
+
+/-- **Node `[85]`, the degree-four arm's exclusion cursor.**  The same row value
+after the other B1 cursor, so the index differs from `[76]`'s in exactly the
+degree-four profile and the arm of node `[68]` beneath it. -/
+theorem degreeFourExclusionCharge_audit_facts
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourExclusionChargeKeys) :
+    (ExactLedger.audit history).facts =
+      `Hypostructure.Graph.Strategy.Spine.typeBExclusionCharge ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHybridEntry ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDisjointAssignment ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDirectCycleFree ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateMarked ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourProfile ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateCap ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourCentres ::
+        `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHighSurplus ::
+        `Hypostructure.Graph.Strategy.Spine.negativeSupport ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeNegative ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeLocalization ::
+        `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap ::
+        `Hypostructure.Graph.Strategy.Spine.largeOrderResidual ::
+        `Hypostructure.Graph.Strategy.Spine.largeBudgetResidual ::
+        `Hypostructure.Graph.Strategy.Spine.remainderEntropyLow ::
+        `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCost ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureFullRank ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank ::
+        `Hypostructure.Graph.Strategy.Spine.wedgeSupply ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureDemandFloor ::
+        `Hypostructure.Graph.Strategy.Spine.boundaryDemand ::
+        `Hypostructure.Graph.Strategy.Spine.stubSupply ::
+        `Hypostructure.Graph.Strategy.Spine.remainderNormalized ::
+        `Hypostructure.Graph.Strategy.Spine.densityCap ::
+        `Hypostructure.Graph.Strategy.Spine.barrierCap ::
+        `Hypostructure.Graph.Strategy.Spine.windowPackageSeparated ::
+        `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow ::
+        `Hypostructure.Graph.Strategy.Spine.localAlgebra ::
+        `Hypostructure.Graph.Strategy.Spine.maximalPacking ::
+        `Hypostructure.Graph.Strategy.Spine.uncompressible ::
+        `Hypostructure.Graph.Strategy.Spine.tightEndpoint ::
+        `Hypostructure.Graph.Strategy.Spine.slackIndependent ::
+        `Hypostructure.Graph.Strategy.Spine.noProperBaseline ::
+        `Hypostructure.Graph.Strategy.Spine.returnAvoidance ::
+        [`Hypostructure.Graph.Strategy.Spine.selection] := rfl
+
+/-- **Node `[75]`, entered from `[71]`'s no arm.**  The fan-mass estimate on a
+fan-certificate residual centre: the branch never reached the direct-cycle or B2
+questions, so neither of their facts is in this index. -/
+theorem typeBCertificateResidualMass_audit_facts
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBCertificateResidualMassKeys) :
+    (ExactLedger.audit history).facts =
+      `Hypostructure.Graph.Strategy.Spine.typeBBridgeMass ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateResidual ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateCap ::
+        `Hypostructure.Graph.Strategy.Spine.typeBLocalDichotomy ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHeavyCentre ::
+        `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHighSurplus ::
+        `Hypostructure.Graph.Strategy.Spine.negativeSupport ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeNegative ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeLocalization ::
+        `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap ::
+        `Hypostructure.Graph.Strategy.Spine.largeOrderResidual ::
+        `Hypostructure.Graph.Strategy.Spine.largeBudgetResidual ::
+        `Hypostructure.Graph.Strategy.Spine.remainderEntropyLow ::
+        `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCost ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureFullRank ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank ::
+        `Hypostructure.Graph.Strategy.Spine.wedgeSupply ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureDemandFloor ::
+        `Hypostructure.Graph.Strategy.Spine.boundaryDemand ::
+        `Hypostructure.Graph.Strategy.Spine.stubSupply ::
+        `Hypostructure.Graph.Strategy.Spine.remainderNormalized ::
+        `Hypostructure.Graph.Strategy.Spine.densityCap ::
+        `Hypostructure.Graph.Strategy.Spine.barrierCap ::
+        `Hypostructure.Graph.Strategy.Spine.windowPackageSeparated ::
+        `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow ::
+        `Hypostructure.Graph.Strategy.Spine.localAlgebra ::
+        `Hypostructure.Graph.Strategy.Spine.maximalPacking ::
+        `Hypostructure.Graph.Strategy.Spine.uncompressible ::
+        `Hypostructure.Graph.Strategy.Spine.tightEndpoint ::
+        `Hypostructure.Graph.Strategy.Spine.slackIndependent ::
+        `Hypostructure.Graph.Strategy.Spine.noProperBaseline ::
+        `Hypostructure.Graph.Strategy.Spine.returnAvoidance ::
+        [`Hypostructure.Graph.Strategy.Spine.selection] := rfl
+
+/-- **Node `[75]`, entered from `[73]`.**  The same row value on the B2-failure
+cursor, which carries the minimal overlap obstruction instead. -/
+theorem typeBOverlapObstructionMass_audit_facts
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBOverlapObstructionMassKeys) :
+    (ExactLedger.audit history).facts =
+      `Hypostructure.Graph.Strategy.Spine.typeBBridgeMass ::
+        `Hypostructure.Graph.Strategy.Spine.typeBOverlapObstruction ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDirectCycleFree ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateMarked ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateCap ::
+        `Hypostructure.Graph.Strategy.Spine.typeBLocalDichotomy ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHeavyCentre ::
+        `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHighSurplus ::
+        `Hypostructure.Graph.Strategy.Spine.negativeSupport ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeNegative ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeLocalization ::
+        `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap ::
+        `Hypostructure.Graph.Strategy.Spine.largeOrderResidual ::
+        `Hypostructure.Graph.Strategy.Spine.largeBudgetResidual ::
+        `Hypostructure.Graph.Strategy.Spine.remainderEntropyLow ::
+        `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCost ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureFullRank ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank ::
+        `Hypostructure.Graph.Strategy.Spine.wedgeSupply ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureDemandFloor ::
+        `Hypostructure.Graph.Strategy.Spine.boundaryDemand ::
+        `Hypostructure.Graph.Strategy.Spine.stubSupply ::
+        `Hypostructure.Graph.Strategy.Spine.remainderNormalized ::
+        `Hypostructure.Graph.Strategy.Spine.densityCap ::
+        `Hypostructure.Graph.Strategy.Spine.barrierCap ::
+        `Hypostructure.Graph.Strategy.Spine.windowPackageSeparated ::
+        `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow ::
+        `Hypostructure.Graph.Strategy.Spine.localAlgebra ::
+        `Hypostructure.Graph.Strategy.Spine.maximalPacking ::
+        `Hypostructure.Graph.Strategy.Spine.uncompressible ::
+        `Hypostructure.Graph.Strategy.Spine.tightEndpoint ::
+        `Hypostructure.Graph.Strategy.Spine.slackIndependent ::
+        `Hypostructure.Graph.Strategy.Spine.noProperBaseline ::
+        `Hypostructure.Graph.Strategy.Spine.returnAvoidance ::
+        [`Hypostructure.Graph.Strategy.Spine.selection] := rfl
+
+/-- **Node `[84]`, entered from `[80]`'s no arm.** -/
+theorem degreeFourResidualMass_audit_facts
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourResidualMassKeys) :
+    (ExactLedger.audit history).facts =
+      `Hypostructure.Graph.Strategy.Spine.typeBBridgeMass ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateResidual ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourProfile ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateCap ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourCentres ::
+        `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHighSurplus ::
+        `Hypostructure.Graph.Strategy.Spine.negativeSupport ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeNegative ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeLocalization ::
+        `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap ::
+        `Hypostructure.Graph.Strategy.Spine.largeOrderResidual ::
+        `Hypostructure.Graph.Strategy.Spine.largeBudgetResidual ::
+        `Hypostructure.Graph.Strategy.Spine.remainderEntropyLow ::
+        `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCost ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureFullRank ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank ::
+        `Hypostructure.Graph.Strategy.Spine.wedgeSupply ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureDemandFloor ::
+        `Hypostructure.Graph.Strategy.Spine.boundaryDemand ::
+        `Hypostructure.Graph.Strategy.Spine.stubSupply ::
+        `Hypostructure.Graph.Strategy.Spine.remainderNormalized ::
+        `Hypostructure.Graph.Strategy.Spine.densityCap ::
+        `Hypostructure.Graph.Strategy.Spine.barrierCap ::
+        `Hypostructure.Graph.Strategy.Spine.windowPackageSeparated ::
+        `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow ::
+        `Hypostructure.Graph.Strategy.Spine.localAlgebra ::
+        `Hypostructure.Graph.Strategy.Spine.maximalPacking ::
+        `Hypostructure.Graph.Strategy.Spine.uncompressible ::
+        `Hypostructure.Graph.Strategy.Spine.tightEndpoint ::
+        `Hypostructure.Graph.Strategy.Spine.slackIndependent ::
+        `Hypostructure.Graph.Strategy.Spine.noProperBaseline ::
+        `Hypostructure.Graph.Strategy.Spine.returnAvoidance ::
+        [`Hypostructure.Graph.Strategy.Spine.selection] := rfl
+
+/-- **Node `[84]`, entered from `[83]`.** -/
+theorem degreeFourOverlapObstructionMass_audit_facts
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourOverlapObstructionMassKeys) :
+    (ExactLedger.audit history).facts =
+      `Hypostructure.Graph.Strategy.Spine.typeBBridgeMass ::
+        `Hypostructure.Graph.Strategy.Spine.typeBOverlapObstruction ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDirectCycleFree ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateMarked ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourProfile ::
+        `Hypostructure.Graph.Strategy.Spine.fanCertificateCap ::
+        `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourCentres ::
+        `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm ::
+        `Hypostructure.Graph.Strategy.Spine.typeBHighSurplus ::
+        `Hypostructure.Graph.Strategy.Spine.negativeSupport ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeNegative ::
+        `Hypostructure.Graph.Strategy.Spine.netChargeLocalization ::
+        `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap ::
+        `Hypostructure.Graph.Strategy.Spine.largeOrderResidual ::
+        `Hypostructure.Graph.Strategy.Spine.largeBudgetResidual ::
+        `Hypostructure.Graph.Strategy.Spine.remainderEntropyLow ::
+        `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCost ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureFullRank ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank ::
+        `Hypostructure.Graph.Strategy.Spine.wedgeSupply ::
+        `Hypostructure.Graph.Strategy.Spine.curvatureDemandFloor ::
+        `Hypostructure.Graph.Strategy.Spine.boundaryDemand ::
+        `Hypostructure.Graph.Strategy.Spine.stubSupply ::
+        `Hypostructure.Graph.Strategy.Spine.remainderNormalized ::
+        `Hypostructure.Graph.Strategy.Spine.densityCap ::
+        `Hypostructure.Graph.Strategy.Spine.barrierCap ::
+        `Hypostructure.Graph.Strategy.Spine.windowPackageSeparated ::
+        `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow ::
+        `Hypostructure.Graph.Strategy.Spine.localAlgebra ::
+        `Hypostructure.Graph.Strategy.Spine.maximalPacking ::
+        `Hypostructure.Graph.Strategy.Spine.uncompressible ::
+        `Hypostructure.Graph.Strategy.Spine.tightEndpoint ::
+        `Hypostructure.Graph.Strategy.Spine.slackIndependent ::
+        `Hypostructure.Graph.Strategy.Spine.noProperBaseline ::
+        `Hypostructure.Graph.Strategy.Spine.returnAvoidance ::
+        [`Hypostructure.Graph.Strategy.Spine.selection] := rfl
+
 theorem typeBDegreeFourFanCap_audit_facts
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
@@ -1826,6 +2090,60 @@ theorem typeBCertificateResidual_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected typeBCertificateResidualKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem typeBExclusionCharge_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBExclusionChargeKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem degreeFourExclusionCharge_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourExclusionChargeKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem typeBCertificateResidualMass_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBCertificateResidualMassKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem typeBOverlapObstructionMass_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBOverlapObstructionMassKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem degreeFourResidualMass_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourResidualMassKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem degreeFourOverlapObstructionMass_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourOverlapObstructionMassKeys) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=

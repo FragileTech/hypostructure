@@ -348,9 +348,23 @@ bookkeeping; the first is not:
 > `sorryAx`, and no `Lean.ofReduceBool`, so no `native_decide` result is
 > load-bearing in it.
 >
-> Every other `Where` entry below still names a declaration that does not
-> elaborate, and no ticked column in those rows is backed by a compiling
-> target.
+> Rows 16 and 17 are ported into `Spine.runRouteEight` (see the note below the
+> table).  Rows 12--15, 18 and 19 are unbuilt in the strict sense: the spine's
+> `Key` enumeration has no key for any of those nodes, no `Decision` names them,
+> and the only code that ever implemented them is quarantined or inside the
+> commented legacy topology in `StrategyDag.lean`.  Their `Where` cells say so,
+> and no column in them is ticked.
+>
+> The evidence for rows 16 and 17 is a green build of
+> `Hypostructure.Graph.Strategy.Route8Run`, `Hypostructure.Fixtures.Route8Run`
+> and `Hypostructure.Fixtures.Route8ExitFive` at commit `77cd999`, together with
+> the canonical-API and negative-enforcement fixture set, which is green at the
+> same commit.  Row 16's Facts column is the one still open: `Graph/ExitFourFamily.lean`
+> supplies the exit-`(4)` family, but the decision at node `[101]` still splits on
+> the exit-`(4)` *conclusion* of `lem:typeA-unpeeled-visible-routing` /
+> `lem:typeA-unpeeled-silent-routing` rather than on a quotient of
+> `def:typeA-exit4-family`, because clauses (Q1)--(Q4) are built from the
+> receiver's declared coordinates of node `[93]`, which is row 12's and unbuilt.
 
 
 | # | Node | Where | Ledger | Transport | Residual | Facts |
@@ -360,7 +374,7 @@ bookkeeping; the first is not:
 | 13 | Exit 1: Mersenne return [95] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
 | 14 | Exit 2: power-of-two theta [97] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
 | 15 | Exit 3: P13 label collision [99] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 16 | Exit 4: target-defective quotient [101] | `Spine.typeAExitFourPeelDichotomy`, `Spine.typeAPeeledCharge`, `Spine.typeAExitFourDichotomy` over `Graph/ExitFourPeeling.lean` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`) — the peel ledger is built; the alternative is the exit-(4) *conclusion*, not the quotient | ✅ | ✅ | ✅ | ❌ |
+| 16 | Exit 4: target-defective quotient [101] | `Spine.typeAExitFourPeelDichotomy`, `Spine.typeAPeeledCharge`, `Spine.typeAExitFourDichotomy` over `Graph/ExitFourFamily.lean` and `Graph/ExitFourPeeling.lean` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`) | ✅ | ✅ | ✅ | ✅ |
 | 17 | Exit 5: target-complete compression [103] | `Spine.typeAExitFiveDichotomy`, `Spine.typeAExitFiveRealizationDichotomy`, `Spine.typeAExitFiveCompressionClosed` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`, checked in `Fixtures/Route8ExitFive.lean`) | ✅ | ✅ | ✅ | ✅ |
 | 18 | Exit 6: response delocalization [105] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
 | 19 | Exit 7: decorated handoff fan [107] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
@@ -369,19 +383,24 @@ bookkeeping; the first is not:
 > and `[103]` run as live `Decision`s in `Spine.runRouteEight`, ahead of the
 > `[109]` placement.
 >
-> Row 16's yes arm is now the manuscript's peel-and-return, not a terminal:
-> `Graph/ExitFourPeeling.lean` owns `def:typeA-exit4-peeling`'s `ℒ(w)`, `P₄(w)`
-> and `L₄(w)`, proves `lem:typeA-exit4-peeling-charge` (the remaining charge
-> `q(w) − ¼ − ¼L₄(w)` is nonnegative exactly when the peeled residual is
-> unsaturated), `lem:typeA-exit4-discharge` (one adjoined load drops `L₄(w)` by
-> exactly one) and the finite descent `lem:typeA-exit4-residual-routing` opens,
-> and `Spine.typeAPeeledCharge` commits its output — the receiver retested at
-> node `[89]`.  What the arm still *reads* rather than proves is the exit-(4)
-> occurrence itself: `𝒬₄(w)`'s clauses (Q1)–(Q4) need the receiver's declared
-> coordinates of node `[93]`, so the decision splits on
-> `lem:typeA-unpeeled-visible-routing`/`lem:typeA-unpeeled-silent-routing`'s
-> exit-(4) conclusion instead of on the quotient.  That is row 16's remaining
-> `❌` in Facts.
+> Row 16 is complete.  `Graph/ExitFourFamily.lean` owns
+> `def:typeA-exit4-family`: `ExitFour.Family` is `𝒬₄(w)` at a receiver — the
+> receiver's declared reading on one labelled boundary, so every member retains
+> the boundary-degree profile, the canonical coordinate of a routed load, and the
+> `Generated` predicate through which each of the five clauses is supplied — and
+> `Family.Witness` is `def:typeA-exit4-peeling`'s exit-(4) witness: a generated
+> member, a compatible outside context distinguishing its two realizations, and a
+> declared support containing the load's canonical coordinate.  Node `[101]` now
+> splits on that, which is exit (4) itself, and the yes arm is the manuscript's
+> peel-and-return: `Family.isPeeling_insert` is `lem:typeA-exit4-discharge`,
+> `Family.exists_unsaturated_isPeeling` is the finite descent
+> `lem:typeA-exit4-residual-routing` opens, and `Spine.typeAPeeledCharge` commits
+> a witnessed peeling set leaving the receiver unsaturated — by
+> `lem:typeA-exit4-peeling-charge` the nonnegative remaining charge
+> `q(w) − ¼ − ¼L₄(w)`, retested at node `[89]`.  Clause (Q5) is exhibited as a
+> member by `ExitFour.occurs_of_carrierDeletion`; the constructions generating
+> (Q1)–(Q4) are node `[93]`'s declared coordinates and are recorded against
+> row 12, which owes them.
 >
 > Row 17 is the manuscript's own dichotomy in `lem:typeA-exits-discharged`:
 > *"if the compression is realized by a smaller proper atom, it contradicts
@@ -485,8 +504,8 @@ bookkeeping; the first is not:
 
 | # | Node | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
-| 30 | Ordered surplus activation [125]–[128] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 31 | Baseline demand accounting [129] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
+| 30 | Ordered surplus activation [125]–[128] | `Spine.sparseSlackSurplus`, `Spine.activeSurplusFamily`, `Spine.sparsePortActivation` (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ❌ |
+| 31 | Baseline demand accounting [129] | `Spine.baselineSpineDemand` (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ❌ |
 | 32 | Canonical pair-response [130]–[134] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
 | 33 | Capacity-token accounting [134]–[136] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
 | 34 | Coupled homogeneous fibre pressure [137]–[143] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
@@ -741,10 +760,19 @@ bookkeeping; the first is not:
 > `Graph/Route8Carrier.lean`, `Graph/Route8Closure.lean`,
 > `Graph/Route8Residual.lean`, the rows of `Graph/Strategy/Route8Rows.lean`,
 > the run `Spine.runRouteEight` in `Graph/Strategy/Route8Run.lean`, and the
-> fixture `Fixtures/Route8Run.lean`, which runs the whole block on the Type A
-> residual of node `[63]` that `Spine.run` reaches.  Every `Where` entry below
-> names a declaration that elaborates, and every ticked column is backed by a
-> compiling target.
+> fixtures `Fixtures/Route8Run.lean`, which runs the whole block on the Type A
+> residual of node `[63]` that `Spine.run` reaches, and
+> `Fixtures/Route8ExitFive.lean`, which checks node `[103]`'s two arms.  Every
+> `Where` entry below names a declaration that elaborates, and every ticked
+> column is backed by a compiling target.
+>
+> `Spine.runRouteEight` is not yet called from `Spine.run`: the path
+> `[93]`--`[99]` between node `[89]` and node `[101]` is rows 12--15 of
+> section B, which are unbuilt.  The block is therefore proved and certified
+> against any incoming index that carries node `[14]`'s `uncompressible`, and
+> run on node `[63]`'s Type A residual by its fixtures, but no live execution
+> reaches it from the entry spine yet.  That is rows 12--15's gap, recorded
+> there.
 >
 > **Every clause is a registered fact.**  `Graph.Route8.Data` is *data only* --
 > the collection's supports `𝒳` with their per-support readings, the indexed
@@ -764,8 +792,9 @@ bookkeeping; the first is not:
 > route-8 arm is entered only on their no arms and the exit absences are *read*
 > by nodes `[116]` and `[124]` rather than assumed.  Their yes arms leave the
 > block: `[101]`'s to the manuscript's target-defect peel and `[103]`'s to the
-> uncompressibility contradiction, both of which are rows 16 and 17's and
-> unbuilt.  The block uses only these two absences -- exits `(1)`, `(2)`, `(3)`,
+> uncompressibility contradiction, both of which are rows 16 and 17's and are
+> built — the peel returns to node `[89]` as `Route8Result.peeled`, and the
+> compression closes as `Route8Result.exitFiveClosed`.  The block uses only these two absences -- exits `(1)`, `(2)`, `(3)`,
 > `(6)` and `(7)` are not needed by any step of Figure 9 -- so the block's
 > theorem is *weaker in hypotheses* than the manuscript's (R2) and implies it.
 >
@@ -1721,6 +1750,17 @@ threshold algebra is an exact integer identity.
   porting this row has to settle that reading against the manuscript before
   either arm of `[93]` can be committed, because dropping the clause weakens
   the yes arm and strengthens the no arm at once.
+
+  This row also owes row 16 the generators of clauses (Q1)–(Q4) of
+  `def:typeA-exit4-family`.  `Graph.ExitFour.Family.Generated` is the slot they
+  are supplied through — `.visibleEntry` is the visible receiver-entry
+  coordinate identification this node tests, and `.silentBasin`, `.traceBasin`
+  and `.continuationSwitch` are the constructions of `[94]`'s basin, the trace
+  basin, and the continuation/cubic-switch quotient — and nothing instantiates
+  it at any of the four, because all four are built from this node's declared
+  coordinates.  Row 16 proves its statement for every candidate reading, so this
+  costs it nothing; what it costs is that no row exhibits the canonical family
+  itself.
 - **Ledger and residual.**  `DichotomyData` reads only `ProblemInput`; the port,
   the returns and the loads are all rebuilt from `input.object` rather than from
   the receiver the `[89]` arm selected.  The stable residual is retained by the
@@ -1961,65 +2001,106 @@ adapter is invoked at this vertex.
 - **Paper fact.** Exit (4): "a quotient in the canonical exit-(4) family
   `𝒬₄(w)` of `def:typeA-exit4-family` is target-defective".  It is the
   *target-defect peeling* exit: `def:typeA-exit4-peeling` gives the receiver its
-  routed loads `ℒ(w) = {u : r(u) = w}`, a peeling set `P₄(w) ⊆ ℒ(w)` with no
-  load listed twice, and the residual load `L₄(w) = L(w) − |P₄(w)|`;
+  routed loads `ℒ(w) = {u : r(u) = w}`, an *exit-(4) witness for a routed load*
+  `u` — a quotient `q ∈ 𝒬₄(w)`, two realizations in the same boundary-degree
+  fibre, a compatible outside context distinguishing their target predicates,
+  and the requirement that the declared support of `q` contains the canonical
+  coordinate of `u` — a peeling set `P₄(w) ⊆ ℒ(w)` of such witnessed loads with
+  no load listed twice, and the residual load `L₄(w) = L(w) − |P₄(w)|`;
   `lem:typeA-exit4-peeling-charge` gives the remaining charge
   `q(w) − ¼ − ¼·L₄(w)`, nonnegative once `L₄(w) ≤ 4q(w) − 1`;
-  `lem:typeA-exit4-discharge` says one adjoined unpeeled load is again a peeling
-  set and reduces the deficit by exactly `¼`; and
+  `lem:typeA-exit4-discharge` says one adjoined witnessed unpeeled load is again
+  a peeling set and reduces the deficit by exactly `¼`; and
   `lem:typeA-exit4-residual-routing` says that while `L₄(w) ≥ 4q(w)` the
   unpeeled loads realize an exit, the exit-(4) case enlarging the peeling set by
   one.  The arm returns to node `[89]`.
-- **What the Lean does.** `Graph/ExitFourPeeling.lean` owns the ledger:
-  `ExitFour.routedLoads` is `ℒ(w)` — the set whose cardinality
+- **What the Lean does.** `Graph/ExitFourFamily.lean` owns
+  `def:typeA-exit4-family`.  `ExitFour.Clause` is the five canonical generating
+  constructions (Q1)–(Q5); `ExitFour.Family` is `𝒬₄(w)` at a receiver: the
+  receiver's declared reading as a `Route8.Entry` — a finite declared coordinate
+  family with the carrier support of each, presented on *one* labelled boundary,
+  so every member retains the boundary-degree profile by construction — the
+  canonical coordinate `def:declared-coordinate-signature` gives a routed load,
+  and the `Generated` predicate through which a clause's owner supplies its
+  construction.  `Family.Defective` is a generated member separated by one
+  compatible outside context (`Response.TargetDefect`), `Family.Occurs` is exit
+  (4) itself, `Family.declaredLoads` is the declared routed-load support — the
+  loads whose canonical coordinate the quotient identifies or forgets, which is
+  the definition's clause-by-clause list read uniformly — and `Family.Witness`
+  is `def:typeA-exit4-peeling`'s exit-(4) witness.  `Family.IsPeeling` is the
+  peeling set with its witnesses; `Family.isPeeling_insert` is
+  `lem:typeA-exit4-discharge`; `Family.exists_unsaturated_isPeeling` is the
+  descent `lem:typeA-exit4-residual-routing` opens, run on the invariant-carrying
+  `ExitFour.exists_unsaturated_peeling`.  `Graph/ExitFourPeeling.lean` owns the
+  ledger: `routedLoads` is `ℒ(w)` — the set whose cardinality
   `FiniteObject.routedLoad` already is, tied to it by `routedLoad_eq_card` —
-  `ExitFour.residualLoad` is `L₄(w)`, and `ExitFour.SaturatedAfter` is
-  `FiniteObject.Saturated` read at the residual.
-  `ExitFour.not_saturatedAfter_iff` is `lem:typeA-exit4-peeling-charge` cleared
-  of the quarter: the remaining charge is nonnegative exactly when the peeled
-  residual is unsaturated.  `ExitFour.residualLoad_insert` is
-  `lem:typeA-exit4-discharge`: adjoining an unpeeled load drops `L₄(w)` by
-  exactly one.  `ExitFour.exists_unsaturated_peeling` is the descent
-  `lem:typeA-exit4-residual-routing` opens, by induction on `L₄(w)`.
-  `Spine.typeAExitFourPeelDichotomy` is node `[101]`, and its yes arm runs
-  `Spine.typeAPeeledCharge`, which commits that every receiver has a peeling set
-  leaving it unsaturated — the receiver retested at node `[89]` — and leaves the
-  block as `Route8Result.peeled`.  The no arm continues down the ladder.
-- **What it should do.** The alternative should name the quotient of the
+  `unpeeledLoads` is `ℒ(w) ∖ P₄(w)`, `residualLoad` is `L₄(w)`,
+  `SaturatedAfter` is `FiniteObject.Saturated` read at the residual,
+  `not_saturatedAfter_iff` is `lem:typeA-exit4-peeling-charge` cleared of the
+  quarter, and `residualLoad_insert` is the exact one-load drop.
+  `ExitFour.occurs_of_carrierDeletion` reads clause (Q5) — the deletion at an
+  essential carrier, target-defective by `Route8.Entry.deletion_targetDefect` —
+  as a member of the family.  `Spine.typeAExitFourPeelDichotomy` is node `[101]`:
+  it splits on whether, at every stage at which the peeled residual is still
+  saturated, some unpeeled routed load carries such a witness.  Its yes arm runs
+  `Spine.typeAPeeledCharge`, which commits that every receiver has a witnessed
+  peeling set leaving it unsaturated — the receiver retested at node `[89]` —
+  and leaves the block as `Route8Result.peeled`.  The no arm continues down the
+  ladder to `Spine.typeAExitFourDichotomy`, the route-8 (R2) reading.
+- **What it should do.** This.  The alternative names the quotient of the
   response state — an identification of declared coordinates preserving the
-  boundary-degree profile, belonging to one of (Q1)–(Q5) — together with the
-  outside context distinguishing it.
-- **Gap.** The peel-and-return is now the manuscript's, and so is every step of
-  its ledger.  What the decision splits on is the exit-(4) *conclusion* of
-  `lem:typeA-unpeeled-visible-routing` and `lem:typeA-unpeeled-silent-routing` —
-  "the peeling set can be enlarged by one unpeeled load" — rather than on the
-  quotient itself, because (Q1)–(Q4) of `def:typeA-exit4-family` are built from
-  the receiver's declared coordinates of node `[93]`, which is row 12's and
-  unbuilt.  Clause (Q5) *is* built: `Route8.Data.ExitFour`, decided by
-  `Spine.typeAExitFourDichotomy` on the same node.  **Facts therefore fails**,
-  on the definition of the alternative alone.
+  boundary-degree profile, generated by one of (Q1)–(Q5) — the outside context
+  distinguishing it, and the routed load whose declared coordinate it uses.
+- **Gap.** None at this node.  The family, like the support and the receiver, is
+  *data*, so the fact quantifies over it rather than carrying it — the
+  vocabulary's standing convention, which is why the row reads no fact it does
+  not own.  What no row yet *builds* is the canonical generation predicate for
+  clauses (Q1)–(Q4): those constructions are the receiver's declared coordinates
+  of node `[93]`, which is row 12's and unbuilt, so nothing instantiates
+  `Generated` at them.  Clause (Q5) is built and is exhibited as a member by
+  `ExitFour.occurs_of_carrierDeletion`.  That hole is recorded against row 12; it
+  costs this row nothing, because the row proves its statement for every
+  candidate reading and therefore for the canonical one.
 - **Ledger and residual.** `Decision.run` for the split; `rowManifest` for the
-  peel row, which reads the peel step by exact key.  Residual unchanged.
+  peel row, which reads node `[101]`'s exit by exact key.  Residual unchanged.
 - **Transport and terminals.** No terminal: the yes arm is
   `Route8Result.peeled`, carrying `typeAExitFourPeel` and `typeAPeeledCharge`,
-  which is the manuscript's return edge `[102] → [89]`.  The earlier revision
-  closed this arm instead; that is corrected.
+  which is the manuscript's return edge `[102] → [89]`.
+- **Deleted with this row.** `Graph.Strategy.TypeAReceiverExhaustion`'s
+  legacy node-`[101]` pair — `TargetDefectiveQuotient`, which read exit (4) as
+  "some declared proper sub-support satisfies the baseline", and the
+  `Core.DichotomyData` stage `exitFourSplit` built on it — is dead with the
+  retired `Blueprint` topology and is not a second live path; the module is Tier
+  3 porting reference for rows 12–19 and is left untouched.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:typeA-exit4-peeling` | def | `Graph.ExitFour.routedLoads`<br>`Graph.ExitFour.residualLoad`<br>`Graph.ExitFour.insert_subset_routedLoads` | standalone |
+| `def:typeA-exit4-family` | def | `Graph.ExitFour.Clause`<br>`Graph.ExitFour.Family`<br>`Graph.ExitFour.Family.Occurs` | standalone |
+| `def:typeA-exit4-family` (Q5) | def | `Graph.ExitFour.occurs_of_carrierDeletion` from `Graph.Route8.Entry.deletion_targetDefect`; the route-8 reading is `Graph.Route8.Data.ExitFour`, decided by `Spine.typeAExitFourDichotomy` | standalone |
+| `def:typeA-exit4-family` (Q1)–(Q4) | def | `Graph.ExitFour.Family.Generated` at `.visibleEntry`, `.silentBasin`, `.traceBasin`, `.continuationSwitch` | *(constructions are node `[93]`'s declared coordinates; row 12)* |
+| `def:typeA-exit4-peeling` | def | `Graph.ExitFour.routedLoads`<br>`Graph.ExitFour.unpeeledLoads`<br>`Graph.ExitFour.residualLoad`<br>`Graph.ExitFour.Family.Witness`<br>`Graph.ExitFour.Family.declaredLoads`<br>`Graph.ExitFour.Family.IsPeeling` | standalone |
 | `lem:typeA-exit4-peeling-charge` | lem | `Graph.ExitFour.not_saturatedAfter_iff` | standalone |
-| `lem:typeA-exit4-discharge` | lem | `Graph.ExitFour.residualLoad_insert` | standalone |
-| `lem:typeA-exit4-residual-routing` | lem | `Graph.ExitFour.exists_unsaturated_peeling` (the descent); its exit-(4) reading is node `[101]`'s alternative | standalone |
-| `def:typeA-exit4-family` (Q5) | def | `Graph.Route8.Data.ExitFour`, decided by `Spine.typeAExitFourDichotomy` | standalone |
-| `def:typeA-exit4-family` (Q1)–(Q4) | def |  | *(node `[93]`'s declared coordinates; row 12)* |
+| `lem:typeA-exit4-discharge` | lem | `Graph.ExitFour.Family.isPeeling_insert` over `Graph.ExitFour.residualLoad_insert` and `Graph.ExitFour.insert_subset_routedLoads` | standalone |
+| `lem:typeA-exit4-residual-routing` | lem | `Graph.ExitFour.Family.exists_unsaturated_isPeeling` over `Graph.ExitFour.exists_unsaturated_peeling`; its exit-(4) reading is node `[101]`'s alternative | standalone |
 | `rem:typeA-exit4-peeling-use` | rem | `Spine.typeAPeeledCharge` — peeled loads leave before the pure Type A charge is summed | standalone |
 
 **CT composition at this row.** None.  A `Decision` and one fact-only Strategy;
 the manuscript's loop back to `[89]` is the descent inside
-`exists_unsaturated_peeling`, which is why no cycle appears in the DAG.
+`Family.exists_unsaturated_isPeeling`, which is why no cycle appears in the DAG.
+
+**Evidence.** `lake build` of the canonical ledger, manifest and execution
+modules with the fifteen positive and negative enforcement fixtures, then of
+`Hypostructure.Graph.ExitFourFamily`, `Hypostructure.Fixtures.ExitFourFamily`,
+`Hypostructure.Graph.Strategy.Route8Run` and `Hypostructure.Fixtures.Route8Run`,
+all clean.  `#print axioms` on `Family.isPeeling_insert`,
+`Family.exists_unsaturated_isPeeling`, `occurs_of_carrierDeletion`,
+`exists_unsaturated_peeling`, `Spine.typeAExitFourPeelDichotomy`,
+`Spine.typeAPeeledChargeRow` and the fixture's `peeled_charge_of_exitFour`
+reports `propext`, `Classical.choice`, `Quot.sound` only.  The EG package itself
+does not currently elaborate, for a reason outside this row: `Problem.lean`'s
+registration is mid-edit and is missing `bridgeMassFactor` / `bridgeMassSlack`.
 
 ### Row 17 — Exit 5: target-complete compression `[103]`
 
@@ -3210,220 +3291,159 @@ a CT to own, because a centre is data and the fact quantifies rather than
 selecting one — which is also why the legacy `OrderedWitnessScan` was the wrong
 shape for it.
 
-### Row 30 — Ordered surplus activation `[125]`–`[128]`
+### Row 30 — Ordered surplus activation `[125]`–`[128]` (ported: `Spine.sparseSlackSurplus`, `Spine.activeSurplusFamily`, `Spine.sparsePortActivation`)
 
 - **Paper fact.** `[125]` is the sparse-pressure survivor: a minimal
-  counterexample past `[19]` for which none of the five sparse surplus exits
-  of `def:named-surplus-exits` occurs — "(a) a direct dyadic contradiction …
-  (b) a target-defective quotient … (c) a nontrivial target-complete
-  compression of a proper atom … (d) a proper or global delocalization
-  coordinate … (e) an open-port suppression cycle whose chord set violates
-  the arithmetic conclusion".  `[126]` is `lem:sparse-slack-surplus`:
-  `σ(G) = n - 6 - 2λ` and `m = (3/2)n + (1/2)σ(G)`, on the envelope
-  `m ≤ 2n-2`.  `[127]` is `lem:sparse-excess-port-extraction`:
-  `|𝒫_exc| = σ(G)`, and for every `p = (h,x) ∈ 𝒫_exc`, `d_G(h) ≥ 4`,
-  `d_G(x) = 3` and `N_G(x) = {h, a_p, b_p}` with `a_p, b_p ≠ h` distinct.
-  `[128]` is `lem:sparse-port-activation`: each selected port carries
-  `T(p) = {x, a_p, b_p}`; a simple `x`–`h` path `R_p ⊆ G - hx` whose first
-  edge after `x` is `xa_p` or `xb_p`; if `p` is open, the lexicographically
-  first `Q_p ⊆ G - x` joining `a_p` to `b_p` of length `2^{j(p)} - 1` with
-  `j(p) ≥ 2`; if `p` is triangular, the triangle `x a_p b_p x` together with
-  `R_p`.  `def:active-surplus-demands` is the bundle `(p, T(p), R_p, Γ(p))`
-  not removed by an exit, and `lem:surviving-active-family` concludes
-  `𝒜₀ := 𝒫_exc` with `|𝒜₀| = σ(G)`.
-- **What the Lean does.**
-  `Graph.Strategy.SurplusAccounting.orderedSurplusActivation
-  (object : Residual → Graph.FiniteObject) (baselineDegree : Residual → Nat)
-  : Core.Strategy.OrderedSurplusActivation.Registration Residual`.  Every
-  field is supplied, none derived: `Index := fun residual => (object
-  residual).Vertex`; `order := fun residual => vertices (object residual)`
-  (the whole declared vertex scan); `FailureData := fun _ _ => Unit`;
-  `Failure := fun residual centre => baselineDegree residual < (object
-  residual).degree centre ∧ ∃ endpoint, (object residual).graph.Adj centre
-  endpoint ∧ (object residual).degree endpoint ≠ baselineDegree residual`;
-  `failureData := fun _ _ _ => ()`;
-  `failureDecidable := fun _ _ => Classical.propDecidable _`;
-  `contribution := fun residual centre => (object residual).degree centre -
-  baselineDegree residual`; and `accounting := activeSurplusAccounting object
-  baselineDegree`, itself all supplied: `Site := Vertex`,
-  `Witness := fun residual _ => Vertex`, `family := { indices := vertices …,
-  fibres := neighbours … }`, `Active := fun residual vertex => baselineDegree
-  residual < degree vertex`, `Supports := fun residual vertex witness =>
-  Adj vertex witness ∧ degree witness = baselineDegree residual`,
-  `contribution := degree vertex - baselineDegree residual`, and
-  `required = capacity = (object residual).degreeSurplus (baselineDegree
-  residual)` — syntactically the same term on both sides of CT5's resource
-  comparison.  At the registration site
-  (`/home/guillem/structural_exhaustion/examples/hypostructure_erdos_64_eg/HypostructureErdos64EG/Official/Definition.lean`)
-  the arguments are `object := fun input => input.object` and
-  `baselineDegree := fun _ => erdosReceiverLoadProfile.baselineDegree`, which
-  is the literal `3` of `Problem.lean`.  No theorem in
-  `/home/guillem/structural_exhaustion/hypostructure/Hypostructure/Graph/Strategy/SurplusAccounting.lean`
-  constrains this registration.
-- **What it should do.** The CT6 half would have to enumerate `𝒫_exc`, not
-  `V(G)`: an `Index` of type `Σ h : Vertex, {x // Adj h x}` restricted to
-  `4 ≤ d(h)`, with `FailureData` carrying `T(p)`, a `Walk x h` in `G - hx`,
-  and either a `Walk a_p b_p` in `G - x` of Mersenne length or a triangle
-  certificate — i.e. `lem:sparse-port-activation`'s four clauses as the data
-  of an index, not `Unit`.  `Failure` would have to name one of
-  `def:named-surplus-exits`'s five conclusions, so that "no failure over the
-  whole order" is the survivor hypothesis of `lem:surviving-active-family`.
-  A theorem of type `(activePorts residual).card = (object
-  residual).degreeSurplus (baselineDegree residual)` together with
-  `∀ p, 4 ≤ degree p.centre ∧ degree p.cubic = 3 ∧ N(p.cubic) = {p.centre,
-  a, b}` would state `[127]`.
-- **Gap.** `Failure` is not an exit of `def:named-surplus-exits`; it is the
-  negation of a fact `[9]`–`[10]` already proved and appended by row 4
-  (`SlackIncompatibilityLedger`: carriers of `4 ≤ degree` are pairwise
-  nonadjacent, so every neighbour of a higher-degree centre sits at the
-  baseline), so no index of the order can satisfy it and the ordered
-  exhaustion certifies nothing.  `FailureData` is `Unit`, so even a firing
-  index would produce no `T(p)`, `R_p`, `Q_p`, or `Γ(p)`: `[128]` is absent
-  entirely.  `[127]` is absent as a statement; the only port-shaped object,
-  `CanonicalAccounting.activePorts`, is `Σ vertex, Fin (degree vertex -
-  baselineDegree)` — a numeral, with no cubic endpoint `x` and hence no
-  `a_p`, `b_p`.  `[126]`'s `m ≤ 2n-2` and `σ = n-6-2λ` do not occur.  The
-  CT5 half proves `X ≤ X`.  **Facts therefore fails.**
-- **Ledger and residual.** `Core.Strategy.OrderedSurplusActivation.Profile`
-  has fields `registration` and `current : Query Previous (fun _ =>
-  Residual)`; `Dag.orderedSurplusActivationRecipe` constructs it as
-  `{ registration, current }` with the compiler's query, so every read goes
-  through the accumulated stage's `HasResidual Stage (ProblemInput P)`.
-  `activitySpec` and `activityOrder` read via `profile.current.read` and
-  `current.dependentMap`.  `execution` is `(CTAdapters.ct6
-  activity).compose (CTAdapters.ct5 accounting)`, and the CT5 profile is
-  `{ registration := profile.registration.accounting, current :=
-  profile.current.preserve }` over `ActivityStage := Ledger.Extension
-  Previous (CTAdapters.ct6 profile.activityCapability).Output`, i.e. the
-  literal CT6 extension with the CT6 entry retained beneath it.  The
-  incoming residual is the literal `above` arm of `v0`.  Ledger and Residual
-  pass.  Separately: the registration's only inputs are `input.object` and
-  the constant `3`, so
-  `ScaleThresholdDichotomy.AboveResidual.threshold_lt_load` — the strict
-  surplus fact that defines this branch — sits on the ledger and is unread
-  by every row in 30–36.
-- **Transport and terminals.** CT6 and CT5 own the scan, the ledger
-  extensions, the work bound (`workCoefficient = workDegree = Fintype.card
-  Unit`, `workBound` by `Nat.le_succ`), and the terminal; Graph supplies only
-  the inert `Registration`, and the application supplies only `object` and
-  `baselineDegree`.  The operation is nonbranching.  The export has the
-  incoming conditional output edge `e18 : v0 → v14` (`output: above`) and the
-  single outgoing sequence edge `e8 : v14 → v13`.  `v14` is exported with
-  `kind: operation` and `components: []`.
+  counterexample past `[19]` for which none of the five sparse surplus exits of
+  `def:named-surplus-exits` occurs.  `[126]` is `lem:sparse-slack-surplus`:
+  `σ(G) = n - 6 - 2λ` and `m = (3/2)n + (1/2)σ(G)`.  `[127]` is
+  `lem:sparse-excess-port-extraction`: `|𝒫_exc| = σ(G)`, and for every
+  `p = (h,x) ∈ 𝒫_exc`, `d_G(h) ≥ 4`, `d_G(x) = 3` and `N_G(x) = {h, a_p, b_p}`
+  with `a_p, b_p ≠ h` distinct.  `[128]` is `lem:sparse-port-activation`: each
+  selected port carries `T(p) = {x, a_p, b_p}`; a simple `x`–`h` path
+  `R_p ⊆ G - hx`; if `p` is open, the lexicographically first `Q_p ⊆ G - x`
+  joining `a_p` to `b_p` of length `2^{j(p)} - 1` with `j(p) ≥ 2`; if `p` is
+  triangular, the triangle `x a_p b_p x` together with `R_p`.
+  `lem:surviving-active-family` concludes `𝒜₀ := 𝒫_exc` with `|𝒜₀| = σ(G)`.
+- **What the Lean does.** Three fact-only rows of
+  `Hypostructure/Graph/Strategy/SurplusRows.lean`, installed at the spine's own
+  keys in `SurplusRun.lean` and run by `Spine.runSurplusBranch` over the literal
+  ledger of `Spine.Result.surplusAbove`.
+  `sparseSlackSurplusRow` commits `2m = δn + σ(G)` — `lem:sparse-slack-surplus`
+  cleared of division and of the abbreviation `λ = 2n − 3 − m` — from the
+  standing baseline read off the residual (`Requires := []`).
+  `activeSurplusFamilyRow` reads node `[10]`'s `slackIndependent` entry and
+  commits `(excessPorts δ).card = degreeSurplus δ` together with, at every
+  selected port, `δ < d(c(p))`, `d(x(p)) = δ` and `|s(p)| = δ − 1`.  The count is
+  `FiniteObject.card_excessPorts` of the new
+  `Hypostructure/Graph/ExcessPortFamily.lean`, which builds `𝒫_exc` as the first
+  `d(h) − δ` entries of the object's own ordered neighbour list at each high
+  centre and sums the disjoint per-centre blocks to `ambientSurplus`; the port
+  clauses are `SurplusPort.endpoint_degree_eq` and `SurplusPort.card_shoulders`.
+  `sparsePortActivationRow` reads the `selection` entry and commits, at every
+  selected port carrying a shoulder pair, clause (c) — a simple `a_p`–`b_p` path
+  of `G` avoiding `x(p)` whose restored length is accepted — and clause (d), the
+  triangle of a triangular port.  Clause (c) is
+  `SurplusPort.openPortWitness_of_minimal` of the new
+  `Hypostructure/Graph/SparsePortActivation.lean`, which reads the port as a
+  `TightVertexSuppression.Configuration` and spends the framework's own
+  `singleSuppressionWitness_of_minimal`: minimality gives the suppressed object
+  an accepted cycle, avoidance forces it through the inserted shoulder chord,
+  and the reconstruction returns the path.
+- **What it should do.** Commit clause (b) as well — the return path
+  `R_p ⊆ G − c(p)x(p)`, whose first edge after `x` is `xa_p` or `xb_p` — and run
+  the five exits of `def:named-surplus-exits` as branch alternatives, so that
+  `[125]`'s survivor hypothesis and `lem:surviving-active-family`'s *"not removed
+  by an exit"* clause are facts of an arm rather than absent.
+- **Gap.** Clause (b) rests on `lem:bridgeless` (every edge of the minimal
+  counterexample lies on a cycle), which the framework does not carry: it needs
+  the bridge-contraction argument on `Graph/Contraction.lean`, and no live
+  declaration states it.  The block therefore commits clauses (a), (c) and (d)
+  of `lem:sparse-port-activation` and not (b).  `def:named-surplus-exits` is not
+  a branch alternative here: four of its five conclusions have live machinery
+  (see the section note) but exit (e), `lem:suppressed-family-critical-cycle`,
+  has none, so no honest exhaustive dichotomy can be written yet and
+  `def:active-surplus-demands`'s exit-freeness clause is not on the ledger.
+  `lem:sparse-port-activation`'s *lexicographic* selection of `R_p` and `Q_p` is
+  not committed either: the row commits existence, which is what every consumer
+  in rows 31–36 reads.  **Facts therefore fails.**
+- **Ledger and residual.** The predecessor is the literal `surplusAboveKeys`
+  ledger of node `[19]`'s above arm — nine facts, including `selection` and
+  `slackIndependent`, both of which this block reads by exact key through
+  `FactInputs.get`.  Each row is `factOnly`, so its refinement is
+  `RefinementSystem.refl` and the residual is unchanged; `AtomicCT.run` appends
+  each row's declared productions to the incoming index, and the output index is
+  `sparseActivationKeys surplusAboveKeys`.  No row calls `ExactLedger.root`,
+  `append`, `publishFact`, `refine`, `initializeScope` or `FactInputs.ofLedger`.
+  Ledger and Residual pass.
+- **Transport and terminals.** Core's `AtomicCT.run` owns the commit, the index
+  extension and the work accounting; the rows own only their manifests and their
+  proofs.  Nothing is transported outside the ledger, no payload channel exists,
+  and the block is nonbranching, so it declares no terminal.
+  `Hypostructure/Fixtures/SurplusRun.lean` runs the block on the spine's own
+  `surplusAboveKeys` cursor and checks `audit_complete`, `audit_facts_unique`
+  and `audit_commits_nonempty` on the result.  Transport passes.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
 | `def:named-surplus-exits` | def |  |  |
-| `lem:sparse-slack-surplus` | lem |  |  |
-| `lem:sparse-excess-port-extraction` | lem |  |  |
-| `lem:sparse-port-activation` | lem |  |  |
+| `lem:sparse-slack-surplus` | lem | `Spine.sparseSlackSurplusRow` | standalone |
+| `lem:sparse-excess-port-extraction` | lem | `FiniteObject.card_excessPorts`, `FiniteObject.SurplusPort.endpoint_degree_eq`, `FiniteObject.SurplusPort.card_shoulders` | standalone |
+| `lem:sparse-port-activation` | lem | `FiniteObject.SurplusPort.openPortWitness_of_minimal`, `FiniteObject.SurplusPort.triangle_of_shoulders_adj` | standalone |
 | `def:active-surplus-demands` | def |  |  |
 | `lem:surviving-active-family` | lem |  |  |
 
-`def:named-surplus-exits` is also the survivor hypothesis of rows 32, 35 and
-36; it is placed here because `[125]` is its first consuming node.
-`lem:surviving-active-family` is also read at row 31, where `[129]` restates
-`𝒜₀ = 𝒫_exc`; the manuscript's own dependency ledger files it at
-`[125]`–`[128]`, so it is placed here.
+`lem:sparse-port-activation`'s cell covers clauses (a), (c) and (d) only;
+`lem:surviving-active-family`'s cardinality is `card_excessPorts`, but its
+statement is about the *active* family, whose exit-freeness clause is absent, so
+the cell is empty.
 
-**CT composition at this row.** `OrderedSurplusActivation.execution` is
-`(CTAdapters.ct6 activity).compose (CTAdapters.ct5 accounting)`, so the code
-order is **CT6 → CT5**, not the CT5 → CT6 of the reference table.  CT6 runs
-the ordered exhaustion over `activityOrder` and decides whether any index
-satisfies `Failure`, producing `FailureData` at the first hit; CT5 then runs
-the resource comparison of `required` against `capacity` over CT6's exact
-extension.  The composition buys the ordering: CT5's demand family is built
-from `profile.current.preserve` over `ActivityStage`, so the surplus account
-is taken on the object the scan just traversed rather than on an
-independently queried one, which a bare CT5 could not express.  As
-registered neither stage decides anything — CT6's `Failure` is refuted by
-row 4's appended ledger entry, and CT5's `required` and `capacity` are the
-same term.
+**CT composition at this row.** No CT: three atomic fact-only Strategies run in
+the manuscript's order by `AtomicCT.run` against one immutable prefix.  The
+manuscript's own ordering is a dependency chain, not an enumeration — `[127]`
+consumes node `[10]` and `[128]` consumes the selection — so there is nothing
+for a scan or a resource comparison to buy at this node.
 
-### Row 31 — Baseline demand accounting `[129]`
+### Row 31 — Baseline demand accounting `[129]` (ported: `Spine.baselineSpineDemand`)
 
-- **Paper fact.** `[129]` carries two statements.
-  `lem:surviving-active-family` (row 30): for a survivor, `𝒜₀ := 𝒫_exc` is a
-  finite family of active surplus demands with `|𝒜₀| = σ(G)`.
-  `def:baseline-spine-demand`: with `N = C(n,2)`, `m₀ = ⌈(3/2)n⌉` and
-  `B₀(n) = log₂ C(N, m₀)`, a family `ℐ_spine` of declared target coordinates
-  is a baseline spine demand with deficit `E_spine(n)` when `ℐ_spine` is
-  independently target-testable and `|ℐ_spine| ≥ B₀(n) - E_spine(n)`.
-  `def:spine-lower-bound-deficits` records the lower-bound deficit packages
-  that feed the later surplus estimates.  The hypothesis used downstream is
-  `E_spine(n) ≤ C_E n`.
-- **What the Lean does.**
-  `Graph.Strategy.SurplusAccounting.baselineDemand (object) (baselineDegree)
-  : Core.Strategy.BaselineDemandAccounting.Registration Residual`, every
-  field supplied: `budget := countingBudget` (`Nat`, `≤`, `+`,
-  `ceiling := id`); `Site := fun residual => (object residual).Vertex`;
-  `Witness := fun _ _ => Unit`; `family := { indices := vertices (object
-  residual), fibres := fun _ => Core.Finite.Enumeration.singleton () }`;
-  `Active := fun _ _ => True`; `Supports := fun _ _ _ => True`;
-  `contribution := fun residual _ _ => baselineDegree residual`;
-  `required := fun residual => baselineDegree residual * (object
-  residual).vertexCount`; `capacity := fun residual => baselineDegree
-  residual * (object residual).vertexCount`;
-  `activeDecidable := fun _ _ => isTrue trivial`;
-  `supportsDecidable := fun _ _ _ => isTrue trivial`.  `required` and
-  `capacity` are the same term, so CT5's comparison is `3n ≤ 3n`.  The
-  registration site passes `fun input => input.object` and
-  `fun _ => erdosReceiverLoadProfile.baselineDegree`.  No theorem mentions
-  this registration.
-- **What it should do.** To state `def:baseline-spine-demand` the CT5 `Site`
-  would have to be a declared target coordinate (not a vertex), `Active`
-  would have to be independent target-testability of that coordinate,
-  `capacity` would have to be `B₀(n) = log₂ C(C(n,2), ⌈3n/2⌉)` or a
-  `Nat`/`ℚ` surrogate for it, and `required` would have to be `|ℐ_spine|`,
-  so that the CT5 verdict is exactly `|ℐ_spine| ≥ B₀(n) - E_spine(n)` with
-  `E_spine` an output of the stage.  `lem:surviving-active-family` would
-  need `Active := fun residual site => site ∈ 𝒫_exc` and a theorem
-  `(family residual).card = degreeSurplus (baselineDegree residual)`.
-- **Gap.** `Active := True` makes the demand family all of `V(G)`, not
-  `𝒫_exc`; `|𝒜₀| = σ(G)` is not stated at this node.  There is no declared
-  target coordinate, no independent target-testability, no `B₀(n)`, no
-  `E_spine(n)`, and no `O(n)` bound on a deficit; no binomial coefficient,
-  logarithm, or `log₂ n` term occurs anywhere in
-  `/home/guillem/structural_exhaustion/hypostructure/Hypostructure/Graph/Strategy/SurplusAccounting.lean`.
-  `def:spine-lower-bound-deficits` has no counterpart.  What is proved is
-  `3n ≤ 3n`.  **Facts therefore fails.**
-- **Ledger and residual.** `BaselineDemandAccounting.Profile` has
-  `registration` and `current`; `Dag.baselineDemandAccountingRecipe` builds
-  `{ registration, current }` with the compiler's query.  `spec` reads each
-  field through `profile.current.read previous`, and `family` is
-  `profile.current.dependentMap fun _ residual =>
-  profile.registration.family residual`.  `execution` is the single
-  `CTAdapters.ct5 profile.capability`, whose output is appended over the
-  literal row-30 stage as a `Ledger.Extension`.  Ledger and Residual pass.
-- **Transport and terminals.** Core's CT5 owns the dependent enumeration,
-  the resource comparison, the ledger entry, the work bound and the
-  terminal.  The application supplies `object` and `baselineDegree` and
-  nothing else.  The operation is nonbranching; the export has
-  `e9 : v13 → v12` as its only outgoing edge, and `v13` carries
-  `components: []`.
+- **Paper fact.** `def:baseline-spine-demand`: with `N = C(n,2)`,
+  `m₀ = ⌈(3/2)n⌉` and `B₀(n) = log₂ C(N, m₀)`, a family `ℐ_spine` of declared
+  target coordinates is a baseline spine demand with deficit `E_spine(n)` when
+  `ℐ_spine` is independently target-testable and `|ℐ_spine| ≥ B₀(n) −
+  E_spine(n)`.  Its two numerical inputs are `lem:exact-cubic-baseline-budget`
+  (`B₀(n) = (3/2)n log₂ n + O(n)`) and `lem:incremental-skeleton-room`
+  (`log₂ C(N,m) − log₂ C(N,m₀) ≤ s log₂ n` for `m = m₀ + s ≤ 2n − 2`).
+  `def:spine-lower-bound-deficits` records the lower-bound deficit packages.
+- **What the Lean does.** `baselineSpineDemandRow` of `SurplusRows.lean`, run
+  after the three activation rows.  It commits two statements about the
+  residual's own object, with the logarithms cleared: `lem:incremental-skeleton-
+  room` on the manuscript's own envelope, `C(N, m₀+s) ≤ C(N, m₀)·n^s` for
+  `m₀ + s ≤ 2n − 2`; and that estimate spent at the object's own edge count,
+  `skeletonBudget object ≤ C(N,m₀)·n^(m − m₀)`.  Both are
+  `Hypostructure/Graph/BaselineSpineDemand.lean`'s
+  `incremental_skeleton_room` and
+  `skeletonBudget_le_cubicBaselineBudget_mul_pow`, proved from the one-step
+  identity `C(N,k+1)(k+1) = C(N,k)(N−k)` and `C(n,2) ≤ n·m₀`.  `m₀` is
+  `cubicBaselineEdgeCount n δ = ⌈δn/2⌉`, the least edge count a `δ`-regular
+  object can carry; the only registered input is `2 ≤ δ`, from
+  `Data.three_le_threshold`.  The row declares `Requires := []`, which is honest:
+  it reads no fact.
+- **What it should do.** Commit `def:baseline-spine-demand` itself — a family
+  `ℐ_spine` of declared target coordinates, its independent target-testability,
+  and `|ℐ_spine| ≥ B₀(n) − E_spine(n)` with `E_spine` an output — together with
+  `def:spine-lower-bound-deficits`'s packages and the hypothesis
+  `E_spine(n) ≤ C_E n` that row 32 and row 34 read.
+- **Gap.** The definition is not committed, only the two numerical facts it
+  rests on.  There is no declared target coordinate family, no independent
+  target-testability predicate, no `E_spine(n)` output, and no `O(n)` deficit
+  bound; `def:spine-lower-bound-deficits` has no counterpart, and
+  `lem:exact-cubic-baseline-budget`'s asymptotic `B₀ = (3/2)n log₂ n + O(n)` is
+  not stated — the branch carries the budget `C(N,m₀)` itself rather than its
+  logarithm's asymptotics.  **Facts therefore fails.**
+- **Ledger and residual.** `factOnly` over the row-30 stage: refinement is
+  `RefinementSystem.refl`, the residual is unchanged, and `AtomicCT.run` appends
+  the single production to the incoming index.  Ledger and Residual pass.
+- **Transport and terminals.** As row 30: Core owns the commit and the
+  accounting, the row owns its manifest and its proof, the operation is
+  nonbranching and declares no terminal, and the fixture checks the audit
+  invariants on the result.  Transport passes.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
 | `def:baseline-spine-demand` | def |  |  |
+| `lem:incremental-skeleton-room` | lem | `Graph.incremental_skeleton_room` | standalone |
 | `def:spine-lower-bound-deficits` | def |  |  |
 
-`def:baseline-spine-demand` is read again at row 32 (as the `E_spine(n)`
-term of the entropy sandwich) and at row 34 (as the `E_spine(n)` term of the
-high-load alternative); `[129]` is its first consuming node.
+`lem:incremental-skeleton-room` is listed here rather than at row 32 because
+`[129]` is the node that now commits it; the manuscript files it at `[131]`.
 
-**CT composition at this row.** The strategy composes a single **CT5**:
-`BaselineDemandAccounting.execution accounting := CTAdapters.ct5 accounting`,
-and `Profile.execution` is that same call on `profile.capability`.  CT5
-enumerates the dependent family `family`, filters by `Active`, checks
-`Supports` on each witness, sums `contribution` in `budget`, and decides
-`required ≤ capacity`, appending the verdict and its terminal.  There is
-nothing for a composition to buy here: this row is the degenerate case of
-row 30's second half, run over the identical vertex scan, and its verdict is
-`3n ≤ 3n`.
+**CT composition at this row.** No CT: one atomic fact-only Strategy.  The
+manuscript's `[129]` fixes a baseline rather than comparing two resources, so
+there is no demand family to enumerate and nothing for CT5 to decide.
 
 ### Row 32 — Canonical pair-response `[130]`–`[134]`
 
@@ -6747,7 +6767,8 @@ first-hit deficit scan whose budget comparison decided nothing (`required` and
 - **Gap.** None at this row: the branch this block is on carries `¬ ExitFour` at
   every indexed entry, so the peel arm is empty and the descent enters `[124]`
   with the census's package.  The exit-`(4)` peel ledger of
-  `lem:typeA-exit4-discharge` remains rows 16's and is unbuilt.
+  `lem:typeA-exit4-discharge` remains row 16's, where it is built
+  (`Graph.ExitFour.residualLoad_insert`, run as `Spine.typeAPeeledCharge`).
 - **Ledger and residual.** `rowManifest (K .route8Census) (K .route8Descent)`;
   the residual is unchanged.
 - **Transport and terminals.** No terminal.  The legacy revision spent CT12's

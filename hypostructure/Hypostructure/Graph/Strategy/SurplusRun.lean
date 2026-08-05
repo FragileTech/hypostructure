@@ -4,7 +4,7 @@ import Hypostructure.Graph.Strategy.SpineRun
 /-!
 # The sparse surplus branch, run
 
-Nodes `[126]`--`[128]`, on the arm node `[19]` sends an object whose degree
+Nodes `[126]`--`[129]`, on the arm node `[19]` sends an object whose degree
 surplus exceeds the registered scale threshold.  The rows of `SurplusRows` are
 each quantified over the keys they consume and produce; this module installs
 them at the spine's own vocabulary and runs them in the manuscript's order
@@ -19,7 +19,7 @@ ledger, and no row names a producer or an execution position.
 
 Node `[125]` is the *survivor* of the five sparse surplus exits of
 `def:named-surplus-exits`.  Those exits are not yet branch alternatives of this
-block -- exit `(e)` has no live support -- so this module runs the three rows
+block -- exit `(e)` has no live support -- so this module runs the four rows
 that do not depend on exit-freeness, and the arm it produces is the activation
 data itself.  `lem:surviving-active-family`'s cardinality is committed;
 its *"not removed by an exit"* clause and clause (b) of
@@ -68,19 +68,24 @@ exactly the raw hypothesis `TightVertexSuppression` asks for. -/
       fact.down.2 smaller lexicographic baseline)
     (fun _input value => ⟨value⟩)
 
+/-- Node `[129]`: the common cubic baseline and the room above it. -/
+@[reducible] noncomputable def baselineSpineDemand :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  baselineSpineDemandRow (K .baselineSpineDemand) (fun _input value => ⟨value⟩)
+
 /-! ## The block, run -/
 
-/-- The key index a branch carries after the three activation rows. -/
+/-- The key index a branch carries after the four activation rows. -/
 abbrev sparseActivationKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .sparsePortActivation :: K .activeSurplusFamily :: K .sparseSlackSurplus ::
-    known
+  K .baselineSpineDemand :: K .sparsePortActivation ::
+    K .activeSurplusFamily :: K .sparseSlackSurplus :: known
 
 /-- **The exit of the sparse activation block.**
 
 There is one constructor: the block is nonbranching, and it carries the
-canonical ledger indexed by exactly the three facts it appended. -/
+canonical ledger indexed by exactly the four facts it appended. -/
 inductive SurplusResult
     (selected : Input BranchState Presentation presentation data)
     (known : FactKeys (Input BranchState Presentation presentation data)) where
@@ -88,9 +93,9 @@ inductive SurplusResult
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (sparseActivationKeys known))
 
-/-- **Nodes `[126]`--`[128]`, run.**
+/-- **Nodes `[126]`--`[129]`, run.**
 
-The three fact-only rows are composed by `AtomicCT.run`, which appends each
+The four fact-only rows are composed by `AtomicCT.run`, which appends each
 row's declared productions to the incoming index while retaining the literal
 ancestry.  Every freshness side condition is decided on the vocabulary's own
 finite `Key`. -/
@@ -103,7 +108,8 @@ noncomputable def runSparseActivation
       current known)
     (slackFresh : K (data := data) .sparseSlackSurplus ∉ known)
     (familyFresh : K (data := data) .activeSurplusFamily ∉ known)
-    (activationFresh : K (data := data) .sparsePortActivation ∉ known) :
+    (activationFresh : K (data := data) .sparsePortActivation ∉ known)
+    (demandFresh : K (data := data) .baselineSpineDemand ∉ known) :
     SurplusResult current known := by
   classical
   have afterSlack :=
@@ -127,7 +133,14 @@ noncomputable def runSparseActivation
       subst isNew
       revert isOld
       simp [activationFresh])
-  exact .activated afterActivation
+  have afterDemand :=
+    (baselineSpineDemand (data := data)).run afterActivation (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [demandFresh])
+  exact .activated afterDemand
 
 /-- **The sparse surplus branch, entered from the entry spine's own exit.**
 
@@ -144,6 +157,6 @@ noncomputable def runSurplusBranch
     SurplusResult selected
       (surplusAboveKeys (BranchState := BranchState)
         (presentation := presentation) (data := data)) :=
-  runSparseActivation history (by simp) (by simp) (by simp)
+  runSparseActivation history (by simp) (by simp) (by simp) (by simp)
 
 end Hypostructure.Graph.Strategy.Spine

@@ -253,5 +253,15 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   coldSignature := Graph.ColdCorridor.declaredSignature inducedPathOrder
     (by norm_num [inducedPathOrder])
   coldSignature_windowOrder := rfl
+  -- `lem:typeB-bridge-deficit-bound`'s factor.  The manuscript charges each
+  -- Type B bridge residual at `No_-(X) ≤ 8 Σ_{h}(d_G(h) − 3)` and remarks that
+  -- the estimate "is equivalent to `27k ≥ 85`, and holds for every `k ≥ 4`", so
+  -- the factor is a round choice above a floor rather than a forced value.  It
+  -- is a presentation constant of this manuscript, registered here in the same
+  -- way as the order exponent above.
+  bridgeMassFactor := 8
+  -- `27k ≥ 85` at the registered baseline and discharge scale: `3 + 2 + 4 ≤ 32`.
+  -- Decided on the registered numbers, not restated as a numeral.
+  bridgeMassSlack := by norm_num [erdosReceiverLoadProfile]
 
 end HypostructureErdos64EG

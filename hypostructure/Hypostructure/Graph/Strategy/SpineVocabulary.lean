@@ -34,6 +34,7 @@ import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
 import Hypostructure.Graph.ColdBranchClosure
 import Hypostructure.Graph.SparsePortActivation
+import Hypostructure.Graph.BaselineSpineDemand
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -101,6 +102,12 @@ structure Data where
   graph.  A presentation whose accepted set misses the quadrilateral does not
   reach the local fan branch. -/
   quadrilateralAccepted : LengthOK 4
+  /-- **The `4` of node `[58]`.**  `def:net-charge` is
+  `N₀(X) = def⁺(X) − σ(X) − |V(X)|/s` at this discharge scale.  Every
+  comparison of the charge is made after multiplying through by `s`, so the
+  reciprocal never appears and nothing rounds. -/
+  dischargeScale : Nat
+  dischargeScale_pos : 0 < dischargeScale
   /-- **The marked-fan slack of `lem:typeB-multiclosed-budget`.**
 
   The local Type B fan ledger pays the closed-neighbour deficit
@@ -166,12 +173,6 @@ structure Data where
   written. -/
   entropyDenominator : Nat
   entropyDenominator_pos : 0 < entropyDenominator
-  /-- **The `4` of node `[58]`.**  `def:net-charge` is
-  `N₀(X) = def⁺(X) − σ(X) − |V(X)|/s` at this discharge scale.  Every
-  comparison of the charge is made after multiplying through by `s`, so the
-  reciprocal never appears and nothing rounds. -/
-  dischargeScale : Nat
-  dischargeScale_pos : 0 < dischargeScale
   /-- **The manuscript's "for all sufficiently large `n`", as a binary
   exponent.**  `prop:negative-net-charge` is stated "for all sufficiently large
   `n`", and nodes `[55]`--`[56]` carry `+o(1)` on every display.  This is where
@@ -828,6 +829,11 @@ inductive Key where
   witness `Q_p ⊆ G − x(p)` whose restored length is accepted, and a triangular
   port carries the triangle `x a_p b_p x`. -/
   | sparsePortActivation
+  /-- Node `[129]`, `def:baseline-spine-demand` with
+  `lem:incremental-skeleton-room`: the common cubic baseline `B₀(n)` the later
+  surplus accounting is measured against, and the room an edge count above the
+  cubic one buys over it.  Both are committed with the logarithms cleared. -/
+  | baselineSpineDemand
   deriving DecidableEq
 
 /-- **`𝒲₂(R)`**: the raw internal length-two curvature tests carried by the
@@ -2563,6 +2569,27 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 object.graph.Adj pair.2 left ∧
                   object.graph.Adj left right ∧
                   object.graph.Adj right pair.2))
+  | .baselineSpineDemand, object =>
+      -- `lem:incremental-skeleton-room` on the manuscript's own envelope, and
+      -- the same estimate spent at the object's own edge count.
+      ((∀ increment : Nat,
+          Graph.cubicBaselineEdgeCount object.vertexCount data.threshold +
+              increment ≤ 2 * object.vertexCount - 2 →
+          (object.vertexCount.choose 2).choose
+              (Graph.cubicBaselineEdgeCount object.vertexCount data.threshold +
+                increment) ≤
+            (object.vertexCount.choose 2).choose
+                (Graph.cubicBaselineEdgeCount object.vertexCount
+                  data.threshold) *
+              object.vertexCount ^ increment) ∧
+        (Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
+            object.edgeCount →
+          Graph.skeletonBudget object ≤
+            Graph.cubicBaselineBudget object.vertexCount data.threshold *
+              object.vertexCount ^
+                (object.edgeCount -
+                  Graph.cubicBaselineEdgeCount object.vertexCount
+                    data.threshold)))
 
 /-- Audit names.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2709,6 +2736,8 @@ def name : Key → Lean.Name
       `Hypostructure.Graph.Strategy.Spine.activeSurplusFamily
   | .sparsePortActivation =>
       `Hypostructure.Graph.Strategy.Spine.sparsePortActivation
+  | .baselineSpineDemand =>
+      `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
 
 /-- The value schema at a residual: the object-level statement, read at the
 residual's own object. -/
