@@ -84,6 +84,37 @@ and the only project axiom is
 
 ## A. Entry spine
 
+> **Block A has been rewritten onto the canonical ledger.**  The `Where`
+> column below, and the whole of the **Row evidence** section for rows 1–10,
+> describe the *previous* implementation on the legacy `Core.Residual.Ledger`
+> stack.  That implementation is quarantined (`hypostructure/quarantine.txt`),
+> so the exported run it cites cannot be regenerated and the `v0`–`v16` vertex
+> ids no longer resolve.  It is kept as the porting reference, not as a
+> current description.
+>
+> The block now lives in three files:
+>
+> | file | what it holds |
+> |---|---|
+> | `Graph/Strategy/SpineVocabulary.lean` | the `Data` record and the thirteen semantic keys with their `Holds` clauses |
+> | `Graph/Strategy/SpineRows.lean` | the ten rows, each an `AtomicStrategy` or a `Decision` |
+> | `Graph/Strategy/SpineRun.lean` | the composition, its three-exit `Result`, and the audit theorems |
+>
+> What is compiler-checked, rather than asserted here: `Spine.run` elaborates,
+> so every row's prerequisites were present in the branch index when it ran;
+> `complete_audit_facts` is `rfl`, so a completed block's audit is exactly its
+> ten facts in commit order; and `complete_audit_accounts_for_every_fact`
+> applies `ExactLedger.audit_complete`, so none of them was archived or
+> dropped.  The framework builds green with no `sorry`.
+>
+> Two things the old rows did that the new ones do not.  No row writes a
+> numeral: every constant is a field of `Spine.Data`, supplied by the
+> presentation, and `399` is now `(legalCodeList data.windowOrder).length`
+> rather than a type index.  And no fact carries data: `p₁₃` is
+> `FiniteObject.windowPackingNumber`, an observable of the object, so the
+> packing family never travels between rows —
+> `FactSystem.value_subsingleton` makes carrying it unelaborable.
+
 | # | Node | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
 | 1 | Minimal counterexample [1]–[4] | `v3` `minimal_counterexample_selection` | ✅ | ✅ | ✅ | ✅ |

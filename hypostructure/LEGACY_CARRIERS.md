@@ -12,41 +12,69 @@ holds real proofs. The work per file is: remove the record and its accessors,
 and route what the proofs need through the canonical ledger instead. Nothing
 mathematical should be lost — only the vehicle it travels in.
 
-`live dependents` is the number of modules in the build closure that would need
+`live deps` is the number of modules in the build closure that would need
 touching, so the list is also the cheapest-first order to do the work.
 
-| live deps | violations | module |
-|---:|---:|---|
-| 1 | 1 | `Core.Strategy.FiniteBottleneckClassification` (`SeparatorLedger`) |
-| 1 | 1 | `Graph.InducedPathWindowLedger` (bare `Ledger`) |
-| 1 | 1 | `Graph.Strategy.Official.Features.SupportIncidenceLedger` (bare `Ledger`) |
-| 1 | 2 | `Core.Strategy.FiniteDensityBudget` (`overflowLedger`, `capLedger`) |
-| 2 | 1 | `Core.NormalForm.ClassClosure` (`extendedLedger`) |
-| 2 | 1 | `Graph.TypeBOverlapObstruction` (`RefinedSupportLedger`) |
-| 5 | 1 | `Core.ClosedLedger.Closure` (`ClosedClassLedger`) |
-| 5 | 1 | `Core.Strategy.CoupledHomogeneousFibrePressure` (`OverloadLedger`) |
-| 5 | 2 | `Graph.Strategy.Official.Features.DegreeSurplusLedger` (bare `Ledger` ×2) |
-| 9 | 1 | `Graph.TypeBBridgeResidual` (`augmentedLedger`) |
-| 18 | 2 | `Core.Strategy.Official.Features.DeletionFanAccounting` (`ThresholdLedger`) |
-| 23 | 1 | `Graph.ReceiverLoad` (`VisibleLoadLedger`) |
-| 24 | 1 | `Graph.DeletionCriticality` (`deletionCriticalityOfLedger`) |
-| 26 | 2 | `Core.Strategy.CriticalModificationStructure` (`CriticalityLedger`, `SlackIncompatibilityLedger`) |
-| 43 | 1 | `Core.Strategy` (`CapacityLedger`) |
-| 71 | 1 | `Core.Strategy.ColdBranchAggregation` (`inheritedOverflowLedger`) |
-| 71 | 2 | `Core.Strategy.FiniteStateNetChargeContinuation` |
-| 72 | 1 | `Core.Strategy.ColdBranchAggregationSemantics` (`OverflowLedger`) |
-| 72 | 1 | `Core.Strategy.FiniteDensityBudgetSemantics` (`CapLedger`) |
-| 72 | 1 | `Core.Strategy.FiniteStateNetChargeContinuationSemantics` (`CapacityLedger`) |
-| 73 | 3 | `Core.Finite.ColdCorridor` (`classifyIntoLedger` ×2, `classifyStateIntoLedger`) |
-| 77 | 1 | `Core.Strategy.FiniteBarrierEnumerationSemantics` (`RateLedger`) |
-| **275** | 1 | **`Core.Residual.Ledger`** (bare `Ledger`) — the legacy residual ledger |
+## Status
 
-## The one that matters
+Block A (nodes `[1]`–`[24]`) is ported. **No Block A row constructs, reads, or
+writes any of the carriers below.** The spine runs on `ExactLedger` alone:
+`Graph/Strategy/SpineRun.lean` composes all ten rows, and
+`complete_audit_facts` pins the ledger's audit to exactly the ten facts it
+commits. The `on Block A path` column below records only that a module is
+*reachable through imports* from the spine — never that the spine uses it.
 
-`Core/Residual/Ledger.lean:28` is the spine of the legacy framework: 275 live
-dependents, essentially all of CT1–CT17. It cannot be cut; it has to be
-dissolved as rows port onto `ExactLedger`. Everything above it in the table is
-comparatively local.
+Deleted since the previous revision, as their rows ported:
+
+| carrier | was | replaced by |
+|---|---|---|
+| `FiniteBarrierEnumerationSemantics.RateLedger` | row 9's rate carrier | `Key.barrierCap` / `barrierOverflow` |
+| `CriticalModificationStructure.CriticalityLedger` | row 4's criticality carrier | `Key.tightEndpoint` |
+| `CriticalModificationStructure.SlackIncompatibilityLedger` | row 4's slack carrier | `Key.slackIndependent` |
+| `Graph.deletionCriticalityOfLedger` | row 4's graph accessor | `deletionCriticalityRow` |
+| `ReceiverLoad.VisibleLoadLedger` | unused visible-load carrier | — (no consumer) |
+| `ColdBranchAggregation.inheritedOverflowLedger` | overflow accessor | — (no consumer) |
+| `FiniteStateNetChargeContinuation.classifiedCapacityLedger` | capacity accessor | — (no consumer) |
+| `FiniteStateNetChargeContinuation.classifiedDensityLedger` | density accessor | — (no consumer) |
+
+Quarantined in the same pass: `Core.Strategy.FiniteBottleneckClassification`,
+`Core.Strategy.FiniteDensityBudget`, `Core.Strategy.CriticalModificationStructure`,
+`Core.Strategy.CounterexampleReduction`, `Graph.InducedPathWindowLedger`,
+`Graph.Strategy.Official.Features.SupportIncidenceLedger`.
+
+The gate stands at **17** violations, from 30.
+
+## What is left
+
+| live deps | violations | on Block A path | module |
+|---:|---:|:-:|---|
+| 1 | 1 | no | `Core.ClosedLedger.Closure` (`ClosedClassLedger`) |
+| 1 | 3 | yes | `Core.Finite.ColdCorridor` (`classifyIntoLedger` ×2, `classifyStateIntoLedger`) |
+| 1 | 1 | no | `Core.NormalForm.ClassClosure` (`extendedLedger`) |
+| 1 | 1 | yes | `Core.Strategy.ColdBranchAggregationSemantics` (`OverflowLedger`) |
+| 1 | 1 | no | `Core.Strategy.CoupledHomogeneousFibrePressure` (`OverloadLedger`) |
+| 1 | 1 | yes | `Core.Strategy.FiniteStateNetChargeContinuationSemantics` (`CapacityLedger`) |
+| 1 | 2 | no | `Core.Strategy.Official.Features.DeletionFanAccounting` (`ThresholdLedger`, `deriveThresholdLedger`) |
+| 1 | 1 | no | `Graph.TypeBOverlapObstruction` (`RefinedSupportLedger`) |
+| 2 | 1 | yes | `Core.Strategy.FiniteDensityBudgetSemantics` (`CapLedger`) |
+| 2 | 2 | no | `Graph.Strategy.Official.Features.DegreeSurplusLedger` (bare `Ledger` ×2) |
+| 2 | 1 | no | `Graph.TypeBBridgeResidual` (`augmentedLedger`) |
+| 6 | 1 | yes | **`Core.Residual.Ledger`** (bare `Ledger`) — the legacy residual ledger |
+| 6 | 1 | yes | `Core.Strategy` (`CapacityLedger`) |
+
+## The two that block the rest
+
+`Core/Residual/Ledger.lean:28` and `Core/Strategy.lean:1595` are the spine of
+the legacy framework. Six direct dependents each, but the transitive cone is
+essentially the whole build: `Core.Strategy` alone is reachable from 71
+modules, including — through `Graph.Strategy.MinimumDegreeBaseline` — the new
+spine's own vocabulary. They cannot be cut; they dissolve as the remaining
+blocks port onto `ExactLedger`.
+
+`FiniteDensityBudgetSemantics.CapLedger` is a near miss. It is row 10's old
+carrier and row 10 no longer touches it, but
+`FiniteStateNetChargeContinuation`'s `DensityCap56`/`RateCap56` machinery —
+row 41, block E — still reads its four queries. It goes when row 41 ports.
 
 ## Scope note
 
