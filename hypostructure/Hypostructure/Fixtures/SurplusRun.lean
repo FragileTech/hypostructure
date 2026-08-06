@@ -58,12 +58,12 @@ theorem run_audit_contains_activation_facts
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected activatedKeys) :
-    ∀ fact ∈ [`Hypostructure.Graph.Strategy.Spine.sparseSlackSurplus,
-        `Hypostructure.Graph.Strategy.Spine.activeSurplusFamily,
-        `Hypostructure.Graph.Strategy.Spine.sparsePortActivation,
-        `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand,
-        `Hypostructure.Graph.Strategy.Spine.canonicalPairLedger,
-        `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger],
+    ∀ fact ∈ [(name .sparseSlackSurplus),
+        (name .activeSurplusFamily),
+        (name .sparsePortActivation),
+        (name .baselineSpineDemand),
+        (name .canonicalPairLedger),
+        (name .capacityTokenLedger)],
       fact ∈ (ExactLedger.audit history).facts := by
   intro fact member
   simp only [List.mem_cons, List.not_mem_nil, or_false] at member

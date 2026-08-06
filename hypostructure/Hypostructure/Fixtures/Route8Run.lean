@@ -73,15 +73,15 @@ theorem run_audit_contains_route8_facts
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected closedKeys) :
-    ∀ fact ∈ [`Hypostructure.Graph.Strategy.Spine.typeAExitFourFree,
-        `Hypostructure.Graph.Strategy.Spine.typeAExitFiveFree,
-        `Hypostructure.Graph.Strategy.Spine.typeAExitSixFree,
-        `Hypostructure.Graph.Strategy.Spine.route8Residual,
-        `Hypostructure.Graph.Strategy.Spine.route8Burden,
-        `Hypostructure.Graph.Strategy.Spine.route8CarrierCore,
-        `Hypostructure.Graph.Strategy.Spine.route8Census,
-        `Hypostructure.Graph.Strategy.Spine.route8Descent,
-        `Hypostructure.Graph.Strategy.Spine.route8Closed],
+    ∀ fact ∈ [(name .typeAExitFourFree),
+        (name .typeAExitFiveFree),
+        (name .typeAExitSixFree),
+        (name .route8Residual),
+        (name .route8Burden),
+        (name .route8CarrierCore),
+        (name .route8Census),
+        (name .route8Descent),
+        (name .route8Closed)],
       fact ∈ (ExactLedger.audit history).facts := by
   intro fact member
   simp only [List.mem_cons, List.not_mem_nil, or_false] at member

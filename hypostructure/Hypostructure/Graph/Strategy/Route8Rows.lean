@@ -98,7 +98,7 @@ noncomputable def typeAExitFourPeelDichotomy
     (noPeelFresh : typeAExitFourNoPeel ∉ known) :
     Decision typeAExitFourPeel typeAExitFourNoPeel previous :=
   Decision.run previous typeAExitFourPeel typeAExitFourNoPeel
-    `Hypostructure.Graph.Strategy.Spine.typeAExitFourPeel
+    (name .typeAExitFourPeel)
     (by
       classical
       by_cases available :
@@ -201,7 +201,7 @@ noncomputable def typeAExitFourDichotomy
     (freeFresh : typeAExitFourFree ∉ known) :
     Decision typeAExitFour typeAExitFourFree previous :=
   Decision.run previous typeAExitFour typeAExitFourFree
-    `Hypostructure.Graph.Strategy.Spine.typeAExitFour
+    (name .typeAExitFour)
     (by
       classical
       by_cases occurs :
@@ -240,7 +240,7 @@ noncomputable def typeAExitFiveDichotomy
     (freeFresh : typeAExitFiveFree ∉ known) :
     Decision typeAExitFive typeAExitFiveFree previous :=
   Decision.run previous typeAExitFive typeAExitFiveFree
-    `Hypostructure.Graph.Strategy.Spine.typeAExitFive
+    (name .typeAExitFive)
     (by
       classical
       by_cases occurs :
@@ -291,7 +291,7 @@ noncomputable def typeAExitSixDichotomy
     (freeFresh : typeAExitSixFree ∉ known) :
     Decision typeAExitSix typeAExitSixFree previous :=
   Decision.run previous typeAExitSix typeAExitSixFree
-    `Hypostructure.Graph.Strategy.Spine.typeAExitSix
+    (name .typeAExitSix)
     (by
       classical
       by_cases occurs :
@@ -354,7 +354,7 @@ noncomputable def typeAExitSixScopeDichotomy
     (globalFresh : typeAExitSixGlobal ∉ known) :
     Decision typeAExitSixProper typeAExitSixGlobal previous :=
   Decision.run previous typeAExitSixProper typeAExitSixGlobal
-    `Hypostructure.Graph.Strategy.Spine.typeAExitSixProper
+    (name .typeAExitSixProper)
     (by
       classical
       by_cases proper :
@@ -403,7 +403,7 @@ noncomputable def route8Placement
     (freeFresh : route8Free ∉ known) :
     Decision route8Residual route8Free previous :=
   Decision.run previous route8Residual route8Free
-    `Hypostructure.Graph.Strategy.Spine.route8Residual
+    (name .route8Residual)
     (by
       classical
       by_cases carried :
@@ -575,7 +575,7 @@ noncomputable def typeAExitFiveRealizationDichotomy
     (traceLevelFresh : typeAExitFiveTraceLevel ∉ known) :
     Decision typeAExitFiveCompression typeAExitFiveTraceLevel previous :=
   Decision.run previous typeAExitFiveCompression typeAExitFiveTraceLevel
-    `Hypostructure.Graph.Strategy.Spine.typeAExitFiveCompression
+    (name .typeAExitFiveCompression)
     (by
       classical
       by_cases realized :

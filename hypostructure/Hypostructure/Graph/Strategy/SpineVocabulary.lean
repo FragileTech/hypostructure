@@ -3327,190 +3327,130 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
         data.threshold
 
-/-- Audit names.  They are diagnostics; every routing and lookup decision
+/-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
-def name : Key → Lean.Name
-  | .selection => `Hypostructure.Graph.Strategy.Spine.selection
-  | .returnAvoidance => `Hypostructure.Graph.Strategy.Spine.returnAvoidance
-  | .noProperBaseline => `Hypostructure.Graph.Strategy.Spine.noProperBaseline
-  | .tightEndpoint => `Hypostructure.Graph.Strategy.Spine.tightEndpoint
-  | .slackIndependent => `Hypostructure.Graph.Strategy.Spine.slackIndependent
-  | .uncompressible => `Hypostructure.Graph.Strategy.Spine.uncompressible
-  | .maximalPacking => `Hypostructure.Graph.Strategy.Spine.maximalPacking
-  | .localAlgebra => `Hypostructure.Graph.Strategy.Spine.localAlgebra
-  | .surplusAbove => `Hypostructure.Graph.Strategy.Spine.surplusAbove
-  | .surplusAtOrBelow => `Hypostructure.Graph.Strategy.Spine.surplusAtOrBelow
-  | .barrierCap => `Hypostructure.Graph.Strategy.Spine.barrierCap
-  | .barrierOverflow => `Hypostructure.Graph.Strategy.Spine.barrierOverflow
-  | .densityCap => `Hypostructure.Graph.Strategy.Spine.densityCap
-  | .remainderNormalized =>
-      `Hypostructure.Graph.Strategy.Spine.remainderNormalized
-  | .boundaryDemand => `Hypostructure.Graph.Strategy.Spine.boundaryDemand
-  | .stubSupply => `Hypostructure.Graph.Strategy.Spine.stubSupply
-  | .wedgeSupply => `Hypostructure.Graph.Strategy.Spine.wedgeSupply
-  | .curvatureDemandFloor =>
-      `Hypostructure.Graph.Strategy.Spine.curvatureDemandFloor
-  | .curvatureTargetRank =>
-      `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank
-  | .curvatureRankDrop => `Hypostructure.Graph.Strategy.Spine.curvatureRankDrop
-  | .curvatureFullRank => `Hypostructure.Graph.Strategy.Spine.curvatureFullRank
-  | .branchDependence => `Hypostructure.Graph.Strategy.Spine.branchDependence
-  | .contextUniversal => `Hypostructure.Graph.Strategy.Spine.contextUniversal
-  | .contextDefect => `Hypostructure.Graph.Strategy.Spine.contextDefect
-  | .atomCompression => `Hypostructure.Graph.Strategy.Spine.atomCompression
-  | .delocalizedSupport =>
-      `Hypostructure.Graph.Strategy.Spine.delocalizedSupport
-  | .properDelocalization =>
-      `Hypostructure.Graph.Strategy.Spine.properDelocalization
-  | .globalDelocalization =>
-      `Hypostructure.Graph.Strategy.Spine.globalDelocalization
-  | .repairIdentity => `Hypostructure.Graph.Strategy.Spine.repairIdentity
-  | .globalBarrier => `Hypostructure.Graph.Strategy.Spine.globalBarrier
-  | .coldCorridorState =>
-      `Hypostructure.Graph.Strategy.Spine.coldCorridorState
-  | .coldSameInterfaceTable =>
-      `Hypostructure.Graph.Strategy.Spine.coldSameInterfaceTable
-  | .coldGermRealized => `Hypostructure.Graph.Strategy.Spine.coldGermRealized
-  | .coldGermDistinguished =>
-      `Hypostructure.Graph.Strategy.Spine.coldGermDistinguished
-  | .coldGermSilent => `Hypostructure.Graph.Strategy.Spine.coldGermSilent
-  | .coldFailureCycle => `Hypostructure.Graph.Strategy.Spine.coldFailureCycle
-  | .coldFailureDefect => `Hypostructure.Graph.Strategy.Spine.coldFailureDefect
-  | .coldFailureCompression =>
-      `Hypostructure.Graph.Strategy.Spine.coldFailureCompression
-  | .coldFailureHandoff => `Hypostructure.Graph.Strategy.Spine.coldFailureHandoff
-  | .coldFailureRouting => `Hypostructure.Graph.Strategy.Spine.coldFailureRouting
-  | .coldHandoffTransfer =>
-      `Hypostructure.Graph.Strategy.Spine.coldHandoffTransfer
-  | .coldGermExtraction =>
-      `Hypostructure.Graph.Strategy.Spine.coldGermExtraction
-  | .coldBranchClosed => `Hypostructure.Graph.Strategy.Spine.coldBranchClosed
-  | .highCentreNormalForm =>
-      `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm
-  | .typeBHeavyCentre => `Hypostructure.Graph.Strategy.Spine.typeBHeavyCentre
-  | .typeBDegreeFourCentres =>
-      `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourCentres
-  | .typeBLocalDichotomy =>
-      `Hypostructure.Graph.Strategy.Spine.typeBLocalDichotomy
-  | .fanCertificateCap =>
-      `Hypostructure.Graph.Strategy.Spine.fanCertificateCap
-  | .fanCertificateMarked =>
-      `Hypostructure.Graph.Strategy.Spine.fanCertificateMarked
-  | .fanCertificateResidual =>
-      `Hypostructure.Graph.Strategy.Spine.fanCertificateResidual
-  | .typeBDegreeFourProfile =>
-      `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourProfile
-  | .typeBHybridEntry => `Hypostructure.Graph.Strategy.Spine.typeBHybridEntry
-  | .typeBDirectCycle => `Hypostructure.Graph.Strategy.Spine.typeBDirectCycle
-  | .typeBDirectCycleFree =>
-      `Hypostructure.Graph.Strategy.Spine.typeBDirectCycleFree
-  | .typeBDisjointAssignment =>
-      `Hypostructure.Graph.Strategy.Spine.typeBDisjointAssignment
-  | .typeBOverlapObstruction =>
-      `Hypostructure.Graph.Strategy.Spine.typeBOverlapObstruction
-  | .typeBBridgeMass => `Hypostructure.Graph.Strategy.Spine.typeBBridgeMass
-  | .typeBExclusionCharge =>
-      `Hypostructure.Graph.Strategy.Spine.typeBExclusionCharge
-  | .typeBExcluded => `Hypostructure.Graph.Strategy.Spine.typeBExcluded
-  | .typeBExclusionResidual =>
-      `Hypostructure.Graph.Strategy.Spine.typeBExclusionResidual
-  | .windowPackageSeparated =>
-      `Hypostructure.Graph.Strategy.Spine.windowPackageSeparated
-  | .windowPackageCollided =>
-      `Hypostructure.Graph.Strategy.Spine.windowPackageCollided
-  | .forcedCurvatureCost =>
-      `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCost
-  | .remainderEntropyHigh =>
-      `Hypostructure.Graph.Strategy.Spine.remainderEntropyHigh
-  | .remainderEntropyLow =>
-      `Hypostructure.Graph.Strategy.Spine.remainderEntropyLow
-  | .entropyPackageDemand =>
-      `Hypostructure.Graph.Strategy.Spine.entropyPackageDemand
-  | .entropyCapActive => `Hypostructure.Graph.Strategy.Spine.entropyCapActive
-  | .largeBudgetResidual =>
-      `Hypostructure.Graph.Strategy.Spine.largeBudgetResidual
-  | .largeOrderResidual =>
-      `Hypostructure.Graph.Strategy.Spine.largeOrderResidual
-  | .smallOrderResidual =>
-      `Hypostructure.Graph.Strategy.Spine.smallOrderResidual
-  | .netDeficiencyCap => `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap
-  | .netChargeLocalization =>
-      `Hypostructure.Graph.Strategy.Spine.netChargeLocalization
-  | .netChargeNonNegative =>
-      `Hypostructure.Graph.Strategy.Spine.netChargeNonNegative
-  | .netChargeNegative => `Hypostructure.Graph.Strategy.Spine.netChargeNegative
-  | .windowJoinPressure =>
-      `Hypostructure.Graph.Strategy.Spine.windowJoinPressure
-  | .negativeSupport => `Hypostructure.Graph.Strategy.Spine.negativeSupport
-  | .typeALowSurplus => `Hypostructure.Graph.Strategy.Spine.typeALowSurplus
-  | .typeBHighSurplus => `Hypostructure.Graph.Strategy.Spine.typeBHighSurplus
-  | .typeAReceiverRouting =>
-      `Hypostructure.Graph.Strategy.Spine.typeAReceiverRouting
-  | .typeASaturatedReceiver =>
-      `Hypostructure.Graph.Strategy.Spine.typeASaturatedReceiver
-  | .typeAUnsaturatedReceivers =>
-      `Hypostructure.Graph.Strategy.Spine.typeAUnsaturatedReceivers
-  | .typeAVisibleEntry => `Hypostructure.Graph.Strategy.Spine.typeAVisibleEntry
-  | .typeAVisibleFirstExcess =>
-      `Hypostructure.Graph.Strategy.Spine.typeAVisibleFirstExcess
-  | .typeAExitOneReturn =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitOneReturn
-  | .typeAExitOneFree => `Hypostructure.Graph.Strategy.Spine.typeAExitOneFree
-  | .typeAExitTwoTheta => `Hypostructure.Graph.Strategy.Spine.typeAExitTwoTheta
-  | .typeAExitTwoFree => `Hypostructure.Graph.Strategy.Spine.typeAExitTwoFree
-  | .typeAExitThreeCollision =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitThreeCollision
-  | .typeAExitThreeFree =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitThreeFree
-  | .typeAExitFourPeel => `Hypostructure.Graph.Strategy.Spine.typeAExitFourPeel
-  | .typeAExitFourNoPeel =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitFourNoPeel
-  | .typeAPeeledCharge => `Hypostructure.Graph.Strategy.Spine.typeAPeeledCharge
-  | .typeAExitFiveCompression =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitFiveCompression
-  | .typeAExitFiveTraceLevel =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitFiveTraceLevel
-  | .typeAExitFour => `Hypostructure.Graph.Strategy.Spine.typeAExitFour
-  | .typeAExitFourFree => `Hypostructure.Graph.Strategy.Spine.typeAExitFourFree
-  | .typeAExitFive => `Hypostructure.Graph.Strategy.Spine.typeAExitFive
-  | .typeAExitFiveFree => `Hypostructure.Graph.Strategy.Spine.typeAExitFiveFree
-  | .typeAExitSix => `Hypostructure.Graph.Strategy.Spine.typeAExitSix
-  | .typeAExitSixFree => `Hypostructure.Graph.Strategy.Spine.typeAExitSixFree
-  | .typeAExitSixProper =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitSixProper
-  | .typeAExitSixGlobal =>
-      `Hypostructure.Graph.Strategy.Spine.typeAExitSixGlobal
-  | .route8Residual => `Hypostructure.Graph.Strategy.Spine.route8Residual
-  | .route8Free => `Hypostructure.Graph.Strategy.Spine.route8Free
-  | .route8Burden => `Hypostructure.Graph.Strategy.Spine.route8Burden
-  | .route8CarrierCore => `Hypostructure.Graph.Strategy.Spine.route8CarrierCore
-  | .route8Census => `Hypostructure.Graph.Strategy.Spine.route8Census
-  | .route8Descent => `Hypostructure.Graph.Strategy.Spine.route8Descent
-  | .route8Closed => `Hypostructure.Graph.Strategy.Spine.route8Closed
-  | .sparseSlackSurplus =>
-      `Hypostructure.Graph.Strategy.Spine.sparseSlackSurplus
-  | .activeSurplusFamily =>
-      `Hypostructure.Graph.Strategy.Spine.activeSurplusFamily
-  | .sparsePortActivation =>
-      `Hypostructure.Graph.Strategy.Spine.sparsePortActivation
-  | .baselineSpineDemand =>
-      `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
-  | .canonicalPairLedger =>
-      `Hypostructure.Graph.Strategy.Spine.canonicalPairLedger
-  | .capacityTokenLedger =>
-      `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
-  | .roleFibrePartition =>
-      `Hypostructure.Graph.Strategy.Spine.roleFibrePartition
-  | .fibrePressure =>
-      `Hypostructure.Graph.Strategy.Spine.fibrePressure
-  | .bottleneckClassification =>
-      `Hypostructure.Graph.Strategy.Spine.bottleneckClassification
-  | .homogeneousBottleneck =>
-      `Hypostructure.Graph.Strategy.Spine.homogeneousBottleneck
-  | .sparseSurplusSurvivor =>
-      `Hypostructure.Graph.Strategy.Spine.sparseSurplusSurvivor
-  | .activeSurplusDemands =>
-      `Hypostructure.Graph.Strategy.Spine.activeSurplusDemands
+def label : Key → String
+  | .selection => "selection"
+  | .returnAvoidance => "returnAvoidance"
+  | .noProperBaseline => "noProperBaseline"
+  | .tightEndpoint => "tightEndpoint"
+  | .slackIndependent => "slackIndependent"
+  | .uncompressible => "uncompressible"
+  | .maximalPacking => "maximalPacking"
+  | .localAlgebra => "localAlgebra"
+  | .surplusAbove => "surplusAbove"
+  | .surplusAtOrBelow => "surplusAtOrBelow"
+  | .barrierCap => "barrierCap"
+  | .barrierOverflow => "barrierOverflow"
+  | .densityCap => "densityCap"
+  | .remainderNormalized => "remainderNormalized"
+  | .boundaryDemand => "boundaryDemand"
+  | .stubSupply => "stubSupply"
+  | .wedgeSupply => "wedgeSupply"
+  | .curvatureDemandFloor => "curvatureDemandFloor"
+  | .curvatureTargetRank => "curvatureTargetRank"
+  | .curvatureRankDrop => "curvatureRankDrop"
+  | .curvatureFullRank => "curvatureFullRank"
+  | .branchDependence => "branchDependence"
+  | .contextUniversal => "contextUniversal"
+  | .contextDefect => "contextDefect"
+  | .atomCompression => "atomCompression"
+  | .delocalizedSupport => "delocalizedSupport"
+  | .properDelocalization => "properDelocalization"
+  | .globalDelocalization => "globalDelocalization"
+  | .repairIdentity => "repairIdentity"
+  | .globalBarrier => "globalBarrier"
+  | .coldCorridorState => "coldCorridorState"
+  | .coldSameInterfaceTable => "coldSameInterfaceTable"
+  | .coldGermRealized => "coldGermRealized"
+  | .coldGermDistinguished => "coldGermDistinguished"
+  | .coldGermSilent => "coldGermSilent"
+  | .coldFailureCycle => "coldFailureCycle"
+  | .coldFailureDefect => "coldFailureDefect"
+  | .coldFailureCompression => "coldFailureCompression"
+  | .coldFailureHandoff => "coldFailureHandoff"
+  | .coldFailureRouting => "coldFailureRouting"
+  | .coldHandoffTransfer => "coldHandoffTransfer"
+  | .coldGermExtraction => "coldGermExtraction"
+  | .coldBranchClosed => "coldBranchClosed"
+  | .highCentreNormalForm => "highCentreNormalForm"
+  | .typeBHeavyCentre => "typeBHeavyCentre"
+  | .typeBDegreeFourCentres => "typeBDegreeFourCentres"
+  | .typeBLocalDichotomy => "typeBLocalDichotomy"
+  | .fanCertificateCap => "fanCertificateCap"
+  | .fanCertificateMarked => "fanCertificateMarked"
+  | .fanCertificateResidual => "fanCertificateResidual"
+  | .typeBDegreeFourProfile => "typeBDegreeFourProfile"
+  | .typeBHybridEntry => "typeBHybridEntry"
+  | .typeBDirectCycle => "typeBDirectCycle"
+  | .typeBDirectCycleFree => "typeBDirectCycleFree"
+  | .typeBDisjointAssignment => "typeBDisjointAssignment"
+  | .typeBOverlapObstruction => "typeBOverlapObstruction"
+  | .typeBBridgeMass => "typeBBridgeMass"
+  | .typeBExclusionCharge => "typeBExclusionCharge"
+  | .typeBExcluded => "typeBExcluded"
+  | .typeBExclusionResidual => "typeBExclusionResidual"
+  | .windowPackageSeparated => "windowPackageSeparated"
+  | .windowPackageCollided => "windowPackageCollided"
+  | .forcedCurvatureCost => "forcedCurvatureCost"
+  | .remainderEntropyHigh => "remainderEntropyHigh"
+  | .remainderEntropyLow => "remainderEntropyLow"
+  | .entropyPackageDemand => "entropyPackageDemand"
+  | .entropyCapActive => "entropyCapActive"
+  | .largeBudgetResidual => "largeBudgetResidual"
+  | .largeOrderResidual => "largeOrderResidual"
+  | .smallOrderResidual => "smallOrderResidual"
+  | .netDeficiencyCap => "netDeficiencyCap"
+  | .netChargeLocalization => "netChargeLocalization"
+  | .netChargeNonNegative => "netChargeNonNegative"
+  | .netChargeNegative => "netChargeNegative"
+  | .windowJoinPressure => "windowJoinPressure"
+  | .negativeSupport => "negativeSupport"
+  | .typeALowSurplus => "typeALowSurplus"
+  | .typeBHighSurplus => "typeBHighSurplus"
+  | .typeAReceiverRouting => "typeAReceiverRouting"
+  | .typeASaturatedReceiver => "typeASaturatedReceiver"
+  | .typeAUnsaturatedReceivers => "typeAUnsaturatedReceivers"
+  | .typeAVisibleEntry => "typeAVisibleEntry"
+  | .typeAVisibleFirstExcess => "typeAVisibleFirstExcess"
+  | .typeAExitOneReturn => "typeAExitOneReturn"
+  | .typeAExitOneFree => "typeAExitOneFree"
+  | .typeAExitTwoTheta => "typeAExitTwoTheta"
+  | .typeAExitTwoFree => "typeAExitTwoFree"
+  | .typeAExitThreeCollision => "typeAExitThreeCollision"
+  | .typeAExitThreeFree => "typeAExitThreeFree"
+  | .typeAExitFourPeel => "typeAExitFourPeel"
+  | .typeAExitFourNoPeel => "typeAExitFourNoPeel"
+  | .typeAPeeledCharge => "typeAPeeledCharge"
+  | .typeAExitFiveCompression => "typeAExitFiveCompression"
+  | .typeAExitFiveTraceLevel => "typeAExitFiveTraceLevel"
+  | .typeAExitFour => "typeAExitFour"
+  | .typeAExitFourFree => "typeAExitFourFree"
+  | .typeAExitFive => "typeAExitFive"
+  | .typeAExitFiveFree => "typeAExitFiveFree"
+  | .typeAExitSix => "typeAExitSix"
+  | .typeAExitSixFree => "typeAExitSixFree"
+  | .typeAExitSixProper => "typeAExitSixProper"
+  | .typeAExitSixGlobal => "typeAExitSixGlobal"
+  | .route8Residual => "route8Residual"
+  | .route8Free => "route8Free"
+  | .route8Burden => "route8Burden"
+  | .route8CarrierCore => "route8CarrierCore"
+  | .route8Census => "route8Census"
+  | .route8Descent => "route8Descent"
+  | .route8Closed => "route8Closed"
+  | .sparseSlackSurplus => "sparseSlackSurplus"
+  | .activeSurplusFamily => "activeSurplusFamily"
+  | .sparsePortActivation => "sparsePortActivation"
+  | .baselineSpineDemand => "baselineSpineDemand"
+  | .canonicalPairLedger => "canonicalPairLedger"
+  | .capacityTokenLedger => "capacityTokenLedger"
+  | .roleFibrePartition => "roleFibrePartition"
+  | .fibrePressure => "fibrePressure"
+  | .bottleneckClassification => "bottleneckClassification"
+  | .homogeneousBottleneck => "homogeneousBottleneck"
+  | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
+  | .activeSurplusDemands => "activeSurplusDemands"
 
 /-- The value schema at a residual: the object-level statement, read at the
 residual's own object. -/
@@ -3521,10 +3461,20 @@ def Value (BranchState : Graph.FiniteObject.{u} → Type v)
       (problem BranchState Presentation presentation data)) : Type :=
   PLift (Holds BranchState Presentation presentation data k input.object)
 
-set_option maxHeartbeats 2000000 in
-theorem name_injective : Function.Injective name := by
-  intro left right same
-  cases left <;> cases right <;> simp_all [name]
+/-- The constructor index is injective: `deriving DecidableEq` on `Key` emits
+both `Key.ofNat` and `Key.ofNat_ctorIdx`, which is exactly a left inverse. -/
+theorem ctorIdx_injective : Function.Injective Key.ctorIdx :=
+  Function.LeftInverse.injective Key.ofNat_ctorIdx
+
+/-- Audit names.  They are diagnostics; every routing and lookup decision
+compares exact keys.  The name carries the constructor index as its final
+component, so distinctness is inherited from `ctorIdx_injective` instead of
+being re-derived by a pairwise comparison of the 121 audit labels. -/
+def name (k : Key) : Lean.Name :=
+  .num (.str `Hypostructure.Graph.Strategy.Spine (label k)) k.ctorIdx
+
+theorem name_injective : Function.Injective name := fun _ _ same =>
+  ctorIdx_injective (by injection same)
 
 /-- The spine's closed fact vocabulary.  Every value depends on the residual
 only through its object, so transport along a refinement is a rewrite. -/
@@ -3536,7 +3486,9 @@ def vocabulary (BranchState : Graph.FiniteObject.{u} → Type v)
   keyDecidableEq := inferInstance
   name := name
   name_injective := name_injective
-  name_ne_closure := by intro key; cases key <;> decide
+  -- Spine names end in a numeric component, the reserved closure name in a
+  -- string component, so they differ without inspecting the key.
+  name_ne_closure := fun _ h => Lean.Name.noConfusion h
   Value := Value BranchState Presentation presentation data
   -- Every spine fact is `PLift` of a proposition, so its value type has at
   -- most one inhabitant: the fact is the statement, and the graph it speaks

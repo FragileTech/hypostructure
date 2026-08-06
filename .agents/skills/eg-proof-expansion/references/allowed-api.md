@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **423**.
+Compiled declarations: **429**.
 
-Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 57, **Minimum-degree cycle spine vocabulary** 176.
+Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 57, **Minimum-degree cycle spine vocabulary** 182.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -4197,6 +4197,50 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSix`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSixFree`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSixGlobal`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSixProper`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitThreeCollision`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4994,6 +5038,21 @@ Graph.Strategy.Spine.Key
                       contextDefect ∉ known →
                         contextUniversal ∉ known → Core.Strategy.Decision contextDefect contextUniversal previous
 ```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.ctorIdx_injective`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Function.Injective Graph.Strategy.Spine.Key.ctorIdx
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.curvatureRankDichotomy`
 
@@ -5889,6 +5948,17 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
             (Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation data))
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.label`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key → String
+```
+
 ### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.localAlgebraRow`
@@ -6683,11 +6753,7 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                               ∃
                                                 outside ∈
                                                   Graph.VisibleEntry.completionPorts current.object piece receiver,
-                                                data.dischargeScale ≤
-                                                    (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                                                        data.threshold receiver outside).card ∧
-                                                  ∃ return',
-                                                    Graph.ShiftedCycleLength data.LengthOK return'.path.length) →
+                                                ∃ return', Graph.ShiftedCycleLength data.LengthOK return'.path.length) →
                           typeAExitOneReturn.At current) →
                         ((∀ (packing : Finset (Finset current.object.Vertex)),
                               Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
@@ -6706,14 +6772,11 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                                 ∀
                                                   outside ∈
                                                     Graph.VisibleEntry.completionPorts current.object piece receiver,
-                                                  data.dischargeScale ≤
-                                                      (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                                                          data.threshold receiver outside).card →
-                                                    ∀
-                                                      (return' :
-                                                        Graph.VisibleEntry.AnchoredReturn current.object receiver
-                                                          outside),
-                                                      ¬Graph.ShiftedCycleLength data.LengthOK return'.path.length) →
+                                                  ∀
+                                                    (return' :
+                                                      Graph.VisibleEntry.AnchoredReturn current.object receiver
+                                                        outside),
+                                                    ¬Graph.ShiftedCycleLength data.LengthOK return'.path.length) →
                             typeAExitOneFree.At current) →
                           typeAExitOneReturn ∉ known →
                             typeAExitOneFree ∉ known →
@@ -6772,18 +6835,8 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                     Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
                                         data.dischargeScale ∧
                                       Graph.FiniteObject.ambientSurplus current.object piece data.threshold = 0 ∧
-                                        ∃ receiver,
-                                          Graph.FiniteObject.IsReceiver current.object piece data.threshold receiver ∧
-                                            Graph.FiniteObject.Saturated current.object piece data.threshold
-                                                data.dischargeScale receiver ∧
-                                              ∃
-                                                outside ∈
-                                                  Graph.VisibleEntry.completionPorts current.object piece receiver,
-                                                data.dischargeScale ≤
-                                                    (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                                                        data.threshold receiver outside).card ∧
-                                                  Graph.WindowLabelCollision.LabelCollision current.object
-                                                    data.windowOrder data.LengthOK packing) →
+                                        Graph.WindowLabelCollision.LabelCollision current.object data.windowOrder
+                                          data.LengthOK packing) →
                           typeAExitThreeCollision.At current) →
                         ((∀ (packing : Finset (Finset current.object.Vertex)),
                               Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
@@ -6795,18 +6848,8 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                       Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
                                           data.dischargeScale →
                                         Graph.FiniteObject.ambientSurplus current.object piece data.threshold = 0 →
-                                          ∀ (receiver : current.object.Vertex),
-                                            Graph.FiniteObject.IsReceiver current.object piece data.threshold receiver →
-                                              Graph.FiniteObject.Saturated current.object piece data.threshold
-                                                  data.dischargeScale receiver →
-                                                ∀
-                                                  outside ∈
-                                                    Graph.VisibleEntry.completionPorts current.object piece receiver,
-                                                  data.dischargeScale ≤
-                                                      (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                                                          data.threshold receiver outside).card →
-                                                    Graph.WindowLabelCollision.LabelCollisionFree current.object
-                                                      data.windowOrder data.LengthOK packing) →
+                                          Graph.WindowLabelCollision.LabelCollisionFree current.object data.windowOrder
+                                            data.LengthOK packing) →
                             typeAExitThreeFree.At current) →
                           typeAExitThreeCollision ∉ known →
                             typeAExitThreeFree ∉ known →
@@ -6872,11 +6915,8 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                               ∃
                                                 outside ∈
                                                   Graph.VisibleEntry.completionPorts current.object piece receiver,
-                                                data.dischargeScale ≤
-                                                    (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                                                        data.threshold receiver outside).card ∧
-                                                  Graph.VisibleEntry.ExitTwoThrough current.object piece data.LengthOK
-                                                    receiver outside) →
+                                                Graph.VisibleEntry.ExitTwoThrough current.object piece data.LengthOK
+                                                  receiver outside) →
                           typeAExitTwoTheta.At current) →
                         ((∀ (packing : Finset (Finset current.object.Vertex)),
                               Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
@@ -6895,11 +6935,8 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                                 ∀
                                                   outside ∈
                                                     Graph.VisibleEntry.completionPorts current.object piece receiver,
-                                                  data.dischargeScale ≤
-                                                      (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                                                          data.threshold receiver outside).card →
-                                                    ¬Graph.VisibleEntry.ExitTwoThrough current.object piece
-                                                        data.LengthOK receiver outside) →
+                                                  ¬Graph.VisibleEntry.ExitTwoThrough current.object piece data.LengthOK
+                                                      receiver outside) →
                             typeAExitTwoFree.At current) →
                           typeAExitTwoTheta ∉ known →
                             typeAExitTwoFree ∉ known →

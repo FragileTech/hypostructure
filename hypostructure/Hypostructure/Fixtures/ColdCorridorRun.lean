@@ -72,19 +72,19 @@ theorem run_audit_contains_cold_facts
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected coldKeys) :
-    ∀ fact ∈ [`Hypostructure.Graph.Strategy.Spine.coldCorridorState,
-        `Hypostructure.Graph.Strategy.Spine.coldSameInterfaceTable,
-        `Hypostructure.Graph.Strategy.Spine.coldGermRealized,
-        `Hypostructure.Graph.Strategy.Spine.coldGermDistinguished,
-        `Hypostructure.Graph.Strategy.Spine.coldGermSilent,
-        `Hypostructure.Graph.Strategy.Spine.coldFailureCycle,
-        `Hypostructure.Graph.Strategy.Spine.coldFailureDefect,
-        `Hypostructure.Graph.Strategy.Spine.coldFailureCompression,
-        `Hypostructure.Graph.Strategy.Spine.coldFailureHandoff,
-        `Hypostructure.Graph.Strategy.Spine.coldFailureRouting,
-        `Hypostructure.Graph.Strategy.Spine.coldHandoffTransfer,
-        `Hypostructure.Graph.Strategy.Spine.coldGermExtraction,
-        `Hypostructure.Graph.Strategy.Spine.coldBranchClosed],
+    ∀ fact ∈ [(name .coldCorridorState),
+        (name .coldSameInterfaceTable),
+        (name .coldGermRealized),
+        (name .coldGermDistinguished),
+        (name .coldGermSilent),
+        (name .coldFailureCycle),
+        (name .coldFailureDefect),
+        (name .coldFailureCompression),
+        (name .coldFailureHandoff),
+        (name .coldFailureRouting),
+        (name .coldHandoffTransfer),
+        (name .coldGermExtraction),
+        (name .coldBranchClosed)],
       fact ∈ (ExactLedger.audit history).facts := by
   intro fact member
   simp only [List.mem_cons, List.not_mem_nil, or_false] at member
