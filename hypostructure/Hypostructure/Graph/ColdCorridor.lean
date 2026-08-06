@@ -1199,10 +1199,21 @@ structure BoundedGerm (S : DeclaredSignature)
   /-- The replacement meets the standing baseline. -/
   baseline :
     Baseline (glue canonical (rowAtom object support connected proper).outside)
-  /-- The carried window labels and target-response profile. -/
+  /-- **(T1)--(T4), carried.**  `def:cold-bounded-germ`: the germ "also carries
+  the inherited boundary degree profile, `P₁₃`-window labels, and target-response
+  profile".  Carried, and nothing more: `Record` is exactly that tuple, and
+  `Fintype (Record S)` is what the definition uses it for -- *"there are only
+  finitely many germ types"*.
+
+  The definition states no invariant tying `record.truth` back to `Target`.  An
+  earlier reading asserted one, in the form `∀ outside, record.truth = true ↔
+  Target (glue canonical outside)`; that is constancy of the canonical
+  representative's target truth across *every* completion, which no germ of a
+  cycle target satisfies, and it left this structure uninhabited -- which is why
+  nothing in the tree ever built a germ.  The semantic content of (T4) belongs
+  where the branch actually reads it, `.coldCorridorState`, not to a field
+  here. -/
   record : Record S
-  /-- The recorded truth value, at this germ's own completions. -/
-  record_truth : ∀ outside, record.truth = true ↔ Target (glue canonical outside)
 
 namespace BoundedGerm
 
