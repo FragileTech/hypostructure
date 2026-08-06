@@ -137,6 +137,26 @@ and one refinement transport.  This is the formal reason same-named schema
 spoofing is impossible and every upstream fact remains applicable on a
 descendant.  A fact that is not refinement-stable cannot be a ledger fact.
 
+Adding a key to `Graph.Strategy.Spine.Key` means six entries, all in
+`SpineVocabulary.lean`: the `Holds` branch, `label`, `idx`, `ofIdx`, `name`, and
+a `LabelPins` line.  Omitting any one is a compile error, never a silent gap.
+Give `idx` the next unused number and never renumber an existing key, including
+when the new constructor is inserted mid-list: the audit name carries the index,
+so renumbering rewrites the emitted names of unrelated facts.  `label` is the
+constructor's own name, which is what its `LabelPins` line pins.  Keep `name`
+written out as a literal `.num (.str ... "label") idx`; spelling it out is what
+lets a downstream audit proof unfold it once instead of three times, and
+`name_eq` is what ties the spelling back to `label` and `idx`.
+
+Injectivity of the audit names comes from the index, through `ofIdx_idx`,
+`idx_injective`, and `name_eq`.  A duplicated or missing index fails to
+elaborate.  Never prove `name_injective` by case analysis over pairs of keys: it
+is quadratic in the vocabulary size and will not survive the rows still to come.
+
+Name a fact in an audit assertion as `(name .key)`, never as a `Lean.Name`
+literal, so the assertion is indifferent to how a name is spelled.  Rule names
+passed to `factOnly` stay literal -- those are strategy labels, not facts.
+
 The sole exception is framework-owned first-scope initialization: it accepts
 only an `ExactLedger ... []`, publishes the first nonempty fact bundle, and is
 therefore impossible after any fact or commit exists.  It is used for the
