@@ -3664,8 +3664,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             ∀ family : Finset (Finset (object.Vertex × object.Vertex)),
               (activation.pairFamily family).card = family.card) ∧
         (∀ spineCount freeCount deficit : Nat,
-          Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
-            object.edgeCount →
+          -- `m₀ ≤ m` is *not* a hypothesis: `[126]`'s slack identity
+          -- `2m = δn + σ` and `[19]`'s positive surplus give it, and the row
+          -- reads both by exact key.
           2 ^ (spineCount + freeCount) ≤ Graph.skeletonBudget object →
           Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
             2 ^ (spineCount + deficit) →

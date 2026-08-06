@@ -83,8 +83,11 @@ exactly the raw hypothesis `TightVertexSuppression` asks for. -/
 ledger. -/
 @[reducible] noncomputable def canonicalPairLedger :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  canonicalPairLedgerRow (K .activeSurplusFamily) (K .canonicalPairLedger)
-    (by simp) (fun _input value => ⟨value⟩)
+  canonicalPairLedgerRow (K .activeSurplusFamily) (K .sparseSlackSurplus)
+    (K .surplusAbove) (K .canonicalPairLedger)
+    (by simp) (by simp) (by simp) (by simp)
+    (fun _input fact => fact.down) (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
 
 /-- Node `[132]`: `lem:sparse-pair-dependence-exit`'s own disjunction.  The exit
 arm is node `[133]` and the blocker arm opens the canonical blocker ledger
@@ -320,6 +323,18 @@ abbrev bottleneckKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .bottleneckRouting :: K .homogeneousBottleneckPattern :: audited
 
+/-- Node `[144]`'s bottleneck arm, with `[70]`'s source-free cap committed: the
+entry index of the local Type B fan ledger.
+
+`thm:homogeneous-overload-geometric-closure` routes the decorated Type B handoff
+fan data of a role-homogeneous same-token bottleneck *into the Type B fan
+ledger*, and `prop:fan-closed-port-typeB-routing` says that ledger is entered at
+node `[72]`.  This is that entry. -/
+abbrev bottleneckFanKeys
+    (audited : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .fanCertificateCap :: bottleneckKeys audited
+
 /-- **The exit of the sparse activation block: `[125]`--`[144]`, closed.**
 
 Eight constructors.  `sparsePairExit` is node `[133]`: node `[132]`'s exit arm,
@@ -352,20 +367,20 @@ inductive SurplusResult
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (capsClosedKeys (windowAuditKeys known)))
   | windowBottleneck
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (bottleneckKeys (windowAuditKeys known)))
+      (result : TypeBFanLedgerResult selected
+        (bottleneckFanKeys (windowAuditKeys known)))
   | remainderCapsClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (capsClosedKeys (remainderAuditKeys known)))
   | remainderBottleneck
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (bottleneckKeys (remainderAuditKeys known)))
+      (result : TypeBFanLedgerResult selected
+        (bottleneckFanKeys (remainderAuditKeys known)))
   | primitiveCapsClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (capsClosedKeys (primitiveAuditKeys known)))
   | primitiveBottleneck
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (bottleneckKeys (primitiveAuditKeys known)))
+      (result : TypeBFanLedgerResult selected
+        (bottleneckFanKeys (primitiveAuditKeys known)))
 
 /-- **Nodes `[126]`--`[144]`, run.**
 
@@ -414,7 +429,19 @@ noncomputable def runSparseActivation
     (capsHoldFresh : K (data := data) .homogeneousCapsHold ∉ known)
     (patternFresh : K (data := data) .homogeneousBottleneckPattern ∉ known)
     (routingFresh : K (data := data) .bottleneckRouting ∉ known)
-    (bottleneckFresh : K (data := data) .homogeneousBottleneck ∉ known) :
+    (bottleneckFresh : K (data := data) .homogeneousBottleneck ∉ known)
+    (capFresh : K (data := data) .fanCertificateCap ∉ known)
+    (markedFresh : K (data := data) .fanCertificateMarked ∉ known)
+    (certResidualFresh : K (data := data) .fanCertificateResidual ∉ known)
+    (cycleFresh : K (data := data) .typeBDirectCycle ∉ known)
+    (cycleFreeFresh : K (data := data) .typeBDirectCycleFree ∉ known)
+    (assignmentFresh : K (data := data) .typeBDisjointAssignment ∉ known)
+    (obstructionFresh : K (data := data) .typeBOverlapObstruction ∉ known)
+    (hybridFresh : K (data := data) .typeBHybridEntry ∉ known)
+    (chargeFresh : K (data := data) .typeBExclusionCharge ∉ known)
+    (excludedFresh : K (data := data) .typeBExcluded ∉ known)
+    (exclusionResidualFresh : K (data := data) .typeBExclusionResidual ∉ known)
+    (massFresh : K (data := data) .typeBBridgeMass ∉ known) :
     SurplusResult current known := by
   classical
   have afterSlack :=
@@ -526,7 +553,23 @@ noncomputable def runSparseActivation
                   subst isNew
                   revert isOld
                   simp [routingFresh])
-              exact .windowBottleneck afterRouting
+              -- `thm:homogeneous-overload-geometric-closure`: the decorated
+              -- Type B handoff fan data is routed into the Type B fan ledger,
+              -- which `prop:fan-closed-port-typeB-routing` enters at `[72]`.
+              exact .windowBottleneck
+                (runTypeBFanLedger
+                  ((fanCertificateCap (data := data)).run afterRouting (by
+                    intro key isNew isOld
+                    simp only [List.mem_singleton] at isNew
+                    subst isNew
+                    revert isOld
+                    simp [capFresh]))
+                  (by simp [markedFresh]) (by simp [certResidualFresh])
+                  (by simp [cycleFresh]) (by simp [cycleFreeFresh])
+                  (by simp [assignmentFresh]) (by simp [obstructionFresh])
+                  (by simp [hybridFresh]) (by simp [chargeFresh])
+                  (by simp [excludedFresh]) (by simp [exclusionResidualFresh])
+                  (by simp [massFresh]) (by simp [closureFresh]))
       | .right freeHistory =>
           -- Node `[141]`: is it a remainder-surplus token?
           match remainderClassDichotomy freeHistory (K .remainderClassOverload)
@@ -562,7 +605,23 @@ noncomputable def runSparseActivation
                   subst isNew
                   revert isOld
                   simp [routingFresh])
-              exact .remainderBottleneck afterRouting
+              -- `thm:homogeneous-overload-geometric-closure`: the decorated
+              -- Type B handoff fan data is routed into the Type B fan ledger,
+              -- which `prop:fan-closed-port-typeB-routing` enters at `[72]`.
+              exact .remainderBottleneck
+                (runTypeBFanLedger
+                  ((fanCertificateCap (data := data)).run afterRouting (by
+                    intro key isNew isOld
+                    simp only [List.mem_singleton] at isNew
+                    subst isNew
+                    revert isOld
+                    simp [capFresh]))
+                  (by simp [markedFresh]) (by simp [certResidualFresh])
+                  (by simp [cycleFresh]) (by simp [cycleFreeFresh])
+                  (by simp [assignmentFresh]) (by simp [obstructionFresh])
+                  (by simp [hybridFresh]) (by simp [chargeFresh])
+                  (by simp [excludedFresh]) (by simp [exclusionResidualFresh])
+                  (by simp [massFresh]) (by simp [closureFresh]))
           | .right primitiveHistory =>
               have afterAudit :=
                 (primitiveCarrierAudit (data := data)).run primitiveHistory (by
@@ -592,7 +651,23 @@ noncomputable def runSparseActivation
                   subst isNew
                   revert isOld
                   simp [routingFresh])
-              exact .primitiveBottleneck afterRouting
+              -- `thm:homogeneous-overload-geometric-closure`: the decorated
+              -- Type B handoff fan data is routed into the Type B fan ledger,
+              -- which `prop:fan-closed-port-typeB-routing` enters at `[72]`.
+              exact .primitiveBottleneck
+                (runTypeBFanLedger
+                  ((fanCertificateCap (data := data)).run afterRouting (by
+                    intro key isNew isOld
+                    simp only [List.mem_singleton] at isNew
+                    subst isNew
+                    revert isOld
+                    simp [capFresh]))
+                  (by simp [markedFresh]) (by simp [certResidualFresh])
+                  (by simp [cycleFresh]) (by simp [cycleFreeFresh])
+                  (by simp [assignmentFresh]) (by simp [obstructionFresh])
+                  (by simp [hybridFresh]) (by simp [chargeFresh])
+                  (by simp [excludedFresh]) (by simp [exclusionResidualFresh])
+                  (by simp [massFresh]) (by simp [closureFresh]))
 
 /-- **The sparse surplus branch, entered from the entry spine's own exit.**
 
@@ -609,13 +684,15 @@ noncomputable def runSurplusBranch
     SurplusResult selected
       (surplusAboveKeys (BranchState := BranchState)
         (presentation := presentation) (data := data)) :=
-  runSparseActivation history (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
+  runSparseActivation history (by simp) (by simp) (by simp)
     (by simp) (by simp) (by simp) (by simp) (by simp)
     (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp)
-
+    (by simp) (by simp) (by simp) (by simp) (by simp)
+    (by simp) (by simp) (by simp) (by simp) (by simp)
+    (by simp) (by simp) (by simp) (by simp) (by simp)
+    (by simp) (by simp) (by simp) (by simp) (by simp)
+    (by simp) (by simp) (by simp) (by simp) (by simp)
+    (by simp) (by simp) (by simp) (by simp)
 /-! ## The branch, attached to the entry spine
 
 `Spine.run` leaves node `[19]`'s above arm as `Spine.Result.surplusAbove` and

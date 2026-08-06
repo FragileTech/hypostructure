@@ -389,9 +389,21 @@ the entropy count and the baseline demand — which is the discipline
 sparse-envelope bound uses.  Nothing supplies a callback: every hypothesis is a
 statement the branch either already carries or is about to derive. -/
 @[reducible] noncomputable def canonicalPairLedgerRow
-    (activeSurplusFamily canonicalPairLedger :
+    (activeSurplusFamily sparseSlackSurplus surplusAbove canonicalPairLedger :
       FactKey (Input BranchState Presentation presentation data))
     (distinct : activeSurplusFamily ≠ canonicalPairLedger)
+    (familyNeSlack : activeSurplusFamily ≠ sparseSlackSurplus)
+    (familyNeAbove : activeSurplusFamily ≠ surplusAbove)
+    (slackNeAbove : sparseSlackSurplus ≠ surplusAbove)
+    (slackOf : (input : Input BranchState Presentation presentation data) →
+      sparseSlackSurplus.At input →
+      2 * input.object.edgeCount =
+        data.threshold * input.object.vertexCount +
+          input.object.degreeSurplus data.threshold)
+    (aboveOf : (input : Input BranchState Presentation presentation data) →
+      surplusAbove.At input →
+      data.surplusThreshold input.object.vertexCount <
+        input.object.degreeSurplus data.threshold)
     (encode : (input : Input BranchState Presentation presentation data) →
       ((input.object.portPairSchedule data.threshold).card =
           (input.object.degreeSurplus data.threshold).choose 2 ∧
@@ -431,8 +443,6 @@ statement the branch either already carries or is about to derive. -/
         -- `prop:sparse-entropy-sandwich`, its blocked refinement, and
         -- `cor:sparse-pair-entropy-saturation`.
         (∀ spineCount freeCount deficit : Nat,
-          Graph.cubicBaselineEdgeCount input.object.vertexCount data.threshold ≤
-            input.object.edgeCount →
           2 ^ (spineCount + freeCount) ≤ Graph.skeletonBudget input.object →
           Graph.cubicBaselineBudget input.object.vertexCount data.threshold ≤
             2 ^ (spineCount + deficit) →
@@ -449,9 +459,20 @@ statement the branch either already carries or is about to derive. -/
       canonicalPairLedger.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.canonicalPairLedger
-    (rowManifest activeSurplusFamily canonicalPairLedger distinct)
+    { Requires := [activeSurplusFamily, sparseSlackSurplus, surplusAbove]
+      Produces := [canonicalPairLedger]
+      requiresUnique := by simp [familyNeSlack, familyNeAbove, slackNeAbove]
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let object := inputs.current.object
+      -- `m₀ ≤ m`, read off `[126]` and `[19]` rather than assumed.
+      let above : Graph.cubicBaselineEdgeCount inputs.current.object.vertexCount
+          data.threshold ≤ inputs.current.object.edgeCount := by
+        have slack := slackOf inputs.current (inputs.get sparseSlackSurplus)
+        have positive := aboveOf inputs.current (inputs.get surplusAbove)
+        unfold Graph.cubicBaselineEdgeCount
+        omega
       let baseline : ∀ vertex : object.Vertex,
           data.threshold ≤ object.degree vertex :=
         fun vertex => le_trans inputs.current.baseline
@@ -478,7 +499,7 @@ statement the branch either already carries or is about to derive. -/
                       Graph.FiniteObject.DemandActivation.mem_pairBoundary_iff
                         object _ vertex⟩,
                 fun family => activation.card_pairFamily family⟩,
-            fun _spineCount _freeCount _deficit above entropy demand =>
+            fun _spineCount _freeCount _deficit entropy demand =>
               Graph.entropySandwich object two_le above entropy demand,
             fun entropy =>
               (Graph.FiniteObject.card_portPairSchedule baseline) ▸ entropy⟩)
