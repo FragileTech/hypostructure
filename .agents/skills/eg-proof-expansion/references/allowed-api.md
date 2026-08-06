@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **429**.
+Compiled declarations: **432**.
 
-Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 57, **Minimum-degree cycle spine vocabulary** 182.
+Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 57, **Minimum-degree cycle spine vocabulary** 185.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -5039,21 +5039,6 @@ Graph.Strategy.Spine.Key
                         contextUniversal ∉ known → Core.Strategy.Decision contextDefect contextUniversal previous
 ```
 
-### `Hypostructure.Graph.Strategy.SpineVocabulary`
-
-#### `Hypostructure.Graph.Strategy.Spine.ctorIdx_injective`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Function.Injective Graph.Strategy.Spine.Key.ctorIdx
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows`
-
 #### `Hypostructure.Graph.Strategy.Spine.curvatureRankDichotomy`
 
 - Category: Minimum-degree cycle spine rows
@@ -5868,6 +5853,28 @@ Function.Injective Graph.Strategy.Spine.Key.ctorIdx
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
+#### `Hypostructure.Graph.Strategy.Spine.idx`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.idx_injective`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Function.Injective Graph.Strategy.Spine.idx
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.instDecidableEqKey`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6351,6 +6358,32 @@ Function.Injective Graph.Strategy.Spine.name
                       maximalPacking.At input) →
                   Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.ofIdx`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+ℕ → Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.ofIdx_idx`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (k : Graph.Strategy.Spine.Key), Graph.Strategy.Spine.ofIdx (Graph.Strategy.Spine.idx k) = k
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.orderThresholdDichotomy`
 

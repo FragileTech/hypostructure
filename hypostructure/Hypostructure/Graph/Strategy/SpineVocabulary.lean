@@ -3452,6 +3452,138 @@ def label : Key → String
   | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
   | .activeSurplusDemands => "activeSurplusDemands"
 
+/-! ### Label pins
+
+Every audit label is the constructor's own name.  `label` is checked for
+totality by the elaborator and the numbering below is pinned by `idx`, but
+nothing forces the two to agree, so each pairing is stated here.  Each is a
+constant-time `rfl`, and together they rule out a mistyped or duplicated
+label. -/
+
+section LabelPins
+example : label .selection = "selection" := rfl
+example : label .returnAvoidance = "returnAvoidance" := rfl
+example : label .noProperBaseline = "noProperBaseline" := rfl
+example : label .tightEndpoint = "tightEndpoint" := rfl
+example : label .slackIndependent = "slackIndependent" := rfl
+example : label .uncompressible = "uncompressible" := rfl
+example : label .maximalPacking = "maximalPacking" := rfl
+example : label .localAlgebra = "localAlgebra" := rfl
+example : label .surplusAbove = "surplusAbove" := rfl
+example : label .surplusAtOrBelow = "surplusAtOrBelow" := rfl
+example : label .barrierCap = "barrierCap" := rfl
+example : label .barrierOverflow = "barrierOverflow" := rfl
+example : label .densityCap = "densityCap" := rfl
+example : label .remainderNormalized = "remainderNormalized" := rfl
+example : label .boundaryDemand = "boundaryDemand" := rfl
+example : label .stubSupply = "stubSupply" := rfl
+example : label .wedgeSupply = "wedgeSupply" := rfl
+example : label .curvatureDemandFloor = "curvatureDemandFloor" := rfl
+example : label .curvatureTargetRank = "curvatureTargetRank" := rfl
+example : label .curvatureRankDrop = "curvatureRankDrop" := rfl
+example : label .curvatureFullRank = "curvatureFullRank" := rfl
+example : label .branchDependence = "branchDependence" := rfl
+example : label .contextUniversal = "contextUniversal" := rfl
+example : label .contextDefect = "contextDefect" := rfl
+example : label .atomCompression = "atomCompression" := rfl
+example : label .delocalizedSupport = "delocalizedSupport" := rfl
+example : label .properDelocalization = "properDelocalization" := rfl
+example : label .globalDelocalization = "globalDelocalization" := rfl
+example : label .repairIdentity = "repairIdentity" := rfl
+example : label .globalBarrier = "globalBarrier" := rfl
+example : label .coldCorridorState = "coldCorridorState" := rfl
+example : label .coldSameInterfaceTable = "coldSameInterfaceTable" := rfl
+example : label .coldGermRealized = "coldGermRealized" := rfl
+example : label .coldGermDistinguished = "coldGermDistinguished" := rfl
+example : label .coldGermSilent = "coldGermSilent" := rfl
+example : label .coldFailureCycle = "coldFailureCycle" := rfl
+example : label .coldFailureDefect = "coldFailureDefect" := rfl
+example : label .coldFailureCompression = "coldFailureCompression" := rfl
+example : label .coldFailureHandoff = "coldFailureHandoff" := rfl
+example : label .coldFailureRouting = "coldFailureRouting" := rfl
+example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
+example : label .coldGermExtraction = "coldGermExtraction" := rfl
+example : label .coldBranchClosed = "coldBranchClosed" := rfl
+example : label .highCentreNormalForm = "highCentreNormalForm" := rfl
+example : label .typeBHeavyCentre = "typeBHeavyCentre" := rfl
+example : label .typeBDegreeFourCentres = "typeBDegreeFourCentres" := rfl
+example : label .typeBLocalDichotomy = "typeBLocalDichotomy" := rfl
+example : label .fanCertificateCap = "fanCertificateCap" := rfl
+example : label .fanCertificateMarked = "fanCertificateMarked" := rfl
+example : label .fanCertificateResidual = "fanCertificateResidual" := rfl
+example : label .typeBDegreeFourProfile = "typeBDegreeFourProfile" := rfl
+example : label .typeBHybridEntry = "typeBHybridEntry" := rfl
+example : label .typeBDirectCycle = "typeBDirectCycle" := rfl
+example : label .typeBDirectCycleFree = "typeBDirectCycleFree" := rfl
+example : label .typeBDisjointAssignment = "typeBDisjointAssignment" := rfl
+example : label .typeBOverlapObstruction = "typeBOverlapObstruction" := rfl
+example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
+example : label .typeBExclusionCharge = "typeBExclusionCharge" := rfl
+example : label .typeBExcluded = "typeBExcluded" := rfl
+example : label .typeBExclusionResidual = "typeBExclusionResidual" := rfl
+example : label .windowPackageSeparated = "windowPackageSeparated" := rfl
+example : label .windowPackageCollided = "windowPackageCollided" := rfl
+example : label .forcedCurvatureCost = "forcedCurvatureCost" := rfl
+example : label .remainderEntropyHigh = "remainderEntropyHigh" := rfl
+example : label .remainderEntropyLow = "remainderEntropyLow" := rfl
+example : label .entropyPackageDemand = "entropyPackageDemand" := rfl
+example : label .entropyCapActive = "entropyCapActive" := rfl
+example : label .largeBudgetResidual = "largeBudgetResidual" := rfl
+example : label .largeOrderResidual = "largeOrderResidual" := rfl
+example : label .smallOrderResidual = "smallOrderResidual" := rfl
+example : label .netDeficiencyCap = "netDeficiencyCap" := rfl
+example : label .netChargeLocalization = "netChargeLocalization" := rfl
+example : label .netChargeNonNegative = "netChargeNonNegative" := rfl
+example : label .netChargeNegative = "netChargeNegative" := rfl
+example : label .windowJoinPressure = "windowJoinPressure" := rfl
+example : label .negativeSupport = "negativeSupport" := rfl
+example : label .typeALowSurplus = "typeALowSurplus" := rfl
+example : label .typeBHighSurplus = "typeBHighSurplus" := rfl
+example : label .typeAReceiverRouting = "typeAReceiverRouting" := rfl
+example : label .typeASaturatedReceiver = "typeASaturatedReceiver" := rfl
+example : label .typeAUnsaturatedReceivers = "typeAUnsaturatedReceivers" := rfl
+example : label .typeAVisibleEntry = "typeAVisibleEntry" := rfl
+example : label .typeAVisibleFirstExcess = "typeAVisibleFirstExcess" := rfl
+example : label .typeAExitOneReturn = "typeAExitOneReturn" := rfl
+example : label .typeAExitOneFree = "typeAExitOneFree" := rfl
+example : label .typeAExitTwoTheta = "typeAExitTwoTheta" := rfl
+example : label .typeAExitTwoFree = "typeAExitTwoFree" := rfl
+example : label .typeAExitThreeCollision = "typeAExitThreeCollision" := rfl
+example : label .typeAExitThreeFree = "typeAExitThreeFree" := rfl
+example : label .typeAExitFourPeel = "typeAExitFourPeel" := rfl
+example : label .typeAExitFourNoPeel = "typeAExitFourNoPeel" := rfl
+example : label .typeAPeeledCharge = "typeAPeeledCharge" := rfl
+example : label .typeAExitFiveCompression = "typeAExitFiveCompression" := rfl
+example : label .typeAExitFiveTraceLevel = "typeAExitFiveTraceLevel" := rfl
+example : label .typeAExitFour = "typeAExitFour" := rfl
+example : label .typeAExitFourFree = "typeAExitFourFree" := rfl
+example : label .typeAExitFive = "typeAExitFive" := rfl
+example : label .typeAExitFiveFree = "typeAExitFiveFree" := rfl
+example : label .typeAExitSix = "typeAExitSix" := rfl
+example : label .typeAExitSixFree = "typeAExitSixFree" := rfl
+example : label .typeAExitSixProper = "typeAExitSixProper" := rfl
+example : label .typeAExitSixGlobal = "typeAExitSixGlobal" := rfl
+example : label .route8Residual = "route8Residual" := rfl
+example : label .route8Free = "route8Free" := rfl
+example : label .route8Burden = "route8Burden" := rfl
+example : label .route8CarrierCore = "route8CarrierCore" := rfl
+example : label .route8Census = "route8Census" := rfl
+example : label .route8Descent = "route8Descent" := rfl
+example : label .route8Closed = "route8Closed" := rfl
+example : label .sparseSlackSurplus = "sparseSlackSurplus" := rfl
+example : label .activeSurplusFamily = "activeSurplusFamily" := rfl
+example : label .sparsePortActivation = "sparsePortActivation" := rfl
+example : label .baselineSpineDemand = "baselineSpineDemand" := rfl
+example : label .canonicalPairLedger = "canonicalPairLedger" := rfl
+example : label .capacityTokenLedger = "capacityTokenLedger" := rfl
+example : label .roleFibrePartition = "roleFibrePartition" := rfl
+example : label .fibrePressure = "fibrePressure" := rfl
+example : label .bottleneckClassification = "bottleneckClassification" := rfl
+example : label .homogeneousBottleneck = "homogeneousBottleneck" := rfl
+example : label .sparseSurplusSurvivor = "sparseSurplusSurvivor" := rfl
+example : label .activeSurplusDemands = "activeSurplusDemands" := rfl
+end LabelPins
+
 /-- The value schema at a residual: the object-level statement, read at the
 residual's own object. -/
 def Value (BranchState : Graph.FiniteObject.{u} → Type v)
@@ -3461,20 +3593,273 @@ def Value (BranchState : Graph.FiniteObject.{u} → Type v)
       (problem BranchState Presentation presentation data)) : Type :=
   PLift (Holds BranchState Presentation presentation data k input.object)
 
-/-- The constructor index is injective: `deriving DecidableEq` on `Key` emits
-both `Key.ofNat` and `Key.ofNat_ctorIdx`, which is exactly a left inverse. -/
-theorem ctorIdx_injective : Function.Injective Key.ctorIdx :=
-  Function.LeftInverse.injective Key.ofNat_ctorIdx
+/-- The audit index of a key.  It is written out rather than taken from
+`Key.ctorIdx` so that inserting or reordering a constructor cannot silently
+renumber the audit names an earlier run emitted. -/
+def idx : Key → Nat
+  | .selection => 0
+  | .returnAvoidance => 1
+  | .noProperBaseline => 2
+  | .tightEndpoint => 3
+  | .slackIndependent => 4
+  | .uncompressible => 5
+  | .maximalPacking => 6
+  | .localAlgebra => 7
+  | .surplusAbove => 8
+  | .surplusAtOrBelow => 9
+  | .barrierCap => 10
+  | .barrierOverflow => 11
+  | .densityCap => 12
+  | .remainderNormalized => 13
+  | .boundaryDemand => 14
+  | .stubSupply => 15
+  | .wedgeSupply => 16
+  | .curvatureDemandFloor => 17
+  | .curvatureTargetRank => 18
+  | .curvatureRankDrop => 19
+  | .curvatureFullRank => 20
+  | .branchDependence => 21
+  | .contextUniversal => 22
+  | .contextDefect => 23
+  | .atomCompression => 24
+  | .delocalizedSupport => 25
+  | .properDelocalization => 26
+  | .globalDelocalization => 27
+  | .repairIdentity => 28
+  | .globalBarrier => 29
+  | .coldCorridorState => 30
+  | .coldSameInterfaceTable => 31
+  | .coldGermRealized => 32
+  | .coldGermDistinguished => 33
+  | .coldGermSilent => 34
+  | .windowPackageSeparated => 35
+  | .windowPackageCollided => 36
+  | .forcedCurvatureCost => 37
+  | .remainderEntropyHigh => 38
+  | .remainderEntropyLow => 39
+  | .entropyPackageDemand => 40
+  | .entropyCapActive => 41
+  | .largeBudgetResidual => 42
+  | .largeOrderResidual => 43
+  | .smallOrderResidual => 44
+  | .netDeficiencyCap => 45
+  | .netChargeLocalization => 46
+  | .netChargeNonNegative => 47
+  | .netChargeNegative => 48
+  | .windowJoinPressure => 49
+  | .negativeSupport => 50
+  | .typeALowSurplus => 51
+  | .typeBHighSurplus => 52
+  | .typeAReceiverRouting => 53
+  | .typeASaturatedReceiver => 54
+  | .typeAUnsaturatedReceivers => 55
+  | .typeAVisibleEntry => 56
+  | .typeAVisibleFirstExcess => 57
+  | .typeAExitOneReturn => 58
+  | .typeAExitOneFree => 59
+  | .typeAExitTwoTheta => 60
+  | .typeAExitTwoFree => 61
+  | .typeAExitThreeCollision => 62
+  | .typeAExitThreeFree => 63
+  | .coldFailureCycle => 64
+  | .coldFailureDefect => 65
+  | .coldFailureCompression => 66
+  | .coldFailureHandoff => 67
+  | .coldFailureRouting => 68
+  | .coldHandoffTransfer => 69
+  | .coldGermExtraction => 70
+  | .coldBranchClosed => 71
+  | .highCentreNormalForm => 72
+  | .typeBHeavyCentre => 73
+  | .typeBDegreeFourCentres => 74
+  | .typeBLocalDichotomy => 75
+  | .fanCertificateCap => 76
+  | .fanCertificateMarked => 77
+  | .fanCertificateResidual => 78
+  | .typeBDegreeFourProfile => 79
+  | .typeBHybridEntry => 80
+  | .typeBDirectCycle => 81
+  | .typeBDirectCycleFree => 82
+  | .typeBDisjointAssignment => 83
+  | .typeBOverlapObstruction => 84
+  | .typeBBridgeMass => 85
+  | .typeBExclusionCharge => 86
+  | .typeBExcluded => 87
+  | .typeBExclusionResidual => 88
+  | .typeAExitFourPeel => 89
+  | .typeAExitFourNoPeel => 90
+  | .typeAPeeledCharge => 91
+  | .typeAExitFiveCompression => 92
+  | .typeAExitFiveTraceLevel => 93
+  | .typeAExitFour => 94
+  | .typeAExitFourFree => 95
+  | .typeAExitFive => 96
+  | .typeAExitFiveFree => 97
+  | .typeAExitSix => 98
+  | .typeAExitSixFree => 99
+  | .typeAExitSixProper => 100
+  | .typeAExitSixGlobal => 101
+  | .route8Residual => 102
+  | .route8Free => 103
+  | .route8Burden => 104
+  | .route8CarrierCore => 105
+  | .route8Census => 106
+  | .route8Descent => 107
+  | .route8Closed => 108
+  | .sparseSlackSurplus => 109
+  | .activeSurplusFamily => 110
+  | .sparsePortActivation => 111
+  | .baselineSpineDemand => 112
+  | .canonicalPairLedger => 113
+  | .capacityTokenLedger => 114
+  | .roleFibrePartition => 115
+  | .fibrePressure => 116
+  | .bottleneckClassification => 117
+  | .homogeneousBottleneck => 118
+  | .sparseSurplusSurvivor => 119
+  | .activeSurplusDemands => 120
+
+/-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
+two keys sharing an index would make `ofIdx_idx` unprovable. -/
+def ofIdx : Nat → Key
+  | 0 => .selection
+  | 1 => .returnAvoidance
+  | 2 => .noProperBaseline
+  | 3 => .tightEndpoint
+  | 4 => .slackIndependent
+  | 5 => .uncompressible
+  | 6 => .maximalPacking
+  | 7 => .localAlgebra
+  | 8 => .surplusAbove
+  | 9 => .surplusAtOrBelow
+  | 10 => .barrierCap
+  | 11 => .barrierOverflow
+  | 12 => .densityCap
+  | 13 => .remainderNormalized
+  | 14 => .boundaryDemand
+  | 15 => .stubSupply
+  | 16 => .wedgeSupply
+  | 17 => .curvatureDemandFloor
+  | 18 => .curvatureTargetRank
+  | 19 => .curvatureRankDrop
+  | 20 => .curvatureFullRank
+  | 21 => .branchDependence
+  | 22 => .contextUniversal
+  | 23 => .contextDefect
+  | 24 => .atomCompression
+  | 25 => .delocalizedSupport
+  | 26 => .properDelocalization
+  | 27 => .globalDelocalization
+  | 28 => .repairIdentity
+  | 29 => .globalBarrier
+  | 30 => .coldCorridorState
+  | 31 => .coldSameInterfaceTable
+  | 32 => .coldGermRealized
+  | 33 => .coldGermDistinguished
+  | 34 => .coldGermSilent
+  | 35 => .windowPackageSeparated
+  | 36 => .windowPackageCollided
+  | 37 => .forcedCurvatureCost
+  | 38 => .remainderEntropyHigh
+  | 39 => .remainderEntropyLow
+  | 40 => .entropyPackageDemand
+  | 41 => .entropyCapActive
+  | 42 => .largeBudgetResidual
+  | 43 => .largeOrderResidual
+  | 44 => .smallOrderResidual
+  | 45 => .netDeficiencyCap
+  | 46 => .netChargeLocalization
+  | 47 => .netChargeNonNegative
+  | 48 => .netChargeNegative
+  | 49 => .windowJoinPressure
+  | 50 => .negativeSupport
+  | 51 => .typeALowSurplus
+  | 52 => .typeBHighSurplus
+  | 53 => .typeAReceiverRouting
+  | 54 => .typeASaturatedReceiver
+  | 55 => .typeAUnsaturatedReceivers
+  | 56 => .typeAVisibleEntry
+  | 57 => .typeAVisibleFirstExcess
+  | 58 => .typeAExitOneReturn
+  | 59 => .typeAExitOneFree
+  | 60 => .typeAExitTwoTheta
+  | 61 => .typeAExitTwoFree
+  | 62 => .typeAExitThreeCollision
+  | 63 => .typeAExitThreeFree
+  | 64 => .coldFailureCycle
+  | 65 => .coldFailureDefect
+  | 66 => .coldFailureCompression
+  | 67 => .coldFailureHandoff
+  | 68 => .coldFailureRouting
+  | 69 => .coldHandoffTransfer
+  | 70 => .coldGermExtraction
+  | 71 => .coldBranchClosed
+  | 72 => .highCentreNormalForm
+  | 73 => .typeBHeavyCentre
+  | 74 => .typeBDegreeFourCentres
+  | 75 => .typeBLocalDichotomy
+  | 76 => .fanCertificateCap
+  | 77 => .fanCertificateMarked
+  | 78 => .fanCertificateResidual
+  | 79 => .typeBDegreeFourProfile
+  | 80 => .typeBHybridEntry
+  | 81 => .typeBDirectCycle
+  | 82 => .typeBDirectCycleFree
+  | 83 => .typeBDisjointAssignment
+  | 84 => .typeBOverlapObstruction
+  | 85 => .typeBBridgeMass
+  | 86 => .typeBExclusionCharge
+  | 87 => .typeBExcluded
+  | 88 => .typeBExclusionResidual
+  | 89 => .typeAExitFourPeel
+  | 90 => .typeAExitFourNoPeel
+  | 91 => .typeAPeeledCharge
+  | 92 => .typeAExitFiveCompression
+  | 93 => .typeAExitFiveTraceLevel
+  | 94 => .typeAExitFour
+  | 95 => .typeAExitFourFree
+  | 96 => .typeAExitFive
+  | 97 => .typeAExitFiveFree
+  | 98 => .typeAExitSix
+  | 99 => .typeAExitSixFree
+  | 100 => .typeAExitSixProper
+  | 101 => .typeAExitSixGlobal
+  | 102 => .route8Residual
+  | 103 => .route8Free
+  | 104 => .route8Burden
+  | 105 => .route8CarrierCore
+  | 106 => .route8Census
+  | 107 => .route8Descent
+  | 108 => .route8Closed
+  | 109 => .sparseSlackSurplus
+  | 110 => .activeSurplusFamily
+  | 111 => .sparsePortActivation
+  | 112 => .baselineSpineDemand
+  | 113 => .canonicalPairLedger
+  | 114 => .capacityTokenLedger
+  | 115 => .roleFibrePartition
+  | 116 => .fibrePressure
+  | 117 => .bottleneckClassification
+  | 118 => .homogeneousBottleneck
+  | 119 => .sparseSurplusSurvivor
+  | 120 => .activeSurplusDemands
+  | _ => .selection
+
+theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
+  cases k <;> rfl
+
+theorem idx_injective : Function.Injective idx :=
+  Function.LeftInverse.injective ofIdx_idx
 
 /-- Audit names.  They are diagnostics; every routing and lookup decision
-compares exact keys.  The name carries the constructor index as its final
-component, so distinctness is inherited from `ctorIdx_injective` instead of
-being re-derived by a pairwise comparison of the 121 audit labels. -/
+compares exact keys.  The name carries the key's audit index as its final
+component, so distinctness is inherited from `idx_injective` instead of being
+re-derived by a pairwise comparison of the 121 audit labels. -/
 def name (k : Key) : Lean.Name :=
-  .num (.str `Hypostructure.Graph.Strategy.Spine (label k)) k.ctorIdx
+  .num (.str `Hypostructure.Graph.Strategy.Spine (label k)) (idx k)
 
 theorem name_injective : Function.Injective name := fun _ _ same =>
-  ctorIdx_injective (by injection same)
+  idx_injective (by injection same)
 
 /-- The spine's closed fact vocabulary.  Every value depends on the residual
 only through its object, so transport along a refinement is a rewrite. -/
