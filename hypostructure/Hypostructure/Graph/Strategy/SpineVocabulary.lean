@@ -3855,11 +3855,281 @@ theorem idx_injective : Function.Injective idx :=
 compares exact keys.  The name carries the key's audit index as its final
 component, so distinctness is inherited from `idx_injective` instead of being
 re-derived by a pairwise comparison of the 121 audit labels. -/
-def name (k : Key) : Lean.Name :=
-  .num (.str `Hypostructure.Graph.Strategy.Spine (label k)) (idx k)
+def name : Key → Lean.Name
+  | .selection => .num (.str `Hypostructure.Graph.Strategy.Spine "selection") 0
+  | .returnAvoidance =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "returnAvoidance") 1
+  | .noProperBaseline =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "noProperBaseline") 2
+  | .tightEndpoint =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "tightEndpoint") 3
+  | .slackIndependent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "slackIndependent") 4
+  | .uncompressible =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "uncompressible") 5
+  | .maximalPacking =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "maximalPacking") 6
+  | .localAlgebra =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "localAlgebra") 7
+  | .surplusAbove =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "surplusAbove") 8
+  | .surplusAtOrBelow =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "surplusAtOrBelow") 9
+  | .barrierCap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "barrierCap") 10
+  | .barrierOverflow =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "barrierOverflow") 11
+  | .densityCap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "densityCap") 12
+  | .remainderNormalized =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderNormalized") 13
+  | .boundaryDemand =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "boundaryDemand") 14
+  | .stubSupply =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "stubSupply") 15
+  | .wedgeSupply =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "wedgeSupply") 16
+  | .curvatureDemandFloor =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "curvatureDemandFloor") 17
+  | .curvatureTargetRank =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "curvatureTargetRank") 18
+  | .curvatureRankDrop =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "curvatureRankDrop") 19
+  | .curvatureFullRank =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "curvatureFullRank") 20
+  | .branchDependence =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "branchDependence") 21
+  | .contextUniversal =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "contextUniversal") 22
+  | .contextDefect =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "contextDefect") 23
+  | .atomCompression =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "atomCompression") 24
+  | .delocalizedSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "delocalizedSupport") 25
+  | .properDelocalization =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "properDelocalization") 26
+  | .globalDelocalization =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "globalDelocalization") 27
+  | .repairIdentity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "repairIdentity") 28
+  | .globalBarrier =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "globalBarrier") 29
+  | .coldCorridorState =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldCorridorState") 30
+  | .coldSameInterfaceTable =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldSameInterfaceTable") 31
+  | .coldGermRealized =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermRealized") 32
+  | .coldGermDistinguished =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermDistinguished") 33
+  | .coldGermSilent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermSilent") 34
+  | .windowPackageSeparated =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "windowPackageSeparated") 35
+  | .windowPackageCollided =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowPackageCollided") 36
+  | .forcedCurvatureCost =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "forcedCurvatureCost") 37
+  | .remainderEntropyHigh =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderEntropyHigh") 38
+  | .remainderEntropyLow =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderEntropyLow") 39
+  | .entropyPackageDemand =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "entropyPackageDemand") 40
+  | .entropyCapActive =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "entropyCapActive") 41
+  | .largeBudgetResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "largeBudgetResidual") 42
+  | .largeOrderResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "largeOrderResidual") 43
+  | .smallOrderResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "smallOrderResidual") 44
+  | .netDeficiencyCap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "netDeficiencyCap") 45
+  | .netChargeLocalization =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "netChargeLocalization") 46
+  | .netChargeNonNegative =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "netChargeNonNegative") 47
+  | .netChargeNegative =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "netChargeNegative") 48
+  | .windowJoinPressure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowJoinPressure") 49
+  | .negativeSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "negativeSupport") 50
+  | .typeALowSurplus =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeALowSurplus") 51
+  | .typeBHighSurplus =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBHighSurplus") 52
+  | .typeAReceiverRouting =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAReceiverRouting") 53
+  | .typeASaturatedReceiver =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeASaturatedReceiver") 54
+  | .typeAUnsaturatedReceivers =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeAUnsaturatedReceivers") 55
+  | .typeAVisibleEntry =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAVisibleEntry") 56
+  | .typeAVisibleFirstExcess =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeAVisibleFirstExcess") 57
+  | .typeAExitOneReturn =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitOneReturn") 58
+  | .typeAExitOneFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitOneFree") 59
+  | .typeAExitTwoTheta =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitTwoTheta") 60
+  | .typeAExitTwoFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitTwoFree") 61
+  | .typeAExitThreeCollision =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeAExitThreeCollision") 62
+  | .typeAExitThreeFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitThreeFree") 63
+  | .coldFailureCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureCycle") 64
+  | .coldFailureDefect =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureDefect") 65
+  | .coldFailureCompression =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldFailureCompression") 66
+  | .coldFailureHandoff =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureHandoff") 67
+  | .coldFailureRouting =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureRouting") 68
+  | .coldHandoffTransfer =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldHandoffTransfer") 69
+  | .coldGermExtraction =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermExtraction") 70
+  | .coldBranchClosed =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldBranchClosed") 71
+  | .highCentreNormalForm =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highCentreNormalForm") 72
+  | .typeBHeavyCentre =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBHeavyCentre") 73
+  | .typeBDegreeFourCentres =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBDegreeFourCentres") 74
+  | .typeBLocalDichotomy =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBLocalDichotomy") 75
+  | .fanCertificateCap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "fanCertificateCap") 76
+  | .fanCertificateMarked =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "fanCertificateMarked") 77
+  | .fanCertificateResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "fanCertificateResidual") 78
+  | .typeBDegreeFourProfile =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBDegreeFourProfile") 79
+  | .typeBHybridEntry =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBHybridEntry") 80
+  | .typeBDirectCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBDirectCycle") 81
+  | .typeBDirectCycleFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBDirectCycleFree") 82
+  | .typeBDisjointAssignment =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBDisjointAssignment") 83
+  | .typeBOverlapObstruction =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBOverlapObstruction") 84
+  | .typeBBridgeMass =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBBridgeMass") 85
+  | .typeBExclusionCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBExclusionCharge") 86
+  | .typeBExcluded =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBExcluded") 87
+  | .typeBExclusionResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBExclusionResidual") 88
+  | .typeAExitFourPeel =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourPeel") 89
+  | .typeAExitFourNoPeel =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourNoPeel") 90
+  | .typeAPeeledCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledCharge") 91
+  | .typeAExitFiveCompression =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeAExitFiveCompression") 92
+  | .typeAExitFiveTraceLevel =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeAExitFiveTraceLevel") 93
+  | .typeAExitFour =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFour") 94
+  | .typeAExitFourFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourFree") 95
+  | .typeAExitFive =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFive") 96
+  | .typeAExitFiveFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFiveFree") 97
+  | .typeAExitSix =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSix") 98
+  | .typeAExitSixFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixFree") 99
+  | .typeAExitSixProper =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixProper") 100
+  | .typeAExitSixGlobal =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixGlobal") 101
+  | .route8Residual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Residual") 102
+  | .route8Free =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Free") 103
+  | .route8Burden =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Burden") 104
+  | .route8CarrierCore =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8CarrierCore") 105
+  | .route8Census =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Census") 106
+  | .route8Descent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Descent") 107
+  | .route8Closed =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Closed") 108
+  | .sparseSlackSurplus =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sparseSlackSurplus") 109
+  | .activeSurplusFamily =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "activeSurplusFamily") 110
+  | .sparsePortActivation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sparsePortActivation") 111
+  | .baselineSpineDemand =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "baselineSpineDemand") 112
+  | .canonicalPairLedger =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalPairLedger") 113
+  | .capacityTokenLedger =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "capacityTokenLedger") 114
+  | .roleFibrePartition =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "roleFibrePartition") 115
+  | .fibrePressure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "fibrePressure") 116
+  | .bottleneckClassification =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "bottleneckClassification") 117
+  | .homogeneousBottleneck =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "homogeneousBottleneck") 118
+  | .sparseSurplusSurvivor =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "sparseSurplusSurvivor") 119
+  | .activeSurplusDemands =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "activeSurplusDemands") 120
 
-theorem name_injective : Function.Injective name := fun _ _ same =>
-  idx_injective (by injection same)
+/-- The written-out names agree with `label` and `idx`.  `name` is spelled out
+so that reducing it in a downstream audit proof costs one unfolding rather
+than three; this lemma is what ties the spelling back to the two components,
+and it is 121 constant-time `rfl`s. -/
+theorem name_eq (k : Key) :
+    name k
+      = .num (.str `Hypostructure.Graph.Strategy.Spine (label k)) (idx k) := by
+  cases k <;> rfl
+
+theorem name_injective : Function.Injective name := fun a b same =>
+  idx_injective (by
+    rw [name_eq a, name_eq b] at same
+    injection same)
+
 
 /-- The spine's closed fact vocabulary.  Every value depends on the residual
 only through its object, so transport along a refinement is a rewrite. -/
@@ -3873,7 +4143,9 @@ def vocabulary (BranchState : Graph.FiniteObject.{u} → Type v)
   name_injective := name_injective
   -- Spine names end in a numeric component, the reserved closure name in a
   -- string component, so they differ without inspecting the key.
-  name_ne_closure := fun _ h => Lean.Name.noConfusion h
+  name_ne_closure := fun key h => by
+    rw [name_eq key] at h
+    exact Lean.Name.noConfusion h
   Value := Value BranchState Presentation presentation data
   -- Every spine fact is `PLift` of a proposition, so its value type has at
   -- most one inhabitant: the fact is the statement, and the graph it speaks

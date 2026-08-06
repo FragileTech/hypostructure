@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **432**.
+Compiled declarations: **433**.
 
-Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 57, **Minimum-degree cycle spine vocabulary** 185.
+Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 57, **Minimum-degree cycle spine vocabulary** 186.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -6005,6 +6005,19 @@ Graph.Strategy.Spine.Key → String
 
 ```lean
 Graph.Strategy.Spine.Key → Name
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.name_eq`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (k : Graph.Strategy.Spine.Key),
+  Graph.Strategy.Spine.name k =
+    (`Hypostructure.Graph.Strategy.Spine.str (Graph.Strategy.Spine.label k)).num (Graph.Strategy.Spine.idx k)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.name_injective`
