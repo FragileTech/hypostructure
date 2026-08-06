@@ -1,4 +1,5 @@
 import Hypostructure.Graph.ReceiverRouting
+import Hypostructure.Graph.TypeADischarge
 
 /-!
 # Receiver-entry returns, visible loads, and the visible-first excess basin
@@ -105,23 +106,6 @@ theorem card_completionPorts (object : FiniteObject.{u})
       object.internalDegree support receiver := rfl
   unfold completionPorts FiniteObject.missingPorts
   omega
-
-/-- **The receivers of a support.** -/
-noncomputable def receivers (object : FiniteObject.{u})
-    (support : Finset object.Vertex) (threshold : Nat) :
-    Finset object.Vertex := by
-  classical
-  exact support.filter fun vertex =>
-    object.internalDegree support vertex < threshold
-
-theorem mem_receivers (object : FiniteObject.{u})
-    {support : Finset object.Vertex} {threshold : Nat}
-    {vertex : object.Vertex} :
-    vertex ∈ receivers object support threshold ↔
-      object.IsReceiver support threshold vertex := by
-  classical
-  unfold receivers FiniteObject.IsReceiver
-  simp only [Finset.mem_filter]
 
 /-! ## Anchored returns and the first entry
 
@@ -260,7 +244,7 @@ noncomputable def entryPortEdges (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat)
     (receiver : object.Vertex) : Finset (Sym2 object.Vertex) := by
   classical
-  exact ((receivers object support threshold).erase receiver).biUnion
+  exact ((object.receivers support threshold).erase receiver).biUnion
     fun other =>
       (completionPorts object support other).image fun outside =>
         s(outside, other)
@@ -321,7 +305,7 @@ theorem mem_entryPortEdges {support : Finset object.Vertex} {threshold : Nat}
     s(before, entry) ∈ entryPortEdges object support threshold receiver := by
   classical
   refine Finset.mem_biUnion.mpr ⟨entry, ?_, ?_⟩
-  · exact Finset.mem_erase.mpr ⟨different, (mem_receivers object).mpr isReceiver⟩
+  · exact Finset.mem_erase.mpr ⟨different, FiniteObject.mem_receivers.mpr isReceiver⟩
   · exact Finset.mem_image.mpr ⟨before,
       (mem_completionPorts).mpr ⟨adjacency.symm, beforeOutside⟩, rfl⟩
 
@@ -331,13 +315,13 @@ theorem card_entryPortEdges_le (object : FiniteObject.{u})
     (receiver : object.Vertex)
     (baseline : ∀ vertex ∈ support, object.degree vertex = threshold) :
     (entryPortEdges object support threshold receiver).card ≤
-      ∑ other ∈ (receivers object support threshold).erase receiver,
+      ∑ other ∈ (object.receivers support threshold).erase receiver,
         object.missingPorts support threshold other := by
   classical
   refine le_trans (Finset.card_biUnion_le) (Finset.sum_le_sum ?_)
   intro other member
   have isReceiver : object.IsReceiver support threshold other :=
-    (mem_receivers object).mp (Finset.mem_of_mem_erase member)
+    FiniteObject.mem_receivers.mp (Finset.mem_of_mem_erase member)
   refine le_trans (Finset.card_image_le) ?_
   exact le_of_eq
     (card_completionPorts object support threshold (baseline other isReceiver.1))
@@ -743,109 +727,23 @@ degree profile: a vertex of internal degree `i` contributes `1 − s(δ−i)` to
 `|V(X)| − s·def⁺(X)`, which at `δ = 3`, `s = 4` is `1, −3, −7, −11` for
 `i = 3, 2, 1, 0`. -/
 
-/-- **The full vertices of a support**: those spending the whole baseline
-inside it. -/
-noncomputable def fullVertices (object : FiniteObject.{u})
-    (support : Finset object.Vertex) (threshold : Nat) :
-    Finset object.Vertex := by
-  classical
-  exact support.filter fun vertex =>
-    object.internalDegree support vertex = threshold
-
-/-- **A capped support splits into its full vertices and its receivers.**  On a
-support of no ambient surplus no vertex exceeds the baseline, so every vertex is
-one or the other. -/
-theorem card_eq_card_fullVertices_add_card_receivers (object : FiniteObject.{u})
-    (support : Finset object.Vertex) (threshold : Nat)
-    (capped : ∀ vertex ∈ support,
-      object.internalDegree support vertex ≤ threshold) :
-    support.card =
-      (fullVertices object support threshold).card +
-        (receivers object support threshold).card := by
-  classical
-  have partition :
-      (support.filter fun vertex =>
-          object.internalDegree support vertex = threshold).card +
-        (support.filter fun vertex =>
-          ¬ object.internalDegree support vertex = threshold).card =
-      support.card :=
-    Finset.filter_card_add_filter_neg_card_eq_card _
-  have rewriteReceivers :
-      (support.filter fun vertex =>
-          ¬ object.internalDegree support vertex = threshold) =
-        receivers object support threshold := by
-    unfold receivers
-    refine Finset.filter_congr ?_
-    intro vertex member
-    have := capped vertex member
-    omega
-  unfold fullVertices
-  rw [← partition, rewriteReceivers]
-
 /-- **`Σ_{w receiver} q(w) = def⁺(X)`.**  A vertex at or above the baseline has
 no positive deficiency, so the sum over the receivers is the sum over the whole
 support. -/
 theorem sum_missingPorts_eq_positiveDeficiency (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat) :
-    ∑ receiver ∈ receivers object support threshold,
+    ∑ receiver ∈ object.receivers support threshold,
         object.missingPorts support threshold receiver =
       object.positiveDeficiency support threshold := by
   classical
-  unfold FiniteObject.positiveDeficiency receivers FiniteObject.missingPorts
+  unfold FiniteObject.positiveDeficiency FiniteObject.receivers
+    FiniteObject.missingPorts
   refine (Finset.sum_subset (Finset.filter_subset _ _) ?_).symm.symm
   intro vertex member absent
   have : ¬ object.internalDegree support vertex < threshold := by
     intro lt
     exact absent (Finset.mem_filter.mpr ⟨member, lt⟩)
   omega
-
-/-- **`Σ_{w receiver} L(w) = n_δ`.**  The canonical routing assigns every full
-vertex to exactly one receiver, so the routed-load sets partition the full
-vertices. -/
-theorem sum_routedLoad_eq_card_fullVertices (object : FiniteObject.{u})
-    (support : Finset object.Vertex) (threshold : Nat)
-    (routed : ∀ vertex ∈ support,
-      object.internalDegree support vertex = threshold →
-      ∃ receiver : object.Vertex,
-        object.traceReceiver? support threshold vertex = some receiver ∧
-          object.IsReceiver support threshold receiver) :
-    ∑ receiver ∈ receivers object support threshold,
-        object.routedLoad support threshold receiver =
-      (fullVertices object support threshold).card := by
-  classical
-  have disjoint : ∀ left ∈ receivers object support threshold,
-      ∀ right ∈ receivers object support threshold, left ≠ right →
-        Disjoint (object.routedLoads support threshold left)
-          (object.routedLoads support threshold right) := by
-    intro left _ right _ different
-    refine Finset.disjoint_left.mpr ?_
-    intro load leftMember rightMember
-    have leftRouted := ((object.mem_routedLoads).mp leftMember).2.2
-    have rightRouted := ((object.mem_routedLoads).mp rightMember).2.2
-    exact different (Option.some.inj (leftRouted.symm.trans rightRouted))
-  have union :
-      (receivers object support threshold).biUnion
-          (fun receiver => object.routedLoads support threshold receiver) =
-        fullVertices object support threshold := by
-    ext load
-    unfold fullVertices
-    simp only [Finset.mem_biUnion, Finset.mem_filter]
-    constructor
-    · rintro ⟨receiver, _, member⟩
-      obtain ⟨inside, full, _⟩ := (object.mem_routedLoads).mp member
-      exact ⟨inside, full⟩
-    · rintro ⟨inside, full⟩
-      obtain ⟨receiver, route, isReceiver⟩ := routed load inside full
-      exact ⟨receiver, (mem_receivers object).mpr isReceiver,
-        (object.mem_routedLoads).mpr ⟨inside, full, route⟩⟩
-  calc ∑ receiver ∈ receivers object support threshold,
-          object.routedLoad support threshold receiver
-      = ∑ receiver ∈ receivers object support threshold,
-          (object.routedLoads support threshold receiver).card := rfl
-    _ = ((receivers object support threshold).biUnion
-          (fun receiver => object.routedLoads support threshold receiver)).card :=
-        (Finset.card_biUnion disjoint).symm
-    _ = (fullVertices object support threshold).card := by rw [union]
 
 /-- **`lem:typeA-silent-excess-count`.**
 
@@ -877,29 +775,31 @@ theorem card_le_sum_silentExcess_add_positiveDeficiency
         (visibleLoadsAt object support threshold receiver outside).card + 1 ≤
           scale) :
     support.card ≤
-      (∑ receiver ∈ receivers object support threshold,
+      (∑ receiver ∈ object.receivers support threshold,
           (silentExcess object support threshold scale receiver).card) +
         scale * object.positiveDeficiency support threshold := by
   classical
   have perReceiver :
-      ∑ receiver ∈ receivers object support threshold,
+      ∑ receiver ∈ object.receivers support threshold,
           (1 + object.routedLoad support threshold receiver) ≤
-        ∑ receiver ∈ receivers object support threshold,
+        ∑ receiver ∈ object.receivers support threshold,
           ((silentExcess object support threshold scale receiver).card +
             scale * object.missingPorts support threshold receiver) := by
     refine Finset.sum_le_sum ?_
     intro receiver member
-    have isReceiver := (mem_receivers object).mp member
+    have isReceiver := FiniteObject.mem_receivers.mp member
     exact one_add_routedLoad_le_silentExcess object support threshold scale
       (baseline receiver isReceiver.1) isReceiver scalePos
       (unsaturatedPorts receiver isReceiver)
   rw [Finset.sum_add_distrib, Finset.sum_add_distrib, Finset.sum_const,
     smul_eq_mul, Nat.mul_one, ← Finset.mul_sum,
     sum_missingPorts_eq_positiveDeficiency object support threshold,
-    sum_routedLoad_eq_card_fullVertices object support threshold routed]
+    FiniteObject.sum_routedLoad object support threshold routed]
     at perReceiver
-  rw [card_eq_card_fullVertices_add_card_receivers object support threshold
-    capped]
+  -- `|R| + |F| = |V(X)|`: the capped support is its receivers and its full
+  -- vertices, which is `Graph/TypeADischarge.lean`'s split, not a second one.
+  have split := FiniteObject.card_receivers_add_card_fullVertices object support
+    threshold capped
   omega
 
 end Hypostructure.Graph.VisibleEntry

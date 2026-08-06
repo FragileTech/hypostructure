@@ -457,78 +457,6 @@ noncomputable abbrev presented (object : FiniteObject.{u}) (threshold : Nat)
     (object.degreeSurplus threshold) pairCount tokenDecidable order orderNonempty
     subtype Eligible eligibleDecidable role entropyBudget sandwich
 
-/-- **Node `[137]`, the role-fibre partition of `def:same-token-blocker-roles`**:
-`ℓ_cap(t) = Σ_{r ∈ 𝔕_st} ℓ(t,r)` at every token of every presentation. -/
-def RoleFibrePartitionStatement (object : FiniteObject.{u}) (threshold : Nat) : Prop :=
-  ∀ (pairCount : (object.portPairSchedule threshold).card =
-      (object.degreeSurplus threshold).choose 2)
-    (Token : Type u) (tokenDecidable : DecidableEq Token) (order : List Token)
-    (orderNonempty : order.toFinset.Nonempty) (subtype : Token → TokenSubtype)
-    (Eligible : Token → Finset (object.Vertex × object.Vertex) → Prop)
-    (eligibleDecidable : ∀ token pair, Decidable (Eligible token pair))
-    (role : Finset (object.Vertex × object.Vertex) → Role) (entropyBudget : Nat)
-    (sandwich : (freeSide object.vertexPairDecidableEq
-      (object.portPairSchedule threshold) order Eligible eligibleDecidable).card ≤
-        entropyBudget)
-    (token : Token),
-    (presented object threshold pairCount tokenDecidable order orderNonempty
-        subtype Eligible eligibleDecidable role entropyBudget sandwich).load token =
-      ∑ value : Role,
-        ((presented object threshold pairCount tokenDecidable order orderNonempty
-          subtype Eligible eligibleDecidable role entropyBudget
-          sandwich).roleFibre token value).card
-
-/-- **Node `[137]`, `lem:capacity-token-high-load` with
-`cor:forced-homogeneous-same-token-scale`.** -/
-def FibrePressureStatement (object : FiniteObject.{u}) (threshold : Nat) : Prop :=
-  ∀ (pairCount : (object.portPairSchedule threshold).card =
-      (object.degreeSurplus threshold).choose 2)
-    (Token : Type u) (tokenDecidable : DecidableEq Token) (order : List Token)
-    (orderNonempty : order.toFinset.Nonempty) (subtype : Token → TokenSubtype)
-    (Eligible : Token → Finset (object.Vertex × object.Vertex) → Prop)
-    (eligibleDecidable : ∀ token pair, Decidable (Eligible token pair))
-    (role : Finset (object.Vertex × object.Vertex) → Role) (entropyBudget : Nat)
-    (sandwich : (freeSide object.vertexPairDecidableEq
-      (object.portPairSchedule threshold) order Eligible eligibleDecidable).card ≤
-        entropyBudget),
-    ∃ token ∈ (presented object threshold pairCount tokenDecidable order
-        orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-        sandwich).tokens,
-      (object.degreeSurplus threshold).choose 2 ≤
-          entropyBudget +
-            (presented object threshold pairCount tokenDecidable order orderNonempty
-              subtype Eligible eligibleDecidable role entropyBudget
-              sandwich).tokens.card *
-              (presented object threshold pairCount tokenDecidable order
-                orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-                sandwich).load token ∧
-        ∃ value : Role,
-          (presented object threshold pairCount tokenDecidable order orderNonempty
-              subtype Eligible eligibleDecidable role entropyBudget
-              sandwich).load token ≤
-              sameTokenRoleBound *
-                ((presented object threshold pairCount tokenDecidable order
-                  orderNonempty subtype Eligible eligibleDecidable role
-                  entropyBudget sandwich).roleFibre token value).card ∧
-            ((∃ pattern ⊆ (presented object threshold pairCount tokenDecidable order
-                  orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-                  sandwich).roleFibre token value,
-                PatternFamily.IsMatching pattern ∧
-                  PatternFamily.patternThreshold
-                      ((presented object threshold pairCount tokenDecidable order
-                        orderNonempty subtype Eligible eligibleDecidable role
-                        entropyBudget sandwich).roleFibre token value).card ≤
-                    pattern.card) ∨
-              (∃ centre, ∃ pattern ⊆ (presented object threshold pairCount
-                  tokenDecidable order orderNonempty subtype Eligible
-                  eligibleDecidable role entropyBudget sandwich).roleFibre token value,
-                PatternFamily.IsStar pattern centre ∧
-                  PatternFamily.patternThreshold
-                      ((presented object threshold pairCount tokenDecidable order
-                        orderNonempty subtype Eligible eligibleDecidable role
-                        entropyBudget sandwich).roleFibre token value).card ≤
-                    pattern.card))
-
 /-- **Nodes `[140]`, `[142]`, `[143]`, the three geometric class audits.** -/
 def BottleneckClassificationStatement (object : FiniteObject.{u}) (threshold : Nat) :
     Prop :=
@@ -620,22 +548,6 @@ def HomogeneousBottleneckStatement (object : FiniteObject.{u}) (threshold : Nat)
         Nat.sqrt (2 * entropyBudget + 2 * (cap * scale))
 
 /-! ## The four statements, proved -/
-
-theorem roleFibrePartitionStatement (object : FiniteObject.{u}) (threshold : Nat) :
-    RoleFibrePartitionStatement object threshold :=
-  fun pairCount _Token tokenDecidable order orderNonempty subtype Eligible
-      eligibleDecidable role entropyBudget sandwich token =>
-    (presented object threshold pairCount tokenDecidable order orderNonempty subtype
-      Eligible eligibleDecidable role entropyBudget sandwich).load_eq_sum_roleFibre
-        token
-
-theorem fibrePressureStatement (object : FiniteObject.{u}) (threshold : Nat) :
-    FibrePressureStatement object threshold :=
-  fun pairCount _Token tokenDecidable order orderNonempty subtype Eligible
-      eligibleDecidable role entropyBudget sandwich =>
-    (presented object threshold pairCount tokenDecidable order orderNonempty subtype
-      Eligible eligibleDecidable role entropyBudget
-      sandwich).exists_forced_homogeneous_pattern
 
 theorem bottleneckClassificationStatement (object : FiniteObject.{u}) (threshold : Nat) :
     BottleneckClassificationStatement object threshold :=

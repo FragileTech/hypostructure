@@ -64,8 +64,29 @@ noncomputable def typeAExitFourPeelDichotomy
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (typeAExitFourPeel typeAExitFourNoPeel :
+    (typeASaturatedExitEntry typeAExitFourPeel typeAExitFourNoPeel :
       FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeASaturatedExitEntry known]
+    (entryOf : typeASaturatedExitEntry.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled)
     (encodePeel :
       (∀ piece : Finset current.object.Vertex,
         ∀ receiver : current.object.Vertex,
@@ -101,6 +122,9 @@ noncomputable def typeAExitFourPeelDichotomy
     (name .typeAExitFourPeel)
     (by
       classical
+      -- `lem:typeA-exit4-residual-routing`'s hypothesis, read by exact key: the
+      -- node is asked only where the exit segment has been entered.
+      have _entry := entryOf (ExactLedger.get previous typeASaturatedExitEntry)
       by_cases available :
           ∀ piece : Finset current.object.Vertex,
             ∀ receiver : current.object.Vertex,
@@ -188,8 +212,29 @@ noncomputable def typeAExitFourDichotomy
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (typeAExitFour typeAExitFourFree :
+    (typeASaturatedExitEntry typeAExitFour typeAExitFourFree :
       FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeASaturatedExitEntry known]
+    (entryOf : typeASaturatedExitEntry.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled)
     (encodeExit :
       (∃ residual : Route8Data data current.object,
         ∃ index ∈ residual.entries, residual.ExitFour index) →
@@ -204,6 +249,7 @@ noncomputable def typeAExitFourDichotomy
     (name .typeAExitFour)
     (by
       classical
+      have _entry := entryOf (ExactLedger.get previous typeASaturatedExitEntry)
       by_cases occurs :
           ∃ residual : Route8Data data current.object,
             ∃ index ∈ residual.entries, residual.ExitFour index
@@ -227,8 +273,29 @@ noncomputable def typeAExitFiveDichotomy
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (typeAExitFive typeAExitFiveFree :
+    (typeASaturatedExitEntry typeAExitFive typeAExitFiveFree :
       FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeASaturatedExitEntry known]
+    (entryOf : typeASaturatedExitEntry.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled)
     (encodeExit :
       (∃ residual : Route8Data data current.object,
         ∃ index ∈ residual.entries, ¬ residual.SurvivingTrace index) →
@@ -243,6 +310,7 @@ noncomputable def typeAExitFiveDichotomy
     (name .typeAExitFive)
     (by
       classical
+      have _entry := entryOf (ExactLedger.get previous typeASaturatedExitEntry)
       by_cases occurs :
           ∃ residual : Route8Data data current.object,
             ∃ index ∈ residual.entries, ¬ residual.SurvivingTrace index
@@ -274,8 +342,29 @@ noncomputable def typeAExitSixDichotomy
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (typeAExitSix typeAExitSixFree :
+    (typeASaturatedExitEntry typeAExitSix typeAExitSixFree :
       FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeASaturatedExitEntry known]
+    (entryOf : typeASaturatedExitEntry.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ piece : Finset current.object.Vertex,
+            piece ⊆ current.object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn current.object
+                piece ∧
+              current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled)
     (encodeExit :
       (∃ residual : Route8Data data current.object,
         ∃ index ∈ residual.entries,
@@ -294,6 +383,7 @@ noncomputable def typeAExitSixDichotomy
     (name .typeAExitSix)
     (by
       classical
+      have _entry := entryOf (ExactLedger.get previous typeASaturatedExitEntry)
       by_cases occurs :
           ∃ residual : Route8Data data current.object,
             ∃ index ∈ residual.entries,

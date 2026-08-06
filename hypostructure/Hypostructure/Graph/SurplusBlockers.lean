@@ -173,6 +173,22 @@ theorem vertex_mem_sharedItems {object : FiniteObject.{u}}
   refine Finset.mem_union_left _ ?_
   exact Finset.mem_image_of_mem _ (Finset.mem_inter.2 ⟨inLeft, inRight⟩)
 
+/-- An edge-incidence item of clauses (a) and (b) is a genuine edge-incidence of
+the object: `sharedItems` filters the object's own `I_E(G)`.  This is what makes
+such an item a member of `def:primitive-sparse-blocker-carrier`'s second
+summand. -/
+theorem incidence_mem_incidences_of_mem_sharedItems {object : FiniteObject.{u}}
+    {left right : Finset object.Vertex} {pair : object.Vertex × object.Vertex}
+    (member : CarrierItem.incidence pair ∈ sharedItems object left right) :
+    pair ∈ object.incidences := by
+  classical
+  rcases Finset.mem_union.1 member with vertexSide | incidenceSide
+  · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 vertexSide
+    cases equality
+  · obtain ⟨other, filtered, equality⟩ := Finset.mem_image.1 incidenceSide
+    cases equality
+    exact (Finset.mem_filter.1 filtered).1
+
 /-- **`𝖡𝗅𝗄(π)`**: the finite set of sparse surplus blockers of a pair.
 
 The union of the six clauses, each read at the pair's own two demands.  Clauses
@@ -197,6 +213,61 @@ noncomputable def blockers (activation : DemandActivation object Coordinate Chor
       ((activation.profileObstructions pair).image Blocker.boundaryProfile ∪
         ((activation.responseObstructions pair).image Blocker.targetResponse ∪
           (activation.chordObstructions pair).image Blocker.arithmeticChordSet))
+
+/-- An edge-incidence blocker of clause (a) or (b) carries a genuine
+edge-incidence of the object.  `def:primitive-sparse-blocker-carrier`'s
+`κ(B) = B` for those clauses therefore lands in `𝔘_sp(G)`. -/
+theorem incidence_mem_incidences_of_mem_blockers
+    (activation : DemandActivation object Coordinate Chord)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {incidence : object.Vertex × object.Vertex}
+    (member : Blocker.sharedDeclaredSupport (CarrierItem.incidence incidence) ∈
+        activation.blockers pair ∨
+      Blocker.sharedReturnSupport (CarrierItem.incidence incidence) ∈
+        activation.blockers pair) :
+    incidence ∈ object.incidences := by
+  classical
+  rcases member with declared | returned
+  · rw [blockers] at declared
+    rcases Finset.mem_union.1 declared with local' | remote
+    · obtain ⟨_, _, inside⟩ := Finset.mem_biUnion.1 local'
+      rcases Finset.mem_union.1 inside with shared | other
+      · obtain ⟨item, itemMem, equality⟩ := Finset.mem_image.1 shared
+        cases equality
+        exact incidence_mem_incidences_of_mem_sharedItems itemMem
+      · rcases Finset.mem_union.1 other with second | third
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 second
+          cases equality
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 third
+          cases equality
+    · rcases Finset.mem_union.1 remote with first | rest
+      · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 first
+        cases equality
+      · rcases Finset.mem_union.1 rest with second | third
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 second
+          cases equality
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 third
+          cases equality
+  · rw [blockers] at returned
+    rcases Finset.mem_union.1 returned with local' | remote
+    · obtain ⟨_, _, inside⟩ := Finset.mem_biUnion.1 local'
+      rcases Finset.mem_union.1 inside with shared | other
+      · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 shared
+        cases equality
+      · rcases Finset.mem_union.1 other with second | third
+        · obtain ⟨item, itemMem, equality⟩ := Finset.mem_image.1 second
+          cases equality
+          exact incidence_mem_incidences_of_mem_sharedItems itemMem
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 third
+          cases equality
+    · rcases Finset.mem_union.1 remote with first | rest
+      · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 first
+        cases equality
+      · rcases Finset.mem_union.1 rest with second | third
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 second
+          cases equality
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.1 third
+          cases equality
 
 /-- **`def:surplus-blockers` as the ledger's applicability relation.**
 

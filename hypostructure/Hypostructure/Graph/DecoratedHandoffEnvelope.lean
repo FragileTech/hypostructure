@@ -1,0 +1,1061 @@
+import Hypostructure.Graph.CommonPortReturnCycle
+import Hypostructure.Graph.Response
+
+/-!
+# Connector germs, surviving separators, and the decorated handoff fan envelope
+
+This module owns the objects Type A exit `(7)` is made of, and nothing else:
+
+* `def:typeA-continuation-classes` — outside connector germs through a
+  completion port, the vertex two germs *separate at*, the switch support's
+  declared reading, and the absorbed/surviving classification of a separator;
+* `lem:typeA-cubic-switch-absorption` — a surviving first separator has ambient
+  degree at least `4`;
+* `lem:typeA-continuation-routing` — a family of declared coordinates through
+  one port either realizes one of the quotient alternatives or has a surviving
+  first separator;
+* `def:decorated-fan-envelope` — the envelope `𝔛 = (Y, H)` with its assigned
+  first-neighbour sets, handoff arms and fan-safe cliques, and its net charge;
+* `lem:typeA-high-degree-handoff` — a surviving first separator *produces* one;
+* `lem:decorated-fan-admissibility` — the envelope carries exactly the data the
+  Type B fan calculation consumes, and no conclusion of `lem:typeB-exclusion`;
+* `def:decorated-typeB-envelope-support` and
+  `lem:decorated-envelope-no-double-count` — the grouped envelope family and
+  the exact-transfer identity;
+* `lem:window-handoff-center-accounting` — a handoff center in a packed window
+  is charged once, or the receiver realizes the label-collision exit.
+
+Two things are worth saying about what is *derived* here rather than declared.
+
+The degree bound is derived.  A germ is rooted at the receiver, so the common
+prefix of two separating germs is never empty and its last edge is the
+manuscript's *root incidence at `z`* in both of its cases at once — the port
+edge `wh` when `z = h`, and the last edge of the common prefix otherwise.
+Simplicity of the two germs then makes the root incidence and the two next
+incidences three distinct neighbours of `z`, which is `d_G(z) ≥ 3`; the
+separator being surviving rules out equality, which is `d_G(z) ≥ 4`.
+
+The absorbed classification is derived from `lem:context-universality`.  What
+the switch support *supplies* is `def:boundaried-gluing`'s bookkeeping: when `z`
+has no unused ambient incidence the two separated responses are a finite
+declared boundaried state, so they lie in one boundary-degree fibre.  That is
+the `fibre` field of `SwitchReading`, and it is the only clause of the argument
+this module does not prove.
+
+Nothing here knows a manuscript, a baseline, a scale, a window order, or a
+proof.  The accepted-length predicate, the target, the boundary-degree profile,
+the high-degree predicate and the coordinate universe are all parameters, and
+no registered constant is written.  The one numeral that occurs is the count of
+incidences a separation uses at its separator — the root incidence and the two
+next incidences — which is intrinsic to the configuration and not a registered
+threshold.
+-/
+
+namespace Hypostructure.Graph.DecoratedHandoff
+
+open Hypostructure
+
+universe u v w
+
+/-! ## Separation of two lists
+
+`def:typeA-continuation-classes` says two coordinates *separate at `z`* when
+they have the same ordered prefix up to `z` and their next incidences after `z`
+are distinct.  On the germs' vertex lists that is exactly the decomposition
+below, and it forces the shared prefix to be *maximal*: the two lists agree on
+`common ++ [z]` and differ immediately after it.  So a separator in this sense
+is automatically the first separator of the pair. -/
+
+variable {α : Type u}
+
+/-- **Two lists separate at `z`**: the same ordered prefix up to and including
+`z`, and distinct next entries. -/
+def SeparatesAt (left right : List α) (separator : α) : Prop :=
+  ∃ common nextLeft nextRight tailLeft tailRight,
+    left = common ++ separator :: nextLeft :: tailLeft ∧
+      right = common ++ separator :: nextRight :: tailRight ∧
+        nextLeft ≠ nextRight
+
+/-- **Two distinct lists issued from the same first entry, neither a prefix of
+the other, separate somewhere.**  This is the finiteness step of
+`lem:typeA-continuation-routing`: *"since `𝒦` is finite and each germ is
+finite, there is a first such separator in the prefix order"*. -/
+theorem exists_separatesAt :
+    ∀ {left right : List α} {first : α}, left.head? = some first →
+      right.head? = some first → ¬ left <+: right → ¬ right <+: left →
+      ∃ separator, SeparatesAt left right separator
+  | [], _, _, headLeft, _, _, _ => by simp at headLeft
+  | _ :: _, [], _, _, headRight, _, _ => by simp at headRight
+  | x :: restLeft, y :: restRight, first, headLeft, headRight,
+      notPrefixLeft, notPrefixRight => by
+      simp only [List.head?_cons, Option.some.injEq] at headLeft headRight
+      subst headLeft
+      subst headRight
+      match restLeft, restRight with
+      | [], _ =>
+          exact absurd (List.cons_prefix_cons.mpr ⟨rfl, List.nil_prefix⟩)
+            notPrefixLeft
+      | _ :: _, [] =>
+          exact absurd (List.cons_prefix_cons.mpr ⟨rfl, List.nil_prefix⟩)
+            notPrefixRight
+      | a :: tailLeft, b :: tailRight =>
+          by_cases equal : a = b
+          · subst equal
+            have innerLeft : ¬ (a :: tailLeft) <+: (a :: tailRight) := by
+              intro prefixed
+              exact notPrefixLeft (List.cons_prefix_cons.mpr ⟨rfl, prefixed⟩)
+            have innerRight : ¬ (a :: tailRight) <+: (a :: tailLeft) := by
+              intro prefixed
+              exact notPrefixRight (List.cons_prefix_cons.mpr ⟨rfl, prefixed⟩)
+            obtain ⟨separator, common, nextLeft, nextRight, tailL, tailR,
+              leftEq, rightEq, distinct⟩ :=
+              exists_separatesAt (first := a) (by simp) (by simp) innerLeft
+                innerRight
+            exact ⟨separator, y :: common, nextLeft, nextRight, tailL, tailR,
+              by simp [leftEq], by simp [rightEq], distinct⟩
+          · exact ⟨y, [], a, b, tailLeft, tailRight, by simp, by simp, equal⟩
+
+/-! ## Outside connector germs
+
+`def:typeA-continuation-classes`' germ is `Γ = (x₀,…,x_g)` with `x₀ = h` the
+outside end of the completion port `⃗e = (w,h)`, `x_g = ent_X(P)` the first-entry
+receiver, and `x₁,…,x_{g-1} ∉ X`.  The germ is recorded here *rooted at `w`*:
+the manuscript's root incidence at the separator is the port edge `wh` when the
+separator is `h` and the last edge of the common prefix otherwise, and rooting
+the germ at `w` makes those one case.  Nothing else changes: the port edge is
+the germ's own first edge, which is the completion port. -/
+
+variable {object : FiniteObject.{u}}
+
+/-- **A rooted outside connector germ through the completion port `⃗e = (w,h)`.**
+The list is `w, h, x₁, …, x_g`: the receiver, the port's outside end, the
+outside connector, and the first-entry receiver in the support. -/
+structure RootedGerm (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (receiver outside : object.Vertex) where
+  /-- `w, h, x₁, …, x_g`. -/
+  path : List object.Vertex
+  /-- It is a walk of the object. -/
+  chain : path.IsChain object.graph.Adj
+  /-- It is simple. -/
+  nodup : path.Nodup
+  /-- It is rooted at the receiver `w`. -/
+  rooted : path.head? = some receiver
+  /-- Its first step is the completion port `wh`. -/
+  issued : path.tail.head? = some outside
+  /-- `ent_X(P)`, the first-entry receiver the germ lands on. -/
+  terminal : object.Vertex
+  /-- The germ ends there. -/
+  terminal_last : path.getLast? = some terminal
+  /-- and it is in the support. -/
+  terminal_inside : terminal ∈ support
+  /-- `x₁,…,x_{g-1} ∉ X`: after the root the germ meets the support only at its
+  first entry. -/
+  interior : ∀ vertex ∈ path.tail, vertex ∈ support → vertex = terminal
+
+namespace RootedGerm
+
+variable {support : Finset object.Vertex} {receiver outside : object.Vertex}
+
+/-- The germ's list is `w :: h :: …`, so it is never empty. -/
+theorem path_ne_nil (germ : RootedGerm object support receiver outside) :
+    germ.path ≠ [] := by
+  intro empty
+  have root := germ.rooted
+  rw [empty] at root
+  simp at root
+
+/-- The first entry is on the germ's tail: it is the last entry of a list whose
+head is the receiver and whose tail is nonempty. -/
+theorem terminal_mem_tail (germ : RootedGerm object support receiver outside) :
+    germ.terminal ∈ germ.path.tail := by
+  match found : germ.path, germ.rooted, germ.issued with
+  | [], root, _ => simp at root
+  | [_], _, issue => simp at issue
+  | first :: second :: rest, _, _ =>
+      have last : (second :: rest).getLast? = some germ.terminal := by
+        have := germ.terminal_last
+        rw [found] at this
+        simpa using this
+      obtain ⟨front, split⟩ := List.getLast?_eq_some_iff.mp last
+      simp [split]
+
+/-- **Neither germ of a separating pair is a prefix of the other.**  A proper
+prefix would put its own first entry strictly inside the longer germ, where the
+longer germ's interior clause forbids the support -- unless the two first
+entries coincide, which simplicity of the longer germ forbids. -/
+theorem not_isPrefix_of_ne {left right : RootedGerm object support receiver outside}
+    (different : left.path ≠ right.path) : ¬ left.path <+: right.path := by
+  rintro ⟨rest, split⟩
+  have restNonempty : rest ≠ [] := by
+    intro empty
+    exact different (by simp [← split, empty])
+  -- The shorter germ's first entry sits on the longer germ's tail.
+  have member : left.terminal ∈ right.path.tail := by
+    have tailSplit : right.path.tail = left.path.tail ++ rest := by
+      match found : left.path, left.rooted with
+      | [], root => simp at root
+      | first :: restLeft, _ => simp [← split, found]
+    rw [tailSplit]
+    exact List.mem_append_left _ left.terminal_mem_tail
+  have identified : left.terminal = right.terminal :=
+    right.interior left.terminal member left.terminal_inside
+  -- but the longer germ ends strictly later, and it is simple.
+  obtain ⟨front, frontSplit⟩ := List.getLast?_eq_some_iff.mp right.terminal_last
+  obtain ⟨leftFront, leftSplit⟩ := List.getLast?_eq_some_iff.mp left.terminal_last
+  have restLast : rest.getLast? = right.path.getLast? := by
+    rw [← split]
+    exact (List.getLast?_append_of_ne_nil _ restNonempty).symm
+  obtain ⟨restFront, restSplit⟩ :=
+    List.getLast?_eq_some_iff.mp (restLast.trans right.terminal_last)
+  have nodup : (left.path ++ rest).Nodup := by rw [split]; exact right.nodup
+  have disjoint := (List.nodup_append.mp nodup).2.2
+  refine disjoint left.terminal ?_ left.terminal ?_ rfl
+  · rw [leftSplit]; simp
+  · rw [restSplit, identified]; simp
+
+end RootedGerm
+
+/-! ## Separation at a vertex, and the three incidences it uses -/
+
+/-- **Two germs through one completion port, separating at a vertex.**  This is
+`def:typeA-continuation-classes`' *"they separate at `z`"*, with the maximal
+common prefix exhibited, so `z` is the pair's first separator. -/
+structure Separation (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (receiver outside : object.Vertex) where
+  /-- The first of the two declared coordinates' germs. -/
+  left : RootedGerm object support receiver outside
+  /-- The second. -/
+  right : RootedGerm object support receiver outside
+  /-- The common ordered prefix, up to but not including the separator. -/
+  common : List object.Vertex
+  /-- `z`. -/
+  separator : object.Vertex
+  /-- The next incidence the first germ uses after `z`. -/
+  nextLeft : object.Vertex
+  /-- The next incidence the second germ uses after `z`. -/
+  nextRight : object.Vertex
+  /-- What the first germ does afterwards. -/
+  tailLeft : List object.Vertex
+  /-- What the second germ does afterwards. -/
+  tailRight : List object.Vertex
+  /-- The first germ's decomposition. -/
+  leftEq : left.path = common ++ separator :: nextLeft :: tailLeft
+  /-- The second germ's. -/
+  rightEq : right.path = common ++ separator :: nextRight :: tailRight
+  /-- The two next incidences are distinct: this is what *separating* means. -/
+  distinct : nextLeft ≠ nextRight
+
+namespace Separation
+
+variable {support : Finset object.Vertex} {receiver outside : object.Vertex}
+variable (separation : Separation object support receiver outside)
+
+/-- **The common prefix is never empty.**  Both germs are rooted at `w` and
+step first to `h`, so an empty common prefix would make the two next incidences
+both equal to `h`. -/
+theorem common_ne_nil : separation.common ≠ [] := by
+  intro empty
+  have leftPath := separation.leftEq
+  have rightPath := separation.rightEq
+  rw [empty, List.nil_append] at leftPath rightPath
+  have leftNext : separation.nextLeft = outside := by
+    have := separation.left.issued
+    rw [leftPath] at this
+    simpa using this
+  have rightNext : separation.nextRight = outside := by
+    have := separation.right.issued
+    rw [rightPath] at this
+    simpa using this
+  exact separation.distinct (leftNext.trans rightNext.symm)
+
+/-- **The root incidence at `z`.**  The last vertex of the common prefix: the
+receiver `w` itself when the separator is the port's outside end `h`, and the
+previous vertex of the shared prefix otherwise.  These are the manuscript's two
+cases, and rooting the germ at `w` makes them one. -/
+noncomputable def root : object.Vertex :=
+  separation.common.getLast separation.common_ne_nil
+
+theorem root_mem_common : separation.root ∈ separation.common :=
+  List.getLast_mem separation.common_ne_nil
+
+theorem common_getLast? : separation.common.getLast? = some separation.root :=
+  List.getLast?_eq_some_getLast separation.common_ne_nil
+
+/-- The root incidence is an edge at `z`. -/
+theorem root_adj : object.graph.Adj separation.root separation.separator := by
+  have chain := separation.left.chain
+  rw [separation.leftEq] at chain
+  obtain ⟨_, _, joint⟩ := List.isChain_append.mp chain
+  exact joint separation.root separation.common_getLast? separation.separator
+    (by simp)
+
+/-- The first germ's next incidence is an edge at `z`. -/
+theorem nextLeft_adj :
+    object.graph.Adj separation.separator separation.nextLeft := by
+  have chain := separation.left.chain
+  rw [separation.leftEq] at chain
+  obtain ⟨_, rest, _⟩ := List.isChain_append.mp chain
+  exact (List.isChain_cons.mp rest).1 separation.nextLeft (by simp)
+
+/-- The second germ's next incidence is an edge at `z`. -/
+theorem nextRight_adj :
+    object.graph.Adj separation.separator separation.nextRight := by
+  have chain := separation.right.chain
+  rw [separation.rightEq] at chain
+  obtain ⟨_, rest, _⟩ := List.isChain_append.mp chain
+  exact (List.isChain_cons.mp rest).1 separation.nextRight (by simp)
+
+/-- The root incidence is not the first germ's next incidence: one lies in the
+common prefix, the other after it, and the germ is simple. -/
+theorem root_ne_nextLeft : separation.root ≠ separation.nextLeft := by
+  have nodup := separation.left.nodup
+  rw [separation.leftEq] at nodup
+  exact fun equal =>
+    (List.nodup_append.mp nodup).2.2 separation.root separation.root_mem_common
+      separation.nextLeft (by simp) equal
+
+/-- and not the second germ's. -/
+theorem root_ne_nextRight : separation.root ≠ separation.nextRight := by
+  have nodup := separation.right.nodup
+  rw [separation.rightEq] at nodup
+  exact fun equal =>
+    (List.nodup_append.mp nodup).2.2 separation.root separation.root_mem_common
+      separation.nextRight (by simp) equal
+
+/-- **The three incidences `z` uses.**  `def:typeA-continuation-classes`' switch
+support meets `z` in the root incidence and the two separated next incidences,
+and they are pairwise distinct. -/
+noncomputable def usedIncidences : Finset object.Vertex := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact {separation.root, separation.nextLeft, separation.nextRight}
+
+theorem card_usedIncidences : separation.usedIncidences.card = 3 := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  rw [usedIncidences,
+    Finset.card_insert_of_notMem (by
+      simp [separation.root_ne_nextLeft, separation.root_ne_nextRight]),
+    Finset.card_insert_of_notMem (by simp [separation.distinct]),
+    Finset.card_singleton]
+
+theorem usedIncidences_subset : ∀ vertex ∈ separation.usedIncidences,
+    object.graph.Adj separation.separator vertex := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  intro vertex member
+  rw [usedIncidences] at member
+  simp only [Finset.mem_insert, Finset.mem_singleton] at member
+  rcases member with rfl | rfl | rfl
+  · exact separation.root_adj.symm
+  · exact separation.nextLeft_adj
+  · exact separation.nextRight_adj
+
+/-- **`d_G(z) ≥ 3`.**
+
+*"If `z` is the initial outside vertex `h` of the completion port, the port edge
+`wh` is the root incidence at `z`; otherwise the last edge of the common prefix
+is the root incidence.  Since the two germs separate at `z`, they use two
+distinct next incidences after `z`.  Hence `d_G(z) ≥ 3`."*
+
+The `3` is the count of incidences the configuration itself uses; it is not a
+registered baseline. -/
+theorem three_le_degree : 3 ≤ object.degree separation.separator := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  have contained : separation.usedIncidences ⊆
+      object.graph.neighborFinset separation.separator := by
+    intro vertex member
+    exact (object.graph.mem_neighborFinset separation.separator vertex).mpr
+      (separation.usedIncidences_subset vertex member)
+  have counted := Finset.card_le_card contained
+  rw [separation.card_usedIncidences] at counted
+  exact counted
+
+/-- **The separator uses every one of its incidences exactly when its degree is
+`3`.**  This is the manuscript's *"the switch support `S_z` has no unused
+ambient incidence at `z`"*. -/
+theorem usedIncidences_eq_neighbors
+    (cubic : object.degree separation.separator = 3) :
+    letI : FinEnum object.Vertex := object.vertices
+    letI : DecidableRel object.graph.Adj := object.decideAdj
+    separation.usedIncidences =
+      object.graph.neighborFinset separation.separator := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  refine Finset.eq_of_subset_of_card_le (fun vertex member =>
+    (object.graph.mem_neighborFinset separation.separator vertex).mpr
+      (separation.usedIncidences_subset vertex member)) ?_
+  have degreeEq :
+      (object.graph.neighborFinset separation.separator).card =
+        object.degree separation.separator := rfl
+  rw [degreeEq, cubic, separation.card_usedIncidences]
+
+end Separation
+
+/-! ## The switch support's declared reading, and absorption
+
+`def:typeA-continuation-classes`: the switch support `S_z` is the finite
+connected support consisting of the common prefix, the two connector tails, the
+two receiver-entry channels, the completion-port boundary datum and the declared
+supports of the two response coordinates; and `z` is *absorbed* when the
+response identification on it is target-defective, target-complete on a
+nontrivial response quotient, or target-complete only after adjoining a larger
+connected support.
+
+The reading is presented the way every declared reading in this framework is:
+one labelled boundary, and the retained coordinate sets read on it, so the two
+realizations of the identification are `state (base \ identified)` and
+`state base`.  The `fibre` clause is `def:boundaried-gluing`'s bookkeeping for
+that presentation: with no unused ambient incidence at `z` the boundary records
+exactly the root incidence, the two connector tails and the two receiver-entry
+channels, so the two realizations lie in one boundary-degree fibre. -/
+
+/-- **The declared reading the switch support carries.** -/
+structure SwitchReading {support : Finset object.Vertex}
+    {receiver outside : object.Vertex}
+    (separation : Separation object support receiver outside)
+    {Profile : Type v} (Target : FiniteObject.{u} → Prop) where
+  /-- The labelled boundary of `S_z`. -/
+  boundary : Graph.Boundary.{u}
+  /-- The declared coordinate universe of `S_z`. -/
+  Coordinate : Type u
+  /-- The reading: a retained coordinate set presented on that boundary. -/
+  state : Finset Coordinate → Graph.BoundaryPiece boundary
+  /-- The boundary-degree profile the reading is compared in. -/
+  profile : Graph.BoundaryPiece boundary → Profile
+  /-- The coordinate set before the identification. -/
+  base : Finset Coordinate
+  /-- The coordinate set the identification leaves: the two separated response
+  coordinates have been identified, so at least one is forgotten. -/
+  reduced : Finset Coordinate
+  /-- The identification forgets coordinates of the base, and it forgets
+  something -- the two separated response coordinates are distinct, which is
+  what makes the quotient nontrivial. -/
+  reduced_ssubset : reduced ⊂ base
+  /-- **`def:boundaried-gluing` at an exhausted separator.**  When `S_z` leaves
+  no ambient incidence at `z` unused, the boundary records exactly the root
+  incidence, the two connector tails and the two receiver-entry channels, so the
+  two realizations lie in one boundary-degree fibre. -/
+  fibre :
+    (letI : FinEnum object.Vertex := object.vertices
+     letI : DecidableRel object.graph.Adj := object.decideAdj
+     separation.usedIncidences =
+       object.graph.neighborFinset separation.separator) →
+    profile (state reduced) = profile (state base)
+
+namespace SwitchReading
+
+variable {support : Finset object.Vertex} {receiver outside : object.Vertex}
+variable {separation : Separation object support receiver outside}
+variable {Profile : Type v} {Target : FiniteObject.{u} → Prop}
+variable (reading : SwitchReading separation (Profile := Profile) Target)
+
+/-- The realization after the identification. -/
+def quotient : Graph.BoundaryPiece reading.boundary :=
+  reading.state reading.reduced
+
+/-- The realization before it. -/
+def full : Graph.BoundaryPiece reading.boundary :=
+  reading.state reading.base
+
+end SwitchReading
+
+/-- **`def:typeA-continuation-classes`: the separator is absorbed.**
+
+The response identification on the switch support is target-defective — which
+is exit `(4)` — or target-complete on a nontrivial response quotient — exit
+`(5)` — or target-complete only after adjoining a larger connected support —
+exit `(6)`.  The third alternative is carried as a declared property of the
+switch, because it is a statement about supports strictly larger than `S_z`. -/
+def Absorbed {support : Finset object.Vertex} {receiver outside : object.Vertex}
+    {separation : Separation object support receiver outside}
+    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
+    (reading : SwitchReading separation (Profile := Profile) Target)
+    (Enlarges : Prop) : Prop :=
+  Graph.Response.TargetDefect Target reading.quotient reading.full ∨
+    Graph.Response.TargetComplete reading.profile Target reading.quotient
+        reading.full ∨
+      Enlarges
+
+/-- **`z` is surviving**: it is not absorbed. -/
+def Surviving {support : Finset object.Vertex} {receiver outside : object.Vertex}
+    {separation : Separation object support receiver outside}
+    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
+    (reading : SwitchReading separation (Profile := Profile) Target)
+    (Enlarges : Prop) : Prop :=
+  ¬ Absorbed reading Enlarges
+
+/-- **A separator with no unused ambient incidence is absorbed.**
+
+*"Consider the quotient that identifies the two separated response coordinates
+on this finite state.  If some compatible outside context distinguishes the two
+responses, the quotient is target-defective ..., which is exit (4).  Otherwise
+the identification is target-complete."*
+
+`lem:context-universality`'s exhaustiveness is
+`Response.contextEquivalent_or_targetDefect`; the boundary-degree half of
+target-completeness is the reading's `fibre` clause at the exhausted
+separator. -/
+theorem absorbed_of_exhausted {support : Finset object.Vertex}
+    {receiver outside : object.Vertex}
+    {separation : Separation object support receiver outside}
+    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
+    (reading : SwitchReading separation (Profile := Profile) Target)
+    (Enlarges : Prop)
+    (exhausted :
+      letI : FinEnum object.Vertex := object.vertices
+      letI : DecidableRel object.graph.Adj := object.decideAdj
+      separation.usedIncidences =
+        object.graph.neighborFinset separation.separator) :
+    Absorbed reading Enlarges := by
+  rcases Graph.Response.contextEquivalent_or_targetDefect Target
+      reading.quotient reading.full with equivalent | defect
+  · exact Or.inr (Or.inl ⟨reading.fibre exhausted, equivalent⟩)
+  · exact Or.inl defect
+
+/-- **`lem:typeA-cubic-switch-absorption`.**  A surviving first separator for
+two declared response coordinates through one completion port has
+
+  `d_G(z) ≥ 4`.
+
+*"Hence `d_G(z) ≥ 3` ... Assume `d_G(z) = 3` ... Each of these alternatives is
+exactly the absorbed case ... This contradicts that `z` is surviving.  Thus
+`d_G(z) ≠ 3`, and the already-proved inequality `d_G(z) ≥ 3` gives
+`d_G(z) ≥ 4`."* -/
+theorem four_le_degree_of_surviving {support : Finset object.Vertex}
+    {receiver outside : object.Vertex}
+    {separation : Separation object support receiver outside}
+    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
+    {reading : SwitchReading separation (Profile := Profile) Target}
+    {Enlarges : Prop} (surviving : Surviving reading Enlarges) :
+    3 < object.degree separation.separator := by
+  have three := separation.three_le_degree
+  rcases Nat.lt_or_ge 3 (object.degree separation.separator) with high | low
+  · exact high
+  · exact absurd
+      (absorbed_of_exhausted reading Enlarges
+        (separation.usedIncidences_eq_neighbors (Nat.le_antisymm low three)))
+      surviving
+
+/-- **`lem:typeA-continuation-routing`, at a pair of declared coordinates.**
+
+*"Then either one of exits (4)--(6) of `def:typeA-saturated-exits` occurs, or
+`𝒦` has a surviving first separator."*
+
+The two germs are distinct declared coordinates through the same port, so
+neither is a prefix of the other and they separate; at that separator the
+identification is absorbed — which is exits `(4)`--`(6)` — or it is not, which
+is the surviving first separator. -/
+theorem absorbed_or_surviving {support : Finset object.Vertex}
+    {receiver outside : object.Vertex}
+    {separation : Separation object support receiver outside}
+    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
+    (reading : SwitchReading separation (Profile := Profile) Target)
+    (Enlarges : Prop) :
+    Absorbed reading Enlarges ∨ Surviving reading Enlarges := by
+  classical
+  exact em _
+
+/-- **Two distinct germs through one port do separate.**  The finiteness step
+of `lem:typeA-continuation-routing`, on the germs' own vertex lists. -/
+theorem exists_separatesAt_of_ne {support : Finset object.Vertex}
+    {receiver outside : object.Vertex}
+    {left right : RootedGerm object support receiver outside}
+    (different : left.path ≠ right.path) :
+    ∃ separator, SeparatesAt left.path right.path separator :=
+  exists_separatesAt left.rooted right.rooted
+    (RootedGerm.not_isPrefix_of_ne different)
+    (RootedGerm.not_isPrefix_of_ne (Ne.symm different))
+
+/-! ## Fan safety
+
+`def:typeB-fan-safe` makes two neighbours `u, v` of a high-degree vertex `h`
+adjacent in `F_safe(h)` when five conditions hold.  The first is geometric and
+is discharged here from the selected object's own target avoidance: *"any return
+from `a` to `b` in `G − h` of length `2^j − 2` would close with the two edges
+`ha, hb` to form a cycle of length `2^j`"*.  The remaining four are exactly
+the label, target-defect, target-compression and delocalization exits `(3)`--`(6)`,
+which are already denied on the branch that reaches exit `(7)`; they are
+therefore carried as a parameter and read, never restated. -/
+
+/-- **A simple `a`--`b` return in `G − h`.** -/
+structure FanReturn (object : FiniteObject.{u})
+    (centre first second : object.Vertex) where
+  /-- The return. -/
+  walk : object.graph.Walk first second
+  /-- It is simple. -/
+  isPath : walk.IsPath
+  /-- It avoids the centre, which is what `G − h` means. -/
+  avoidsCentre : centre ∉ walk.support
+
+/-- **The return closes with the two fan edges.**  `ha`, the return, and `bh`
+are a simple cycle of length `|R| + 2`, so a return whose shifted length is
+accepted exhibits the target. -/
+theorem hasCycleWithLength_of_fanReturn {LengthOK : Nat → Prop}
+    {centre first second : object.Vertex}
+    (firstAdj : object.graph.Adj centre first)
+    (secondAdj : object.graph.Adj centre second)
+    (different : first ≠ second)
+    (return' : FanReturn object centre first second)
+    (accepted : LengthOK (return'.walk.length + 2)) :
+    Graph.HasCycleWithLength LengthOK object := by
+  classical
+  refine ⟨(?pair : Graph.CommonEndpointsCycle object).target LengthOK ?_⟩
+  case pair =>
+    exact
+      { ends := (first, second)
+        forward := return'.walk
+        backward := SimpleGraph.Walk.cons firstAdj.symm
+          (SimpleGraph.Walk.cons secondAdj SimpleGraph.Walk.nil)
+        forward_isPath := return'.isPath
+        backward_isPath := by
+          refine SimpleGraph.Walk.IsPath.mk' ?_
+          simp only [SimpleGraph.Walk.support_cons, SimpleGraph.Walk.support_nil]
+          refine List.nodup_cons.mpr ⟨?_, List.nodup_cons.mpr ⟨?_, ?_⟩⟩
+          · simp only [List.mem_cons, List.not_mem_nil, or_false]
+            exact fun member => by
+              rcases member with equal | equal
+              · exact (object.graph.ne_of_adj firstAdj) equal.symm
+              · exact different equal
+          · simp only [List.mem_singleton]
+            exact fun equal => (object.graph.ne_of_adj secondAdj) equal
+          · exact List.nodup_singleton _
+        internallyDisjoint := by
+          intro vertex memberForward memberBackward
+          have inSupport : vertex ∈ return'.walk.support :=
+            List.mem_of_mem_tail memberForward
+          have backwardSupport :
+              (SimpleGraph.Walk.cons firstAdj.symm
+                (SimpleGraph.Walk.cons secondAdj
+                  SimpleGraph.Walk.nil)).reverse.support.tail =
+                [centre, first] := by
+            simp
+          rw [backwardSupport] at memberBackward
+          simp only [List.mem_cons, List.not_mem_nil,
+            or_false] at memberBackward
+          rcases memberBackward with equal | equal
+          · exact return'.avoidsCentre (equal ▸ inSupport)
+          · -- `a` is the head of a simple return, so it is not on its own tail.
+            have nodup : (first :: return'.walk.support.tail).Nodup := by
+              have := return'.isPath.support_nodup
+              rwa [return'.walk.support_eq_cons] at this
+            exact (List.nodup_cons.mp nodup).1 (equal ▸ memberForward)
+        nondegenerate := Or.inr (by simp) }
+  · simpa using accepted
+
+/-- **`def:typeB-fan-safe`**, as the exit-`(7)` handoff uses it: the geometric
+clause, and the four quotient clauses read from the branch.  `Absorbing` is the
+branch's own record that one of exits `(3)`--`(6)` occurs at the pair; the
+handoff never restates those exits and never proves them here. -/
+def FanSafe (object : FiniteObject.{u}) (LengthOK : Nat → Prop)
+    (Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop)
+    (centre first second : object.Vertex) : Prop :=
+  (∀ return' : FanReturn object centre first second,
+      ¬ LengthOK (return'.walk.length + 2)) ∧
+    ¬ Absorbing centre first second
+
+/-- **The geometric clause of `def:typeB-fan-safe` holds on the selected
+object.**  A return whose shifted length is accepted would be an accepted cycle,
+and the selection carries none. -/
+theorem fanSafe_geometric {LengthOK : Nat → Prop}
+    {centre first second : object.Vertex}
+    (firstAdj : object.graph.Adj centre first)
+    (secondAdj : object.graph.Adj centre second)
+    (different : first ≠ second)
+    (avoids : ¬ Graph.HasCycleWithLength LengthOK object) :
+    ∀ return' : FanReturn object centre first second,
+      ¬ LengthOK (return'.walk.length + 2) :=
+  fun return' accepted =>
+    avoids (hasCycleWithLength_of_fanReturn firstAdj secondAdj different return'
+      accepted)
+
+/-! ## The decorated handoff fan envelope -/
+
+/-- **`def:decorated-fan-envelope`.**  The pair `𝔛 = (Y, H)` together with the
+handoff-arm data: for each decoration a nonempty assigned first-neighbour set,
+a simple handoff arm from each assigned first neighbour to a terminal vertex of
+the core whose interior avoids `Y ∪ H ∪ {h}`, distinct first neighbours, and the
+fan-safe clique condition on the assigned neighbours themselves.
+
+`HighDegree` is the ambient high-degree predicate the decorations are drawn
+from; `lem:typeA-cubic-switch-absorption`'s own conclusion `d_G(z) ≥ 4` is what
+the exit-`(7)` handoff instantiates it with. -/
+structure Envelope (object : FiniteObject.{u}) (LengthOK : Nat → Prop)
+    (HighDegree : object.Vertex → Prop)
+    (Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop) where
+  /-- `Y`, the counted `P₁₃`-free remainder core. -/
+  core : Finset object.Vertex
+  /-- `H`, the assigned high-degree decorations. -/
+  decorations : Finset object.Vertex
+  /-- `H ⊆ V_{≥4}(G)`. -/
+  decorations_high : ∀ centre ∈ decorations, HighDegree centre
+  /-- `K_h ⊆ N_G(h)`, the assigned first neighbours. -/
+  assigned : object.Vertex → Finset object.Vertex
+  /-- It is nonempty. -/
+  assigned_nonempty : ∀ centre ∈ decorations, (assigned centre).Nonempty
+  /-- and consists of actual neighbours. -/
+  assigned_adj : ∀ centre ∈ decorations, ∀ first ∈ assigned centre,
+    object.graph.Adj centre first
+  /-- `A_{h,a}`, the simple handoff arm issued at `a`. -/
+  arm : object.Vertex → object.Vertex → List object.Vertex
+  /-- It starts at `a`. -/
+  arm_issued : ∀ centre ∈ decorations, ∀ first ∈ assigned centre,
+    (arm centre first).head? = some first
+  /-- It is a walk. -/
+  arm_chain : ∀ centre ∈ decorations, ∀ first ∈ assigned centre,
+    (arm centre first).IsChain object.graph.Adj
+  /-- and a simple one. -/
+  arm_nodup : ∀ centre ∈ decorations, ∀ first ∈ assigned centre,
+    (arm centre first).Nodup
+  /-- It lands in the core at `y_{h,a}`. -/
+  arm_lands : ∀ centre ∈ decorations, ∀ first ∈ assigned centre,
+    ∃ terminal, (arm centre first).getLast? = some terminal ∧ terminal ∈ core
+  /-- Its interior avoids `Y ∪ H ∪ {h}`. -/
+  arm_interior : ∀ centre ∈ decorations, ∀ first ∈ assigned centre,
+    ∀ vertex ∈ arm centre first, vertex ∈ core ∨ vertex ∈ decorations ∨
+      vertex = centre →
+      (arm centre first).getLast? = some vertex
+  /-- `K_h` is a clique in `F_safe(h)`. -/
+  fanSafe : ∀ centre ∈ decorations, ∀ first ∈ assigned centre,
+    ∀ second ∈ assigned centre, first ≠ second →
+      FanSafe object LengthOK Absorbing centre first second
+
+namespace Envelope
+
+variable {LengthOK : Nat → Prop} {HighDegree : object.Vertex → Prop}
+variable {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
+variable (envelope : Envelope object LengthOK HighDegree Absorbing)
+
+/-- **`ω(h) = d_G(h) − 3`**, the ambient surplus token of a decoration, and
+`ω(H)` its sum over the decorations.  This is the framework's own ambient
+surplus at the registered baseline; the manuscript's `d_G(h) − 3` is that
+quantity at `δ = 3`. -/
+noncomputable def centreTokens (threshold : Nat) : Nat :=
+  object.ambientSurplus envelope.decorations threshold
+
+/-- **`No(𝔛) = def⁺(Y) − ω(H) − ¼|V(Y)|`, negative side**, cleared of the
+division exactly as `def:net-charge` is: `s·def⁺(Y) < |V(Y)| + s·ω(H)`. -/
+def NegativeCharge (threshold dischargeScale : Nat) : Prop :=
+  dischargeScale * object.positiveDeficiency envelope.core threshold <
+    envelope.core.card + dischargeScale * envelope.centreTokens threshold
+
+end Envelope
+
+/-! ## `lem:typeA-high-degree-handoff` -/
+
+/-- **`lem:typeA-high-degree-handoff`.**
+
+*"Let `X` be a Type A support, and let `z` be a surviving first separator for a
+finite family of declared response coordinates through one completion port.
+Then `z`, together with the separated connector tails from `z` to their
+first-entry data in `X`, produces a decorated handoff fan envelope."*
+
+`Y = X` is the counted remainder core and `H = {z}`; the assigned first
+neighbours are the two separated next incidences, which are distinct because the
+germs separate, and the arms are the two connector tails.  The fan-safe clique
+condition on that pair is the geometric clause — discharged from the selected
+object's target avoidance — together with the four quotient clauses, which are
+the exits already denied on this branch. -/
+noncomputable def envelopeOfSeparation {support : Finset object.Vertex}
+    {receiver outside : object.Vertex} {LengthOK : Nat → Prop}
+    {HighDegree : object.Vertex → Prop}
+    {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
+    (separation : Separation object support receiver outside)
+    (armLeft armRight : List object.Vertex)
+    (armLeftIssued : armLeft.head? = some separation.nextLeft)
+    (armRightIssued : armRight.head? = some separation.nextRight)
+    (armLeftChain : armLeft.IsChain object.graph.Adj)
+    (armRightChain : armRight.IsChain object.graph.Adj)
+    (armLeftNodup : armLeft.Nodup) (armRightNodup : armRight.Nodup)
+    (armLeftLands : ∃ terminal, armLeft.getLast? = some terminal ∧
+      terminal ∈ support)
+    (armRightLands : ∃ terminal, armRight.getLast? = some terminal ∧
+      terminal ∈ support)
+    (armLeftInterior : ∀ vertex ∈ armLeft,
+      vertex ∈ support ∨ vertex = separation.separator →
+      armLeft.getLast? = some vertex)
+    (armRightInterior : ∀ vertex ∈ armRight,
+      vertex ∈ support ∨ vertex = separation.separator →
+      armRight.getLast? = some vertex)
+    (high : HighDegree separation.separator)
+    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
+    (denied : ¬ Absorbing separation.separator separation.nextLeft
+      separation.nextRight)
+    (deniedSwap : ¬ Absorbing separation.separator separation.nextRight
+      separation.nextLeft) :
+    Envelope object LengthOK HighDegree Absorbing := by
+  classical
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  refine
+    { core := support
+      decorations := {separation.separator}
+      decorations_high := ?_
+      assigned := fun _ => {separation.nextLeft, separation.nextRight}
+      assigned_nonempty := ?_
+      assigned_adj := ?_
+      arm := fun _ first =>
+        if first = separation.nextLeft then armLeft else armRight
+      arm_issued := ?_
+      arm_chain := ?_
+      arm_nodup := ?_
+      arm_lands := ?_
+      arm_interior := ?_
+      fanSafe := ?_ }
+  · intro centre member
+    rw [Finset.mem_singleton] at member
+    exact member ▸ high
+  · intro _ _
+    exact ⟨separation.nextLeft, by simp⟩
+  · intro centre member first assignedMember
+    rw [Finset.mem_singleton] at member
+    subst member
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with rfl | rfl
+    · exact separation.nextLeft_adj
+    · exact separation.nextRight_adj
+  · intro _ _ first assignedMember
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with rfl | rfl
+    · simpa using armLeftIssued
+    · by_cases equal : separation.nextRight = separation.nextLeft
+      · exact absurd equal.symm separation.distinct
+      · simpa [equal] using armRightIssued
+  · intro _ _ first assignedMember
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with rfl | rfl
+    · simpa using armLeftChain
+    · by_cases equal : separation.nextRight = separation.nextLeft
+      · exact absurd equal.symm separation.distinct
+      · simpa [equal] using armRightChain
+  · intro _ _ first assignedMember
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with rfl | rfl
+    · simpa using armLeftNodup
+    · by_cases equal : separation.nextRight = separation.nextLeft
+      · exact absurd equal.symm separation.distinct
+      · simpa [equal] using armRightNodup
+  · intro _ _ first assignedMember
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with rfl | rfl
+    · simpa using armLeftLands
+    · by_cases equal : separation.nextRight = separation.nextLeft
+      · exact absurd equal.symm separation.distinct
+      · simpa [equal] using armRightLands
+  · intro centre member first assignedMember
+    rw [Finset.mem_singleton] at member
+    subst member
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with rfl | rfl
+    · intro vertex vertexMember alternatives
+      simp only at vertexMember ⊢
+      refine armLeftInterior vertex vertexMember ?_
+      rcases alternatives with inside | rest
+      · exact Or.inl inside
+      · rcases rest with decoration | equal
+        · exact Or.inr (Finset.mem_singleton.mp decoration)
+        · exact Or.inr equal
+    · by_cases equal : separation.nextRight = separation.nextLeft
+      · exact absurd equal.symm separation.distinct
+      · intro vertex vertexMember alternatives
+        simp only [if_neg equal] at vertexMember ⊢
+        refine armRightInterior vertex vertexMember ?_
+        rcases alternatives with inside | rest
+        · exact Or.inl inside
+        · rcases rest with decoration | centreEq
+          · exact Or.inr (Finset.mem_singleton.mp decoration)
+          · exact Or.inr centreEq
+  · intro centre member first firstMember second secondMember different
+    rw [Finset.mem_singleton] at member
+    subst member
+    simp only [Finset.mem_insert, Finset.mem_singleton] at firstMember secondMember
+    rcases firstMember with rfl | rfl <;> rcases secondMember with rfl | rfl
+    · exact absurd rfl different
+    · exact ⟨fanSafe_geometric separation.nextLeft_adj separation.nextRight_adj
+        separation.distinct avoids, denied⟩
+    · exact ⟨fanSafe_geometric separation.nextRight_adj separation.nextLeft_adj
+        (Ne.symm separation.distinct) avoids, deniedSwap⟩
+    · exact absurd rfl different
+
+/-! ## `lem:decorated-fan-admissibility` -/
+
+/-- **The Type B fan-envelope data a decorated handoff carries.**
+
+`lem:decorated-fan-admissibility`: *"contextual dyadic-safety, a `P₁₃`-free
+empty-`3`-core remainder core, hereditary target-uncompressibility of the
+decorated boundaried profile, and fan-return-safety at every decoration."*
+
+This is the *handoff interface* of `rem:typeA-typeB-stratification`: every field
+is a hypothesis the Type B calculation consumes, and none is a conclusion of
+`lem:typeB-exclusion`. -/
+structure Admissible (object : FiniteObject.{u}) (LengthOK : Nat → Prop)
+    (Uncompressible : Finset object.Vertex → Prop)
+    (WindowFree : Finset object.Vertex → Prop)
+    {HighDegree : object.Vertex → Prop}
+    {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
+    (envelope : Envelope object LengthOK HighDegree Absorbing) : Prop where
+  /-- Contextual dyadic-safety: the ambient object carries no accepted cycle. -/
+  dyadicSafe : ¬ Graph.HasCycleWithLength LengthOK object
+  /-- The counted core is `P₁₃`-free with empty internal `3`-core. -/
+  coreWindowFree : WindowFree envelope.core
+  /-- Hereditary target-uncompressibility of the decorated profile. -/
+  uncompressible : ∀ piece : Finset object.Vertex, Uncompressible piece
+  /-- Fan-return safety at every decoration: no assigned pair closes an accepted
+  cycle through the centre. -/
+  fanReturnSafe : ∀ centre ∈ envelope.decorations,
+    ∀ first ∈ envelope.assigned centre, ∀ second ∈ envelope.assigned centre,
+      first ≠ second →
+      ∀ return' : FanReturn object centre first second,
+        ¬ LengthOK (return'.walk.length + 2)
+
+/-- **`lem:decorated-fan-admissibility`.**
+
+*"If exit (7) of `def:typeA-saturated-exits` occurs in a saturated Type A
+branch, the resulting decorated handoff fan envelope carries exactly the data
+required by the Type B fan calculation."*
+
+The counted core is the Type A support `X` used in
+`lem:typeA-high-degree-handoff`, so the first three clauses are inherited from
+`def:admissible` — here read as the branch's own committed facts — and the
+fourth is the geometric clause of the envelope's fan-safe cliques.  Nothing in
+the derivation mentions `lem:typeB-exclusion`. -/
+theorem admissible_of_envelope {LengthOK : Nat → Prop}
+    {Uncompressible WindowFree : Finset object.Vertex → Prop}
+    {HighDegree : object.Vertex → Prop}
+    {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
+    {envelope : Envelope object LengthOK HighDegree Absorbing}
+    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
+    (windowFree : WindowFree envelope.core)
+    (uncompressible : ∀ piece : Finset object.Vertex, Uncompressible piece) :
+    Admissible object LengthOK Uncompressible WindowFree envelope where
+  dyadicSafe := avoids
+  coreWindowFree := windowFree
+  uncompressible := uncompressible
+  fanReturnSafe := fun centre member first firstMember second secondMember
+      different => (envelope.fanSafe centre member first firstMember second
+    secondMember different).1
+
+/-! ## `def:decorated-typeB-envelope-support` and the exact transfer
+
+The grouped envelope support is read off the core--center incidence graph: its
+connected components partition both the cores and the handoff centers.  That
+partition is the whole content of `lem:decorated-envelope-no-double-count`, so
+it is what the structure below carries, and the displayed identity is the
+fiberwise sum it forces. -/
+
+/-- **`def:decorated-typeB-envelope-support`.**  A family of pairwise disjoint
+Type A cores producing exit-`(7)` handoffs, the ambient handoff centers, and
+the assignment of each to its connected component of the core--center incidence
+graph. -/
+structure GroupedEnvelopes (Core Component : Type v) where
+  /-- `𝒴`, the family of Type A cores. -/
+  cores : Finset Core
+  /-- The ambient high-degree handoff centers. -/
+  centres : Finset Component
+  /-- The incidence component a core belongs to. -/
+  coreComponent : Core → Component
+  /-- The incidence component a center belongs to. -/
+  centreComponent : Component → Component
+  /-- The components themselves. -/
+  components : Finset Component
+  /-- `def⁺(Y)`. -/
+  deficiency : Core → Nat
+  /-- `|V(Y)|`. -/
+  size : Core → Nat
+  /-- `ω(h) = d_G(h) − 3`. -/
+  token : Component → Nat
+  /-- Every core lies in a listed component. -/
+  coreComponent_mem : ∀ core ∈ cores, coreComponent core ∈ components
+  /-- and every center does. -/
+  centreComponent_mem : ∀ centre ∈ centres, centreComponent centre ∈ components
+
+namespace GroupedEnvelopes
+
+variable {Core Component : Type v} [DecidableEq Component]
+variable (grouped : GroupedEnvelopes Core Component)
+
+/-- `𝒴_𝔆`, the cores of one incidence component. -/
+def componentCores (component : Component) : Finset Core :=
+  grouped.cores.filter fun core => grouped.coreComponent core = component
+
+/-- `H_𝔆`, the handoff centers of one incidence component. -/
+def componentCentres (component : Component) : Finset Component :=
+  grouped.centres.filter fun centre => grouped.centreComponent centre = component
+
+/-- `ω(𝔆) = Σ_{h ∈ H_𝔆} ω(h)`, the center-token sum of one component. -/
+def componentTokens (component : Component) : Nat :=
+  ∑ centre ∈ grouped.componentCentres component, grouped.token centre
+
+/-- **`No(𝔛*_𝔆)` at the discharge scale**, cleared of the division:
+`s·Σ_{Y ∈ 𝒴_𝔆} def⁺(Y) − s·ω(𝔆) − Σ_{Y ∈ 𝒴_𝔆} |V(Y)|`, as an integer. -/
+def componentCharge (dischargeScale : Nat) (component : Component) : Int :=
+  (dischargeScale : Int) *
+      (∑ core ∈ grouped.componentCores component, grouped.deficiency core : Nat) -
+    (dischargeScale : Int) * (grouped.componentTokens component : Nat) -
+      (∑ core ∈ grouped.componentCores component, grouped.size core : Nat)
+
+/-- **The Type A core deficiencies are counted exactly once.**  The components
+partition the cores, so the fiberwise sum is the whole sum. -/
+theorem sum_componentCores (weight : Core → Nat) :
+    ∑ component ∈ grouped.components,
+        ∑ core ∈ grouped.componentCores component, weight core =
+      ∑ core ∈ grouped.cores, weight core := by
+  classical
+  exact Finset.sum_fiberwise_of_maps_to grouped.coreComponent_mem weight
+
+/-- **Each ambient handoff-center token is counted exactly once.** -/
+theorem sum_componentTokens :
+    ∑ component ∈ grouped.components, grouped.componentTokens component =
+      ∑ centre ∈ grouped.centres, grouped.token centre := by
+  classical
+  exact Finset.sum_fiberwise_of_maps_to grouped.centreComponent_mem grouped.token
+
+/-- **`lem:decorated-envelope-no-double-count`.**
+
+  `Σ_𝔆 No(𝔛*_𝔆) = Σ_{Y ∈ 𝒴} (def⁺(Y) − ¼|V(Y)|) − Σ_𝔆 ω(𝔆)`.
+
+*"Consequently a negative Type A handoff contribution is not discarded when the
+branch leaves the Type A calculation; it is transferred to the grouped Type B
+envelope ledger."*  Both sides are at the discharge scale, so no rounding is
+introduced, and the identity is exactly the two partition statements above. -/
+theorem sum_componentCharge (dischargeScale : Nat) :
+    ∑ component ∈ grouped.components,
+        grouped.componentCharge dischargeScale component =
+      ((dischargeScale : Int) *
+            (∑ core ∈ grouped.cores, grouped.deficiency core : Nat) -
+          (∑ core ∈ grouped.cores, grouped.size core : Nat)) -
+        (dischargeScale : Int) *
+          (∑ component ∈ grouped.components,
+            grouped.componentTokens component : Nat) := by
+  classical
+  simp only [componentCharge, Finset.sum_sub_distrib, ← Finset.mul_sum,
+    ← Nat.cast_sum]
+  rw [grouped.sum_componentCores grouped.deficiency,
+    grouped.sum_componentCores grouped.size]
+  push_cast
+  ring
+
+/-- **`lem:window-handoff-center-accounting`.**
+
+*"Let `h` be an exit-(7) handoff center lying in a packed `P₁₃`-window.  Then
+either exit (3) occurs at the saturated receiver that produced the handoff, or
+the grouped envelope containing `h` is charged to the surplus token `d_G(h) − 3`
+of the window vertex `h`."*
+
+The disjunction is the branch's, and the second alternative is proved outright:
+`h`'s token is one of the center tokens of its own incidence component, which is
+exactly what "the grouped envelope containing `h` is charged to `ω(h)`" says.
+The first alternative is therefore never needed to discharge the lemma, which is
+the strongest form of the manuscript's statement. -/
+theorem token_le_componentTokens (Collision : Prop) {centre : Component}
+    (member : centre ∈ grouped.centres) :
+    Collision ∨
+      grouped.token centre ≤
+        grouped.componentTokens (grouped.centreComponent centre) := by
+  classical
+  refine Or.inr (Finset.single_le_sum (f := grouped.token)
+    (fun _ _ => Nat.zero_le _) ?_)
+  exact Finset.mem_filter.mpr ⟨member, rfl⟩
+
+end GroupedEnvelopes
+
+end Hypostructure.Graph.DecoratedHandoff

@@ -87,18 +87,24 @@ ledger. -/
   capacityTokenLedgerRow (K .canonicalPairLedger) (K .capacityTokenLedger)
     (by simp) (fun _input value => ⟨value⟩)
 
-/-- Nodes `[137]`--`[143]`: the coupled high-load test with its role split.
+/-- Nodes `[137]`--`[143]`: the coupled high-load test with its role split and
+the near-cubic surplus estimate.
 
-Both productions read node `[130]`'s pair count; the presentation the ledger
-still needs -- the token order, the eligibility whose first applicable label is
-`Θ_cap`, the role map and the entropy budget -- is what the committed statements
-quantify over, because node `[136]` does not build it. -/
+Three keys are read and all three are spent: node `[130]`'s pair count converts
+the lower-bound package bound, node `[136]`'s capacity-token ledger witnesses the
+high-load display, and node `[129]`'s package ordering supplies the deficit the
+estimate is stated at. -/
 @[reducible] noncomputable def coupledFibrePressure :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  coupledFibrePressureRow (K .canonicalPairLedger) (K .roleFibrePartition)
-    (K .fibrePressure) (by simp) (by simp) (by simp)
+  coupledFibrePressureRow (K .canonicalPairLedger) (K .capacityTokenLedger)
+    (K .baselineSpineDemand) (K .roleFibrePartition) (K .fibrePressure)
+    (K .spineSurplusEstimate)
+    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
     (fun _input fact => fact.down.1)
+    (fun _input fact => fact.down.2)
+    (fun _input fact => fact.down.2.2.2.2)
     (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
+    (fun _input value => ⟨value⟩)
 
 /-- Nodes `[140]`, `[142]`, `[143]`: the three geometric class audits. -/
 @[reducible] noncomputable def bottleneckClassification :
@@ -141,27 +147,51 @@ carries. -/
 
 /-! ## The block, run -/
 
-/-- The key index a branch carries after the six activation rows. -/
+/-- The key index a branch carries after nodes `[126]`--`[137]`, before the
+node-`[137]` branch. -/
 abbrev sparseActivationKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .homogeneousBottleneck :: K .bottleneckClassification ::
-    K .roleFibrePartition :: K .fibrePressure ::
+  K .roleFibrePartition :: K .fibrePressure :: K .spineSurplusEstimate ::
     K .capacityTokenLedger :: K .canonicalPairLedger :: K .baselineSpineDemand ::
     K .activeSurplusDemands :: K .sparseSurplusSurvivor ::
     K .sparsePortActivation :: K .activeSurplusFamily ::
     K .sparseSlackSurplus :: known
 
+/-- The near-cubic arm's index: the block's facts plus
+`prop:single-graph-sparse-pressure-routing` (a).  The geometric audits are
+absent, so nothing downstream of `[138]` can read an overload that did not
+occur. -/
+abbrev nearCubicKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .sparsePressureNearCubic :: sparseActivationKeys known
+
+/-- The overload arm's index: the block's facts, the forced role-homogeneous
+pattern of `prop:single-graph-sparse-pressure-routing` (b), and the three
+geometric class audits `[140]`, `[142]`, `[143]` with `[144]` that read it. -/
+abbrev overloadKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .homogeneousBottleneck :: K .bottleneckClassification ::
+    K .sparsePressureOverload :: sparseActivationKeys known
+
 /-- **The exit of the sparse activation block.**
 
-There is one constructor: the block is nonbranching, and it carries the
-canonical ledger indexed by exactly the twelve facts it appended. -/
+Two constructors, one per arm of `prop:single-graph-sparse-pressure-routing`:
+either the geometric caps hold and the branch routes to node `[138]` carrying
+`σ(G) ≤ R_L(n)` and the surplus estimate, or some role fibre overloads and the
+branch carries the forced role-homogeneous pattern into the three geometric
+class audits.  The arm not taken is not in the taken arm's index. -/
 inductive SurplusResult
     (selected : Input BranchState Presentation presentation data)
     (known : FactKeys (Input BranchState Presentation presentation data)) where
-  | activated
+  | nearCubic
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (sparseActivationKeys known))
+        selected (nearCubicKeys known))
+  | overloaded
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (overloadKeys known))
 
 /-- **Nodes `[126]`--`[144]`, run.**
 
@@ -187,6 +217,9 @@ noncomputable def runSparseActivation
     (tokenFresh : K (data := data) .capacityTokenLedger ∉ known)
     (partitionFresh : K (data := data) .roleFibrePartition ∉ known)
     (pressureFresh : K (data := data) .fibrePressure ∉ known)
+    (estimateFresh : K (data := data) .spineSurplusEstimate ∉ known)
+    (nearCubicFresh : K (data := data) .sparsePressureNearCubic ∉ known)
+    (overloadFresh : K (data := data) .sparsePressureOverload ∉ known)
     (classificationFresh : K (data := data) .bottleneckClassification ∉ known)
     (bottleneckFresh : K (data := data) .homogeneousBottleneck ∉ known) :
     SurplusResult current known := by
@@ -252,23 +285,29 @@ noncomputable def runSparseActivation
       intro key isNew isOld
       simp only [List.mem_cons, List.mem_singleton, List.not_mem_nil,
         or_false] at isNew
-      rcases isNew with rfl | rfl <;> revert isOld <;>
-        simp [partitionFresh, pressureFresh])
-  have afterClassification :=
-    (bottleneckClassification (data := data)).run afterPressure (by
-      intro key isNew isOld
-      simp only [List.mem_singleton] at isNew
-      subst isNew
-      revert isOld
-      simp [classificationFresh])
-  have afterBottleneck :=
-    (homogeneousBottleneck (data := data)).run afterClassification (by
-      intro key isNew isOld
-      simp only [List.mem_singleton] at isNew
-      subst isNew
-      revert isOld
-      simp [bottleneckFresh])
-  exact .activated afterBottleneck
+      rcases isNew with rfl | rfl | rfl <;> revert isOld <;>
+        simp [partitionFresh, pressureFresh, estimateFresh])
+  -- Node `[137]`: `prop:single-graph-sparse-pressure-routing`.
+  match sparsePressureDichotomy afterPressure (K .sparsePressureNearCubic)
+      (K .sparsePressureOverload) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+      (by simp [nearCubicFresh]) (by simp [overloadFresh]) with
+  | .left nearCubicHistory => exact .nearCubic nearCubicHistory
+  | .right overloadHistory =>
+      have afterClassification :=
+        (bottleneckClassification (data := data)).run overloadHistory (by
+          intro key isNew isOld
+          simp only [List.mem_singleton] at isNew
+          subst isNew
+          revert isOld
+          simp [classificationFresh])
+      have afterBottleneck :=
+        (homogeneousBottleneck (data := data)).run afterClassification (by
+          intro key isNew isOld
+          simp only [List.mem_singleton] at isNew
+          subst isNew
+          revert isOld
+          simp [bottleneckFresh])
+      exact .overloaded afterBottleneck
 
 /-- **The sparse surplus branch, entered from the entry spine's own exit.**
 
@@ -287,5 +326,6 @@ noncomputable def runSurplusBranch
         (presentation := presentation) (data := data)) :=
   runSparseActivation history (by simp) (by simp) (by simp) (by simp) (by simp)
     (by simp) (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
+    (by simp) (by simp) (by simp)
 
 end Hypostructure.Graph.Strategy.Spine

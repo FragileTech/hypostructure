@@ -280,6 +280,7 @@ noncomputable def runRouteEight
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .uncompressible) known]
     [FactKeys.Has (K (data := data) .selection) known]
+    [FactKeys.Has (K (data := data) .typeASaturatedExitEntry) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
     (peelFresh : K (data := data) .typeAExitFourPeel ∉ known)
@@ -307,9 +308,9 @@ noncomputable def runRouteEight
     Route8Result current known := by
   classical
   -- Node `[101]`, the ladder's peel test.
-  match typeAExitFourPeelDichotomy history (K .typeAExitFourPeel)
-      (K .typeAExitFourNoPeel) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
-      peelFresh noPeelFresh with
+  match typeAExitFourPeelDichotomy history (K .typeASaturatedExitEntry)
+      (K .typeAExitFourPeel) (K .typeAExitFourNoPeel) (fun fact => fact.down)
+      (fun value => ⟨value⟩) (fun value => ⟨value⟩) peelFresh noPeelFresh with
   | .left available =>
       -- Node `[102]`: peel to a nonnegative charge and return to node `[89]`.
       exact .peeled
@@ -321,14 +322,16 @@ noncomputable def runRouteEight
           simp [peeledChargeFresh]))
   | .right noPeel =>
   -- Node `[101]`, the route-8 `(Q5)` reading.
-  match typeAExitFourDichotomy noPeel (K .typeAExitFour) (K .typeAExitFourFree)
+  match typeAExitFourDichotomy noPeel (K .typeASaturatedExitEntry)
+      (K .typeAExitFour) (K .typeAExitFourFree) (fun fact => fact.down)
       (fun value => ⟨value⟩) (fun value => ⟨value⟩) (by simp [exitFourFresh])
       (by simp [exitFourFreeFresh]) with
   | .left carrierExit => exact .exitFour carrierExit
   | .right exitFourFree =>
   -- Node `[103]`: exit `(5)`.
-  match typeAExitFiveDichotomy exitFourFree (K .typeAExitFive)
-      (K .typeAExitFiveFree) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+  match typeAExitFiveDichotomy exitFourFree (K .typeASaturatedExitEntry)
+      (K .typeAExitFive) (K .typeAExitFiveFree) (fun fact => fact.down)
+      (fun value => ⟨value⟩) (fun value => ⟨value⟩)
       (by simp [exitFiveFresh]) (by simp [exitFiveFreeFresh]) with
   | .left compressed =>
       -- Node `[103]`, the realization test of `lem:typeA-exits-discharged`.
@@ -343,7 +346,8 @@ noncomputable def runRouteEight
       | .right traceLevel => exact .exitFiveTraceLevel traceLevel
   | .right surviving =>
   -- Node `[105]`: exit `(6)`, clause (c) of `def:typeA-trace-basin`.
-  match typeAExitSixDichotomy surviving (K .typeAExitSix) (K .typeAExitSixFree)
+  match typeAExitSixDichotomy surviving (K .typeASaturatedExitEntry)
+      (K .typeAExitSix) (K .typeAExitSixFree) (fun fact => fact.down)
       (fun value => ⟨value⟩) (fun value => ⟨value⟩)
       (by simp [exitSixFresh]) (by simp [exitSixFreeFresh]) with
   | .left delocalized =>

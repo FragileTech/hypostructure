@@ -519,8 +519,9 @@ inductive ExitChainResult
           (typeAExitTwoFreeKeys (typeAExitOneFreeKeys known))))
   | free
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitThreeFreeKeys
-          (typeAExitTwoFreeKeys (typeAExitOneFreeKeys known))))
+        selected (K .typeASaturatedExitEntry ::
+          typeAExitThreeFreeKeys
+            (typeAExitTwoFreeKeys (typeAExitOneFreeKeys known))))
 
 /-- **Exits `(1)`, `(2)` and `(3)`, run in the manuscript's order.**
 
@@ -532,6 +533,7 @@ noncomputable def runExitChain
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
     [FactKeys.Has (K (data := data) .returnAvoidance) known]
+    [FactKeys.Has (K (data := data) .typeASaturatedReceiver) known]
     [FactKeys.Has (K (data := data) .typeAVisibleEntry) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
@@ -541,6 +543,7 @@ noncomputable def runExitChain
     (twoFreeFresh : K (data := data) .typeAExitTwoFree ∉ known)
     (collisionFresh : K (data := data) .typeAExitThreeCollision ∉ known)
     (threeFreeFresh : K (data := data) .typeAExitThreeFree ∉ known)
+    (entryFresh : K (data := data) .typeASaturatedExitEntry ∉ known)
     (closureFresh : closed (BranchState := BranchState)
       (presentation := presentation) (data := data) ∉ known) :
     ExitChainResult current known := by
@@ -555,6 +558,151 @@ noncomputable def runExitChain
           match runExitThree continuing (by simp [collisionFresh])
               (by simp [threeFreeFresh]) (by simp [closureFresh]) with
           | .closed closedHistory => exact .exitThreeClosed closedHistory
-          | .free surviving => exact .free surviving
+          | .free surviving =>
+              -- `lem:typeA-unpeeled-visible-routing` routes node `[99]`'s no
+              -- arm into the shared exit segment, so its entry is committed
+              -- here, refined out of node `[89]`'s saturation exactly as it is
+              -- at node `[94]`.
+              exact .free
+                ((Spine.typeASaturatedExitEntryRow (K .typeASaturatedReceiver)
+                    (K .typeASaturatedExitEntry) (by simp)
+                    (fun _input fact => fact.down)
+                    (fun _input value => ⟨value⟩)).run surviving
+                  (by simp [entryFresh]))
+
+/-! # The saturated exit chain, run: node `[107]`
+
+Exit `(7)` of `def:typeA-saturated-exits`: *"a high-degree decorated handoff fan
+envelope is produced"*.  It is the Type B handoff exit, and it is the only exit
+of the list whose taken arm is neither a closure nor a Type A continuation:
+`lem:typeA-exits-discharged` reclassifies the branch as a decorated handoff fan
+envelope, and `lem:typeA-saturated-handoff` records the transfer.
+
+The row is asked after any canonical branch cursor whose index carries the
+shared entry of the exit segment — `lem:typeA-exit4-residual-routing`'s
+hypothesis, which node `[99]`'s no arm and node `[94]` both commit — together
+with node `[1]`'s selection and node `[14]`'s hereditary
+target-uncompressibility.  All three requirements are discharged by instance
+resolution against the incoming index; the row names no producer, no execution
+position and no predecessor depth, and in particular it does not name which of
+Figure 8's two entries the branch came in through. -/
+
+/-- **Node `[107]`, asked on the exit segment's own entry.**
+
+The entry requirement is discharged by instance resolution against the incoming
+index, so this question does not elaborate on a history that has not entered
+the saturated exit segment; the selection and uncompressibility requirements are
+what `lem:decorated-fan-admissibility` spends, read the same way. -/
+noncomputable def typeAExitSeven
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .selection) known]
+    [FactKeys.Has (K (data := data) .uncompressible) known]
+    [FactKeys.Has (K (data := data) .typeASaturatedExitEntry) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (handoffFresh : K (data := data) .typeAExitSevenHandoff ∉ known)
+    (freeFresh : K (data := data) .typeAExitSevenFree ∉ known) :
+    Decision (K (data := data) .typeAExitSevenHandoff)
+      (K (data := data) .typeAExitSevenFree) history :=
+  typeAExitSevenDichotomy history (K .selection) (K .uncompressible)
+    (K .typeASaturatedExitEntry) (K .typeAExitSevenHandoff)
+    (K .typeAExitSevenFree)
+    (fun fact => fact.down.1) (fun fact => fact.down) (fun fact => fact.down)
+    (fun value => ⟨value⟩) (fun value => ⟨value⟩) handoffFresh freeFresh
+
+/-! ## The block, run -/
+
+/-- The key index of node `[107]`'s handoff arm: the admissible decorated
+handoff fan envelope the Type B entry reads.  There is no closure key: exit
+`(7)` does not close. -/
+abbrev typeAExitSevenHandoffKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSevenHandoff :: known
+
+/-- The key index of node `[107]`'s no arm — the entry of node `[109]`. -/
+abbrev typeAExitSevenFreeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSevenFree :: known
+
+/-- **The exits of node `[107]`.**
+
+`handoff` is the Type B transfer `lem:typeA-exits-discharged` records for exit
+`(7)`: the branch leaves the Type A charge calculation carrying
+`def:decorated-fan-envelope`'s envelope and `lem:decorated-fan-admissibility`'s
+interface, and it is an *open* residual, not a terminal.  `free` is the
+alternative the saturated exit list continues on at node `[109]`. -/
+inductive ExitSevenResult
+    (selected : Input BranchState Presentation presentation data)
+    (known : FactKeys (Input BranchState Presentation presentation data)) where
+  | handoff
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitSevenHandoffKeys known))
+  | free
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitSevenFreeKeys known))
+
+/-- **Exit `(7)` of `def:typeA-saturated-exits`, run.**
+
+The decision commits one arm against the one immutable prefix.  Neither arm
+appends a closure key, because neither alternative is a terminal: the handoff
+arm hands the branch to Type B and the free arm continues to node `[109]`.
+Nothing is transported between the two arms, and the arm not taken is absent
+from the taken branch's index. -/
+noncomputable def runExitSeven
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .selection) known]
+    [FactKeys.Has (K (data := data) .uncompressible) known]
+    [FactKeys.Has (K (data := data) .typeASaturatedExitEntry) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (handoffFresh : K (data := data) .typeAExitSevenHandoff ∉ known)
+    (freeFresh : K (data := data) .typeAExitSevenFree ∉ known) :
+    ExitSevenResult current known := by
+  classical
+  match typeAExitSeven history handoffFresh freeFresh with
+  | .left produced => exact .handoff produced
+  | .right free => exact .free free
+
+/-! ## What the two exits carry -/
+
+theorem exitSevenHandoff_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (typeAExitSevenHandoffKeys known)) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem exitSevenFree_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (typeAExitSevenFreeKeys known)) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem exitSevenHandoff_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (typeAExitSevenHandoffKeys known)) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem exitSevenFree_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (typeAExitSevenFreeKeys known)) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
 
 end Hypostructure.Graph.Strategy.Spine

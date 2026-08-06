@@ -4,6 +4,7 @@ import Hypostructure.Graph.PrimitiveCarrier
 import Hypostructure.Graph.SparsePairLedger
 import Hypostructure.Graph.SameTokenBlockerRoles
 import Hypostructure.Graph.SparseEntropySandwich
+import Hypostructure.Graph.CapacityTokenAssignment
 
 /-!
 # The sparse surplus branch: the activation rows
@@ -513,7 +514,8 @@ is about to derive. -/
 /-! ## Nodes `[134]`--`[136]`: the capacity-token ledger -/
 
 /-- `def:primitive-sparse-blocker-carrier` with `lem:primitive-carrier-supply`,
-and `lem:token-ledger-no-overcount`.
+`def:capacity-token-ledger` with `lem:capacity-token-supply` and
+`lem:token-ledger-no-overcount`, and `def:same-token-patterns`.
 
 The carrier `𝔘_sp(G) = V(G) ⊔ I_E(G) ⊔ 𝒫_exc` is built from the object's own
 data, and its supply is committed in both of the manuscript's forms: the
@@ -522,15 +524,27 @@ envelope `m ≤ 2n − 2`, which is committed as an implication because the enve
 is a hypothesis the manuscript carries into the estimate rather than a property
 of every object.
 
-`lem:token-ledger-no-overcount` is the blocker ledger's own identity read at a
-token alphabet instead of a blocker alphabet — the same
-`card_chargedPairs_eq_sum_multiplicity`, not a second implementation — and it is
-committed together with the totality clause that makes `Θ_cap` charge every pair
-it is defined on.
+The token universe is the manuscript's three-summand
+`𝔗_cap = 𝔗_prim ⊔ 𝔗_R ⊔ 𝔗_W`: the primitive carrier, the remainder surplus units
+`{(v,j) : v ∈ R, 1 ≤ j ≤ d_G(v) − δ}`, and the window--remainder and cross-window
+incidence families of the packing.  `lem:capacity-token-supply` is committed in
+its exact form `|𝔗_cap| + 2(order−1)p = |𝔘_sp(G)| + δ·order·p + σ(G)` — the
+manuscript's `|𝔗_cap| = |𝔘_sp(G)| + 15p₁₃ + σ(G)` — and its displayed bound
+`|𝔗_cap| ≤ 8n + σ(G)` as an implication from the same envelope and the registered
+join comparison.
 
-What is not committed: the token universe `𝔗_cap = 𝔗_prim ⊔ 𝔗_R ⊔ 𝔗_W` beyond
-its primitive summand, the four-case assignment `Θ_cap`, and
-`lem:capacity-token-supply`'s `|𝔗_cap| ≤ 8n + σ(G)`. -/
+`Θ_cap` is the four-case charge, built from the pair's canonical blocker
+`Φ_can(π)`, that blocker's declared support and its primitive carrier `κ`.  It
+lands in `𝔗_cap`, and `lem:token-ledger-no-overcount` is the blocker ledger's own
+fibre identity read at that charge — the same
+`card_chargedPairs_eq_sum_multiplicity`, not a second implementation — together
+with the clause that makes the identity read at the whole blocked family.
+`def:same-token-patterns`' fibre graph `H_t` is the charge's own fibre, a simple
+graph on `𝒜₀` with `e(H_t) = ℓ_cap(t)`.
+
+The statement is quantified over exactly two things the branch does not fix: a
+maximal packing of induced windows, and the declared coordinate and shoulder-chord
+presentation of `def:declared-coordinate-signature`. -/
 @[reducible] noncomputable def capacityTokenLedgerRow
     (canonicalPairLedger capacityTokenLedger :
       FactKey (Input BranchState Presentation presentation data))
@@ -542,22 +556,8 @@ its primitive summand, the four-case assignment `Θ_cap`, and
           (input.object.edgeCount + 2 ≤ 2 * input.object.vertexCount →
             (input.object.primitiveCarrier data.threshold).card ≤
               6 * input.object.vertexCount)) ∧
-        ∀ Token : Type,
-          ∀ tokenDecidableEq : DecidableEq Token,
-          ∀ tokens : List Token,
-            ∀ Eligible : Token →
-                Finset (input.object.Vertex × input.object.Vertex) → Prop,
-              ∀ decidable : ∀ token pair, Decidable (Eligible token pair),
-                (input.object.chargedPairs data.threshold tokens Eligible
-                    decidable).card =
-                  (@List.toFinset _ tokenDecidableEq tokens).sum
-                    (input.object.pairMultiplicity data.threshold
-                      tokenDecidableEq tokens Eligible decidable) ∧
-                ((∀ pair ∈ input.object.portPairSchedule data.threshold,
-                    ∃ token ∈ tokens, Eligible token pair) →
-                  input.object.chargedPairs data.threshold tokens Eligible
-                      decidable =
-                    input.object.portPairSchedule data.threshold)) →
+        Graph.FiniteObject.CapacityTokenLedgerStatement input.object
+          data.threshold data.windowOrder) →
       capacityTokenLedger.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
@@ -580,12 +580,8 @@ its primitive summand, the four-case assignment `Θ_cap`, and
             fun envelope =>
               object.card_primitiveCarrier_le baseline data.three_le_threshold
                 handshake envelope⟩,
-            fun _Token tokenDecidableEq tokens Eligible decidable =>
-              ⟨Graph.FiniteObject.card_chargedPairs_eq_sum_multiplicity
-                  tokenDecidableEq tokens Eligible decidable,
-                fun total =>
-                  Graph.FiniteObject.chargedPairs_eq_of_total tokens Eligible
-                    decidable total⟩⟩)
+            Graph.FiniteObject.capacityTokenLedgerStatement object baseline
+              data.three_le_threshold data.windowOrder_pos handshake⟩)
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

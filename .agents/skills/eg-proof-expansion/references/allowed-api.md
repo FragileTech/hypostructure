@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **433**.
+Compiled declarations: **440**.
 
-Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 57, **Minimum-degree cycle spine vocabulary** 186.
+Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 60, **Minimum-degree cycle spine vocabulary** 190.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -3174,6 +3174,28 @@ Graph.Strategy.Spine.Data → ℕ
     (packing : Finset (Finset object.Vertex)) → Graph.Strategy.Spine.remainderQuotient data object packing → Prop
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.HandoffAdmissible`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex) → Finset object.Vertex → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.HandoffProduced`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex) → Finset object.Vertex → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Holds`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4197,6 +4219,28 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSevenFree`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSevenHandoff`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSix`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4307,6 +4351,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAPortReturn`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAReceiverRouting`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4341,6 +4396,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAVisibleEntry`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAVisibleEntryClause`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5637,6 +5703,55 @@ Graph.Strategy.Spine.Key
                           (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.handoffAbsorbing`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data →
+  (object : Graph.FiniteObject) → Finset (Finset object.Vertex) → object.Vertex → object.Vertex → object.Vertex → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.handoffHighDegree`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(object : Graph.FiniteObject) → object.Vertex → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.handoffUncompressible`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset object.Vertex → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.handoffWindowFree`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset object.Vertex → Prop
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
+
 #### `Hypostructure.Graph.Strategy.Spine.heavyCentreDichotomy`
 
 - Category: Minimum-degree cycle spine rows
@@ -5853,28 +5968,6 @@ Graph.Strategy.Spine.Key
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
-#### `Hypostructure.Graph.Strategy.Spine.idx`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key → ℕ
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.idx_injective`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Function.Injective Graph.Strategy.Spine.idx
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.instDecidableEqKey`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5955,17 +6048,6 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
             (Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation data))
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.label`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key → String
-```
-
 ### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.localAlgebraRow`
@@ -6005,19 +6087,6 @@ Graph.Strategy.Spine.Key → String
 
 ```lean
 Graph.Strategy.Spine.Key → Name
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.name_eq`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-∀ (k : Graph.Strategy.Spine.Key),
-  Graph.Strategy.Spine.name k =
-    (`Hypostructure.Graph.Strategy.Spine.str (Graph.Strategy.Spine.label k)).num (Graph.Strategy.Spine.idx k)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.name_injective`
@@ -6371,32 +6440,6 @@ Function.Injective Graph.Strategy.Spine.name
                       maximalPacking.At input) →
                   Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
-
-### `Hypostructure.Graph.Strategy.SpineVocabulary`
-
-#### `Hypostructure.Graph.Strategy.Spine.ofIdx`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-ℕ → Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.ofIdx_idx`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-∀ (k : Graph.Strategy.Spine.Key), Graph.Strategy.Spine.ofIdx (Graph.Strategy.Spine.idx k) = k
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.orderThresholdDichotomy`
 
@@ -6829,6 +6872,112 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                               Core.Strategy.Decision typeAExitOneReturn typeAExitOneFree previous
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.typeAExitSevenDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+              (previous :
+                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    current known) →
+                (selection uncompressible typeAVisibleEntry typeAExitSevenHandoff typeAExitSevenFree :
+                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+                  [Core.Residual.FactKeys.Has selection known] →
+                    [Core.Residual.FactKeys.Has uncompressible known] →
+                      [Core.Residual.FactKeys.Has typeAVisibleEntry known] →
+                        (∀ (a : selection.At current), ¬Graph.HasCycleWithLength data.LengthOK current.object) →
+                          (∀ (a : uncompressible.At current) (support : Finset current.object.Vertex),
+                              Graph.Strategy.Spine.handoffUncompressible data current.object support) →
+                            (∀ (a : typeAVisibleEntry.At current),
+                                ∃ packing,
+                                  Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                                    (∀ (window : Finset current.object.Vertex),
+                                        Graph.FiniteObject.InducesWindow current.object data.windowOrder window →
+                                          ∃ member ∈ packing, ¬Disjoint window member) ∧
+                                      ∃ piece ⊆ Graph.FiniteObject.remainderSupport current.object packing,
+                                        Graph.SupportComponents.Connected.ConnectedOn current.object piece ∧
+                                          Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
+                                              data.dischargeScale ∧
+                                            Graph.FiniteObject.ambientSurplus current.object piece data.threshold = 0 ∧
+                                              ∃ receiver,
+                                                Graph.FiniteObject.IsReceiver current.object piece data.threshold
+                                                    receiver ∧
+                                                  Graph.FiniteObject.Saturated current.object piece data.threshold
+                                                      data.dischargeScale receiver ∧
+                                                    ∃
+                                                      outside ∈
+                                                        Graph.VisibleEntry.completionPorts current.object piece
+                                                          receiver,
+                                                      data.dischargeScale ≤
+                                                        (Graph.VisibleEntry.visibleLoadsAt current.object piece
+                                                            data.threshold receiver outside).card) →
+                              ((∃ packing,
+                                    Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                                      (∀ (window : Finset current.object.Vertex),
+                                          Graph.FiniteObject.InducesWindow current.object data.windowOrder window →
+                                            ∃ member ∈ packing, ¬Disjoint window member) ∧
+                                        ∃ piece ⊆ Graph.FiniteObject.remainderSupport current.object packing,
+                                          Graph.SupportComponents.Connected.ConnectedOn current.object piece ∧
+                                            Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
+                                                data.dischargeScale ∧
+                                              Graph.FiniteObject.ambientSurplus current.object piece data.threshold =
+                                                  0 ∧
+                                                ∃ receiver,
+                                                  Graph.FiniteObject.IsReceiver current.object piece data.threshold
+                                                      receiver ∧
+                                                    Graph.FiniteObject.Saturated current.object piece data.threshold
+                                                        data.dischargeScale receiver ∧
+                                                      ∃
+                                                        outside ∈
+                                                          Graph.VisibleEntry.completionPorts current.object piece
+                                                            receiver,
+                                                        data.dischargeScale ≤
+                                                            (Graph.VisibleEntry.visibleLoadsAt current.object piece
+                                                                data.threshold receiver outside).card ∧
+                                                          Graph.Strategy.Spine.HandoffAdmissible data current.object
+                                                            packing piece) →
+                                  typeAExitSevenHandoff.At current) →
+                                ((∀ (packing : Finset (Finset current.object.Vertex)),
+                                      Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
+                                        (∀ (window : Finset current.object.Vertex),
+                                            Graph.FiniteObject.InducesWindow current.object data.windowOrder window →
+                                              ∃ member ∈ packing, ¬Disjoint window member) →
+                                          ∀ piece ⊆ Graph.FiniteObject.remainderSupport current.object packing,
+                                            Graph.SupportComponents.Connected.ConnectedOn current.object piece →
+                                              Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
+                                                  data.dischargeScale →
+                                                Graph.FiniteObject.ambientSurplus current.object piece data.threshold =
+                                                    0 →
+                                                  ∀ (receiver : current.object.Vertex),
+                                                    Graph.FiniteObject.IsReceiver current.object piece data.threshold
+                                                        receiver →
+                                                      Graph.FiniteObject.Saturated current.object piece data.threshold
+                                                          data.dischargeScale receiver →
+                                                        ∀
+                                                          outside ∈
+                                                            Graph.VisibleEntry.completionPorts current.object piece
+                                                              receiver,
+                                                          data.dischargeScale ≤
+                                                              (Graph.VisibleEntry.visibleLoadsAt current.object piece
+                                                                  data.threshold receiver outside).card →
+                                                            ¬Graph.Strategy.Spine.HandoffProduced data current.object
+                                                                packing piece) →
+                                    typeAExitSevenFree.At current) →
+                                  typeAExitSevenHandoff ∉ known →
+                                    typeAExitSevenFree ∉ known →
+                                      Core.Strategy.Decision typeAExitSevenHandoff typeAExitSevenFree previous
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.typeAExitThreeDichotomy`
 
 - Category: Minimum-degree cycle spine rows
@@ -6989,6 +7138,37 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                               Core.Strategy.Decision typeAExitTwoTheta typeAExitTwoFree previous
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.typeAPortReturnRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (selection typeAPortReturn :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            selection ≠ typeAPortReturn →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
+                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                    (a : selection.At input) (smaller : Graph.FiniteObject),
+                    smaller.LexicographicallySmaller input.object →
+                      Graph.MinimumDegreeAtLeast data.threshold smaller →
+                        Graph.HasCycleWithLength data.LengthOK smaller) →
+                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                      (∀ (support : Finset input.object.Vertex) (receiver outside : input.object.Vertex),
+                          outside ∈ Graph.VisibleEntry.completionPorts input.object support receiver →
+                            Nonempty (Graph.VisibleEntry.AnchoredReturn input.object receiver outside)) →
+                        typeAPortReturn.At input) →
+                    Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.typeAReceiverRoutingRow`
 
 - Category: Minimum-degree cycle spine rows
@@ -7113,6 +7293,87 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                               Core.Strategy.Decision typeASaturatedReceiver typeAUnsaturatedReceivers previous
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.typeAVisibleEntryClauseRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (typeAVisibleEntry typeAVisibleEntryClause :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            typeAVisibleEntry ≠ typeAVisibleEntryClause →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : typeAVisibleEntry.At input),
+                  ∃ packing,
+                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                      (∀ (window : Finset input.object.Vertex),
+                          Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
+                            ∃ member ∈ packing, ¬Disjoint window member) ∧
+                        ∃ piece ⊆ Graph.FiniteObject.remainderSupport input.object packing,
+                          Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
+                            Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold data.dischargeScale ∧
+                              Graph.FiniteObject.ambientSurplus input.object piece data.threshold = 0 ∧
+                                ∃ receiver,
+                                  Graph.FiniteObject.IsReceiver input.object piece data.threshold receiver ∧
+                                    Graph.FiniteObject.Saturated input.object piece data.threshold data.dischargeScale
+                                        receiver ∧
+                                      ∃ outside ∈ Graph.VisibleEntry.completionPorts input.object piece receiver,
+                                        data.dischargeScale ≤
+                                          (Graph.VisibleEntry.visibleLoadsAt input.object piece data.threshold receiver
+                                              outside).card) →
+                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                    (∃ packing,
+                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                          (∀ (window : Finset input.object.Vertex),
+                              Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
+                                ∃ member ∈ packing, ¬Disjoint window member) ∧
+                            ∃ piece ⊆ Graph.FiniteObject.remainderSupport input.object packing,
+                              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
+                                Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold
+                                    data.dischargeScale ∧
+                                  Graph.FiniteObject.ambientSurplus input.object piece data.threshold = 0 ∧
+                                    ∃ receiver,
+                                      Graph.FiniteObject.IsReceiver input.object piece data.threshold receiver ∧
+                                        Graph.FiniteObject.Saturated input.object piece data.threshold
+                                            data.dischargeScale receiver ∧
+                                          ∃ outside ∈ Graph.VisibleEntry.completionPorts input.object piece receiver,
+                                            data.dischargeScale ≤
+                                                (Graph.VisibleEntry.visibleLoadsAt input.object piece data.threshold
+                                                    receiver outside).card ∧
+                                              ∀ (Carrier : Type u)
+                                                (entry :
+                                                  Graph.Route8.Entry (Graph.HasCycleWithLength data.LengthOK) Carrier)
+                                                (coordinate : input.object.Vertex → entry.Coordinate)
+                                                (declared :
+                                                  ∀
+                                                    load ∈
+                                                      Graph.FiniteObject.routedLoads input.object piece data.threshold
+                                                        receiver,
+                                                    coordinate load ∈ entry.coordinates),
+                                                (Graph.VisibleEntry.visibleEntryFamily piece data.threshold receiver
+                                                        entry coordinate outside declared).Generated
+                                                    Graph.ExitFour.Clause.visibleEntry entry.coordinates
+                                                    (Graph.VisibleEntry.visibleCoordinates piece data.threshold receiver
+                                                      entry coordinate outside entry.coordinates) ∧
+                                                  (Graph.VisibleEntry.visibleCoordinates piece data.threshold receiver
+                                                        entry coordinate outside entry.coordinates).Nonempty ∧
+                                                    Graph.VisibleEntry.visibleLoadsAt input.object piece data.threshold
+                                                        receiver outside ⊆
+                                                      (Graph.VisibleEntry.visibleEntryFamily piece data.threshold
+                                                            receiver entry coordinate outside declared).declaredLoads
+                                                        (Graph.VisibleEntry.visibleCoordinates piece data.threshold
+                                                          receiver entry coordinate outside entry.coordinates)) →
+                      typeAVisibleEntryClause.At input) →
+                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.typeAVisibleEntryDichotomy`
 
 - Category: Minimum-degree cycle spine rows
@@ -7198,7 +7459,7 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                               piece.card ≤
                                                 ∑
                                                     receiver ∈
-                                                      Graph.VisibleEntry.receivers current.object piece data.threshold,
+                                                      Graph.FiniteObject.receivers current.object piece data.threshold,
                                                     (Graph.VisibleEntry.silentExcess current.object piece data.threshold
                                                         data.dischargeScale receiver).card +
                                                   data.dischargeScale *

@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineRows
-import Hypostructure.Graph.CapacityTokenLedger
+import Hypostructure.Graph.ObjectCapacityLedger
 import Hypostructure.Graph.NamedSurplusExits
 
 /-!
@@ -24,15 +24,16 @@ the single implementation nodes `[130]`--`[136]` already use -- and
 two-element `Finset` of selected ports, which is
 `FiniteObject.portPairSchedule`'s own representation.
 
-## What is still quantified, and why
+## Where the data comes from
 
-`def:capacity-token-ledger`'s three-summand universe and its four-case
-assignment `Θ_cap` are *not* built: node `[136]`'s own **Gap** records that only
-the primitive summand of `𝔗_cap` exists.  `lem:capacity-token-supply`'s
-`|𝔗_cap| ≤ 8n + σ(G)` is not committed either, so the token supply enters as the
-parameter `scale`.  `prop:sparse-entropy-sandwich-with-blockers` is not on the
-ledger, so the entropy budget enters as a parameter with its bound as a
-hypothesis.  Each manifest lists exactly the one key its executor reads.
+Nothing is quantified over a presentation nobody built.  Node `[136]` commits
+`Graph.ObjectCapacityLedger` -- the token universe `𝔗_cap`, the assignment
+`Θ_cap`, node `[130]`'s pair count, `lem:capacity-token-supply`'s
+`|𝔗_cap| ≤ 8n + σ(G)` and the free-side entropy sandwich -- and node `[137]`
+reads that commitment by exact key.  The lower-bound package ordering of
+`def:spine-lower-bound-deficits` is read from node `[129]`, and node `[130]`'s
+pair count is read from the canonical pair ledger.  Every key in a manifest is
+consumed by the executor, and every production is derived from what was read.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -56,52 +57,152 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
 
 proved from the canonical ledger's own split `Π(𝒜₀) = Π_free ⊔ Π_blk`, the
 entropy sandwich on the free part, and `lem:token-ledger-no-overcount` on the
-charged part.  All three token classes are evaluated against the one presented
+charged part.  All three token classes are evaluated against the one committed
 ledger, which is what makes the test coupled.
 
-`def:same-token-blocker-roles` splits the realized load over the role alphabet
-`𝔕_st` -- the first production -- and
-`cor:forced-homogeneous-same-token-scale` turns the split into a forced pattern:
-one role fibre carries at least a `Q_st`-th of the load, and by
-`lem:same-token-matching-star` a fibre of that size contains a matching or a
-star of size `ψ` of its own count.
+The three productions are the three things the manuscript reads off that ledger
+before it branches.
 
-`|𝒜₀| = σ(G)` is not assumed: the ledger is presented at the object's own pair
-schedule and the count that identifies it is read from node `[130]`. -/
+* `roleFibrePartition` is `lem:exact-surplus-pair-charge-partition` with
+  `thm:sharp-classwise-homogeneous-token-budget` (a)--(c) and
+  `thm:sharp-surplus-overload-audit` (b)--(c): the exact decomposition of
+  `C(𝒜₀,2)` into the free side and the class/token/role fibres, the class and
+  subtype splits of `|Π_blk| ≥ N_*(G)`, the supplies, and the classwise cap.
+* `fibrePressure` is `lem:capacity-token-high-load` with
+  `cor:forced-homogeneous-same-token-scale`,
+  `thm:sharp-classwise-homogeneous-token-budget` (e) and
+  `thm:sharp-surplus-overload-audit` (d), stated *at the object's own* capacity
+  ledger.  It is existential in that ledger, so it is unprovable without node
+  `[136]`'s commitment, which the executor reads and spends.
+* `spineSurplusEstimate` is `cor:spine-lower-bound-surplus-estimates`: node
+  `[129]`'s ordering of the three lower-bound packages, composed with node
+  `[130]`'s pair count, turns a package bound on the pair schedule into the
+  surplus estimate the near-cubic route carries.
+
+Both reads are spent: the pair count converts the package bound and the token
+ledger witnesses the high-load display. -/
 @[reducible] noncomputable def coupledFibrePressureRow
-    (canonicalPairLedger roleFibrePartition fibrePressure :
+    (canonicalPairLedger capacityTokenLedger baselineSpineDemand
+      roleFibrePartition fibrePressure spineSurplusEstimate :
       FactKey (Input BranchState Presentation presentation data))
-    (partitionFresh : roleFibrePartition ≠ canonicalPairLedger)
-    (pressureFresh : fibrePressure ≠ canonicalPairLedger)
-    (distinct : roleFibrePartition ≠ fibrePressure)
+    (pairNeToken : canonicalPairLedger ≠ capacityTokenLedger)
+    (pairNeDemand : canonicalPairLedger ≠ baselineSpineDemand)
+    (tokenNeDemand : capacityTokenLedger ≠ baselineSpineDemand)
+    (partitionNePressure : roleFibrePartition ≠ fibrePressure)
+    (partitionNeEstimate : roleFibrePartition ≠ spineSurplusEstimate)
+    (pressureNeEstimate : fibrePressure ≠ spineSurplusEstimate)
     (pairCountOf : (input : Input BranchState Presentation presentation data) →
       canonicalPairLedger.At input →
       (input.object.portPairSchedule data.threshold).card =
         (input.object.degreeSurplus data.threshold).choose 2)
+    (tokenLedgerOf : (input : Input BranchState Presentation presentation data) →
+      capacityTokenLedger.At input →
+      Nonempty (Graph.ObjectCapacityLedger input.object data.threshold))
+    (packageOrderOf : (input : Input BranchState Presentation presentation data) →
+      baselineSpineDemand.At input →
+      ∀ packing remainder scaleCount : Nat,
+        Graph.spineDeficit input.object.vertexCount data.threshold
+            (Graph.curvaturePackageBound data.windowRate packing scaleCount
+              remainder data.entropyDenominator data.curvatureCost) ≤
+          Graph.spineDeficit input.object.vertexCount data.threshold
+            (Graph.highEntropyPackageBound data.windowRate packing scaleCount
+              remainder data.entropyDenominator) ∧
+        Graph.spineDeficit input.object.vertexCount data.threshold
+            (Graph.highEntropyPackageBound data.windowRate packing scaleCount
+              remainder data.entropyDenominator) ≤
+          Graph.spineDeficit input.object.vertexCount data.threshold
+            (Graph.windowPackageBound data.windowRate packing scaleCount))
     (encodePartition : (input : Input BranchState Presentation presentation data) →
       Graph.RoleFibrePartitionStatement input.object data.threshold →
       roleFibrePartition.At input)
     (encodePressure : (input : Input BranchState Presentation presentation data) →
       Graph.FibrePressureStatement input.object data.threshold →
-      fibrePressure.At input) :
+      fibrePressure.At input)
+    (encodeEstimate : (input : Input BranchState Presentation presentation data) →
+      (∀ packing remainder scaleCount : Nat,
+        (input.object.portPairSchedule data.threshold).card ≤
+            Graph.spineDeficit input.object.vertexCount data.threshold
+              (Graph.curvaturePackageBound data.windowRate packing scaleCount
+                remainder data.entropyDenominator data.curvatureCost) →
+          input.object.degreeSurplus data.threshold ≤
+            1 + Nat.sqrt (2 * Graph.spineDeficit input.object.vertexCount
+              data.threshold
+              (Graph.windowPackageBound data.windowRate packing scaleCount))) →
+      spineSurplusEstimate.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coupledFibrePressure
-    { Requires := [canonicalPairLedger]
-      Produces := [roleFibrePartition, fibrePressure]
-      requiresUnique := by simp
-      producesUnique := by simp [distinct]
+    { Requires := [canonicalPairLedger, capacityTokenLedger, baselineSpineDemand]
+      Produces := [roleFibrePartition, fibrePressure, spineSurplusEstimate]
+      requiresUnique := by simp [pairNeToken, pairNeDemand, tokenNeDemand]
+      producesUnique := by
+        simp [partitionNePressure, partitionNeEstimate, pressureNeEstimate]
       producesNonempty := by simp }
     (fun inputs =>
-      -- The pair count is read from node `[130]`; the statements below are
-      -- quantified over it, so nothing here recomputes the schedule.
-      let _read := pairCountOf inputs.current (inputs.get canonicalPairLedger)
+      let object := inputs.current.object
+      -- Node `[130]`'s count, node `[136]`'s ledger, node `[129]`'s ordering.
+      let pairCount := pairCountOf inputs.current (inputs.get canonicalPairLedger)
+      let existing := tokenLedgerOf inputs.current (inputs.get capacityTokenLedger)
+      let ordering := packageOrderOf inputs.current (inputs.get baselineSpineDemand)
       .cons (key := roleFibrePartition)
         (encodePartition inputs.current
-          (Graph.roleFibrePartitionStatement inputs.current.object data.threshold))
+          (Graph.roleFibrePartitionStatement object data.threshold))
         (.cons (key := fibrePressure)
           (encodePressure inputs.current
-            (Graph.fibrePressureStatement inputs.current.object data.threshold))
-          .nil))
+            (Graph.fibrePressureStatement object data.threshold existing))
+          (.cons (key := spineSurplusEstimate)
+            (encodeEstimate inputs.current
+              (fun packing remainder scaleCount budget =>
+                Graph.surplus_le_of_package object data.threshold _
+                  (le_trans (pairCount ▸ budget)
+                    (le_trans (ordering packing remainder scaleCount).1
+                      (ordering packing remainder scaleCount).2))))
+            .nil)))
+
+/-! ## Node `[137]`: the branch
+
+`prop:single-graph-sparse-pressure-routing` is exhaustive: either every capacity
+ledger of the object respects the geometric caps of
+`thm:homogeneous-overload-geometric-closure` -- and then
+`cor:coupled-single-graph-overload-budget` and
+`cor:numerical-single-graph-budget` give `σ(G) ≤ R_L(n)`, the near-cubic route
+`[138]` -- or `D_all > 0`, and
+`cor:quantified-homogeneous-class-overload` forces a role-homogeneous same-token
+matching or star whose token class selects `[140]`, `[142]` or `[143]`.
+
+This is a `Decision`, not a fact-only row: the arm not taken is absent from the
+taken branch's key index, so the geometric audits cannot read the near-cubic
+bound and the near-cubic route cannot read an overload that did not occur.  The
+test is `SparsePressureCapped` itself, a property of the object; no graph
+remains at `[137]` because the two arms are the two cases of the excluded middle
+on it. -/
+noncomputable def sparsePressureDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (sparsePressureNearCubic sparsePressureOverload :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeNearCubic :
+      Graph.SparsePressureCapped current.object data.threshold →
+      sparsePressureNearCubic.At current)
+    (encodeOverload :
+      Graph.SparsePressureOverloadStatement current.object data.threshold →
+      sparsePressureOverload.At current)
+    (nearCubicFresh : sparsePressureNearCubic ∉ known)
+    (overloadFresh : sparsePressureOverload ∉ known) :
+    Decision sparsePressureNearCubic sparsePressureOverload previous := by
+  classical
+  refine Decision.run previous sparsePressureNearCubic sparsePressureOverload
+    `Hypostructure.Graph.Strategy.Spine.sparsePressureRouting ?_ nearCubicFresh
+    overloadFresh
+  exact
+    if capped : Graph.SparsePressureCapped current.object data.threshold then
+      .inl (encodeNearCubic capped)
+    else
+      .inr (encodeOverload
+        ((Graph.sparsePressureRouting current.object data.threshold).resolve_left
+          capped))
 
 /-! ## Nodes `[140]`, `[142]`, `[143]`: the three geometric class audits
 
