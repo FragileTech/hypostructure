@@ -74,7 +74,7 @@ noncomputable def runChain
       selected typeAVisibleEntryKeys) :
     ExitChainResult selected typeAVisibleEntryKeys :=
   runExitChain history (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp)
+    (by simp) (by simp) (by simp)
 
 /-! ## What the two exits carry -/
 

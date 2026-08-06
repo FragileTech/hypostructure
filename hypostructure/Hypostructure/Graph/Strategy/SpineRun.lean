@@ -143,6 +143,36 @@ noncomputable def spineTargetInvariant
     (fun _input fact => fact.down.2)
     (fun _input value => ⟨value⟩)
 
+/-- Nodes `[89]`--`[94]`: `lem:typeA-port-return`, the port non-vacuity. -/
+@[reducible] noncomputable def typeAPortReturn :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  typeAPortReturnRow (K .selection) (K .typeAPortReturn) (by simp)
+    (fun _input fact => fact.down.1)
+    (fun _input fact => fact.down.2)
+    (fun _input value => ⟨value⟩)
+
+/-- **The shared entry of nodes `[101]`--`[107]`**, at the spine's own keys.
+
+`lem:typeA-exit4-residual-routing`'s hypothesis, refined out of node `[89]`'s
+saturation at the empty peeling set.  Figure 8's two entries into the exit
+segment — node `[99]`'s no arm and node `[94]` — both commit it, and nodes
+`[101]`--`[107]` are asked under it, which is what keeps the segment one chain
+of nodes instead of two copies. -/
+@[reducible] noncomputable def typeASaturatedExitEntry :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  typeASaturatedExitEntryRow (K .typeASaturatedReceiver)
+    (K .typeASaturatedExitEntry) (by simp)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
+
+/-- Node `[93]`, yes arm: clause (Q1) of `def:typeA-exit4-family`. -/
+@[reducible] noncomputable def typeAVisibleEntryClause :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  typeAVisibleEntryClauseRow (K .typeAVisibleEntry)
+    (K .typeAVisibleEntryClause) (by simp)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
+
 /-- Nodes `[9]`--`[10]`. -/
 @[reducible] noncomputable def deletionCriticality :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
@@ -637,15 +667,25 @@ abbrev typeASaturatedReceiverKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeASaturatedReceiver :: typeAReceiverRoutingKeys
 
-/-- Node `[93]`, yes arm — the entry of the saturated exit chain. -/
+/-- `lem:typeA-port-return`, committed on the shared prefix of nodes `[93]`
+and `[94]`: every completion port of the object carries an anchored return. -/
+abbrev typeAPortReturnKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAPortReturn :: typeASaturatedReceiverKeys
+
+/-- Node `[93]`, yes arm — the entry of the saturated exit chain, after clause
+(Q1) of `def:typeA-exit4-family` is committed on it. -/
 abbrev typeAVisibleEntryKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeAVisibleEntry :: typeASaturatedReceiverKeys
+  K .typeAVisibleEntryClause :: K .typeAVisibleEntry :: typeAPortReturnKeys
 
-/-- Node `[93]`, no arm — node `[94]`, the visible-first excess. -/
+/-- Node `[93]`, no arm — node `[94]`, the visible-first excess, carrying the
+shared entry of the exit segment `lem:typeA-unpeeled-silent-routing` routes it
+into. -/
 abbrev typeAVisibleFirstExcessKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeAVisibleFirstExcess :: typeASaturatedReceiverKeys
+  K .typeASaturatedExitEntry :: K .typeAVisibleFirstExcess ::
+    typeAPortReturnKeys
 
 /-- Node `[89]`, no arm — node `[90]`. -/
 abbrev typeAUnsaturatedReceiverKeys :
@@ -1162,11 +1202,19 @@ noncomputable def run
                                   (fun unsaturated => ⟨unsaturated⟩)
                                   (by simp) (by simp) with
                               | .left saturatedHistory =>
+                                  -- `lem:typeA-port-return` first, on the
+                                  -- shared prefix: every completion port
+                                  -- carries an anchored return, so neither
+                                  -- arm of `[93]` and none of the exit tests
+                                  -- below it is vacuous.
+                                  have afterPortReturn :=
+                                    (typeAPortReturn (data := data)).run
+                                      saturatedHistory (by simp)
                                   -- Node `[93]`: does a completion port of the
                                   -- saturated receiver see `s` visible
                                   -- receiver-entry returns?
                                   match typeAVisibleEntryDichotomy
-                                      saturatedHistory
+                                      afterPortReturn
                                       (K .typeAReceiverRouting)
                                       (K .typeASaturatedReceiver)
                                       (K .typeAVisibleEntry)
@@ -1180,10 +1228,25 @@ noncomputable def run
                                       (fun excess => ⟨excess⟩)
                                       (by simp) (by simp) with
                                   | .left visibleHistory =>
-                                      exact .typeAVisibleEntry visibleHistory
+                                      -- Clause (Q1) of
+                                      -- `def:typeA-exit4-family`, committed on
+                                      -- the yes cursor: the canonical family
+                                      -- row 16 quantifies over is exhibited at
+                                      -- its visible-entry generator.
+                                      exact .typeAVisibleEntry
+                                        ((typeAVisibleEntryClause
+                                          (data := data)).run visibleHistory
+                                          (by simp))
                                   | .right excessHistory =>
+                                      -- `lem:typeA-unpeeled-silent-routing`
+                                      -- routes node `[94]` into the shared
+                                      -- exit segment, so the segment's entry
+                                      -- is committed here, refined out of node
+                                      -- `[89]`'s saturation.
                                       exact .typeAVisibleFirstExcess
-                                        excessHistory
+                                        ((typeASaturatedExitEntry
+                                          (data := data)).run excessHistory
+                                          (by simp))
                               | .right unsaturatedHistory =>
                                   exact .typeAUnsaturatedReceivers
                                     unsaturatedHistory

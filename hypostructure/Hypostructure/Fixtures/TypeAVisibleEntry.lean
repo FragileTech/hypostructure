@@ -42,17 +42,33 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-! ## Node `[93]`, asked on the saturated cursor -/
+/-! ## `lem:typeA-port-return`, on the shared prefix
 
-/-- **The visible-entry question, asked on the cursor node `[89]` left.**
+The port test is asked only after the returns are known to exist.  The row
+reads the selection by exact key and nothing else, so it elaborates on any
+cursor carrying it. -/
 
-Both prerequisites -- node `[88]`'s routing and node `[89]`'s saturated receiver
--- are discharged by instance resolution against the incoming index, and the two
-freshness side conditions are decided on the vocabulary's own finite `Key`. -/
-noncomputable def visibleEntry
+/-- **The port non-vacuity, committed on the cursor node `[89]` left.** -/
+noncomputable def portReturn
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected typeASaturatedReceiverKeys) :
+    ExactLedger (Input BranchState Presentation presentation data) selected
+      typeAPortReturnKeys :=
+  (typeAPortReturn (data := data)).run history (by simp)
+
+/-! ## Node `[93]`, asked on the port-return cursor -/
+
+/-- **The visible-entry question, asked on the cursor node `[89]` left.**
+
+All three prerequisites -- node `[88]`'s routing, node `[89]`'s saturated
+receiver and `lem:typeA-port-return` -- are on the incoming index, the first two
+discharged by instance resolution, and the two freshness side conditions are
+decided on the vocabulary's own finite `Key`. -/
+noncomputable def visibleEntry
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeAPortReturnKeys) :
     Decision (K .typeAVisibleEntry) (K .typeAVisibleFirstExcess) history :=
   typeAVisibleEntryDichotomy history (K .typeAReceiverRouting)
     (K .typeASaturatedReceiver) (K .typeAVisibleEntry)
@@ -61,6 +77,17 @@ noncomputable def visibleEntry
       (fact.down packing valid maximal piece inside surplus).1)
     (fun fact => fact.down) (fun visible => ⟨visible⟩)
     (fun excess => ⟨excess⟩) (by simp) (by simp)
+
+/-- **Clause (Q1) of `def:typeA-exit4-family`, committed on the yes arm.**  The
+canonical family row 16 quantifies over is exhibited at its visible-entry
+generator, on the cursor that carries the port. -/
+noncomputable def visibleEntryClause
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (K .typeAVisibleEntry :: typeAPortReturnKeys)) :
+    ExactLedger (Input BranchState Presentation presentation data) selected
+      typeAVisibleEntryKeys :=
+  (typeAVisibleEntryClause (data := data)).run history (by simp)
 
 /-! ## What the two exits carry -/
 
@@ -197,7 +224,7 @@ example (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex)
     (Graph.VisibleEntry.entryPortEdges object support threshold receiver).card ≤
       ∑ other ∈
         letI := Graph.vertexDecEq object
-        (Graph.VisibleEntry.receivers object support threshold).erase receiver,
+        (object.receivers support threshold).erase receiver,
         object.missingPorts support threshold other :=
   Graph.VisibleEntry.card_entryPortEdges_le object support threshold receiver
     baseline
@@ -241,11 +268,91 @@ example (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex)
         (Graph.VisibleEntry.visibleLoadsAt object support threshold receiver
           outside).card + 1 ≤ scale) :
     support.card ≤
-      (∑ receiver ∈ Graph.VisibleEntry.receivers object support threshold,
+      (∑ receiver ∈ object.receivers support threshold,
           (Graph.VisibleEntry.silentExcess object support threshold scale
             receiver).card) +
         scale * object.positiveDeficiency support threshold :=
   Graph.VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency object
     support threshold scale scalePos baseline capped routed unsaturatedPorts
+
+
+/-! ## `lem:typeA-port-return` and clause (Q1), at the framework level
+
+Both are checked at an arbitrary object, receiver, port and reading: neither
+knows a degree, an overload factor, or a graph family. -/
+
+/-- **`lem:typeA-port-return`.**  `lem:bridgeless` at the port edge: a minimal
+object avoiding the target carries an anchored return through every completion
+port.  The two hypotheses are the two halves of the selection statement. -/
+example (object : Graph.FiniteObject.{u}) (CycleLengthOK : Nat → Prop)
+    (threshold : Nat) (two_le : 2 ≤ threshold)
+    (baseline : Graph.MinimumDegreeAtLeast threshold object)
+    (avoids : ¬ Graph.HasCycleWithLength CycleLengthOK object)
+    (minimal : ∀ smaller : Graph.FiniteObject.{u},
+      smaller.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast threshold smaller →
+      Graph.HasCycleWithLength CycleLengthOK smaller)
+    (support : Finset object.Vertex) (receiver outside : object.Vertex)
+    (port : outside ∈ Graph.VisibleEntry.completionPorts object support
+      receiver) :
+    Nonempty (Graph.VisibleEntry.AnchoredReturn object receiver outside) :=
+  Graph.VisibleEntry.exists_anchoredReturn_of_mem_completionPorts
+    (LengthOK := CycleLengthOK) two_le baseline avoids minimal support receiver
+    outside port
+
+/-- **Clause (Q1) of `def:typeA-exit4-family` is generated.**  The canonical
+family at an arbitrary declared reading has the visible-entry identification
+among its members. -/
+example (object : Graph.FiniteObject.{u}) (Target : Graph.FiniteObject.{u} → Prop)
+    (Carrier : Type u) (support : Finset object.Vertex) (threshold : Nat)
+    (receiver outside : object.Vertex)
+    (entry : Graph.Route8.Entry Target Carrier)
+    (coordinate : object.Vertex → entry.Coordinate)
+    (declared : ∀ load ∈ object.routedLoads support threshold receiver,
+      coordinate load ∈ entry.coordinates) :
+    (Graph.VisibleEntry.visibleEntryFamily support threshold receiver entry
+        coordinate outside declared).Generated
+      Graph.ExitFour.Clause.visibleEntry entry.coordinates
+      (Graph.VisibleEntry.visibleCoordinates support threshold receiver entry
+        coordinate outside entry.coordinates) :=
+  Graph.VisibleEntry.generated_visibleEntry support threshold receiver entry
+    coordinate outside declared entry.coordinates (subset_refl _)
+
+/-- **(Q1)'s declared routed-load support carries the port's visible loads.**
+*"In (Q1) it is the set of visible routed loads whose response coordinates are
+identified."*  This is what lets exit `(4)` peel a visible load. -/
+example (object : Graph.FiniteObject.{u}) (Target : Graph.FiniteObject.{u} → Prop)
+    (Carrier : Type u) (support : Finset object.Vertex) (threshold : Nat)
+    (receiver outside : object.Vertex)
+    (entry : Graph.Route8.Entry Target Carrier)
+    (coordinate : object.Vertex → entry.Coordinate)
+    (declared : ∀ load ∈ object.routedLoads support threshold receiver,
+      coordinate load ∈ entry.coordinates) :
+    Graph.VisibleEntry.visibleLoadsAt object support threshold receiver
+        outside ⊆
+      (Graph.VisibleEntry.visibleEntryFamily support threshold receiver entry
+          coordinate outside declared).declaredLoads
+        (Graph.VisibleEntry.visibleCoordinates support threshold receiver entry
+          coordinate outside entry.coordinates) :=
+  Graph.VisibleEntry.visibleLoadsAt_subset_declaredLoads support threshold
+    receiver entry coordinate outside declared
+
+/-- **The (Q1) member is nontrivial exactly when the port is visible.**  At a
+port carrying a visible load the identification collapses a declared
+coordinate; at a silent port the same construction collapses nothing.  This is
+the branch content the yes arm commits. -/
+example (object : Graph.FiniteObject.{u}) (Target : Graph.FiniteObject.{u} → Prop)
+    (Carrier : Type u) (support : Finset object.Vertex) (threshold : Nat)
+    (receiver outside : object.Vertex)
+    (entry : Graph.Route8.Entry Target Carrier)
+    (coordinate : object.Vertex → entry.Coordinate)
+    (declared : ∀ load ∈ object.routedLoads support threshold receiver,
+      coordinate load ∈ entry.coordinates)
+    (seen : (Graph.VisibleEntry.visibleLoadsAt object support threshold receiver
+      outside).Nonempty) :
+    (Graph.VisibleEntry.visibleCoordinates support threshold receiver entry
+      coordinate outside entry.coordinates).Nonempty :=
+  Graph.VisibleEntry.visibleCoordinates_nonempty support threshold receiver
+    entry coordinate outside declared seen
 
 end Hypostructure.Fixtures.TypeAVisibleEntry

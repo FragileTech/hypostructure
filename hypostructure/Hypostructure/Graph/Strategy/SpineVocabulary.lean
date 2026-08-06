@@ -8,6 +8,7 @@ import Hypostructure.Graph.FiniteEdgeBudget
 import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.WindowPacking
 import Hypostructure.Graph.WindowRemainder
+import Hypostructure.Graph.CapacityTokenAssignment
 import Hypostructure.Graph.FanCertificate
 import Hypostructure.Graph.TypeBDirectCycle
 import Hypostructure.Graph.TypeBFanIncidence
@@ -23,6 +24,9 @@ import Hypostructure.Graph.BoundaryDemand
 import Hypostructure.Graph.ReceiverRouting
 import Hypostructure.Graph.VisibleReceiverEntry
 import Hypostructure.Graph.CommonPortReturnCycle
+import Hypostructure.Graph.PortReturnExistence
+import Hypostructure.Graph.VisibleEntryQuotient
+import Hypostructure.Graph.DecoratedHandoffEnvelope
 import Hypostructure.Graph.WindowLabelCollision
 import Hypostructure.Graph.WindowInternalMass
 import Hypostructure.Graph.WedgeLowerBound
@@ -44,7 +48,7 @@ import Hypostructure.Graph.BaselineSpineDemand
 import Hypostructure.Graph.PrimitiveCarrier
 import Hypostructure.Graph.SparsePairLedger
 import Hypostructure.Graph.SameTokenBlockerRoles
-import Hypostructure.Graph.CapacityTokenLedger
+import Hypostructure.Graph.ObjectCapacityLedger
 import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparseEntropySandwich
 
@@ -624,6 +628,14 @@ inductive Key where
   is unsaturated, `L(w) ≤ s·q(w) − 1`.  This is the capacity the `3/7/11`
   discharging of node `[91]` spends. -/
   | typeAUnsaturatedReceivers
+  /-- Nodes `[89]`, `[93]`, `[94]`, `[109]`, `lem:typeA-port-return`: every
+  completion port of the selected object carries at least one anchored return.
+  `lem:bridgeless` says the port edge is on a cycle, and deleting it from that
+  cycle leaves the return.  This is what makes every saturated port test
+  nonvacuous: the alternatives at nodes `[95]`--`[107]` quantify over the
+  anchored returns of a port, and without this fact "no return of the port has
+  property `p`" would be satisfied by a port with no returns at all. -/
+  | typeAPortReturn
   /-- Node `[93]`, yes arm — the entry of the saturated exit chain at node
   `[95]`: some completion port of a saturated receiver of the Type A support
   carries `s` visible receiver-entry returns, in the sense of
@@ -639,6 +651,15 @@ inductive Key where
   `S_sil^exc(X) ≥ s·D_A(X)`.  Cleared of the division and the subtraction,
   `|V(X)| ≤ S_sil^exc(X) + s·def⁺(X)`. -/
   | typeAVisibleFirstExcess
+  /-- Node `[93]`, yes arm — clause (Q1) of `def:typeA-exit4-family`.  The
+  visible receiver-entry coordinate identification at the port node `[93]`
+  fixed is a member of the canonical exit-`(4)` family `𝒬₄(w)`: it is generated
+  from the receiver's declared reading, it collapses at least one declared
+  coordinate because the port carries a visible load, and its declared
+  routed-load support contains every visible load of the port.  This is the
+  clause row 16's exit-`(4)` peeling draws a *visible* load from; without it
+  `𝒬₄(w)` is exhibited at none of its five generators. -/
+  | typeAVisibleEntryClause
   /-- Node `[95]`, yes arm — exit `(1)` of `def:typeA-saturated-exits`: *"an
   anchored return through a completion port of `w` has length in `Mers`"*, at a
   saturated receiver `w` of a Type A support.  `Mers` is the shifted accepted
@@ -683,6 +704,50 @@ inductive Key where
   exit `(3)` is not the exit this branch realizes and the saturated exit list
   continues at exit `(4)`. -/
   | typeAExitThreeFree
+  /-- **The shared entry of nodes `[101]`--`[107]`**, and the hypothesis of
+  `lem:typeA-exit4-residual-routing`: *"let `w` be a saturated Type A receiver
+  with a peeling set `P₄(w)`; if `L₄(w) ≥ 4q(w)`, then the unpeeled routed loads
+  at `w` realize one of exits (1)--(8)"*.
+
+  Figure 8 draws one segment `[101]`--`[107]` with *two* entries: node `[99]`'s
+  no arm, which is `lem:typeA-unpeeled-visible-routing` after exits `(1)`--`(3)`
+  have been denied, and node `[94]`, which is
+  `lem:typeA-unpeeled-silent-routing`.  `lem:typeA-exit4-residual-routing` is
+  the manuscript's own statement that the two combine, and this is its
+  hypothesis: the exit segment is asked under it and under nothing else, so the
+  segment is one chain of nodes rather than two copies.
+
+  It is a refinement of the residual node `[89]` already committed, not a new
+  assumption: at the empty peeling set `L₄(w) = L(w)`, so
+  `ExitFour.saturatedAfter_empty` reads it straight off
+  `typeASaturatedReceiver`.  The peeling set grows only at node `[102]`, whose
+  `def:typeA-exit4-peeling` witnesses ride with `typeAPeeledCharge`; the routing
+  lemma's proof uses of `P₄(w)` exactly the two clauses carried here. -/
+  | typeASaturatedExitEntry
+  /-- Node `[107]`, yes arm — exit `(7)` of `def:typeA-saturated-exits`: *"a
+  high-degree decorated handoff fan envelope is produced"*, at the visible
+  saturated port node `[93]` delivered.  This is the Type B handoff exit, and it
+  is the one exit of the list that neither closes nor stays in Type A:
+  `lem:typeA-exits-discharged` says the branch *"is reclassified as a decorated
+  handoff fan envelope and leaves the Type A charge calculation"*.
+
+  The envelope is `def:decorated-fan-envelope`'s `𝔛 = (Y, H)` with `Y` the Type
+  A support itself and `H` the surviving first separator of two declared outside
+  connector germs through the port — `def:typeA-trace-basin` clause (d), routed
+  by `lem:typeA-continuation-routing`, with ambient degree at least `4` by
+  `lem:typeA-cubic-switch-absorption` and handed over by
+  `lem:typeA-high-degree-handoff`.  The fact carries the envelope's
+  admissibility as well, which is `lem:decorated-fan-admissibility`: the handoff
+  interface the Type B fan calculation consumes.  By
+  `rem:typeA-typeB-stratification` no conclusion of `lem:typeB-exclusion` is
+  used, and none is available on this cursor. -/
+  | typeAExitSevenHandoff
+  /-- Node `[107]`, no arm — the entry of node `[109]`: no high-degree decorated
+  handoff fan envelope is produced at any visible port of any saturated receiver
+  of any Type A support, so exit `(7)` is not the exit this branch realizes and
+  the saturated exit list continues at exit `(8)`, the route-8 residual of
+  `def:typeA-silent-core-residual`. -/
+  | typeAExitSevenFree
   /-- Nodes `[154]`, `[155]`, the (F1) producer.  A compatible completion
   through a cold-window offset that realizes a power-of-two cycle would be an
   accepted cycle of the selected object, which node `[1]` excludes: (F1) never
@@ -978,20 +1043,50 @@ inductive Key where
   schedule and `|Π_blk| = Σ_B μ(B)`. -/
   | canonicalPairLedger
   /-- Nodes `[134]`--`[136]`, `def:primitive-sparse-blocker-carrier` with
-  `lem:primitive-carrier-supply` and `lem:token-ledger-no-overcount`:
-  `|𝔘_sp(G)| = n + 2m + σ(G)`, which is `≤ 6n` on the sparse upper envelope, and
-  the token ledger's own fibre identity `|Π_blk| = Σ_t ℓ_cap(t)` at every
-  declared token alphabet and assignment. -/
+  `lem:primitive-carrier-supply`, `def:capacity-token-ledger` with
+  `lem:capacity-token-supply` and `lem:token-ledger-no-overcount`, and
+  `def:same-token-patterns`: `|𝔘_sp(G)| = n + 2m + σ(G)`, which is `≤ 6n` on the
+  sparse upper envelope; the three-summand token universe
+  `𝔗_cap = 𝔗_prim ⊔ 𝔗_R ⊔ 𝔗_W` with `|𝔗_cap| = |𝔘_sp(G)| + 15p₁₃ + σ(G)` and
+  `|𝔗_cap| ≤ 8n + σ(G)`; the four-case charge `Θ_cap` landing in `𝔗_cap` with its
+  fibre identity `|Π_blk| = Σ_t ℓ_cap(t)` read at the whole blocked family; and
+  the fibre graph `H_t` with `e(H_t) = ℓ_cap(t)`. -/
   | capacityTokenLedger
-  /-- Node `[137]`, the role split of `def:same-token-blocker-roles`: at every
-  token of every presented capacity-token ledger, the role fibres partition the
-  token's load, `ℓ_cap(t) = Σ_{r ∈ 𝔕_st} ℓ(t,r)`. -/
+  /-- Node `[137]`, `lem:exact-surplus-pair-charge-partition` with
+  `thm:sharp-classwise-homogeneous-token-budget` (a)--(c) and
+  `thm:sharp-surplus-overload-audit` (b)--(c): at the object's capacity-token
+  ledger, `C(𝒜₀,2)` decomposes exactly into `Π_free` and the class/token/role
+  fibres, the class and subtype loads sum to `|Π_blk| ≥ N_*(G)`, their supplies
+  sum to `|𝔗_cap|`, and a class with no role-homogeneous `L`-pattern is capped
+  by `Cap_hom(L)S_C`. -/
   | roleFibrePartition
   /-- Nodes `[137]`--`[143]`, `lem:capacity-token-high-load` with
-  `cor:forced-homogeneous-same-token-scale`: the coupled high-load display
-  `C(s,2) ≤ E + L_max|𝔗_cap|` at a token that realizes `L_max`, and a role fibre
-  there carrying a matching or a star of size `ψ` of its own count. -/
+  `cor:forced-homogeneous-same-token-scale`,
+  `thm:sharp-classwise-homogeneous-token-budget` (e) and
+  `thm:sharp-surplus-overload-audit` (d): the object's *own* capacity-token
+  ledger realizes the coupled high-load display `C(s,2) ≤ E + L_max|𝔗_cap|`, a
+  role fibre there carries at least a `Q_st`-th of the load and all of the
+  forced demand `N_*(G)` up to the token supply, and contains a matching or a
+  star of size `ψ` of its own count. -/
   | fibrePressure
+  /-- Node `[137]`, `cor:spine-lower-bound-surplus-estimates`: a lower-bound
+  package of `def:spine-lower-bound-deficits` that bounds the pair schedule
+  bounds the surplus, `σ(G) ≤ 1 + √(2 D_win)`.  This is what the near-cubic
+  route `[138]` carries away from the block. -/
+  | spineSurplusEstimate
+  /-- Node `[137]`, near-cubic arm of
+  `prop:single-graph-sparse-pressure-routing` (a): every capacity-token ledger
+  of the object respects the geometric caps, so `σ(G) ≤ R_L(n)`.  Routes to
+  `[138]`. -/
+  | sparsePressureNearCubic
+  /-- Node `[137]`, overload arm of
+  `prop:single-graph-sparse-pressure-routing` (b) with
+  `cor:coupled-single-graph-overload-budget` and
+  `cor:quantified-homogeneous-class-overload`: some capacity-token ledger of the
+  object has `D_all > 0`, and a role fibre absorbing its share over the
+  `Q_st|𝔗_cap|` slots carries a role-homogeneous same-token matching or star.
+  `class(t)` routes to `[140]`, `[142]` or `[143]`. -/
+  | sparsePressureOverload
   /-- Nodes `[140]`, `[142]`, `[143]`, the three geometric class audits: a token
   whose load exceeds `Cap_hom(L)` for the bound registered at its own token class
   carries a role-homogeneous `L`-matching or `L`-star. -/
@@ -1184,6 +1279,96 @@ noncomputable abbrev jointPackageDemand (data : Data.{u})
       remainderStates data object packing *
     2 ^ (data.curvatureCost *
       remainderCurvatureTargetRank data object packing)
+
+/-! ## The exit-`(7)` handoff envelope, at the spine's registered data
+
+The three parameters `def:decorated-fan-envelope` is quantified over are fixed
+here once, so the node's two arms, its row and its fixture all read the same
+predicate.
+
+*The high-degree predicate* is `lem:typeA-cubic-switch-absorption`'s own
+conclusion `d_G(z) ≥ 4` at a surviving first separator.  It is the count of
+incidences the separation uses — the root incidence and the two next incidences
+— strictly exceeded; it is not a registered baseline, and the registered
+`threshold` is deliberately not written here.
+
+*The absorbing predicate* is `def:typeB-fan-safe` clause (ii), the label
+collision of `lem:labels`: exit `(3)`, which the branch reaching node `[107]`
+has already denied and which the row therefore reads rather than restates.
+
+*The two admissibility predicates* are node `[14]`'s hereditary
+target-uncompressibility and the `P₁₃`-freeness of the counted core. -/
+
+/-- `V_{≥4}(G)` at a surviving first separator: `lem:typeA-cubic-switch-absorption`. -/
+abbrev handoffHighDegree (object : Graph.FiniteObject.{u}) :
+    object.Vertex → Prop :=
+  fun vertex => 3 < object.degree vertex
+
+/-- **`def:typeB-fan-safe` clauses (ii)--(v)**, at the registered data.
+`lem:typeA-high-degree-handoff` reads them off the exit list: *"failures of the
+other four fan-safe conditions are exactly the label, target-defect,
+target-compression, and delocalization exits already removed before exit (7)"*.
+So the four clauses are exits `(3)`, `(4)`, `(5)` and `(6)` occurring, verbatim
+as nodes `[99]`, `[101]`, `[103]` and `[105]` state them; the handoff never
+restates one and never proves one, it reads the four denials off the index the
+exit list leaves. -/
+abbrev handoffAbsorbing (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex)) :
+    object.Vertex → object.Vertex → object.Vertex → Prop :=
+  fun _centre _first _second =>
+    Graph.WindowLabelCollision.LabelCollision object data.windowOrder
+        data.LengthOK packing ∨
+      (∃ residual : Graph.Route8.Data
+          (Graph.HasCycleWithLength data.LengthOK) object,
+        ∃ index ∈ residual.entries, residual.ExitFour index) ∨
+      (∃ residual : Graph.Route8.Data
+          (Graph.HasCycleWithLength data.LengthOK) object,
+        ∃ index ∈ residual.entries, ¬ residual.SurvivingTrace index) ∨
+      (∃ residual : Graph.Route8.Data
+          (Graph.HasCycleWithLength data.LengthOK) object,
+        ∃ index ∈ residual.entries,
+          residual.Delocalizes
+            (Graph.MinimumDegreeAtLeast data.threshold) index)
+
+/-- `cor:uncompressible` at node `[14]`, as the envelope's admissibility reads
+it. -/
+abbrev handoffUncompressible (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Finset object.Vertex → Prop :=
+  fun support =>
+    ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object support
+
+/-- The counted core is `P₁₃`-free. -/
+abbrev handoffWindowFree (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
+    Finset object.Vertex → Prop :=
+  fun support =>
+    ∀ window : Finset object.Vertex, window ⊆ support →
+      ¬ object.InducesWindow data.windowOrder window
+
+/-- **A decorated handoff fan envelope is produced at a support.**  The test
+node `[107]` splits on: `def:decorated-fan-envelope`'s data, with the Type A
+support as the counted core and at least one high-degree decoration. -/
+def HandoffProduced (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (piece : Finset object.Vertex) : Prop :=
+  ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+      (handoffHighDegree object) (handoffAbsorbing data object packing),
+    envelope.core = piece ∧ envelope.decorations.Nonempty
+
+/-- **The envelope produced is admissible Type B fan-envelope data**
+(`lem:decorated-fan-admissibility`).  This is the handoff interface, and by
+`rem:typeA-typeB-stratification` it uses no conclusion of
+`lem:typeB-exclusion`. -/
+def HandoffAdmissible (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (piece : Finset object.Vertex) : Prop :=
+  ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+      (handoffHighDegree object) (handoffAbsorbing data object packing),
+    envelope.core = piece ∧ envelope.decorations.Nonempty ∧
+      Graph.DecoratedHandoff.Admissible object data.LengthOK
+        (handoffUncompressible data object) (handoffWindowFree data object)
+        envelope
 
 /-- The value schema of each spine fact, stated of the *object* alone.
 
@@ -2293,6 +2478,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             1 + object.routedLoad piece data.threshold receiver ≤
               data.dischargeScale *
                 object.missingPorts piece data.threshold receiver)
+  | .typeAPortReturn, object =>
+      -- `lem:typeA-port-return`: every completion port of the object carries an
+      -- anchored return.  Stated of the object and of every support, receiver
+      -- and port, because the manuscript's proof reads only `lem:bridgeless` at
+      -- the port edge -- nothing about the support the port belongs to.
+      (∀ support : Finset object.Vertex, ∀ receiver outside : object.Vertex,
+        outside ∈ Graph.VisibleEntry.completionPorts object support receiver →
+        Nonempty (Graph.VisibleEntry.AnchoredReturn object receiver outside))
   | .typeAVisibleEntry, object =>
       -- Node `[93]`, yes: `def:typeA-visible-load`'s count at a completion port
       -- of a saturated receiver of the Type A support has reached the
@@ -2336,7 +2529,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           object.ambientSurplus piece data.threshold = 0 →
           piece.card ≤
             (∑ receiver ∈
-                Graph.VisibleEntry.receivers object piece data.threshold,
+                object.receivers piece data.threshold,
               (Graph.VisibleEntry.silentExcess object piece data.threshold
                 data.dischargeScale receiver).card) +
               data.dischargeScale *
@@ -2521,6 +2714,128 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           object.ambientSurplus piece data.threshold = 0 →
           Graph.WindowLabelCollision.LabelCollisionFree object
             data.windowOrder data.LengthOK packing)
+  | .typeASaturatedExitEntry, object =>
+      -- The shared entry of nodes `[101]`--`[107]`, and the hypothesis of
+      -- `lem:typeA-exit4-residual-routing`: a saturated Type A receiver with a
+      -- peeling set whose residual load is still at or above the saturation
+      -- threshold.  `def:typeA-exit4-peeling`'s `P₄(w) ⊆ ℒ(w)` and
+      -- `L₄(w) ≥ s·q(w)` are the two clauses the routing lemma uses; the
+      -- witnesses attached to the peeled loads are node `[102]`'s fact.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset object.Vertex,
+            object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ piece : Finset object.Vertex,
+            piece ⊆ object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn object piece ∧
+              object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : object.Vertex,
+                object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset object.Vertex,
+                    peeled ⊆ object.routedLoads piece data.threshold receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled)
+  | .typeAExitSevenHandoff, object =>
+      -- Node `[107]`, yes -- exit `(7)` of `def:typeA-saturated-exits`: *"a
+      -- high-degree decorated handoff fan envelope is produced"*.
+      --
+      -- Like clause (3), and unlike clauses (1) and (2), clause (7) names no
+      -- receiver and no completion port.  `lem:typeA-unpeeled-visible-routing`
+      -- reaches it from the four visible returns through one port and
+      -- `lem:typeA-unpeeled-silent-routing` reaches it from the residual excess
+      -- basin, and node `[107]` is the *same* node on both paths; writing
+      -- either path's port here would fork the node in two.  The branch's
+      -- warrant for being on the exit list stays where it belongs, on the
+      -- ledger: `typeASaturatedExitEntry` is what the node is asked under.
+      --
+      -- What the fact carries is `def:decorated-fan-envelope`'s envelope on the
+      -- Type A support together with `lem:decorated-fan-admissibility`'s
+      -- interface record, because `lem:typeA-exits-discharged` does not close
+      -- this exit -- it hands the branch to Type B at node `[108]`.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset object.Vertex,
+            object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ piece : Finset object.Vertex,
+            piece ⊆ object.remainderSupport packing ∧
+              Graph.SupportComponents.Connected.ConnectedOn object piece ∧
+              object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              object.ambientSurplus piece data.threshold = 0 ∧
+              HandoffAdmissible data object packing piece)
+  | .typeAExitSevenFree, object =>
+      -- Node `[107]`, no -- the entry of node `[109]`: the same configuration
+      -- with the exit-`(7)` test denied.  This is the last clause of
+      -- `def:typeA-silent-core-residual`'s *"none of the target, quotient,
+      -- compression, delocalization, or decorated handoff fan alternatives
+      -- applies"*, and it is the hypothesis exit `(8)` is read under.
+      (∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset object.Vertex,
+          object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ piece : Finset object.Vertex,
+          piece ⊆ object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn object piece →
+          object.NegativeNetCharge piece data.threshold data.dischargeScale →
+          object.ambientSurplus piece data.threshold = 0 →
+          ¬ HandoffProduced data object packing piece)
+  | .typeAVisibleEntryClause, object =>
+      -- Node `[93]`, yes arm -- clause (Q1) of `def:typeA-exit4-family`: the
+      -- visible receiver-entry coordinate identification at the port node
+      -- `[93]` fixed is a generated member of `𝒬₄(w)` whose declared
+      -- routed-load support contains every visible load of that port.
+    (∃ packing : Finset (Finset object.Vertex),
+      object.IsWindowPacking data.windowOrder packing ∧
+        (∀ window : Finset object.Vertex,
+          object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) ∧
+        ∃ piece : Finset object.Vertex,
+          piece ⊆ object.remainderSupport packing ∧
+            Graph.SupportComponents.Connected.ConnectedOn object piece ∧
+            object.NegativeNetCharge piece data.threshold
+              data.dischargeScale ∧
+            object.ambientSurplus piece data.threshold = 0 ∧
+            ∃ receiver : object.Vertex,
+              object.IsReceiver piece data.threshold receiver ∧
+                object.Saturated piece data.threshold
+                  data.dischargeScale receiver ∧
+                ∃ outside ∈ Graph.VisibleEntry.completionPorts object
+                    piece receiver,
+                  data.dischargeScale ≤
+                      (Graph.VisibleEntry.visibleLoadsAt object piece
+                        data.threshold receiver outside).card ∧
+                    ∀ Carrier : Type u,
+                      ∀ entry : Graph.Route8.Entry
+                          (Graph.HasCycleWithLength data.LengthOK) Carrier,
+                        ∀ coordinate : object.Vertex → entry.Coordinate,
+                          ∀ declared : ∀ load ∈
+                              object.routedLoads piece data.threshold
+                                receiver,
+                              coordinate load ∈ entry.coordinates,
+                            (Graph.VisibleEntry.visibleEntryFamily piece
+                                  data.threshold receiver entry coordinate
+                                  outside declared).Generated
+                                Graph.ExitFour.Clause.visibleEntry
+                                entry.coordinates
+                                (Graph.VisibleEntry.visibleCoordinates piece
+                                  data.threshold receiver entry coordinate
+                                  outside entry.coordinates) ∧
+                              (Graph.VisibleEntry.visibleCoordinates piece
+                                data.threshold receiver entry coordinate
+                                outside entry.coordinates).Nonempty ∧
+                              Graph.VisibleEntry.visibleLoadsAt object
+                                  piece data.threshold receiver outside ⊆
+                                (Graph.VisibleEntry.visibleEntryFamily piece
+                                    data.threshold receiver entry coordinate
+                                    outside declared).declaredLoads
+                                  (Graph.VisibleEntry.visibleCoordinates piece
+                                    data.threshold receiver entry coordinate
+                                    outside entry.coordinates))
   | .highCentreNormalForm, object =>
       -- Node `[68]`: `lem:heavy-neighbourhood-normal-form`, at every high
       -- centre of the object at once.  It is not about one support, so it is
@@ -3282,35 +3597,51 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             Graph.skeletonBudget object))
   | .capacityTokenLedger, object =>
       -- `lem:primitive-carrier-supply` in both displayed forms, and
-      -- `lem:token-ledger-no-overcount` with its totality clause.
+      -- `def:capacity-token-ledger` with `lem:capacity-token-supply`,
+      -- `lem:token-ledger-no-overcount` and `def:same-token-patterns`, at the
+      -- object's own token universe and its own four-case charge.
       (((object.primitiveCarrier data.threshold).card =
             object.vertexCount + 2 * object.edgeCount +
               object.degreeSurplus data.threshold ∧
           (object.edgeCount + 2 ≤ 2 * object.vertexCount →
             (object.primitiveCarrier data.threshold).card ≤
               6 * object.vertexCount)) ∧
-        ∀ Token : Type,
-          ∀ tokenDecidableEq : DecidableEq Token,
-          ∀ tokens : List Token,
-            ∀ Eligible : Token →
-                Finset (object.Vertex × object.Vertex) → Prop,
-              ∀ decidable : ∀ token pair, Decidable (Eligible token pair),
-                (object.chargedPairs data.threshold tokens Eligible
-                    decidable).card =
-                  (@List.toFinset _ tokenDecidableEq tokens).sum
-                    (object.pairMultiplicity data.threshold tokenDecidableEq
-                      tokens Eligible decidable) ∧
-                ((∀ pair ∈ object.portPairSchedule data.threshold,
-                    ∃ token ∈ tokens, Eligible token pair) →
-                  object.chargedPairs data.threshold tokens Eligible decidable =
-                    object.portPairSchedule data.threshold))
+        Graph.FiniteObject.CapacityTokenLedgerStatement object data.threshold
+          data.windowOrder) ∧
+        -- The object *has* a capacity-token ledger: `𝔗_cap` with `Θ_cap`, node
+        -- `[130]`'s pair count, `lem:capacity-token-supply`'s `|𝔗_cap| ≤ 8n +
+        -- σ(G)` and the free-side sandwich, bundled by
+        -- `Graph.ObjectCapacityLedger.ofCapacityCharge`.  Nodes `[137]`--`[144]`
+        -- read this and nothing else about the token universe.
+        Nonempty (Graph.ObjectCapacityLedger object data.threshold)
   | .roleFibrePartition, object =>
-      -- `def:same-token-blocker-roles`' role-fibre partition.
+      -- `lem:exact-surplus-pair-charge-partition` with the classwise and
+      -- subtype budgets, at the object's own capacity-token ledger.
       Graph.RoleFibrePartitionStatement object data.threshold
   | .fibrePressure, object =>
       -- `lem:capacity-token-high-load` with
-      -- `cor:forced-homogeneous-same-token-scale`.
+      -- `cor:forced-homogeneous-same-token-scale` and the two sharp budgets,
+      -- existential in the object's own capacity-token ledger.
       Graph.FibrePressureStatement object data.threshold
+  | .spineSurplusEstimate, object =>
+      -- `cor:spine-lower-bound-surplus-estimates`: node `[129]`'s ordering of
+      -- the lower-bound packages, composed with node `[130]`'s pair count.
+      ∀ packing remainder scaleCount : Nat,
+        (object.portPairSchedule data.threshold).card ≤
+            Graph.spineDeficit object.vertexCount data.threshold
+              (Graph.curvaturePackageBound data.windowRate packing scaleCount
+                remainder data.entropyDenominator data.curvatureCost) →
+          object.degreeSurplus data.threshold ≤
+            1 + Nat.sqrt (2 * Graph.spineDeficit object.vertexCount
+              data.threshold
+              (Graph.windowPackageBound data.windowRate packing scaleCount))
+  | .sparsePressureNearCubic, object =>
+      -- `prop:single-graph-sparse-pressure-routing` (a).
+      Graph.SparsePressureCapped object data.threshold
+  | .sparsePressureOverload, object =>
+      -- `prop:single-graph-sparse-pressure-routing` (b) with
+      -- `cor:coupled-single-graph-overload-budget`.
+      Graph.SparsePressureOverloadStatement object data.threshold
   | .bottleneckClassification, object =>
       -- The three geometric class audits `[140]`, `[142]`, `[143]`.
       Graph.BottleneckClassificationStatement object data.threshold
@@ -3450,7 +3781,10 @@ def name : Key → Lean.Name
       `Hypostructure.Graph.Strategy.Spine.typeASaturatedReceiver
   | .typeAUnsaturatedReceivers =>
       `Hypostructure.Graph.Strategy.Spine.typeAUnsaturatedReceivers
+  | .typeAPortReturn => `Hypostructure.Graph.Strategy.Spine.typeAPortReturn
   | .typeAVisibleEntry => `Hypostructure.Graph.Strategy.Spine.typeAVisibleEntry
+  | .typeAVisibleEntryClause =>
+      `Hypostructure.Graph.Strategy.Spine.typeAVisibleEntryClause
   | .typeAVisibleFirstExcess =>
       `Hypostructure.Graph.Strategy.Spine.typeAVisibleFirstExcess
   | .typeAExitOneReturn =>
@@ -3462,6 +3796,12 @@ def name : Key → Lean.Name
       `Hypostructure.Graph.Strategy.Spine.typeAExitThreeCollision
   | .typeAExitThreeFree =>
       `Hypostructure.Graph.Strategy.Spine.typeAExitThreeFree
+  | .typeASaturatedExitEntry =>
+      `Hypostructure.Graph.Strategy.Spine.typeASaturatedExitEntry
+  | .typeAExitSevenHandoff =>
+      `Hypostructure.Graph.Strategy.Spine.typeAExitSevenHandoff
+  | .typeAExitSevenFree =>
+      `Hypostructure.Graph.Strategy.Spine.typeAExitSevenFree
   | .typeAExitFourPeel => `Hypostructure.Graph.Strategy.Spine.typeAExitFourPeel
   | .typeAExitFourNoPeel =>
       `Hypostructure.Graph.Strategy.Spine.typeAExitFourNoPeel
@@ -3503,6 +3843,12 @@ def name : Key → Lean.Name
       `Hypostructure.Graph.Strategy.Spine.roleFibrePartition
   | .fibrePressure =>
       `Hypostructure.Graph.Strategy.Spine.fibrePressure
+  | .spineSurplusEstimate =>
+      `Hypostructure.Graph.Strategy.Spine.spineSurplusEstimate
+  | .sparsePressureNearCubic =>
+      `Hypostructure.Graph.Strategy.Spine.sparsePressureNearCubic
+  | .sparsePressureOverload =>
+      `Hypostructure.Graph.Strategy.Spine.sparsePressureOverload
   | .bottleneckClassification =>
       `Hypostructure.Graph.Strategy.Spine.bottleneckClassification
   | .homogeneousBottleneck =>

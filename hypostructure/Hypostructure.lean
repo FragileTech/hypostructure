@@ -57,6 +57,7 @@ import Hypostructure.Fixtures.TypeAReceiverNode
 import Hypostructure.Fixtures.TypeAExitOne
 import Hypostructure.Fixtures.TypeAExitTwo
 import Hypostructure.Fixtures.TypeAExitThree
+import Hypostructure.Fixtures.TypeAExitSeven
 import Hypostructure.Fixtures.TypeBFanWindowNode
 import Hypostructure.Fixtures.TypeBBridgeNode
 import Hypostructure.Fixtures.Route8Run
@@ -132,6 +133,7 @@ import Hypostructure.Graph.ReceiverLoad
 import Hypostructure.Graph.ReceiverRouting
 import Hypostructure.Graph.VisibleReceiverEntry
 import Hypostructure.Graph.CommonPortReturnCycle
+import Hypostructure.Graph.DecoratedHandoffEnvelope
 import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.WindowCurvatureAlgebra
 import Hypostructure.Graph.WindowCurvatureEnumeration

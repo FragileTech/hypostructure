@@ -71,6 +71,18 @@ theorem not_saturatedAfter_iff (peeled : Finset object.Vertex) :
   unfold SaturatedAfter
   omega
 
+/-- **The empty peeling set is the loop's entry.**  `P₄(w) = ∅` gives
+`L₄(w) = L(w)`, so `lem:typeA-exit4-residual-routing`'s hypothesis
+`L₄(w) ≥ s·q(w)` at the empty peeling set *is* node `[89]`'s own saturation.
+This is what lets both entries of the shared exit segment derive their entry
+fact from the saturation already on the ledger instead of restating it. -/
+theorem saturatedAfter_empty :
+    SaturatedAfter support threshold scale receiver ∅ ↔
+      object.Saturated support threshold scale receiver := by
+  classical
+  simp [SaturatedAfter, residualLoad, unpeeledLoads,
+    FiniteObject.Saturated, FiniteObject.routedLoad]
+
 /-- An unpeeled load is a routed load that has not been peeled. -/
 theorem mem_unpeeledLoads {peeled : Finset object.Vertex}
     {load : object.Vertex} :

@@ -35,13 +35,22 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- The key index of the closed route-8 terminal, over the Type A residual. -/
+/-- The key index of the closed route-8 terminal, over Figure 8's silent entry
+into the shared exit segment. -/
 abbrev closedKeys : FactKeys (Input BranchState Presentation presentation data) :=
   Hypostructure.Graph.Strategy.Spine.route8ClosedKeys
-    (typeALowSurplusKeys (BranchState := BranchState)
+    (typeAVisibleFirstExcessKeys (BranchState := BranchState)
       (presentation := presentation) (data := data))
 
-/-- **The route-8 block runs on the Type A residual of node `[63]`.**
+/-- **The route-8 block runs on node `[94]`, the silent entry of the shared exit
+segment.**
+
+Figure 8 draws one segment `[101]`--`[107]` entered from node `[99]`'s no arm
+and from node `[94]`, and `lem:typeA-exit4-residual-routing` is the manuscript's
+statement that the two combine.  The block is therefore asked on a cursor
+carrying that lemma's hypothesis — `typeASaturatedExitEntry`, which node `[94]`
+commits — and not on the bare Type A residual of node `[63]`, which is above
+both entries and above node `[89]`'s saturation.
 
 Every freshness side condition is decided on the vocabulary's own finite `Key`,
 and the block's internal prerequisites -- node `[113]` after the `[109]`
@@ -51,8 +60,8 @@ resolution against the index each row is handed. -/
 noncomputable def run
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeALowSurplusKeys) :
-    Route8Result selected typeALowSurplusKeys :=
+      selected typeAVisibleFirstExcessKeys) :
+    Route8Result selected typeAVisibleFirstExcessKeys :=
   runRouteEight history (peelFresh := by simp) (noPeelFresh := by simp)
     (peeledChargeFresh := by simp) (compressionFresh := by simp)
     (traceLevelFresh := by simp) (exitFourFresh := by simp)
