@@ -22,9 +22,9 @@ Three statements are proved about that ledger, and they are the manuscript's:
   residual is still saturated, exit `(4)` supplies a fresh unpeeled load, and
   that descent terminates: some peeling set leaves the receiver unsaturated.
 
-`ℒ(w)` is the set whose cardinality `FiniteObject.routedLoad` already is; it is
-named here because a peeling set is a subset of it, and `routedLoad_eq_card`
-keeps the two definitions the same object.
+`ℒ(w)` of `def:typeA-exit4-peeling` is `FiniteObject.routedLoads`, which the
+routing module owns: `L(w)` is its cardinality by definition, so a peeling set
+is a subset of the very set the load counts.
 -/
 
 namespace Hypostructure.Graph.ExitFour
@@ -36,39 +36,13 @@ universe u
 variable {object : FiniteObject.{u}} (support : Finset object.Vertex)
 variable (threshold scale : Nat) (receiver : object.Vertex)
 
-/-- Vertices of a finite object have decidable equality: the object's own vertex
-schedule decides it.  Peeling sets are taken at this instance, which is the one
-`FiniteObject.routedLoad` is already defined against. -/
-def vertexDecEq (object : FiniteObject.{u}) : DecidableEq object.Vertex :=
-  object.vertices.decEq
-
 attribute [local instance] vertexDecEq
-
-/-- **`ℒ(w) = {u : r(u) = w}`** of `def:typeA-exit4-peeling`: the full vertices
-the canonical routing sends to this receiver. -/
-noncomputable def routedLoads : Finset object.Vertex :=
-  letI : DecidablePred fun source : object.Vertex =>
-      object.internalDegree support source = threshold ∧
-        object.traceReceiver? support threshold source = some receiver :=
-    fun _ => Classical.propDecidable _
-  support.filter fun source =>
-    object.internalDegree support source = threshold ∧
-      object.traceReceiver? support threshold source = some receiver
-
-/-- `L(w)` is the size of `ℒ(w)`: the two readings are the same object. -/
-theorem routedLoad_eq_card :
-    object.routedLoad support threshold receiver =
-      (routedLoads support threshold receiver).card := by
-  unfold FiniteObject.routedLoad routedLoads
-  congr 1
-  ext source
-  simp only [Finset.mem_filter]
 
 /-- **The unpeeled routed loads `ℒ(w) ∖ P₄(w)`**: the loads still charged to the
 receiver after peeling. -/
 noncomputable def unpeeledLoads (peeled : Finset object.Vertex) :
     Finset object.Vertex :=
-  (routedLoads support threshold receiver) \ peeled
+  (object.routedLoads support threshold receiver) \ peeled
 
 /-- **`L₄(w) = L(w) − |P₄(w)|`**, the residual load after peeling. -/
 noncomputable def residualLoad (peeled : Finset object.Vertex) : Nat :=
@@ -101,7 +75,7 @@ theorem not_saturatedAfter_iff (peeled : Finset object.Vertex) :
 theorem mem_unpeeledLoads {peeled : Finset object.Vertex}
     {load : object.Vertex} :
     load ∈ unpeeledLoads support threshold receiver peeled ↔
-      load ∈ routedLoads support threshold receiver ∧ load ∉ peeled :=
+      load ∈ object.routedLoads support threshold receiver ∧ load ∉ peeled :=
   Finset.mem_sdiff
 
 /-- **`lem:typeA-exit4-discharge`.**
@@ -121,8 +95,8 @@ theorem residualLoad_insert {peeled : Finset object.Vertex}
     residualLoad support threshold receiver (insert load peeled) + 1 =
       residualLoad support threshold receiver peeled := by
   have erase :
-      (routedLoads support threshold receiver) \ insert load peeled =
-        ((routedLoads support threshold receiver) \ peeled).erase load := by
+      (object.routedLoads support threshold receiver) \ insert load peeled =
+        ((object.routedLoads support threshold receiver) \ peeled).erase load := by
     ext other
     simp only [Finset.mem_sdiff, Finset.mem_insert, Finset.mem_erase,
       not_or]
@@ -138,9 +112,9 @@ theorem residualLoad_insert {peeled : Finset object.Vertex}
 /-- A peeling set is a set of routed loads. -/
 theorem insert_subset_routedLoads {peeled : Finset object.Vertex}
     {load : object.Vertex}
-    (inside : peeled ⊆ routedLoads support threshold receiver)
-    (routed : load ∈ routedLoads support threshold receiver) :
-    insert load peeled ⊆ routedLoads support threshold receiver :=
+    (inside : peeled ⊆ object.routedLoads support threshold receiver)
+    (routed : load ∈ object.routedLoads support threshold receiver) :
+    insert load peeled ⊆ object.routedLoads support threshold receiver :=
   Finset.insert_subset routed inside
 
 /-- **`lem:typeA-exit4-residual-routing`, with the descent it opens.**
@@ -161,18 +135,18 @@ which is `ExitFour.Family.IsPeeling`, and the descent preserves it because each
 step supplies its own witness. -/
 theorem exists_unsaturated_peeling
     {Retained : Finset object.Vertex → Prop} (empty : Retained ∅)
-    (step : ∀ peeled ⊆ routedLoads support threshold receiver, Retained peeled →
+    (step : ∀ peeled ⊆ object.routedLoads support threshold receiver, Retained peeled →
       SaturatedAfter support threshold scale receiver peeled →
-      ∃ load ∈ routedLoads support threshold receiver,
+      ∃ load ∈ object.routedLoads support threshold receiver,
         load ∉ peeled ∧ Retained (insert load peeled)) :
-    ∃ peeled ⊆ routedLoads support threshold receiver,
+    ∃ peeled ⊆ object.routedLoads support threshold receiver,
       Retained peeled ∧
         ¬ SaturatedAfter support threshold scale receiver peeled := by
   -- Descent on the residual load, which every peel step strictly decreases.
   suffices claim : ∀ bound : Nat,
-      ∀ peeled ⊆ routedLoads support threshold receiver, Retained peeled →
+      ∀ peeled ⊆ object.routedLoads support threshold receiver, Retained peeled →
         residualLoad support threshold receiver peeled ≤ bound →
-        ∃ larger ⊆ routedLoads support threshold receiver,
+        ∃ larger ⊆ object.routedLoads support threshold receiver,
           Retained larger ∧
             ¬ SaturatedAfter support threshold scale receiver larger by
     exact claim (residualLoad support threshold receiver ∅)

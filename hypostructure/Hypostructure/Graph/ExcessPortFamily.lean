@@ -63,40 +63,86 @@ theorem selectedPortEndpoints_length (centre : object.Vertex) :
   rw [selectedPortEndpoints, List.length_take, object.orderedNeighbors_length]
   omega
 
-variable (object threshold)
+variable (object)
 
-/-- **`𝒫_exc` of `def:surplus-ports`**, as ordered pairs `(c(p), x(p))`.
+/-- **The blocks of a vertex-indexed selection**, as ordered pairs
+`(centre, selected)`.
 
-The family is indexed by its centre, so distinct centres contribute disjoint
-blocks; that is what makes the count a sum of the per-centre contributions. -/
-noncomputable def excessPorts : Finset (object.Vertex × object.Vertex) := by
+A selection names, at each vertex, a list of other vertices; the family it
+generates is indexed by its centre, so distinct centres contribute disjoint
+blocks.  That is the only structure the counting below uses, and it is what both
+the excess selector `𝒫_exc` and the edge-incidence family `I_E(G)` are. -/
+noncomputable def centreBlocks (selection : object.Vertex → List object.Vertex) :
+    Finset (object.Vertex × object.Vertex) := by
   classical
   letI : FinEnum object.Vertex := object.vertices
   letI : DecidableEq object.Vertex := object.vertices.decEq
   exact Finset.univ.biUnion fun centre =>
-    (object.selectedPortEndpoints threshold centre).toFinset.image
-      fun endpoint => (centre, endpoint)
+    (selection centre).toFinset.image fun endpoint => (centre, endpoint)
 
-variable {object threshold}
+variable {object}
 
-theorem mem_excessPorts_iff (pair : object.Vertex × object.Vertex) :
-    pair ∈ object.excessPorts threshold ↔
-      pair.2 ∈ object.selectedPortEndpoints threshold pair.1 := by
+theorem mem_centreBlocks_iff (selection : object.Vertex → List object.Vertex)
+    (pair : object.Vertex × object.Vertex) :
+    pair ∈ object.centreBlocks selection ↔ pair.2 ∈ selection pair.1 := by
   classical
   letI : FinEnum object.Vertex := object.vertices
   letI : DecidableEq object.Vertex := object.vertices.decEq
   obtain ⟨centre, endpoint⟩ := pair
   constructor
   · intro member
-    simp only [excessPorts, Finset.mem_biUnion, Finset.mem_image,
+    simp only [centreBlocks, Finset.mem_biUnion, Finset.mem_image,
       List.mem_toFinset] at member
     obtain ⟨other, _, candidate, selected, equality⟩ := member
     obtain ⟨rfl, rfl⟩ := Prod.mk.injEq .. ▸ equality
     exact selected
   · intro selected
-    simp only [excessPorts, Finset.mem_biUnion, Finset.mem_image,
+    simp only [centreBlocks, Finset.mem_biUnion, Finset.mem_image,
       List.mem_toFinset]
     exact ⟨centre, Finset.mem_univ _, endpoint, selected, rfl⟩
+
+/-- **The blocks are disjoint, so the family counts blockwise.** -/
+theorem card_centreBlocks (selection : object.Vertex → List object.Vertex)
+    (nodup : ∀ centre : object.Vertex, (selection centre).Nodup) :
+    letI : FinEnum object.Vertex := object.vertices
+    (object.centreBlocks selection).card =
+      ∑ centre : object.Vertex, (selection centre).length := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  have disjoint : ∀ left ∈ (Finset.univ : Finset object.Vertex),
+      ∀ right ∈ (Finset.univ : Finset object.Vertex), left ≠ right →
+      Disjoint
+        ((selection left).toFinset.image fun endpoint => (left, endpoint))
+        ((selection right).toFinset.image fun endpoint => (right, endpoint)) := by
+    intro left _ right _ different
+    refine Finset.disjoint_left.2 fun pair leftMember rightMember => ?_
+    simp only [Finset.mem_image] at leftMember rightMember
+    obtain ⟨_, _, leftEq⟩ := leftMember
+    obtain ⟨_, _, rightEq⟩ := rightMember
+    apply different
+    have first : pair.1 = left := by rw [← leftEq]
+    have second : pair.1 = right := by rw [← rightEq]
+    rw [← first, second]
+  rw [centreBlocks, Finset.card_biUnion disjoint]
+  refine Finset.sum_congr rfl fun centre _ => ?_
+  rw [Finset.card_image_of_injective _
+      (fun _ _ equality => congrArg Prod.snd equality),
+    List.toFinset_card_of_nodup (nodup centre)]
+
+variable (object threshold)
+
+/-- **`𝒫_exc` of `def:surplus-ports`**, as ordered pairs `(c(p), x(p))`: the
+blocks of the per-centre excess selection. -/
+noncomputable def excessPorts : Finset (object.Vertex × object.Vertex) :=
+  object.centreBlocks (object.selectedPortEndpoints threshold)
+
+variable {object threshold}
+
+theorem mem_excessPorts_iff (pair : object.Vertex × object.Vertex) :
+    pair ∈ object.excessPorts threshold ↔
+      pair.2 ∈ object.selectedPortEndpoints threshold pair.1 :=
+  mem_centreBlocks_iff _ pair
 
 /-- A selected port is a `def:surplus-ports` port: its centre is strictly above
 the baseline and its endpoint is a neighbour of the centre. -/
@@ -139,33 +185,12 @@ theorem card_excessPorts
     (object.excessPorts threshold).card = object.degreeSurplus threshold := by
   classical
   letI : FinEnum object.Vertex := object.vertices
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  have disjoint : ∀ left ∈ (Finset.univ : Finset object.Vertex),
-      ∀ right ∈ (Finset.univ : Finset object.Vertex), left ≠ right →
-      Disjoint
-        ((object.selectedPortEndpoints threshold left).toFinset.image
-          fun endpoint => (left, endpoint))
-        ((object.selectedPortEndpoints threshold right).toFinset.image
-          fun endpoint => (right, endpoint)) := by
-    intro left _ right _ different
-    refine Finset.disjoint_left.2 fun pair leftMember rightMember => ?_
-    simp only [Finset.mem_image] at leftMember rightMember
-    obtain ⟨_, _, leftEq⟩ := leftMember
-    obtain ⟨_, _, rightEq⟩ := rightMember
-    apply different
-    have first : pair.1 = left := by rw [← leftEq]
-    have second : pair.1 = right := by rw [← rightEq]
-    rw [← first, second]
-  have blocks : (object.excessPorts threshold).card =
-      ∑ centre : object.Vertex, (object.degree centre - threshold) := by
-    rw [excessPorts, Finset.card_biUnion disjoint]
-    refine Finset.sum_congr rfl fun centre _ => ?_
-    rw [Finset.card_image_of_injective _
-        (fun _ _ equality => congrArg Prod.snd equality),
-      List.toFinset_card_of_nodup (selectedPortEndpoints_nodup centre),
-      selectedPortEndpoints_length]
-  rw [blocks, ← object.ambientSurplus_univ_eq_degreeSurplus threshold baseline]
-  rfl
+  have blocks := card_centreBlocks (object := object)
+    (object.selectedPortEndpoints threshold)
+    fun centre => selectedPortEndpoints_nodup centre
+  rw [excessPorts, blocks,
+    ← object.ambientSurplus_univ_eq_degreeSurplus threshold baseline]
+  exact Finset.sum_congr rfl fun centre _ => selectedPortEndpoints_length centre
 
 end FiniteObject
 

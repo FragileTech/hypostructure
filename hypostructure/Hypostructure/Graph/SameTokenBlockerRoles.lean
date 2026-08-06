@@ -59,6 +59,26 @@ inductive BlockerKind
   | arithmeticChordSet
 deriving DecidableEq, Fintype, Repr
 
+/-- **`def:canonical-sparse-blocker-order`**: the declared total order on the
+blocker types, in the clause order (a)--(f) of `def:surplus-blockers`.
+
+The order is what makes `def:canonical-blocker-ledger` single-valued: a pair
+blocked by several types is charged to the first of them in this list, and
+nothing else chooses. -/
+def canonicalBlockerOrder : List BlockerKind :=
+  [.sharedDeclaredSupport, .sharedReturnSupport, .sharedLocalBuffer,
+    .boundaryProfile, .targetResponse, .arithmeticChordSet]
+
+/-- The declared order is the whole closed clause list: every blocker type
+occurs in it, so a blocked pair always has a canonical blocker. -/
+theorem mem_canonicalBlockerOrder (kind : BlockerKind) :
+    kind ∈ canonicalBlockerOrder := by
+  cases kind <;> decide
+
+/-- The declared order lists each blocker type once, so the ledger's fibre sum
+runs over the alphabet without repetition. -/
+theorem canonicalBlockerOrder_nodup : canonicalBlockerOrder.Nodup := by decide
+
 /-- `class(t)` of `def:same-token-blocker-roles`: the summand of the capacity
 token universe `𝔗_cap = 𝔗_W ⊔ 𝔗_R ⊔ 𝔗_prim` that contains `t`. -/
 inductive TokenClass
@@ -140,16 +160,20 @@ def sameTokenRoleBound : Nat := Fintype.card Role
 def homogeneousCapCharge (patternBound : Nat) : Nat :=
   sameTokenRoleBound * ((patternBound - 1) * (2 * patternBound - 3))
 
-/-- `L_geom := Q_geom + 1` of `thm:homogeneous-overload-geometric-closure`,
-where `Q_geom` is the cardinality of the routing-label alphabet of
-`def:same-token-routing-germs`.  The bound is the caller's own count of that
-alphabet; nothing here computes it. -/
+/-- `L_geom := Q_geom + 1` of `thm:homogeneous-overload-geometric-closure`.
+
+The argument is `Q_geom`, the cardinality of the routing-label alphabet of
+`def:same-token-routing-germs`.  This leaf does not know that alphabet: it is
+declared and counted in `Graph/SameTokenRoutingGerms.lean`, whose own
+`geometricPatternBound` is this function at `geometricLabelBound`.  A caller
+that passes anything other than a routing-label count is not computing
+`L_geom`. -/
 def geometricPatternBound (routingLabelBound : Nat) : Nat := routingLabelBound + 1
 
-/-- `M₀ = Cap_hom(L_geom)`: the uniform token load `cor:homogeneous-same-token-caps-close`
-forms from the three fixed class caps once
-`thm:homogeneous-overload-geometric-closure` has set
-`L_W = L_R = L_P = L_geom`. -/
+/-- `M₀ = Cap_hom(L_geom)`: the uniform token load
+`cor:homogeneous-same-token-caps-close` forms from the three fixed class caps
+once `thm:homogeneous-overload-geometric-closure` has set
+`L_W = L_R = L_P = L_geom`.  The argument is `Q_geom`, as above. -/
 def homogeneousTokenCap (routingLabelBound : Nat) : Nat :=
   homogeneousCapCharge (geometricPatternBound routingLabelBound)
 

@@ -40,6 +40,8 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Strategy.SpineRows
 import Hypostructure.Graph.Strategy.Route8Rows
 import Hypostructure.Graph.Strategy.Route8Run
+import Hypostructure.Graph.Strategy.TypeAExitRun
+import Hypostructure.Graph.Strategy.SurplusRun
 import Hypostructure.Graph.Strategy.SpineRun
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
@@ -52,8 +54,14 @@ import Hypostructure.Fixtures.ColdCorridorConstruction
 import Hypostructure.Fixtures.ColdCorridorShortSelfReturn
 import Hypostructure.Fixtures.ColdCorridorRun
 import Hypostructure.Fixtures.TypeAReceiverNode
+import Hypostructure.Fixtures.TypeAExitOne
+import Hypostructure.Fixtures.TypeAExitTwo
+import Hypostructure.Fixtures.TypeAExitThree
 import Hypostructure.Fixtures.TypeBFanWindowNode
+import Hypostructure.Fixtures.TypeBBridgeNode
 import Hypostructure.Fixtures.Route8Run
+import Hypostructure.Fixtures.Route8ExitSix
+import Hypostructure.Fixtures.SurplusRun
 import Hypostructure.Fixtures.ExitFourFamily
 import Hypostructure.Core.Strategy.FactManifest
 import Hypostructure.Fixtures.ExactLedger
@@ -73,7 +81,14 @@ import Hypostructure.Routes.Registry
 import Hypostructure.Graph.Object
 import Hypostructure.Graph.Problem
 import Hypostructure.Graph.Finite
+import Hypostructure.Graph.Contraction
 import Hypostructure.Graph.SurplusPort
+import Hypostructure.Graph.ExcessPortFamily
+import Hypostructure.Graph.SparsePortActivation
+import Hypostructure.Graph.BaselineSpineDemand
+import Hypostructure.Graph.CanonicalFibreLedger
+import Hypostructure.Graph.SparsePairLedger
+import Hypostructure.Graph.PrimitiveCarrier
 import Hypostructure.Graph.FiniteEdgeBudget
 import Hypostructure.Graph.SupportComponents
 import Hypostructure.Graph.OneThreeRepair
@@ -101,11 +116,27 @@ import Hypostructure.Graph.SameTokenBlockerRoles
 import Hypostructure.Graph.MatchingStar
 import Hypostructure.Graph.HomogeneousTokenCap
 import Hypostructure.Graph.TokenLoadClosure
+import Hypostructure.Graph.CapacityTokenLedger
+import Hypostructure.Graph.DeclaredCoordinateSignature
+import Hypostructure.Graph.SameTokenRoutingGerms
+import Hypostructure.Graph.PortResponseSupport
+import Hypostructure.Graph.SparseEntropySandwich
+import Hypostructure.Graph.SparsePairResponse
+import Hypostructure.Graph.SurplusBlockers
+import Hypostructure.Graph.DeclaredRankQuotient
+import Hypostructure.Graph.CanonicalSupportSelection
+import Hypostructure.Graph.NamedSurplusExits
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows
+import Hypostructure.Fixtures.HomogeneousTokenBottleneck
 import Hypostructure.Graph.ReceiverLoad
 import Hypostructure.Graph.ReceiverRouting
+import Hypostructure.Graph.VisibleReceiverEntry
+import Hypostructure.Graph.CommonPortReturnCycle
+import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.WindowCurvatureAlgebra
 import Hypostructure.Graph.WindowCurvatureEnumeration
 import Hypostructure.Graph.WindowCurvatureCode
+import Hypostructure.Graph.WindowLabelCollision
 import Hypostructure.Graph.SurplusClasswiseOverload
 
 -- Manuscript Part VIII--IX, Figures 8 and 9: the Type A receiver chain and the
@@ -118,6 +149,7 @@ import Hypostructure.Graph.ExitFourFamily
 import Hypostructure.Graph.Route8Carrier
 import Hypostructure.Graph.Route8Closure
 import Hypostructure.Graph.Route8Residual
+import Hypostructure.Graph.ResponseDelocalization
 
 -- Modules rescued from the quarantine boundary: legal modules that happened to
 -- be reachable only through a quarantined one.  They are imported explicitly so

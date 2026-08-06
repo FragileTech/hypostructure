@@ -325,15 +325,15 @@ the four bridge-residual cursors: the two fan-certificate residual arms of node
 `[71]`/`[80]` and the two overlap-obstruction arms of node `[72]`/`[81]`. -/
 @[reducible] noncomputable def bridgeFanMass :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  bridgeFanMassRow (K .highCentreNormalForm) (K .typeBBridgeMass)
-    (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
+  bridgeFanMassRow (K .typeBBridgeMass) (fun _input value => ⟨value⟩)
 
 /-- Nodes `[76]`/`[85]`, Step 1 of `lem:typeB-exclusion`.  One executor value,
 run after either of the two B1 cursors. -/
 @[reducible] noncomputable def typeBExclusionCharge :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeBExclusionChargeRow (K .highCentreNormalForm) (K .typeBExclusionCharge)
-    (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
+  typeBExclusionChargeRow (K .typeBDisjointAssignment)
+    (K .typeBExclusionCharge) (by simp) (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
 
 end Rows
 
@@ -406,6 +406,30 @@ noncomputable instance instIncompatibleDirectCycle :
     exact selected.down.1
       (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
         valid present)
+
+/-- **`thm:branch-kill` (b): the node-`[76]`/`[85]` closing arm is
+uninhabited**, at the spine's own keys.
+
+The node-`[64]` residual carries a connected assigned Type B support of
+*negative* net charge.  `prop:typeB-bridge-reduction` says an excluded-shaped
+support has *nonnegative* net charge, and `def:net-charge`'s two sides are exact
+negations.  Registering the collision as `Incompatible` is what lets the
+framework close the arm the moment the branch test takes it, with the closure
+entry naming these two facts and nothing else.
+
+This is the whole Type B half of `thm:branch-kill`: "every large-budget residual
+outside the target-defect exit, outside the Type A route-8 residual branch, and
+outside the Type B bridge residual branch is closed". -/
+noncomputable instance instIncompatibleTypeBExcluded :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .typeBHighSurplus) (K .typeBExcluded) where
+  contradiction := fun residual surplus excluded => by
+    obtain ⟨packing, valid, piece, inside, connected, charge, positive⟩ :=
+      surplus.down
+    exact (residual.object.not_negativeNetCharge_iff piece data.threshold
+      data.dischargeScale).mpr
+      (excluded.down packing valid piece inside connected charge positive)
+      charge
 
 /-- **The terminal `[37]` is uninhabited**, at the spine's own key.
 
@@ -613,6 +637,16 @@ abbrev typeASaturatedReceiverKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeASaturatedReceiver :: typeAReceiverRoutingKeys
 
+/-- Node `[93]`, yes arm — the entry of the saturated exit chain. -/
+abbrev typeAVisibleEntryKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAVisibleEntry :: typeASaturatedReceiverKeys
+
+/-- Node `[93]`, no arm — node `[94]`, the visible-first excess. -/
+abbrev typeAVisibleFirstExcessKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAVisibleFirstExcess :: typeASaturatedReceiverKeys
+
 /-- Node `[89]`, no arm — node `[90]`. -/
 abbrev typeAUnsaturatedReceiverKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -730,6 +764,31 @@ abbrev typeBExclusionChargeKeys :
 abbrev degreeFourExclusionChargeKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBExclusionCharge :: degreeFourHybridEntryKeys
+
+/-- Node `[76]`, the closing arm of `thm:branch-kill` (b): the support is
+excluded-shaped, which collides with the node-`[64]` residual's own negative net
+charge. -/
+abbrev typeBBranchKillKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  closed :: K .typeBExcluded :: typeBExclusionChargeKeys
+
+/-- Node `[76]`, the surviving arm.  B2 *holds* on this cursor, so by
+`lem:typeB-exclusion`'s "consequently" the support is **not** a bridge residual:
+it carries a positive-deficit fan -- node `[74]`'s B1 case -- or a route-8
+residual.  It is therefore a retained leaf and no fan-mass bound applies. -/
+abbrev typeBExclusionResidualKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBExclusionResidual :: typeBExclusionChargeKeys
+
+/-- Node `[85]`, the closing arm. -/
+abbrev degreeFourBranchKillKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  closed :: K .typeBExcluded :: degreeFourExclusionChargeKeys
+
+/-- Node `[85]`, the surviving arm, for the same reason. -/
+abbrev degreeFourExclusionResidualKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBExclusionResidual :: degreeFourExclusionChargeKeys
 
 /-- Node `[72]`/`[81]`, no arm — the entry of `[73]`/`[83]`, which the
 manuscript routes to the fan-mass node `[75]`/`[84]`. -/
@@ -854,18 +913,24 @@ inductive Result (selected : Input BranchState Presentation presentation data)
   | windowJoinPressure
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected windowJoinPressureKeys)
-  | typeASaturatedReceiver
+  | typeAVisibleEntry
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected typeASaturatedReceiverKeys)
+        selected typeAVisibleEntryKeys)
+  | typeAVisibleFirstExcess
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected typeAVisibleFirstExcessKeys)
   | typeAUnsaturatedReceivers
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected typeAUnsaturatedReceiverKeys)
   | typeBDirectCycleClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected typeBDirectCycleClosedKeys)
-  | typeBExclusionCharge
+  | typeBBranchKill
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected typeBExclusionChargeKeys)
+        selected typeBBranchKillKeys)
+  | typeBExclusionResidual
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected typeBExclusionResidualKeys)
   | typeBOverlapObstructionMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected typeBOverlapObstructionMassKeys)
@@ -878,14 +943,17 @@ inductive Result (selected : Input BranchState Presentation presentation data)
   | degreeFourDirectCycleClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected degreeFourDirectCycleClosedKeys)
-  | degreeFourExclusionCharge
+  | degreeFourBranchKill
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected degreeFourExclusionChargeKeys)
+        selected degreeFourBranchKillKeys)
+  | degreeFourExclusionResidual
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected degreeFourExclusionResidualKeys)
   | degreeFourOverlapObstructionMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected degreeFourOverlapObstructionMassKeys)
 
-set_option maxHeartbeats 1200000 in
+set_option maxHeartbeats 4000000 in
 /-- **Block A, run.**
 
 The fact-only rows are composed by `AtomicCT.run`, which appends each row's
@@ -1094,7 +1162,28 @@ noncomputable def run
                                   (fun unsaturated => ⟨unsaturated⟩)
                                   (by simp) (by simp) with
                               | .left saturatedHistory =>
-                                  exact .typeASaturatedReceiver saturatedHistory
+                                  -- Node `[93]`: does a completion port of the
+                                  -- saturated receiver see `s` visible
+                                  -- receiver-entry returns?
+                                  match typeAVisibleEntryDichotomy
+                                      saturatedHistory
+                                      (K .typeAReceiverRouting)
+                                      (K .typeASaturatedReceiver)
+                                      (K .typeAVisibleEntry)
+                                      (K .typeAVisibleFirstExcess)
+                                      (fun fact packing valid maximal piece
+                                        inside surplus =>
+                                        (fact.down packing valid maximal piece
+                                          inside surplus).1)
+                                      (fun fact => fact.down)
+                                      (fun visible => ⟨visible⟩)
+                                      (fun excess => ⟨excess⟩)
+                                      (by simp) (by simp) with
+                                  | .left visibleHistory =>
+                                      exact .typeAVisibleEntry visibleHistory
+                                  | .right excessHistory =>
+                                      exact .typeAVisibleFirstExcess
+                                        excessHistory
                               | .right unsaturatedHistory =>
                                   exact .typeAUnsaturatedReceivers
                                     unsaturatedHistory
@@ -1157,14 +1246,39 @@ noncomputable def run
                                           | .left ledgerHistory =>
                                               -- Node `[74]`: the local hybrid B1
                                               -- payment, on the B2 cursor.
-                                              -- Node `[76]`: Step 1 of the Type
-                                              -- B exclusion, on that cursor.
-                                              exact .typeBExclusionCharge
-                                                ((typeBExclusionCharge
+                                              -- Node `[76]`: the Type B
+                                              -- exclusion, then
+                                              -- `thm:branch-kill` (b).
+                                              have afterExclusion :=
+                                                (typeBExclusionCharge
                                                     (data := data)).run
                                                   ((hybridEntry (data := data)).run
                                                     ledgerHistory (by simp))
-                                                  (by simp))
+                                                  (by simp)
+                                              match typeBExclusionDichotomy
+                                                  afterExclusion
+                                                  (K .typeBExclusionCharge)
+                                                  (K .typeBExcluded)
+                                                  (K .typeBExclusionResidual)
+                                                  (fun fact packing valid piece
+                                                      inside connected charge
+                                                      positive =>
+                                                    (fact.down packing valid
+                                                      piece inside connected
+                                                      charge positive).2)
+                                                  (fun excluded => ⟨excluded⟩)
+                                                  (fun residual => ⟨residual⟩)
+                                                  (by simp) (by simp) with
+                                              | .left excludedHistory =>
+                                                  exact .typeBBranchKill
+                                                    (closeIncompatible
+                                                      excludedHistory
+                                                      (K .typeBHighSurplus)
+                                                      (K .typeBExcluded)
+                                                      (by simp))
+                                              | .right residualHistory =>
+                                                  exact .typeBExclusionResidual
+                                                    residualHistory
                                           | .right obstructionHistory =>
                                               -- Node `[73]` → `[75]`: the
                                               -- fan-mass estimate on the
@@ -1224,15 +1338,39 @@ noncomputable def run
                                               (fun obstruction => ⟨obstruction⟩)
                                               (by simp) (by simp) with
                                           | .left ledgerHistory =>
-                                              -- Node `[82]`: the same executor,
-                                              -- after the other B2 cursor, then
-                                              -- node `[85]`.
-                                              exact .degreeFourExclusionCharge
-                                                ((typeBExclusionCharge
+                                              -- Node `[82]`, then node `[85]`:
+                                              -- the same two values after the
+                                              -- other B2 cursor.
+                                              have afterExclusion :=
+                                                (typeBExclusionCharge
                                                     (data := data)).run
                                                   ((hybridEntry (data := data)).run
                                                     ledgerHistory (by simp))
-                                                  (by simp))
+                                                  (by simp)
+                                              match typeBExclusionDichotomy
+                                                  afterExclusion
+                                                  (K .typeBExclusionCharge)
+                                                  (K .typeBExcluded)
+                                                  (K .typeBExclusionResidual)
+                                                  (fun fact packing valid piece
+                                                      inside connected charge
+                                                      positive =>
+                                                    (fact.down packing valid
+                                                      piece inside connected
+                                                      charge positive).2)
+                                                  (fun excluded => ⟨excluded⟩)
+                                                  (fun residual => ⟨residual⟩)
+                                                  (by simp) (by simp) with
+                                              | .left excludedHistory =>
+                                                  exact .degreeFourBranchKill
+                                                    (closeIncompatible
+                                                      excludedHistory
+                                                      (K .typeBHighSurplus)
+                                                      (K .typeBExcluded)
+                                                      (by simp))
+                                              | .right residualHistory =>
+                                                  exact .degreeFourExclusionResidual
+                                                    residualHistory
                                           | .right obstructionHistory =>
                                               -- Node `[83]` → `[84]`.
                                               exact .degreeFourOverlapObstructionMass
@@ -1349,11 +1487,22 @@ complete assignment on either arm.
 Neither arm can read the other's, and neither can read either arm of node
 `[62]`, `[59]`, `[53]`, `[50]`, `[32]`, `[21]` or `[19]` it did not take. -/
 
-/-- **The saturated arm's audit is exactly its facts, in commit order.** -/
-theorem typeASaturatedReceiver_audit_accounts_for_every_fact
+/-- **The visible-entry arm's audit is exactly its facts, in commit order.** -/
+theorem typeAVisibleEntry_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeASaturatedReceiverKeys) :
+      selected typeAVisibleEntryKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+/-- **The visible-first excess arm's audit is exactly its facts, in commit
+order.** -/
+theorem typeAVisibleFirstExcess_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeAVisibleFirstExcessKeys) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=
@@ -2148,6 +2297,70 @@ theorem degreeFourOverlapObstructionMass_audit_accounts_for_every_fact
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=
   ExactLedger.audit_complete history
+
+theorem typeBBranchKill_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBBranchKillKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem typeBBranchKill_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBBranchKillKeys) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem typeBExclusionResidual_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBExclusionResidualKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem typeBExclusionResidual_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBExclusionResidualKeys) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem degreeFourBranchKill_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourBranchKillKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem degreeFourBranchKill_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourBranchKillKeys) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem degreeFourExclusionResidual_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourExclusionResidualKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem degreeFourExclusionResidual_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourExclusionResidualKeys) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
 
 theorem typeBDegreeFourFanCap_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}

@@ -1,137 +1,123 @@
+import Hypostructure.Graph.CanonicalFibreLedger
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Finset.Max
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Tactic.Ring
 
 /-!
-# Token loads, the high-load alternative, and the tokenized closure
+# The high-load alternative and the tokenized closure
 
-Three accounting statements about a finite charge map from a set of blocked
-demand pairs onto a finite token universe, and the arithmetic that turns a
-uniform load bound into a square-root bound on the demand family.
+What `lem:capacity-token-high-load` and
+`thm:tokenized-surplus-accounting-closure` add to the canonical ledger.
 
-`lem:token-ledger-no-overcount`:
+The ledger itself is not built here.  `Graph/CanonicalFibreLedger.lean` is the
+single implementation of both of the manuscript's canonical ledgers, and
+`lem:token-ledger-no-overcount` -- `|Π_blk| = Σ_t ℓ_cap(t)` -- is its
+`card_assigned_eq_sum_multiplicity`.  This module reads that identity; it does
+not restate it.  `ℓ_cap(t)` is `CanonicalFibreLedger.multiplicity`.
 
-  `|Π_blk| = Σ_{t ∈ 𝔗_cap} ℓ_cap(t)`,
+Three statements are added.
 
-which is the fibre partition of the charge map and nothing more -- the
-manuscript's "no disjointness loss" is exactly the statement that the fibres
-partition, so it is a `card_eq_sum_card_fiberwise` and not an estimate.
+`L_max`, realized: some declared token carries a load large enough that the
+whole charged family fits inside `|𝔗_cap|` copies of it.  The manuscript writes
+`L_max := max_t ℓ_cap(t)`; a witness is what its consumers actually use.
 
 `lem:capacity-token-high-load`:
 
   `C(s,2) ≤ E_spine(n) + ((1/2)σ + 1)log₂ n + L_max|𝔗_cap|`,
 
-from the free/blocked split of the pair set, the entropy sandwich bound on the
-free part, and the fibre partition on the blocked part.  The entropy budget
-enters as a parameter: this file does not know how the free pairs were charged,
-and does not need to.
+from the ledger's own free/charged split, the entropy sandwich bound on the free
+part, and the fibre identity on the charged part.  The entropy budget is a
+parameter: this module does not know how the free pairs were charged.
 
-`thm:tokenized-surplus-accounting-closure`:  a uniform load bound `M₀` turns
-that display into `σ(G) = O(√n)`.  The manuscript argues asymptotically,
-absorbing the terms linear in `σ` into `σ²/2`; the exact finite form below does
-the absorption explicitly and keeps the constant visible:
+`thm:tokenized-surplus-accounting-closure`: a uniform load bound `M₀` turns that
+display into `σ(G) = O(√n)`.  The manuscript argues asymptotically, absorbing the
+terms linear in `σ` into `σ²/2` "after increasing constants"; the exact finite
+form below does the absorption explicitly and keeps the constant visible,
 
-  `s(s−1) ≤ A + B·s` gives `s ≤ 1 + B + ⌊√A⌋`,
+  `s(s−1) ≤ A + B·s`  gives  `s ≤ 1 + B + ⌊√A⌋`,
 
 with `A` the part of the budget that does not scale with the demand family and
 `B` the part that does.  At `A = 2C_E n + 16M₀ n` and `B = 2M₀` -- the values
 `|𝔗_cap| ≤ 8n + σ(G)` and `E_spine(n) ≤ C_E n` produce -- this is the
 manuscript's `σ(G) = O(√n)` with the implicit constant written out.
-
-Nothing here is about graphs.  The token universe, the pattern set and the
-charge map are arbitrary.
 -/
 
 namespace Hypostructure.Graph.TokenLoad
 
 open scoped BigOperators
+open Hypostructure.Graph.CanonicalFibreLedger
 
-universe u v
+universe uDemand uLabel
 
-variable {Token : Type u} {Pattern : Type v} [DecidableEq Token]
+variable {Demand : Type uDemand} {Token : Type uLabel}
+variable [DecidableEq Demand] [DecidableEq Token]
 
-/-- **`Θ_cap^{-1}(t)`**: the patterns the charge map sends to a token.  This is
-the edge set of the token-fibre graph `H_t` of `def:same-token-patterns`. -/
-def fibre (blocked : Finset Pattern) (charge : Pattern → Token) (token : Token) :
-    Finset Pattern :=
-  blocked.filter fun pattern => charge pattern = token
+/-- **`|Π_blk| ≤ M₀|𝔗_cap|`**: the canonical ledger under a uniform load bound.
 
-theorem fibre_subset (blocked : Finset Pattern) (charge : Pattern → Token)
-    (token : Token) : fibre blocked charge token ⊆ blocked :=
-  Finset.filter_subset _ _
-
-/-- **`ℓ_cap(t) = |Θ_cap^{-1}(t)| = e(H_t)`**. -/
-def load (blocked : Finset Pattern) (charge : Pattern → Token) (token : Token) : Nat :=
-  (fibre blocked charge token).card
-
-theorem load_eq_card_fibre (blocked : Finset Pattern) (charge : Pattern → Token)
-    (token : Token) : load blocked charge token = (fibre blocked charge token).card :=
-  rfl
-
-/-- **`lem:token-ledger-no-overcount`.**
-
-  `|Π_blk| = Σ_{t ∈ 𝔗_cap} ℓ_cap(t)`.
-
-The fibres of the charge map partition the blocked set, so the ledger has no
-double counting and no loss.  This is the identity, not a bound. -/
-theorem card_eq_sum_load (blocked : Finset Pattern) (tokens : Finset Token)
-    (charge : Pattern → Token) (declared : ∀ pattern ∈ blocked, charge pattern ∈ tokens) :
-    blocked.card = ∑ token ∈ tokens, load blocked charge token :=
-  Finset.card_eq_sum_card_fiberwise declared
-
-/-- **`|Π_blk| ≤ M₀|𝔗_cap|`**: the ledger under a uniform load bound. -/
-theorem card_le_mul_of_load_le (blocked : Finset Pattern) (tokens : Finset Token)
-    (charge : Pattern → Token) (bound : Nat)
-    (declared : ∀ pattern ∈ blocked, charge pattern ∈ tokens)
-    (loads : ∀ token ∈ tokens, load blocked charge token ≤ bound) :
-    blocked.card ≤ bound * tokens.card := by
-  calc blocked.card
-      = ∑ token ∈ tokens, load blocked charge token :=
-        card_eq_sum_load blocked tokens charge declared
-    _ ≤ ∑ _token ∈ tokens, bound := Finset.sum_le_sum loads
-    _ = bound * tokens.card := by
+The identity spent is `lem:token-ledger-no-overcount` as
+`CanonicalFibreLedger.card_assigned_eq_sum_multiplicity`; only the bound is
+new. -/
+theorem card_assigned_le_mul_of_multiplicity_le
+    (demands : Finset Demand) (order : List Token)
+    (Applies : Token → Demand → Prop)
+    [∀ token demand, Decidable (Applies token demand)] (bound : Nat)
+    (loads : ∀ token ∈ order.toFinset,
+      multiplicity demands order Applies token ≤ bound) :
+    (assigned demands order Applies).card ≤ bound * order.toFinset.card := by
+  calc (assigned demands order Applies).card
+      = ∑ token ∈ order.toFinset, multiplicity demands order Applies token :=
+        card_assigned_eq_sum_multiplicity demands order Applies
+    _ ≤ ∑ _token ∈ order.toFinset, bound := Finset.sum_le_sum loads
+    _ = bound * order.toFinset.card := by
         rw [Finset.sum_const_nat fun _ _ => rfl, Nat.mul_comm]
 
-/-- **`L_max`, realized.**  Some token carries a load large enough that the
-whole blocked set fits inside `|𝔗_cap|` copies of it.  This is the maximum the
-manuscript writes as `L_max := max_t ℓ_cap(t)`, produced as a witness rather
-than as a defined extremum. -/
-theorem exists_load_ge (blocked : Finset Pattern) (tokens : Finset Token)
-    (charge : Pattern → Token) (nonempty : tokens.Nonempty)
-    (declared : ∀ pattern ∈ blocked, charge pattern ∈ tokens) :
-    ∃ token ∈ tokens, blocked.card ≤ tokens.card * load blocked charge token := by
+/-- **`L_max`, realized.**  Some declared token carries a load large enough that
+the whole charged family fits inside `|𝔗_cap|` copies of it.  This is the
+maximum the manuscript writes as `L_max := max_t ℓ_cap(t)`, produced as a witness
+rather than as a defined extremum. -/
+theorem exists_multiplicity_ge
+    (demands : Finset Demand) (order : List Token)
+    (Applies : Token → Demand → Prop)
+    [∀ token demand, Decidable (Applies token demand)]
+    (nonempty : order.toFinset.Nonempty) :
+    ∃ token ∈ order.toFinset,
+      (assigned demands order Applies).card ≤
+        order.toFinset.card * multiplicity demands order Applies token := by
   classical
   obtain ⟨best, bestMem, bestMax⟩ :=
-    Finset.exists_max_image tokens (fun token => load blocked charge token) nonempty
+    Finset.exists_max_image order.toFinset
+      (fun token => multiplicity demands order Applies token) nonempty
   refine ⟨best, bestMem, ?_⟩
-  calc blocked.card
-      = ∑ token ∈ tokens, load blocked charge token :=
-        card_eq_sum_load blocked tokens charge declared
-    _ ≤ ∑ _token ∈ tokens, load blocked charge best :=
+  calc (assigned demands order Applies).card
+      = ∑ token ∈ order.toFinset, multiplicity demands order Applies token :=
+        card_assigned_eq_sum_multiplicity demands order Applies
+    _ ≤ ∑ _token ∈ order.toFinset, multiplicity demands order Applies best :=
         Finset.sum_le_sum fun token tokenMem => bestMax token tokenMem
-    _ = tokens.card * load blocked charge best :=
+    _ = order.toFinset.card * multiplicity demands order Applies best :=
         Finset.sum_const_nat fun _ _ => rfl
 
 /-- **`lem:capacity-token-high-load`, first display.**
 
   `C(s,2) ≤ E_spine(n) + ((1/2)σ + 1)log₂ n + L_max|𝔗_cap|`.
 
-The pair set splits as `Π_free ⊔ Π_blk`; the free part is bounded by the
-entropy budget the caller supplies, and the blocked part by the fibre
-partition under the load bound. -/
-theorem pairCount_le_entropy_add_load_mul (blocked : Finset Pattern)
-    (tokens : Finset Token) (charge : Pattern → Token)
-    (pairCount free entropyBudget maxLoad : Nat)
-    (split : pairCount = free + blocked.card)
-    (sandwich : free ≤ entropyBudget)
-    (declared : ∀ pattern ∈ blocked, charge pattern ∈ tokens)
-    (loads : ∀ token ∈ tokens, load blocked charge token ≤ maxLoad) :
-    pairCount ≤ entropyBudget + maxLoad * tokens.card := by
-  have blockedBound :=
-    card_le_mul_of_load_le blocked tokens charge maxLoad declared loads
+The pair set splits as `Π_free ⊔ Π_blk` -- the ledger's own
+`card_assigned_add_card_unassigned` -- the free part is bounded by the entropy
+budget the caller supplies, and the charged part by the fibre identity under the
+load bound. -/
+theorem card_le_entropy_add_load_mul
+    (demands : Finset Demand) (order : List Token)
+    (Applies : Token → Demand → Prop)
+    [∀ token demand, Decidable (Applies token demand)]
+    (entropyBudget maxLoad : Nat)
+    (sandwich : (unassigned demands order Applies).card ≤ entropyBudget)
+    (loads : ∀ token ∈ order.toFinset,
+      multiplicity demands order Applies token ≤ maxLoad) :
+    demands.card ≤ entropyBudget + maxLoad * order.toFinset.card := by
+  have split := card_assigned_add_card_unassigned demands order Applies
+  have charged :=
+    card_assigned_le_mul_of_multiplicity_le demands order Applies maxLoad loads
   omega
 
 /-- **The absorption step of `thm:tokenized-surplus-accounting-closure`.**
@@ -147,8 +133,6 @@ theorem le_one_add_of_quadratic_le (demand quadraticBudget linearRate : Nat)
   by_contra big
   push_neg at big
   set root := Nat.sqrt quadraticBudget with rootDef
-  -- The demand exceeds the claimed bound, so its excess above `1 + B` is at
-  -- least one more than the integer square root.
   obtain ⟨excess, demandDef⟩ :
       ∃ excess, demand = excess + 1 + linearRate ∧ root + 1 ≤ excess := by
     exact ⟨demand - 1 - linearRate, by omega, by omega⟩

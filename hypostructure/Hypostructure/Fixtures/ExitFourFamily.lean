@@ -46,7 +46,7 @@ theorem witness_of_defective
     {clause : Clause} {base identified : Finset family.entry.Coordinate}
     (defective : family.Defective clause base identified)
     {load : object.Vertex}
-    (routed : load ∈ routedLoads support threshold receiver)
+    (routed : load ∈ object.routedLoads support threshold receiver)
     (declared : family.coordinate load ∈ identified) :
     family.Witness load ∧ family.Occurs := by
   have witness : family.Witness load :=

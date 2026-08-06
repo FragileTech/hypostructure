@@ -397,6 +397,10 @@ def check_canonical_sources(root: Path) -> None:
     )
     violations = []
     for path in obsolete_paths:
+        # A canonical source deleted by the rewrite cannot reintroduce obsolete
+        # transport; only the modules that still exist are scanned.
+        if not path.exists():
+            continue
         source = path.read_text(encoding="utf-8")
         for token in obsolete:
             if token in source:

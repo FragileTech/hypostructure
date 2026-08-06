@@ -1,22 +1,21 @@
 import Hypostructure.Graph.TypeBFanIncidence
 import Hypostructure.Graph.NetCharge
 import Hypostructure.Graph.TypeBRefinedSupport
+import Hypostructure.Graph.TypeADischarge
 
 /-!
 # The augmented Type B fan-envelope charge
 
-`def:typeB-assigned-ledger` measures a vertex of an assigned Type B support by
+`def:typeB-assigned-ledger` measures an assigned Type B support with two
+charges: a core vertex by `ch_X(y) = max{0, δ − d(y)} − α` and an assigned
+high-degree centre by `ch_X(h) = −(d_G(h) − δ) − α`, where `α = 1/s` is one
+discharge unit.  Both are carried at the scale `s` below, so no reciprocal is
+ever written and the truncation is `Nat` subtraction.  There is no third charge
+formula: the fan estimates read the core charge against the assigned envelope
+`E_h` and the accounting identity reads it against the counted core `Y_X`, which
+is the one parameter that distinguishes the manuscript's two uses.
 
-  `ch_X(v) = δ − d_E(v) − α`,
-
-the baseline less the vertex's degree *inside the assigned fan envelope* less one
-discharge unit `α = 1/s`.  Everything below is that reading, carried at the scale
-`s` so that no reciprocal is ever written:
-
-  `s·ch_X(v) = s·(δ − d_E(v)) − 1`.
-
-Two manuscript statements are proved from it, and they are the two halves of the
-Type B bridge.
+Three manuscript statements are proved from them.
 
 ## Step 1 of `lem:typeB-exclusion`: the closed-neighbourhood charge
 
@@ -44,8 +43,15 @@ unpaid part is
 the manuscript's `(k − 3 + 1/4) + c/4`.  With `c ≤ k` this is below
 `F·s·(k − δ)` for the registered bridge-mass factor `F` — the manuscript's
 `5k/4 − 11/4 ≤ 8(k−3)`, valid because `27k ≥ 85`.  Summing over the assigned
-centres of a support and then over the pieces of a decomposition gives its
-`M_B ≤ 8 S_B ≤ 16σ(G)` for the ordinary assigned role.
+centres of a support and then over the pieces of a decomposition bounds the
+envelope mass by `F·S_B`, and `S_B` by the object's own surplus.
+
+## `def:typeB-assigned-ledger`: the identity `(B-ledger)`
+
+`No(X) = Ĉh_B(X) + α|H_X|`, which is what makes `Ĉh_B(X) ≥ 0` the same
+statement as `defp(X) − σ(X) ≥ α|V(X)|`.  It is an exact identity of the two
+sums, and it is what both `lem:typeB-exclusion` and
+`lem:typeB-bridge-deficit-bound` spend their charge estimates on.
 
 Nothing here is specialized to a manuscript: the baseline, the discharge scale
 and the mass factor are parameters, and no numeral is written.
@@ -63,266 +69,833 @@ variable {object : FiniteObject.{u}}
 
 open scoped Classical
 
-/-! ## The assigned fan envelope -/
+/-! ## `def:typeB-assigned-ledger`: the two vertex charges
 
-/-- **The coherence an assigned fan envelope has at its centre.**
+The manuscript measures a core vertex and an assigned centre by different
+formulas, and both are used below:
 
-`def:typeB-assigned-ledger` builds `E_h` from the centre, its assigned fan
-neighbours, and the non-`h` incidences of the cubic-closed ones.  Which vertices
-the assignment picks is fan data and not a property of the graph, so the envelope
-is a parameter here; what every charge reading below uses is only that the
-envelope contains the centre and the whole of `N(h)`.  The incidences of the
-cubic-closed neighbours are inside it already, by `IsCubicClosed`. -/
-structure IsFanEnvelope (object : FiniteObject.{u}) (envelope : Finset object.Vertex)
-    (centre : object.Vertex) : Prop where
-  /-- The centre belongs to its own envelope. -/
-  centreMem : centre ∈ envelope
-  /-- Every fan neighbour is assigned to the envelope. -/
-  fanMem : ∀ ⦃owner : object.Vertex⦄, object.graph.Adj centre owner → owner ∈ envelope
+  `ch_X(y) = max{0, δ − d(y)} − α`   for a core vertex,
+  `ch_X(h) = −(d_G(h) − δ) − α`      for an assigned centre,
 
-/-- **`s·ch_X(v)`**, the augmented Type B charge of a vertex at the discharge
-scale: the baseline less the vertex's envelope-internal degree, less one
-discharge unit.  Carried in `ℤ` because the charge is genuinely signed. -/
-noncomputable def scaledCharge (object : FiniteObject.{u})
-    (threshold dischargeScale : Nat) (envelope : Finset object.Vertex)
+carried at the scale `s`, so `α = 1/s` never appears as a reciprocal and the
+truncation is `Nat` subtraction.  The set the core degree is read against is a
+parameter: the accounting identity reads it against the counted core `Y_X`, and
+the fan estimates read it against the assigned envelope `E_h`, which is the
+manuscript's own "internal degree at most `2` **in the assigned fan
+envelope**". -/
+
+/-- **`s·ch_X(y)` for a core vertex**, against the counted core. -/
+noncomputable def scaledCoreCharge (object : FiniteObject.{u})
+    (threshold dischargeScale : Nat) (core : Finset object.Vertex)
     (vertex : object.Vertex) : Int :=
-  (dischargeScale : Int) *
-      ((threshold : Int) - (object.internalDegree envelope vertex : Int)) - 1
+  ((dischargeScale * (threshold - object.internalDegree core vertex) : Nat) : Int) - 1
 
-/-! ## The three readings of `d_E` -/
+/-- **`s·ch_X(h)` for an assigned centre**, against its ambient surplus. -/
+noncomputable def scaledCentreCharge (object : FiniteObject.{u})
+    (threshold dischargeScale : Nat) (centre : object.Vertex) : Int :=
+  - ((dischargeScale * (object.degree centre - threshold) : Nat) : Int) - 1
 
-/-- **The centre sees all `k` of its neighbours.**  Its envelope-internal degree
-is its ambient degree, because the envelope contains `N(h)`. -/
-theorem internalDegree_centre {envelope : Finset object.Vertex}
-    {centre : object.Vertex} (assigned : IsFanEnvelope object envelope centre) :
-    object.internalDegree envelope centre = object.degree centre := by
-  letI : FinEnum object.Vertex := object.vertices
-  letI : DecidableRel object.graph.Adj := object.decideAdj
+/-! ## `def:typeB-assigned-ledger`: the augmented ledger and `(B-ledger)`
+
+The two readings of `def:typeB-assigned-ledger` are distinct and the manuscript
+uses both.  The *envelope* reading above measures a fan vertex against the
+assigned envelope `E_h`, which is what its per-centre estimates are stated in;
+the *core* reading below measures a core vertex against the counted core `Y_X`,
+which is what the accounting identity is stated in.  They agree at the centre
+and at a cubic-closed neighbour -- the two negative species -- because both see
+the same neighbours there.
+
+The core reading is the manuscript's verbatim
+
+  `ch_X(y) = max{0, δ − d_{Y_X}(y)} − α`   for a core vertex,
+  `ch_X(h) = −(d_G(h) − δ) − α`            for an assigned centre,
+
+carried at the scale `s`, so `α = 1/s` never appears as a reciprocal and the
+truncation is `Nat` subtraction. -/
+
+/-- **`Ĉh_B(X)`**, the Type B augmented ledger of a connected assigned support,
+at the discharge scale. -/
+noncomputable def augmentedLedger (object : FiniteObject.{u})
+    (threshold dischargeScale : Nat) (piece : Finset object.Vertex) : Int :=
+  ∑ vertex ∈ piece, scaledCoreCharge object threshold dischargeScale piece vertex +
+    ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+      scaledCentreCharge object threshold dischargeScale centre
+
+/-- **`σ(X) = Σ_{h ∈ H_X}(d_G(h) − δ)`.**  A vertex of the support that is not
+an assigned centre carries no surplus at all, so the assigned centres already
+account for the whole of it. -/
+theorem sum_centres_surplus (object : FiniteObject.{u}) (threshold : Nat)
+    (piece : Finset object.Vertex) :
+    ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+        (object.degree centre - threshold) =
+      object.ambientSurplus piece threshold := by
   classical
-  have inside : object.graph.neighborFinset centre ∩ envelope =
-      object.graph.neighborFinset centre := by
-    refine Finset.inter_eq_left.mpr ?_
-    intro owner member
-    exact assigned.fanMem ((SimpleGraph.mem_neighborFinset _ _ _).mp member)
-  simpa [FiniteObject.internalDegree, FiniteObject.degree, inside] using
-    congrArg Finset.card inside
-
-/-- **A cubic-closed neighbour sees all `δ` of its own.**  It sits at the
-baseline, the centre is in the envelope, and its two other incidences are
-assigned there by `IsCubicClosed`. -/
-theorem internalDegree_closedNeighbour {threshold : Nat}
-    {envelope : Finset object.Vertex} {centre owner : object.Vertex}
-    (assigned : IsFanEnvelope object envelope centre)
-    (closed : IsCubicClosed object threshold envelope centre owner) :
-    object.internalDegree envelope owner = threshold := by
-  letI : FinEnum object.Vertex := object.vertices
-  letI : DecidableRel object.graph.Adj := object.decideAdj
-  classical
-  obtain ⟨adjacent, cubic, incidences⟩ := closed
-  have inside : object.graph.neighborFinset owner ∩ envelope =
-      object.graph.neighborFinset owner := by
-    refine Finset.inter_eq_left.mpr ?_
-    intro other member
-    have adjacentOther : object.graph.Adj owner other :=
-      (SimpleGraph.mem_neighborFinset _ _ _).mp member
-    by_cases isCentre : other = centre
-    · exact isCentre ▸ assigned.centreMem
-    · exact incidences other adjacentOther isCentre
-  have counted : object.internalDegree envelope owner = object.degree owner := by
-    simpa [FiniteObject.internalDegree, FiniteObject.degree, inside] using
-      congrArg Finset.card inside
-  rw [counted, cubic]
-
-/-- **Every other fan neighbour misses one.**  A fan neighbour of a high centre
-sits exactly at the baseline (`lem:heavy-neighbourhood-normal-form` (a)); if it
-is not cubic-closed, some incidence of it other than the centre is outside the
-envelope, so its envelope-internal degree is at most `δ − 1`.  This is the
-manuscript's "internal degree at most `2` in the assigned fan envelope". -/
-theorem internalDegree_openNeighbour_lt {threshold : Nat}
-    {envelope : Finset object.Vertex} {centre owner : object.Vertex}
-    (adjacent : object.graph.Adj centre owner)
-    (cubic : object.degree owner = threshold)
-    (open' : ¬ IsCubicClosed object threshold envelope centre owner) :
-    object.internalDegree envelope owner + 1 ≤ threshold := by
-  letI : FinEnum object.Vertex := object.vertices
-  letI : DecidableRel object.graph.Adj := object.decideAdj
-  classical
-  -- The first two clauses of `IsCubicClosed` hold, so the third fails.
-  have escapes : ∃ other : object.Vertex, object.graph.Adj owner other ∧
-      other ≠ centre ∧ other ∉ envelope := by
-    by_contra none'
-    push_neg at none'
-    exact open' ⟨adjacent, cubic, fun other adjacentOther isCentre =>
-      none' other adjacentOther isCentre⟩
-  obtain ⟨other, adjacentOther, _isCentre, outside⟩ := escapes
-  have member : other ∈ object.graph.neighborFinset owner :=
-    (SimpleGraph.mem_neighborFinset _ _ _).mpr adjacentOther
-  have contained : object.graph.neighborFinset owner ∩ envelope ⊆
-      (object.graph.neighborFinset owner).erase other := by
-    intro vertex inside
-    rw [Finset.mem_inter] at inside
-    refine Finset.mem_erase.mpr ⟨?_, inside.1⟩
-    rintro rfl
-    exact outside inside.2
-  have counted := Finset.card_le_card contained
-  rw [Finset.card_erase_of_mem member] at counted
-  have total : (object.graph.neighborFinset owner).card = threshold := by
-    simpa [FiniteObject.degree] using cubic
-  have positive : 1 ≤ (object.graph.neighborFinset owner).card :=
-    Finset.card_pos.mpr ⟨other, member⟩
-  have : object.internalDegree envelope owner ≤
-      (object.graph.neighborFinset owner).card - 1 := by
-    simpa [FiniteObject.internalDegree] using counted
+  unfold FiniteObject.ambientSurplus
+  refine Finset.sum_subset TypeBRefinedSupport.centres_subset ?_
+  intro vertex member notCentre
+  have : ¬ IsHighCentre object threshold vertex := fun high =>
+    notCentre (TypeBRefinedSupport.mem_centres.mpr ⟨member, high⟩)
+  rw [IsHighCentre] at this
   omega
 
-/-! ## Step 1 of `lem:typeB-exclusion`: the closed-neighbourhood charge -/
+/-- **`(B-ledger)`.**  `No(X) = Ĉh_B(X) + ¼|H_X|`, at the discharge scale, with
+`s·No(X) = s·def⁺(X) − s·σ(X) − |V(X)|` spelled out on the right.
 
-/-- **`ch_X(h) + Σ_{u ∈ N(h)} ch_X(u)`**, at the discharge scale. -/
-noncomputable def closedNeighbourhoodCharge (object : FiniteObject.{u})
-    (threshold dischargeScale : Nat) (envelope : Finset object.Vertex)
-    (centre : object.Vertex) : Int :=
-  scaledCharge object threshold dischargeScale envelope centre +
-    ∑ owner ∈ (object.orderedNeighbors centre).toFinset,
-      scaledCharge object threshold dischargeScale envelope owner
-
-/-- **The cubic-closed neighbours sit inside `N(h)`.** -/
-theorem closedNeighbours_subset_neighbourFinset (threshold : Nat)
-    (envelope : Finset object.Vertex) (centre : object.Vertex) :
-    closedNeighbours object threshold envelope centre ⊆
-      (object.orderedNeighbors centre).toFinset :=
-  closedNeighbours_subset object threshold envelope centre
-
-/-- **Step 1 of `lem:typeB-exclusion`.**
-
-`ch_X(h) + Σ_{u ∈ N(h)} ch_X(u) ≥ −D_B(𝔉_h)`, at the discharge scale.
-
-The manuscript's own calculation: the centre contributes `δ − k − α`, each of
-the `c` cubic-closed neighbours `−α`, and each of the remaining `k − c` fan
-neighbours at least `1 − α`.  Collecting,
-
-  `(δ − k − α) − cα + (1 − α)(k − c) = δ − (k+1)α − c = −D_B(𝔉_h)`,
-
-which at `δ = 3`, `α = 1/4` is the manuscript's `(11−k)/4 − c`.
-
-The hypothesis `tight` is `lem:heavy-neighbourhood-normal-form` (a): every fan
-neighbour sits exactly at the baseline.  It is the only graph input; the rest is
-the three envelope readings above. -/
-theorem neg_scaledDeficit_le_closedNeighbourhoodCharge {threshold dischargeScale : Nat}
-    {envelope : Finset object.Vertex} {centre : object.Vertex}
-    (assigned : IsFanEnvelope object envelope centre)
-    (tight : ∀ ⦃owner : object.Vertex⦄, object.graph.Adj centre owner →
-      object.degree owner = threshold) :
-    - scaledDeficit object threshold dischargeScale envelope centre ≤
-      closedNeighbourhoodCharge object threshold dischargeScale envelope centre := by
+The manuscript's own two-line derivation: the core sum is
+`def⁺(Y_X) − α|Y_X|` and the centre sum is `−σ(X) − α|H_X|`, and
+`def⁺(X) = def⁺(Y_X)`, `|V(X)| = |V(Y_X)|`. -/
+theorem augmentedLedger_add_card_centres (object : FiniteObject.{u})
+    (threshold dischargeScale : Nat) (piece : Finset object.Vertex) :
+    augmentedLedger object threshold dischargeScale piece +
+        ((TypeBRefinedSupport.centres object threshold piece).card : Int) =
+      ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) -
+        ((dischargeScale * object.ambientSurplus piece threshold : Nat) : Int) -
+        (piece.card : Int) := by
   classical
-  set neighbours := (object.orderedNeighbors centre).toFinset with neighboursDef
-  set closed := closedNeighbours object threshold envelope centre with closedDef
-  have contained : closed ⊆ neighbours :=
-    closedNeighbours_subset_neighbourFinset threshold envelope centre
-  -- `Σ_{N(h)} = Σ_{closed} + Σ_{N(h) ∖ closed}`.
-  have split : ∑ owner ∈ neighbours \ closed,
-        scaledCharge object threshold dischargeScale envelope owner +
-      ∑ owner ∈ closed,
-        scaledCharge object threshold dischargeScale envelope owner =
-      ∑ owner ∈ neighbours,
-        scaledCharge object threshold dischargeScale envelope owner :=
-    Finset.sum_sdiff contained
-  -- A cubic-closed neighbour contributes exactly `−1`.
-  have closedValue : ∑ owner ∈ closed,
-      scaledCharge object threshold dischargeScale envelope owner =
-        - (closedCount object threshold envelope centre : Int) := by
-    have pointwise : ∀ owner ∈ closed,
-        scaledCharge object threshold dischargeScale envelope owner = (-1 : Int) := by
-      intro owner member
-      have isClosed : IsCubicClosed object threshold envelope centre owner :=
-        mem_closedNeighbours_iff.mp (closedDef ▸ member)
-      rw [scaledCharge, internalDegree_closedNeighbour assigned isClosed]
-      ring
-    rw [Finset.sum_congr rfl pointwise, Finset.sum_const, closedCount, ← closedDef,
-      nsmul_eq_mul]
+  have core : ∑ vertex ∈ piece,
+      scaledCoreCharge object threshold dischargeScale piece vertex =
+        ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) -
+          (piece.card : Int) := by
+    unfold scaledCoreCharge FiniteObject.positiveDeficiency
+    rw [Finset.sum_sub_distrib, Finset.sum_const, nsmul_eq_mul, mul_one,
+      Finset.mul_sum]
+    push_cast
+    rfl
+  have centres : ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+      scaledCentreCharge object threshold dischargeScale centre =
+        - ((dischargeScale * object.ambientSurplus piece threshold : Nat) : Int) -
+          ((TypeBRefinedSupport.centres object threshold piece).card : Int) := by
+    unfold scaledCentreCharge
+    rw [Finset.sum_sub_distrib, Finset.sum_const, nsmul_eq_mul, mul_one]
+    have inner : ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+        - ((dischargeScale * (object.degree centre - threshold) : Nat) : Int) =
+          - ((dischargeScale * object.ambientSurplus piece threshold : Nat) : Int) := by
+      rw [Finset.sum_neg_distrib, ← Nat.cast_sum, ← Finset.mul_sum,
+        sum_centres_surplus object threshold piece]
+    rw [inner]
+  rw [augmentedLedger, core, centres]
+  ring
+
+/-- **The consumed consequence of `(B-ledger)`.**  `Ĉh_B(X) ≥ 0` gives
+`No(X) ≥ 0`, that is `def⁺(X) − σ(X) ≥ ¼|V(X)|`, which is the last line of
+`prop:typeB-bridge-reduction` and of `lem:typeB-exclusion`.
+
+The comparison is the subtraction-free `NonNegativeNetCharge` of
+`def:net-charge`, so nothing rounds. -/
+theorem nonNegativeNetCharge_of_augmentedLedger_nonneg (object : FiniteObject.{u})
+    (threshold dischargeScale : Nat) (piece : Finset object.Vertex)
+    (nonneg : 0 ≤ augmentedLedger object threshold dischargeScale piece) :
+    object.NonNegativeNetCharge piece threshold dischargeScale := by
+  have identity :=
+    augmentedLedger_add_card_centres object threshold dischargeScale piece
+  have counted : ((TypeBRefinedSupport.centres object threshold piece).card : Int) ≤
+      (piece.card : Int) := by
+    exact_mod_cast Finset.card_le_card
+      (TypeBRefinedSupport.centres_subset (threshold := threshold) (piece := piece))
+  rw [FiniteObject.NonNegativeNetCharge]
+  have cast :
+      ((piece.card + dischargeScale * object.ambientSurplus piece threshold : Nat) : Int) ≤
+        ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) := by
+    push_cast
+    push_cast at identity
+    linarith [identity, nonneg, counted]
+  exact_mod_cast cast
+
+
+
+/-! ## `lem:typeB-exclusion` Step 2: summing the B2 ledger
+
+Nothing here builds a fan envelope or a block structure of its own.  The
+entries, their carriers, their disjointness and their payment are
+`def:typeB-candidate-ledger`'s own, committed at node `[72]`/`[81]` as
+`Spine.Key.typeBDisjointAssignment` and carried by
+`TypeBRefinedSupport.RefinedSupportAssignment`:
+
+* `CandidateEntry.assigned` is `A_h`, with `assigned_adjacent`, `assigned_subset`
+  and `assigned_notCentre` its clauses;
+* `CandidateEntry.pays` is `ch_X(h) + Σ_{v ∈ A_h} ch_X(v) + ½|chosen| ≥ 0`,
+  cleared of denominators at the scale `2s`;
+* `HasDisjointChoice` is B2(a) and B2(c), the pairwise disjointness of the
+  carriers;
+* `IsMaximal` is B2(d), which with `demands_subset` makes the demand family
+  exactly `H_X`.
+
+What Step 2 adds is the summation: the entry blocks are disjoint, so their
+charges add, and the core outside them is discharged in place.  `(B-ledger)`
+then converts the total into `defp(X) − σ(X) ≥ α|V(X)|`.
+
+The `−α` per block is the centre's own charge as a vertex of the counted core,
+which `def:typeB-candidate-ledger`'s display does not include; it is exactly the
+`+α|H_X|` on the other side of `(B-ledger)`. -/
+
+/-- **The vertex block of a candidate entry**: the centre together with `A_h`. -/
+noncomputable def entryBlock {threshold dischargeScale : Nat}
+    {piece : Finset object.Vertex} {hub : object.Vertex}
+    (entry : TypeBRefinedSupport.CandidateEntry object threshold dischargeScale
+      piece hub) : Finset object.Vertex :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  insert hub entry.assigned
+
+theorem mem_entryBlock {threshold dischargeScale : Nat}
+    {piece : Finset object.Vertex} {hub vertex : object.Vertex}
+    {entry : TypeBRefinedSupport.CandidateEntry object threshold dischargeScale
+      piece hub} :
+    vertex ∈ entryBlock entry ↔ vertex = hub ∨ vertex ∈ entry.assigned := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  rw [entryBlock]
+  exact Finset.mem_insert
+
+/-- **A vertex-only entry's block charge is at least `−α`.**
+
+`def:typeB-candidate-ledger` (a) read straight off `CandidateEntry.pays` at an
+empty `chosen`, plus the centre's own core charge, which is at worst `−α`.
+Nothing is re-derived: the payment is the entry's own field. -/
+theorem neg_one_le_entryBlockCharge {threshold dischargeScale : Nat}
+    {piece : Finset object.Vertex} {hub : object.Vertex}
+    (entry : TypeBRefinedSupport.CandidateEntry object threshold dischargeScale
+      piece hub)
+    (vertexOnly : entry.chosen = ∅) :
+    (-1 : Int) ≤
+      ∑ vertex ∈ entryBlock entry,
+          scaledCoreCharge object threshold dischargeScale piece vertex +
+        scaledCentreCharge object threshold dischargeScale hub := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  have hubFresh : hub ∉ entry.assigned := fun present =>
+    object.graph.irrefl (entry.assigned_adjacent hub present)
+  have pays := entry.pays
+  rw [vertexOnly] at pays
+  simp only [Finset.card_empty, Nat.mul_zero] at pays
+  have assignedSum : ∑ vertex ∈ entry.assigned,
+      scaledCoreCharge object threshold dischargeScale piece vertex =
+        ((dischargeScale : Int)) * (∑ vertex ∈ entry.assigned,
+            ((threshold - object.internalDegree piece vertex : Nat) : Int)) -
+          (entry.assigned.card : Int) := by
+    unfold scaledCoreCharge
+    rw [Finset.sum_sub_distrib, Finset.sum_const, nsmul_eq_mul, mul_one,
+      Finset.mul_sum]
+    push_cast
+    rfl
+  have hubCore : (-1 : Int) ≤
+      scaledCoreCharge object threshold dischargeScale piece hub := by
+    rw [scaledCoreCharge]
+    have : (0 : Int) ≤ ((dischargeScale *
+        (threshold - object.internalDegree piece hub) : Nat) : Int) :=
+      Int.natCast_nonneg _
+    linarith
+  have cast : ((2 * dischargeScale * (object.degree hub - threshold) + 2 +
+        2 * entry.assigned.card : Nat) : Int) ≤
+      ((2 * dischargeScale * ∑ vertex ∈ entry.assigned,
+        (threshold - object.internalDegree piece vertex) : Nat) : Int) := by
+    exact_mod_cast pays
+  push_cast at cast
+  rw [entryBlock, Finset.sum_insert hubFresh, assignedSum, scaledCentreCharge]
+  push_cast
+  linarith [hubCore]
+
+/-- **The blocks of a disjoint choice are pairwise disjoint.**
+
+The vertex part of `Disjoint carriers`: `CandidateEntry.carriers` is
+`(insert hub A_h).disjSum chosen`, so two entries with disjoint carriers have
+disjoint blocks.  This is B2(a) and B2(c) read, not restated. -/
+theorem entryBlock_disjoint {threshold dischargeScale : Nat}
+    {piece : Finset object.Vertex} {left right : object.Vertex}
+    (leftEntry : TypeBRefinedSupport.CandidateEntry object threshold
+      dischargeScale piece left)
+    (rightEntry : TypeBRefinedSupport.CandidateEntry object threshold
+      dischargeScale piece right)
+    (disjoint : Disjoint leftEntry.carriers rightEntry.carriers) :
+    Disjoint (entryBlock leftEntry) (entryBlock rightEntry) := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  refine Finset.disjoint_left.mpr fun vertex leftMember rightMember => ?_
+  refine Finset.disjoint_left.mp disjoint
+    (show Sum.inl vertex ∈ leftEntry.carriers from ?_)
+    (show Sum.inl vertex ∈ rightEntry.carriers from ?_)
+  · rw [TypeBRefinedSupport.CandidateEntry.carriers]
+    exact Finset.inl_mem_disjSum.mpr leftMember
+  · rw [TypeBRefinedSupport.CandidateEntry.carriers]
+    exact Finset.inl_mem_disjSum.mpr rightMember
+
+/-- **The post-ledger core of a disjoint refined ledger**, and the two Type A
+conditions `lem:typeB-postledger-core-hygiene` hands its components to.
+
+The region is the support less the entry blocks -- the manuscript's "remove
+these ledger entries and call the remaining support `X₀`".  The conditions are
+nodes `[88]` and `[90]`: the canonical routing is total on it and stays in it,
+and every one of its receivers is unsaturated. -/
+def PostLedgerCore {threshold dischargeScale : Nat}
+    (object : FiniteObject.{u}) (piece : Finset object.Vertex)
+    (assignment : TypeBRefinedSupport.RefinedSupportAssignment object threshold
+      dischargeScale piece)
+    (entry : ∀ hub ∈ assignment.demands,
+      TypeBRefinedSupport.CandidateEntry object threshold dischargeScale piece
+        hub) : Prop := by
+  classical
+  exact (∀ vertex ∈ piece \ assignment.demands.attach.biUnion
+      (fun hub => entryBlock (entry hub.1 hub.2)),
+      object.internalDegree piece vertex ≤ threshold) ∧
+    (∀ vertex ∈ piece \ assignment.demands.attach.biUnion
+        (fun hub => entryBlock (entry hub.1 hub.2)),
+      object.internalDegree piece vertex = threshold →
+      ∃ receiver : object.Vertex,
+        object.traceReceiver? piece threshold vertex = some receiver ∧
+          object.IsReceiver piece threshold receiver ∧
+            receiver ∉ assignment.demands.attach.biUnion
+              (fun hub => entryBlock (entry hub.1 hub.2))) ∧
+      ∀ receiver ∈ object.receivers piece threshold \
+          assignment.demands.attach.biUnion
+            (fun hub => entryBlock (entry hub.1 hub.2)),
+        1 + object.restrictedLoad piece
+            (assignment.demands.attach.biUnion
+              (fun hub => entryBlock (entry hub.1 hub.2))) threshold receiver ≤
+          dischargeScale * object.missingPorts piece threshold receiver
+
+/-- **`lem:typeB-exclusion` Step 2, and with it `prop:typeB-bridge-reduction`.**
+
+`defp(X) − σ(X) ≥ α|V(X)|` at a connected assigned Type B support carrying the
+refined ledger B2, every entry of which is certificate-closed, and whose
+post-ledger core is a Type A region the canonical routing reaches with every
+receiver unsaturated.
+
+Every ingredient is read: the entries and their disjointness from the
+assignment, the payment from `CandidateEntry.pays`, the identity from
+`(B-ledger)`, and the core from `FiniteObject.card_le_scaled_deficiency_off`.
+The core hypotheses are nodes `[88]` and `[90]`, which
+`lem:typeB-postledger-core-hygiene` hands the components to. -/
+theorem typeBExclusion {threshold dischargeScale : Nat}
+    (object : FiniteObject.{u}) (piece : Finset object.Vertex)
+    (assignment : TypeBRefinedSupport.RefinedSupportAssignment object threshold
+      dischargeScale piece)
+    (entry : ∀ hub ∈ assignment.demands,
+      TypeBRefinedSupport.CandidateEntry object threshold dischargeScale piece
+        hub)
+    (disjointCarriers : ∀ (left : object.Vertex)
+      (leftMember : left ∈ assignment.demands) (right : object.Vertex)
+      (rightMember : right ∈ assignment.demands), left ≠ right →
+      Disjoint (entry left leftMember).carriers (entry right rightMember).carriers)
+    (vertexOnly : ∀ (hub : object.Vertex) (member : hub ∈ assignment.demands),
+      (entry hub member).chosen = ∅)
+    (core : PostLedgerCore object piece assignment entry) :
+    object.NonNegativeNetCharge piece threshold dischargeScale := by
+  classical
+  obtain ⟨coreCapped, coreRoutes, coreUnsaturated⟩ := core
+  set blocks := assignment.demands.attach.biUnion
+    (fun hub => entryBlock (entry hub.1 hub.2)) with blocksDef
+  -- B2(d) with `demands_subset`: the demand family is exactly `H_X`.
+  have demandsEq : assignment.demands =
+      TypeBRefinedSupport.centres object threshold piece :=
+    Finset.Subset.antisymm assignment.demands_subset assignment.maximal
+  -- The blocks lie inside the support.
+  have blocksSubset : blocks ⊆ piece := by
+    intro vertex member
+    obtain ⟨hub, _present, inside⟩ := Finset.mem_biUnion.mp member
+    rcases mem_entryBlock.mp inside with equal | assigned
+    · exact equal ▸ TypeBRefinedSupport.centres_subset
+        (demandsEq ▸ hub.2 : hub.1 ∈ TypeBRefinedSupport.centres object threshold piece)
+    · exact (entry hub.1 hub.2).assigned_subset assigned
+  -- The blocks are pairwise disjoint, by B2(a) and B2(c).
+  have blocksDisjoint : Set.PairwiseDisjoint
+      (↑assignment.demands.attach : Set {x // x ∈ assignment.demands})
+      (fun hub => entryBlock (entry hub.1 hub.2)) := by
+    intro left _ right _ different
+    refine entryBlock_disjoint _ _ (disjointCarriers left.1 left.2 right.1 right.2 ?_)
+    intro same
+    exact different (Subtype.ext same)
+  have blockSum : ∑ vertex ∈ blocks,
+      scaledCoreCharge object threshold dischargeScale piece vertex =
+        ∑ hub ∈ assignment.demands.attach, ∑ vertex ∈ entryBlock (entry hub.1 hub.2),
+          scaledCoreCharge object threshold dischargeScale piece vertex :=
+    Finset.sum_biUnion blocksDisjoint
+  -- Each block, with its centre charge, is at least `−α`.
+  have blockBound : - ((assignment.demands.attach).card : Int) ≤
+      ∑ hub ∈ assignment.demands.attach,
+        (∑ vertex ∈ entryBlock (entry hub.1 hub.2),
+            scaledCoreCharge object threshold dischargeScale piece vertex +
+          scaledCentreCharge object threshold dischargeScale hub.1) := by
+    have pointwise : ∀ hub ∈ assignment.demands.attach, (-1 : Int) ≤
+        ∑ vertex ∈ entryBlock (entry hub.1 hub.2),
+            scaledCoreCharge object threshold dischargeScale piece vertex +
+          scaledCentreCharge object threshold dischargeScale hub.1 :=
+      fun hub _ => neg_one_le_entryBlockCharge (entry hub.1 hub.2)
+        (vertexOnly hub.1 hub.2)
+    have := Finset.sum_le_sum pointwise
+    rw [Finset.sum_const, nsmul_eq_mul] at this
+    linarith
+  -- Outside the blocks the Type A discharging applies in place.
+  have offBlocks : (0 : Int) ≤ ∑ vertex ∈ piece \ blocks,
+      scaledCoreCharge object threshold dischargeScale piece vertex := by
+    have discharged := object.card_le_scaled_deficiency_off piece blocks threshold
+      dischargeScale coreCapped coreRoutes coreUnsaturated
+    have expand : ∑ vertex ∈ piece \ blocks,
+        scaledCoreCharge object threshold dischargeScale piece vertex =
+          ((∑ vertex ∈ piece \ blocks,
+            dischargeScale *
+              (threshold - object.internalDegree piece vertex) : Nat) : Int) -
+            ((piece \ blocks).card : Int) := by
+      unfold scaledCoreCharge
+      rw [Finset.sum_sub_distrib, Finset.sum_const, nsmul_eq_mul, mul_one,
+        Nat.cast_sum]
+    rw [expand]
+    have cast : ((piece \ blocks).card : Int) ≤
+        ((∑ vertex ∈ piece \ blocks,
+          dischargeScale *
+            (threshold - object.internalDegree piece vertex) : Nat) : Int) := by
+      exact_mod_cast discharged
+    linarith
+  -- Assemble.
+  have centreSum : ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+      scaledCentreCharge object threshold dischargeScale centre =
+        ∑ hub ∈ assignment.demands.attach,
+          scaledCentreCharge object threshold dischargeScale hub.1 := by
+    rw [← demandsEq, Finset.sum_attach assignment.demands
+      (fun centre => scaledCentreCharge object threshold dischargeScale centre)]
+  have cardEq : ((assignment.demands.attach).card : Int) =
+      ((TypeBRefinedSupport.centres object threshold piece).card : Int) := by
+    rw [Finset.card_attach, demandsEq]
+  have splitCore : ∑ vertex ∈ piece,
+      scaledCoreCharge object threshold dischargeScale piece vertex =
+        ∑ vertex ∈ piece \ blocks,
+            scaledCoreCharge object threshold dischargeScale piece vertex +
+          ∑ vertex ∈ blocks,
+            scaledCoreCharge object threshold dischargeScale piece vertex :=
+    (Finset.sum_sdiff blocksSubset).symm
+  have ledger : - ((TypeBRefinedSupport.centres object threshold piece).card : Int) ≤
+      augmentedLedger object threshold dischargeScale piece := by
+    rw [augmentedLedger, splitCore, blockSum, centreSum, add_assoc,
+      ← Finset.sum_add_distrib, ← cardEq]
+    linarith [offBlocks, blockBound]
+  have identity :=
+    augmentedLedger_add_card_centres object threshold dischargeScale piece
+  have counted : ((TypeBRefinedSupport.centres object threshold piece).card : Int) ≤
+      (piece.card : Int) := by
+    exact_mod_cast Finset.card_le_card
+      (TypeBRefinedSupport.centres_subset (threshold := threshold) (piece := piece))
+  rw [FiniteObject.NonNegativeNetCharge]
+  have cast :
+      ((piece.card + dischargeScale * object.ambientSurplus piece threshold : Nat) :
+        Int) ≤
+        ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) := by
+    push_cast
+    push_cast at identity ledger
+    linarith
+  exact_mod_cast cast
+
+
+/-! ## `lem:typeB-bridge-deficit-bound`: the residual mass itself
+
+Display (2) and the line after it.  The manuscript removes the fan envelopes and
+discharges what is left; the same accounting is available directly on the
+support, because the *only* vertices of an assigned Type B support that sit
+above the baseline are its assigned centres.  Every other vertex is at the
+baseline ambiently, so its core charge is the Type A charge and the discharging
+calculation of `lem:typeA-unsaturated-discharge` runs on it unchanged -- with
+the centres as the exceptional set, which is exactly the generality
+`card_le_scaled_deficiency_off` was stated in.
+
+A centre contributes `−(s(k−δ)+1)` through `ch_X(h)` and at worst `−1` more
+through its own core term, so the whole ledger is bounded below by
+`−Σ_h (s(k−δ) + 2)`, and the registered mass slack pays that against
+`F·s·(k−δ)`.  Nothing here needs the ordinary deficiency reserve: no carrier is
+deleted, so no boundary deficit is created. -/
+
+/-- **`Ĉh_B(X) ≥ −Σ_{h∈H_X}(s(d_G(h) − δ) + 2)`.** -/
+theorem neg_centreAllowance_le_augmentedLedger (object : FiniteObject.{u})
+    (piece : Finset object.Vertex) (threshold dischargeScale : Nat)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (routes : ∀ vertex ∈ piece \ TypeBRefinedSupport.centres object threshold piece,
+      object.internalDegree piece vertex = threshold →
+      ∃ receiver : object.Vertex,
+        object.traceReceiver? piece threshold vertex = some receiver ∧
+          object.IsReceiver piece threshold receiver ∧
+            receiver ∉ TypeBRefinedSupport.centres object threshold piece)
+    (unsaturated : ∀ receiver ∈ object.receivers piece threshold \
+        TypeBRefinedSupport.centres object threshold piece,
+      1 + object.restrictedLoad piece
+          (TypeBRefinedSupport.centres object threshold piece) threshold
+          receiver ≤
+        dischargeScale * object.missingPorts piece threshold receiver) :
+    - ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+          ((dischargeScale * (object.degree centre - threshold) + 2 : Nat) : Int) ≤
+      augmentedLedger object threshold dischargeScale piece := by
+  classical
+  set centres := TypeBRefinedSupport.centres object threshold piece with centresDef
+  -- Off the centres every vertex is at the baseline ambiently, so it is capped.
+  have capped : ∀ vertex ∈ piece \ centres,
+      object.internalDegree piece vertex ≤ threshold := by
+    intro vertex member
+    obtain ⟨inside, fresh⟩ := Finset.mem_sdiff.mp member
+    have notHigh : ¬ IsHighCentre object threshold vertex := fun high =>
+      fresh (TypeBRefinedSupport.mem_centres.mpr ⟨inside, high⟩)
+    rw [IsHighCentre] at notHigh
+    exact le_trans (object.internalDegree_le_degree piece vertex) (by omega)
+  -- The Type A discharging, off the centres.
+  have discharged := object.card_le_scaled_deficiency_off piece centres threshold
+    dischargeScale capped routes unsaturated
+  -- Off the centres the core charge is the Type A charge, so its sum is ≥ 0.
+  have offCentres : (0 : Int) ≤ ∑ vertex ∈ piece \ centres,
+      scaledCoreCharge object threshold dischargeScale piece vertex := by
+    have expand : ∑ vertex ∈ piece \ centres,
+        scaledCoreCharge object threshold dischargeScale piece vertex =
+          ((∑ vertex ∈ piece \ centres,
+            dischargeScale *
+              (threshold - object.internalDegree piece vertex) : Nat) : Int) -
+            ((piece \ centres).card : Int) := by
+      unfold scaledCoreCharge
+      rw [Finset.sum_sub_distrib, Finset.sum_const, nsmul_eq_mul, mul_one,
+        Nat.cast_sum]
+    rw [expand]
+    have cast : ((piece \ centres).card : Int) ≤
+        ((∑ vertex ∈ piece \ centres,
+          dischargeScale *
+            (threshold - object.internalDegree piece vertex) : Nat) : Int) := by
+      exact_mod_cast discharged
+    linarith
+  -- A centre's own core term is at worst `−1`.
+  have centreCore : ∀ centre ∈ centres,
+      (-1 : Int) ≤ scaledCoreCharge object threshold dischargeScale piece centre := by
+    intro centre _
+    rw [scaledCoreCharge]
+    have : (0 : Int) ≤ ((dischargeScale *
+        (threshold - object.internalDegree piece centre) : Nat) : Int) :=
+      Int.natCast_nonneg _
+    linarith
+  have centreCoreSum : - (centres.card : Int) ≤
+      ∑ centre ∈ centres,
+        scaledCoreCharge object threshold dischargeScale piece centre := by
+    have := Finset.sum_le_sum centreCore
+    rw [Finset.sum_const, nsmul_eq_mul] at this
+    linarith
+  -- Split the core sum at the centres and assemble.
+  have splitCore : ∑ vertex ∈ piece,
+      scaledCoreCharge object threshold dischargeScale piece vertex =
+        ∑ vertex ∈ piece \ centres,
+            scaledCoreCharge object threshold dischargeScale piece vertex +
+          ∑ centre ∈ centres,
+            scaledCoreCharge object threshold dischargeScale piece centre :=
+    (Finset.sum_sdiff (TypeBRefinedSupport.centres_subset
+      (threshold := threshold) (piece := piece))).symm
+  have centreCharges : - ∑ centre ∈ centres,
+        ((dischargeScale * (object.degree centre - threshold) + 1 : Nat) : Int) =
+      ∑ centre ∈ centres,
+        scaledCentreCharge object threshold dischargeScale centre := by
+    rw [← Finset.sum_neg_distrib]
+    refine Finset.sum_congr rfl fun centre _ => ?_
+    rw [scaledCentreCharge]
+    push_cast
     ring
-  -- Every other fan neighbour contributes at least `s − 1`.
-  have openValue : ((neighbours \ closed).card : Int) * ((dischargeScale : Int) - 1) ≤
-      ∑ owner ∈ neighbours \ closed,
-        scaledCharge object threshold dischargeScale envelope owner := by
-    rw [← nsmul_eq_mul, ← Finset.sum_const]
-    refine Finset.sum_le_sum fun owner member => ?_
-    rw [Finset.mem_sdiff, neighboursDef, List.mem_toFinset,
-      object.mem_orderedNeighbors_iff] at member
-    obtain ⟨adjacent, notClosed⟩ := member
-    have missing : object.internalDegree envelope owner + 1 ≤ threshold :=
-      internalDegree_openNeighbour_lt adjacent (tight adjacent)
-        (fun isClosed => notClosed (mem_closedNeighbours_iff.mpr isClosed))
-    have cast : (object.internalDegree envelope owner : Int) + 1 ≤ (threshold : Int) := by
-      exact_mod_cast missing
-    have step : (1 : Int) * (dischargeScale : Int) ≤
-        ((threshold : Int) - (object.internalDegree envelope owner : Int)) *
-          (dischargeScale : Int) :=
-      mul_le_mul_of_nonneg_right (by linarith) (Int.natCast_nonneg _)
-    rw [scaledCharge]
-    linarith [step]
-  -- The two cardinalities, and `c ≤ k`.
-  have counted : neighbours.card = object.degree centre := by
-    rw [neighboursDef, List.toFinset_card_of_nodup (object.orderedNeighbors_nodup centre),
-      object.orderedNeighbors_length centre]
-  have closedCard : closed.card = closedCount object threshold envelope centre := rfl
-  have sdiffCard : (neighbours \ closed).card + closed.card = neighbours.card :=
-    Finset.card_sdiff_add_card_eq_card contained
-  have sdiffCast : ((neighbours \ closed).card : Int) =
-      (object.degree centre : Int) -
-        (closedCount object threshold envelope centre : Int) := by
-    rw [counted, closedCard] at sdiffCard
-    omega
-  -- Assemble, and read off `−D_B`.
-  rw [closedNeighbourhoodCharge, scaledCharge, internalDegree_centre assigned,
-    ← split, closedValue, scaledDeficit]
-  rw [sdiffCast] at openValue
-  nlinarith [openValue]
+  have allowance : ∑ centre ∈ centres,
+      ((dischargeScale * (object.degree centre - threshold) + 2 : Nat) : Int) =
+        ∑ centre ∈ centres,
+            ((dischargeScale * (object.degree centre - threshold) + 1 : Nat) : Int) +
+          (centres.card : Int) := by
+    have pointwise : ∀ centre ∈ centres,
+        ((dischargeScale * (object.degree centre - threshold) + 2 : Nat) : Int) =
+          ((dischargeScale * (object.degree centre - threshold) + 1 : Nat) : Int)
+            + 1 := by
+      intro centre _
+      push_cast
+      ring
+    rw [Finset.sum_congr rfl pointwise, Finset.sum_add_distrib, Finset.sum_const,
+      nsmul_eq_mul, mul_one]
+  rw [augmentedLedger, splitCore, allowance, ← centreCharges]
+  linarith [offCentres, centreCoreSum]
 
-/-- **A certificate-closed fan carries nonnegative closed-neighbourhood
-charge.**  `D_B ≤ 0` is exactly `IsCertificateClosed`, so this is Step 1's
-conclusion: "this proves nonnegative charge for every non-residual fan
-neighbourhood". -/
-theorem closedNeighbourhoodCharge_nonneg {threshold dischargeScale : Nat}
-    {envelope : Finset object.Vertex} {centre : object.Vertex}
-    (assigned : IsFanEnvelope object envelope centre)
-    (tight : ∀ ⦃owner : object.Vertex⦄, object.graph.Adj centre owner →
-      object.degree owner = threshold)
-    (closed : IsCertificateClosed object threshold dischargeScale envelope centre) :
-    0 ≤ closedNeighbourhoodCharge object threshold dischargeScale envelope centre := by
-  have step := neg_scaledDeficit_le_closedNeighbourhoodCharge assigned tight
-    (dischargeScale := dischargeScale)
-  have : (0 : Int) ≤ - scaledDeficit object threshold dischargeScale envelope centre := by
-    have := closed
-    rw [IsCertificateClosed] at this
-    omega
+
+/-- **The centre allowance is inside the registered mass budget.**
+
+`Σ_h (s(k−δ) + 1) ≤ F·s·σ(X)`: per centre this is `s·t + 1 ≤ F·s·t` at `t ≥ 1`,
+which the registered `δ + 2 + s ≤ F·s` pays with room to spare. -/
+theorem sum_centreAllowance_le {threshold dischargeScale massFactor : Nat}
+    (object : FiniteObject.{u}) (piece : Finset object.Vertex)
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale) :
+    ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+        (dischargeScale * (object.degree centre - threshold) + 1) ≤
+      massFactor * dischargeScale * object.ambientSurplus piece threshold := by
+  classical
+  calc ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+          (dischargeScale * (object.degree centre - threshold) + 1)
+      ≤ ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+          massFactor * dischargeScale * (object.degree centre - threshold) := by
+        refine Finset.sum_le_sum fun centre member => ?_
+        have high : threshold < object.degree centre :=
+          (TypeBRefinedSupport.mem_centres.mp member).2
+        obtain ⟨surplus, degree⟩ : ∃ surplus : Nat,
+            object.degree centre = threshold + surplus + 1 :=
+          ⟨object.degree centre - threshold - 1, by omega⟩
+        have spent : (threshold + 2 + dischargeScale) * (surplus + 1) ≤
+            massFactor * dischargeScale * (surplus + 1) :=
+          Nat.mul_le_mul_right _ slack
+        rw [degree]
+        have reduce : threshold + surplus + 1 - threshold = surplus + 1 := by omega
+        rw [reduce]
+        nlinarith [spent]
+    _ = massFactor * dischargeScale *
+          ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
+            (object.degree centre - threshold) := by rw [Finset.mul_sum]
+    _ = massFactor * dischargeScale * object.ambientSurplus piece threshold := by
+        rw [sum_centres_surplus object threshold piece]
+
+/-- **`lem:typeB-bridge-deficit-bound`.**
+
+`No_-(X) ≤ F·Σ_{h∈H_X}(d_G(h) − δ)`, written subtraction-free at the discharge
+scale: `|V(X)| + s·σ(X) ≤ s·defp(X) + F·s·σ(X)`.  The manuscript's `8` is the
+registered factor and its `27k ≥ 85` is `Data.bridgeMassSlack`.
+
+The proof is the manuscript's: the ledger is bounded below by the centre
+allowance, `(B-ledger)` converts that into a statement about `No(X)`, and the
+registered slack pays the allowance out of the assigned surplus. -/
+theorem bridgeDeficitBound {threshold dischargeScale massFactor : Nat}
+    (object : FiniteObject.{u}) (piece : Finset object.Vertex)
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (routes : ∀ vertex ∈ piece \ TypeBRefinedSupport.centres object threshold piece,
+      object.internalDegree piece vertex = threshold →
+      ∃ receiver : object.Vertex,
+        object.traceReceiver? piece threshold vertex = some receiver ∧
+          object.IsReceiver piece threshold receiver ∧
+            receiver ∉ TypeBRefinedSupport.centres object threshold piece)
+    (unsaturated : ∀ receiver ∈ object.receivers piece threshold \
+        TypeBRefinedSupport.centres object threshold piece,
+      1 + object.restrictedLoad piece
+          (TypeBRefinedSupport.centres object threshold piece) threshold
+          receiver ≤
+        dischargeScale * object.missingPorts piece threshold receiver) :
+    piece.card + dischargeScale * object.ambientSurplus piece threshold ≤
+      dischargeScale * object.positiveDeficiency piece threshold +
+        massFactor * dischargeScale * object.ambientSurplus piece threshold := by
+  classical
+  set centres := TypeBRefinedSupport.centres object threshold piece with centresDef
+  have ledger := neg_centreAllowance_le_augmentedLedger object piece threshold
+    dischargeScale baseline routes unsaturated
+  have identity :=
+    augmentedLedger_add_card_centres object threshold dischargeScale piece
+  -- `Σ_h (s·t_h + 2) = Σ_h (s·t_h + 1) + |H_X|`.
+  have allowance : ∑ centre ∈ centres,
+      ((dischargeScale * (object.degree centre - threshold) + 2 : Nat) : Int) =
+        ((∑ centre ∈ centres,
+          (dischargeScale * (object.degree centre - threshold) + 1) : Nat) : Int) +
+          (centres.card : Int) := by
+    push_cast
+    rw [Finset.sum_add_distrib, Finset.sum_add_distrib, Finset.sum_const,
+      Finset.sum_const, nsmul_eq_mul, nsmul_eq_mul]
+    ring
+  rw [allowance] at ledger
+  have budget := sum_centreAllowance_le (massFactor := massFactor) object piece slack
+  have budgetCast :
+      ((∑ centre ∈ centres,
+        (dischargeScale * (object.degree centre - threshold) + 1) : Nat) : Int) ≤
+        ((massFactor * dischargeScale *
+          object.ambientSurplus piece threshold : Nat) : Int) := by
+    exact_mod_cast budget
+  have goal :
+      ((piece.card + dischargeScale *
+          object.ambientSurplus piece threshold : Nat) : Int) ≤
+        ((dischargeScale * object.positiveDeficiency piece threshold +
+          massFactor * dischargeScale *
+            object.ambientSurplus piece threshold : Nat) : Int) := by
+    push_cast
+    push_cast at identity ledger budgetCast
+    linarith
+  exact_mod_cast goal
+
+
+/-- **The two Type A conditions `lem:typeB-bridge-deficit-bound` reads on one
+support**, off its assigned centres: the canonical routing is total and lands
+off them, and every receiver outside them is unsaturated.
+
+These are nodes `[88]` and `[90]` -- `lem:typeA-receiver-loads` and
+`lem:typeA-unsaturated-discharge` -- read at the region
+`lem:typeB-postledger-core-hygiene` leaves.  They are not restated here: this is
+one name for the pair so that the family statements below do not spell it
+twice. -/
+def BridgeResidualComponentAt (object : FiniteObject.{u})
+    (piece : Finset object.Vertex) (threshold dischargeScale : Nat) : Prop :=
+  (∀ vertex ∈ piece \ TypeBRefinedSupport.centres object threshold piece,
+    object.internalDegree piece vertex = threshold →
+    ∃ receiver : object.Vertex,
+      object.traceReceiver? piece threshold vertex = some receiver ∧
+        object.IsReceiver piece threshold receiver ∧
+          receiver ∉ TypeBRefinedSupport.centres object threshold piece) ∧
+    ∀ receiver ∈ object.receivers piece threshold \
+        TypeBRefinedSupport.centres object threshold piece,
+      1 + object.restrictedLoad piece
+          (TypeBRefinedSupport.centres object threshold piece) threshold
+          receiver ≤
+        dischargeScale * object.missingPorts piece threshold receiver
+
+/-- The same pair at every piece of a decomposition. -/
+def BridgeResidualComponents (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold dischargeScale : Nat) : Prop :=
+  ∀ piece ∈ object.canonicalPieces support,
+    BridgeResidualComponentAt object (object.pieceSupport support piece)
+      threshold dischargeScale
+
+
+/-- **`D_A(𝒜)`**, the large-budget Type A deficit of a collection of route-8
+pieces, at the discharge scale: `Σ_Y (α|V(Y)| − defp(Y))` cleared of its
+reciprocal. -/
+noncomputable def route8Deficit (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold dischargeScale : Nat)
+    (route8 : Finset (SupportComponents.Connected.Component object support)) :
+    Nat :=
+  ∑ piece ∈ route8,
+    ((object.pieceSupport support piece).card -
+      dischargeScale * object.positiveDeficiency
+        (object.pieceSupport support piece) threshold)
+
+/-- **`lem:typeB-bridge-with-route8-core`.**
+
+`No(X) ≥ −D_A(𝒜_X) − F·Σ_h(d_G(h) − δ)`, summed over a decomposition: the pieces
+carrying a route-8 residual profile are set aside and paid by `D_A`, and every
+other piece is paid by the bridge estimate.  A route-8 piece is a Type A support,
+so `σ(Y) = 0` and its whole negative part *is* its Type A deficit. -/
+theorem bridgeResidualMass_le_route8 {threshold dischargeScale massFactor : Nat}
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (route8 : Finset (SupportComponents.Connected.Component object support))
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (route8Surplus : ∀ piece ∈ route8,
+      object.ambientSurplus (object.pieceSupport support piece) threshold = 0)
+    (components : ∀ piece ∈ object.canonicalPieces support, piece ∉ route8 →
+      BridgeResidualComponentAt object (object.pieceSupport support piece)
+        threshold dischargeScale) :
+    ∑ piece ∈ object.canonicalPieces support,
+        ((object.pieceSupport support piece).card +
+            dischargeScale * object.ambientSurplus
+              (object.pieceSupport support piece) threshold -
+          dischargeScale * object.positiveDeficiency
+            (object.pieceSupport support piece) threshold) ≤
+      route8Deficit object support threshold dischargeScale route8 +
+        massFactor * dischargeScale * object.degreeSurplus threshold := by
+  classical
+  set pieces := object.canonicalPieces support with piecesDef
+  set mass := fun piece => (object.pieceSupport support piece).card +
+      dischargeScale * object.ambientSurplus
+        (object.pieceSupport support piece) threshold -
+    dischargeScale * object.positiveDeficiency
+      (object.pieceSupport support piece) threshold with massDef
+  have split := (Finset.sum_filter_add_sum_filter_not pieces
+    (fun piece => piece ∈ route8) mass).symm
+  have route8Bound : ∑ piece ∈ pieces.filter (fun piece => piece ∈ route8),
+      mass piece ≤
+        route8Deficit object support threshold dischargeScale route8 := by
+    rw [route8Deficit]
+    have pointwise : ∀ piece ∈ pieces.filter (fun piece => piece ∈ route8),
+        mass piece = (object.pieceSupport support piece).card -
+          dischargeScale * object.positiveDeficiency
+            (object.pieceSupport support piece) threshold := by
+      intro piece member
+      have zero := route8Surplus piece (Finset.mem_filter.mp member).2
+      simp only [massDef, zero, Nat.mul_zero, Nat.add_zero]
+    rw [Finset.sum_congr rfl pointwise]
+    refine Finset.sum_le_sum_of_subset ?_
+    exact fun piece member => (Finset.mem_filter.mp member).2
+  have restBound : ∑ piece ∈ pieces.filter (fun piece => ¬ piece ∈ route8),
+      mass piece ≤ massFactor * dischargeScale *
+        object.degreeSurplus threshold := by
+    calc ∑ piece ∈ pieces.filter (fun piece => ¬ piece ∈ route8), mass piece
+        ≤ ∑ piece ∈ pieces.filter (fun piece => ¬ piece ∈ route8),
+            massFactor * dischargeScale * object.ambientSurplus
+              (object.pieceSupport support piece) threshold := by
+          refine Finset.sum_le_sum fun piece member => ?_
+          obtain ⟨inside, fresh⟩ := Finset.mem_filter.mp member
+          obtain ⟨routes, unsaturated⟩ := components piece inside fresh
+          have bound := bridgeDeficitBound (massFactor := massFactor) object
+            (object.pieceSupport support piece) slack baseline routes
+            unsaturated
+          simp only [massDef]
+          omega
+      _ ≤ ∑ piece ∈ pieces,
+            massFactor * dischargeScale * object.ambientSurplus
+              (object.pieceSupport support piece) threshold :=
+          Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+      _ = massFactor * dischargeScale *
+            ∑ piece ∈ pieces, object.ambientSurplus
+              (object.pieceSupport support piece) threshold := by
+          rw [Finset.mul_sum]
+      _ = massFactor * dischargeScale *
+            object.ambientSurplus support threshold := by
+          rw [piecesDef, object.sum_ambientSurplus_canonicalPieces support threshold]
+      _ ≤ massFactor * dischargeScale * object.degreeSurplus threshold := by
+          refine Nat.mul_le_mul_left _ ?_
+          letI : FinEnum object.Vertex := object.vertices
+          rw [← object.ambientSurplus_univ_eq_degreeSurplus threshold baseline]
+          exact Finset.sum_le_sum_of_subset (Finset.subset_univ support)
+  rw [split]
   omega
 
-/-- **The fan neighbours that are not cubic-closed carry nonnegative charge.**
+/-- **`def:typeB-residual-mass`, the at-most-twice occurrence convention.**
 
-The manuscript's "every other fan neighbour has internal degree at most `2` in
-the assigned fan envelope and contributes at least `3/4`": at the scale `s` the
-contribution is at least `s − 1`, which is nonnegative for any registered scale.
-This is what makes `envelopeNegativePart` below the *whole* negative part of the
-envelope rather than a selection of its terms. -/
-theorem scaledCharge_openNeighbour_nonneg {threshold dischargeScale : Nat}
-    {envelope : Finset object.Vertex} {centre owner : object.Vertex}
-    (positive : 0 < dischargeScale)
-    (adjacent : object.graph.Adj centre owner)
-    (cubic : object.degree owner = threshold)
-    (open' : ¬ IsCubicClosed object threshold envelope centre owner) :
-    0 ≤ scaledCharge object threshold dischargeScale envelope owner := by
-  have missing : object.internalDegree envelope owner + 1 ≤ threshold :=
-    internalDegree_openNeighbour_lt adjacent cubic open'
-  have cast : (object.internalDegree envelope owner : Int) + 1 ≤ (threshold : Int) := by
-    exact_mod_cast missing
-  have scale : (1 : Int) ≤ (dischargeScale : Int) := by exact_mod_cast positive
-  have step : (1 : Int) * (dischargeScale : Int) ≤
-      ((threshold : Int) - (object.internalDegree envelope owner : Int)) *
-        (dischargeScale : Int) :=
-    mul_le_mul_of_nonneg_right (by linarith) (Int.natCast_nonneg _)
-  rw [scaledCharge]
-  linarith [step]
+`S_B ≤ 2σ(G)`, hence `M_B ≤ F·S_B ≤ 2F·σ(G)` -- the manuscript's `16σ(G)`.  The
+per-centre bound is the same at a grouped decorated envelope centre as at an
+ordinary one, so `lem:decorated-envelope-deficit-bound` and
+`lem:decorated-envelope-with-route8-core` are this theorem's second summand and
+need no separate estimate. -/
+theorem bridgeResidualMass_le_twice {threshold dischargeScale massFactor : Nat}
+    (object : FiniteObject.{u}) (ordinary grouped : Finset object.Vertex)
+    (ordinaryRoute8 :
+      Finset (SupportComponents.Connected.Component object ordinary))
+    (groupedRoute8 :
+      Finset (SupportComponents.Connected.Component object grouped))
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (ordinarySurplus : ∀ piece ∈ ordinaryRoute8,
+      object.ambientSurplus (object.pieceSupport ordinary piece) threshold = 0)
+    (groupedSurplus : ∀ piece ∈ groupedRoute8,
+      object.ambientSurplus (object.pieceSupport grouped piece) threshold = 0)
+    (ordinaryComponents : ∀ piece ∈ object.canonicalPieces ordinary,
+      piece ∉ ordinaryRoute8 →
+      BridgeResidualComponentAt object (object.pieceSupport ordinary piece)
+        threshold dischargeScale)
+    (groupedComponents : ∀ piece ∈ object.canonicalPieces grouped,
+      piece ∉ groupedRoute8 →
+      BridgeResidualComponentAt object (object.pieceSupport grouped piece)
+        threshold dischargeScale) :
+    ∑ piece ∈ object.canonicalPieces ordinary,
+        ((object.pieceSupport ordinary piece).card +
+            dischargeScale * object.ambientSurplus
+              (object.pieceSupport ordinary piece) threshold -
+          dischargeScale * object.positiveDeficiency
+            (object.pieceSupport ordinary piece) threshold) +
+      ∑ piece ∈ object.canonicalPieces grouped,
+        ((object.pieceSupport grouped piece).card +
+            dischargeScale * object.ambientSurplus
+              (object.pieceSupport grouped piece) threshold -
+          dischargeScale * object.positiveDeficiency
+            (object.pieceSupport grouped piece) threshold) ≤
+      route8Deficit object ordinary threshold dischargeScale ordinaryRoute8 +
+        route8Deficit object grouped threshold dischargeScale groupedRoute8 +
+          2 * (massFactor * dischargeScale * object.degreeSurplus threshold) := by
+  have first := bridgeResidualMass_le_route8 (massFactor := massFactor) object
+    ordinary ordinaryRoute8 slack baseline ordinarySurplus ordinaryComponents
+  have second := bridgeResidualMass_le_route8 (massFactor := massFactor) object
+    grouped groupedRoute8 slack baseline groupedSurplus groupedComponents
+  omega
+
+/-- **`prop:typeB-bridge-sublinear`.**
+
+`M_B(𝒳_B) ≤ F·S_B(𝒳_B) ≤ F·σ(G)`, the route-8-free case: no piece of the
+decomposition carries a route-8 residual profile, so `𝒜_X` is empty and the
+whole mass is paid by the assigned surplus. -/
+theorem bridgeResidualMass_le {threshold dischargeScale massFactor : Nat}
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (components :
+      BridgeResidualComponents object support threshold dischargeScale) :
+    ∑ piece ∈ object.canonicalPieces support,
+        ((object.pieceSupport support piece).card +
+            dischargeScale * object.ambientSurplus
+              (object.pieceSupport support piece) threshold -
+          dischargeScale * object.positiveDeficiency
+            (object.pieceSupport support piece) threshold) ≤
+      massFactor * dischargeScale * object.degreeSurplus threshold := by
+  have bound := bridgeResidualMass_le_route8 (massFactor := massFactor) object
+    support ∅ slack baseline (by simp)
+    (fun piece member _ => components piece member)
+  rw [route8Deficit] at bound
+  simpa using bound
+
 
 /-! ## `lem:typeB-bridge-deficit-bound`: the envelope negative part -/
 
@@ -337,22 +910,6 @@ noncomputable def envelopeNegativePart (object : FiniteObject.{u})
     (centre : object.Vertex) : Nat :=
   dischargeScale * (object.degree centre - threshold) + 1 +
     closedCount object threshold envelope centre
-
-/-- **The centre's own charge is the negative of its share.** -/
-theorem scaledCharge_centre_eq {threshold dischargeScale : Nat}
-    {envelope : Finset object.Vertex} {centre : object.Vertex}
-    (assigned : IsFanEnvelope object envelope centre)
-    (high : threshold < object.degree centre) :
-    scaledCharge object threshold dischargeScale envelope centre =
-      - ((dischargeScale * (object.degree centre - threshold) : Nat) : Int) - 1 := by
-  rw [scaledCharge, internalDegree_centre assigned]
-  have expand : ((dischargeScale * (object.degree centre - threshold) : Nat) : Int) =
-      (dischargeScale : Int) *
-        ((object.degree centre : Int) - (threshold : Int)) := by
-    push_cast [Nat.cast_sub (le_of_lt high)]
-    ring
-  rw [expand]
-  ring
 
 /-- **`lem:typeB-bridge-deficit-bound`, display (1).**
 
@@ -381,77 +938,6 @@ theorem envelopeNegativePart_le {threshold dischargeScale massFactor : Nat}
   have reduce : threshold + surplus + 1 - threshold = surplus + 1 := by omega
   rw [reduce] at *
   nlinarith [spent, counted]
-
-/-- **`lem:typeB-bridge-deficit-bound`, display (2), at one support.**
-
-`Ĉh_B(X) ≥ −8 Σ_{h ∈ H_X}(d_G(h) − 3)`: summing the envelope estimate over the
-assigned centres of the support gives the assigned surplus back, because a
-vertex of the support that is not a centre carries no surplus at all. -/
-theorem sum_envelopeNegativePart_le {threshold dischargeScale massFactor : Nat}
-    (piece : Finset object.Vertex)
-    (envelope : object.Vertex → Finset object.Vertex)
-    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale) :
-    ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
-        envelopeNegativePart object threshold dischargeScale (envelope centre)
-          centre ≤
-      massFactor * dischargeScale * object.ambientSurplus piece threshold := by
-  classical
-  have surplus : ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
-      (object.degree centre - threshold) =
-        object.ambientSurplus piece threshold := by
-    unfold FiniteObject.ambientSurplus
-    refine Finset.sum_subset TypeBRefinedSupport.centres_subset ?_
-    intro vertex member notCentre
-    have : ¬ IsHighCentre object threshold vertex := fun high =>
-      notCentre (TypeBRefinedSupport.mem_centres.mpr ⟨member, high⟩)
-    rw [IsHighCentre] at this
-    omega
-  calc ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
-          envelopeNegativePart object threshold dischargeScale (envelope centre)
-            centre
-      ≤ ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
-          massFactor * dischargeScale * (object.degree centre - threshold) :=
-        Finset.sum_le_sum fun centre member =>
-          envelopeNegativePart_le _
-            (TypeBRefinedSupport.mem_centres.mp member).2 slack
-    _ = massFactor * dischargeScale *
-          ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
-            (object.degree centre - threshold) := by rw [Finset.mul_sum]
-    _ = massFactor * dischargeScale * object.ambientSurplus piece threshold := by
-        rw [surplus]
-
-/-- **`prop:typeB-bridge-sublinear` for the ordinary assigned role.**
-
-`M_B(𝒳_B) ≤ 8 S_B(𝒳_B)`: the bridge mass of a whole canonical decomposition is
-the sum of its pieces' envelope masses, and the assigned surpluses add over the
-pieces because the decomposition partitions the region. -/
-theorem sum_canonicalPieces_envelopeNegativePart_le
-    {threshold dischargeScale massFactor : Nat}
-    (support : Finset object.Vertex)
-    (envelope : object.Vertex → Finset object.Vertex)
-    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale) :
-    ∑ piece ∈ object.canonicalPieces support,
-        ∑ centre ∈ TypeBRefinedSupport.centres object threshold
-            (object.pieceSupport support piece),
-          envelopeNegativePart object threshold dischargeScale (envelope centre)
-            centre ≤
-      massFactor * dischargeScale * object.ambientSurplus support threshold := by
-  classical
-  calc ∑ piece ∈ object.canonicalPieces support,
-          ∑ centre ∈ TypeBRefinedSupport.centres object threshold
-              (object.pieceSupport support piece),
-            envelopeNegativePart object threshold dischargeScale
-              (envelope centre) centre
-      ≤ ∑ piece ∈ object.canonicalPieces support,
-          massFactor * dischargeScale *
-            object.ambientSurplus (object.pieceSupport support piece) threshold :=
-        Finset.sum_le_sum fun piece _ => sum_envelopeNegativePart_le _ envelope slack
-    _ = massFactor * dischargeScale *
-          ∑ piece ∈ object.canonicalPieces support,
-            object.ambientSurplus (object.pieceSupport support piece) threshold := by
-        rw [Finset.mul_sum]
-    _ = massFactor * dischargeScale * object.ambientSurplus support threshold := by
-        rw [object.sum_ambientSurplus_canonicalPieces support threshold]
 
 /-- **`prop:typeB-bridge-sublinear`, `S_B ≤ σ(G)` for the ordinary role.**  The
 assigned surplus of any region is below the global surplus, because the surplus

@@ -12,7 +12,7 @@ columns claim:
 * the block elaborates against that branch cursor, with both prerequisites --
   the node-`[1]`--`[4]` selection entry and node `[10]`'s slack independence --
   discharged by resolution against the incoming index;
-* the output index is the incoming one with the four activation facts on top,
+* the output index is the incoming one with the six activation facts on top,
   so every earlier fact of the branch is still in the type;
 * the audit accounts for every fact with chronological commits and no semantic
   fact was committed twice.
@@ -50,7 +50,7 @@ noncomputable def run
     SurplusResult selected surplusAboveKeys :=
   runSurplusBranch history
 
-/-- **The four facts of the block are all on the ledger after it runs.**
+/-- **The six facts of the block are all on the ledger after it runs.**
 
 Membership rather than position: later blocks add their own facts to the same
 index, and this check is about what the activation block contributes. -/
@@ -61,15 +61,19 @@ theorem run_audit_contains_activation_facts
     ∀ fact ∈ [`Hypostructure.Graph.Strategy.Spine.sparseSlackSurplus,
         `Hypostructure.Graph.Strategy.Spine.activeSurplusFamily,
         `Hypostructure.Graph.Strategy.Spine.sparsePortActivation,
-        `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand],
+        `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand,
+        `Hypostructure.Graph.Strategy.Spine.canonicalPairLedger,
+        `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger],
       fact ∈ (ExactLedger.audit history).facts := by
   intro fact member
   simp only [List.mem_cons, List.not_mem_nil, or_false] at member
-  rcases member with rfl | rfl | rfl | rfl
+  rcases member with rfl | rfl | rfl | rfl | rfl | rfl
   · exact List.mem_map.mpr ⟨K .sparseSlackSurplus, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .activeSurplusFamily, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .sparsePortActivation, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .baselineSpineDemand, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .canonicalPairLedger, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .capacityTokenLedger, by simp, rfl⟩
 
 /-- **Every fact of the block is accounted for by a chronological commit.** -/
 theorem run_audit_accounts_for_every_fact

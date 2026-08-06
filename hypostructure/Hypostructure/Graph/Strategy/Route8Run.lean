@@ -7,17 +7,20 @@ import Hypostructure.Graph.Strategy.SpineRun
 The rows of `Route8Rows` are each quantified over the keys they consume and
 produce.  This module installs them at the spine's own vocabulary and runs them
 in the manuscript's order against the one canonical `ExactLedger`: the exit-`(4)`
-dichotomy of node `[101]`, the exit-`(5)` dichotomy of node `[103]`, the arm
+dichotomy of node `[101]`, the exit-`(5)` dichotomy of node `[103]`, the
+exit-`(6)` dichotomy of node `[105]`, the arm
 placement of node `[109]`, the burden and large-budget deficit of
 `[111]`--`[113]`, the carrier core of `[114]`--`[116]`, the private-carrier
 census of `[117]`--`[122]`, the pressure descent of `[123]`, and the terminal
 no-go of `[124]`.
 
-The two exit dichotomies come first, as Figure 8 places them: the arm is entered
-only on their no arms, so (R2) of `def:typeA-true-route8-residual` is two facts
-on the ledger rather than a clause anyone assumes.  Their yes arms leave the
-block -- `[101]`'s to the manuscript's target-defect peel and `[103]`'s to the
-uncompressibility contradiction -- and carry no route-8 fact.
+The three exit dichotomies come first, as Figure 8 places them: the arm is
+entered only on their no arms, so (R2) of `def:typeA-true-route8-residual` is
+three facts on the ledger rather than a clause anyone assumes.  Their yes arms
+leave the block -- `[101]`'s to the manuscript's target-defect peel, `[103]`'s to
+the uncompressibility contradiction, and `[105]`'s to the terminal `[106]`,
+whose two cases are `lem:proper-smearing` and `lem:no-silent-global-smearing`
+-- and carry no route-8 fact.
 
 Inside the arm the wiring is the manuscript's: `[111]`--`[113]` reads the
 `[109]` collection, `[123]` reads `[122]`'s census, and `[124]` reads `[113]`,
@@ -102,6 +105,39 @@ noncomputable instance typeAExitFiveCompressionClosed :
     let ⟨support, compressible⟩ := compression.down
     uncompressible.down support compressible
 
+/-- **A proper delocalization support is impossible.**
+
+Node `[105]`'s scope test, proper arm, carries `lem:proper-smearing`'s
+conclusion: the equality that becomes target-complete only after adjoining
+`Z ⊋ B_u` with `Z ⊊ G` makes `Z` a replacement of a proper boundaried support.
+`lem:replacement` and `cor:uncompressible` forbid one at the selected minimal
+counterexample, which is what `not_globalBarrierReading` refutes on its first
+disjunct.  The collision is between the arm's fact and the selection's own
+avoidance and minimality, so it is read off two committed statements. -/
+noncomputable instance typeAExitSixProperClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .selection) (K (data := data) .typeAExitSixProper) where
+  contradiction := fun residual selected proper => by
+    obtain ⟨_support, replacement⟩ := proper.down
+    exact not_globalBarrierReading residual.baseline residual.branchState
+      selected.down.1 selected.down.2 (Or.inl replacement)
+
+/-- **A whole-graph delocalization is impossible.**
+
+Node `[105]`'s scope test, global arm, carries
+`lem:no-silent-global-smearing`'s conclusion: the whole-graph dependence
+supplies a strictly smaller admissible closed representative.  The selection
+says every strictly smaller baseline object realizes the target and that the
+selected object does not, so the representative transfers a target the object
+avoids.  Nothing is recomputed: both halves come from the two facts. -/
+noncomputable instance typeAExitSixGlobalClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .selection) (K (data := data) .typeAExitSixGlobal) where
+  contradiction := fun _residual selected global => by
+    obtain ⟨representative, smaller, baseline, transfer⟩ := global.down
+    exact selected.down.1
+      (transfer (selected.down.2 representative smaller baseline))
+
 /-- **The two route-8 facts are incompatible.**
 
 Node `[109]` commits that the object carries a large-budget route-8 collection
@@ -139,11 +175,32 @@ abbrev exitFiveTraceLevelKeys
   K .typeAExitFiveTraceLevel :: K .typeAExitFive :: K .typeAExitFourFree ::
     K .typeAExitFourNoPeel :: known
 
-/-- The key index of nodes `[101]` and `[103]`'s no arms: (R2). -/
-abbrev exitFreeKeys
+/-- The key index of node `[103]`'s no arm — the entry of node `[105]`. -/
+abbrev exitFiveFreeKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitFiveFree :: K .typeAExitFourFree :: K .typeAExitFourNoPeel :: known
+
+/-- The key index of node `[105]`'s proper arm: `lem:proper-smearing`'s
+replacement of the enlarging support, closed against the selection. -/
+abbrev exitSixProperKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  closed :: K .typeAExitSixProper :: K .typeAExitSix :: exitFiveFreeKeys known
+
+/-- The key index of node `[105]`'s global arm:
+`lem:no-silent-global-smearing`'s smaller admissible closed representative,
+closed against the selection. -/
+abbrev exitSixGlobalKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  closed :: K .typeAExitSixGlobal :: K .typeAExitSix :: exitFiveFreeKeys known
+
+/-- The key index of nodes `[101]`, `[103]` and `[105]`'s no arms: (R2). -/
+abbrev exitFreeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSixFree :: exitFiveFreeKeys known
 
 /-- The key index a branch carries after the five rows of the route-8 arm. -/
 abbrev route8Keys
@@ -174,9 +231,11 @@ abbrev route8FreeKeys
 /-- **The exits of the route-8 block.**
 
 `exitFour` and `exitFive` are the yes arms of nodes `[101]` and `[103]`, which
-leave the block; `free` is node `[109]`'s complementary arm, which carries no
-route-8 collection; `closed` is Figure 9's terminal, with Core's closure key
-appended from the two incompatible facts. -/
+leave the block; `exitSixProper` and `exitSixGlobal` are the two cases of node
+`[105]`'s terminal `[106]`, each closed against the selection; `free` is node
+`[109]`'s complementary arm, which carries no route-8 collection; `closed` is
+Figure 9's terminal, with Core's closure key appended from the two incompatible
+facts. -/
 inductive Route8Result
     (selected : Input BranchState Presentation presentation data)
     (known : FactKeys (Input BranchState Presentation presentation data)) where
@@ -192,6 +251,12 @@ inductive Route8Result
   | exitFiveTraceLevel
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (exitFiveTraceLevelKeys known))
+  | exitSixProper
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (exitSixProperKeys known))
+  | exitSixGlobal
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (exitSixGlobalKeys known))
   | free
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (route8FreeKeys known))
@@ -199,10 +264,10 @@ inductive Route8Result
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (route8ClosedKeys known))
 
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 1600000 in
 /-- **The route-8 carrier closure, run.**
 
-The three decisions commit one arm each; on the arm that carries a collection the
+The five decisions commit one arm each; on the arm that carries a collection the
 five rows are composed by `AtomicCT.run`, which appends each row's declared
 productions to the incoming index while retaining the literal ancestry.  Every
 prerequisite is discharged by instance resolution against the incoming index --
@@ -214,6 +279,7 @@ noncomputable def runRouteEight
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .uncompressible) known]
+    [FactKeys.Has (K (data := data) .selection) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
     (peelFresh : K (data := data) .typeAExitFourPeel ∉ known)
@@ -225,6 +291,10 @@ noncomputable def runRouteEight
     (exitFourFreeFresh : K (data := data) .typeAExitFourFree ∉ known)
     (exitFiveFresh : K (data := data) .typeAExitFive ∉ known)
     (exitFiveFreeFresh : K (data := data) .typeAExitFiveFree ∉ known)
+    (exitSixFresh : K (data := data) .typeAExitSix ∉ known)
+    (exitSixFreeFresh : K (data := data) .typeAExitSixFree ∉ known)
+    (exitSixProperFresh : K (data := data) .typeAExitSixProper ∉ known)
+    (exitSixGlobalFresh : K (data := data) .typeAExitSixGlobal ∉ known)
     (residualFresh : K (data := data) .route8Residual ∉ known)
     (freeFresh : K (data := data) .route8Free ∉ known)
     (burdenFresh : K (data := data) .route8Burden ∉ known)
@@ -272,8 +342,28 @@ noncomputable def runRouteEight
               (K .typeAExitFiveCompression) (by simp [closureFresh]))
       | .right traceLevel => exact .exitFiveTraceLevel traceLevel
   | .right surviving =>
+  -- Node `[105]`: exit `(6)`, clause (c) of `def:typeA-trace-basin`.
+  match typeAExitSixDichotomy surviving (K .typeAExitSix) (K .typeAExitSixFree)
+      (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+      (by simp [exitSixFresh]) (by simp [exitSixFreeFresh]) with
+  | .left delocalized =>
+      -- Node `[105]`, the scope test of `lem:typeA-exits-discharged`.
+      match typeAExitSixScopeDichotomy delocalized (K .typeAExitSix)
+          (K .typeAExitSixProper) (K .typeAExitSixGlobal)
+          (fun fact => fact.down) (fun value => ⟨value⟩)
+          (fun value => ⟨value⟩)
+          (by simp [exitSixProperFresh]) (by simp [exitSixGlobalFresh]) with
+      | .left proper =>
+          exact .exitSixProper
+            (closeIncompatible proper (K .selection) (K .typeAExitSixProper)
+              (by simp [closureFresh]))
+      | .right global =>
+          exact .exitSixGlobal
+            (closeIncompatible global (K .selection) (K .typeAExitSixGlobal)
+              (by simp [closureFresh]))
+  | .right exitSixFree =>
   -- Node `[109]`: the arm placement, on the ladder's no arms.
-  match route8Placement surviving (K .route8Residual) (K .route8Free)
+  match route8Placement exitSixFree (K .route8Residual) (K .route8Free)
       (fun value => ⟨value⟩) (fun value => ⟨value⟩)
       (by simp [residualFresh]) (by simp [freeFresh]) with
   | .right free => exact .free free

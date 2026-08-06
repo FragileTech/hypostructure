@@ -175,13 +175,13 @@ Both are checked at an arbitrary object, support, baseline and scale: neither
 knows a degree, an overload factor, or a graph family. -/
 
 /-- **The routing is total under the empty-core hypothesis.**  A vertex
-spending the whole baseline inside a support whose internal degrees are capped
-there is routed, and to a receiver — `lem:typeA-receiver-loads` in the form the
-row commits it. -/
+spending the whole baseline is routed, and to a receiver —
+`lem:typeA-receiver-loads` in the form the row commits it.  No cappedness is
+needed: the reachable region is the vertices at *or above* the baseline, so the
+only alternative to a trace is a subregion meeting the baseline, which node
+`[27]` denies. -/
 example (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex)
     (threshold : Nat)
-    (capped : ∀ vertex ∈ support,
-      object.internalDegree support vertex ≤ threshold)
     (noCore : ∀ inner : Finset object.Vertex, inner ⊆ support →
       ¬ Graph.MinimumDegreeAtLeast threshold (object.induce inner))
     {source : object.Vertex} (member : source ∈ support)
@@ -190,8 +190,8 @@ example (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex)
       object.traceReceiver? support threshold source = some receiver ∧
         object.IsReceiver support threshold receiver := by
   obtain ⟨target, trace⟩ :=
-    object.exists_traceTo_of_no_baseline_subsupport support threshold capped
-      noCore member full
+    object.exists_traceTo_of_no_baseline_subsupport support threshold
+      noCore member (le_of_eq full.symm)
   obtain ⟨found, routed⟩ :=
     Option.isSome_iff_exists.mp (object.isSome_traceReceiver?_of_traceTo trace)
   exact ⟨found, routed,

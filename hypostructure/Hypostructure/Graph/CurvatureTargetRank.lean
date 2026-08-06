@@ -1,6 +1,5 @@
 import Hypostructure.Graph.InternalWedgeFamily
-import Hypostructure.Graph.Strategy.InterfaceReplacement
-import Hypostructure.Core.TargetRank
+import Hypostructure.Graph.DeclaredRankQuotient
 
 /-!
 # The curvature target-rank of a region
@@ -67,141 +66,17 @@ end FiniteObject
 
 /-- **`def:admissible-rank-quotient` on the raw curvature tests of a region.**
 
-An admissible rank quotient for the family `𝒲₂(region)`: a quotient of the
-exact response profile of a connected determination support carrying the
-family, which is target-complete, and which — when it is rank-reducing on the
-family — supplies the representative its scope requires.
-
-The two representative clauses are stated against the scope split the framework
-already owns (`SupportAtom.classifyScope`): a support with a vertex outside it
-is proper, and one covering every vertex is the closed whole graph. -/
-structure CurvatureQuotient (Baseline Target : FiniteObject.{u} → Prop)
-    (object : FiniteObject.{u}) (region : Finset object.Vertex) :
-    Type (u + 2) where
-  /-- The connected determination support `Z` of the quotient. -/
-  support : Finset object.Vertex
-  /-- `Z` is connected: `def:admissible-rank-quotient` quantifies over families
-  "carried by a connected support `X ⊆ G`". -/
-  connected : SupportComponents.Connected.ConnectedOn object support
-  /-- `Z` carries the coordinates under discussion. -/
-  carries : ∀ test ∈ object.internalWedgeFamily region,
-    FiniteObject.internalWedgeSupport test ⊆ support
-  /-- The labelled coordinates of the quotient datum `Q`. -/
-  Label : Type (u + 1)
-  /-- Target-response values. -/
-  Value : Type (u + 1)
-  /-- The quotient map on the declared coordinate labels. -/
-  label : object.InternalWedge region → Label
-  /-- The target response a realization gives at a quotient label.  A
-  realization is a boundaried graph that can occupy `Z`'s place. -/
-  value : BoundaryPiece (SupportAtom.boundary object support) → Label → Value
-  /-- `def:target-complete-quotient` (a): two realizations carrying the same
-  quotient data lie in the same boundary-degree fibre.  "Two boundaried states
-  with different boundary degree profiles are never eligible to be identified
-  by a target-complete quotient." -/
-  fibrewise : ∀ left right : BoundaryPiece (SupportAtom.boundary object support),
-    (∀ test ∈ object.internalWedgeFamily region,
-      value left (label test) = value right (label test)) →
-    left.boundaryDegreeProfile = right.boundaryDegreeProfile
-  /-- `def:target-complete-quotient` (b): and no boundaried context separates
-  them.  "Two coordinates may be identified only … when no context `Y ∈ Ctx_T`
-  creates a power-of-two cycle from one coordinate and not from the other." -/
-  contextUniversal :
-    ∀ left right : BoundaryPiece (SupportAtom.boundary object support),
-    (∀ test ∈ object.internalWedgeFamily region,
-      value left (label test) = value right (label test)) →
-    ∀ outside : OutsideContext (SupportAtom.boundary object support),
-      (Target (glue left outside) ↔ Target (glue right outside))
-  /-- `def:admissible-rank-quotient`, proper clause: at a proper support a
-  rank-reducing quotient is represented by a strictly smaller proper
-  representative — the five hypotheses of `lem:replacement` at `Z`. -/
-  properRepresentative : (∃ vertex, vertex ∉ support) →
-    ¬ Set.InjOn label ↑(object.internalWedgeFamily region) →
-    ReplacementSupport Baseline Target object support
-  /-- `def:admissible-rank-quotient`, closed clause: at `Z = G` a rank-reducing
-  quotient is represented by a strictly smaller admissible closed
-  representative. -/
-  closedRepresentative : (∀ vertex, vertex ∈ support) →
-    ¬ Set.InjOn label ↑(object.internalWedgeFamily region) →
-    ∃ representative : FiniteObject.{u},
-      representative.LexicographicallySmaller object ∧
-        Baseline representative ∧ (Target representative → Target object)
-
-namespace CurvatureQuotient
-
-variable {Baseline Target : FiniteObject.{u} → Prop}
-variable {object : FiniteObject.{u}} {region : Finset object.Vertex}
-
-/-- The rank calculus reads an admissible quotient through its labelling and
-its responses; this is that reading, and it forgets nothing the calculus
-uses. -/
-def toRankQuotient (quotient : CurvatureQuotient Baseline Target object region) :
-    Core.TargetRank.RankQuotient.{u, u + 1} (object.InternalWedge region) where
-  Label := quotient.Label
-  Value := quotient.Value
-  Realization := BoundaryPiece (SupportAtom.boundary object quotient.support)
-  label := quotient.label
-  value := quotient.value
-
-@[simp] theorem toRankQuotient_label
-    (quotient : CurvatureQuotient Baseline Target object region) :
-    quotient.toRankQuotient.label = quotient.label := rfl
-
-/-- **`lem:degree-profile-fibres` and `lem:context-universality`, read off
-`def:admissible-rank-quotient`.**
-
-An admissible rank quotient "preserves the boundary degree profile and is
-target-complete against all `T`-boundaried contexts", and
-`def:target-complete-quotient` spells that as its two clauses: identified states
-lie in one boundary-degree fibre, and no outside context creates the target from
-one and not the other.  So the pairs an admissible quotient identifies are never
-separated -- neither by their profiles, which is `lem:degree-profile-fibres`,
-nor by a context, which is `lem:context-universality`.
-
-This is the statement a context-validity test decides, and the reason its
-defective alternative is uninhabited: a target-defective identification is by
-definition not target-complete, so it is not made by an admissible quotient. -/
-theorem targetComplete_of_identified
-    (quotient : CurvatureQuotient Baseline Target object region)
-    (left right : BoundaryPiece (SupportAtom.boundary object quotient.support))
-    (identified : ∀ test ∈ object.internalWedgeFamily region,
-      quotient.value left (quotient.label test) =
-        quotient.value right (quotient.label test)) :
-    left.boundaryDegreeProfile = right.boundaryDegreeProfile ∧
-      Response.ContextEquivalent Target left right :=
-  ⟨quotient.fibrewise left right identified,
-    fun outside => quotient.contextUniversal left right identified outside⟩
-
-/-- **`lem:curvature-dependence-routing` for an admissible quotient.**
-
-The manuscript's routing has three cases: a target-defective quotient, a
-target-complete compression of a proper atom, and a dependence that becomes
-valid only on an enlarged support.  The first cannot occur here — an admissible
-quotient is target-complete by definition, which is exactly what
-`fibrewise` and `contextUniversal` record — so a rank-reducing admissible
-quotient falls in the remaining two by the scope of its determination support:
-proper, and then it is a replacement of that support; or the whole graph, and
-then it is a smaller closed representative.
-
-Both alternatives are refuted at a selected minimal counterexample —
-`InterfaceReplacement.not_replacementSupport` for the first, and the
-selection's own minimality for the second — which is how the rank-drop branch
-closes. -/
-theorem localize (quotient : CurvatureQuotient Baseline Target object region)
-    (reducing :
-      ¬ Set.InjOn quotient.label ↑(object.internalWedgeFamily region)) :
-    ReplacementSupport Baseline Target object quotient.support ∨
-      ∃ representative : FiniteObject.{u},
-        representative.LexicographicallySmaller object ∧
-          Baseline representative ∧
-            (Target representative → Target object) := by
-  match SupportAtom.classifyScope object quotient.support with
-  | .proper vertex outside =>
-      exact Or.inl (quotient.properRepresentative ⟨vertex, outside⟩ reducing)
-  | .closed covers =>
-      exact Or.inr (quotient.closedRepresentative covers reducing)
-
-end CurvatureQuotient
+`r_Ω`'s quotients are the declared-family quotients of
+`Graph.DeclaredQuotient` at one particular family: the raw internal length-two
+wedges of the region, each carried on its own wedge as clause (D4) of
+`def:declared-coordinate-signature` declares.  There is no second structure:
+this abbreviation is that instance, so every field, every completeness clause
+and the routing `localize` are the ones proved once in
+`Graph/DeclaredRankQuotient`. -/
+abbrev CurvatureQuotient (Baseline Target : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) (region : Finset object.Vertex) : Type (u + 2) :=
+  DeclaredQuotient Baseline Target object (object.internalWedgeFamily region)
+    (FiniteObject.internalWedgeSupport (region := region))
 
 namespace FiniteObject
 
@@ -215,12 +90,9 @@ noncomputable def curvatureQuotientSystem
     (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
     (region : Finset object.Vertex) :
     Core.TargetRank.QuotientSystem.{u, u + 1} (object.InternalWedge region)
-      (object.internalWedgeFamily region) where
-  Member quotient :=
-    (∃ admissible : CurvatureQuotient Baseline Target object region,
-      admissible.toRankQuotient = quotient) ∧
-      quotient.FunctionalOn ↑(object.internalWedgeFamily region)
-  functional membership := membership.2
+      (object.internalWedgeFamily region) :=
+  declaredQuotientSystem Baseline Target object (object.internalWedgeFamily region)
+    (FiniteObject.internalWedgeSupport (region := region))
 
 /-- **`r_Ω(X)`**: the curvature target-rank of a region — the maximum size of a
 subfamily of its raw internal curvature tests that survives every functional

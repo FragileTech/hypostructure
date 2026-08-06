@@ -1,10 +1,11 @@
 import Hypostructure.Graph.Strategy.SurplusRows
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows
 import Hypostructure.Graph.Strategy.SpineRun
 
 /-!
 # The sparse surplus branch, run
 
-Nodes `[126]`--`[129]`, on the arm node `[19]` sends an object whose degree
+Nodes `[126]`--`[136]`, on the arm node `[19]` sends an object whose degree
 surplus exceeds the registered scale threshold.  The rows of `SurplusRows` are
 each quantified over the keys they consume and produce; this module installs
 them at the spine's own vocabulary and runs them in the manuscript's order
@@ -19,11 +20,10 @@ ledger, and no row names a producer or an execution position.
 
 Node `[125]` is the *survivor* of the five sparse surplus exits of
 `def:named-surplus-exits`.  Those exits are not yet branch alternatives of this
-block -- exit `(e)` has no live support -- so this module runs the four rows
+block -- exit `(e)` has no live support -- so this module runs the six rows
 that do not depend on exit-freeness, and the arm it produces is the activation
 data itself.  `lem:surviving-active-family`'s cardinality is committed;
-its *"not removed by an exit"* clause and clause (b) of
-`lem:sparse-port-activation` are not.
+its *"not removed by an exit"* clause is not.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -73,19 +73,89 @@ exactly the raw hypothesis `TightVertexSuppression` asks for. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   baselineSpineDemandRow (K .baselineSpineDemand) (fun _input value => ⟨value⟩)
 
+/-- Nodes `[130]`--`[134]`: the pair schedule and the canonical blocker
+ledger. -/
+@[reducible] noncomputable def canonicalPairLedger :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  canonicalPairLedgerRow (K .activeSurplusFamily) (K .canonicalPairLedger)
+    (by simp) (fun _input value => ⟨value⟩)
+
+/-- Nodes `[134]`--`[136]`: the primitive carrier supply and the capacity-token
+ledger. -/
+@[reducible] noncomputable def capacityTokenLedger :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  capacityTokenLedgerRow (K .canonicalPairLedger) (K .capacityTokenLedger)
+    (by simp) (fun _input value => ⟨value⟩)
+
+/-- Nodes `[137]`--`[143]`: the coupled high-load test with its role split.
+
+Both productions read node `[130]`'s pair count; the presentation the ledger
+still needs -- the token order, the eligibility whose first applicable label is
+`Θ_cap`, the role map and the entropy budget -- is what the committed statements
+quantify over, because node `[136]` does not build it. -/
+@[reducible] noncomputable def coupledFibrePressure :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  coupledFibrePressureRow (K .canonicalPairLedger) (K .roleFibrePartition)
+    (K .fibrePressure) (by simp) (by simp) (by simp)
+    (fun _input fact => fact.down.1)
+    (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
+
+/-- Nodes `[140]`, `[142]`, `[143]`: the three geometric class audits. -/
+@[reducible] noncomputable def bottleneckClassification :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  bottleneckClassificationRow (K .canonicalPairLedger)
+    (K .bottleneckClassification) (by simp)
+    (fun _input fact => fact.down.1) (fun _input value => ⟨value⟩)
+
+/-- Node `[144]`: the homogeneous bottleneck. -/
+@[reducible] noncomputable def homogeneousBottleneck :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  homogeneousBottleneckRow (K .canonicalPairLedger) (K .homogeneousBottleneck)
+    (by simp) (fun _input fact => fact.down.1) (fun _input value => ⟨value⟩)
+
+/-- Node `[125]`: the selected object survives the five sparse surplus exits.
+Derived from the selection entry; every later node of the block reads it. -/
+@[reducible] noncomputable def sparseSurplusSurvivor :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  sparseSurplusSurvivorRow (K .selection) (K .uncompressible)
+    (K .sparseSurplusSurvivor) (by simp) (by simp)
+    (fun _input fact => fact.down.1)
+    (fun _input fact smaller lexicographic baseline =>
+      fact.down.2 smaller lexicographic baseline)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
+
+/-- Node `[125]`, continued: `def:active-surplus-demands` with
+`lem:surviving-active-family`.  Every input is a fact the branch already
+carries. -/
+@[reducible] noncomputable def activeSurplusDemands :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  activeSurplusDemandsRow (K .sparseSurplusSurvivor) (K .activeSurplusFamily)
+    (K .sparsePortActivation) (K .activeSurplusDemands)
+    (by simp) (by simp) (by simp) (by simp)
+    (fun _input fact => fact.down)
+    (fun _input fact => fact.down.1)
+    (fun _input fact pair member left right shoulders distinct =>
+      fact.down pair member left right shoulders distinct)
+    (fun _input value => ⟨value⟩)
+
 /-! ## The block, run -/
 
-/-- The key index a branch carries after the four activation rows. -/
+/-- The key index a branch carries after the six activation rows. -/
 abbrev sparseActivationKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .baselineSpineDemand :: K .sparsePortActivation ::
-    K .activeSurplusFamily :: K .sparseSlackSurplus :: known
+  K .homogeneousBottleneck :: K .bottleneckClassification ::
+    K .roleFibrePartition :: K .fibrePressure ::
+    K .capacityTokenLedger :: K .canonicalPairLedger :: K .baselineSpineDemand ::
+    K .activeSurplusDemands :: K .sparseSurplusSurvivor ::
+    K .sparsePortActivation :: K .activeSurplusFamily ::
+    K .sparseSlackSurplus :: known
 
 /-- **The exit of the sparse activation block.**
 
 There is one constructor: the block is nonbranching, and it carries the
-canonical ledger indexed by exactly the four facts it appended. -/
+canonical ledger indexed by exactly the twelve facts it appended. -/
 inductive SurplusResult
     (selected : Input BranchState Presentation presentation data)
     (known : FactKeys (Input BranchState Presentation presentation data)) where
@@ -93,9 +163,9 @@ inductive SurplusResult
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (sparseActivationKeys known))
 
-/-- **Nodes `[126]`--`[129]`, run.**
+/-- **Nodes `[126]`--`[144]`, run.**
 
-The four fact-only rows are composed by `AtomicCT.run`, which appends each
+The eleven fact-only rows are composed by `AtomicCT.run`, which appends each
 row's declared productions to the incoming index while retaining the literal
 ancestry.  Every freshness side condition is decided on the vocabulary's own
 finite `Key`. -/
@@ -104,12 +174,21 @@ noncomputable def runSparseActivation
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
     [FactKeys.Has (K (data := data) .slackIndependent) known]
+    [FactKeys.Has (K (data := data) .uncompressible) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
     (slackFresh : K (data := data) .sparseSlackSurplus ∉ known)
     (familyFresh : K (data := data) .activeSurplusFamily ∉ known)
     (activationFresh : K (data := data) .sparsePortActivation ∉ known)
-    (demandFresh : K (data := data) .baselineSpineDemand ∉ known) :
+    (survivorFresh : K (data := data) .sparseSurplusSurvivor ∉ known)
+    (demandsFresh : K (data := data) .activeSurplusDemands ∉ known)
+    (demandFresh : K (data := data) .baselineSpineDemand ∉ known)
+    (pairFresh : K (data := data) .canonicalPairLedger ∉ known)
+    (tokenFresh : K (data := data) .capacityTokenLedger ∉ known)
+    (partitionFresh : K (data := data) .roleFibrePartition ∉ known)
+    (pressureFresh : K (data := data) .fibrePressure ∉ known)
+    (classificationFresh : K (data := data) .bottleneckClassification ∉ known)
+    (bottleneckFresh : K (data := data) .homogeneousBottleneck ∉ known) :
     SurplusResult current known := by
   classical
   have afterSlack :=
@@ -133,14 +212,63 @@ noncomputable def runSparseActivation
       subst isNew
       revert isOld
       simp [activationFresh])
+  have afterSurvivor :=
+    (sparseSurplusSurvivor (data := data)).run afterActivation (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [survivorFresh])
+  have afterDemands :=
+    (activeSurplusDemands (data := data)).run afterSurvivor (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [demandsFresh])
   have afterDemand :=
-    (baselineSpineDemand (data := data)).run afterActivation (by
+    (baselineSpineDemand (data := data)).run afterDemands (by
       intro key isNew isOld
       simp only [List.mem_singleton] at isNew
       subst isNew
       revert isOld
       simp [demandFresh])
-  exact .activated afterDemand
+  have afterPairs :=
+    (canonicalPairLedger (data := data)).run afterDemand (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [pairFresh])
+  have afterTokens :=
+    (capacityTokenLedger (data := data)).run afterPairs (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [tokenFresh])
+  have afterPressure :=
+    (coupledFibrePressure (data := data)).run afterTokens (by
+      intro key isNew isOld
+      simp only [List.mem_cons, List.mem_singleton, List.not_mem_nil,
+        or_false] at isNew
+      rcases isNew with rfl | rfl <;> revert isOld <;>
+        simp [partitionFresh, pressureFresh])
+  have afterClassification :=
+    (bottleneckClassification (data := data)).run afterPressure (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [classificationFresh])
+  have afterBottleneck :=
+    (homogeneousBottleneck (data := data)).run afterClassification (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [bottleneckFresh])
+  exact .activated afterBottleneck
 
 /-- **The sparse surplus branch, entered from the entry spine's own exit.**
 
@@ -157,6 +285,7 @@ noncomputable def runSurplusBranch
     SurplusResult selected
       (surplusAboveKeys (BranchState := BranchState)
         (presentation := presentation) (data := data)) :=
-  runSparseActivation history (by simp) (by simp) (by simp) (by simp)
+  runSparseActivation history (by simp) (by simp) (by simp) (by simp) (by simp)
+    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
 
 end Hypostructure.Graph.Strategy.Spine

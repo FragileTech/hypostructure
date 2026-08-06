@@ -35,6 +35,13 @@ namespace Hypostructure.Graph
 
 universe u
 
+/-- Vertices of a finite object have decidable equality: the object's own vertex
+schedule decides it.  Every finite set of vertices this module and its consumers
+build is taken at this instance, so no two of them differ by their decidability
+proof. -/
+@[reducible] def vertexDecEq (object : FiniteObject.{u}) : DecidableEq object.Vertex :=
+  object.vertices.decEq
+
 namespace FiniteObject
 
 /-- **A receiver of a support.**  Its internal degree is below the baseline, so
@@ -58,26 +65,36 @@ def IsFullDegree (object : FiniteObject.{u}) (support : Finset object.Vertex)
     (threshold : Nat) (vertex : object.Vertex) : Prop :=
   vertex ∈ support ∧ object.internalDegree support vertex = threshold
 
-/-- **Connectivity through full vertices.**  A walk inside the support all of
-whose vertices are full.  It is written on ambient walks rather than on the
-induced full-degree object so that no restriction has to be built and no walk
-has to be transported. -/
+/-- **Connectivity through non-receiving vertices.**  A walk inside the support
+none of whose vertices is a receiver: each spends *at least* the baseline
+internally.  It is written on ambient walks rather than on the induced object so
+that no restriction has to be built and no walk has to be transported.
+
+The bound is `≥` rather than `=` because a support may carry vertices above the
+baseline -- an assigned Type B fan centre is one -- and the routing argument
+below must be able to pass through them.  On a support of zero assigned surplus
+no vertex exceeds the baseline, so there the two readings coincide and this is
+`lem:typeA-receiver-loads`' own "through full vertices". -/
 def FullConnected (object : FiniteObject.{u}) (support : Finset object.Vertex)
     (threshold : Nat) (source target : object.Vertex) : Prop :=
   ∃ walk : object.graph.Walk source target,
     ∀ vertex ∈ walk.support,
-      vertex ∈ support ∧ object.internalDegree support vertex = threshold
+      vertex ∈ support ∧ threshold ≤ object.internalDegree support vertex
 
-/-- **The trace relation.**  A path inside the support that stays full until its
-last edge and ends at a receiver.  This is the shape a routed trace has; which
-one of them is *the* trace is decided by `traceReceiver?` below. -/
+/-- **The trace relation.**  A path inside the support that meets no receiver
+until its last vertex, which is one.  This is the shape a routed trace has;
+which one of them is *the* trace is decided by `traceReceiver?` below.
+
+As for `FullConnected`, the interior bound is `≥ δ` rather than `= δ`, so that
+the trace may pass a vertex above the baseline.  The endpoint condition is
+unchanged: a receiver is strictly below it either way. -/
 def TraceTo (object : FiniteObject.{u}) (support : Finset object.Vertex)
     (threshold : Nat) (source target : object.Vertex) : Prop :=
   ∃ walk : object.graph.Walk source target,
     walk.IsPath ∧
       (∀ vertex ∈ walk.support, vertex ∈ support) ∧
       (∀ vertex ∈ walk.support, vertex ≠ target →
-        object.internalDegree support vertex = threshold) ∧
+        threshold ≤ object.internalDegree support vertex) ∧
       object.internalDegree support target < threshold
 
 theorem mem_support_of_traceTo (object : FiniteObject.{u})
@@ -146,7 +163,7 @@ def IsTracePath (object : FiniteObject.{u}) (support : Finset object.Vertex)
     (path : object.graph.Walk source target) : Prop :=
   (∀ vertex ∈ path.support, vertex ∈ support) ∧
     (∀ vertex ∈ path.support, vertex ≠ target →
-      object.internalDegree support vertex = threshold) ∧
+      threshold ≤ object.internalDegree support vertex) ∧
     object.internalDegree support target < threshold
 
 theorem traceTo_iff_exists_isTracePath (object : FiniteObject.{u})
@@ -217,15 +234,43 @@ theorem isSome_tracePath?_of_traceTo (object : FiniteObject.{u})
       (FinitePathSelection.mem_pathSchedule object.graph path)
   · simp
 
+/-- **`ℒ(w) = {u : r(u) = w}`.**  The full vertices the canonical routing sends
+to a receiver. -/
+noncomputable def routedLoads (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver : object.Vertex) : Finset object.Vertex := by
+  classical
+  exact support.filter fun source =>
+    object.internalDegree support source = threshold ∧
+      object.traceReceiver? support threshold source = some receiver
+
 /-- **`L(w)`.**  The number of full vertices the canonical routing sends to a
 receiver. -/
 noncomputable def routedLoad (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat)
-    (receiver : object.Vertex) : Nat := by
+    (receiver : object.Vertex) : Nat :=
+  (object.routedLoads support threshold receiver).card
+
+/-- Membership in `ℒ(w)`: a routed load is a full vertex of the support the
+canonical routing sends to this receiver. -/
+theorem mem_routedLoads (object : FiniteObject.{u})
+    {support : Finset object.Vertex} {threshold : Nat}
+    {receiver source : object.Vertex} :
+    source ∈ object.routedLoads support threshold receiver ↔
+      source ∈ support ∧
+        object.internalDegree support source = threshold ∧
+          object.traceReceiver? support threshold source = some receiver := by
   classical
-  exact (support.filter fun source =>
-    object.internalDegree support source = threshold ∧
-      object.traceReceiver? support threshold source = some receiver).card
+  unfold routedLoads
+  simp only [Finset.mem_filter]
+
+/-- `L(w)` is the size of `ℒ(w)`: the two readings are the same object. -/
+theorem routedLoad_eq_card (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver : object.Vertex) :
+    object.routedLoad support threshold receiver =
+      (object.routedLoads support threshold receiver).card :=
+  rfl
 
 /-- **A saturated receiver.**  Its routed load has reached the registered
 multiple of its own port count. -/
@@ -251,12 +296,10 @@ inside itself, and it is a subregion of the support meeting the baseline, which
 the hypothesis denies. -/
 theorem exists_traceTo_of_no_baseline_subsupport (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat)
-    (capped : ∀ vertex ∈ support,
-      object.internalDegree support vertex ≤ threshold)
     (noCore : ∀ inner : Finset object.Vertex, inner ⊆ support →
       ¬ MinimumDegreeAtLeast threshold (object.induce inner))
     {source : object.Vertex} (member : source ∈ support)
-    (full : object.internalDegree support source = threshold) :
+    (full : threshold ≤ object.internalDegree support source) :
     ∃ target, object.TraceTo support threshold source target := by
   classical
   by_contra missing
@@ -264,7 +307,7 @@ theorem exists_traceTo_of_no_baseline_subsupport (object : FiniteObject.{u})
   -- The region the source reaches through full vertices.
   set core : Finset object.Vertex :=
     support.filter fun vertex =>
-      object.internalDegree support vertex = threshold ∧
+      threshold ≤ object.internalDegree support vertex ∧
         object.FullConnected support threshold source vertex with coreDef
   have coreSubset : core ⊆ support := Finset.filter_subset _ _
   have sourceMem : source ∈ core := by
@@ -289,7 +332,7 @@ theorem exists_traceTo_of_no_baseline_subsupport (object : FiniteObject.{u})
       simpa using inside
     -- The neighbour is full: a receiver there would be a trace the source has
     -- been assumed not to have.
-    have otherFull : object.internalDegree support other = threshold := by
+    have otherFull : threshold ≤ object.internalDegree support other := by
       rcases Nat.lt_or_ge (object.internalDegree support other) threshold with
         below | above
       · exact absurd
@@ -311,7 +354,7 @@ theorem exists_traceTo_of_no_baseline_subsupport (object : FiniteObject.{u})
               · exact absurd equal distinct),
             below⟩
           (missing other)
-      · exact Nat.le_antisymm (capped other otherMem) above
+      · exact above
     refine Finset.mem_filter.mpr ⟨otherMem, otherFull, walk.concat adjacent, ?_⟩
     intro inner inside
     rcases split inner inside with previous | equal
@@ -335,7 +378,7 @@ theorem exists_traceTo_of_no_baseline_subsupport (object : FiniteObject.{u})
     have monotone : object.internalDegree support vertex ≤
         object.internalDegree core vertex := by
       simpa [internalDegree] using Finset.card_le_card contained
-    exact vertexFull ▸ monotone
+    exact le_trans vertexFull monotone
   -- A subregion of the support meeting the baseline: excluded by hypothesis.
   refine noCore core coreSubset ?_
   letI : Nonempty (object.induce core).Vertex := ⟨⟨source, sourceMem⟩⟩

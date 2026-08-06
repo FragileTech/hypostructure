@@ -40,6 +40,41 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 
 ## Build status
 
+**The framework, the application and every fixture compile.**  Re-measured on
+2026-08-06 after the row-32 port, in the working tree:
+
+- `lake build` in `hypostructure/` — green, 8740 jobs, no failing target.  The
+  earlier `TypeAReceiverNode` and `TypeBEnvelopeCharge` failures recorded here
+  are resolved.
+- `lake build` in `proofs/hypostructure_erdos_64_eg/` — green, 8712 jobs.
+- The canonical `ExactLedger`, `FactManifest` and `ExactExecution` modules with
+  all fifteen positive and negative enforcement fixtures — green; every
+  `#guard_msgs` in the negative fixtures is intact.
+- `Hypostructure.Graph.Strategy.SurplusRows`,
+  `Hypostructure.Graph.Strategy.SurplusRun` and
+  `Hypostructure.Fixtures.SurplusRun` — green.
+- The Type A saturated exit chain, rows 12--15:
+  `Hypostructure.Graph.VisibleReceiverEntry`,
+  `Hypostructure.Graph.AnchoredReturnCompletion`,
+  `Hypostructure.Graph.CommonPortReturnCycle`,
+  `Hypostructure.Graph.WindowLabelCollision`,
+  `Hypostructure.Graph.Strategy.TypeAExitRun`, and the fixtures
+  `Fixtures.TypeAVisibleEntry`, `Fixtures.TypeAExitOne`,
+  `Fixtures.TypeAExitTwo`, `Fixtures.TypeAExitThree` — green.
+- The API-catalog boundary check — `catalog is current`, after a refresh for the
+  row-32 API additions (`Graph/SurplusBlockers.lean`,
+  `Graph/CanonicalSupportSelection.lean`, `Graph/SparsePairResponse.lean`,
+  `Graph/DeclaredRankQuotient.lean`, `Graph/SparseEntropySandwich.lean`) and the
+  `CurvatureQuotient → DeclaredQuotient` replacement.
+
+The build is intermittently flaky in a way worth recording: a truncated
+dependency olean produces errors sited in unrelated files ("object file … does
+not exist").  Re-running `lake build` clears it; such an error is never evidence
+about a row.
+
+The measurement below is the last full one and is retained for what it records
+about the ported rows; it is stale as a claim about the tree.
+
 **The framework and the application compile.**  Measured on 2026-08-05 in the
 working tree, `make test` passes end to end:
 
@@ -104,9 +139,14 @@ in the live tree: the legacy vertex ids `v8`–`v14`, `v21`, `v25`–`v28`,
 `coupled_homogeneous_fibre_pressure`, `finite_bottleneck_classification`,
 `homogeneous_bottleneck` and `ordered_witness_scan`.  All of them were
 `Core.DichotomyData` or stage registrations in the deleted `Blueprint`
-topology.  A ticked column is a claim about the current tree, so rows 12–19,
-26–28 and 30–36 are now `❌ ❌ ❌ ❌`; row 15, which had been ticked in all four,
-is included and carries its own correction note.  Rows 16 and 17 keep their
+topology.  A ticked column is a claim about the current tree, so rows 12–19 and
+30–36 were reset to `❌ ❌ ❌ ❌`; rows 30–33 have since been partly ported and
+their Ledger, Transport and Residual cells are claims about
+`Spine.runSurplusBranch`.  Row 15, which had been ticked in all four,
+is included and carries its own correction note.  Rows 26–28 were reset by the
+same correction and have since been ported; their cells below are claims about
+`Spine.hybridEntry`, `Spine.bridgeFanMass` and `Spine.typeBExclusionCharge`, and
+rows 27 and 28 keep an open **Facts** column.  Rows 16 and 17 keep their
 `Where` entries but they are named exactly: `Spine.typeAExitFourDichotomy` and
 `Spine.typeAExitFiveDichotomy` are live, and they are the route-8 `(R2)`
 *absence* generators of `def:typeA-true-route8-residual`, not the `[101]`/`[102]`
@@ -349,31 +389,112 @@ bookkeeping; the first is not:
 > load-bearing in it.
 >
 > Rows 16 and 17 are ported into `Spine.runRouteEight` (see the note below the
-> table).  Rows 12--15, 18 and 19 are unbuilt in the strict sense: the spine's
-> `Key` enumeration has no key for any of those nodes, no `Decision` names them,
-> and the only code that ever implemented them is quarantined or inside the
-> commented legacy topology in `StrategyDag.lean`.  Their `Where` cells say so,
-> and no column in them is ticked.
+> table).  Rows 12--15 were landed on 2026-08-06 and are ported into the
+> saturated exit chain: each has its own pair of `Key` constructors with value
+> schemas and audit names in `SpineVocabulary`, a `Decision` in `SpineRows`,
+> and — for rows 13, 14 and 15 — a runner and a closure `Incompatible` in
+> `Graph/Strategy/TypeAExitRun.lean`, composed by `Spine.runExitChain`.
+> Row 12 is run inside `SpineRun.run` itself, at node `[89]`'s saturated
+> cursor.
+>
+> **All four were measured green on 2026-08-06**, after the port, on the
+> working tree: `lake build` in `hypostructure/` end to end (8740 jobs),
+> `lake build HypostructureErdos64EG` (8712 jobs), the narrow targets
+> `Hypostructure.Graph.VisibleReceiverEntry`,
+> `Hypostructure.Graph.AnchoredReturnCompletion`,
+> `Hypostructure.Graph.CommonPortReturnCycle`,
+> `Hypostructure.Graph.WindowLabelCollision`,
+> `Hypostructure.Graph.Strategy.TypeAExitRun` and the four row fixtures
+> `Fixtures.TypeAVisibleEntry`, `Fixtures.TypeAExitOne`,
+> `Fixtures.TypeAExitTwo`, `Fixtures.TypeAExitThree`, together with the
+> canonical `ExactLedger`, `FactManifest` and `ExactExecution` modules and all
+> fifteen positive and negative enforcement fixtures.  The total-execution gate
+> passes and the API-catalog boundary check reports `catalog is current`.
+> `#print axioms` on `Graph.VisibleEntry.commonEndpointsCycle`,
+> `Graph.VisibleEntry.hasCycleWithLength_of_commonPortReturns`,
+> `Graph.VisibleEntry.hasCycleWithLength_of_exitTwoThrough`,
+> `Graph.VisibleEntry.AnchoredReturn.two_le_length`,
+> `Spine.typeAExitTwoDichotomy`, `Spine.runExitTwo` and `Spine.runExitChain`
+> reports `propext`, `Classical.choice` and `Quot.sound` only.
+>
+> Rows 13, 14 and 15 are therefore ticked in all four columns.  Row 12 keeps an
+> open **Facts** column: its split is exact, but the (Q1)--(Q4) generators of
+> `def:typeA-exit4-family` it owes row 16, and `lem:typeA-port-return` with the
+> two unpeeled-routing lemmas, have no declaration.  Its own row records that,
+> together with the duplicated `receivers`/`fullVertices` reading described
+> below.
+>
+> The canonical-ledger gate still fails at two sites, both outside this chain
+> and both pre-existing: the parallel carrier `CapacityTokenLedger`
+> (`Graph/CapacityTokenLedger.lean:59`, row 33's slice) and the second ledger
+> API `augmentedLedger` (`Graph/TypeBEnvelopeCharge.lean:118`, rows 27--28's
+> slice).  Neither is reachable from rows 12--15.
+>
+> Rows 18 and 19 remain unbuilt in the strict sense: the spine's `Key`
+> enumeration has no key for either node, no `Decision` names them, and the only
+> code that ever implemented them is quarantined or inside the commented legacy
+> topology in `StrategyDag.lean`.  Their `Where` cells say so, and no column in
+> them is ticked.
+>
+> **The visible-count conjunct was a deviation across rows 13--15, and is now
+> removed from all three.**  Row 13 first stated exit `(1)` with an extra
+> conjunct `data.dischargeScale ≤ (visibleLoadsAt …).card` on the port, on the
+> argument that the proof of `lem:typeA-visible-entry` fixes `⃗e` before walking
+> the exit list; rows 14 and 15 copied it.  It is not in
+> `def:typeA-saturated-exits`.  Clause (1) is stated at a saturated receiver over
+> anchored returns through *any* completion port of it; clause (2) names one
+> completion port and the receiver-entry returns through it, but not a count;
+> clause (3) — *"a shared `P₁₃` window violates the corresponding legal-label
+> relation `C_s`"* — names no receiver and no port at all.  Conjoining the count
+> strengthened each yes arm and weakened each no arm past the clause's own
+> negation, and the weakened hypothesis is what the next exit inherits.
+>
+> All three rows now state their clause and nothing more: row 13 keeps support,
+> receiver and port; row 14 keeps support, receiver and port; row 15 keeps only
+> the Type A support and the packing, and its `Incompatible` instance no longer
+> destructures a receiver and a port it never used.  Node `[93]`'s visible-entry
+> fact is still required by `FactKeys.Has` and read by `ExactLedger.get` in all
+> three — it is the branch's warrant for being on the exit list — but it is a
+> ledger read, not a conjunct of the alternative.  No build has confirmed any of
+> this.
+>
+> **One duplication is outstanding in the chain's slice, and it is row 12's.**
+> `Graph/VisibleReceiverEntry.lean` defines `Graph.VisibleEntry.receivers`,
+> `Graph.VisibleEntry.mem_receivers` and `Graph.VisibleEntry.fullVertices`, and
+> `Graph/TypeADischarge.lean` already defines `FiniteObject.receivers`,
+> `FiniteObject.mem_receivers` and `FiniteObject.fullVertices` with the same
+> bodies — the support filtered by internal degree below, respectively at, the
+> baseline.  Both files are live and both are imported by `SpineVocabulary`, and
+> the node-`[94]` value schema `Key.typeAVisibleFirstExcess` is stated against
+> the `VisibleEntry` copy, so the copy is load-bearing rather than dead.  It is
+> still one paper object with two Lean readings, which is what
+> `lem:typeA-silent-excess-count`'s support-level sum is counted over; the
+> `VisibleEntry` copy should be deleted and the value schema restated against
+> `FiniteObject.receivers`.  Rows 13, 14 and 15 do not read either copy, so this
+> is recorded against row 12 alone and blocks none of them.
 >
 > The evidence for rows 16 and 17 is a green build of
-> `Hypostructure.Graph.Strategy.Route8Run`, `Hypostructure.Fixtures.Route8Run`
-> and `Hypostructure.Fixtures.Route8ExitFive` at commit `77cd999`, together with
-> the canonical-API and negative-enforcement fixture set, which is green at the
-> same commit.  Row 16's Facts column is the one still open: `Graph/ExitFourFamily.lean`
-> supplies the exit-`(4)` family, but the decision at node `[101]` still splits on
-> the exit-`(4)` *conclusion* of `lem:typeA-unpeeled-visible-routing` /
-> `lem:typeA-unpeeled-silent-routing` rather than on a quotient of
-> `def:typeA-exit4-family`, because clauses (Q1)--(Q4) are built from the
-> receiver's declared coordinates of node `[93]`, which is row 12's and unbuilt.
+> `Hypostructure.Graph.Strategy.Route8Run`, `Hypostructure.Fixtures.Route8Run`,
+> `Hypostructure.Fixtures.ExitFourFamily` and
+> `Hypostructure.Fixtures.Route8ExitFive`, together with the canonical-API and
+> negative-enforcement fixture set, all green on the current tree.  Row 16's
+> Facts column is now closed: `Graph/ExitFourFamily.lean` supplies
+> `def:typeA-exit4-family` and `def:typeA-exit4-peeling`'s exit-`(4)` witness,
+> and the decision at node `[101]` splits on a target-defective quotient of
+> `𝒬₄(w)` at an unpeeled routed load.  What no row yet *builds* is the
+> generation of clauses (Q1)--(Q4), whose constructions are the receiver's
+> declared coordinates of node `[93]`; that is recorded against row 12, which
+> owes them, and it costs row 16 nothing because the row proves its statement
+> for every candidate reading.
 
 
 | # | Node | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
 | 11 | Saturated receiver [89] | `Spine.typeAReceiverRouting`, `Spine.typeASaturationDichotomy` (`SpineRows`, run in `SpineRun.run`) | ✅ | ✅ | ✅ | ✅ |
-| 12 | Visible receiver-entry returns [93] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 13 | Exit 1: Mersenne return [95] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 14 | Exit 2: power-of-two theta [97] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 15 | Exit 3: P13 label collision [99] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
+| 12 | Visible receiver-entry returns [93] | `Spine.typeAVisibleEntryDichotomy` over `Graph/VisibleReceiverEntry.lean` (`SpineRows`, run in `SpineRun.run`, checked in `Fixtures/TypeAVisibleEntry.lean`) | ✅ | ✅ | ✅ | ❌ |
+| 13 | Exit 1: Mersenne return [95] | `Spine.typeAExitOneDichotomy` over `Graph/AnchoredReturnCompletion.lean` (`SpineRows`, run in `Spine.runExitOne` of `TypeAExitRun`, checked in `Fixtures/TypeAExitOne.lean`) | ✅ | ✅ | ✅ | ✅ |
+| 14 | Exit 2: power-of-two theta [97] | `Spine.typeAExitTwoDichotomy` over `Graph/CommonPortReturnCycle.lean` (`SpineRows`, run in `Spine.runExitTwo`/`Spine.runExitChain` of `TypeAExitRun`, checked in `Fixtures/TypeAExitTwo.lean`) | ✅ | ✅ | ✅ | ✅ |
+| 15 | Exit 3: P13 label collision [99] | `Spine.typeAExitThreeDichotomy` over `Graph/WindowLabelCollision.lean` (`SpineRows`, run in `Spine.runExitThree`/`Spine.runExitChain` of `TypeAExitRun`, checked in `Fixtures/TypeAExitThree.lean`) | ✅ | ✅ | ✅ | ✅ |
 | 16 | Exit 4: target-defective quotient [101] | `Spine.typeAExitFourPeelDichotomy`, `Spine.typeAPeeledCharge`, `Spine.typeAExitFourDichotomy` over `Graph/ExitFourFamily.lean` and `Graph/ExitFourPeeling.lean` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`) | ✅ | ✅ | ✅ | ✅ |
 | 17 | Exit 5: target-complete compression [103] | `Spine.typeAExitFiveDichotomy`, `Spine.typeAExitFiveRealizationDichotomy`, `Spine.typeAExitFiveCompressionClosed` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`, checked in `Fixtures/Route8ExitFive.lean`) | ✅ | ✅ | ✅ | ✅ |
 | 18 | Exit 6: response delocalization [105] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
@@ -398,9 +519,10 @@ bookkeeping; the first is not:
 > a witnessed peeling set leaving the receiver unsaturated — by
 > `lem:typeA-exit4-peeling-charge` the nonnegative remaining charge
 > `q(w) − ¼ − ¼L₄(w)`, retested at node `[89]`.  Clause (Q5) is exhibited as a
-> member by `ExitFour.occurs_of_carrierDeletion`; the constructions generating
-> (Q1)–(Q4) are node `[93]`'s declared coordinates and are recorded against
-> row 12, which owes them.
+> member by `ExitFour.occurs_of_carrierDeletion` — its target defect is proved
+> from `Route8.Entry.deletion_targetDefect`, and only its listing in the family
+> is hypothesised; the constructions generating (Q1)–(Q4) are node `[93]`'s
+> declared coordinates and are recorded against row 12, which owes them.
 >
 > Row 17 is the manuscript's own dichotomy in `lem:typeA-exits-discharged`:
 > *"if the compression is realized by a smaller proper atom, it contradicts
@@ -435,24 +557,72 @@ bookkeeping; the first is not:
 > module of `Hypostructure.Graph` is quarantined, so each row is being rebuilt
 > against the live framework rather than re-imported.
 >
-> Rows 20--25 and 29 are ported.  They run on the Type B residual of node
-> `[64]` that `Spine.run` already reaches, and their `Where` columns name the
-> live spine declarations.
+> **Every row of this section is now ported.**  Rows 20--29 run on the Type B
+> residual of node `[64]` that `Spine.run` already reaches, and every `Where`
+> column names a live spine declaration.
 >
-> Every theorem the ported rows rest on has been checked with `#print axioms`
-> and depends on `propext`, `Classical.choice` and `Quot.sound` alone -- no
-> `sorryAx`, and no `Lean.ofReduceBool`, so no `native_decide` result is
-> load-bearing anywhere in Section C.
+> **Every row of this section is complete.**  Rows 20--29 all carry `✅` in all
+> four columns, and `thm:branch-kill` (b) closes `[76]`/`[85]` on its excluded
+> arm.
 >
-> Rows 23, 24 and 25 are wired at *both* of their manuscript positions.  With
-> row 29 ported, the degree-four arm of `[68]` runs `[79]`'s profile and then the
-> same three row values at `[80]` and `[81]` that the heavy arm runs at `[71]`
-> and `[72]`; a `Decision` carries no predecessor, so nothing is re-registered
-> and no row exists twice.
+> Three things about how rows 27 and 28 are built are worth recording, because
+> each replaced an earlier attempt that was doing more than the manuscript asks.
 >
-> Every other `Where` entry below still names a declaration that does not
-> elaborate, and no ticked column in those rows is backed by a compiling
-> target.
+> **Nothing is rebuilt that the branch already carries.**  Row 28 reads B2 --
+> `Spine.Key.typeBDisjointAssignment`, committed at node `[72]`/`[81]` -- and
+> takes the entries `A_h`, their carriers, their disjointness and their payment
+> from `def:typeB-candidate-ledger`'s own `CandidateEntry` fields.  An earlier
+> pass had invented a parallel envelope-and-block apparatus
+> (`IsFanEnvelope`, `closedNeighbourhood`, `IsExcludedTypeBSupport`,
+> `AssignedFans`, `BridgeResidualSupport`) and a second saturation node; all of
+> it is deleted.  `CandidateEntry.pays` is the entry charge, and the claim in an
+> earlier version of row 25's Gap that the entries carry no charge is withdrawn
+> there.
+>
+> **Every fact is about the incoming residual.**  Both rows' facts are scoped by
+> `∀ packing, IsWindowPacking → ∀ piece ⊆ remainderSupport packing, Connected →
+> NegativeNetCharge → 0 < ambientSurplus`.  Nothing is stated of an arbitrary
+> region of an arbitrary object.
+>
+> **No row declares a prerequisite it does not read.**  Row 27's manifest is
+> `sourceFreeManifest` -- `Requires := []` -- because its content is the
+> registered mass slack and the residual's own baseline.  Row 27's `Requires`
+> had briefly named `highCentreNormalForm` after the clause that used it was
+> deleted; that is corrected.
+>
+> The accounting itself avoids the manuscript's deletion step, and that is why it
+> goes through without `def:typeB-ledger-carriers`' ordinary deficiency reserve.
+> The manuscript proves `lem:typeB-bridge-deficit-bound` and Step 2 by deleting
+> carriers and discharging the remainder, which forces the reserve because
+> cutting carriers creates boundary deficits.  The same accounting runs in place,
+> because the only vertices of an assigned Type B support above the baseline are
+> its assigned centres: the Type A discharging calculation applies to the support
+> itself with the centres (row 27) or the entry blocks (row 28) as an exceptional
+> set -- `FiniteObject.card_le_scaled_deficiency_off` -- and no boundary deficit
+> is ever created.
+>
+> One bookkeeping point the manuscript leaves implicit: its Step 1 display omits
+> the centre's own `−α` as a vertex of the counted core, so a block is bounded
+> below by `−α` rather than `0` and `Ĉh_B(X) ≥ −α|H_X|` is what the summation
+> gives.  That is exactly the `+α|H_X|` on the other side of `(B-ledger)`, so the
+> conclusion follows -- but only because the identity is carried as a fact.  At
+> `k = 7`, `c = 1`, where `D_B = 0` exactly, `Ĉh_B(X) ≥ 0` would be false.
+>
+> Rows 23, 24, 25, 26, 27 and 28 are wired at *every* one of their manuscript
+> positions.  The degree-four arm of `[68]` runs `[79]`'s profile and then the
+> same row values at `[80]`, `[81]`, `[82]`, `[84]` and `[85]` that the heavy arm
+> runs at `[71]`, `[72]`, `[74]`, `[75]` and `[76]`; neither a `Decision` nor an
+> `AtomicCT` carries a predecessor, so nothing is re-registered and no row exists
+> twice.  Row 27 is one executor at four cursors.
+>
+> **A registered-data defect was repaired here.**  `Spine.Data` declared
+> `dischargeScale` *after* `fanCapSlack` and `highCentreDeficitSlack`, so the
+> `dischargeScale` in those two types was an auto-bound implicit rather than the
+> field: both obligations read `∀ {s}, …`, which is false, and
+> `HypostructureErdos64EG.Problem` did not elaborate.  The field is now declared
+> before its consumers.  This invalidated nothing that was proved -- the two
+> slacks are hypotheses, not conclusions -- but it did mean rows 22 and 26 had no
+> compiling presentation until the move.
 
 
 | # | Node | Where | Ledger | Transport | Residual | Facts |
@@ -464,53 +634,115 @@ bookkeeping; the first is not:
 | 23 | Certificate labelling [71]/[80] | `Spine.fanCertificateDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 24 | Direct-cycle removal [72] | `Spine.directCycleDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 25 | B2 ledger [72]/[81] | `Spine.b2AssignmentDichotomy` | ✅ | ✅ | ✅ | ✅ |
-| 26 | Hybrid B1 entry [74]/[82] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 27 | Bridge fan-mass [73],[75] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 28 | Bridge deficit [76]/[85] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
+| 26 | Hybrid B1 entry [74]/[82] | `Spine.hybridEntry` | ✅ | ✅ | ✅ | ✅ |
+| 27 | Bridge fan-mass [73],[75],[83],[84] | `Spine.bridgeFanMass` | ✅ | ✅ | ✅ | ✅ |
+| 28 | Bridge deficit [76]/[85] | `Spine.typeBExclusionCharge`, `Spine.typeBExclusionDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 29 | Degree-four fan profile [78],[79] | `Spine.degreeFourProfile` | ✅ | ✅ | ✅ | ✅ |
 ## D. Non-near-cubic surplus branch
 
-> **Unbuilt; groundwork started.**  The rows in this section were implemented
-> against the legacy `Blueprint` topology and its `Core.ProblemDefinition`
-> registry.  Both are gone, so every `Where` entry below names a declaration
-> that does not currently elaborate and **no ticked column in this section is
-> backed by a compiling target** — read the whole block as `❌ ❌ ❌ ❌`.  The
-> legacy `Graph/Strategy/SurplusAccounting.lean` is quarantined and is reference
-> only; nothing may import it.
+> **Partly ported.**  Rows 30--33 now run live, as
+> `Graph/Strategy/SurplusRows.lean` installed and composed by
+> `Graph/Strategy/SurplusRun.lean`'s `Spine.runSurplusBranch`, over the literal
+> ledger of `Spine.Result.surplusAbove` -- node `[19]`'s above arm, with its nine
+> facts.  `Hypostructure/Fixtures/SurplusRun.lean` runs the block on that cursor
+> and checks the audit invariants.  Their Ledger, Transport and Residual columns
+> are backed by that compiling target; their Facts columns are not, and each
+> row's **Gap** bullet says exactly which paper objects are missing.
 >
-> What does exist live is `Hypostructure/Graph/SurplusPort.lean`:
-> `def:surplus-ports` as `FiniteObject.SurplusPort`, its shoulder set
-> `N_G(x(p)) ∖ {c(p)}`, `endpoint_degree_eq` (the endpoint of a port sits
-> exactly at the baseline, which is node `[10]`'s independence consumed rather
-> than re-proved) and `card_shoulders` (a port has `δ − 1` shoulders; at the
-> manuscript's `δ = 3` that is the shoulder pair `{a_p, b_p}`).  The module is
-> generic in the threshold and writes no numeral.  It is not yet consumed by any
-> row, so it changes no status cell.
+> The legacy `Graph/Strategy/SurplusAccounting.lean` remains quarantined and is
+> reference only; nothing imports it, and none of the rows below was ported from
+> it.
 >
-> The entry residual for this block is `Spine.Result.surplusAbove`, which is
-> live and carries nine facts.  But node `[125]` is the *survivor* of the five
-> sparse surplus exits of `def:named-surplus-exits`, so rows 30--36 cannot be
-> written until those exits are branch alternatives that close.  Four of the
-> five already have their machinery: (a) is `returnAvoidance` on the branch,
-> (b) is `Graph.CurvatureQuotient.targetComplete_of_identified` and
-> `Graph.Response.contextEquivalent_or_targetDefect` from row 69, (c) is
-> `uncompressible` on the branch with
-> `InterfaceReplacement.not_replacementSupport` from row 70, and (d) is
-> `Graph.CurvatureQuotient.localize` with `Spine.not_globalBarrierReading` from
-> rows 71--73.  Only (e), `lem:suppressed-family-critical-cycle`, has no live
-> support, and it is the remaining prerequisite together with `[128]`'s
-> activation bundle.
-
+> The generic modules the ported rows rest on are
+> `Graph/ExcessPortFamily.lean` (`𝒫_exc` and `|𝒫_exc| = σ(G)`),
+> `Graph/SparsePortActivation.lean` (`lem:sparse-port-activation` (a), (c), (d)),
+> `Graph/BaselineSpineDemand.lean` (the cubic baseline and
+> `lem:incremental-skeleton-room`), `Graph/CanonicalFibreLedger.lean` (the one
+> implementation of both canonical ledgers), `Graph/SparsePairLedger.lean` (that
+> ledger at the object's own pair schedule), `Graph/PrimitiveCarrier.lean`
+> (`𝔘_sp(G)` and its supply), `Graph/PortResponseSupport.lean` (`Γ(p)` and
+> `T(p) ∪ Γ(p)`), `Graph/SurplusBlockers.lean` (the six clause objects of
+> `def:surplus-blockers` and the ledger at them),
+> `Graph/CanonicalSupportSelection.lean` (the one implementation of
+> "the lexicographically first minimum-vertex connected support containing …"),
+> `Graph/SparsePairResponse.lean` (`X_π`, `∂X_π`, `r_π`, `X_Π`),
+> `Graph/DeclaredRankQuotient.lean` (`def:admissible-rank-quotient` at an
+> arbitrary declared coordinate family, of which `Graph/CurvatureTargetRank.lean`
+> is now one instance) and `Graph/SparseEntropySandwich.lean` (the dependence
+> dichotomy and the entropy sandwich).  None imports a `HypostructureErdos64EG`
+> module and none writes a numeral of this presentation.
+>
+> One prerequisite blocks the rest of the block.  `lem:bridgeless` is now carried
+> by the framework -- `Graph/Contraction.lean`, spent by row 30 -- so clause (b)
+> of `lem:sparse-port-activation` is committed and blocker clause (b) of
+> `def:surplus-blockers` has its return path available, and row 32 now builds
+> the six clause objects on top of it.  `def:named-surplus-exits` is still not
+> a branch alternative: four of its five conclusions have live machinery -- (a) is
+> `returnAvoidance` on the branch, (b) is
+> `Graph.DeclaredQuotient.targetComplete_of_identified` and
+> `Graph.Response.contextEquivalent_or_targetDefect`, (c) is `uncompressible`
+> with `InterfaceReplacement.not_replacementSupport`, and (d) is
+> `Graph.DeclaredQuotient.localize` with `Spine.not_globalBarrierReading` -- but
+> (e), `lem:suppressed-family-critical-cycle`, has none, so no exhaustive
+> dichotomy can be written and `[125]`'s survivor hypothesis is absent from every
+> row of this block.
+>
+> Rows 34--36 now run live too, installed in the same
+> `Spine.runSurplusBranch` after node `[136]`, so the block is nodes
+> `[126]`--`[144]` end to end.  Their mathematics is
+> `Graph/MatchingStar.lean` (`lem:same-token-matching-star`),
+> `Graph/HomogeneousTokenCap.lean` (the role-fibre partition,
+> `lem:same-token-homogeneous-extraction`, `Cap_hom` and `ψ`),
+> `Graph/TokenLoadClosure.lean` (`lem:capacity-token-high-load` and
+> `thm:tokenized-surplus-accounting-closure` in exact finite form) and
+> `Graph/CapacityTokenLedger.lean` (`cor:homogeneous-same-token-caps-close`),
+> with `Fixtures/HomogeneousTokenBottleneck.lean` evaluating the chain end to
+> end at a concrete presentation.  Their Ledger, Transport and Residual columns
+> are backed by that compiling target; their Facts columns are not.
+>
+> There is **one ledger implementation and one pair representation** across the
+> whole block.  `Graph/CanonicalFibreLedger.lean` is the single canonical
+> ledger: `Π_blk`, `Π_free` and `ℓ_cap(t)` are its `assigned`, `unassigned` and
+> `multiplicity`, and `lem:token-ledger-no-overcount` is its
+> `card_assigned_eq_sum_multiplicity`, which rows 34--36 read rather than
+> restate.  `TokenLoadClosure` defines no fibre and no load of its own; it adds
+> only what the canonical ledger lacks -- the realized `L_max`, the high-load
+> display, and the square-root closure.  A pair is a two-element `Finset` of
+> demands everywhere, which is what `CanonicalFibreLedger.pairs` and
+> `FiniteObject.portPairSchedule` produce, so `PatternFamily` is stated at that
+> representation and the matching--star machinery applies to `[130]`'s own
+> schedule.
+>
+> Each of the three rows declares `Requires := [canonicalPairLedger]` and reads
+> node `[130]`'s committed `|Π(𝒜₀)| = C(σ(G),2)` by exact key;
+> `CapacityTokenLedger.ofPortSchedule` presents the ledger at the object's own
+> `portPairSchedule` and takes that count as an argument precisely so that a
+> caller must have read it.  The four statements the rows commit are written out
+> once, in `Graph/CapacityTokenLedger.lean`, and referenced by both the residual
+> domain's value schema and the row that proves it, so the two cannot drift.
+>
+> What is still quantified is what node `[136]`'s own **Gap** says it has not
+> built -- the three-summand `𝔗_cap`, the four-case `Θ_cap`, and
+> `lem:capacity-token-supply`'s `|𝔗_cap| ≤ 8n + σ(G)`.
+> `prop:sparse-entropy-sandwich-with-blockers` is no longer among them: row 32
+> commits it (`Graph.entropySandwich`), so rows 34--36 can read the free-pair
+> charge off the ledger instead of assuming it.  They do not yet do so, which is
+> why their Facts columns remain `❌`.
+>
+> `Hypostructure/Graph/SurplusPort.lean` is consumed now: `def:surplus-ports` is
+> `FiniteObject.SurplusPort`, its shoulder set is `N_G(x(p)) ∖ {c(p)}`,
+> `endpoint_degree_eq` spends node `[10]`'s independence, and `card_shoulders`
+> gives a port `δ − 1` shoulders.
 
 | # | Node | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
-| 30 | Ordered surplus activation [125]–[128] | `Spine.sparseSlackSurplus`, `Spine.activeSurplusFamily`, `Spine.sparsePortActivation` (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ❌ |
-| 31 | Baseline demand accounting [129] | `Spine.baselineSpineDemand` (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ❌ |
-| 32 | Canonical pair-response [130]–[134] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 33 | Capacity-token accounting [134]–[136] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 34 | Coupled homogeneous fibre pressure [137]–[143] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 35 | Finite bottleneck classification [140]–[143] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
-| 36 | Homogeneous bottleneck [144] | *unbuilt* — no live declaration | ❌ | ❌ | ❌ | ❌ |
+| 30 | Ordered surplus activation [125]–[128] | `Spine.sparseSlackSurplus`, `Spine.activeSurplusFamily`, `Spine.sparsePortActivation`, `Spine.sparseSurplusSurvivor`, `Spine.activeSurplusDemands` (`SurplusRows`, `HomogeneousBottleneckRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
+| 31 | Baseline demand accounting [129] | `Spine.baselineSpineDemand` (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
+| 32 | Canonical pair-response [130]–[134] | `Spine.canonicalPairLedger` (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
+| 33 | Capacity-token accounting [134]–[136] | `Spine.capacityTokenLedger` (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ❌ |
+| 34 | Coupled homogeneous fibre pressure [137]–[143] | `Spine.coupledFibrePressure` (`HomogeneousBottleneckRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ❌ |
+| 35 | Finite bottleneck classification [140]–[143] | `Spine.bottleneckClassification` (`HomogeneousBottleneckRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ❌ |
+| 36 | Homogeneous bottleneck [144] | `Spine.homogeneousBottleneck` (`HomogeneousBottleneckRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ❌ |
 
 ## E. Remainder, rank, and net charge
 
@@ -1073,9 +1305,9 @@ two-key production.
 | `def:target-complete-compression` | def | `Core.Strategy.InterfaceReplacement.Profile.Compression`<br>`Core.Strategy.InterfaceReplacement.Profile.Compression.toStrictReplacement` | no CT |
 | `cor:uncompressible` | cor | `Core.Strategy.InterfaceReplacement.Profile.Uncompressible`<br>`Core.Strategy.InterfaceReplacement.uncompressible`<br>`Core.Strategy.InterfaceReplacement.ClosurePayload.noCompressionCandidate` | no CT |
 | `def:target-rank` | def | | |
-| `lem:independent-target-entropy` | lem | `Core.FiniteEntropy.two_pow_le_card_ambient_of_realizes`<br>`Graph.LabelledOn.two_pow_le_card_of_realized` | unconsumed — no call site |
+| `lem:independent-target-entropy` | lem | `Core.FiniteEntropy.two_pow_le_card_ambient_of_realizes`<br>`Graph.LabelledOn.two_pow_le_card_of_realized` | stated, not applied — see the note |
 
-`lem:target-complete-quotient-composition` and `def:target-rank` are in the same manuscript subsection as `[11]`–`[14]` but are consumed at the rank-drop branch (nodes `[31]`–`[45]`), outside rows 1–8; nothing in the tree states either as a type. `lem:independent-target-entropy` is placed here because it closes the same subsection; the two declarations state its inequality generically, but neither is applied anywhere in `hypostructure` or `examples`.
+`lem:target-complete-quotient-composition` and `def:target-rank` are in the same manuscript subsection as `[11]`–`[14]` but are consumed at the rank-drop branch (nodes `[31]`–`[45]`), outside rows 1–8; nothing in the tree states either as a type. `lem:independent-target-entropy` is placed here because it closes the same subsection; the two declarations state its inequality generically, but neither is applied anywhere in `hypostructure` or `examples`. Row 32's entropy sandwich needs the composition of this lemma with `lem:skeleton-dominates` **at the `m`-edge stratum** — `2^k ≤ Graph.skeletonBudget object` — and neither declaration reaches that stratum: `two_pow_le_card_ambient_of_realizes` bounds by the whole finite ambient and `two_pow_le_card_of_realized` by `Nat.card (LabelledOn n)`, the labelled graphs on `[n]` before the edge count is fixed. That stratum-level composition is the one open interface of row 32's **Gap**.
 
 ---
 
@@ -1650,9 +1882,11 @@ needs no CT machinery.
   Its two rational side conditions `dischargeRate_gt` and `dischargeRate_le`
   are also removed: they were framework-side constraints written in Type B fan
   constants (`5`, `9`, `3`) with manuscript labels in their docstrings, and no
-  live declaration consumed them.  When rows 26–29 are ported, whichever
-  constraint the fan ledger actually needs is to be registered where it is
-  consumed.  `Problem.lean` drops the two discharged fields with them.
+  live declaration consumed them.  Rows 26–29 are now ported, and the constraints
+  the fan ledger actually needs were registered where they are consumed: they are
+  `Data.fanCapSlack`, `Data.highCentreDeficitSlack` and `Data.bridgeMassSlack`,
+  each a comparison between already-registered numbers rather than a rational
+  side condition.  `Problem.lean` drops the two discharged fields with them.
 
 **Paper objects at this row.**
 
@@ -1675,326 +1909,450 @@ threshold algebra is an exact integer identity.
 
 ### Row 12 — Visible receiver-entry returns `[93]`
 
-- **Paper fact.** Node `[93]` asks "some port has four visible receiver-entry
-  returns?".  `def:typeA-visible-load` defines an anchored return through
-  `\vec e = (w,h)` as a simple path `P : h ⤳ w` in `G - wh`; it is a
-  receiver-entry return when `P = Γ ∘ Q` with `Γ` from `h` to a receiver `r`
-  having all internal vertices outside `X`, and `Q` a simple `r ⤳ w` path inside
-  `X`; and it is *visible for* a routed cubic `u` with `r(u) = w` when `T_u` is a
-  subpath of `Q`, or `Q` is the lexicographically first channel assigned to the
-  terminal receiver edge of `T_u`.  `lem:typeA-first-entry` proves the first
-  entry of an anchored return is a receiver; `lem:typeA-entry-budget` bounds the
-  distinct first-entry edges by `Σ_{r ≠ w} q(r)`; `lem:typeA-port-return` gives
-  every completion port at least one anchored return.  The yes-arm is
-  `lem:typeA-visible-entry` — four visible receiver-entry returns force one of
-  exits (1)–(7) of `def:typeA-saturated-exits` — refined by
-  `lem:typeA-unpeeled-visible-routing`.  The no-arm is `[94]`, "visible-first
-  excess: `S_sil^exc(X) ≥ 4 D_A(X)`", built from `def:typeA-excess-basin` and
-  quantified by `lem:typeA-silent-excess-count`,
-  `lem:typeA-reduced-silent-residual`, `lem:typeA-silent-excess` and
-  `lem:typeA-unpeeled-silent-routing` (exits (4)–(8)).
-- **What the Lean does.**  `VisibleReturnSaturation presentation object profile
-  threshold` is
-  `∀ certificate : TypeACertificate presentation object,
-   ∃ (port : CompletionPort ⟨certificate.common.support⟩ profile)
-     (loads : Finset (…FullVertex profile)),
-   threshold ≤ loads.card ∧
-   ∀ load ∈ loads, ∃ returnData : ReceiverEntryReturn port,
-     load.1 ∈ returnData.channel.path.support`.
-  `CompletionPort` is `(receiver, outside, adjacent, outside_mem)`;
-  `ReceiverEntryReturn port` bundles `anchored : AnchoredReturn port`, an
-  `entry` receiver, a `connector` walk with
-  `connector_supported_only_at_end`, and a
-  `channel : ReceiverEntryChannel entry port.receiver`.  `AnchoredReturn` carries
-  `firstEntry`, `firstEntry_mem` and `firstEntry_receiver` as *fields*, so
-  `lem:typeA-first-entry` is assumed, not proved.  `VisibleLoadLedger` — the
-  only place `visible`/`silent` loads are named — has fields
-  `visible : FullVertex → Prop`, `visible_correct : Prop` and
-  `silent_correct : Prop`; the last two are opaque propositions with no content,
-  and the record is not used by this node.  `visibleReturnSplit` registers
-  `ofAlternative` with neither `closeLeft` nor `closeRight`; the registration
-  site passes `threshold := fun _ => erdosReceiverLoadProfile.loadMultiplier`,
-  i.e. `4`.  The `∃ returnData` is per load and unconstrained: the same return
-  may witness all four loads, and the only link between a load and a return is
-  `load.1 ∈ returnData.channel.path.support`.
-- **What it should do.**  The alternative has to be attached to the receiver `w`
-  selected at `[89]`, quantify over that receiver's own completion ports, demand
-  four *distinct* receiver-entry returns through one port, and define visibility
-  as "the canonical trace `T_u` is a subpath of the channel `Q`" — which
-  presupposes a canonical trace map (row 11).  Its no-arm has to carry `[94]`'s
-  inequality `S_sil^exc(X) ≥ 4 D_A(X)`.
-- **Gap.**  The predicate is again `∀ certificate` (vacuous with no
-  certificate); the port is existentially chosen over all completion ports of the
-  support rather than being a port of the `[89]` receiver; the four returns are
-  not required to be distinct; and visibility is replaced by membership of the
-  load vertex in the channel's support, which neither mentions `T_u` nor the
-  canonical channel order.  Nothing in the right arm carries `[94]`'s excess
-  bound: the payload is exactly `PLift (¬ VisibleReturnSaturation …)`.
-  **Facts therefore fails.**
+- **Paper fact.** Node `[93]` asks whether some completion port of the
+  saturated receiver carries `s` visible receiver-entry returns.
+  `def:typeA-visible-load` defines an anchored return through `⃗e = (w,h)` as a
+  simple path `P : h ⤳ w` in `G − wh`; it is a *receiver-entry* return when
+  `P = Γ ∘ Q` with `Γ` running from `h` to a receiver `r` whose internal
+  vertices lie outside `X`, and `Q` a simple `r ⤳ w` channel inside `X`; and it
+  is *visible for* a routed cubic `u` with `r(u) = w` when the canonical trace
+  `T_u` is a subpath of `Q`, or `Q` is the lexicographically first channel
+  assigned to the terminal receiver edge of `T_u`.
+  `lem:typeA-first-entry` proves the first entry of an anchored return is a
+  receiver; `lem:typeA-entry-budget` excludes a degree-two receiver from being
+  its own first entry and bounds the distinct first-entry edges by
+  `Σ_{r ≠ w} q(r)`; `lem:typeA-port-return` gives every completion port at
+  least one anchored return.  The yes arm is `lem:typeA-visible-entry`'s
+  hypothesis — its conclusion is the exit list `def:typeA-saturated-exits`
+  (1)--(7), which is what nodes `[95]`--`[107]` walk.  The no arm is `[94]`,
+  `lem:typeA-silent-excess-count`: with no visible-saturated port the
+  visible-first basins of `def:typeA-excess-basin` are silent and carry the
+  whole excess, `S_sil^exc(X) ≥ s·D_A(X)`.
+- **What the Lean does.**  `Spine.typeAVisibleEntryDichotomy` (`SpineRows`) is a
+  `Decision` on
+  `∃ packing, IsWindowPacking ∧ maximal ∧ ∃ piece ⊆ remainderSupport, ConnectedOn ∧
+  NegativeNetCharge ∧ ambientSurplus = 0 ∧ ∃ receiver, IsReceiver ∧ Saturated ∧
+  ∃ outside ∈ VisibleEntry.completionPorts object piece receiver,
+  data.dischargeScale ≤ (VisibleEntry.visibleLoadsAt object piece threshold receiver outside).card`.
+  `Graph/VisibleReceiverEntry.lean` supplies every component:
+  `completionPorts` (the receiver's neighbours outside the support, with
+  `card_completionPorts` proving there are exactly `q(w)` of them),
+  `AnchoredReturn`, `firstEntry?`, `IsChannel`, `ReceiverEntryReturn` with its
+  `P = Γ ∘ Q` fields and `toAnchoredReturn`, `canonicalChannel?`, `VisibleFor`,
+  `visibleLoadsAt` and `visibleLoads`.  Visibility is
+  `def:typeA-visible-load`'s own disjunction: the trace's support is a suffix of
+  the channel's, or the channel is `canonicalChannel?` at the trace's last edge
+  — both read off the object's single `FinitePathSelection.pathSchedule`, the
+  same order `tracePath?` selects `T_u` from, so "lexicographically first" is
+  one framework order rather than a second one.
+  The no arm is *proved*, not assumed:
+  `VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency` is `[94]`'s
+  count, and the row discharges its three hypotheses from the branch — the
+  support sits exactly at the baseline because it carries no ambient surplus,
+  the routing is total by node `[88]`'s committed fact read through
+  `typeAReceiverRouting`, and no saturated receiver has a visible-saturated port
+  because that is the alternative not taken.
+  `SpineRun.run` runs it on node `[89]`'s saturated cursor, exiting at
+  `Result.typeAVisibleEntry` (`typeAVisibleEntryKeys`, the entry of the exit
+  chain) and `Result.typeAVisibleFirstExcess`.
+- **What it should do.**  This is what it does.  The three things the old
+  registration was missing are present: the port is a completion port of the
+  receiver node `[89]` selected rather than an arbitrary port of the support,
+  the count is of *distinct routed loads* (a `Finset.card`, so four visible
+  returns cannot be one return counted four times), and visibility is
+  `def:typeA-visible-load`'s comparison against the canonical trace rather than
+  bare membership of the load vertex in a channel's support.
+  `lem:typeA-first-entry` is proved (`isReceiver_firstEntry`), not a supplied
+  field.
+- **Gap.**  Two paper objects this row owes are still unimplemented, and both
+  are debts to other rows rather than defects in the split itself.
 
-  The prerequisite this row inherits from row 11 is **supplied**.
-  `def:typeA-visible-load` asks whether the canonical trace `T_u` is a subpath
-  of the channel `Q`, so the row needs the trace *path*, not only its endpoint.
-  `Graph.FiniteObject.tracePath?` is that path: the first path of the object's
-  own `Graph.FinitePathSelection.pathSchedule` from `u` to a given receiver
-  that satisfies `Graph.FiniteObject.IsTracePath`.  It is asked exactly at the
-  receiver `traceReceiver?` returns, so `T_u` and `r(u)` are one routing rather
-  than two, and `isSome_tracePath?_of_traceTo` says a routed vertex always has
-  one.  What this row still has to add is the rest of
-  `def:typeA-visible-load` — the anchored return through a completion port
-  (`Graph.EdgeRootedReturn` is already exactly that shape at the dart `(w,h)`),
-  the receiver-entry channel and the `P = Γ ∘ Q` decomposition, and the
-  visibility test itself.  The manuscript's visibility is a disjunction whose
-  second clause — "`Q` is the lexicographically first channel assigned to the
-  terminal receiver edge of `T_u`" — does not fix which assignment is meant;
-  porting this row has to settle that reading against the manuscript before
-  either arm of `[93]` can be committed, because dropping the clause weakens
-  the yes arm and strengthens the no arm at once.
+  First, the generators of clauses (Q1)--(Q4) of `def:typeA-exit4-family`.
+  `Graph.ExitFour.Family.Generated` is the slot they are supplied through —
+  `.visibleEntry` is the visible receiver-entry coordinate identification this
+  node tests, and `.silentBasin`, `.traceBasin` and `.continuationSwitch` are
+  the constructions of `[94]`'s basin, the trace basin and the
+  continuation/cubic-switch quotient — and nothing instantiates it at any of the
+  four, because all four are built from this node's declared coordinates.
+  Row 16 proves its statement for every candidate reading, so this costs row 16
+  nothing; what it costs is that no row exhibits the canonical family itself.
 
-  This row also owes row 16 the generators of clauses (Q1)–(Q4) of
-  `def:typeA-exit4-family`.  `Graph.ExitFour.Family.Generated` is the slot they
-  are supplied through — `.visibleEntry` is the visible receiver-entry
-  coordinate identification this node tests, and `.silentBasin`, `.traceBasin`
-  and `.continuationSwitch` are the constructions of `[94]`'s basin, the trace
-  basin, and the continuation/cubic-switch quotient — and nothing instantiates
-  it at any of the four, because all four are built from this node's declared
-  coordinates.  Row 16 proves its statement for every candidate reading, so this
-  costs it nothing; what it costs is that no row exhibits the canonical family
-  itself.
-- **Ledger and residual.**  `DichotomyData` reads only `ProblemInput`; the port,
-  the returns and the loads are all rebuilt from `input.object` rather than from
-  the receiver the `[89]` arm selected.  The stable residual is retained by the
-  framework extension.
-- **Transport and terminals.**  No CT: Core `DichotomyData`, no registered
-  closure on either side.  The export shows `v25` (`dichotomy:5`) entered by
-  `e54` from `v24`, leaving by `e42` `v25 → v26` (`left`, "Four visible returns")
-  and `e53` `v25 → v34` (`right`, "Visible-first excess"); both conditional, no
-  terminal.
+  Second, `lem:typeA-port-return` and the two unpeeled-routing lemmas
+  (`lem:typeA-unpeeled-visible-routing`, `lem:typeA-unpeeled-silent-routing`)
+  have no declaration.  Neither arm consumes them — the split is a `Prop`
+  dichotomy and its no arm is proved from the silent-excess count — but they are
+  `def:typeA-visible-load`'s non-vacuity and `lem:typeA-visible-entry`'s
+  routing, so their cells stay empty.  **Facts therefore fails.**
+
+  A third item is hygiene rather than mathematics, and it does not move a
+  column.  `Graph/VisibleReceiverEntry.lean` defines
+  `Graph.VisibleEntry.receivers`, `Graph.VisibleEntry.mem_receivers` and
+  `Graph.VisibleEntry.fullVertices`, and `Graph/TypeADischarge.lean` already
+  defines `FiniteObject.receivers`, `FiniteObject.mem_receivers` and
+  `FiniteObject.fullVertices` with the same bodies — the support filtered by
+  internal degree below, respectively at, the baseline.  Both files are live and
+  both are imported by `SpineVocabulary`, and node `[94]`'s value schema is
+  stated against the `VisibleEntry` copy, so the copy is load-bearing rather
+  than dead.  It is one paper object with two Lean readings; the copy should be
+  deleted and the schema restated against `FiniteObject.receivers`.  Rows 13--15
+  read neither copy, so this is recorded here alone and blocks none of them.
+- **Ledger and residual.**  The row reads only the accumulated ledger: node
+  `[88]`'s routing and node `[89]`'s saturated receiver, both by exact key
+  through `[FactKeys.Has …]` and `ExactLedger.get`, and the current object
+  through `current.object`.  Nothing is recomputed from the root input and no
+  port, receiver or support is reconstructed from the ambient graph — the
+  saturated receiver is read as a fact, which is what makes both arms
+  non-vacuous.  The residual is unchanged: a `Decision` is a fact-only step, so
+  `RefinementSystem.Refines` is the identity and every earlier key stays in the
+  output index.  Both arms retain node `[88]`'s routing, which is what makes
+  `L(w)` a complete assignment on either side.
+- **Transport and terminals.**  No CT; the recipe is `Core.Strategy.Decision`
+  and neither arm closes, so no closure runner is involved: the yes arm enters
+  the saturated exit chain at node `[95]` and the no arm is node `[94]`'s
+  quantitative residual.  No EG-specific carrier, executor or routing helper
+  appears; the mathematics is `Graph.VisibleEntry`'s and the transport is the
+  framework's.  The arm not taken is absent from the taken branch's key index
+  (`Fixtures/TypeAVisibleEntry.lean` checks both directions), so the exit chain
+  cannot read `[94]`'s excess bound and node `[109]` cannot read the
+  visible-entry hypothesis.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:typeA-visible-load` | def | `Graph.ReceiverLoad.CompletionPort`<br>`Graph.ReceiverLoad.AnchoredReturn`<br>`Graph.ReceiverLoad.ReceiverEntryReturn` | no CT |
-| `lem:typeA-first-entry` | lem | | |
-| `lem:typeA-entry-budget` | lem | | |
+| `def:typeA-visible-load` | def | `Graph.VisibleEntry.completionPorts`<br>`Graph.VisibleEntry.AnchoredReturn`<br>`Graph.VisibleEntry.IsChannel`<br>`Graph.VisibleEntry.ReceiverEntryReturn`<br>`Graph.VisibleEntry.canonicalChannel?`<br>`Graph.VisibleEntry.VisibleFor`<br>`Graph.VisibleEntry.visibleLoadsAt`<br>`Graph.VisibleEntry.visibleLoads` | no CT |
+| `lem:typeA-first-entry` | lem | `Graph.VisibleEntry.isReceiver_firstEntry` | no CT |
+| `lem:typeA-entry-budget` | lem | `Graph.VisibleEntry.firstEntry_ne_of_missingPorts_eq_one`<br>`Graph.VisibleEntry.card_entryPortEdges_le` | no CT |
 | `lem:typeA-port-return` | lem | | |
-| `lem:typeA-visible-entry` | lem | | |
+| `lem:typeA-visible-entry` | lem | `Spine.typeAVisibleEntryDichotomy` (hypothesis only; the exit list is rows 13--19) | no CT |
 | `lem:typeA-unpeeled-visible-routing` | lem | | |
-| `def:typeA-saturated-exits` | def | | first consumed here, as the yes-arm's target list; its clauses are also the alternatives at rows 13–19 |
-| `def:typeA-excess-basin` | def | | |
-| `lem:typeA-silent-excess-count` | lem | | |
+| `def:typeA-saturated-exits` | def | | first consumed here, as the yes-arm's target list; its clauses are the alternatives at rows 13--19 |
+| `def:typeA-excess-basin` | def | `Graph.VisibleEntry.visibleFirstOrder`<br>`Graph.VisibleEntry.payableSet`<br>`Graph.VisibleEntry.excessBasin`<br>`Graph.VisibleEntry.silentExcess` | no CT |
+| `lem:typeA-silent-excess-count` | lem | `Graph.VisibleEntry.one_add_routedLoad_le_silentExcess`<br>`Graph.VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency` | no CT |
 | `lem:typeA-reduced-silent-residual` | lem | | |
-| `lem:typeA-silent-excess` | lem | | |
+| `lem:typeA-silent-excess` | lem | `Graph.VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency` (the subtraction-free form committed at `[94]`) | no CT |
 | `lem:typeA-unpeeled-silent-routing` | lem | | |
 
-`Graph.ReceiverExhaustion.Exit` is the only type in the tree that enumerates
-saturated-receiver alternatives, but it has six constructors, merges exits (3),
-(5) and (6) into a single `closed : T.Predicate input.object`, and leaves exits
-(4), (7), (8) as arbitrary type parameters `Step`, `Handoff`, `Residual`; it is
-referenced only by `TypeAReceiverClosure.target_of_exit`, which has no call
-site.  It therefore does not state `def:typeA-saturated-exits` and the cell is
-empty.
-
-**CT composition at this row.**  No CT.  The Core recipe is
-`DichotomyData.ofAlternative`, the same one rows 11 and 13–19 use.  This row's
-stage decides only the visible/silent split and registers *no* closure, so both
-arms are conditional continuations: the left enters the exit chain at row 13,
-the right enters the duplicated exit chain at row 16's `v34`.  Nothing about the
-split is executed or retained — the classification is `Classical.propDecidable`
-on a proposition over `ProblemInput` — so `[94]`'s quantitative excess has no
-stage in which to be recorded.
+**CT composition at this row.**  No CT.  The recipe is `Core.Strategy.Decision`
+and nothing is enumerated: the split is `Classical.em` on a proposition, no port
+or receiver is extracted to build the branch, and the arm not taken supplies the
+other arm's clause.  The one piece of arithmetic — `[94]`'s count — is a finite
+sum identity proved once in `Graph/VisibleReceiverEntry.lean` and read here as a
+theorem, not a search a CT would run.  Neither arm registers a closure, so both
+are open continuations: the left into row 13, the right into node `[109]`'s
+route-8 placement.
 
 ### Row 13 — Exit 1: Mersenne return `[95]`
 
-- **Paper fact.** Exit (1) of `def:typeA-saturated-exits`: "an anchored return
-  through a completion port of `w` has length in `Mers`".  In the proof of
-  `lem:typeA-visible-entry` it is one of the four visible returns through the
-  fixed port `\vec e = (w,h)`; `lem:return-equivalence` then yields the
-  power-of-two cycle.  `lem:typeA-exits-discharged` records the outcome for the
-  whole exit list: exits (1)–(3), (5) and (6) close inside the Type A analysis,
-  exit (4) peels exactly one routed load, exit (7) is transferred to Type B.
-- **What the Lean does.**  `exitOneSplit` registers `ofAlternative` on
-  `fun input => Nonempty (rootedReturn.RootedReturn (object input))`, where
-  `rootedReturn := Graph.RootedReturnTargetAlgebra.shifted PowerOfTwoLength` and
-  `RootedReturn profile object = EdgeRootedReturn object profile.ReturnLengthOK`,
-  a structure `(dart, path : (graph.deleteEdges {dart.edge}).Walk dart.snd dart.fst,
-  isPath, length_ok)`.  The dart ranges over every dart of the whole object.
-  `closeLeft` is
-  `fun input witness => closure input
-   ((rootedReturn.target_iff_hasRootedReturn (object input)).mpr witness.down)`,
-  a direct transport along the registered biconditional.
-- **What it should do.**  The alternative has to be
-  `∃ anchoredReturn : AnchoredReturn port, ReturnLengthOK anchoredReturn.path.length`
-  for a completion port `port` of the receiver fixed at `[89]`, with the
-  conversion to the target going through
-  `AnchoredReturn.toEdgeRootedReturn` (which exists and takes exactly that data).
-- **Gap.**  The registered alternative is `HasEdgeRootedReturn object
-  (ShiftedCycleLength PowerOfTwoLength)`, which by
-  `RootedReturnTargetAlgebra.target_iff_hasRootedReturn` is *equivalent* to
-  `HasCycleWithLength PowerOfTwoLength object` — the registered target itself,
-  and the very predicate node `[6]` reduced.  The selected minimal
-  counterexample already carries `¬ Target`, so the left arm is refuted by the
-  residual the branch has carried since `[4]` and the node decides nothing.  No
-  port, no receiver and no anchoring appear in the type, and
-  `AnchoredReturn.toEdgeRootedReturn` is not used here.
-  **Facts therefore fails.**
-- **Ledger and residual.**  `DichotomyData` on `ProblemInput`; the return is
-  searched in `input.object`, not in the completion port the predecessor arm
-  produced.  Stable residual retained.
-- **Transport and terminals.**  No CT: Core `DichotomyData` with a registered
-  `closeLeft`.  The export shows `v26` (`dichotomy:6`) entered by `e42` from
-  `v25`, leaving by `e26` `v26 → t5` (`left`, closed, "Target cycle") and `e41`
-  `v26 → v27` (`right`, conditional, "No Mersenne return").
+- **Paper fact.** Exit (1) of `def:typeA-saturated-exits`: *"an anchored return
+  through a completion port of `w` has length in `Mers`"*.  The proof of
+  `lem:typeA-visible-entry` asks it of the port node `[93]` fixed — *"Fix a port
+  `\vec e=(w,h)` carrying four visible receiver-entry returns […] If one return
+  has length in `Mers`, `lem:return-equivalence` gives a power-of-two cycle; this
+  is exit (1)"* — and `lem:return-equivalence` is the closure: *"if
+  `2^j−1 ∈ R_e(G)`, then `e` together with the corresponding simple return path
+  gives a simple cycle of length `2^j`"*.  `lem:typeA-exits-discharged` records
+  the disposition: *"Exit (1) gives an edge-rooted Mersenne return, hence a
+  power-of-two cycle by `lem:return-equivalence`"*, so exit (1) is one of the
+  closed exits and cannot remain as a negative-charge Type A discharging case.
+- **What the Lean does.**  `Spine.typeAExitOneDichotomy` (`SpineRows.lean`) is a
+  `Core.Strategy.Decision` on the canonical `ExactLedger`.  It requires node
+  `[93]`'s key by `FactKeys.Has typeAVisibleEntry known` and reads it with
+  `ExactLedger.get`, so the question elaborates only on the branch that entered
+  the saturated exit chain.  Its yes arm is the vocabulary value at
+  `Key.typeAExitOneReturn`: some Type A support of the object (a maximal window
+  packing, a connected piece of its remainder with negative net charge and zero
+  ambient surplus) has a saturated receiver with a completion port
+  `outside ∈ Graph.VisibleEntry.completionPorts object piece receiver` through
+  which some `Graph.VisibleEntry.AnchoredReturn object receiver outside`
+  satisfies `Graph.ShiftedCycleLength data.LengthOK return'.path.length`.  Its
+  no arm, `Key.typeAExitOneFree`, is the same configuration universally
+  quantified with the length test denied.  `Spine.runExitOne` (`TypeAExitRun.lean`) runs the
+  decision and closes the yes arm with Core's `closeIncompatible` against
+  `Key.returnAvoidance`; the `Incompatible` instance's whole content is
+  `Graph.VisibleEntry.not_shiftedCycleLength_of_returnLengthSets_disjoint`.
+  `Spine.runExitChain` composes that runner with nodes `[97]` and `[99]`, so the
+  exit list is walked in the manuscript's order on one immutable prefix; rows 14
+  and 15 call this row's runner rather than repeating its decision.
+- **What it should do.**  This is what it does.  The alternative is asked of the
+  receiver's own completion ports and of anchored returns through them, and the
+  conversion to the target goes through
+  `Graph.VisibleEntry.AnchoredReturn.toEdgeRootedReturn` at the dart `(w,h)`.
+
+  > **Corrected on 2026-08-06.**  As first landed, both arms of this row carried
+  > an extra conjunct `data.dischargeScale ≤ (visibleLoadsAt …).card` on the
+  > port — node `[93]`'s visible count — on the argument that the proof of
+  > `lem:typeA-visible-entry` fixes the port `⃗e` before walking the exit list.
+  > That was a deviation.  `def:typeA-saturated-exits` (1) is stated at a
+  > saturated receiver over anchored returns through *any* completion port of
+  > it, with no visibility condition; clause (2) is the one that names
+  > receiver-entry returns, and clause (1) deliberately does not.  Conjoining
+  > the count strengthened the yes alternative and, worse, weakened the no arm —
+  > *"no anchored return of a **visible** port has accepted length"* instead of
+  > `def:typeA-saturated-exits` (1)'s own negation — and that weaker hypothesis
+  > is what nodes `[97]`, `[99]` and `[101]` inherit.  The conjunct is removed
+  > from both arms; node `[93]`'s fact is still read by exact key, as the
+  > warrant for being on the exit list at all, but it is not part of the
+  > alternative.  Rows 14 and 15 copied the same conjunct into
+  > `Key.typeAExitTwoTheta`/`typeAExitTwoFree` and
+  > `Key.typeAExitThreeCollision`/`typeAExitThreeFree`; those are recorded
+  > against their own rows below and are **not** fixed here.
+- **Gap.**  None.  The alternative no longer implies the registered target
+  outright: it is a statement about a named port of a named saturated receiver of
+  a Type A support, and the *closure* — not the alternative — is where
+  `lem:return-equivalence` turns it into the cycle the residual denies.  The
+  legacy `exitOneSplit`, whose `Nonempty (RootedReturn (object input))` was
+  literally the target predicate node `[6]` reduced, is gone with the rest of the
+  `Blueprint` topology.  The only other Lean that ever enumerated the saturated
+  exits — `Graph.ReceiverExhaustion.Exit`, with its six constructors merging
+  exits (3), (5) and (6) and leaving (4), (7), (8) as type parameters, and
+  `TypeAReceiverClosure.target_of_exit` — is in `quarantine.txt` and imported by
+  no live module, so no second reading of exit (1) survives.
+
+  Row 13 commits no fact outside its two declared keys.  The three lemmas of
+  `Graph/AnchoredReturnCompletion.lean` are framework statements about an
+  arbitrary object and an arbitrary length predicate, consumed inside the row's
+  own proof and inside the `Incompatible` instance; none of them is a statement
+  about the residual's object, so none of them is a ledger entry withheld from
+  the index.  The slice calls no `ExactLedger.root`, `append`, `publishFact`,
+  `refine` or `initializeScope`, carries no second `…Ledger` type, and names no
+  producer, row number or execution position.
+
+  What this row does *not* do is decide which of the four visible returns
+  realizes exit (1); `def:typeA-saturated-exits` quantifies anchored returns, not
+  visible ones, so the node states the definition's own alternative and the
+  visible family is carried by node `[93]`'s clause rather than re-derived here.
+- **Ledger and residual.**  One canonical `ExactLedger`.  The row reads node
+  `[93]`'s fact by exact key off the literal incoming cursor — no producer, no
+  predecessor depth, no re-selection — and commits exactly one of the two arms
+  through `Decision.run`.  `Decision` preserves the residual, so the Type A
+  residual node `[63]` selected is retained definitionally; the closed arm
+  appends only Core's reserved closure key, which the vocabulary cannot spell.
+- **Transport and terminals.**  No CT: the row is a Core `Decision` and the
+  closure is `Core.Strategy.closeIncompatible`, not a registered `closeLeft`.
+  The closed arm's index is `closed :: typeAExitOneReturn :: known`; the no arm's
+  is `typeAExitOneFree :: known`, which still carries `typeAVisibleEntry` and
+  therefore hands node `[97]` the same port.  Neither arm's index contains the
+  other's key, and neither contains node `[93]`'s sibling
+  `typeAVisibleFirstExcess`.  `Fixtures/TypeAExitOne.lean` checks each of those,
+  the presence of the closure key on the closed arm and its absence on the free
+  arm, and `audit_complete` / `audit_facts_unique` / `audit_commits_nonempty` on
+  both.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:typeA-exits-discharged` | lem | | first consumed here, as the disposition of exit (1); it is equally the disposition of rows 14–19 |
+| `def:typeA-saturated-exits` (1) | def | `Spine.Key.typeAExitOneReturn` / `Spine.Key.typeAExitOneFree` (value schemas in `SpineVocabulary.lean`), decided by `Spine.typeAExitOneDichotomy` | no CT |
+| `lem:return-equivalence` at a port | lem | `Graph.VisibleEntry.AnchoredReturn.toEdgeRootedReturn`<br>`Graph.VisibleEntry.hasCycleWithLength_of_anchoredReturn`<br>`Graph.VisibleEntry.not_shiftedCycleLength_of_returnLengthSets_disjoint` | standalone, `Graph/AnchoredReturnCompletion.lean` |
+| `lem:typeA-exits-discharged` | lem | `Spine.typeAExitOneReturnClosed` (`Incompatible`), spent by `Spine.runExitOne` | first consumed here, as the disposition of exit (1); it is equally the disposition of rows 14–19 |
 
-**CT composition at this row.**  No CT.  The Core recipe is
-`DichotomyData.ofAlternative`.  This row's stage decides whether an accepted
-edge-rooted return exists and registers `closeLeft`, so its yes-arm is closed by
-the runner from the registered target transport and its no-arm is a conditional
-edge into row 14.  There is no execution to compose: the decision is
-`Classical.propDecidable` on a `Nonempty` proposition, and the closure is a
-one-line transport, so nothing is enumerated, bounded, or retained.
+**CT composition at this row.**  No CT, and none is wanted.  The row decides one
+alternative of a fixed exit list and its closure is an identity of two committed
+statements: nothing is enumerated, bounded, or retained, so a CT would add a
+finite search that the manuscript does not perform.  The composition is
+`Decision.run` followed by `closeIncompatible`, both framework-owned; the row
+contributes the alternative and the two schema bridges, which are the identity
+on `PLift`.
 
 ### Row 14 — Exit 2: power-of-two theta `[97]`
 
-- **Paper fact.** Exit (2): "two anchored receiver-entry returns through one
-  completion port are internally vertex-disjoint as anchored paths and their
-  lengths sum to a power of two".  `lem:typeA-common-port-return-cycle` proves
-  that two anchored returns through the *same* port `\vec e = (w,h)` share the
-  endpoints `h` and `w`, so internal disjointness makes their union a simple
-  cycle of length `|P₁| + |P₂|`; "in particular, if `|P₁|+|P₂| ∈ Pow`, then `G`
-  contains a dyadic cycle".
-- **What the Lean does.**  `exitTwoSplit` registers `ofAlternative` on
-  `fun input => ∃ pair : Graph.CommonEndpointsCycle (object input),
-   CycleLengthOK (pair.forward.length + pair.backward.length)`.
-  `CommonEndpointsCycle` is `(ends : Vertex × Vertex, forward, backward :
-  Walk ends.1 ends.2, forward_isPath, backward_isPath, internallyDisjoint,
-  nondegenerate)` — an arbitrary internally disjoint pair of paths anywhere in
-  the object.  `closeLeft` is
-  `fun input witness => closure input ⟨witness.down.choose.target CycleLengthOK
-  witness.down.choose_spec⟩`, i.e. the generic two-path criterion.
-- **What it should do.**  The alternative has to be
-  `∃ (port : CompletionPort …) (P₁ P₂ : AnchoredReturn port), internally disjoint ∧
-  CycleLengthOK (P₁.path.length + P₂.path.length)`, together with the missing
-  bridge turning two `AnchoredReturn`s through one port into a
-  `CommonEndpointsCycle` — the content of `lem:typeA-common-port-return-cycle`
-  beyond `lem:two-path-criterion`.
-- **Gap.**  No port, no receiver-entry structure and no anchoring: the pair is
-  quantified over the whole object, so the alternative implies
-  `HasCycleWithLength PowerOfTwoLength` and is again refuted by the selected
-  counterexample's target avoidance.  No declaration converts two
-  `AnchoredReturn`s through one `CompletionPort` into a `CommonEndpointsCycle`.
-  **Facts therefore fails.**
-- **Ledger and residual.**  `DichotomyData` on `ProblemInput`; the pair is
-  searched in `input.object`.  Stable residual retained.
-- **Transport and terminals.**  No CT: Core `DichotomyData` with `closeLeft`.
-  The export shows `v27` (`dichotomy:7`) entered by `e41` from `v26`, leaving by
-  `e27` `v27 → t6` (`left`, closed, "Target cycle") and `e40` `v27 → v28`
-  (`right`, conditional, "No accepted theta").
+- **Paper fact.** Exit (2) of `def:typeA-saturated-exits`: *"two anchored
+  receiver-entry returns through one completion port are internally
+  vertex-disjoint as anchored paths and their lengths sum to a power of two"*.
+  `lem:typeA-common-port-return-cycle` is its discharge: two anchored returns
+  through the same port `⃗e = (w,h)` are both simple `h ⤳ w` paths in `G − wh`,
+  so they share both endpoints; internal disjointness is then exactly the
+  hypothesis of `lem:two-path-criterion`, their union is a simple cycle of
+  length `|P₁| + |P₂|`, and *"in particular, if `|P₁|+|P₂| ∈ Pow`, then `G`
+  contains a dyadic cycle"*.  `lem:typeA-exits-discharged` lists exit (2) among
+  the closed exits for that reason.  The returns are the *receiver-entry*
+  returns `def:typeA-visible-load` defines (`P = Γ ∘ Q`), and the clause names
+  one completion port of the saturated receiver — not the object at large, and
+  not a port qualified by node `[93]`'s visible count, which clause (2) does not
+  mention.
+- **What the Lean does.**  `Spine.typeAExitTwoDichotomy` (`SpineRows`) is a
+  `Decision` on the proposition that some Type A support of the branch's own
+  packing carries a saturated receiver with a completion port realizing exit (2):
+  `∃ packing, IsWindowPacking ∧ maximal ∧ ∃ piece ⊆ remainderSupport, ConnectedOn ∧
+  NegativeNetCharge ∧ ambientSurplus = 0 ∧ ∃ receiver, IsReceiver ∧ Saturated ∧
+  ∃ outside ∈ VisibleEntry.completionPorts …,
+  VisibleEntry.ExitTwoThrough object piece data.LengthOK receiver outside`.
+  Node `[93]`'s visible count is *not* a conjunct: it is required by
+  `FactKeys.Has typeAVisibleEntry known` and read with `ExactLedger.get`, which
+  is what puts the branch on the exit list, and nothing more.
+  `Graph.VisibleEntry.ExitTwoThrough` is
+  `∃ first second : ReceiverEntryReturn object support receiver outside,
+  InternallyDisjoint first.toAnchoredReturn second.toAnchoredReturn ∧
+  LengthOK (|P₁| + |P₂|)`, and `InternallyDisjoint` is "the only vertices the
+  two anchored paths share are the port's own two ends".  The no arm is the
+  same configuration with the test denied at every completion port of every
+  saturated receiver, which is the hypothesis exit (3) is asked under at node
+  `[99]`.
+
+  The row consumes node `[93]`'s fact by exact key through
+  `[FactKeys.Has typeAVisibleEntry known]` and `ExactLedger.get`, so it does not
+  elaborate on a history that has not entered the saturated exit chain, and it
+  reconstructs no cursor.  `Spine.typeAExitTwo` and `Spine.runExitTwo`
+  (`TypeAExitRun`) install and run it after node `[95]`'s free arm;
+  `Spine.runExitChain` walks `[95]` then `[97]` on one immutable prefix.
+- **What it should do.**  This is what it does.  The three things the old
+  registration was missing are all present: the pair is anchored at a
+  *completion port of the receiver the branch selected*, the returns are the
+  receiver-entry returns of `def:typeA-visible-load` rather than arbitrary
+  paths of the object, and the bridge from two `AnchoredReturn`s through one
+  port to a `CommonEndpointsCycle` —
+  `Graph.VisibleEntry.commonEndpointsCycle` — is proved rather than assumed.
+- **Gap.**  `none`.  `Graph/CommonPortReturnCycle.lean` proves
+  `lem:typeA-common-port-return-cycle` outright:
+  `two_le_length_of_avoidsPort` supplies the nondegeneracy from the port alone
+  (its two ends are adjacent, so a length-zero return would identify them, and
+  a length-one return would be the deleted port edge), the two `IsPath` fields
+  and `InternallyDisjoint` supply the criterion's disjointness in its own
+  orientation, and `CommonEndpointsCycle.target` — `lem:two-path-criterion`,
+  the row-2 object — closes the cycle at length `|P₁| + |P₂|`.  Nothing writes
+  a power of two: the side condition is `data.LengthOK` of the sum.
+  **Facts passes.**
+- **Ledger and residual.**  The row reads only the accumulated ledger: node
+  `[93]`'s visible-entry fact by exact key, and the current object through
+  `current.object`.  Nothing is recomputed from the root input, and the
+  residual is unchanged — a `Decision` is a fact-only step, so
+  `RefinementSystem.Refines` is the identity and every earlier key stays in the
+  output index.  Both arms retain the whole prefix: `typeAExitTwoFreeKeys` still
+  contains `selection`, `returnAvoidance`, `typeAVisibleEntry` and
+  `typeAExitOneFree`, which is what lets node `[99]` be asked under both
+  alternatives already denied.
+- **Transport and terminals.**  No CT; the recipe is `Core.Strategy.Decision`,
+  and the closure is `Core.Strategy.closeIncompatible` against the registered
+  `Spine.typeAExitTwoThetaClosed :
+  Incompatible … (K .selection) (K .typeAExitTwoTheta)`.  That instance is the
+  only closure content and it reads the two committed statements and nothing
+  else: node `[1]`'s selection says the object carries no accepted cycle, and
+  `hasCycleWithLength_of_exitTwoThrough` turns the exit fact into one.  No row
+  performs the closure, no payload crosses between the arms, and the arm not
+  taken is absent from the taken branch's key index
+  (`Fixtures/TypeAExitTwo.lean` checks both directions).  The closed arm carries
+  the distinguished closure key; the free arm does not, so it is an open
+  residual, exactly as `lem:typeA-exits-discharged` leaves it.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:typeA-common-port-return-cycle` | lem | | |
+| `lem:typeA-common-port-return-cycle` | lem | `Graph.VisibleEntry.commonEndpointsCycle`<br>`Graph.VisibleEntry.hasCycleWithLength_of_commonPortReturns` | no CT |
+| `def:typeA-saturated-exits` (2) | def | `Graph.VisibleEntry.ExitTwoThrough`<br>`Graph.VisibleEntry.hasCycleWithLength_of_exitTwoThrough`<br>`Spine.typeAExitTwoDichotomy` | no CT |
+| `lem:two-path-criterion` | lem | `Graph.CommonEndpointsCycle.target` | consumed here as the gluing step; it is a row-2 object |
+| `def:typeA-visible-load` | def | `Graph.VisibleEntry.ReceiverEntryReturn`<br>`Graph.VisibleEntry.AnchoredReturn`<br>`Graph.VisibleEntry.completionPorts` | supplied by row 12 |
+| `lem:typeA-exits-discharged` | lem | `Spine.typeAExitTwoThetaClosed` | the disposition of exit (2): a closed exit |
 
-`Graph.CommonEndpointsCycle.target` states `lem:two-path-criterion`, a row-2
-object, and is what this node's `closeLeft` calls; nothing states the
-port-anchored strengthening that is `lem:typeA-common-port-return-cycle`, so the
-cell is empty.
-
-**CT composition at this row.**  No CT.  The Core recipe is
-`DichotomyData.ofAlternative`.  This row's stage decides whether an internally
-disjoint path pair of accepted total length exists and registers `closeLeft`, so
-its yes-arm closes and its no-arm is a conditional edge into row 15.  As at
-row 13 there is no executed search: `Classical.propDecidable` classifies an
-existential over `CommonEndpointsCycle`, and no enumeration, capacity or code
-comparison is involved.
+**CT composition at this row.**  No CT.  The manuscript performs no search
+here: exit (2) is a property of a pair of returns at a fixed port, and its
+discharge is one gluing identity, so there is nothing to enumerate, bound,
+certify or retain and a CT would add a finite search the paper does not do.
+The composition is `Decision.run` followed by `closeIncompatible`, both
+framework-owned; the row contributes the alternative and the two schema
+bridges, which are the identity on `PLift`.
 
 ### Row 15 — Exit 3: P13 label collision `[99]`
 
-> **Correction — this row is unbuilt, and its four `✅` cells were wrong.**  The
-> evidence below describes `v28` (`dichotomy:8`), a `Core.DichotomyData`
-> registration in the legacy `Blueprint` topology.  That topology and its
-> `Core.ProblemDefinition` registry are deleted, `Graph/TypeBClosure.lean` and
-> `Graph/TypeBMarkedFan.lean` are quarantined, and no live declaration states
-> `[99]`.  The mathematics recorded below was faithful *at the time it was
-> read*, which is why the row's `Facts` cell had been ticked; but a column is a
-> claim about the current tree, and nothing here compiles.  All four cells are
-> now `❌`.  The description is retained as the porting reference — in
-> particular `hasCycleWithLength_of_illegalLabel` is the closure the ported row
-> will need, and node `[18]`'s `localAlgebra` fact is already live to supply
-> `lem:labels`.
+- **Paper fact.** Exit (3) of `def:typeA-saturated-exits`: "a shared `P₁₃`
+  window violates the corresponding legal-label relation `C_s`".
+  `lem:typeA-visible-entry` states the test: "if two traces pass through a common
+  `P₁₃` window, their labels are governed by the relations `C_s` of
+  `lem:labels`; failure of the corresponding `C_s` test is the stated label
+  collision, which is exit (3)", and `lem:typeA-unpeeled-visible-routing` repeats
+  it verbatim for the unpeeled loads.  `lem:typeA-exits-discharged` discharges
+  it: "Exit (3) is precisely failure of the legal `P₁₃` label relation from
+  `lem:labels`; by definition of the relation, it creates a target event or a
+  target-defective local state", and lists exit (3) among the closed exits.
+  `lem:labels` (node `[18]`, row 7) defines the attachment label
+  `S(x) = {i : x vᵢ ∈ E(G)}`, and, for `s ≥ 0`, `C_s(S,T) = 1` iff
+  `s + 2 + |i − j| ∉ Pow` for all `i ∈ S`, `j ∈ T` — "an outside path of length
+  `s` between vertices carrying labels `S, T` is safe through the induced path
+  `P` precisely when `C_s(S,T) = 1`".
+- **What the Lean does.**  `Spine.typeAExitThreeDichotomy` (`SpineRows.lean`) is
+  a Core `Decision` on the vocabulary keys `typeAExitThreeCollision` and
+  `typeAExitThreeFree`.  It **reads node `[93]`'s `typeAVisibleEntry` by exact
+  key** through `ExactLedger.get`, so neither arm is vacuous and the exit is
+  asked only on a branch that entered the saturated exit list.  Both arms carry
+  the packing, its maximality and the Type A support — the configuration the
+  exit list is scoped to — and *nothing else*: unlike clauses (1) and (2),
+  clause (3) names no receiver and no completion port, and
+  `Graph.WindowLabelCollision.LabelCollision` takes the packing alone.  The exit
+  clause is `LabelCollision current.object data.windowOrder data.LengthOK
+  packing` on the yes arm and `LabelCollisionFree` on the no arm.
 
-- **Paper fact.** Exit (3): "a shared `P₁₃` window violates the corresponding
-  legal-label relation `C_s`".  In `lem:typeA-exits-discharged` this is
-  "precisely failure of the legal `P₁₃` label relation from `lem:labels`; by
-  definition of the relation, it creates a target event or a target-defective
-  local state".  `lem:labels` (node `[18]`, row 7) fixes the legal attachment
-  labels as the nonempty subsets of `{0,…,12}` avoiding gaps `2` and `6`.
-- **What the Lean does.**  `IllegalWindowLabel packing` is
-  `∃ window ∈ packing.selected, ∃ (outside : Vertex) (a b : TypeBMarkedFan.Index),
-   a ≠ b ∧ graph.Adj outside ((windowOfPacking window).coordinate a.val) ∧
-   graph.Adj outside ((windowOfPacking window).coordinate b.val) ∧
-   (∀ t ≤ 12, outside ≠ (windowOfPacking window).coordinate t) ∧
-   ¬ TypeBMarkedFan.IsLegal {a, b}`.
-  `windowOfPacking` maps an `InducedPathMaximalPacking.Window object 13` to a
-  `TypeBClosure.Window` by `coordinate index := window ⟨min index 12, _⟩`, and
-  `windowOfPacking_isPacked` proves the two `IsPacked` fields from
-  `window.map_adj_iff` (edges) and `window.injective` (distinctness) — a
-  derivation, not a supplied field.  `closeLeft` destructs the witness and
-  applies `TypeBClosure.hasCycleWithLength_of_illegalLabel accepted
-  (windowOfPacking_isPacked window) distinct lower upper windowFree illegal`;
-  `accepted` is `acceptedCycleLengths`, whose three fields are `by decide` proofs
-  that `4`, `8`, `16` satisfy `PowerOfTwoLength`.  The registration passes
-  `packing := fun input => Graph.InducedPathMaximalPacking.maximalProfile
-  input.object 13`, a deterministic function of the object.
-- **What it should do.**  The alternative has to say that an outside vertex
-  attaches to a packed window at two positions whose gap violates the legal
-  relation, and its closure has to produce the dyadic cycle — which is what the
-  type says.  A stricter reading of `[99]` would quantify over the window shared
-  by two canonical traces at the `[89]` receiver rather than over all selected
-  windows, but the manuscript's own discharge of exit (3) is the local label
-  test.
-- **Gap.**  `none`.  The illegal-label attachment produces a `4`- or `8`-cycle
-  through the window, which the registered target accepts, and every ingredient
-  of the closure is derived from the packing embedding.  **Facts passes.**
-- **Ledger and residual.**  `DichotomyData` reads only `ProblemInput`, and the
-  packing is recomputed as `maximalProfile input.object 13` rather than read from
-  the row-6 packing capability.  Because `maximalProfile` is a deterministic
-  function of the object and the object is the preserved active input, the
-  recomputation is a canonical reconstruction of the same selection rather than
-  a branch fact re-derived from the wrong evidence; the existing Ledger verdict
-  is unchanged.
-- **Transport and terminals.**  No CT: Core `DichotomyData` with `closeLeft`;
-  Graph owns `hasCycleWithLength_of_illegalLabel` and the packing selection.  The
-  export shows `v28` (`dichotomy:8`) entered by `e40` from `v27`, leaving by
-  `e28` `v28 → t7` (`left`, closed, "Label/target collision") and `e39`
-  `v28 → v29` (`right`, conditional, "No label collision").
+  `Graph/WindowLabelCollision.lean` is the new generic module.
+  `attachmentLabel` is `S(x)` read at a `Graph.TypeBDirectCycle.Presentation`;
+  `LabelCollision` is the manuscript's configuration — two outside vertices
+  attached to one packed window, a simple connector between them avoiding that
+  window, and two attachment coordinates whose
+  `Graph.WindowCurvature.closingLength` is accepted;
+  `labelCollision_iff_not_safe` proves that clause *is*
+  `¬ Graph.WindowCurvature.Safe s S T` at the registered dyadic target, so the
+  alternative is `lem:labels`' own relation rather than a second copy of it;
+  `connectorCycle`/`connectorCycle_isCycle` build the simple cycle
+  `x p_i P p_j y Q x`, whose length `connectorCycle_length` shows to be the
+  manuscript's `s + 2 + |i − j|`; and
+  `hasCycleWithLength_of_labelCollision` is the closure.
+
+  The run is `Spine.runExitThree` in `Graph/Strategy/TypeAExitRun.lean`, and
+  `Spine.runExitChain` walks `[95] → [97] → [99]` on one immutable prefix.  The
+  yes arm closes through `Core.Strategy.closeIncompatible` against the
+  `selection` fact, registered as `Spine.typeAExitThreeCollisionClosed`.
+  `Fixtures/TypeAExitThree.lean` checks the row at the spine's own vocabulary.
+- **What it should do.**  Exactly this: state the alternative as failure of
+  `C_s` at a window shared by the branch's packing, and close the yes arm by the
+  cycle the relation is defined by.  A stricter reading of `[99]` would quantify
+  over the window shared by two *canonical traces* at the `[89]` receiver rather
+  than over the branch's packing, but the manuscript's own discharge of exit (3)
+  is the local label test, and the configuration the row carries is node
+  `[93]`'s, so the exit is asked where the manuscript asks it.
+- **Gap.**  `none`.  The alternative is the manuscript's relation, proved
+  identical to `WindowCurvature.Safe` rather than restated; the closure builds
+  the manuscript's own cycle at the manuscript's own length; and no numeral,
+  forbidden-gap set, or window order is written anywhere in the row or in the
+  generic module.  **Facts passes.**
+
+  One target fact is registered rather than derived: `Data.degenerateClosureRejected`,
+  `¬ LengthOK 2`.  It is the exact analogue of `Data.quadrilateralAccepted`, and
+  it is the manuscript reading its own target — the legality derivation of
+  `lem:labels` counts two *distinct* attachments (`1 ≤ j − i`), so the degenerate
+  closing length `closingLength 0 0 = 2` is not a cycle.  The presentation
+  discharges it by `decide`; no row states it.
+- **Ledger and residual.**  The row reads one fact by exact key
+  (`typeAVisibleEntry`) and commits exactly one, on the literal incoming cursor.
+  The residual is unchanged: the exit is a fact-only decision on the object the
+  branch was handed, and the packing it quantifies over is the configuration's,
+  not a recomputation.  The closed arm appends only Core's reserved closure key,
+  which the vocabulary cannot spell.
+- **Transport and terminals.**  No CT: the row is a Core `Decision` and the
+  closure is `Core.Strategy.closeIncompatible`, not a registered `closeLeft`.
+  The closed arm's index is `closed :: typeAExitThreeCollision :: known`; the no
+  arm's is `typeAExitThreeFree :: known`, which still carries
+  `typeAVisibleEntry`, `typeAExitOneFree` and `typeAExitTwoFree` and therefore
+  hands node `[101]` the manuscript's "assume exits (1)–(3) do not occur".
+  Neither arm's index contains the other's key.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
+| `C_s` at a realized window (`lem:labels`, node `[18]`) | lem | `Graph.WindowLabelCollision.attachmentLabel`<br>`Graph.WindowLabelCollision.LabelCollision`<br>`Graph.WindowLabelCollision.labelCollision_iff_not_safe` | no CT; the relation itself is row 7's `Graph.WindowCurvature.Safe`, consumed here |
+| exit (3)'s closure (`lem:typeA-exits-discharged`) | lem | `Graph.WindowLabelCollision.connectorCycle`<br>`Graph.WindowLabelCollision.connectorCycle_isCycle`<br>`Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision`<br>`Spine.typeAExitThreeCollisionClosed` | no CT |
 
-No `\label` of this range is first consumed here: exit (3) is clause (3) of
+No `\label` of this range is *first* consumed here: exit (3) is clause (3) of
 `def:typeA-saturated-exits` (row 12), its disposition is
 `lem:typeA-exits-discharged` (row 13), and the label algebra it tests is
-`lem:labels`, node `[18]`, which belongs to row 7.
+`lem:labels`, node `[18]`, which belongs to row 7.  The two rows above record
+where those three are realized *at this node*.
 
-**CT composition at this row.**  No CT.  The Core recipe is
-`DichotomyData.ofAlternative`.  This row's stage decides the illegal-attachment
-predicate on the canonical maximal packing and registers `closeLeft`, so its
-yes-arm closes through the Graph-owned cycle construction and its no-arm is a
-conditional edge into row 16.  The packing itself is produced by
-`InducedPathMaximalPacking.maximalProfile`, a Graph selection, not by a CT; no
-adapter is invoked at this vertex.
+**CT composition at this row.**  No CT.  The recipe is Core's `Decision` with
+`closeIncompatible`, the same one rows 13 and 14 use.  The row decides the
+collision predicate on the configuration node `[93]` committed; its yes arm
+closes through the Graph-owned cycle construction and its no arm is the cursor
+node `[101]` is asked on.  No adapter, carrier, or routing helper is invoked at
+this vertex.
 
 ### Row 16 — Exit 4: target-defective quotient `[101]`
 
@@ -2040,7 +2398,10 @@ adapter is invoked at this vertex.
   quarter, and `residualLoad_insert` is the exact one-load drop.
   `ExitFour.occurs_of_carrierDeletion` reads clause (Q5) — the deletion at an
   essential carrier, target-defective by `Route8.Entry.deletion_targetDefect` —
-  as a member of the family.  `Spine.typeAExitFourPeelDichotomy` is node `[101]`:
+  as a member of the family: the defect half is proved outright, and the
+  remaining half, that the family lists that construction, is the hypothesis
+  `Generated .carrierDeletion`, because the vertex-to-coordinate assignment a
+  concrete reading needs is the collection's data, not this row's.  `Spine.typeAExitFourPeelDichotomy` is node `[101]`:
   it splits on whether, at every stage at which the peeled residual is still
   saturated, some unpeeled routed load carries such a witness.  Its yes arm runs
   `Spine.typeAPeeledCharge`, which commits that every receiver has a witnessed
@@ -2066,12 +2427,14 @@ adapter is invoked at this vertex.
 - **Transport and terminals.** No terminal: the yes arm is
   `Route8Result.peeled`, carrying `typeAExitFourPeel` and `typeAPeeledCharge`,
   which is the manuscript's return edge `[102] → [89]`.
-- **Deleted with this row.** `Graph.Strategy.TypeAReceiverExhaustion`'s
-  legacy node-`[101]` pair — `TargetDefectiveQuotient`, which read exit (4) as
-  "some declared proper sub-support satisfies the baseline", and the
-  `Core.DichotomyData` stage `exitFourSplit` built on it — is dead with the
-  retired `Blueprint` topology and is not a second live path; the module is Tier
-  3 porting reference for rows 12–19 and is left untouched.
+- **No second path.** `Graph.Strategy.TypeAReceiverExhaustion`'s legacy
+  node-`[101]` pair — `TargetDefectiveQuotient`, which read exit (4) as "some
+  declared proper sub-support satisfies the baseline", and the
+  `Core.DichotomyData` stage `exitFourSplit` built on it — died with the retired
+  `Blueprint` topology: the module is outside the live import closure, does not
+  elaborate, and is kept only as Tier 3 porting reference for rows 12–19, so it
+  is left as it stands.  Nothing live reads either declaration, and no other
+  live module states exit `(4)`, a peeling set, or a residual load.
 
 **Paper objects at this row.**
 
@@ -2090,17 +2453,22 @@ adapter is invoked at this vertex.
 the manuscript's loop back to `[89]` is the descent inside
 `Family.exists_unsaturated_isPeeling`, which is why no cycle appears in the DAG.
 
-**Evidence.** `lake build` of the canonical ledger, manifest and execution
-modules with the fifteen positive and negative enforcement fixtures, then of
+**Evidence.** One `lake build` of the canonical ledger, manifest and execution
+modules together with the fifteen positive and negative enforcement fixtures,
 `Hypostructure.Graph.ExitFourFamily`, `Hypostructure.Fixtures.ExitFourFamily`,
-`Hypostructure.Graph.Strategy.Route8Run` and `Hypostructure.Fixtures.Route8Run`,
-all clean.  `#print axioms` on `Family.isPeeling_insert`,
+`Hypostructure.Graph.Strategy.Route8Run` and `Hypostructure.Fixtures.Route8Run`:
+green, 8675 jobs.  `#print axioms` on `Family.isPeeling_insert`,
 `Family.exists_unsaturated_isPeeling`, `occurs_of_carrierDeletion`,
 `exists_unsaturated_peeling`, `Spine.typeAExitFourPeelDichotomy`,
 `Spine.typeAPeeledChargeRow` and the fixture's `peeled_charge_of_exitFour`
-reports `propext`, `Classical.choice`, `Quot.sound` only.  The EG package itself
-does not currently elaborate, for a reason outside this row: `Problem.lean`'s
-registration is mid-edit and is missing `bridgeMassFactor` / `bridgeMassSlack`.
+reports `propext`, `Classical.choice`, `Quot.sound` only — no `sorryAx`, no
+`Lean.ofReduceBool`.  `rg` over the live tree finds exit `(4)`, the peeling set,
+the residual load and the routed loads stated in exactly these two modules and
+nowhere else; the only other occurrence is `Graph.Route8.Data.ExitFour`, which
+is clause (Q5) at an indexed entry and is the route-8 `(R2)` carrier nodes
+`[116]` and `[124]` read.  The EG package itself does not elaborate at the time
+of writing, for a reason outside this row: `Problem.lean`'s registration is
+mid-edit and is missing `bridgeMassFactor` / `bridgeMassSlack`.
 
 ### Row 17 — Exit 5: target-complete compression `[103]`
 
@@ -2783,7 +3151,28 @@ path carries it with the contradiction recorded in the closure entry's own
   centres" and its disjointness of the half-incidence entries;
   `hub_ne_of_disjoint_carriers` reads the centre half of that back.
 - **What it should do.**  This is what it does.
-- **Gap.**  None.  **Facts passes.**  Three notes.
+- **Gap.**  None *for this row's own fact*, which is the B2 alternative and is
+  correct as stated.  **Facts passes.**
+
+  **Correction.**  An earlier version of this note claimed that
+  `TypeBRefinedSupport.CandidateEntry` carries carrier *supports* and not
+  *charges*.  That is false and I withdraw it: the structure has a `pays` field,
+
+  > `2s·(d_G(h) − δ) + 2 + 2|A_h| ≤ 2s·Σ_{v∈A_h}(δ − d_X(v)) + s·|chosen|`,
+
+  which is exactly `def:typeB-candidate-ledger`'s
+  `ch_X(h) + Σ_{v∈A_h} ch_X(v) + ½|chosen| ≥ 0` cleared of denominators at the
+  scale `2s`.  Clause (a)'s charge condition, clause (c)'s half-capacity
+  packed-window incidences and clause (d)'s non-window ones are all in the
+  structure, and `HasDisjointChoice` carries B2's disjointness of their
+  carriers.  This row's coverage of `def:typeB-ledger-carriers` is therefore
+  materially better than the withdrawn note said.
+
+  What is genuinely unimplemented is clause (e), the local internal/mixed reserve
+  block, together with the *ordinary deficiency reserve* -- and neither is
+  consumed by any live row, because rows 27 and 28 run their accounting without
+  deleting a carrier and so create no boundary deficit to charge.  Three notes
+  follow on this row's own reading.
 
   *The failed legacy row is not what is here.*  The retired `b2Split` payload was
   `∃ profile, 2 ≤ profile.closedCount` — a local count at one centre, with the
@@ -2834,7 +3223,7 @@ path carries it with the contradiction recorded in the closure entry's own
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:typeB-ledger-carriers` | def | `TypeBRefinedSupport.Carrier`<br>`TypeBRefinedSupport.CandidateEntry.carriers` | no CT |
+| `def:typeB-ledger-carriers` | def | `TypeBRefinedSupport.Carrier`<br>`TypeBRefinedSupport.CandidateEntry.assigned`<br>`TypeBRefinedSupport.CandidateEntry.chosen`<br>`TypeBRefinedSupport.CandidateEntry.pays`<br>`TypeBRefinedSupport.CandidateEntry.carriers` | no CT; carrier *supports*, which is what the disjointness question consumes.  Clause (a)'s charge is at row 28; clauses (b) and (e) are unimplemented and unconsumed, see **Gap** |
 | `def:typeB-candidate-ledger` | def | `TypeBRefinedSupport.CandidateEntry`<br>`TypeBRefinedSupport.HasDisjointChoice`<br>`TypeBRefinedSupport.IsMaximal` | no CT |
 | `def:typeB-bridge-statements`, (B2) | def | `TypeBRefinedSupport.RefinedSupportAssignment`<br>key `Spine.Key.typeBDisjointAssignment` | no CT; the B1 half is row 26 and the bridge-residual classification row 27 |
 | `def:typeB-overlap-obstruction` | def | `TypeBRefinedSupport.OverlapObstruction`<br>key `Spine.Key.typeBOverlapObstruction` | no CT |
@@ -2872,312 +3261,320 @@ capacity comparison or descent for a CT to own — the mathematics is the
 minimization that turns its failure into a minimal obstruction, and that is a
 theorem the row calls, not an aggregation the framework performs.
 
-### Row 26 — Hybrid B1 entry `[74]`/`[82]` (`ordered_witness_scan:2`, exported as `v48`)
+### Row 26 — Hybrid B1 entry `[74]`/`[82]` (ported: `Spine.hybridEntry`)
 
 - **Paper fact.**  `def:typeB-hybrid-incidence` sets `c = c_W + c_M + c_I`,
   `I_W = 2c_W + c_M`, `I_N = c_M + 2c_I`, and
-  `D_N(𝔉) = max{0, D_B(𝔉) - ½ I_W(𝔉)}`.
-  `lem:typeB-multiclosed-budget` gives `4 ≤ k ≤ 8` with `c ≥ 2` for `k ≤ 7` and
-  `c ≥ 1` for `k = 8`, the exactness of the `2c` distinct packed-window
-  incidences, and `D_B(𝔉) ≤ ½·2c - ¾`.
+  `D_N(𝔉) = max{0, D_B(𝔉) − ½I_W(𝔉)}`.
+  `lem:typeB-multiclosed-budget` gives `4 ≤ k ≤ 8`, the exactness of the `2c`
+  distinct packed-window incidences, and `D_B ≤ ½·2c − ¾`.
   `lem:typeB-hybrid-incidence-budget` proves the `2c` non-`h` incidences
-  pairwise disjoint (if `z` were shared, `u-h-v-z-u` is a `4`-cycle) and gives
-  total capacity `½I_W + ½I_N = c`, paying `D_B` with slack `(11-k)/4 ≥ ¾`.
-  `lem:typeB-hybrid-B1` packages this as the B1 alternative: a positive-deficit
-  residual either contains a direct power-of-two cycle; or realizes a
-  target-defective quotient, a target-complete compression, or a proper/global
-  delocalization; or has a disjoint hybrid entry of capacity at least `D_B(𝔉)`.
-  Node `[74]` is `prop:typeB-bridge-reduction`: with B2 and no fan-certificate
-  residual centre, `defp(X) - σ(X) ≥ ¼|V(X)|`, using
-  `lem:typeB-postledger-core-hygiene` to decompose the post-ledger core into
-  admissible Type A components.
-- **What the Lean does.**  `hybridEntryScan` is a `Core.ScanData P` with
-  `Item input = Graph.TypeBFanClosedPorts.Profile (object input)`,
-  `schedule input = Graph.TypeBProfileSchedule.profileCandidates (object input)`,
-  and `witness input profile = Graph.TypeBProfileSchedule.IsHybridEligible profile`.
-  `IsHybridEligible profile` unfolds to `2 ≤ profile.closedCount` — the same
-  proposition that row 25's left payload existentially quantifies.  `ScanData`
-  has no conclusion field, so the node appends the first eligible profile and
-  nothing else.
-- **What it should do.**  The node would have to append the conclusion of
-  `TypeBProfileSchedule.hybridEntry_of_isHybridEligible`, whose type is
-  `(profile : Profile object) → (ledger : LoadCapacityProfile) → IsHybridEligible profile →
-   profile.closedNeighbourDeficit ledger ≤ profile.hybridCapacity ledger ∧
-   profile.hybridNonWindowDemand ledger ≤ profile.nonWindowCredit ∧
-   ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate - 1 ≤ profile.closedNeighbourDeficit ledger ∧
-   5 * ledger.dischargeRate - 1 ≤ profile.closedNeighbourDeficit ledger ∧
-   0 < profile.closedNeighbourDeficit ledger`,
-  together with the disjointness step
-  `TypeBFanClosedPorts.Profile.incidences_endpoint_injective`
-  (which uses `NormalForm.noCommonNeighbourOutside`, i.e. the four-cycle
-  exclusion) and the remaining three arms of B1 — direct cycle, target-defective
-  quotient, target-complete compression, proper/global delocalization — as a
-  four-way alternative rather than a one-sided scan.
-- **Gap.**  The recorded reason for this row, "no B1 charge theorem", is
-  inaccurate and I correct it: the charge theorem exists and is stated
-  correctly.  `hybridEntry_of_isHybridEligible` derives `D_B ≤ ½I_W + D_N` and
-  `D_N ≤ ½I_N` from `windowCredit_add_nonWindowCredit`, `Marked.highDegree`,
-  `Marked.degree_le_eight`, and the recorded rate constraints
-  `one_lt_five_mul_dischargeRate` and `nine_mul_dischargeRate_le_three`; the
-  incidence counts `windowIncidenceTotal = 2c_W + c_M` and
-  `nonWindowIncidenceTotal = c_M + 2c_I` are derived from filtered finsets, with
-  `card_incidences : incidences.card = 2 * closedCount` and
-  `card_windowIncidences`/`card_nonWindowIncidences` matching `I_W` and `I_N`.
-  The verdict nevertheless stands, for a sharper reason: `ScanData` is a
-  five-field record with no proposition to carry a conclusion, so none of that
-  arithmetic enters the run — the node appends "some profile has `2 ≤ c`" and
-  the whole of `lem:typeB-hybrid-B1` is proved beside the ledger.  A second
-  difference is that B1 is a four-way alternative and the node is a one-sided
-  scan: the target-defect, compression, and delocalization arms have no
-  representation at `v48`.  **Facts therefore fails.**
+  pairwise disjoint — if `z` were shared, `u−h−v−z−u` is a `4`-cycle — and gives
+  total capacity `½I_W + ½I_N = c`, paying `D_B` with slack `(11−k)/4 ≥ ¾`.
+  `lem:typeB-hybrid-B1` packages this as the B1 alternative, and
+  `prop:fan-closed-port-typeB-routing` (b) is that two fan-closed ports already
+  make `D_B` positive.
+- **What the Lean does.**  `Spine.hybridEntry` is the one value
+  `SpineRows.hybridEntryRow (K .selection) (K .fanCertificateCap)
+  (K .fanCertificateMarked) (K .typeBHybridEntry)`, an `AtomicStrategy` with
+  `Requires := [selection, fanCertificateCap, fanCertificateMarked]` and
+  `Produces := [typeBHybridEntry]`.  It runs after the B2 cursor at `[74]` and
+  after the degree-four B2 cursor at `[82]`; `AtomicCT` has no predecessor
+  parameter, so those are two positions of one executor and nothing is
+  registered twice.  The committed fact is five clauses at every assigned high
+  centre of every connected assigned Type B support, quantified over the fan
+  envelope and the packed-window union because both are fan data:
+  the carriers are pairwise distinct
+  (`TypeBHybridIncidence.endpoints_not_shared`, which spends
+  `Data.quadrilateralAccepted` and the selection's own avoidance);
+  `I_W + I_N = (δ−1)·c`
+  (`TypeBHybridIncidence.windowIncidences_add_nonWindowIncidences`);
+  `2·s·D_B ≤ s·(I_W + I_N)` (`TypeBHybridIncidence.hybridCapacity_pays`);
+  `D_N ≤ s·I_N` (`TypeBHybridIncidence.nonWindowCredit_ge_demand`); and
+  `2 ≤ c → 0 < s·D_B`
+  (`TypeBHybridIncidence.positive_deficit_of_two_le_closedCount`).
+- **What it should do.**  This.  The manuscript's `2c` is `(δ−1)·c` at the
+  registered baseline, its `k ≤ 8` is `Data.fanCapSlack` against the label
+  algebra's own packing number, and its `(11−k)/4 ≥ ¾` is
+  `Data.highCentreDeficitSlack`.  No numeral is written at the row.
+- **Gap.**  None outstanding for the row's own statement.  Two things are worth
+  recording rather than left implicit.
 
-  **Entry point moved (row 25 port).**  This row's predecessor is no longer the
-  legacy `v47` left arm.  Node `[74]`/`[82]` is now entered on the key index
-  `Spine.typeBDisjointAssignmentKeys`, whose head is
-  `Spine.Key.typeBDisjointAssignment` and which carries
-  `typeBDirectCycleFree` and the whole certificate-marked history beneath it.
-  Node `[82]`, its second position, is entered on
-  `Spine.degreeFourDisjointAssignmentKeys`, which additionally carries `[79]`'s
-  `typeBDegreeFourProfile` — the closed-neighbour deficit identity this row's
-  payment consumes, available as a committed fact rather than re-derived.  Every
-  declaration this row's `Where` column names is still quarantined and still does
-  not elaborate, so nothing here is repaired; the port targets are the two live
-  indices above.
-- **Ledger and residual.**  `liftScan`/`scanRecipe` re-index through
-  `residualOf stage` and seal the contract with `certify := fun _ _ => none`;
-  the predecessor and residual are retained.  The read is `residualOf`, so the
-  `PLift (∃ profile, 2 ≤ profile.closedCount)` witness appended one stage
-  earlier at `v47` is invisible here, and the node re-derives the same
-  proposition from the graph.  Ledger fails.
-- **Transport and terminals.**  Core's `Strategy.OrderedWitnessScan` owns the
-  enumeration.  Graph supplies `profileCandidates` and its `nodup` proof.  The
-  export shows `v47 → v48` (`e64`) and `v48 → v39` (`e70`); no terminal.
+  The first is `lem:typeB-hybrid-B1`'s shape.  The lemma is a four-way
+  alternative — direct power-of-two cycle; target-defective quotient,
+  target-complete compression, or delocalization; or the disjoint hybrid entry.
+  The row does **not** reproduce the alternation, and this is correct rather
+  than a weakening: the direct-cycle arm *is* node `[72]`/`[81]`, which the
+  branch has already taken and closed, so the cursor carries
+  `typeBDirectCycleFree`; and the manuscript's own reason for discarding the
+  middle three is admissibility (`lem:typeB-exclusion`, Step 1: "because `X` is
+  admissible, the fan-window data cannot realize a target cycle,
+  target-defective quotient, target-complete compression, or delocalization"),
+  which is the standing `uncompressible`/`returnAvoidance` history this index
+  already carries.  What survives is the hybrid entry, and the row proves it
+  unconditionally at every marked centre — the strongest of the four disjuncts.
+
+  The second is that `typeBDirectCycleFree` is *not* declared in the manifest.
+  The manuscript states the budget lemma under "none of the direct-cycle
+  conclusions occurs", but its proof of the incidence disjointness uses only the
+  quadrilateral exclusion, and no other clause reads it.  The fact is on this
+  branch's index because the row runs after `[72]`; declaring it would be a
+  false dependency.
+- **Ledger and residual.**  `Core.Strategy.factOnly` lowered by `AtomicCT.run`.
+  The residual is unchanged, so `Refines` is equality, and the output index is
+  definitionally `Produces ++ known` — the incoming ancestry is retained in
+  full and every earlier fact stays indexed.  The three prerequisites are read
+  by `FactInputs.get` on exact keys, and all three are genuinely consumed:
+  `selection` supplies the avoidance, `fanCertificateCap` the degree cap and
+  `fanCertificateMarked` the labelling.  No producer, depth or position is
+  named.
+- **Transport and terminals.**  No terminal.  The cursor continues into row 28
+  at `[76]` and `[85]`, whose excluded arm closes the branch and whose
+  complementary arm is the positive-deficit fan this row pays.  `SpineRun.typeBHybridEntry_audit_facts` and
+  `degreeFourHybridEntry_audit_facts` pin the two indices by `rfl`, and
+  `Fixtures.TypeBBridgeNode` installs the same executor value at both.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:typeB-hybrid-incidence` | def | `TypeBFanClosedPorts.Profile.windowIncidenceTotal`<br>`TypeBFanClosedPorts.Profile.nonWindowIncidenceTotal`<br>`TypeBFanClosedPorts.Profile.hybridNonWindowDemand` | unconsumed — no call site |
-| `lem:typeB-multiclosed-budget` | lem | `TypeBFanClosedPorts.Profile.card_incidences`<br>`TypeBFanClosedPorts.Profile.incidences_endpoint_injective`<br>`TypeBMarkedFan.Marked.degree_mem_window` | unconsumed — no call site |
-| `lem:typeB-hybrid-incidence-budget` | lem | `TypeBProfileSchedule.hybridEntry_of_isHybridEligible`<br>`TypeBFanClosedPorts.Profile.incidences_endpoint_injective` | unconsumed — no call site |
-| `lem:typeB-hybrid-B1` | lem | `TypeBOverlapObstruction.hybridEntry` | unconsumed — no call site |
-| `lem:typeB-postledger-core-hygiene` | lem | `TypeBPostLedgerCore.postLedgerCoreHygiene`<br>`TypeBPostLedgerCore.postLedgerCoreHygieneInContext` | unconsumed — no call site |
+| `def:typeB-hybrid-incidence` | def | `TypeBHybridIncidence.windowIncidences`<br>`TypeBHybridIncidence.nonWindowIncidences`<br>`TypeBHybridIncidence.nonWindowDemand` | consumed by `Spine.hybridEntry` |
+| `lem:typeB-multiclosed-budget` | lem | `TypeBFanIncidence.closedCount_le_degree`<br>`TypeBHybridIncidence.card_nonHubIncidences`<br>`TypeBHybridIncidence.windowIncidences_add_nonWindowIncidences` | consumed by `Spine.hybridEntry` |
+| `lem:typeB-hybrid-incidence-budget` | lem | `TypeBHybridIncidence.endpoints_not_shared`<br>`TypeBHybridIncidence.hybridCapacity_pays`<br>`TypeBHybridIncidence.nonWindowCredit_ge_demand` | consumed by `Spine.hybridEntry` |
+| `lem:typeB-hybrid-B1` | lem | `Spine.hybridEntryRow` | consumed by `Spine.hybridEntry` |
+| `prop:fan-closed-port-typeB-routing` (b) | pro | `TypeBHybridIncidence.positive_deficit_of_two_le_closedCount` | consumed by `Spine.hybridEntry` |
 | `prop:typeB-bridge-reduction` | pro | | |
+| `lem:typeB-postledger-core-hygiene` | lem | | |
 
-The declarations named in `TypeBHybridLedger.lean` all open
-`namespace Hypostructure.Graph.TypeBFanClosedPorts.Profile`, which is why they
-are qualified as `TypeBFanClosedPorts.Profile.*` above.
-`lem:typeB-multiclosed-budget` is a five-clause conjunction and only two of its
-clauses have a type: `card_incidences` is "exactly `2c` distinct incidences" and
-`incidences_endpoint_injective` its distinctness proof; the `c ≥ 2 / c ≥ 1`
-split by `k` and the bound `D_B ≤ ½·2c - ¾` have no declaration, so the cell
-lists what exists and no more.  `prop:typeB-bridge-reduction` is empty: no
-declaration has `defp(X) - σ(X) ≥ ¼|V(X)|` under the hypotheses "B2 holds and
-`X` has no fan-certificate residual centre" as its type — the nearest is the
-fourth disjunct of `TypeBExclusion.typeBExclusion`, recorded at row 28.
+`prop:typeB-bridge-reduction` and `lem:typeB-postledger-core-hygiene` are empty:
+both are the *post-ledger core* half of node `[74]`, and both are inputs of
+row 28's Step 2 rather than of the local payment.  They are recorded again there,
+where they are owed.
 
-**CT composition at this row.**  No CT.  A registered `ordered_witness_scan:2`
-lowered by `Core.Strategy.Dag.liftScan → scanRecipe`, with
-`certify := fun _ _ => none`.  This row is where the absence of a CT costs the
-most: `lem:typeB-hybrid-incidence-budget` is a capacity aggregation
-(`½I_W + ½I_N = c ≥ D_B + (11-k)/4`) of exactly the shape CT5 performs, and
-`hybridEntry_of_isHybridEligible` already proves it.  A CT5 stage with
-`required := closedNeighbourDeficit` and `capacity := hybridCapacity` over the
-incidence family would put that inequality on the ledger; the registered
-`ScanData` has no `required`/`capacity` pair and no proposition, so it cannot.
+**CT composition at this row.**  No CT.  One `factOnly` `AtomicStrategy`, run by
+the framework-owned `AtomicCT.run` at two cursors.  The manuscript's
+`½I_W + ½I_N = c ≥ D_B + (11−k)/4` is an aggregation, but it aggregates over a
+*fan*, which is local data the row already holds; there is no family to enumerate
+and no residual to restrict, so a demand/capacity CT would add a stage without
+adding a comparison.
 
-### Row 27 — Bridge fan-mass `[73]`,`[75]` (`baseline_demand_accounting:1`, exported as `v49` and `v50`)
+### Row 27 — Bridge fan-mass `[73]`,`[75]`,`[83]`,`[84]` (ported: `Spine.bridgeFanMass`)
 
-- **Paper fact.**  `def:typeB-residual-mass` sets
-  `No_-(X) = max{0, -No(X)}`, `M_B(𝒳_B) = Σ_X No_-(X)`,
-  `S_B(𝒳_B) = Σ_X Σ_{h ∈ H_X} (d_G(h) - 3)`, and records `S_B ≤ 2σ(G)` from the
-  at-most-twice occurrence convention (ordinary role and grouped-envelope role).
-  `lem:typeB-bridge-deficit-bound` proves
-  `No_-(X) ≤ 8 Σ_{h ∈ H_X}(d_G(h) - 3)` through the envelope estimate
-  `(k - 3 + ¼) + c/4 ≤ 5k/4 - 11/4 ≤ 8(k-3)`, valid for `k ≥ 4` since it is
-  equivalent to `27k ≥ 85`.  `lem:decorated-envelope-deficit-bound` is the same
-  bound for grouped decorated envelopes, and
+- **Paper fact.**  `def:typeB-residual-mass` sets `No_-(X) = max{0, −No(X)}`,
+  `M_B(𝒳_B) = Σ_X No_-(X)`, `S_B(𝒳_B) = Σ_X Σ_{h∈H_X}(d_G(h) − 3)`, and records
+  `S_B ≤ 2σ(G)` from the at-most-twice occurrence convention — the ordinary
+  assigned role and the grouped-envelope role.
+  `lem:typeB-bridge-deficit-bound` proves `No_-(X) ≤ 8 Σ_{h∈H_X}(d_G(h) − 3)`
+  through `(k − 3 + ¼) + c/4 ≤ 5k/4 − 11/4 ≤ 8(k−3)`, valid for `k ≥ 4` because
+  it is equivalent to `27k ≥ 85`.  `lem:decorated-envelope-deficit-bound` is the
+  same bound for grouped decorated envelopes;
   `lem:typeB-bridge-with-route8-core` and
   `lem:decorated-envelope-with-route8-core` extract a route-8 non-window core
   into `D_A` first.  `prop:typeB-bridge-sublinear` concludes
-  `M_B(𝒳_B) ≤ 8 S_B(𝒳_B) ≤ 16 σ(G) = O(√n) = o(|R|)`.
-- **What the Lean does.**  `fanMassAccounting` is a
-  `Core.Strategy.BaselineDemandAccounting.Registration Residual` with
-  `Site residual = (object residual).Vertex`,
-  `Witness residual _ = (object residual).Vertex`,
-  `family` the vertex/neighbour enumeration,
-  `Active residual vertex = Graph.TypeBFanMass.IsChargedCentre (object residual) vertex`,
-  `Supports residual vertex witness = ((object residual).graph.Adj vertex witness ∧ (object residual).degree witness = baselineDegree residual)`,
-  `contribution residual vertex _ = (object residual).degree vertex - baselineDegree residual`,
-  and — decisively —
-  `required residual = (object residual).degreeSurplus (baselineDegree residual)`
-  and
-  `capacity residual = (object residual).degreeSurplus (baselineDegree residual)`.
-  `required` and `capacity` are syntactically the same term, so the CT5 demand
-  comparison `required ≤ capacity` is `Nat.le_refl` at every input and decides
-  nothing.  `IsChargedCentre object hub` is
-  `IsFanCertificateResidual object hub ∨ IsB2Failure object hub`, with
-  `IsB2Failure object hub = (4 ≤ object.degree hub ∧ (overlapPartners object hub).Nonempty)`
-  and `overlapPartners` defined through `fanEnvelope`, which is a
-  degree-derived vertex set of the ambient graph, not the assigned envelope of
-  any Type B support.  `contribution`, `required`, and `capacity` are all
-  supplied as natural-number degree observables; no rational charge, no
-  `negativePart`, and no factor `8` or `16` occurs in the registration.
-- **What it should do.**  The statements of record are
-  `TypeBBridgeResidual.Residual.negativePart_le_eight_surplus :
-   (∀ h ∈ residual.centers, NormalForm object h) →
-   residual.negativePart profile ≤ 8 * residual.surplus + max 0 (-residual.residualCoreCharge profile)`
-  and
-  `TypeBFanMass.fanResidualMass_le_sixteen_globalSurplus :
-   (∀ v, 3 ≤ object.degree v) → normal → discharged →
-   fanResidualMass object profile ≤ 16 * globalSurplus object`.
-  The node's `required` would have to be the residual mass
-  `fanResidualMass object profile` and its `capacity` the surplus budget
-  `16 * globalSurplus object`, over an `Active` family drawn from
-  `fanMassResiduals object`, so that the CT5 comparison is the manuscript's
-  inequality rather than an identity.
-- **Entry point moved (row 25 port).**  The fan-mass row's two positions are
-  entered on live indices now.  `[73]`/`[83]` is
-  `Spine.typeBOverlapObstructionKeys`, headed by
-  `Spine.Key.typeBOverlapObstruction`, whose value is a *minimal*
-  `TypeBRefinedSupport.OverlapObstruction` — so the minimality
-  `lem:typeB-global-local-reflection` needs arrives as a committed fact rather
-  than being re-derived; `[75]` on the certificate-residual side is
-  `Spine.typeBCertificateResidualKeys`.  Node `[84]`, the degree-four fan-mass
-  route, is entered on `Spine.degreeFourOverlapObstructionKeys` from `[83]` and on
-  `Spine.degreeFourResidualKeys` from `[80]`'s no arm.  Everything the `Where`
-  column below names is still quarantined and still does not elaborate.
-- **Gap.**  `required = capacity` makes the accounting tautological: the node
-  compares `σ(G)` with `σ(G)`.  Neither the factor `8` of
-  `lem:typeB-bridge-deficit-bound` nor the factor `16` of
-  `prop:typeB-bridge-sublinear` nor the `≤ 2σ(G)` occurrence bound of
-  `def:typeB-residual-mass` is expressible in the fields that are registered,
-  and the two theorems that do state them are reachable from no node.  The one
-  non-trivial content of the registration is `Active = IsChargedCentre`, which
-  does implement clauses (i) and (ii) of the bridge-residual classification —
-  but decided on ambient degree and ambient `fanEnvelope` overlap rather than on
-  an assigned support.  **Facts therefore fails.**
-- **Ledger and residual.**  `BaselineDemandAccounting.Profile` reads its object
-  through `current : Query Previous (fun _ => Residual)`, defaulting to
-  `Query.residual`; `spec` and `family` are formed by
-  `profile.current.read previous` and `current.dependentMap`, so the whole
-  demand family is a function of `residualOf`.  The literal predecessor stage is
-  retained by the CT5 ledger extension.  As above, the assigned Type B support
-  produced by `[65]` and the B2 failure recorded one stage earlier at `v47` are
-  not readable; `IsB2Failure` is recomputed from ambient degrees.  Ledger fails.
-- **Transport and terminals.**  Core owns the aggregation and the ledger
-  extension through CT5; the application supplies `Site`, `Witness`, `family`,
-  `Active`, `Supports`, `contribution`, `required`, `capacity` and the three
-  decidability instances.  The registration is placed twice, so the export has
-  two vertices: `v50` (`v40 → v50` `e68`, "No certificate labelling";
-  `v50 → v39` `e72`) and `v49` (`v47 → v49` `e65`, "B2 disjointness fails";
-  `v49 → v39` `e71`).  Both export `components: []`.
+  `M_B ≤ 8 S_B ≤ 16σ(G) = O(√n) = o(|R|)`.
+- **What the Lean does.**  `Spine.bridgeFanMass` is the one value
+  `SpineRows.bridgeFanMassRow (K .typeBBridgeMass)`, run at all four manuscript
+  positions — `[75]` from `[71]`'s fan-certificate residual, `[75]` from `[73]`'s
+  overlap obstruction, and the same two on the degree-four side at `[84]`.
+
+  Its manifest is `sourceFreeManifest`: **`Requires := []`**.  That is the honest
+  declaration and it is checked — the row's content is `Data.bridgeMassSlack`,
+  which is registered, and `inputs.current.baseline`, which is the residual's own
+  baseline rather than a fact.  An unread key in `Requires` would claim a
+  dependency the executor does not have.
+
+  Every clause is stated **at this residual**, scoped by
+  `∀ packing, IsWindowPacking → ∀ piece ⊆ remainderSupport packing, Connected →
+  NegativeNetCharge → 0 < ambientSurplus`, and there are three:
+
+  1. `lem:typeB-bridge-deficit-bound` display (1) at each assigned centre of such
+     a support, `envelopeNegativePart ≤ F·s·(k − δ)`
+     (`TypeBEnvelopeCharge.envelopeNegativePart_le`).  The envelope is fan data,
+     so it is quantified.
+  2. **`lem:typeB-bridge-deficit-bound`**: `No_-(X) ≤ F·σ(X)` at such a support
+     (`bridgeDeficitBound`), subtraction-free as
+     `|V(X)| + s·σ(X) ≤ s·defp(X) + F·s·σ(X)`.
+  3. **`lem:typeB-bridge-with-route8-core`**, and at an empty route-8 collection
+     **`prop:typeB-bridge-sublinear`**, over the canonical decomposition of this
+     residual's packed-window remainder (`bridgeResidualMass_le_route8`,
+     `bridgeResidualMass_le`); and **`def:typeB-residual-mass`'s at-most-twice
+     convention** with both roles drawn from that remainder
+     (`bridgeResidualMass_le_twice`), giving the manuscript's `16σ(G)`.
+
+  The accounting is the manuscript's without its deletion step, and that is what
+  makes it provable.  The only vertices of an assigned Type B support above the
+  baseline are its assigned centres, so every other vertex carries the Type A
+  charge and `lem:typeA-unsaturated-discharge` runs on the support itself with
+  the centres as an exceptional set —
+  `FiniteObject.card_le_scaled_deficiency_off`.  A centre contributes
+  `−(s(k−δ)+1)` through `ch_X(h)` and at worst `−α` more through its own core
+  term, so `Ĉh_B(X) ≥ −Σ_h(s(k−δ)+2)`
+  (`neg_centreAllowance_le_augmentedLedger`), and `Data.bridgeMassSlack` pays
+  that against `F·s·(k−δ)`.  **No carrier is deleted, so no boundary deficit is
+  created and the ordinary deficiency reserve is not needed.**
+- **What it should do.**  This.
+- **Gap.**  None.  **Facts passes.**  Two notes.
+
+  The two Type A conditions of clause 2 are named once as
+  `TypeBEnvelopeCharge.BridgeResidualComponentAt` — off the assigned centres the
+  canonical routing is total and lands off them, and every receiver outside them
+  is unsaturated.  They are nodes `[88]` and `[90]` at the region
+  `lem:typeB-postledger-core-hygiene` leaves, and they are hypotheses of the
+  committed implication because node `[90]` lives on the sibling Type A arm of
+  `[62]` and a sibling fact is not readable across an immutable prefix.
+
+  `lem:decorated-envelope-deficit-bound` and
+  `lem:decorated-envelope-with-route8-core` need no separate estimate: the
+  manuscript is explicit that "the local calculation at a fixed center is the
+  same as the one used for an ordinary Type B bridge center", and clause 2 is
+  stated for an arbitrary support of the remainder with `centres` as its `H_X`,
+  so it *is* the grouped-envelope estimate.  The grouped role enters the
+  at-most-twice clause as the second decomposition.  No `Graph.DecoratedFan` type
+  is required and none is introduced.
+- **Ledger and residual.**  `factOnly` lowered by `AtomicCT.run`; the residual is
+  unchanged, `Refines` is equality, and the output index is `Produces ++ known`.
+  The four cursors are four distinct immutable prefixes; `typeBBridgeMass` is
+  committed at exactly those four sites and nowhere else, so nothing is proved
+  twice on any path.  `SpineRun`'s four `*Mass_audit_facts` theorems pin the four
+  indices by `rfl`.
+- **Transport and terminals.**  No terminal.  The four exits are
+  `Result.typeBCertificateResidualMass`, `Result.typeBOverlapObstructionMass`,
+  `Result.degreeFourResidualMass` and `Result.degreeFourOverlapObstructionMass`
+  — retained leaves, which is what a bridge *residual* is.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:typeB-residual-mass` | def | `TypeBFanMass.fanResidualMass`<br>`TypeBFanMass.fanSurplusMass`<br>`TypeBFanMass.fanCenterOccurrences` | unconsumed — no call site |
-| `lem:typeB-bridge-deficit-bound` | lem | `TypeBBridgeResidual.Residual.negativePart_le_eight_surplus`<br>`TypeBBridgeResidual.Residual.envelopeAllowance_le_eight_surplus` | unconsumed — no call site |
-| `lem:typeB-bridge-with-route8-core` | lem | | |
-| `lem:decorated-envelope-deficit-bound` | lem | | |
-| `lem:decorated-envelope-with-route8-core` | lem | | |
-| `prop:typeB-bridge-sublinear` | pro | `TypeBBridgeResidual.typeBBridgeSublinear_globalSurplus`<br>`TypeBFanMass.fanResidualMass_le_sixteen_globalSurplus` | unconsumed — no call site |
+| `def:typeB-residual-mass` | def | `TypeBEnvelopeCharge.envelopeNegativePart`<br>`TypeBEnvelopeCharge.sum_centres_surplus`<br>`TypeBEnvelopeCharge.route8Deficit`<br>`TypeBEnvelopeCharge.bridgeResidualMass_le_twice` | consumed by `Spine.bridgeFanMass` |
+| `def:typeB-assigned-ledger` | def | `TypeBEnvelopeCharge.scaledCoreCharge`<br>`TypeBEnvelopeCharge.scaledCentreCharge` | consumed here; the identity is row 28's |
+| `lem:typeB-bridge-deficit-bound` | lem | `TypeBEnvelopeCharge.envelopeNegativePart_le`<br>`TypeBEnvelopeCharge.neg_centreAllowance_le_augmentedLedger`<br>`TypeBEnvelopeCharge.sum_centreAllowance_le`<br>`TypeBEnvelopeCharge.bridgeDeficitBound` | consumed by `Spine.bridgeFanMass` |
+| `lem:typeB-bridge-with-route8-core` | lem | `TypeBEnvelopeCharge.route8Deficit`<br>`TypeBEnvelopeCharge.bridgeResidualMass_le_route8` | consumed by `Spine.bridgeFanMass` |
+| `lem:decorated-envelope-deficit-bound` | lem | `TypeBEnvelopeCharge.bridgeDeficitBound` | the same estimate at a grouped envelope centre |
+| `lem:decorated-envelope-with-route8-core` | lem | `TypeBEnvelopeCharge.bridgeResidualMass_le_route8` | the grouped role is the second decomposition |
+| `prop:typeB-bridge-sublinear` | pro | `TypeBEnvelopeCharge.bridgeResidualMass_le`<br>`TypeBEnvelopeCharge.bridgeResidualMass_le_twice`<br>`TypeBEnvelopeCharge.ambientSurplus_le_degreeSurplus` | consumed by `Spine.bridgeFanMass` |
+| `lem:typeA-unsaturated-discharge` (off an exceptional set) | lem | `FiniteObject.restrictedLoad`<br>`FiniteObject.sum_restrictedLoad`<br>`FiniteObject.card_le_scaled_deficiency_off` | consumed by `neg_centreAllowance_le_augmentedLedger` |
 | `rem:typeB-status` | rem | | |
 
-The three grouped-decorated-envelope objects are empty because no declaration
-takes a grouped envelope: `Graph.DecoratedFan.Certificate` is a single hub with
-arms, and there is no type for the core–centre incidence component
-`𝔜_𝔠`, its counted core `Y*_𝔠`, or its centre-token sum `ω(𝔠)`.
-`rem:typeB-status` is commentary on the same classification and is placed here,
-the closest row, with nothing implementing it.  The only declaration of this
-group that the run touches is `TypeBFanMass.IsChargedCentre`, which is not
-itself a labelled paper object — it is the union of clauses (i) and (ii) of
-`def:typeB-bridge-statements` (row 25).
+**CT composition at this row.**  No CT.  One `factOnly` `AtomicStrategy` at four
+cursors.  The global step is a family aggregation, but the family is the
+canonical decomposition, whose sum laws
+(`FiniteObject.sum_ambientSurplus_canonicalPieces`) the framework already owns
+and the row consumes directly.
 
-**CT composition at this row.**  **CT5**, one stage, and the only CT in the
-range.  Read from the code rather than the reference table:
-`Core.Strategy.BaselineDemandAccounting.execution` is
-`CTAdapters.ct5 accounting` with no `.compose`, so the reference table's
-`BaselineDemandAccounting | CT5` is confirmed and needs no correction.
-`Profile.spec : CT5.Spec Previous` re-indexes `budget`, `Site`, `Witness`,
-`Active`, `Supports`, `contribution`, `required`, `capacity` through
-`profile.current.read`, and `Profile.capability` adds the dependent enumeration
-and the three decidability instances.  CT5 then aggregates `contribution` over
-the `Active` sites supported by the family and compares the total against
-`capacity`, appending the outcome as a ledger extension.  A single CT is the
-right shape for a mass estimate and nothing is lost by not composing further —
-what is lost is that both sides of the comparison are the same term, so the one
-stage decides an identity rather than `M_B ≤ 16σ(G)`.
+### Row 28 — Bridge deficit `[76]`/`[85]` (ported: `Spine.typeBExclusionCharge`, `Spine.typeBExclusionDichotomy`)
 
-### Row 28 — Bridge deficit `[76]`/`[85]` (`ordered_witness_scan:3`, exported as `v39`)
-
-- **Paper fact.**  Nodes `[76]` and `[85]` close the Type B branch: Type B
-  cannot carry the linear deficit outside two-carrier route 8, once the fan-mass
-  residual is sublinear.  The operative content is `lem:typeB-exclusion` — for a
-  connected admissible support carrying high-degree surplus, with no
-  fan-certificate residual centre, admitting B2, and containing neither an
-  admissible route-8 residual profile nor an admissible positive-deficit fan,
-  `defp(X) - σ(X) ≥ ¼|V(X)|`, so `No(X) ≥ 0`; consequently a Type B support
-  with `No(X) < 0` and no route-8 or positive-deficit residual witnesses failure
-  of B2.  Its Step 1 is the closed-neighbourhood charge
-  `ch_X(h) + Σ_{u ∈ N(h)} ch_X(u) ≥ (11-k)/4 - c = -D_B(𝔉_h) ≥ 0`.
+- **Paper fact.**  `lem:typeB-exclusion`: for a connected admissible support
+  carrying high-degree surplus, with no fan-certificate residual centre,
+  admitting B2, and containing neither an admissible route-8 residual profile nor
+  an admissible positive-deficit Type B fan-window residual,
+  `defp(X) − σ(X) ≥ ¼|V(X)|`, so `No(X) ≥ 0`.  Step 1 is the closed-neighbourhood
+  charge; Step 2 sums the disjoint B2 entries and discharges the post-ledger
+  core.  `prop:typeB-bridge-reduction` is the same conclusion stated directly.
   `thm:branch-kill` is the branch-closure theorem these nodes feed, jointly with
   `[123]`.
-- **What the Lean does.**  `bridgeDeficitScan` is a `Core.ScanData P` with
-  `Item input = (object input).Vertex`,
-  `schedule input = (object input).orderedVertices`, and
-  `witness input vertex = (baselineDegree input ≤ (object input).degree vertex)`.
-  At the registered `baselineDegree = 3` this reads `3 ≤ deg v`, which is the
-  standing baseline predicate `MinimumDegreeAtLeast 3` restricted to one vertex
-  — a fact already carried on the residual since row 1.  The scan therefore
-  succeeds at the first vertex of `orderedVertices` and appends nothing new.
-  No charge, deficit, surplus, or `No(X)` term occurs in the type.
-- **What it should do.**  The statement of record is
-  `TypeBExclusion.typeBExclusion`, whose conclusion is the four-way alternative
-  `(∃ h ∈ residual.centers, 0 < deficit ∧ deficit ≤ hybridCapacity) ∨ SharedCarrier residual ∨ residual.residualCoreCharge ledger < 0 ∨ ((∀ h ∈ residual.centers, object.degree h ≤ 8 ∧ IsCertificateClosed … ∧ (residual.closedFanCount h : ℤ) ≤ closedCountCap … ∧ 0 ≤ fanEntryCharge …) ∧ 0 ≤ residual.netCharge ledger ∧ (residual.core.card : ℚ) * ledger.dischargeRate ≤ residual.totalDeficiency - residual.surplus)`
-  — the last conjunct being `¼|V(X)| ≤ defp(X) - σ(X)`.  The node would have to
-  append that alternative on the assigned support and route its route-8 disjunct
-  to `[77]`.
-- **Gap.**  The registered witness is the minimum-degree baseline restated per
-  vertex; it carries no part of `lem:typeB-exclusion`.
-  `TypeBExclusion.typeBExclusion` exists and states the correct alternative, and
-  is reachable from no node of the export.  **Facts therefore fails.**
-- **Ledger and residual.**  `liftScan`/`scanRecipe`; predecessor and residual
-  retained, `certify := fun _ _ => none`.  The node is the join of four arms —
-  the closed direct-cycle terminal, the B1 scan, and both fan-mass vertices —
-  and reads none of them: `residualOf` gives only `ProblemInput`, so the scan
-  runs the same degree test whichever arm reached it.  Ledger fails.
-- **Transport and terminals.**  Core's `Strategy.OrderedWitnessScan` owns
-  execution.  The export shows four incoming edges `t21 → v39` (`e69`),
-  `v48 → v39` (`e70`), `v49 → v39` (`e71`), `v50 → v39` (`e72`), and one
-  outgoing autoroute `v39 → v24` (`e73`, label "Route-8 cores to the Type A
-  ledger", `scope: sibling`, `relation: literal_residual`,
-  `selection.rule: deepest_most_restrictive`, destination `v24` at depth 16).
-  The Type B branch therefore has no terminal of its own: instead of closing at
-  `[76]`/`[85]` and handing route-8 cores to `[77]`, it re-enters the Type A
-  saturated-receiver dichotomy `v24` (`[89]`).
+- **What the Lean does.**  Two values.
+
+  `Spine.typeBExclusionCharge` is
+  `SpineRows.typeBExclusionChargeRow (K .typeBDisjointAssignment)
+  (K .typeBExclusionCharge)`, with `Requires := [typeBDisjointAssignment]` — B2,
+  committed at node `[72]`/`[81]` — read through `FactInputs.get`.  At every
+  connected assigned Type B support of this residual it commits:
+
+  * **`(B-ledger)`** of `def:typeB-assigned-ledger`,
+    `Ĉh_B(X) + α|H_X| = defp(X) − σ(X) − α|V(X)|`
+    (`augmentedLedger_add_card_centres`), and the line the manuscript spends it
+    on (`nonNegativeNetCharge_of_augmentedLedger_nonneg`);
+  * **Step 2 / `prop:typeB-bridge-reduction`**
+    (`TypeBEnvelopeCharge.typeBExclusion`): for the B2 assignment the fact
+    supplies, any choice of entries with disjoint carriers that are
+    certificate-closed and whose post-ledger core discharges gives
+    `defp(X) − σ(X) ≥ ¼|V(X)|`.
+
+  **Nothing of `def:typeB-candidate-ledger` is restated.**  `A_h` is
+  `CandidateEntry.assigned` with `assigned_adjacent`, `assigned_subset` and
+  `assigned_notCentre` its clauses; the payment
+  `ch_X(h) + Σ_{v∈A_h} ch_X(v) + ½|chosen| ≥ 0` is `CandidateEntry.pays` cleared
+  at scale `2s`; the disjointness is `HasDisjointChoice`; and `demands = H_X`
+  comes from `demands_subset` with `IsMaximal`.  What Step 2 adds is the
+  summation over the disjoint blocks (`entryBlock`, `entryBlock_disjoint`,
+  `neg_one_le_entryBlockCharge`) and the in-place discharge of the core outside
+  them (`PostLedgerCore`, `card_le_scaled_deficiency_off`).
+
+  The `−α` per block is the centre's own charge as a vertex of the counted core,
+  which `def:typeB-candidate-ledger`'s display does not include; it is exactly
+  the `+α|H_X|` on the other side of `(B-ledger)`.  Committing the identity as a
+  fact is what makes that come out — `Ĉh_B(X) ≥ 0` would be false at `k = 7`,
+  `c = 1`, where `D_B = 0` exactly.
+
+  `Spine.typeBExclusionDichotomy` is **`thm:branch-kill` (b)**.  It splits on
+  `lem:typeB-exclusion`'s own two hypotheses, not on its conclusion, and the arm
+  that meets them *derives* `No(X) ≥ 0` by applying the implication above, read
+  with `ExactLedger.get` from the cursor.  That arm then collides with the
+  node-`[64]` residual's negative net charge
+  (`instIncompatibleTypeBExcluded`, spending
+  `FiniteObject.not_negativeNetCharge_iff`) and the branch **closes**.  The
+  complementary arm, `typeBExclusionResidual`, is the excluded alternative
+  itself: an entry that spends half-incidence credits — the positive-deficit fan
+  of `def:typeB-multiclosed-residual`, which node `[74]`/`[82]` pays — or a
+  post-ledger core that does not discharge, which is the route-8 residual
+  profile.
+- **What it should do.**  This.
+- **Gap.**  None for `lem:typeB-exclusion`, `prop:typeB-bridge-reduction` or
+  `thm:branch-kill` (b).  **Facts passes.**  Two notes.
+
+  `thm:branch-kill` (a) — the Type A half, `lem:typeA-exclusion` — is **not**
+  committed and is not this row's: it is node `[86]` in section E, and the Type A
+  branch of this spine still ends at the `[89]`/`[90]` leaves.  Nor is `[123]`,
+  `thm:large-budget-route8-only`, which is section F.  The theorem's conclusion
+  is a conjunction of the two local halves plus `[123]`, and only the Type B half
+  is owned here.
+
+  Step 2's remaining hypotheses — `chosen = ∅` and `PostLedgerCore` — are not
+  assumptions left dangling: they are exactly what the dichotomy branches on, so
+  the alternative in which they fail is a committed fact with its own arm.
+- **Ledger and residual.**  `factOnly` lowered by `AtomicCT.run` for the charge
+  row; `Decision.run` for the dichotomy.  Residual unchanged, `Refines` equality,
+  output index `Produces ++ known`.  The row reads B2 and nothing else, and the
+  dichotomy reads the charge fact and nothing else.
+- **Transport and terminals.**  `[76]` and `[85]` are **closed terminals** on
+  their excluded arm — `Result.typeBBranchKill` and
+  `Result.degreeFourBranchKill` carry Core's reserved closure key — and their
+  surviving arms are `Result.typeBExclusionResidual` and
+  `Result.degreeFourExclusionResidual`.  B2 *holds* on those cursors, so by
+  `lem:typeB-exclusion`'s "consequently" the survivor is not a bridge residual
+  and no fan-mass bound applies to it; it is a retained leaf.
+
+  There is no join and no autoroute.  Branches commit against one immutable
+  prefix, so the two B1 cursors carry the exclusion, the four bridge-residual
+  cursors carry row 27's mass bound, and neither can read the other —
+  `Fixtures.TypeBBridgeNode` checks that in both directions.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:typeB-exclusion` | lem | `TypeBExclusion.typeBExclusion` | unconsumed — no call site |
-| `thm:branch-kill` | thm | | |
+| `def:typeB-assigned-ledger`, `(B-ledger)` | def | `TypeBEnvelopeCharge.augmentedLedger`<br>`TypeBEnvelopeCharge.augmentedLedger_add_card_centres`<br>`TypeBEnvelopeCharge.nonNegativeNetCharge_of_augmentedLedger_nonneg` | consumed by `Spine.typeBExclusionCharge` |
+| `def:typeB-candidate-ledger` | def | `TypeBRefinedSupport.CandidateEntry.assigned`<br>`TypeBRefinedSupport.CandidateEntry.chosen`<br>`TypeBRefinedSupport.CandidateEntry.pays`<br>`TypeBRefinedSupport.HasDisjointChoice` | row 25's object, read here |
+| `lem:typeB-exclusion` (Step 2) | lem | `TypeBEnvelopeCharge.entryBlock`<br>`TypeBEnvelopeCharge.entryBlock_disjoint`<br>`TypeBEnvelopeCharge.neg_one_le_entryBlockCharge`<br>`TypeBEnvelopeCharge.typeBExclusion` | consumed by `Spine.typeBExclusionCharge` |
+| `prop:typeB-bridge-reduction` | pro | `TypeBEnvelopeCharge.typeBExclusion` | consumed by `Spine.typeBExclusionCharge` |
+| `lem:typeB-postledger-core-hygiene` | lem | `TypeBEnvelopeCharge.PostLedgerCore` | consumed by `TypeBEnvelopeCharge.typeBExclusion` |
+| `def:typeB-multiclosed-residual` | def | key `Spine.Key.typeBExclusionResidual`<br>`TypeBFanIncidence.IsCertificateClosed` | the `chosen ≠ ∅` arm of the dichotomy |
+| `thm:branch-kill` (b), Type B | thm | `Spine.typeBExclusionDichotomy`<br>`Spine.instIncompatibleTypeBExcluded`<br>key `Spine.Key.typeBExcluded` | consumed by `Spine.run`; the arm closes |
+| `lem:typeB-exclusion` (Step 1) | lem | | |
+| `thm:branch-kill` (a), Type A | thm | | |
 
-`thm:branch-kill` spans `[76]`, `[85]` and `[123]`; `[123]` is outside this
-range, and no declaration states the combined closure, so the cell is empty at
-the row that consumes it first.
+`lem:typeB-exclusion` Step 1 is empty and that is deliberate: with B2 supplying
+the entries and `CandidateEntry.pays` supplying their payment, the construction
+of a certificate-closed entry at `A_h = N(h)` is not needed for the conclusion,
+and building it would be a second proof of what row 25's object already carries.
 
-**CT composition at this row.**  No CT.  A registered `ordered_witness_scan:3`
-lowered by `Core.Strategy.Dag.liftScan → scanRecipe`, with
-`certify := fun _ _ => none`.  The node is also the four-way join of the branch,
-but a scan recipe performs no join semantics: `liftScan` reads only
-`residualOf stage`, so the four incoming arms are indistinguishable to it.  The
-outgoing `autoroute` is a separate Core mechanism, not a CT — the export's
-`bridge_provenance` names `Ledger.extend_previous`,
-`Ledger.residualOf_extend` and `HaltingProgram.snoc_previous` as the framework
-lemmas, and `BridgeCertificate.residual_eq` as the relation witness.
+**CT composition at this row.**  No CT.  One `factOnly` `AtomicStrategy` and one
+`Decision`, each at two cursors.  Step 2's aggregation is a `biUnion` over the
+assigned centres whose disjointness is B2's own, summed by Mathlib's
+`Finset.sum_biUnion`; a demand/capacity stage would add a residual restriction
+this row does not make.
+
 
 ### Row 29 — Degree-four fan profile `[78]`,`[79]` (ported: `Spine.degreeFourProfile`)
 
@@ -3291,7 +3688,7 @@ a CT to own, because a centre is data and the fact quantifies rather than
 selecting one — which is also why the legacy `OrderedWitnessScan` was the wrong
 shape for it.
 
-### Row 30 — Ordered surplus activation `[125]`–`[128]` (ported: `Spine.sparseSlackSurplus`, `Spine.activeSurplusFamily`, `Spine.sparsePortActivation`)
+### Row 30 — Ordered surplus activation `[125]`–`[128]` (ported: `Spine.sparseSlackSurplus`, `Spine.activeSurplusFamily`, `Spine.sparsePortActivation`, `Spine.sparseSurplusSurvivor`, `Spine.activeSurplusDemands`)
 
 - **Paper fact.** `[125]` is the sparse-pressure survivor: a minimal
   counterexample past `[19]` for which none of the five sparse surplus exits of
@@ -3321,32 +3718,85 @@ shape for it.
   centre and sums the disjoint per-centre blocks to `ambientSurplus`; the port
   clauses are `SurplusPort.endpoint_degree_eq` and `SurplusPort.card_shoulders`.
   `sparsePortActivationRow` reads the `selection` entry and commits, at every
-  selected port carrying a shoulder pair, clause (c) — a simple `a_p`–`b_p` path
-  of `G` avoiding `x(p)` whose restored length is accepted — and clause (d), the
-  triangle of a triangular port.  Clause (c) is
-  `SurplusPort.openPortWitness_of_minimal` of the new
+  selected port carrying a shoulder pair, clause (b) — a simple `x(p)`–`c(p)`
+  path of `G − c(p)x(p)` whose first edge after `x(p)` is one of the two
+  shoulders — clause (c) — a simple `a_p`–`b_p` path of `G` avoiding `x(p)` whose
+  restored length is accepted — and clause (d), the triangle of a triangular
+  port.  Clause (c) is `SurplusPort.openPortWitness_of_minimal` of
   `Hypostructure/Graph/SparsePortActivation.lean`, which reads the port as a
   `TightVertexSuppression.Configuration` and spends the framework's own
   `singleSuppressionWitness_of_minimal`: minimality gives the suppressed object
   an accepted cycle, avoidance forces it through the inserted shoulder chord,
   and the reconstruction returns the path.
-- **What it should do.** Commit clause (b) as well — the return path
-  `R_p ⊆ G − c(p)x(p)`, whose first edge after `x` is `xa_p` or `xb_p` — and run
-  the five exits of `def:named-surplus-exits` as branch alternatives, so that
-  `[125]`'s survivor hypothesis and `lem:surviving-active-family`'s *"not removed
-  by an exit"* clause are facts of an arm rather than absent.
-- **Gap.** Clause (b) rests on `lem:bridgeless` (every edge of the minimal
-  counterexample lies on a cycle), which the framework does not carry: it needs
-  the bridge-contraction argument on `Graph/Contraction.lean`, and no live
-  declaration states it.  The block therefore commits clauses (a), (c) and (d)
-  of `lem:sparse-port-activation` and not (b).  `def:named-surplus-exits` is not
-  a branch alternative here: four of its five conclusions have live machinery
-  (see the section note) but exit (e), `lem:suppressed-family-critical-cycle`,
-  has none, so no honest exhaustive dichotomy can be written yet and
-  `def:active-surplus-demands`'s exit-freeness clause is not on the ledger.
-  `lem:sparse-port-activation`'s *lexicographic* selection of `R_p` and `Q_p` is
-  not committed either: the row commits existence, which is what every consumer
-  in rows 31–36 reads.  **Facts therefore fails.**
+
+  Clause (b) is `SurplusPort.portReturn_of_minimal` of the same module on the
+  new `Hypostructure/Graph/Contraction.lean`, which carries `lem:bridgeless`.
+  `EdgeContraction.hasReturn_of_minimal` assumes the ordered edge has no return
+  and contracts it — `FiniteObject.contractEdge` deletes the head and
+  transplants its remaining incidences onto the tail, the irreflexivity guard of
+  `SimpleGraph.fromRel` discarding the contracted edge itself.  Without a return
+  the two endpoints have no common neighbour, since a common neighbour is a
+  triangle on the edge and a triangle is a return; so `degree_contracted_of_ne_tail`
+  gives every other vertex its source degree and `degree_contracted_tail` gives
+  the merged vertex `d(tail) + d(head) − 2`, the contracted edge counted once at
+  each end.  The contraction has one vertex fewer, so minimality supplies it an
+  accepted cycle.  That cycle meets the tail in two incidences, each an original
+  tail edge or a transplanted head edge: a mixed pair splices along the rest of
+  the cycle into the return itself (`false_of_mixed_incidences`), so the two
+  agree, and `certificateOfPullback` reads the cycle back into the source along
+  the inclusion or along `merge`, the injective map that sends the tail to the
+  head — contradicting avoidance.  The port supplies the degree hypothesis from
+  its own `centre_high` and the standing baseline, and the first edge of the
+  return is a shoulder because the endpoint's only other incidence is the
+  deleted port edge.  `#print axioms` on
+  `EdgeContraction.hasReturn_of_minimal` and
+  `SurplusPort.portReturn_of_minimal` reports `propext`, `Classical.choice` and
+  `Quot.sound` only, and
+  `Hypostructure/Fixtures/OfficialEdgeContractionGraph.lean` checks the
+  contraction's adjacency, its vertex drop, both degree readings, the
+  minimum-degree preservation and both forms of `lem:bridgeless` at the type
+  level.
+- **What it should do.** Nothing further.  Every paper object of `[125]`--`[128]`
+  is committed, and each is proved from a fact the branch already carries.
+- **Gap.** None.
+
+  `def:named-surplus-exits` is a five-clause inductive, `Graph.SparseSurplusExit`,
+  and `[125]`'s survivor hypothesis is *derived* rather than assumed:
+  `Graph.survives_of_selection` refutes each clause where the manuscript refutes
+  it -- (a) by the selection's avoidance, (b) by
+  `DeclaredQuotient.targetComplete_of_identified`, (c) by node `[11]`--`[14]`'s
+  `cor:uncompressible` entry, (d) by the selection's minimality against the
+  delocalization coordinate's transfer, and (e) by
+  `lem:suppressed-family-critical-cycle`, which
+  `TightVertexSuppression.CompatibleFamily.suppressedFamilyExpansion` already
+  proved and which nothing had been reading.  Clause (c) is stated at
+  `CompressibleSupport`, the *target-complete* two-way notion the manuscript
+  names, not at the one-way `ReplacementSupport`; the two differ exactly in
+  whether the outside-context clause is an implication or an equivalence, and
+  the weaker one would have made the survivor a stronger surrogate.
+
+  No exhaustive dichotomy is written at `[125]`, and none is owed: the
+  manuscript's `[125]` is a survivor *hypothesis*, and at a selected minimal
+  counterexample the complementary arm is refuted outright rather than routed.
+  A `Decision` there would carry an uninhabited side.
+
+  `Γ(p)` itself is `SurplusPort.responseSupport`, a function of the object and
+  the port: its two hypotheses are node `[128]`'s own clauses, not parameters,
+  so nothing about it is supplied.  `SurplusPort.canonicalReturn` is the
+  manuscript's "lexicographically first" `R_p` -- the head of the framework's
+  length-major path schedule -- and it takes `Nonempty (PortReturn …)`, the
+  committed proposition, because `SimpleGraph.Reachable` *is*
+  `Nonempty (Walk …)`.  Neither witness can fail to exist: no return path would
+  make `c(p)x(p)` a bridge, which `EdgeContraction.hasReturn_of_minimal`
+  refutes, and no suppression path would give the suppressed object no accepted
+  cycle, which minimality refutes.  Clause (b) is existential in the manuscript
+  -- the choice lives in its proof and is read back by clause (d) -- so the row
+  commits existence, which is exact.
+
+  `activeSurplusDemandsRow` reads node `[128]`'s entry **whole**.  All three of
+  its clauses are canonical data of an active demand and are exactly what
+  `responseSupport` needs, so projecting out clause (b) would have dropped
+  `Γ(p)`, which `def:active-surplus-demands` requires.
 - **Ledger and residual.** The predecessor is the literal `surplusAboveKeys`
   ledger of node `[19]`'s above arm — nine facts, including `selection` and
   `slackIndependent`, both of which this block reads by exact key through
@@ -3362,25 +3812,38 @@ shape for it.
   and the block is nonbranching, so it declares no terminal.
   `Hypostructure/Fixtures/SurplusRun.lean` runs the block on the spine's own
   `surplusAboveKeys` cursor and checks `audit_complete`, `audit_facts_unique`
-  and `audit_commits_nonempty` on the result.  Transport passes.
+  and `audit_commits_nonempty` on the result.  That fixture builds:
+  `runSparseActivation` was missing the `FactKeys.Has (K .uncompressible)`
+  instance parameter node `[125]`'s survivor row reads, so the block did not
+  elaborate at all; `surplusAboveKeys` carries `uncompressible`, so declaring
+  the requirement is all that was owed and `runSurplusBranch` discharges it.
+  Transport passes.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:named-surplus-exits` | def |  |  |
+| `def:named-surplus-exits` | def | `Graph.SparseSurplusExit`, `Graph.SurvivesSparseExits`, `Graph.survives_of_selection` | standalone (`sparseSurplusSurvivorRow`) |
 | `lem:sparse-slack-surplus` | lem | `Spine.sparseSlackSurplusRow` | standalone |
 | `lem:sparse-excess-port-extraction` | lem | `FiniteObject.card_excessPorts`, `FiniteObject.SurplusPort.endpoint_degree_eq`, `FiniteObject.SurplusPort.card_shoulders` | standalone |
-| `lem:sparse-port-activation` | lem | `FiniteObject.SurplusPort.openPortWitness_of_minimal`, `FiniteObject.SurplusPort.triangle_of_shoulders_adj` | standalone |
-| `def:active-surplus-demands` | def |  |  |
-| `lem:surviving-active-family` | lem |  |  |
+| `lem:bridgeless` | lem | `EdgeContraction.hasReturn_of_minimal` | standalone |
+| `lem:sparse-port-activation` | lem | `FiniteObject.SurplusPort.portReturn_of_minimal`, `FiniteObject.SurplusPort.openPortWitness_of_minimal`, `FiniteObject.SurplusPort.triangle_of_shoulders_adj` | standalone |
+| `def:active-surplus-demands` | def | `Graph.ActiveSurplusDemands` | standalone (`activeSurplusDemandsRow`) |
+| `lem:suppressed-family-critical-cycle` | lem | `TightVertexSuppression.CompatibleFamily.suppressedFamilyExpansion`, `Graph.SurvivesSparseExits.suppression_arithmetic`, `Graph.SurvivesSparseExits.suppression_chords_nonempty` | standalone |
+| `lem:surviving-active-family` | lem | `Graph.surviving_active_family` | standalone (`activeSurplusDemandsRow`) |
 
-`lem:sparse-port-activation`'s cell covers clauses (a), (c) and (d) only;
-`lem:surviving-active-family`'s cardinality is `card_excessPorts`, but its
-statement is about the *active* family, whose exit-freeness clause is absent, so
-the cell is empty.
+`lem:sparse-port-activation`'s cell covers all four clauses.  Clause (b) is
+committed existentially because that is how the manuscript states it; its
+lexicographic choice is `SurplusPort.canonicalReturn`, which `Γ(p)` uses.  `lem:bridgeless` is not a label this row's own
+statement consumes; it is the prerequisite of clause (b)'s proof, and it is
+listed because this row is where the framework acquires it.
+`lem:surviving-active-family` is now stated about the *active* family: its
+exit-freeness clause is the survivor fact, its cardinality is `card_excessPorts`
+read from `[127]`, and its canonical-data clause is clause (b) read from
+`[128]`.  `activeSurplusDemandsRow` proves nothing again -- it commits the family
+those three facts already are.
 
-**CT composition at this row.** No CT: three atomic fact-only Strategies run in
+**CT composition at this row.** No CT: five atomic fact-only Strategies run in
 the manuscript's order by `AtomicCT.run` against one immutable prefix.  The
 manuscript's own ordering is a dependency chain, not an enumeration — `[127]`
 consumes node `[10]` and `[128]` consumes the selection — so there is nothing
@@ -3397,366 +3860,332 @@ for a scan or a resource comparison to buy at this node.
   (`log₂ C(N,m) − log₂ C(N,m₀) ≤ s log₂ n` for `m = m₀ + s ≤ 2n − 2`).
   `def:spine-lower-bound-deficits` records the lower-bound deficit packages.
 - **What the Lean does.** `baselineSpineDemandRow` of `SurplusRows.lean`, run
-  after the three activation rows.  It commits two statements about the
-  residual's own object, with the logarithms cleared: `lem:incremental-skeleton-
-  room` on the manuscript's own envelope, `C(N, m₀+s) ≤ C(N, m₀)·n^s` for
-  `m₀ + s ≤ 2n − 2`; and that estimate spent at the object's own edge count,
-  `skeletonBudget object ≤ C(N,m₀)·n^(m − m₀)`.  Both are
-  `Hypostructure/Graph/BaselineSpineDemand.lean`'s
-  `incremental_skeleton_room` and
-  `skeletonBudget_le_cubicBaselineBudget_mul_pow`, proved from the one-step
-  identity `C(N,k+1)(k+1) = C(N,k)(N−k)` and `C(n,2) ≤ n·m₀`.  `m₀` is
-  `cubicBaselineEdgeCount n δ = ⌈δn/2⌉`, the least edge count a `δ`-regular
-  object can carry; the only registered input is `2 ≤ δ`, from
-  `Data.three_le_threshold`.  The row declares `Requires := []`, which is honest:
-  it reads no fact.
-- **What it should do.** Commit `def:baseline-spine-demand` itself — a family
-  `ℐ_spine` of declared target coordinates, its independent target-testability,
-  and `|ℐ_spine| ≥ B₀(n) − E_spine(n)` with `E_spine` an output — together with
-  `def:spine-lower-bound-deficits`'s packages and the hypothesis
-  `E_spine(n) ≤ C_E n` that row 32 and row 34 read.
-- **Gap.** The definition is not committed, only the two numerical facts it
-  rests on.  There is no declared target coordinate family, no independent
-  target-testability predicate, no `E_spine(n)` output, and no `O(n)` deficit
-  bound; `def:spine-lower-bound-deficits` has no counterpart, and
-  `lem:exact-cubic-baseline-budget`'s asymptotic `B₀ = (3/2)n log₂ n + O(n)` is
-  not stated — the branch carries the budget `C(N,m₀)` itself rather than its
-  logarithm's asymptotics.  **Facts therefore fails.**
-- **Ledger and residual.** `factOnly` over the row-30 stage: refinement is
+  after the five activation rows.  It commits five statements about the
+  residual's own object, every one with the logarithms cleared, all from
+  `Hypostructure/Graph/BaselineSpineDemand.lean`:
+
+  1. `lem:incremental-skeleton-room` on the manuscript's own envelope,
+     `C(N, m₀+s) ≤ C(N, m₀)·n^s` for `m₀ + s ≤ 2n − 2`
+     (`incremental_skeleton_room`), proved from the one-step identity
+     `C(N,k+1)(k+1) = C(N,k)(N−k)` and `C(n,2) ≤ n·m₀`;
+  2. that estimate spent at the object's own edge count,
+     `skeletonBudget object ≤ C(N,m₀)·n^(m − m₀)`
+     (`skeletonBudget_le_cubicBaselineBudget_mul_pow`);
+  3. `lem:exact-cubic-baseline-budget` in both directions,
+     `C(N,m₀) ≤ (2n)^{m₀}` (`cubicBaselineBudget_le_pow`) and
+     `(n−1)^{m₀} ≤ C(N,m₀)·(2(δ+1))^{m₀}`
+     (`pow_pred_le_cubicBaselineBudget_mul`).  The first is the manuscript's
+     `C(N,m) ≤ (eN/m)^m` with `e` replaced by Stirling's own `⌈e⌉` from
+     `Core.FiniteEntropy.pow_self_le_three_pow_mul_factorial`; the second is its
+     product estimate `C(N,k) ≥ (N/k)^k` through
+     `Nat.pow_sub_le_descFactorial`.  Their logarithms are
+     `m₀(log₂ n − log₂(2(δ+1))) ≤ B₀(n) ≤ m₀(log₂ n + 1)`, which at
+     `m₀ = ⌈δn/2⌉` is `B₀(n) = (δ/2)n log₂ n + O(n)` — the manuscript's display
+     at the registered baseline.  The lower direction carries the manuscript's
+     own nonemptiness hypothesis `2m₀ ≤ N`, below which the baseline stratum is
+     empty and `B₀(n)` has no lower bound at all;
+  4. `def:baseline-spine-demand` itself, as `Graph.IsBaselineSpineDemand`: a
+     family `ℐ_spine` of declared target coordinates that is independently
+     target-testable (`Core.TargetRank.targetRank system = family.card`) and
+     satisfies `|ℐ_spine| ≥ B₀(n) − E_spine(n)`, committed as
+     `C(N,m₀) ≤ 2^(|ℐ_spine| + E_spine)`.  The commitment is universal over the
+     coordinate type, the family and the admissible quotient system, and
+     existential in nothing: `isBaselineSpineDemand_of_package` turns any
+     surviving family carrying a package's `L` coordinates into a baseline spine
+     demand.  `E_spine(n)` is this node's **output** `Graph.spineDeficit n δ L =
+     cubicBaselineExponent n δ − L`, computed from the object's own order and
+     the package, with `cubicBaselineExponent n δ = m₀·(log₂ n + 2)` the bit
+     form of clause 3's upper half at the object's own dyadic scale count;
+  5. `def:spine-lower-bound-deficits`, as the three package lower bounds
+     `windowPackageBound` (`L_win = c₁₃·p₁₃·log₂ n`),
+     `highEntropyPackageBound` (`+ |R|·log₂ n / d`) and
+     `curvaturePackageBound` (`+ K·|R|`), at the registered `windowRate`,
+     `entropyDenominator` and `curvatureCost`, together with the ordering
+     `D_{he+Ω} ≤ D_he ≤ D_win` of their deficits.  The entropy term rounds
+     down, which is the safe direction for a lower bound and is where the
+     manuscript's `−o(n)` goes.
+
+  `m₀` is `cubicBaselineEdgeCount n δ = ⌈δn/2⌉`, the least edge count a
+  `δ`-regular object can carry; the only registered inputs are `2 ≤ δ` from
+  `Data.three_le_threshold` and the three package rates.  No decimal of
+  `def:spine-lower-bound-deficits` — `c₁₃ = 118.108581006`, `K`, `θ_he` —
+  occurs anywhere: each is the registered rate the presentation already carries
+  for its own node.  The row declares `Requires := []`, which is honest: every
+  clause is a theorem about the residual object's two counting observables and
+  the registered rates, so declaring a prerequisite would claim a dependency the
+  proof does not have.
+- **What it should do.** As above.
+- **Gap.** None that this node owes.  `ℐ_spine` is committed as the manuscript
+  defines it — a *property* of a presented coordinate family, quantified over
+  every family and every admissible quotient system — rather than at one
+  concrete family, because the manuscript's own sentence *"in applications,
+  `ℐ_spine` is the union of the independent target coordinates already forced by
+  the near-cubic spine"* names a family this branch does not carry: `[129]` is
+  on the non-near-cubic arm of node `[19]`.  The node that presents a family
+  applies clause 4 to it; nothing about which family is used enters the proof.
+  Likewise the *content* of the three packages — that the packed `P₁₃`-windows
+  really do supply `c₁₃θ n log₂ n` independent coordinates — is
+  `lem:p13-window-package` at its own node, not `[129]`'s; `[129]` owes the
+  packages' record and the admissibility of their deficits, and commits both.
+- **Ledger and residual.** `factOnly` over the row-30 stage: the predecessor is
+  the literal ledger the five activation rows left, refinement is
   `RefinementSystem.refl`, the residual is unchanged, and `AtomicCT.run` appends
-  the single production to the incoming index.  Ledger and Residual pass.
+  the single production to the incoming index while retaining every earlier key.
+  The row calls none of `ExactLedger.root`, `append`, `publishFact`, `refine`,
+  `initializeScope` or `FactInputs.ofLedger`, and reads the object only through
+  `FactInputs.current`.  Ledger and Residual pass.
 - **Transport and terminals.** As row 30: Core owns the commit and the
   accounting, the row owns its manifest and its proof, the operation is
-  nonbranching and declares no terminal, and the fixture checks the audit
-  invariants on the result.  Transport passes.
+  nonbranching and declares no terminal, and
+  `Hypostructure/Fixtures/SurplusRun.lean` checks `audit_complete`,
+  `audit_facts_unique` and `audit_commits_nonempty` on the result.  The five
+  clauses are one production, not five: they are the conjunction
+  `def:baseline-spine-demand` is fixed by, and there is no payload channel
+  beside it.  Transport passes.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:baseline-spine-demand` | def |  |  |
+| `def:baseline-spine-demand` | def | `Graph.IsBaselineSpineDemand`, `Graph.isBaselineSpineDemand_of_package`, `Graph.cubicBaselineExponent`, `Graph.spineDeficit` | standalone |
+| `lem:exact-cubic-baseline-budget` | lem | `Graph.cubicBaselineBudget_le_pow`, `Graph.pow_pred_le_cubicBaselineBudget_mul`, `Graph.cubicBaselineBudget_le_two_pow` | standalone |
 | `lem:incremental-skeleton-room` | lem | `Graph.incremental_skeleton_room` | standalone |
-| `def:spine-lower-bound-deficits` | def |  |  |
+| `def:spine-lower-bound-deficits` | def | `Graph.windowPackageBound`, `Graph.highEntropyPackageBound`, `Graph.curvaturePackageBound`, `Graph.spineDeficit_le_of_le` | standalone |
 
-`lem:incremental-skeleton-room` is listed here rather than at row 32 because
-`[129]` is the node that now commits it; the manuscript files it at `[131]`.
+`lem:incremental-skeleton-room` and `lem:exact-cubic-baseline-budget` are listed
+here rather than at row 32 because `[129]` is the node that commits them; the
+manuscript files both at `[131]`, where they are consumed.
+`def:baseline-spine-demand`'s independent target-testability is
+`Core.TargetRank.targetRank_eq_card_iff_survives`, the framework's own rank
+apparatus, not a second notion of independence built for this node.
 
 **CT composition at this row.** No CT: one atomic fact-only Strategy.  The
 manuscript's `[129]` fixes a baseline rather than comparing two resources, so
-there is no demand family to enumerate and nothing for CT5 to decide.
+there is no demand family to enumerate and nothing for CT5 to decide.  The three
+lower-bound packages are not alternatives either — they are three admissible
+readings of the same `E_spine`, ordered by inclusion of their coordinate
+supplies, so no `Decision` is owed and none is written.
 
-### Row 32 — Canonical pair-response `[130]`–`[134]`
+### Row 32 — Canonical pair-response `[130]`–`[134]` (ported: `Spine.canonicalPairLedger`)
 
-- **Paper fact.** `[130]` splits `Π(𝒜₀) = C(𝒜₀,2)` into free and blocked
-  pairs.  `def:sparse-pair-response` attaches to `π = {p,q}` the
-  lexicographically first minimum-vertex connected `X_π ⊇ T(p) ∪ Γ(p) ∪ T(q)
-  ∪ Γ(q)`, its boundary `∂X_π`, and the declared coordinate `r_π` of
-  `ρ^ex_{∂X_π}(X_π)` whose label is `π`, whose support is `X_π`, and whose
-  value is the exact target-response data of `p` and `q` inside `X_π`.
-  `[131]` is `prop:sparse-entropy-sandwich`:
-  `C(|𝒜₀|,2) ≤ E_spine(n) + ((1/2)σ(G) + 1) log₂ n`, and its blocked
-  refinement `prop:sparse-entropy-sandwich-with-blockers`:
-  `|Π_free| ≤ E_spine(n) + ((1/2)σ(G) + 1) log₂ n`.  Their inputs are
-  `lem:exact-cubic-baseline-budget` (`B₀(n) = (3/2) n log₂ n + O(n)`),
-  `lem:incremental-skeleton-room` (`log₂ C(N,m) - log₂ C(N,m₀) ≤ s log₂ n`
-  for `m = m₀ + s ≤ 2n-2`), `lem:mixed-sparse-spine-dependence` (the union
-  `ℐ_spine ∪ {r_π}` is independently target-testable unless an exit or a
-  blocker occurs), `prop:sparse-pair-independence-dichotomy` and
-  `cor:sparse-pair-entropy-saturation`.  `[132]` is
-  `lem:sparse-pair-dependence-exit`: if `{r_π : π ∈ Π}` does not survive
-  every admissible rank quotient, then either a sparse surplus exit occurs
-  or some `π` has a blocker of type (d) or (e).  `def:surplus-blockers`
-  fixes the closed clause list: "(a) a vertex or edge-incidence contained in
-  both declared demand supports; (b) a common vertex or common
-  edge-incidence of the two canonical return paths `R_p` and `R_q`; (c) a
-  common shoulder endpoint or shared cubic buffer vertex among `{a_p, b_p,
-  x(p), a_q, b_q, x(q)}`; (d) a boundary-degree-profile coordinate …;
-  (e) a target-response coordinate witnessing a target-defective quotient,
-  target-complete compression, or delocalization event; (f) an arithmetic
-  chord-set obstruction … the concrete set `𝒮` of added shoulder chords",
-  with the explicit proviso "A pair is not declared blocked merely because
-  the proof has not found a closure".
-  `def:canonical-sparse-blocker-order` totally orders the blockers,
-  `def:canonical-blocker-ledger` (`[134]`) sets `Φ_can(π) = B_π` to the least
-  one and defines `Π_blk`, `Π_free`, and
+- **Paper fact.** `[130]` splits `Π(𝒜₀) = C(𝒜₀,2)` into free and blocked pairs;
+  `def:sparse-pair-response` attaches to `π = {p,q}` the lexicographically first
+  minimum-vertex connected `X_π ⊇ T(p) ∪ Γ(p) ∪ T(q) ∪ Γ(q)`, its boundary
+  `∂X_π`, and the declared coordinate `r_π`.  `[131]` is
+  `prop:sparse-entropy-sandwich` and its blocked refinement
+  `prop:sparse-entropy-sandwich-with-blockers`.  `[132]` is
+  `lem:sparse-pair-dependence-exit`.  `def:surplus-blockers` fixes the closed
+  clause list (a)–(f), `def:canonical-sparse-blocker-order` totally orders the
+  blockers, `def:canonical-blocker-ledger` (`[134]`) sets `Φ_can(π) = B_π` to the
+  least one and defines `Π_blk`, `Π_free`, and
   `lem:canonical-blocker-ledger-no-overcount` proves
   `|Π_blk| = |𝔉_can| = Σ_{B ∈ ℬ_can} μ(B)`.
-- **What the Lean does.**
-  `Graph.Strategy.SurplusAccounting.CanonicalAccounting.pairResponse
-  (object) (baselineDegree) :
-  Core.Strategy.CanonicalPairResponseAccounting.Registration Residual`.
-  Supplied fields: `Pair residual := { pair : PortIndex × PortIndex //
-  pair.1 < pair.2 }`, over `PortIndex := Fin (activePorts residual).card`
-  and `ActivePort := Σ vertex, Fin ((object residual).degree vertex -
-  baselineDegree residual)`; `pairSchedule := (completePairs …).toEnumeration`;
-  `IntendedPair := fun _ _ => True`, and `pairSchedule_exact`'s proof is
-  `⟨fun _ => trivial, fun _ => (completePairs …).complete pair⟩`, i.e. it
-  proves membership against a predicate that is `True`.
-  `Dependent := dependent object baselineDegree`, where
-  `dependent residual pair := (object residual).graph.Adj (leftVertex …
-  pair) (rightVertex … pair)` and `leftVertex`/`rightVertex` are the host
-  vertices `(activePorts.get pair.1.1).1` and `(activePorts.get pair.1.2).1`.
-  `AdmittedDependent := Dependent` with `dependent_exact := fun _ _ => rfl`.
-  `BlockerKind residual := (object residual).Vertex × (object
-  residual).Vertex`; `CanonicalBlocker pair kind := pairRole pair =
-  Role.blocked kind`, where `pairRole := if Adj left right then Role.blocked
-  (left, right) else Role.freeAnchor`;
-  `blocker_exact := dependent_iff_canonicalBlocker`, whose proof re-derives
-  the `if` from itself (`simp [adjacent, Role.blocked]` one way, `rw [free]`
-  and `simp` the other); `role_freeAnchor_exact := pairRole_freeAnchor_exact`,
-  proved by `by_cases adjacent` and `dif_pos`/`dif_neg`;
-  `role_blocked_exact := fun _ _ _ => rfl`.  All three "exactness"
-  obligations are re-packagings of the definition of `pairRole`.
-  `pairCharge := fun _ _ => unitCharge` (`= Fintype.card Unit = 1`),
-  `pairCapacity := fun residual => (pairSchedule residual).card`, and
-  `roleCapacity := fun residual _ => (pairSchedule residual).card`.
-- **What it should do.** `BlockerKind` would have to be an inductive with
-  the six constructors of `def:surplus-blockers`, each carrying its concrete
-  witness (a vertex or edge-incidence in both declared supports; a shared
-  vertex or incidence of `R_p` and `R_q`; a shared shoulder or buffer
-  vertex; a boundary-degree-profile coordinate; a target-response
-  coordinate; a chord set `𝒮`).  `Dependent` would be failure of `{r_π}` to
-  survive every admissible rank quotient of `ρ^ex_{∂X_Π}(X_Π)`, so
-  `blocker_exact` would be the content of `lem:sparse-pair-dependence-exit`
-  rather than an identity.  `CanonicalBlocker` would be minimality in
-  `def:canonical-sparse-blocker-order`, and a separate theorem of type
-  `(pairSchedule.values.filter Dependent).length = Σ_B μ(B)` would state
-  `lem:canonical-blocker-ledger-no-overcount`.  `roleCapacity` would carry
-  `E_spine(n) + ((1/2)σ + 1) log₂ n` on the free-anchor role, so that CT9's
-  verdict is `[131]`.
-- **Gap.** `Dependent` is graph adjacency of two host vertices.  None of the
-  six blocker types occurs; there is no `X_π`, no `∂X_π`, no declared
-  coordinate `r_π`, no return path, no shoulder, no chord set, no
-  boundary-degree profile, and no rank quotient.  Worse, this `Dependent` is
-  uninhabited on the branch: `ActivePort`'s second component is
-  `Fin (degree vertex - baselineDegree)`, so both host vertices have degree
-  above the baseline `3`; `def:surplus-ports`' own `H = V_{≥4}` independence
-  (row 4's appended slack-incompatibility entry) makes two such vertices
-  nonadjacent, and two ports at one vertex give `left = right`, which
-  `SimpleGraph.Adj` refuses.  Hence `Π_blk = ∅` and `Π_free = Π(𝒜₀)` by
-  construction, and the `[130]` split is decided before it is taken.
-  `pairCharge = 1` against `pairCapacity = |pairSchedule|` makes CT15's
-  comparison `C(σ,2) ≤ C(σ,2)`, and `roleCapacity` is the same constant for
-  every role, so CT9's comparison is equally trivial; `[131]`'s entropy
-  bound is absent, and with it `lem:exact-cubic-baseline-budget`,
-  `lem:incremental-skeleton-room` and `lem:mixed-sparse-spine-dependence`.
-  The one thing that does match is the pair *schedule*: `completePairs` is
-  the `<`-subtype of `completePortIndices.product completePortIndices`, so
-  its cardinality is `C(σ(G), 2) = |Π(𝒜₀)|`.  **Facts therefore fails.**
-- **Ledger and residual.**
-  `Dag.canonicalPairResponseAccountingRecipe` builds
-  `CanonicalPairResponseAccounting.Profile` as `{ registration }`, so
-  `current` takes its default `Query.residual` and every read is of the
-  accumulated stage's stable residual.  `pairQuery` and `completeRoleQuery`
-  are `residualQuery.dependentMap`s.
-  `AfterDependence := Ledger.Extension Previous dependenceExecution.Output`;
-  `currentAfterDependence`, `inheritedPairs` and `inheritedRoles` are
-  `Query.preserve`, so CT9 receives exactly the schedules CT15 saw, indexed
-  by CT15's literal extension.  `execution := dependenceExecution.compose
-  roleExecution`, and `dependenceOutput`/`roleOutput` project the two
-  payloads out of the single retained composed entry, the second at
-  `Ledger.extend stage.previous output.fst`.  Ledger and Residual pass.
-- **Transport and terminals.** CT15 owns the dependence decision, CT9 the
-  role partition; both terminals are read back through
-  `dependenceTerminal` / `roleTerminal` (`Query.map` on the retained
-  output), not chosen by the application.  Graph supplies only the
-  registration.  The operation is nonbranching; the export has
-  `e10 : v12 → v11` as its only outgoing edge and `components: []` on `v12`.
+- **What the Lean does.** `canonicalPairLedgerRow` of `SurplusRows.lean`, run
+  after node `[129]` and reading the row-30 `activeSurplusFamily` entry.  It
+  commits `|Π(𝒜₀)| = C(σ(G),2)` — `FiniteObject.card_portPairSchedule`, the
+  unordered pairs of the excess selector counted through the same
+  `card_excessPorts` row 30 committed — and then, at every
+  `FiniteObject.DemandActivation`, the whole of `[130]`–`[134]`:
+  - `def:surplus-blockers` **instantiated**.  `Graph/SurplusBlockers.lean`
+    declares `Blocker`, one constructor per clause (a)–(f) carrying that clause's
+    own witness, and `blockers π` is the genuine `Finset` `𝖡𝗅𝗄(π)` assembled from
+    the six clauses.  `Blocks kind π` is "`π` carries a blocker object of that
+    clause", and `exists_blocks_iff_blockers_nonempty` is the definition's own
+    closing paragraph as a theorem: a pair is charged exactly when it exhibits a
+    finite-capacity object, never for want of a closure.  Clauses (a), (b) and
+    (c) intersect the demands' own `T(p) ∪ Γ(p)`, `R_p` and `{a_p, b_p, x(p)}`,
+    whose items are vertices and edge-incidences — the first two summands of
+    `𝔘_sp(G)`, which is why the primitive carrier is what they charge to.
+  - `def:canonical-blocker-ledger` at that set.  `Φ_can` is
+    `CanonicalFibreLedger.canonicalLabel` at
+    `SameTokenBlockerRoles.canonicalBlockerOrder`, the clause order (a)–(f), and
+    the two identities — the split `|Π_blk| + |Π_free| = |Π(𝒜₀)|` and the
+    no-overcount `|Π_blk| = Σ_B μ(B)` — are `SparsePairLedger`'s, read at the
+    instantiated relation.  Nothing is re-proved: `DemandActivation.chargedPairs`
+    is `FiniteObject.chargedPairs` at `Blocks`.
+  - `def:sparse-pair-response`.  `Graph/SparsePairResponse.lean` builds `X_π` as
+    `CanonicalSupport.select?` — the framework's single implementation of
+    "the lexicographically first connected subgraph with the minimum possible
+    number of vertices containing …", new in
+    `Graph/CanonicalSupportSelection.lean` — at the seed
+    `T(p) ∪ Γ(p) ∪ T(q) ∪ Γ(q)`, which is the *same* declared support clause (a)
+    intersects.  `∂X_π` is `SupportAtom.cutBoundary`, the literal cut boundary.
+    `r_π` is the (D7) base coordinate of `def:declared-coordinate-signature`
+    labelled `π` and supported on `X_π`; `X_Π` is the same selection at the union
+    of the `X_π`, and the manuscript's "viewed by restriction to its declared
+    support" is `support_restrict_pairCoordinate`.  `card_pairFamily` gives
+    `|ℛ_Π| = |Π|`.
+  - `lem:sparse-pair-dependence-exit` and `lem:mixed-sparse-spine-dependence`.
+    `Graph/DeclaredRankQuotient.lean` splits `def:admissible-rank-quotient` into
+    `AttemptedQuotient` — the quotient the proof *tries*, whose two representative
+    clauses are conditional on target-completeness, because that is what the
+    definition says — and `DeclaredQuotient`, the admissible one.
+    `AttemptedQuotient.route` is the manuscript's four-case analysis in its own
+    order: boundary-degree separation, context separation, proper replacement,
+    smaller closed representative.  `blockerSeparation_of_reducing` runs it at a
+    survivor: the last two cases are the delocalization exit and `lem:replacement`,
+    both discharged, so a rank-reducing attempted determination exhibits the
+    blocker of type (d) or (e) as concretely separated realizations.
+  - `prop:sparse-pair-independence-dichotomy` is `survives_of_exitFree` /
+    `targetRank_eq_card_of_exitFree`: an admissible quotient carries no such
+    separation, so at a survivor the declared family attains full target rank —
+    independent target-testability in the sense of `def:target-rank`.
+  - `prop:sparse-entropy-sandwich-with-blockers`, `prop:sparse-entropy-sandwich`
+    and `cor:sparse-pair-entropy-saturation` are `entropySandwich` and its two
+    readings, with the logarithms cleared exactly as
+    `def:baseline-spine-demand` already clears them:
+    `2^{|ℐ_spine|+|Π_free|} ≤ C(N,m)` and `C(N,m₀) ≤ 2^{|ℐ_spine|+E}` give
+    `2^{|Π_free|} ≤ 2^{E}·n^{m−m₀}`, whose logarithm is the manuscript's
+    `|Π_free| ≤ E_spine(n) + (½σ(G)+1) log₂ n` because `m − m₀ ≤ ½σ(G) + 1` is the
+    branch's own slack.  The saturation corollary is that bound at the full
+    schedule, rewritten to `C(σ(G),2)` through `card_portPairSchedule`.
+  `Graph/CurvatureTargetRank.lean` was rewritten rather than extended:
+  `CurvatureQuotient` is now the `DeclaredQuotient` instance at the raw internal
+  wedges and `curvatureQuotientSystem` is `declaredQuotientSystem` at that family,
+  so there is one admissible-quotient structure in the tree and `localize` is
+  proved once.
+- **What it should do.** This.
+- **Gap.** Two hypotheses are carried rather than derived, and both are carried
+  in the discipline row 31 already fixed.  (i) The entropy count
+  `2^{|ℐ_spine|+|Π_free|} ≤ C(N,m)` — `lem:independent-target-entropy` composed
+  with `lem:skeleton-dominates` — enters the sandwich as a hypothesis, exactly as
+  `def:baseline-spine-demand`'s own demand clause carries
+  `|ℐ_spine| ≥ B₀(n) − E_spine(n)`; the framework states both halves
+  (`Core.FiniteEntropy.two_pow_le_card_ambient_of_realizes`,
+  `Graph.LabelledOn.two_pow_le_card_of_realized`) but neither is at the `m`-edge
+  stratum, so composing them into `Graph.skeletonBudget` is not yet a theorem.
+  (ii) The dependence and dichotomy clauses are committed as implications from
+  `SurvivesSparseExits` and replacement-freeness, which are node `[125]`'s and
+  `lem:replacement`'s, not this node's.  The asymptotic tail of
+  `prop:sparse-entropy-sandwich` — `σ(G) = O(√n)` under `E_spine = O(n)` and
+  `|𝒜₀| ≥ c₁σ(G)` — is not stated here; it is a consequence of the displayed
+  inequality at the branch that supplies those two rates, which is row 45.
+- **Ledger and residual.** `factOnly` over the row-31 stage: refinement is
+  `RefinementSystem.refl`, the residual is unchanged, the row reads
+  `activeSurplusFamily` by exact key through `FactInputs.get`, and `AtomicCT.run`
+  appends the single production to the incoming index.  Ledger and Residual pass.
+- **Transport and terminals.** Core owns the commit and the accounting; the row
+  owns its manifest and its proof.  The operation is nonbranching and declares no
+  terminal.  Transport passes.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:sparse-pair-response` | def |  |  |
-| `lem:sparse-pair-dependence-exit` | lem |  |  |
-| `prop:sparse-pair-independence-dichotomy` | pro |  |  |
-| `cor:sparse-pair-entropy-saturation` | cor |  |  |
-| `lem:exact-cubic-baseline-budget` | lem |  |  |
-| `lem:incremental-skeleton-room` | lem |  |  |
-| `lem:mixed-sparse-spine-dependence` | lem |  |  |
-| `prop:sparse-entropy-sandwich` | pro |  |  |
-| `prop:sparse-entropy-sandwich-with-blockers` | pro |  |  |
-| `def:surplus-blockers` | def |  |  |
-| `def:canonical-sparse-blocker-order` | def |  |  |
-| `def:canonical-blocker-ledger` | def |  |  |
-| `lem:canonical-blocker-ledger-no-overcount` | lem |  |  |
+| `def:sparse-pair-response` | def | `Graph.CanonicalSupport.select?`<br>`FiniteObject.DemandActivation.pairSupport`, `.pairSeed`, `.pairBoundary`, `.familySupport`<br>`FiniteObject.DemandActivation.pairCoordinate`, `.pairFamily` | standalone |
+| `lem:sparse-pair-dependence-exit` | lem | `Graph.blockerSeparation_of_reducing` | standalone |
+| `prop:sparse-pair-independence-dichotomy` | pro | `Graph.survives_of_exitFree`<br>`Graph.targetRank_eq_card_of_exitFree` | standalone |
+| `cor:sparse-pair-entropy-saturation` | cor | `Graph.entropySandwich` at the full schedule, through `FiniteObject.card_portPairSchedule` | standalone |
+| `lem:exact-cubic-baseline-budget` | lem |  | committed at row 31 |
+| `lem:incremental-skeleton-room` | lem | `Graph.incremental_skeleton_room` | standalone |
+| `lem:mixed-sparse-spine-dependence` | lem | `Graph.AttemptedQuotient.route`<br>`Graph.blockerSeparation_of_reducing` | standalone |
+| `prop:sparse-entropy-sandwich` | pro | `Graph.entropySandwich_of_unblocked` | standalone |
+| `prop:sparse-entropy-sandwich-with-blockers` | pro | `Graph.entropySandwich` | standalone |
+| `def:surplus-blockers` | def | `Graph.FiniteObject.Blocker` (clauses (a)–(f))<br>`Graph.FiniteObject.DemandActivation.blockers`, `.Blocks`<br>`Graph.SameTokenBlockerRoles.BlockerKind` | standalone |
+| `def:canonical-sparse-blocker-order` | def | `Graph.SameTokenBlockerRoles.canonicalBlockerOrder` | standalone |
+| `def:canonical-blocker-ledger` | def | `FiniteObject.DemandActivation.chargedPairs`, `.freePairs`, `.multiplicity` | standalone |
+| `lem:canonical-blocker-ledger-no-overcount` | lem | `FiniteObject.DemandActivation.card_chargedPairs_eq_sum_multiplicity` | standalone |
+| `def:admissible-rank-quotient` (as consumed here) | def | `Graph.AttemptedQuotient`, `Graph.DeclaredQuotient` | standalone; shared with rows 20/69 |
 
-`def:surplus-blockers` is read again at rows 33 (via `supp(B_π)` in the
-token rule) and 34 (via `type(B_π)` in the role triple);
-`prop:sparse-entropy-sandwich-with-blockers` is read again at rows 33 and 34
-as the `|Π_free|` term.  `[130]`–`[132]` are their first consuming nodes.
+`def:surplus-blockers`' cell now names the clause *objects*, not only the clause
+alphabet: `Blocker` has one constructor per clause and no other, which is the
+definition's "the blocker must be an object explicitly listed above".
 
-**CT composition at this row.**
-`CanonicalPairResponseAccounting.Profile.execution` is
-`dependenceExecution.compose roleExecution`, i.e. **CT15 → CT9** — the
-reverse of the reference table's CT9 → CT15.  CT15 decides
-`TargetDependent := Dependent` coordinate by coordinate over `pairQuery` and
-charges `pairCharge` against `pairCapacity`, appending its verdict and
-terminal.  CT9 then partitions the same coordinates by `label := roleOf` into
-the role alphabet `Role (BlockerKind residual)` and compares each fibre
-against `roleCapacity`.  The composition buys the fact that the role
-partition runs on CT15's own decided coordinates: `inheritedPairs` and
-`inheritedRoles` are `Query.preserve` of the CT15-side queries rather than
-fresh residual reads, and `roleSpec` is indexed by `AfterDependence`.  A bare
-CT9 has no dependence decision of its own and would have to be handed the
-free/blocked split as data.  As registered both comparisons are tautologies
-and the split is constantly `freeAnchor`.
+**CT composition at this row.** No CT: one atomic fact-only Strategy.  The
+manuscript's `[130]`–`[134]` is a partition, a count and an entropy comparison
+against a baseline the previous node fixed.  The count is a fibre identity rather
+than a resource comparison, and the comparison has one admissible reading rather
+than a family of them, so no `Decision` is owed and none is written.
 
-### Row 33 — Capacity-token accounting `[134]`–`[136]`
+### Row 33 — Capacity-token accounting `[134]`–`[136]` (ported: `Spine.capacityTokenLedger`)
 
 - **Paper fact.** `def:primitive-sparse-blocker-carrier` builds
-  `𝔘_sp(G) = V(G) ⊔ I_E(G) ⊔ 𝒫_exc` with `I_E(G) = {(e,v) : e ∈ E(G), v ∈ e}`
-  and a carrier map `κ(B)` by cases on the six blocker types;
+  `𝔘_sp(G) = V(G) ⊔ I_E(G) ⊔ 𝒫_exc` with `I_E(G) = {(e,v) : e ∈ E(G), v ∈ e}`;
   `lem:primitive-carrier-supply` proves `|𝔘_sp(G)| = n + 2m + σ(G) ≤ 6n`.
-  `def:capacity-token-ledger` (`[134]`–`[136]`) builds
-  `𝔗_cap = 𝔗_prim ⊔ 𝔗_R ⊔ 𝔗_W`, `𝔗_prim := 𝔘_sp(G)`,
-  `𝔗_R := {(v,j) : v ∈ R, 1 ≤ j ≤ d_G(v)-3}` (so `|𝔗_R| = σ_R`), and `𝔗_W`
-  the window–remainder edge tokens together with both endpoint tokens of
-  each cross-window edge; and it defines `Θ_cap(π)` by four cases — least
-  window–remainder edge in `supp(B_π)`, else least cross-window edge and the
-  least of its two endpoint tokens, else the least high-degree remainder
-  vertex `v` with rank `j(π) = 1 + (rk_v(π) mod (d_G(v)-3))`, else `κ(B_π)`
-  — with token load `ℓ_cap(t) := |Θ_cap^{-1}(t)|`.
-  `lem:capacity-token-supply` gives `|𝔗_cap| = |𝔘_sp(G)| + σ_R + e(R,W) +
-  2e_×(W) = |𝔘_sp(G)| + 15p₁₃ + σ(G) ≤ 8n + σ(G)`.
-  `lem:token-ledger-no-overcount` gives
-  `|Π_blk| = Σ_{t ∈ 𝔗_cap} ℓ_cap(t)`, hence `|Π_blk| ≤ M₀(8n + σ(G))` when
-  every load is at most `M₀`.  `def:same-token-patterns` defines the
-  token-fibre graph `H_t` with `V(H_t) = 𝒜₀` and
-  `E(H_t) = Π_t = Θ_cap^{-1}(t)`.  `rem:surplus-pair-sharp-frontier` records
-  that this bookkeeping has no disjointness loss: free pairs are charged by
-  the sandwich, blocked pairs get one canonical blocker and one token, and
-  the fibres partition `Π_blk`.
-- **What the Lean does.**
-  `Graph.Strategy.SurplusAccounting.CanonicalAccounting.capacityToken
-  (object) (baselineDegree) :
-  Core.Strategy.CanonicalCapacityTokenAccounting.Registration Residual`.
-  Supplied fields: `Demand := Pair` (all `C(σ,2)` index pairs of row 32,
-  free ones included); `Token := PortIndex` — the active-port index type, of
-  size `σ(G)`; `demands := pairSchedule`; `tokens := fun residual =>
-  (completePortIndices residual).toEnumeration`;
-  `Eligible := fun residual demand token => token = selectedToken residual
-  demand` with `selectedToken residual pair := pair.1.1`, the pair's smaller
-  port index; `demandWeight := fun _ _ => unitCharge`;
-  `tokenCapacity := fun residual token => (object residual).degree
-  (portVertex residual token)`; `required := fun residual => (pairSchedule
-  residual).card`; `roleOf := pairRole`; `Label := Option Token × Role`;
-  `labelOf := fun _ token role => (token, role)`;
-  `labelCapacity (some token, _) := (object residual).degree (portVertex
-  residual token)` and `labelCapacity (none, _) := (pairSchedule
-  residual).card`; `aggregateLabel := Role`;
-  `memberAggregateLabel := fun _ label => label.2`.  No theorem constrains
-  this registration.  Since `Eligible` names exactly one token per demand,
-  CT4's search has a unique candidate; CT9's label is
-  `labelOf (assignedPayer? demand) (roleOf demand)`, and CT14 compares the
-  fibre count of each label against `labelCapacity`, i.e. for each active
-  port `t` the number of pairs whose smaller index is `t` against
-  `d_G(v_t)`.
-- **What it should do.** `Token` would have to be a three-summand type
-  `𝔘_sp(G) ⊕ 𝔗_R ⊕ 𝔗_W` — carrying `I_E(G)` and the window/remainder split —
-  with `tokens` an enumeration of it and a theorem
-  `(tokens residual).card ≤ 8 * vertexCount + degreeSurplus 3`.  `Eligible`
-  would have to be the graph of `Θ_cap`, defined only on blocked demands and
-  by the four-case rule (including the rank `j(π)`), so that CT4's generated
-  assignment *is* `Θ_cap` and CT9's fibre count *is* `ℓ_cap(t)`.
-  `tokenCapacity` would be `M₀`, not `d_G(v)`, and `required` would be
-  `|Π_blk|`, not `|Π(𝒜₀)|`.  `lem:token-ledger-no-overcount` would be a
-  theorem of type `(demands.values.filter Dependent).length = Σ_t
-  (partition.count t)`, and `def:same-token-patterns` would need `Token` to
-  index a graph on `𝒜₀` rather than a bare label.
-- **Gap.** The token universe is the active-port index set, not `𝔗_cap`:
-  there is no `𝔘_sp`, no `I_E(G)`, no remainder/window split, no `p₁₃`, and
-  no rank arithmetic.  `Eligible` is "pay at your own left endpoint",
-  defined for every demand, so the assignment is not `Θ_cap` and the fibre
-  counts are not `ℓ_cap`.  `tokenCapacity` is a raw graph degree, so the
-  CT14 verdict compares `σ - 1 - t` against `d_G(v_t)` — an inequality with
-  no counterpart in the manuscript.  `required = C(σ,2)` counts all pairs,
-  so CT4's feasibility test is about `|Π(𝒜₀)|` and not `|Π_blk|`, which is
-  empty here anyway by row 32's gap.  Neither `|𝔘_sp| ≤ 6n` nor
-  `|𝔗_cap| ≤ 8n + σ(G)` nor the partition identity is stated, and
-  `rem:surplus-pair-sharp-frontier`'s no-loss claim has nothing to range
-  over.  **Facts therefore fails.**
-- **Ledger and residual.**
-  `Dag.canonicalCapacityTokenAccountingRecipe` builds the profile as
-  `{ registration }`, so `current` is `Query.residual` over the accumulated
-  stage.  `demandQuery` and `tokenQuery` are `residualQuery.dependentMap`s;
-  `AfterAssignment := Ledger.Extension Previous assignmentExecution.Output`
-  and `assignmentResult := Query.latest`; `ct9Items`, `ct9Labels` and
-  `fibreSpec.label` all read `assignmentResult.read stage` and its
-  `result.stage.previous`, and `fibreSpec.label` calls
-  `assignedPayerQuery.read stage demand`, so the fibre label is CT4's
-  *generated* payer, not a supplied assignment.  `partitionQuery` and
-  `aggregateMembers` likewise read CT9's own outcome and label schedule.
-  `execution := assignmentExecution.compose (fibreExecution.compose
-  aggregateExecution)`, with all three payloads projected from the one
-  composed entry.  The predecessor is the literal row-32 stage.  Ledger and
-  Residual pass.
-- **Transport and terminals.** CT4 owns the assignment and its four
-  terminals (`missingPayer`, `overloadedFibre`, `c4`, `capacity`), CT9 the
-  fibre partition and its `overloaded`/`bounded` terminals, CT14 the
-  labelled aggregate.  No EG code selects a token, an assignment, a
-  partition, a total, or a terminal.  The operation is nonbranching; the
-  export has `e11 : v11 → v10` as its only outgoing edge, `components: []`
-  on `v11`.
+  `def:capacity-token-ledger` builds `𝔗_cap = 𝔗_prim ⊔ 𝔗_R ⊔ 𝔗_W` and the
+  four-case assignment `Θ_cap(π)` with load `ℓ_cap(t) = |Θ_cap^{-1}(t)|`;
+  `lem:capacity-token-supply` gives `|𝔗_cap| ≤ 8n + σ(G)`;
+  `lem:token-ledger-no-overcount` gives `|Π_blk| = Σ_{t} ℓ_cap(t)`;
+  `def:same-token-patterns` defines the token-fibre graph `H_t`.
+- **What the Lean does.** `capacityTokenLedgerRow` of `SurplusRows.lean`, run
+  after row 32 and reading its `canonicalPairLedger` entry.  It commits
+  `lem:primitive-carrier-supply` in both displayed forms —
+  `|𝔘_sp(G)| = n + 2m + σ(G)` as an identity
+  (`FiniteObject.card_primitiveCarrier`) and `≤ 6n` as an implication from the
+  sparse upper envelope `m ≤ 2n − 2` (`card_primitiveCarrier_le`) — where
+  `𝔘_sp(G)` is the literal three-summand `Finset.disjSum` of the vertex set, the
+  incidence family and the excess selector, the incidence count being the
+  handshake `|I_E(G)| = 2m`.  It then commits `lem:token-ledger-no-overcount` at
+  every declared token alphabet, order and eligibility relation, together with
+  the totality clause that makes the identity read at the whole blocked family:
+  the *same* `card_chargedPairs_eq_sum_multiplicity` row 32 uses, at a token
+  alphabet instead of a blocker alphabet.  Nothing is re-implemented.
+- **What it should do.** Build `𝔗_R = {(v,j) : v ∈ R, 1 ≤ j ≤ d_G(v) − 3}` and
+  the window/remainder token family `𝔗_W`, so that `𝔗_cap` is the manuscript's
+  three-summand universe rather than its primitive summand alone; build `Θ_cap`
+  by its four cases (window–remainder edge in `supp(B_π)`, else cross-window edge
+  and endpoint token, else the ranked high-degree remainder vertex, else
+  `κ(B_π)`); commit `lem:capacity-token-supply`'s `|𝔗_cap| ≤ 8n + σ(G)`; and
+  build `def:same-token-patterns`' fibre graph `H_t`.
+- **Gap.** Only the primitive summand of `𝔗_cap` is built.  `Θ_cap` is not: its
+  four cases need `supp(B_π)`, which row 32 now builds
+  (`FiniteObject.DemandActivation.blockers` and the `Blocker` constructors) but
+  which this row does not yet read, and the window/remainder split of a packing,
+  which this branch does not carry, so
+  the committed no-overcount identity is quantified over eligibility relations
+  rather than instantiated at `Θ_cap`.  `lem:capacity-token-supply`'s bound and
+  `def:same-token-patterns` have no counterpart, and
+  `rem:surplus-pair-sharp-frontier`'s no-loss claim has nothing to range over.
+  The `≤ 6n` half of `lem:primitive-carrier-supply` is committed as an
+  implication because the envelope `m ≤ 2n − 2` (`lem:sparse-upper-envelope`) is
+  not on the ledger.  **Facts therefore fails.**
+- **Ledger and residual.** `factOnly` over the row-32 stage: refinement is
+  `RefinementSystem.refl`, the residual is unchanged, the row reads
+  `canonicalPairLedger` by exact key, and `AtomicCT.run` appends the single
+  production.  Ledger and Residual pass.
+- **Transport and terminals.** Core owns the commit and the accounting; no EG
+  code selects a token, an assignment, a partition or a terminal.  The operation
+  is nonbranching.  Transport passes.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:primitive-sparse-blocker-carrier` | def |  |  |
-| `lem:primitive-carrier-supply` | lem |  |  |
+| `def:primitive-sparse-blocker-carrier` | def | `FiniteObject.primitiveCarrier`, `FiniteObject.incidences` | standalone |
+| `lem:primitive-carrier-supply` | lem | `FiniteObject.card_primitiveCarrier`, `FiniteObject.card_primitiveCarrier_le` | standalone |
 | `def:capacity-token-ledger` | def |  |  |
 | `lem:capacity-token-supply` | lem |  |  |
-| `lem:token-ledger-no-overcount` | lem |  |  |
+| `lem:token-ledger-no-overcount` | lem | `FiniteObject.card_chargedPairs_eq_sum_multiplicity`, `FiniteObject.chargedPairs_eq_of_total` | standalone |
 | `def:same-token-patterns` | def |  |  |
 | `rem:surplus-pair-sharp-frontier` | rem |  |  |
 
-`lem:capacity-token-supply` is read again at row 34 (as the denominator
-`8n + σ(G)` of the high-load bound); `lem:token-ledger-no-overcount` at rows
-34 and 36 (as `|Π_blk| ≤ M₀|𝔗_cap|`); `def:same-token-patterns` at row 34
-(as the fibre graph the roles partition).  `[136]` is their first consuming
-node.  Node `[135]`'s window-join labels
-(`def:window-remainder-surplus-split`, `lem:exact-window-join-identity`,
-`lem:surplus-aware-window-stub`, `cor:global-window-join-pressure`) belong to
-the manuscript's window/remainder block and are audited outside this range;
-nothing in this row's Lean implements them either.
+`def:capacity-token-ledger`'s cell is empty although its primitive summand is
+built: the definition is the three-summand universe together with `Θ_cap`, and
+neither is complete.
 
-**CT composition at this row.**
-`CanonicalCapacityTokenAccounting.Profile.execution` is
-`assignmentExecution.compose (fibreExecution.compose aggregateExecution)`,
-so the code order is **CT4 → CT9 → CT14**, not the reference table's
-CT9 → CT4 → CT14.  CT4 scans `demandQuery` against `tokenQuery` and
-generates the first-eligible demand → token assignment, deciding
-`missingPayer` / `overloadedFibre` / `c4` / `capacity` against
-`tokenCapacity` and `required`.  CT9 then fibres the same demands by
-`labelOf (assignedPayer? demand) (roleOf demand)` and compares each fibre
-against `labelCapacity`.  CT14 aggregates those fibre counts by
-`memberAggregateLabel`.  The composition is what makes the fibre label
-depend on the *generated* assignment: `fibreSpec.label` reads
-`assignedPayerQuery`, which projects CT4's own outcome, so a bare CT9 would
-have to be handed the token map as supplied data and the ledger would carry
-an assignment nobody derived.
+**CT composition at this row.** No CT: one atomic fact-only Strategy.  The
+manuscript's `[134]`–`[136]` is a supply count and a fibre identity; a CT4
+assignment and a CT9 fibre partition become available only once `Θ_cap` itself
+is built, and registering them before that would decide nothing.
 
-### Row 34 — Coupled homogeneous fibre pressure `[137]`–`[143]`
+### Row 34 — Coupled homogeneous fibre pressure `[137]`–`[143]` (ported: `Spine.coupledFibrePressure`)
 
 - **Paper fact.** `[137]` is the coupled single-graph high-load test.
   `lem:capacity-token-high-load` states
   `C(s,2) ≤ E_spine(n) + ((1/2)σ(G) + 1) log₂ n + L_max |𝔗_cap|` with
   `L_max := max_t ℓ_cap(t)`, hence
-  `L_max ≥ max{0, (1/4)σ(G)² - C_E n - ((1/2)σ+1)log₂ n} / (8n + σ(G))` for
-  the full active family.  `cor:forced-homogeneous-same-token-scale`,
+  `L_max ≥ max{0, (1/4)σ(G)² − C_E n − ((1/2)σ+1)log₂ n} / (8n + σ(G))` for the
+  full active family.  `cor:forced-homogeneous-same-token-scale`,
   `cor:coupled-single-graph-overload-budget`,
   `cor:numerical-single-graph-budget` and
-  `prop:single-graph-sparse-pressure-routing` make the test *coupled*: all
-  three token classes are evaluated at the same `n, p₁₃, σ_W, σ_R`; if
-  `D_all = 0` the branch routes to `[138]`, otherwise
-  `thm:tokenized-surplus-accounting-closure` — "Suppose also that the
-  capacity-token ledger satisfies `ℓ_cap(t) ≤ M₀` … Then `σ(G) = O(√n)`" —
-  splits the forced load into the window-incidence, remainder-surplus and
-  primitive-carrier classes and routes to `[140]`, `[142]` or `[143]`.
-  `def:same-token-blocker-roles` defines `ρ_t(π) = (type(B_π), class(t),
-  sub(t))` with `type ∈ {a,…,f}`, `class ∈ {W,R,P}`,
-  `sub ∈ {RW,WW,R,V,I,P}`, bounds the alphabet by
+  `prop:single-graph-sparse-pressure-routing` make the test *coupled*: all three
+  token classes are evaluated at the same `n, p₁₃, σ_W, σ_R`; if `D_all = 0` the
+  branch routes to `[138]`, otherwise
+  `thm:tokenized-surplus-accounting-closure` splits the forced load into the
+  window-incidence, remainder-surplus and primitive-carrier classes and routes
+  to `[140]`, `[142]` or `[143]`.  `def:same-token-blocker-roles` defines
+  `ρ_t(π) = (type(B_π), class(t), sub(t))` with `type ∈ {a,…,f}`,
+  `class ∈ {W,R,P}`, `sub ∈ {RW,WW,R,V,I,P}`, bounds the alphabet by
   `|𝔕_st| ≤ 6(2+1+3) = 36 =: Q_st`, and gives the fibre partition
   `ℓ_cap(t) = Σ_{r ∈ 𝔕_st} ℓ(t,r)`.
   `lem:exact-surplus-pair-charge-partition`,
@@ -3764,496 +4193,430 @@ an assignment nobody derived.
   `cor:quantified-homogeneous-class-overload` and
   `thm:sharp-surplus-overload-audit` supply the exact charge partition, the
   classwise budget and the six-subtype load audit behind that split, and
-  `cor:spine-lower-bound-surplus-estimates` converts the `[138]`
-  lower-bound packages into the surplus estimate on the near-cubic route.
-- **What the Lean does.**
-  `Graph.Strategy.SurplusAccounting.CanonicalAccounting.fibrePressure
-  (object) (baselineDegree) :
-  Core.Strategy.CoupledHomogeneousFibrePressure.Registration Residual`.
-  Supplied fields: `Item := Pair`, `Token := PortIndex`,
-  `Role := Sum ((object residual).Vertex × (object residual).Vertex) Unit`,
-  `Label := Option Token × Role`, `items := pairSchedule`,
-  `labelOf := itemLabel := fun residual pair => (some (selectedToken residual
-  pair), pairRole residual pair)`, `fibreCapacity := labelCapacity`.
-  CT13 layer: `Payer := PortIndex`, `Obstruction := Role`,
-  `Resource := PortIndex`, `payers := (completePortIndices …).toEnumeration`,
-  `tierTwo := fun residual _ => (completePortIndices …).toEnumeration`,
-  `Eligible := fun residual payer => baselineDegree residual < (object
-  residual).degree (portVertex residual payer)`,
-  `obstructionCost := fun residual _ => (pairSchedule residual).card`,
-  `payerResource := fun _ payer => payer`, `charge := tokenCapacity`,
-  `demand := fun residual => (pairSchedule residual).card`, and
-  `obstructions := obstructionSchedule`, whose `fallbackDefault` is
-  `Role.freeAnchor` and whose `remaining` is `completeBlockerKinds.values.map
-  Role.blocked` (every ordered vertex pair).  CT14 layer:
-  `Member := Label`, `AggregateLabel := Role`,
-  `members := (completeLabels …).toEnumeration`,
-  `memberLowerMass := labelCapacity`,
-  `memberCapacity := fun residual label => some (labelCapacity residual
-  label)`, `memberLabel := fun _ label => some label.2`.  `memberLowerMass`
-  and `memberCapacity` are the same function, so the aggregate comparison
-  holds with equality on every label.  `Eligible` holds for every payer,
-  because `ActivePort`'s second component is `Fin (degree vertex -
-  baselineDegree)` and a port index can only name a vertex with positive
-  surplus — the file's own `baselineDegree_lt_degree_of_mem_pairSupport`
-  derives exactly this from `(portAt … index).2.isLt` and `omega`.  No
-  theorem constrains this registration.
-- **What it should do.** `Token` would be `𝔗_cap` and `labelOf` would be
-  `(Θ_cap π, ρ_t(π))` with `Role := Graph.SameTokenBlockerRoles.Role`, so
-  that CT9's fibres are the `Π_{t,r}` and `memberLowerMass` is `ℓ(t,r)`.
-  `memberCapacity` would be a bound independent of the fibre — `M₀`, or the
-  right-hand side of `lem:capacity-token-high-load` — so that CT14's verdict
-  is the high-load alternative rather than an identity.  `demand` would be
-  `C(s,2)` and `obstructionCost` would carry
-  `E_spine(n) + ((1/2)σ + 1) log₂ n`, so that the CT13/CT14 reconciliation
-  computes `L_max |𝔗_cap|` and decides `D_all > 0`.  Three distinct
-  `Obstruction` values `W`, `R`, `P` evaluated at shared `n, p₁₃, σ_W, σ_R`
-  would make the test coupled.
-- **Gap.** `memberLowerMass = memberCapacity`, so the stage's aggregate
-  comparison is an identity and decides nothing; there is no `D_all`, no
-  `L_max`, no `|𝔗_cap|`, no `E_spine(n)`, no `log₂ n`, and no coupling of
-  three classes at shared parameters.  `Role` is `Sum (Vertex × Vertex)
-  Unit` — one blocked role per ordered vertex pair plus a free anchor — not
-  `𝔕_st`; the role map `ρ_t` and the fibres `Π_{t,r}` do not exist.  The
-  manuscript's alphabet *is* declared, in
-  `/home/guillem/structural_exhaustion/hypostructure/Hypostructure/Graph/SameTokenBlockerRoles.lean`,
-  as `Role := { blocker : BlockerKind, token : TokenSubtype }` with
-  `BlockerKind` a six-constructor inductive
-  (`sharedDeclaredSupport`, `sharedReturnSupport`, `sharedLocalBuffer`,
-  `boundaryProfile`, `targetResponse`, `arithmeticChordSet`), `TokenSubtype`
-  a six-constructor inductive (`boundaryWindow`, `crossWindow`,
-  `remainderSurplus`, `primitiveVertex`, `primitiveIncidence`,
-  `primitivePort`), `TokenClass` a three-constructor inductive, and
-  `tokenClass : TokenSubtype → TokenClass` sending
-  `boundaryWindow, crossWindow ↦ windowIncidence`,
-  `remainderSurplus ↦ remainderSurplus`,
-  `primitiveVertex, primitiveIncidence, primitivePort ↦ primitiveCarrier`;
-  `card_role : Fintype.card Role = Fintype.card BlockerKind * Fintype.card
-  TokenSubtype` and `card_tokenSubtype_eq_sum_classFibres` give the
-  manuscript's `6 · (2+1+3)`.  That alphabet is never used as a role: its
-  only consumer in code is `sameTokenRoleBound := Fintype.card
-  Graph.SameTokenBlockerRoles.Role` inside `homogeneousCapCharge`, i.e. as a
-  numeric capacity constant in row 36.  `Eligible` is true for every payer,
-  so the CT13 tier-one selection is unconstrained.
-  `lem:exact-surplus-pair-charge-partition`,
+  `cor:spine-lower-bound-surplus-estimates` converts the `[138]` lower-bound
+  packages into the surplus estimate on the near-cubic route.
+- **What the Lean does.** `coupledFibrePressureRow` of
+  `Graph/Strategy/HomogeneousBottleneckRows.lean`: a `factOnly` Strategy with
+  `Requires := [canonicalPairLedger]` and
+  `Produces := [roleFibrePartition, fibrePressure]`.
+
+  Both productions are universally quantified over the *presentation* the ledger
+  still needs -- a declared token order with its `sub(t)` map, an eligibility
+  relation, a role map, and an entropy budget with its sandwich bound -- and are
+  stated at `Graph.CapacityTokenLedger.ofPortSchedule`, which builds the ledger
+  on the object's own `FiniteObject.portPairSchedule`.  `Π_blk`, `Π_free` and
+  `ℓ_cap(t)` are `CanonicalFibreLedger`'s `assigned`, `unassigned` and
+  `multiplicity` at that schedule.  The constructor takes `|Π(𝒜₀)| = C(σ(G),2)`
+  as an argument, and the executor supplies node `[130]`'s committed value read
+  through `FactInputs.get`, which is how `|𝒜₀| = σ(G)` enters.
+
+  `roleFibrePartition` is `∀ ledger, ∀ t, ℓ_cap(t) = Σ_{r : Role} ℓ(t,r)`,
+  discharged by `CapacityTokenLedger.load_eq_sum_roleFibre`, which is
+  `PatternFamily.card_eq_sum_roleFibre` at `roles := Finset.univ` over
+  `SameTokenBlockerRoles.Role`.  `fibrePressure` is
+  `∀ ledger, ∃ t ∈ 𝔗_cap, C(σ,2) ≤ budget + |𝔗_cap|·ℓ_cap(t) ∧ ∃ r,
+  ℓ_cap(t) ≤ Q_st·ℓ(t,r) ∧ (a matching of size ψ(ℓ(t,r)) in H_{t,r} or a star of
+  that size)`, discharged by
+  `CapacityTokenLedger.exists_forced_homogeneous_pattern`.
+
+  The mathematics is in four proof-agnostic `Graph` modules.
+  `Graph/MatchingStar.lean` defines `PatternFamily.degree`, `support`,
+  `IsMatching`, `IsStar` on a `Finset (Sym2 V)`, decides both notions at a finite
+  vertex type, and proves `card_le_matching_mul_two_mul_degree_sub_one`,
+  `card_le_of_no_matching_no_star` and `exists_matching_or_star_of_lt_card`.
+  `Graph/HomogeneousTokenCap.lean` defines `roleFibre`, `capCharge` and
+  `patternThreshold` and proves `card_eq_sum_roleFibre`, `card_le_capCharge`,
+  `exists_large_roleFibre`, `exists_homogeneous_matching`,
+  `exists_homogeneous_star`, `le_patternThreshold_mul`, `patternThreshold_le` and
+  `exists_matching_or_star_of_patternThreshold`.
+  `Graph/TokenLoadClosure.lean` defines `TokenLoad.fibre` and `load` and proves
+  `card_eq_sum_load`, `card_le_mul_of_load_le`, `exists_load_ge`,
+  `pairCount_le_entropy_add_load_mul`, `le_one_add_of_quadratic_le` and
+  `demand_le_of_bounded_load`.  `Graph/CapacityTokenLedger.lean` bundles the
+  presentation and proves the row-level statements.
+  `Fixtures/HomogeneousTokenBottleneck.lean` evaluates the whole chain at a
+  concrete presentation.
+- **What it should do.** The two productions would be derived from *ledger
+  facts*: `𝔗_cap` and `Θ_cap` read by exact key from row 33, `Π_blk` and the
+  free/blocked split from row 32, and the entropy budget from row 31, so the
+  manifest would read `Requires := [capacityTokenLedger, canonicalPairLedger,
+  baselineSpineDemand]` and the executor would obtain each by `FactInputs.get`.
+  The node would then be a *branch*: `D_all = 0` commits the explicit quadratic
+  bound and routes to `[138]`; `D_all > 0` commits the forced role-homogeneous
+  pattern and routes to `[140]`, `[142]` or `[143]` by `class(t)`.
+  `cor:coupled-single-graph-overload-budget` and
+  `cor:numerical-single-graph-budget` would be the two sides of that test at the
+  registered `C_E`, and `thm:sharp-classwise-homogeneous-token-budget` with
+  `cor:quantified-homogeneous-class-overload` would state the classwise budget the
+  split spends.
+- **Gap.** Three failures.
+
+  First, the row reads one fact and needs three.  `Requires :=
+  [canonicalPairLedger]` is exact -- the executor calls `FactInputs.get` on that
+  key and on nothing else -- and node `[130]`'s `|Π(𝒜₀)| = C(σ(G),2)` is what
+  `CapacityTokenLedger.ofPortSchedule` consumes, so the pair schedule and its
+  count are read rather than assumed.  What is *not* read is what node `[136]`
+  does not commit: its own **Gap** records that only the primitive summand of
+  `𝔗_cap` is built, that `Θ_cap` is not built at all, that
+  `lem:capacity-token-supply`'s `|𝔗_cap| ≤ 8n + σ(G)` is absent and that
+  `def:same-token-patterns`' fibre graph `H_t` has no counterpart.  Those enter
+  as the quantified presentation -- the declared token order, the eligibility
+  relation, the role map -- together with the entropy budget.  The budget is no
+  longer missing: row 32 commits
+  `prop:sparse-entropy-sandwich-with-blockers` (`Graph.entropySandwich`), so the
+  free-pair charge is on the `canonicalPairLedger` entry this row already reads;
+  what this row does not do is spend it.  The remaining statements it commits are
+  implications whose antecedents the branch has not established.  When `Θ_cap` is built, the token
+  order and eligibility stop being quantified and `Requires` grows to
+  `[canonicalPairLedger, capacityTokenLedger]`.
+
+  What is no longer a gap: there is no second ledger and no second pair
+  representation.  `Π_blk`, `Π_free` and `ℓ_cap(t)` are
+  `Graph.CanonicalFibreLedger`'s `assigned`, `unassigned` and `multiplicity` --
+  the same implementation nodes `[130]`--`[136]` use -- and
+  `lem:token-ledger-no-overcount` is that module's
+  `card_assigned_eq_sum_multiplicity`, read here rather than restated.
+
+  Second, the node is nonbranching here.  `D_all`, the routing test of
+  `prop:single-graph-sparse-pressure-routing`, has no counterpart, so neither the
+  `[138]` arm nor the three class arms exist; the row commits the high-load
+  display unconditionally.  `cor:coupled-single-graph-overload-budget`,
+  `cor:numerical-single-graph-budget` and
+  `cor:spine-lower-bound-surplus-estimates` have no counterpart.
+
+  Third, `lem:exact-surplus-pair-charge-partition`,
   `thm:sharp-classwise-homogeneous-token-budget`,
-  `cor:quantified-homogeneous-class-overload`,
-  `thm:sharp-surplus-overload-audit` and
-  `cor:spine-lower-bound-surplus-estimates` have no counterpart anywhere in
-  the tree.  **Facts therefore fails.**
-- **Ledger and residual.**
-  `Dag.coupledHomogeneousFibrePressureRecipe` builds
-  `{ registration, current }` with the compiler's query.
-  `execution := overloadExecution.compose (reconciliationExecution.compose
-  pressureExecution)`; each stage is indexed by the previous literal
-  `Ledger.Extension` and the three payloads are projected from the single
-  composed entry, with `composed_eq` proving the projection is the actual
-  run.  The predecessor is the literal row-33 stage.  Ledger and Residual
-  pass.
-- **Transport and terminals.** CT9 owns the fibre partition, CT13 the payer
-  and fallback selection and the reconciliation, CT14 the aggregate
-  comparison and its terminal.  Graph supplies the registration and the
-  `CT13.ObstructionSchedule` value; the application supplies `object` and
-  `baselineDegree`.  The operation is nonbranching; the export has
-  `e12 : v10 → v9` as its only outgoing edge, `components: []` on `v10`.
+  `cor:quantified-homogeneous-class-overload` and
+  `thm:sharp-surplus-overload-audit` have no counterpart; in particular `ψ` is
+  defined and characterized but `thm:sharp-surplus-overload-audit`'s explicit
+  `ψ(N_*(G)/(36(4n+15p₁₃+3σ(G))))` is not, because its denominator is
+  `lem:capacity-token-supply`, which row 33 does not commit.  **Facts therefore
+  fails.**
+
+  What is *not* a gap: the coupling itself.  All three token classes are
+  evaluated against one presented ledger — one token universe, one charge map,
+  one budget — so the window-incidence, remainder-surplus and primitive-carrier
+  tokens are compared at shared parameters, which is what the manuscript means by
+  coupled.
+- **Ledger and residual.** `factOnly` over the node-`[136]` stage: the
+  refinement is `RefinementSystem.refl`, the residual is unchanged, the row reads
+  `canonicalPairLedger` by exact key, and `AtomicCT.run` appends both productions
+  while retaining the literal ancestry, so every earlier fact of the branch is
+  still in the output index.  Ledger and Residual pass.
+- **Transport and terminals.** No EG code: the row lives in the framework's
+  `Graph.Strategy` namespace, quantified over the residual domain's fact system
+  and over the keys it produces, and the four `Graph` modules mention no EG name,
+  no paper label as a value and no unexplained constant — `Q_st` is
+  `Fintype.card SameTokenBlockerRoles.Role` and every other quantity is a
+  parameter.  The row transports nothing outside the one `ExactLedger` and names
+  no producer or execution position, and the operation is nonbranching, so
+  Transport passes.  What is absent is the *node's* branch:
+  `prop:single-graph-sparse-pressure-routing`'s `D_all` test has no counterpart,
+  which is a Facts gap rather than a transport one.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:capacity-token-high-load` | lem |  |  |
-| `cor:forced-homogeneous-same-token-scale` | cor |  |  |
+| `lem:capacity-token-high-load` | lem | `TokenLoad.pairCount_le_entropy_add_load_mul`, `TokenLoad.exists_load_ge`, `CapacityTokenLedger.exists_high_load` | standalone |
+| `cor:forced-homogeneous-same-token-scale` | cor | `PatternFamily.exists_large_roleFibre`, `PatternFamily.exists_matching_or_star_of_patternThreshold`, `CapacityTokenLedger.exists_forced_homogeneous_pattern` | standalone |
 | `cor:coupled-single-graph-overload-budget` | cor |  |  |
 | `cor:numerical-single-graph-budget` | cor |  |  |
 | `prop:single-graph-sparse-pressure-routing` | pro |  |  |
-| `thm:tokenized-surplus-accounting-closure` | the |  |  |
-| `def:same-token-blocker-roles` | def | `SameTokenBlockerRoles.Role`<br>`SameTokenBlockerRoles.card_role`<br>`SameTokenBlockerRoles.card_tokenSubtype_eq_sum_classFibres` | CT9→CT14→CT10→CT6→CT3→CT6→CT1→CT5→CT14 (row 36) |
+| `thm:tokenized-surplus-accounting-closure` | the | `TokenLoad.le_one_add_of_quadratic_le`, `TokenLoad.demand_le_of_bounded_load` | standalone (row 36) |
+| `def:same-token-blocker-roles` | def | `SameTokenBlockerRoles.Role`, `SameTokenBlockerRoles.card_role`, `SameTokenBlockerRoles.card_tokenSubtype_eq_sum_classFibres`, `PatternFamily.roleFibre`, `PatternFamily.card_eq_sum_roleFibre`, `CapacityTokenLedger.load_eq_sum_roleFibre` | standalone |
 | `lem:exact-surplus-pair-charge-partition` | lem |  |  |
 | `thm:sharp-classwise-homogeneous-token-budget` | the |  |  |
 | `cor:quantified-homogeneous-class-overload` | cor |  |  |
 | `thm:sharp-surplus-overload-audit` | the |  |  |
 | `cor:spine-lower-bound-surplus-estimates` | cor |  |  |
 
-`def:same-token-blocker-roles` is filed here because `[139]`–`[143]` is its
-first consuming node span, but the only declaration that reaches the run is
-`Role`, and it reaches it at row 36 as `Fintype.card Role` inside
-`homogeneousTokenCap`, not as a role at this row; the column-4 chain is
-therefore row 36's.  `thm:tokenized-surplus-accounting-closure` is read
-again at row 36, where `cor:homogeneous-same-token-caps-close` invokes it.
-`cor:spine-lower-bound-surplus-estimates` and
-`thm:sharp-surplus-overload-audit` are filed at the closest row: the former
-belongs to terminal `[138]`, reached from `[137]`, and the latter to the
-subtype audit that `[137]`–`[143]` performs; neither has a node of its own
-in rows 30–36.
+`thm:tokenized-surplus-accounting-closure` is filed here because `[137]` is
+where the manuscript invokes it, but the declarations that state it are read at
+row 36 inside `cor:homogeneous-same-token-caps-close`; the column-4 entry is
+row 36's.  `def:same-token-blocker-roles` is used *as a role* here rather than as
+a numeric constant: `PatternFamily.roleFibre` colours the token fibre by
+`SameTokenBlockerRoles.Role`, and `card_eq_sum_roleFibre` is the partition clause.
 
-**CT composition at this row.**
-`CoupledHomogeneousFibrePressure.Profile.execution` is
-`overloadExecution.compose (reconciliationExecution.compose
-pressureExecution)`, i.e. **CT9 → CT13 → CT14**, matching the reference
-table.  CT9 fibres `items` by `labelOf` and compares each fibre against
-`fibreCapacity`, deciding `overloaded` or `bounded`.  CT13 then works over
-that extension: it walks `obstructions` (an `ObstructionSchedule` with a
-`fallbackDefault` and a `remaining` list), selects an eligible `Payer` per
-obstruction from `payers`, falls through to `tierTwo` when tier one is
-exhausted, and reconciles `charge` against `obstructionCost` and `demand`
-by `payerResource` up to `resourceDecidableEq`.  CT14 finally aggregates
-`memberLowerMass` against `memberCapacity` over `members`, grouped by
-`memberLabel`.  The composition buys the reconciliation step between a fibre
-partition and an aggregate verdict — CT13 is the only stage that can spend a
-payer against an obstruction, and it needs CT9's partition to know which
-fibres are overloaded.  As registered there is nothing to reconcile:
-`Eligible` admits every payer and `memberLowerMass` and `memberCapacity` are
-the same function.
+**CT composition at this row.** None: one atomic fact-only Strategy.  The retired
+`Core.Strategy.CoupledHomogeneousFibrePressure` registration, which composed
+CT9 → CT13 → CT14 against the deleted adapter stack, is deleted in this change as
+this row's old path.
 
-### Row 35 — Finite bottleneck classification `[140]`–`[143]`
+### Row 35 — Finite bottleneck classification `[140]`–`[143]` (ported: `Spine.bottleneckClassification`)
 
 - **Paper fact.** `[140]`, `[142]` and `[143]` are three separate geometric
   audits, one per token class — window-incidence, remainder-surplus,
-  primitive-carrier — each asking whether the class supports a
-  role-homogeneous same-token matching or star.
-  `lem:same-token-matching-star` supplies the combinatorics:
-  `e(H) ≤ ν(H)(2Δ(H) - 1)`, hence "if `K ≥ 1` and `H` contains neither a
-  matching of size `K` nor a star of size `K`, then `e(H) ≤ (K-1)(2K-3)`".
-  `lem:same-token-homogeneous-extraction` refines a same-token `K`-pattern
-  to a role-homogeneous one of size `⌈K/Q_st⌉`.
-  `def:homogeneous-token-charge` fixes `ψ(x)` and the cap charge
-  `Cap_hom(L) := Q_st(L-1)(2L-3)`, "the uniform token load allowed by
-  charging each of the at most `Q_st` role fibres separately when no
-  role-homogeneous same-token `L`-matching or `L`-star occurs at that
-  token"; `cor:quantitative-homogeneous-overload` and
+  primitive-carrier — each asking whether the class supports a role-homogeneous
+  same-token matching or star.  `lem:same-token-matching-star` supplies the
+  combinatorics: `e(H) ≤ ν(H)(2Δ(H) − 1)`, hence "if `K ≥ 1` and `H` contains
+  neither a matching of size `K` nor a star of size `K`, then
+  `e(H) ≤ (K−1)(2K−3)`".  `lem:same-token-homogeneous-extraction` refines a
+  same-token `K`-pattern to a role-homogeneous one of size `⌈K/Q_st⌉`.
+  `def:homogeneous-token-charge` fixes `ψ(x)` — the least integer `k ≥ 0` with
+  `x ≤ k(2k−1)` — and the cap charge `Cap_hom(L) := Q_st(L−1)(2L−3)`, "the
+  uniform token load allowed by charging each of the at most `Q_st` role fibres
+  separately when no role-homogeneous same-token `L`-matching or `L`-star occurs
+  at that token"; `cor:quantitative-homogeneous-overload` and
   `cor:forced-same-token-scale` are its quantitative forms.
   `def:same-token-routing-germs` defines the routing support `Z(π;t,r)`, the
   connector germs from the primitive carrier of `t` to `T(p)` or `T(q)`, the
-  *first separator* (the last vertex of the maximal common initial segment
-  before the germs leave through two distinct next incidences), the parallel
-  case, and the finite routing-label alphabet of cardinality `Q_geom`.
-- **What the Lean does.**
-  `Graph.Strategy.SurplusAccounting.CanonicalAccounting.bottleneck (object)
-  (baselineDegree) :
-  Core.Strategy.FiniteBottleneckClassification.Registration Residual`.
-  Supplied fields, in four groups.  Pattern/pressure:
-  `PatternItem := Pair`, `CoarseCode := Role`,
-  `patternItems := pairSchedule`, `completeCoarseCodes := completeRoles`,
-  `coarseCodeOf := pairRole`, `PressureLabel := Role`,
-  `pressureCapacity := fun residual _ => some (pairSchedule residual).card`
-  (the same number for every code), `pressureLabel := fun _ role => some
-  role`.  Classification: `Datum := Pair`, `SemanticTag := Role`,
-  `Promotion := Role`, `data := pairSchedule`, `classOf := pairRole`,
-  `Direct := fun _ role => role = Role.freeAnchor`,
-  `promote := fun _ role => role`.  Separator:
-  `SeparatorIndex := PortIndex`, `SeparatorData := fun _ _ => Unit`,
-  `separatorOrder := (completePortIndices residual).toEnumeration`,
-  `SeparatorFailure := fun residual token => baselineDegree residual <
-  (object residual).degree (portVertex residual token)`,
-  `separatorFailureData := fun _ _ _ => ()`,
-  `separatorContribution := fun residual token => (object residual).degree
-  (portVertex residual token) - baselineDegree residual`.  The only cap
-  arithmetic in the tree is
-  `homogeneousCapCharge (patternBound : Nat) : Nat := sameTokenRoleBound *
-  ((patternBound - 1) * (2 * patternBound - 3))` with
-  `sameTokenRoleBound := Fintype.card Graph.SameTokenBlockerRoles.Role`, and
-  `geometricPatternBound (baselineDegree : Nat) : Nat := baselineDegree + 1`;
-  both are plain `Nat` computations with no hypotheses and no theorem
-  attached, consumed only by row 36's `boundedCapacity`.  No theorem
-  constrains this registration.
-- **What it should do.** `CoarseCode` would be the token class `{W, R, P}`
-  (or `Graph.SameTokenBlockerRoles.TokenClass`), so the CT9 partition is the
-  three-way class split and the audits `[140]`, `[142]`, `[143]` are three
-  distinct fibres.  `pressureCapacity` would be `Cap_hom(L_geom)` per class,
-  not `|pairSchedule|` uniformly.  `SeparatorIndex` would range over pairs
-  of routing germs in `Z(π;t,r)`, `SeparatorFailure` would say that two
-  germs with the same routing label first separate at a vertex `z`, and
-  `SeparatorData` would carry `z`, the common prefix and the two tails, so
-  that `separatorContribution` bounds the germ count by `Q_geom` and a
-  firing index yields `4 ≤ d_G(z)` and a decorated fan envelope.  Separate
-  theorems of type `e(H) ≤ ν(H) * (2 * Δ(H) - 1)` and
-  `¬ HasMatching K H → ¬ HasStar K H → e(H) ≤ (K-1)*(2K-3)` would state
-  `lem:same-token-matching-star`, and one of type
-  `HasMatching K H → ∃ r, HasMatching (K / Q_st) (H.roleFibre r)` would
-  state `lem:same-token-homogeneous-extraction`.
-- **Gap.** There is one class, not three: `CoarseCode = Role = Sum (Vertex ×
-  Vertex) Unit`, and `Direct` is the Boolean free/blocked test of row 32,
-  which is constantly `freeAnchor` on this branch.  `pressureCapacity` is a
-  single constant for every code, so the CT14 pressure verdict carries no
-  class information.  `SeparatorFailure` holds for *every* index by the
-  construction of `ActivePort` (the same fact the file proves for row 34's
-  `Eligible`), so the CT6 ordered scan reports a failure at the first port
-  and its `SeparatorData` is `Unit`: there is no germ, no common prefix, no
-  first separator, no `Q_geom`, and no `4 ≤ d_G(z)`.  "Separator" here
-  restates the port's own defining condition.  `lem:same-token-matching-star`
-  and `lem:same-token-homogeneous-extraction` have no counterpart: no
-  matching, star, matching number, or maximum degree is defined anywhere in
-  `/home/guillem/structural_exhaustion/hypostructure/Hypostructure/Graph/Strategy/SurplusAccounting.lean`;
-  `homogeneousCapCharge` computes `Cap_hom(L)` but asserts nothing, so the
-  implication that would license it is missing.  **Facts therefore fails.**
-- **Ledger and residual.**
-  `FiniteBottleneckClassification.Profile.execution` is
-  `collisionExecution.compose (pressureExecution.compose
-  (classificationExecution.compose separatorExecution))`; the stages are
-  built over `AfterCollision`, `AfterPressure`, `AfterClassification`, each
-  a literal `Ledger.Extension`, and the four payloads are projected from the
-  single composed output with `composed_eq : composed = profile.execution.run
-  live.previous` proving the projection is the actual run.  The predecessor
-  is the literal row-34 stage.  Ledger and Residual pass.
-- **Transport and terminals.** CT9, CT14, CT10 and CT6 own the partition,
-  the labelled pressure comparison, the classification and the ordered
-  separator scan; each terminal is read back rather than chosen.  Graph
-  supplies only the registration.  The operation is nonbranching; the export
-  has `e13 : v9 → v8` as its only outgoing edge, `components: []` on `v9`.
+  *first separator*, the parallel case, and the finite routing-label alphabet of
+  cardinality `Q_geom`.
+- **What the Lean does.** `bottleneckClassificationRow` of
+  `Graph/Strategy/HomogeneousBottleneckRows.lean`: a `factOnly` Strategy with
+  `Requires := [canonicalPairLedger]` and
+  `Produces := [bottleneckClassification]`.
+
+  Its production is, over every presented `CapacityTokenLedger` at the object's
+  own degree surplus and every class bound `patternBound : TokenClass → Nat`:
+
+    `∀ t, 1 ≤ L(class t) → Cap_hom(L(class t)) < ℓ_cap(t) →
+       ∃ r : Role, (a matching of size L(class t) in H_{t,r})
+                 ∨ (a star of size L(class t) in H_{t,r})`,
+
+  discharged by `CapacityTokenLedger.exists_homogeneous_pattern_of_capCharge_lt`,
+  whose proof is the contrapositive of `PatternFamily.card_le_capCharge` at
+  `roles := Finset.univ`, rewritten through
+  `SameTokenBlockerRoles.card_univ_eq_sameTokenRoleBound` and
+  `homogeneousCapCharge_eq_capCharge`.
+
+  The three audits are one statement, and the reason is checkable: the bound is a
+  function of `CapacityTokenLedger.tokenClass t`, which is
+  `SameTokenBlockerRoles.tokenClass (ledger.subtype t)`, and the ledger is a
+  single presentation, so `[140]`, `[142]` and `[143]` are its three instances at
+  shared parameters.
+
+  `PatternFamily.card_le_capCharge` is the manuscript's sentence: it charges each
+  of the `Q_st` role fibres by `card_le_of_no_matching_no_star` and sums
+  `card_eq_sum_roleFibre`.  `Cap_hom` is
+  `SameTokenBlockerRoles.homogeneousCapCharge`, definitionally
+  `PatternFamily.capCharge (Fintype.card Role)`.  `ψ` is
+  `PatternFamily.patternThreshold`, defined by the manuscript's characterizing
+  property rather than its closed form, with `le_patternThreshold_mul` and
+  `patternThreshold_le` as its two halves.
+- **What it should do.** The row would consume rows 31--33's facts rather than a
+  quantified presentation, and it would be three *branch arms* rather than one
+  universally quantified implication: node `[137]` routes to `[140]`, `[142]` or
+  `[143]` by `class(t)`, and each audit commits its own class's verdict on its
+  own cursor.  `def:same-token-routing-germs` would supply `Z(π;t,r)`, the
+  connector germs, the first separator and the finite routing-label alphabet, so
+  that `Q_geom` were a counted quantity and `L_geom = Q_geom + 1` a derived bound
+  rather than a parameter.  `cor:quantitative-homogeneous-overload` would state
+  the explicit lower bound on `K_hom(G)` at the registered `C_E`.
+- **Gap.** Two failures.
+
+  First, the same partial upstream as row 34: `Requires := [canonicalPairLedger]`
+  reads node `[130]`'s pair count, but `Θ_cap`, the full `𝔗_cap` and the entropy
+  sandwich are still quantified because no row commits them, so what is committed
+  is an implication rather than a verdict about the branch.
+
+  Second, the geometry is absent.  `def:same-token-routing-germs` has no
+  counterpart: there is no routing support, no connector germ, no common prefix,
+  no first separator, no parallel case and no `Q_geom`.  The class bound `L` is
+  therefore a *parameter* of the committed statement rather than the `Q_geom + 1`
+  the manuscript derives; `SameTokenBlockerRoles.geometricPatternBound` now takes
+  the routing-label bound as its argument and says so, but nothing computes that
+  bound.  `cor:quantitative-homogeneous-overload` has no counterpart.  **Facts
+  therefore fails.**
+
+  What is *not* a gap, and was in the retired implementation: the coarse code is
+  the manuscript's own alphabet rather than an ordered vertex pair, the capacity
+  is `Cap_hom` rather than a uniform constant, and the matching--star bound is
+  proved rather than asserted —
+  `Fixtures.HomogeneousTokenBottleneck.matching_star_sharp` computes that it is
+  attained with equality at the triangle, so the coefficients `(L−1)(2L−3)` carry
+  no slack, and `patternThreshold_three` computes `ψ(3) = 2` against both halves
+  of its minimality.
+- **Ledger and residual.** As row 34: `factOnly` over the previous stage,
+  residual unchanged by `RefinementSystem.refl`, the required key read by
+  `FactInputs.get`, the production appended by `AtomicCT.run`.  Ledger and
+  Residual pass.
+- **Transport and terminals.** No EG code, no payload, no terminal, no routing.
+  The three audits do not branch, so **Transport fails**: `[140]`, `[142]` and
+  `[143]` are instances of one statement rather than three arms a router selected.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:same-token-matching-star` | lem |  |  |
-| `lem:same-token-homogeneous-extraction` | lem |  |  |
-| `def:homogeneous-token-charge` | def | `SurplusAccounting.homogeneousCapCharge` | CT9→CT14→CT10→CT6→CT3→CT6→CT1→CT5→CT14 (row 36) |
+| `lem:same-token-matching-star` | lem | `PatternFamily.card_le_matching_mul_two_mul_degree_sub_one`, `PatternFamily.card_le_of_no_matching_no_star`, `PatternFamily.exists_matching_or_star_of_lt_card` | standalone |
+| `lem:same-token-homogeneous-extraction` | lem | `PatternFamily.exists_homogeneous_matching`, `PatternFamily.exists_homogeneous_star`, `PatternFamily.exists_large_roleFibre` | standalone |
+| `def:homogeneous-token-charge` | def | `PatternFamily.capCharge`, `PatternFamily.patternThreshold`, `PatternFamily.le_patternThreshold_mul`, `PatternFamily.patternThreshold_le`, `SameTokenBlockerRoles.homogeneousCapCharge`, `SameTokenBlockerRoles.homogeneousCapCharge_eq_capCharge` | standalone |
 | `cor:quantitative-homogeneous-overload` | cor |  |  |
-| `cor:forced-same-token-scale` | cor |  |  |
-| `def:same-token-routing-germs` | def |  |  |
+| `cor:forced-same-token-scale` | cor | `PatternFamily.exists_matching_or_star_of_patternThreshold` | standalone (row 34) |
+| `def:same-token-routing-germs` | def | `SameTokenRoutingGerms.RoutingLabel`, `SameTokenRoutingGerms.PortStatus`, `SameTokenRoutingGerms.geometricLabelBound`, `SameTokenRoutingGerms.geometricPatternBound` — the label alphabet only | standalone |
 
-`def:homogeneous-token-charge` is filed here because the caps it defines are
-what the three audits `[140]`, `[142]`, `[143]` produce, but the only
-declaration that computes it, `homogeneousCapCharge`, is consumed at row 36
-through `homogeneousTokenCap` in `boundedCapacity`; the column-4 chain is
-therefore row 36's.  Only `Cap_hom(L)` is computed — the definition's `ψ(x)`
-has no counterpart.  `cor:quantitative-homogeneous-overload` and
-`cor:forced-same-token-scale` are filed at the closest row: they quantify the
-same pattern caps and have no node of their own in the figure.
+`cor:forced-same-token-scale` is filed here because it quantifies the same
+pattern caps, but the declaration that states it is consumed at row 34 inside
+`cor:forced-homogeneous-same-token-scale`; the column-4 entry is row 34's.  Both
+halves of `def:homogeneous-token-charge` are present: the retired implementation
+computed `Cap_hom(L)` and asserted nothing, and had no `ψ` at all.
 
-**CT composition at this row.**
-`FiniteBottleneckClassification.Profile.execution` is
-`collisionExecution.compose (pressureExecution.compose
-(classificationExecution.compose separatorExecution))`, i.e.
-**CT9 → CT14 → CT10 → CT6** — the reference table's CT9 → CT6 → CT10 → CT14
-has the last three reversed.  CT9 partitions `patternItems` by
-`coarseCodeOf` into `completeCoarseCodes`.  CT14 then compares, per coarse
-code, the fibre mass against `pressureCapacity`, grouped by `pressureLabel`.
-CT10 classifies each `Datum` by `classOf` into `SemanticTag`, splitting on
-`Direct` and applying `promote` to the rest.  CT6 finally runs an ordered
-scan over `separatorOrder`, stopping at the first `SeparatorFailure` and
-emitting `separatorFailureData` with `separatorContribution` as its work.
-The composition buys two orderings a single CT could not: the classification
-runs *after* a pressure verdict, so `Direct` is decided on a fibre already
-known to be within or over capacity, and the separator scan runs *after* the
-classification, so a firing index is attributable to a class.  As registered
-neither ordering carries information — one class, a uniform capacity, and a
-`SeparatorFailure` that is true at every index.
+**CT composition at this row.** None: one atomic fact-only Strategy.  The retired
+`Core.Strategy.FiniteBottleneckClassification` registration, which composed
+CT9 → CT14 → CT10 → CT6, is deleted in this change as this row's old path.
 
-### Row 36 — Homogeneous bottleneck `[144]`
+### Row 36 — Homogeneous bottleneck `[144]` (ported: `Spine.homogeneousBottleneck`)
 
-- **Paper fact.** `[144]` is `thm:homogeneous-overload-geometric-closure`
-  with `lem:same-token-bottleneck-routing`,
+- **Paper fact.** `[144]` is `thm:homogeneous-overload-geometric-closure` with
+  `lem:same-token-bottleneck-routing`,
   `cor:homogeneous-same-token-caps-close` and
   `prop:nonnear-cubic-sharp-overload-routing`.
-  `lem:same-token-bottleneck-routing`: if a role-homogeneous same-token
-  matching or star in `H_{t,r}` has more than `Q_geom` edges, then "(a) a
-  sparse surplus exit occurs; or (b) the support produces a decorated Type B
-  handoff fan envelope, hence is routed to the Type B fan ledger".  With
-  `L_geom := Q_geom + 1`, `thm:homogeneous-overload-geometric-closure`
-  concludes that every role-homogeneous same-token `L_geom`-matching or
-  `L_geom`-star in the window-incidence, remainder-surplus, or
-  primitive-carrier classes realizes one of those two, and that on the
-  subbranch where sparse exits are absent and all decorated Type B handoff
-  data have been routed into the **Type B fan ledger**, the fixed caps
-  `L_W = L_R = L_P = L_geom` hold, whence `σ(G) = O(√n)` and
-  `m = (3/2)n + O(√n)`.  `cor:homogeneous-same-token-caps-close` is the
-  implication from clauses (a),(b),(c) — no token in `𝔗_W` / `𝔗_R` /
-  `𝔗_prim` supports a role-homogeneous same-token `L`-matching or `L`-star —
-  to `σ(G) = O(√n)`, its proof forming `M₀ := max{Cap_hom(L_W),
-  Cap_hom(L_R), Cap_hom(L_P)}`, using the role-fibre partition
-  `ℓ_cap(t) = Σ_r ℓ(t,r) ≤ Q_st(L-1)(2L-3)`, and invoking
+  `lem:same-token-bottleneck-routing`: if a role-homogeneous same-token matching
+  or star in `H_{t,r}` has more than `Q_geom` edges, then "(a) a sparse surplus
+  exit occurs; or (b) the support produces a decorated Type B handoff fan
+  envelope, hence is routed to the Type B fan ledger".  With
+  `L_geom := Q_geom + 1`, `thm:homogeneous-overload-geometric-closure` concludes
+  that every role-homogeneous same-token `L_geom`-matching or `L_geom`-star in the
+  three token classes realizes one of those two, and that on the subbranch where
+  sparse exits are absent and all decorated Type B handoff data have been routed
+  into the **Type B fan ledger**, the fixed caps `L_W = L_R = L_P = L_geom` hold,
+  whence `σ(G) = O(√n)` and `m = (3/2)n + O(√n)`.
+  `cor:homogeneous-same-token-caps-close` is the implication from clauses
+  (a),(b),(c) — no token in `𝔗_W` / `𝔗_R` / `𝔗_prim` supports a role-homogeneous
+  same-token `L`-matching or `L`-star — to `σ(G) = O(√n)`, its proof forming
+  `M₀ := max{Cap_hom(L_W), Cap_hom(L_R), Cap_hom(L_P)}`, using the role-fibre
+  partition `ℓ_cap(t) = Σ_r ℓ(t,r) ≤ Q_st(L−1)(2L−3)`, and invoking
   `thm:tokenized-surplus-accounting-closure`;
   `cor:same-token-pattern-caps-close` is the same closure stated for pattern
   rather than role caps.  `prop:nonnear-cubic-sharp-overload-routing` is the
   exhaustive outcome: "(a) `G` satisfies the near-cubic spine estimate
-  `σ(G) = O(√n)`; (b) a sparse surplus exit occurs; or (c) a
-  role-homogeneous same-token bottleneck produces decorated Type B fan data
-  and is routed to the Type B fan ledger."
-- **What the Lean does.** The registered value is
-  `Graph.Strategy.SurplusAccounting.homogeneousBottleneck
-  (LengthOK := PowerOfTwoLength) (lengthDecidable := fun _ => inferInstance)`,
-  which is `homogeneousBottleneckOfLowerBound` at
-  `object := fun input => input.object`,
-  `baselineDegree := fun input => (Graph.Strategy.minimumDegreeThresholdQuery
-  …).read input`, `minimumDegree :=
-  Graph.Strategy.minimumDegreeThresholdQuery_le_minDegree`, and
-  `cycleToTarget := fun _ cycle => cycle`.  In that registration `Item`,
-  `HomogeneityCode`, `CapacityLabel`, `Datum`, `LocalClass`, `Promotion`,
-  `LocalIndex`, `AdmissibilityField`, `SupportSite`, `BoundedMember` and
-  `BoundedLabel` are all `(object residual).Vertex`, and `items`, `data`,
-  `localOrder`, `admissibilityOrder`, `supportFamily.indices`,
-  `boundedMembers` are all `vertices (object residual)`.  Five stages are
-  supplied so as to be uninhabited or trivial:
-  `LocalFailure v := (object residual).degree v < baselineDegree residual`
-  and `AdmissibilityFailure` identically, both discharged by
-  `localFailureScheduled` / `admissibilityFailureScheduled` whose bodies are
-  `have lower := (minimumDegree residual).trans (minDegree_le_degree v);
-  omega`; `Representative := Unit` with
-  `responseSystem := unitResponseSystem`,
-  `ResponseCandidate := ResponseRow := Unit`,
-  `ResponseAdmissible := ResponseStrictlySmaller := fun _ _ _ => True`, and
-  `responseDefectScheduled := fun _ _ _ _ _ defect => (defect rfl).elim`;
-  `supportRequired := fun _ => countingBudget.zero` with
-  `SupportActive := True`; and `ExceptionalCandidate := fun _ => Empty` with
-  `exceptionalImpossible := some ⟨fun _ impossible => nomatch impossible⟩`.
-  `TargetCandidate := Graph.CycleCertificate (object residual) LengthOK`,
-  `outcomeCandidates := (cycleCertificates …).map Sum.inl …`,
-  `RealizesTarget := fun _ _ => True`,
-  `targetOfRealization := fun residual certificate _ => cycleToTarget
-  residual ⟨certificate⟩`.  The substantive stage is the final CT14:
-  `boundedLowerMass := fun residual vertex => ((object residual).degree
-  vertex - baselineDegree residual) * ((object residual).degreeSurplus
-  (baselineDegree residual) - 1)` and
-  `boundedCapacity := fun residual _vertex => some (homogeneousTokenCap
-  (baselineDegree residual))`, where
-  `homogeneousTokenCap k := 2 * homogeneousCapCharge (k + 1)`.  Three
-  theorems have content.
-  `homogeneousBottleneckOfLowerBound_boundedLoad` has type
-  `(…).boundedLoad residual = (object residual).degreeSurplus
-  (baselineDegree residual) * ((object residual).degreeSurplus
-  (baselineDegree residual) - 1)`, proved by `sum_map_mul_right` and
-  `sum_vertexSurplus`, the latter going through
-  `DegreeSurplusLedger.total_derive` and `total_eq_edge_mass_sub_baseline`.
-  `homogeneousBottleneckOfLowerBound_boundedCap` has type
-  `(…).boundedCap residual = (object residual).vertexCount *
-  homogeneousTokenCap (baselineDegree residual)`.
-  `degreeSurplus_le_of_homogeneousCaps (target) (baseline cap : Nat)
-  (capped : target.degreeSurplus baseline * (target.degreeSurplus baseline -
-  1) ≤ target.vertexCount * cap) : target.degreeSurplus baseline ≤ 1 +
-  Nat.sqrt (cap * target.vertexCount)`, proved by `Nat.le_sqrt` and `omega`;
-  `homogeneousBottleneckOfLowerBound_degreeSurplus_le_of_bounded` rewrites
-  the two identities into a supplied hypothesis `boundedLoad ≤ boundedCap`
-  and applies it; `boundedRoute_degreeSurplus_le` takes a supplied equality
-  `registered : profile.registration = homogeneousBottleneckOfLowerBound …`
-  and a `witness : profile.RoutedResidual semantics previous .bounded`, and
-  its body is `rw [registered]` on `Profile.bounded_load_le_cap`.
-  `globalSurplus_le_of_homogeneousCaps`,
-  `globalSurplusOf_le_of_homogeneousCaps` and the two positive-part variants
-  restate the same conclusion after
-  `NearCubicSpine.globalSurplusOf_eq_degreeSurplus`.
-- **What it should do.** `BoundedMember` would be `𝔗_cap`,
-  `boundedMembers` an enumeration of it, and `boundedLowerMass t` would be
-  `ℓ_cap(t)` — the CT9 fibre count of row 33's `Θ_cap` — with a theorem
-  `boundedLoad = |Π_blk|` in place of the current `boundedLoad = σ(σ-1)`,
-  and a theorem `boundedCap ≤ M₀ * (8 * vertexCount + degreeSurplus 3)`.
-  The cap `boundedCapacity t = M₀` would have to be *derived* from
-  `lem:same-token-bottleneck-routing`: a theorem whose hypotheses are the
-  absence of a role-homogeneous same-token `L_geom`-matching and
-  `L_geom`-star in each of the three classes and whose conclusion is
-  `∀ t, ℓ_cap t ≤ Cap_hom L_geom`.  `ExceptionalCandidate` would carry the
-  four non-cycle exits of `def:named-surplus-exits` (target-defective
-  quotient, target-complete compression, proper/global delocalization,
-  chord-set arithmetic), and the `structured` arm would route to the Type B
-  fan ledger — the subgraph rooted at `v42` — so that all three alternatives
-  of `prop:nonnear-cubic-sharp-overload-routing` are realized.
-- **Gap.** Three distinct failures.  First, the cap is supplied, not
-  derived: `boundedCapacity` is the constant `homogeneousTokenCap
-  (baselineDegree)` on every member, and nothing in the tree proves
-  `ℓ_cap(t) ≤ M₀` — no matching, star, `L_geom`, or `Q_geom` occurs, so
-  `lem:same-token-bottleneck-routing`, the whole content of the audit that
-  establishes the hypothesis, is absent, and with it
-  `cor:same-token-pattern-caps-close`.  Second, the ledger is the wrong one:
-  `BoundedMember` is `V(G)`, so `boundedCap = n · M₀` where the paper has
-  `M₀|𝔗_cap|` with `|𝔗_cap| ≤ 8n + σ(G)`; and
-  `boundedLowerMass v = (d(v)-3)(σ-1)`, giving `boundedLoad = σ(σ-1)`, which
-  is never proved equal to `|Π_blk|` or to `Σ_t ℓ_cap(t)`.  The surviving
-  arithmetic (`σ(σ-1) ≤ n·cap ⟹ σ ≤ 1 + √(cap·n)`) is a correct `Nat.sqrt`
-  argument, but its hypothesis is a CT14 route condition rather than clauses
-  (a),(b),(c) of `cor:homogeneous-same-token-caps-close`, and it omits that
-  corollary's route through `thm:tokenized-surplus-accounting-closure` — the
-  entropy term `E_spine(n) + ((1/2)σ+1)log₂ n` never appears.  Third, the
-  exhaustive outcome of `prop:nonnear-cubic-sharp-overload-routing` is not
-  realized: alternative (b) is implemented only as exit (a) of
-  `def:named-surplus-exits`, since `TargetCandidate` is
-  `Graph.CycleCertificate object PowerOfTwoLength` and
-  `ExceptionalCandidate` is `Empty`; and alternative (c) does not reach the
-  Type B fan ledger — in
-  `/home/guillem/structural_exhaustion/examples/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean`
-  the `structured` continuation is `fun residual => residual.autoroute …`,
-  realized in the export as `e16 : v8 → v16`, and `v16` is
-  `finite_barrier_enumeration:0`, the near-cubic enumeration, not the Type B
-  fan subgraph (`v42`, `v44`, `v43`, `v40`, reached from `v23`'s `type_B`
-  output by `e74`).  **Facts therefore fails.**
-- **Ledger and residual.** `HomogeneousBottleneck.Profile.execution` is the
-  right-associated composition
-  `(CTAdapters.ct9 collisionCapability).compose ((CTAdapters.ct14
-  codeCapacityCapability).compose ((CTAdapters.ct10
-  classificationCapability).compose ((CTAdapters.ct6
-  localFailureCapability).compose ((CTAdapters.ct3
-  responseCapability).compose ((CTAdapters.ct6
-  admissibilityCapability).compose ((CTAdapters.ct1
-  outcomeCapability).compose ((CTAdapters.ct5 supportCapability).compose
-  (CTAdapters.ct14 boundedCapability))))))))`, each stage built over the
-  previous `Ledger.Extension` (`AfterCollision`, `AfterCodeCapacity`,
-  `AfterClassification`, `AfterLocalFailure`, `AfterResponse`,
-  `AfterAdmissibility`, `AfterOutcome`, `AfterSupport`), and every
-  downstream query obtained by `Query.preserve` from the single
-  `residualQuery`.  `Profile.bounded_load_le_cap` reads the certificate off
-  the composed run.  The predecessor is the literal row-35 stage.  Ledger
-  and Residual pass.
-- **Transport and terminals.** All nine CTs, the terminal elimination and
-  the ledger extensions are Core-owned; Graph supplies the registration and
-  fixes the cycle injection itself (`homogeneousBottleneck` passes
-  `fun _ cycle => cycle`, `homogeneousBottleneckOr` passes
-  `fun _ cycle => Or.inl cycle`), so the application supplies no
-  target-closing callback.  `v8` is exported with `kind: operation` and four
-  outgoing edges: `e14 : v8 → t1` (`output: target`, closed, reason
-  "homogeneous-bottleneck target output"), `e15 : v8 → t2`
-  (`output: exceptional`, closed — vacuous, since `ExceptionalCandidate` is
-  `Empty` and `exceptionalImpossible` is registered), and the two autoroutes
-  `e16 : v8 → v16` and `e17 : v8 → v16`.  Both surviving arms land on the
-  same vertex.
+  `σ(G) = O(√n)`; (b) a sparse surplus exit occurs; or (c) a role-homogeneous
+  same-token bottleneck produces decorated Type B fan data and is routed to the
+  Type B fan ledger."
+- **What the Lean does.** `homogeneousBottleneckRow` of
+  `Graph/Strategy/HomogeneousBottleneckRows.lean`: a `factOnly` Strategy with
+  `Requires := [canonicalPairLedger]` and
+  `Produces := [homogeneousBottleneck]`.
+
+  Its production is `cor:homogeneous-same-token-caps-close` in full.  Over every
+  presented `CapacityTokenLedger` at the object's own degree surplus, every class
+  bound `patternBound : TokenClass → Nat`, and every `cap` and `scale`:
+
+    `(∀ C, 1 ≤ L_C) → (∀ C, Cap_hom(L_C) ≤ M₀) → |𝔗_cap| ≤ scale + σ(G) →`
+    `(clauses a,b,c: no token carries a role-homogeneous L_{class t}-matching)`
+    `→ (the same for stars)`
+    `→ (∀ t ∈ 𝔗_cap, ℓ_cap(t) ≤ M₀) ∧ |Π_blk| ≤ M₀·|𝔗_cap|`
+    `  ∧ σ(G) ≤ 1 + 2M₀ + ⌊√(2·budget + 2·M₀·scale)⌋`,
+
+  discharged by `CapacityTokenLedger.caps_close`.  Its proof is the manuscript's,
+  step for step: `PatternFamily.card_le_capCharge` at each token bounds
+  `ℓ_cap(t)` by `Cap_hom(L_{class t}) ≤ M₀`;
+  `TokenLoad.card_le_mul_of_load_le` sums the fibre partition to
+  `|Π_blk| ≤ M₀|𝔗_cap|`; and `TokenLoad.demand_le_of_bounded_load` is
+  `thm:tokenized-surplus-accounting-closure`, which spends the ledger's own split
+  and entropy sandwich against `TokenLoad.le_one_add_of_quadratic_le`, the exact
+  form of the manuscript's "the terms linear in `σ(G)` … are absorbed into
+  `(1/2)σ(G)²`, after increasing constants":
+
+    `s(s−1) ≤ A + B·s  ⟹  s ≤ 1 + B + ⌊√A⌋`.
+
+  `M₀` is the parameter `cap` together with the hypothesis that it dominates every
+  class charge, which is the only property "the maximum" is used for.
+  `|𝔗_cap| ≤ 8n + σ(G)` of `lem:capacity-token-supply` is the parameter `scale`;
+  at `scale = 8n` and `budget ≤ C_E n + ((1/2)σ+1)log₂ n` the conclusion reads
+  `σ(G) ≤ 1 + 2M₀ + √(2C_E n + 16M₀ n)`, which is the manuscript's
+  `σ(G) = O(√n)` with the implicit constant — "depends only on `c₁, C_E` and
+  `M₀`" — written out.
+
+  `Fixtures.HomogeneousTokenBottleneck` evaluates all of it at a presentation
+  with three active demands whose blocked set is the triangle:
+  `ledger_no_overcount` is `lem:token-ledger-no-overcount` computed,
+  `ledger_no_homogeneous_matching` and `ledger_no_homogeneous_star` discharge
+  clauses (a),(b),(c) at `L = 3`, and `ledger_caps_close` produces the three
+  conclusions.
+- **What it should do.** The row would consume rows 31--33's facts rather than a
+  quantified presentation, and the caps would be *derived* rather than
+  hypothesised: `lem:same-token-bottleneck-routing` would take a role-homogeneous
+  pattern with more than `Q_geom` edges — the pattern row 34 forces and row 35
+  classifies — and produce either a sparse surplus exit or a decorated Type B
+  handoff fan envelope, so that `thm:homogeneous-overload-geometric-closure` could
+  set `L_W = L_R = L_P = L_geom` on the subbranch where neither survives, and
+  `cor:homogeneous-same-token-caps-close`'s hypotheses would be *discharged* at
+  the node instead of assumed.  The node would then be a three-way branch
+  realizing `prop:nonnear-cubic-sharp-overload-routing`.  `m = (3/2)n + O(√n)`
+  would follow from the surplus bound and `lem:sparse-slack-surplus`, which row 30
+  now carries as `Spine.sparseSlackSurplus`.
+- **Gap.** Three failures.
+
+  First, the same partial upstream as rows 34 and 35:
+  `Requires := [canonicalPairLedger]` reads node `[130]`'s pair count, but
+  `Θ_cap`, the full `𝔗_cap` and the entropy sandwich are still quantified, and
+  clauses (a),(b),(c) are hypotheses of the committed implication rather than
+  facts a predecessor established.
+
+  Second, the caps are supplied, not derived.  What `def:same-token-routing-germs`
+  contributes here is its label alphabet: `RoutingLabel` is the manuscript's
+  seven-coordinate tuple, `geometricLabelBound` is `Fintype.card` of it, and
+  `geometricPatternBound` is `L_geom = Q_geom + 1`, so
+  `caps_close_at_geometricBound` states
+  `thm:homogeneous-overload-geometric-closure`'s second assertion at the
+  manuscript's own fixed cap rather than at a parameter.  What is missing is the
+  first assertion.  `lem:same-token-bottleneck-routing` needs the routing germs
+  of `Z(π;t,r)`, which `def:declared-coordinate-signature` does not generate
+  anywhere in this tree, and needs `def:named-surplus-exits` and
+  `def:decorated-fan-envelope` to be live alternatives, which they are not.  So
+  the subbranch on which the caps hold is *assumed*, not entered: clauses
+  (a),(b),(c) are hypotheses.
+
+  Third, `prop:nonnear-cubic-sharp-overload-routing` is not realized, and
+  `[144]`'s three outcomes are not arms.  The trichotomy is exhaustive only
+  because failing the near-cubic case forces an exit or a handoff, and that
+  forcing is exactly the missing first assertion.  Stating the three cases as a
+  disjunction over arbitrary propositions, or splitting on `Classical.em`, would
+  produce the shape without the content.
+
+  What is *not* a gap, and was in the retired implementation: the census is the
+  token ledger rather than `V(G)` — `boundedMembers` used to be the vertex set,
+  giving `n·M₀` where the paper has `M₀|𝔗_cap|` — and `boundedLowerMass` is
+  `ℓ_cap(t)` rather than `(d(v)−3)(σ−1)`, so the identity the closure spends is
+  `|Π_blk| = Σ_t ℓ_cap(t)` rather than the unrelated `σ(σ−1)`.  The `Nat.sqrt`
+  step is the same correct argument it always was, but it is now applied to the
+  manuscript's own inequality.
+- **Ledger and residual.** As rows 34 and 35: `factOnly` over the previous
+  stage, residual unchanged by `RefinementSystem.refl`, the required key read by
+  `FactInputs.get`, the production appended by `AtomicCT.run` with the literal
+  ancestry retained.  Ledger and Residual pass.
+- **Transport and terminals.** No EG code, no payload, no terminal, no routing,
+  no closing callback; the operation is nonbranching and Transport passes.  That
+  `[144]`'s three outcomes are not arms, and that the Type B fan ledger is not
+  reached, is a Facts gap: `prop:nonnear-cubic-sharp-overload-routing` is
+  absent.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
 | `lem:same-token-bottleneck-routing` | lem |  |  |
-| `thm:homogeneous-overload-geometric-closure` | the |  |  |
-| `cor:homogeneous-same-token-caps-close` | cor |  |  |
+| `thm:homogeneous-overload-geometric-closure` | the | `CapacityTokenLedger.caps_close_at_geometricBound` — second assertion only | standalone |
+| `cor:homogeneous-same-token-caps-close` | cor | `CapacityTokenLedger.caps_close`, `TokenLoad.card_assigned_le_mul_of_multiplicity_le`, `TokenLoad.demand_le_of_bounded_load`, `TokenLoad.le_one_add_of_quadratic_le` | standalone |
 | `cor:same-token-pattern-caps-close` | cor |  |  |
 | `prop:nonnear-cubic-sharp-overload-routing` | pro |  |  |
 
-`cor:homogeneous-same-token-caps-close` is filed here rather than at its
-ledger node `[138]` because `[144]` is where its hypotheses are meant to be
-discharged.  Its cell is empty deliberately:
-`SurplusAccounting.degreeSurplus_le_of_homogeneousCaps` and
-`homogeneousBottleneck_degreeSurplus_le_of_bounded` derive
-`σ ≤ 1 + √(cap·n)` from an *aggregate* hypothesis `σ(σ-1) ≤ n·cap`, not from
-clauses (a),(b),(c) about role-homogeneous matchings and stars, so no
-declaration's type states the corollary.  `cor:same-token-pattern-caps-close`
-is filed at the closest row for the same reason.
+`lem:same-token-bottleneck-routing`'s cell is empty because its two remaining
+steps are not stated: the germ dichotomy needs the germs of `Z(π;t,r)`, and the
+reading of a germ configuration as an exit or as decorated fan data needs
+`def:named-surplus-exits` and `def:decorated-fan-envelope` as live alternatives.
+Only its opening pigeonhole is stated, at row 35's
+`SameTokenRoutingGerms.exists_same_routingLabel`.
+`thm:homogeneous-overload-geometric-closure` carries its *second* assertion
+only -- the fixed caps `L_W = L_R = L_P = L_geom` and the resulting
+`σ(G) = O(√n)`, at the counted `L_geom = Q_geom + 1`; its first assertion is
+`lem:same-token-bottleneck-routing`, and its edge-count half
+`m = (3/2)n + O(√n)` is not stated, though it would follow from that bound and
+node `[126]`'s `lem:sparse-slack-surplus`.
+`prop:nonnear-cubic-sharp-overload-routing` has no counterpart: its trichotomy
+is exhaustive only because the negation of the near-cubic case *forces* an exit
+or a handoff, and that forcing is `lem:same-token-bottleneck-routing`.
+`cor:same-token-pattern-caps-close` is filed at the closest row and is not
+stated, although `PatternFamily.card_le_of_no_matching_no_star` and
+`TokenLoad.demand_le_of_bounded_load` would compose to it directly.
 
-**CT composition at this row.** `HomogeneousBottleneck.Profile.execution`
-composes nine stages,
-**CT9 → CT14 → CT10 → CT6 → CT3 → CT6 → CT1 → CT5 → CT14**, right-associated;
-the reference table lists the set `{CT1, CT3, CT5, CT6, CT9, CT10, CT14}`
-and does not record that CT6 and CT14 each appear twice.  CT9 partitions
-`items` by `homogeneityCodeOf` against `homogeneityCapacity`; CT14 compares
-each code's mass against `codeCapacity` grouped by `codeLabel`; CT10
-classifies `data` by `classOf`, splitting on `Direct` and applying
-`promote`; the first CT6 scans `localOrder` for a `LocalFailure`; CT3 runs
-the response system, testing `ResponseAdmissible` and
-`ResponseStrictlySmaller` over `responseCandidates` and `responseRows`; the
-second CT6 scans `admissibilityOrder` for an `AdmissibilityFailure`; CT1
-scans `outcomeCandidates` and decides the target or exceptional outcome; CT5
-runs the support accounting of `supportRequired` against `supportCapacity`;
-the final CT14 compares `boundedLowerMass` against `boundedCapacity` over
-`boundedMembers`.  Under the registered presentation five of the nine are
-vacuous — the two CT6 failure scans (`degree v < baselineDegree`, impossible
-under `minimumDegree`), CT3's unit response system with
-`ResponseAdmissible = True`, and CT5's support step with
-`supportRequired = 0` — so what the composition actually buys is its last
-two live stages: CT1 scans the accepted-cycle certificate schedule and
-closes the target arm `e14 : v8 → t1`, and the final CT14 produces the
-`.bounded` route whose certificate `Profile.bounded_load_le_cap` feeds
-`boundedRoute_degreeSurplus_le` to give
-`degreeSurplus ≤ 1 + Nat.sqrt (homogeneousTokenCap · vertexCount)`.  That
-last step is the only place in rows 30–36 where a CT verdict is turned into
-a mathematical conclusion rather than restated; no single CT could produce
-it, because the route condition is a terminal of the ninth stage over a
-ledger the first eight built.
+**CT composition at this row.** None: one atomic fact-only Strategy.  The retired
+`Core.Strategy.HomogeneousBottleneck` registration composed nine CT stages, five
+of which were vacuous as registered; it is deleted in this change as this row's
+old path, together with `Fixtures/HomogeneousBottleneck.lean`.
 
 ### Row 37 — Support-complement normalization `[25]`–`[27]`
 
@@ -4700,7 +5063,12 @@ no capability, member schedule, label, or terminal.  The row is a single
   declared support.
 
   `Graph.CurvatureQuotient Baseline Target object region` is
-  `def:admissible-rank-quotient` at that family, clause by clause.  Its
+  `def:admissible-rank-quotient` at that family, clause by clause.  It is no
+  longer a structure of its own: since row 32 it is an abbreviation for
+  `Graph.DeclaredQuotient` — the same definition at an *arbitrary* declared
+  coordinate family, in `Graph/DeclaredRankQuotient.lean` — instantiated at the
+  raw internal wedges, so every field named below and the routing `localize` are
+  proved once and shared with the sparse pair-response family of `[132]`.  Its
   `support` is the connected determination support `Z` with `connected` and
   `carries`; its realizations are `BoundaryPiece (SupportAtom.boundary object
   support)`, the boundaried graphs that can occupy `Z`'s place at `Z`'s own cut
@@ -4722,11 +5090,12 @@ no capability, member schedule, label, or terminal.  The row is a single
   event").  The scope split between the two clauses is the framework's own
   `SupportAtom.classifyScope`.
 
-  `Graph.FiniteObject.curvatureQuotientSystem` is the system
-  `def:functional-rank-quotient` closes with — "the admissible quotient system
-  used to compute target-rank consists only of admissible rank quotients that
-  are functional on the coordinate family under discussion" — so membership is
-  exactly *admissible* (a `CurvatureQuotient`) *and functional*.
+  `Graph.FiniteObject.curvatureQuotientSystem` — `declaredQuotientSystem` at
+  this family — is the system `def:functional-rank-quotient` closes with — "the
+  admissible quotient system used to compute target-rank consists only of
+  admissible rank quotients that are functional on the coordinate family under
+  discussion" — so membership is exactly *admissible* (a `CurvatureQuotient`)
+  *and functional*.
   `Graph.FiniteObject.curvatureTargetRank` is `r_Ω`: the maximum size of a
   subfamily surviving every member, and
   `curvatureTargetRank_le_internalWedgeCount` is `r_Ω(X) ≤ W₂(X)`.
@@ -4759,7 +5128,7 @@ no capability, member schedule, label, or terminal.  The row is a single
   two halves of one excluded middle, so they are exhaustive and mutually
   exclusive by construction, and neither is readable on the other's branch.
 
-  `Graph.CurvatureQuotient.localize` is `lem:curvature-dependence-routing` for
+  `Graph.DeclaredQuotient.localize` is `lem:curvature-dependence-routing` for
   an admissible quotient: the manuscript's target-defect case cannot arise —
   an admissible quotient is target-complete by definition, which is what
   `fibrewise` and `contextUniversal` record — so a rank-reducing member falls,
@@ -4821,7 +5190,7 @@ no capability, member schedule, label, or terminal.  The row is a single
   predecessor depth, or an execution position: both are quantified over the
   keys they consume and produce.  `#print axioms` on `Spine.run`,
   `curvatureRankDichotomy`, both audit theorems, `curvatureTargetRank`,
-  `CurvatureQuotient.localize` and every `Core.TargetRank` theorem reports
+  `DeclaredQuotient.localize` and every `Core.TargetRank` theorem reports
   `[propext, Classical.choice, Quot.sound]` and nothing else.
 - **Retired with this row.** The legacy path is deleted, not shimmed.
   `Core.Strategy.TargetRelativeRankDichotomy`,
@@ -4832,7 +5201,10 @@ no capability, member schedule, label, or terminal.  The row is a single
   support, no context, no functionality, no survival and no system, and a
   "rank" that was the cardinality of one map's image;
   `Core.TargetRank` and `Graph.CurvatureTargetRank` replace it, and there is no
-  shim.
+  shim.  Row 32 continued that replacement rather than adding beside it: the
+  quotient structure moved to `Graph/DeclaredRankQuotient.lean` at an arbitrary
+  declared coordinate family and `CurvatureQuotient` became its instance, so the
+  tree still holds exactly one `def:admissible-rank-quotient`.
 
 **Paper objects at this row.**
 
@@ -4843,15 +5215,15 @@ no capability, member schedule, label, or terminal.  The row is a single
 | `def:boundaried-gluing`, `def:atom` | def | `Graph.Boundary`, `Graph.BoundaryPiece`, `Graph.OutsideContext`, `Graph.glue`<br>`InterfaceReplacement.SupportAtom.boundary`, `.cutBoundary` | inherited; `cutBoundary` is the manuscript's `T` |
 | `def:boundary-degree-profile` | def | `Graph.BoundaryPiece.boundaryDegreeProfile` | inherited |
 | `def:exact-response-profile` | def | `Core.TargetRank.RankQuotient`<br>`.LabelInjectiveOn`, `.RankReducingOn` | a quotient's labelling of the declared coordinates and its response at a realization |
-| `def:target-complete-quotient` | def | `Graph.CurvatureQuotient.fibrewise`<br>`Graph.CurvatureQuotient.contextUniversal` | clauses (a) and (b), at `boundaryDegreeProfile` and at `glue` against every `OutsideContext` |
+| `def:target-complete-quotient` | def | `Graph.DeclaredQuotient.fibrewise`<br>`Graph.DeclaredQuotient.contextUniversal` | clauses (a) and (b), at `boundaryDegreeProfile` and at `glue` against every `OutsideContext` |
 | `def:proper-quotient-representative` | def | `InterfaceReplacement.ReplacementSupport` | the manuscript's own identification of its five properties with `lem:replacement`'s five hypotheses |
-| `def:closed-quotient-representative` | def | `Graph.CurvatureQuotient.closedRepresentative` | strictly smaller, baseline, `profile_∅(H) ⊆ profile_∅(G)` read at the empty context |
-| `def:admissible-rank-quotient` | def | `Graph.CurvatureQuotient` | all four clauses; the proper/closed split is `SupportAtom.classifyScope` |
-| `def:functional-rank-quotient` | def | `Core.TargetRank.RankQuotient.Determines`<br>`Core.TargetRank.RankQuotient.FunctionalOn`<br>`Graph.FiniteObject.curvatureQuotientSystem` | the rank axiom, and the closing sentence that the system consists only of functional admissible quotients |
+| `def:closed-quotient-representative` | def | `Graph.DeclaredQuotient.closedRepresentative` | strictly smaller, baseline, `profile_∅(H) ⊆ profile_∅(G)` read at the empty context |
+| `def:admissible-rank-quotient` | def | `Graph.DeclaredQuotient` (`Graph.CurvatureQuotient` is its instance at the raw wedges) | all four clauses; the proper/closed split is `SupportAtom.classifyScope`; the *attempted* reading, with the representative clauses conditional on target-completeness, is `Graph.AttemptedQuotient` |
+| `def:functional-rank-quotient` | def | `Core.TargetRank.RankQuotient.Determines`<br>`Core.TargetRank.RankQuotient.FunctionalOn`<br>`Graph.FiniteObject.declaredQuotientSystem` (`curvatureQuotientSystem` is its instance) | the rank axiom, and the closing sentence that the system consists only of functional admissible quotients |
 | `def:curvature-target-rank` | def | `Graph.FiniteObject.curvatureTargetRank`<br>`Core.TargetRank.QuotientSystem.Survives`<br>`Core.TargetRank.targetRank`<br>`Graph.FiniteObject.curvatureTargetRank_le_internalWedgeCount` | `r_Ω(R)` as a `Nat` |
 | `def:curvature-target-dependence` | def | `Core.TargetRank.Dependence` | the pair, its determination against every realization, its properness, and the rank-reducing admissible quotient witnessing it |
 | `lem:target-rank-circuit` | lem | `Core.TargetRank.exists_dependence_of_maximal`<br>`Core.TargetRank.exists_independent_attaining`<br>`Core.TargetRank.exists_dependence_of_targetRank_lt`<br>`Core.TargetRank.targetRank_eq_card_of_no_dependence` | proved, including the "in particular"; committed as `Spine.Key.curvatureTargetRank` and consumed by the yes arm of `[32]` |
-| `lem:curvature-dependence-routing` | lem | `Graph.CurvatureQuotient.localize` | proved: the target-defect case cannot arise for an admissible quotient, and the other two are the scope split of the determination support; consumed at `[33]`/`[35]`–`[46]` |
+| `lem:curvature-dependence-routing` | lem | `Graph.DeclaredQuotient.localize`<br>`Graph.AttemptedQuotient.route` | proved: the target-defect case cannot arise for an *admissible* quotient, and the other two are the scope split of the determination support; `route` is the same analysis for an attempted one, where the defect case is the blocker of `def:surplus-blockers` (d)/(e); consumed at `[33]`/`[35]`–`[46]` and at `[132]` |
 | `def:target-rank`, `lem:independent-target-entropy`, `rem:rank-coordinate-entropy-interface` | def, lem, rem | | the `2^{\|𝒜\|}` state realization and the entropy interface are consumed at `[18]`→`[22]` and at `[47]`, not here |
 
 **CT composition at this row.** None.  The retired path composed `CT10 → CT15 →
@@ -6930,7 +7302,7 @@ Strategies and three `Decision`s, composed by `AtomicCT.run` and closed by Core.
 |---|---|---|---|
 | `def:curvature-target-dependence` | def | `Spine.DeterminationCertificate` is the tuple `𝔠 = (X, T, q, 𝒫)`: clause (a) is the quotient's `support`/`connected`/`carries`, (b) is `remainderQuotient`, (c) is `RankQuotient.Determines` with the properness clause, (d) is `carries`.  Its minimality clause is the second conjunct of this row's committed fact | standalone; the pair `(a, ℬ)` comes from `Core.TargetRank.Dependence`, whose `determined`, `supported`, `proper` and `witness` fields are the remaining clauses |
 | `lem:target-rank-circuit` | lem | `Core.TargetRank.exists_dependence_of_attaining`, `Core.TargetRank.exists_independent_attaining` | standalone; consumed at `[31]`/`[32]` and unpacked here |
-| `lem:curvature-dependence-routing` | lem | `Graph.CurvatureQuotient.localize` | standalone; its case analysis is the scope split `SupportAtom.classifyScope`, and this row supplies the inclusion-minimal certificate it is applied to |
+| `lem:curvature-dependence-routing` | lem | `Graph.DeclaredQuotient.localize` | standalone; its case analysis is the scope split `SupportAtom.classifyScope`, and this row supplies the inclusion-minimal certificate it is applied to |
 | `def:admissible-rank-quotient` | def | `Graph.CurvatureQuotient` | standalone |
 | `def:functional-rank-quotient` | def | `Core.TargetRank.RankQuotient.FunctionalOn`, `Core.TargetRank.QuotientSystem` | standalone |
 
@@ -6986,7 +7358,7 @@ prerequisite and adds no adapter.
 - **What it should do.** Exactly that: a real two-way branch on the manuscript's
   eligibility test, with the separating witness exhibited on the no arm, and the
   no arm closed rather than left open or made unreachable.
-- **Gap.** none.  `Graph.CurvatureQuotient.targetComplete_of_identified` is the
+- **Gap.** none.  `Graph.DeclaredQuotient.targetComplete_of_identified` is the
   two clauses of `def:target-complete-quotient` read off an admissible quotient
   — `fibrewise` is `lem:degree-profile-fibres` and `contextUniversal` is
   `lem:context-universality` — and both halves are consumed by
@@ -7024,10 +7396,10 @@ prerequisite and adds no adapter.
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:context-universality` | lem | `Graph.CurvatureQuotient.targetComplete_of_identified` (second component); `Graph.Response.ContextEquivalent`, `Graph.Response.TargetDefect` | standalone; consumed by `not_contextDefect` against the context disjunct of `[37]` |
-| `lem:degree-profile-fibres` | lem | `Graph.CurvatureQuotient.targetComplete_of_identified` (first component); `Graph.Response.profile_ne_not_targetComplete` | standalone; consumed by `not_contextDefect` against the fibre disjunct of `[37]` |
+| `lem:context-universality` | lem | `Graph.DeclaredQuotient.targetComplete_of_identified` (second component); `Graph.Response.ContextEquivalent`, `Graph.Response.TargetDefect` | standalone; consumed by `not_contextDefect` against the context disjunct of `[37]` |
+| `lem:degree-profile-fibres` | lem | `Graph.DeclaredQuotient.targetComplete_of_identified` (first component); `Graph.Response.profile_ne_not_targetComplete` | standalone; consumed by `not_contextDefect` against the fibre disjunct of `[37]` |
 | `lem:separated-testers` | lem | `Graph.Response.contextEquivalent_or_targetDefect` | standalone; consumed by the no arm.  This is the lemma's closing sentence, the clause `[36]` needs.  Its opening sentence — a tester separating the two wedge coordinates is supported in the complement of `B̄_r(u) ∪ B̄_r(v)` — is not a separate declaration: in the framework a tester is an `OutsideContext` sharing only the labelled interface with the support, so being supported in the complement is the gluing model itself and not a theorem about balls |
-| `def:target-complete-quotient` | def | `Graph.CurvatureQuotient.fibrewise`, `Graph.CurvatureQuotient.contextUniversal` | standalone |
+| `def:target-complete-quotient` | def | `Graph.DeclaredQuotient.fibrewise`, `Graph.DeclaredQuotient.contextUniversal` | standalone |
 | `def:curvature-target-dependence` | def | `Core.TargetRank.Dependence` | the identified pair `[36]` tests is the certificate's own, supplied by row 68 |
 
 **CT composition at this row.** None.  The node is a branch decision composed by
@@ -7067,7 +7439,7 @@ and no adapter is written.
   selected minimal counterexample, and hand the complementary arm the enlarged
   support node `[40]` is stated on.
 - **Gap.** none.  The closure is the manuscript's own two exclusions and no
-  other: `Graph.CurvatureQuotient.localize` is the scope split of
+  other: `Graph.DeclaredQuotient.localize` is the scope split of
   `def:admissible-rank-quotient` — a rank-reducing admissible quotient at a
   proper support supplies a `ReplacementSupport`, and at the closed support a
   strictly smaller admissible closed representative — and
@@ -7093,8 +7465,8 @@ and no adapter is written.
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:curvature-dependence-routing`, case (ii) | lem | `Graph.CurvatureQuotient.localize`, proper branch | standalone; consumed by `Spine.not_determinationCertificate` |
-| `def:admissible-rank-quotient`, proper clause | def | `Graph.CurvatureQuotient.properRepresentative` | standalone |
+| `lem:curvature-dependence-routing`, case (ii) | lem | `Graph.DeclaredQuotient.localize`, proper branch | standalone; consumed by `Spine.not_determinationCertificate` |
+| `def:admissible-rank-quotient`, proper clause | def | `Graph.DeclaredQuotient.properRepresentative` | standalone |
 | `lem:replacement` | lem | `Graph.Strategy.InterfaceReplacement.not_replacementSupport` | standalone; consumed here |
 | `cor:uncompressible` | cor | `Graph.Strategy.InterfaceReplacement.not_compressibleSupport`, and the `uncompressible` fact of nodes `[11]`--`[14]` | standalone; the compression is excluded through the replacement lemma it weakens to |
 | `def:proper-quotient-representative` | def | `Graph.Strategy.InterfaceReplacement.ReplacementSupport` | standalone |
@@ -7127,9 +7499,9 @@ and no adapter is written.
   split on whether it is proper in `G`, and close the proper case.
 - **Gap.** none.  `lem:proper-smearing`'s two alternatives are the two the
   framework's admissibility already carries: an admissible quotient cannot be
-  target-defective (`CurvatureQuotient.contextUniversal`, which is why row 69's
+  target-defective (`DeclaredQuotient.contextUniversal`, which is why row 69's
   terminal is uninhabited), so the proper case is the compression, refuted by
-  `not_replacementSupport` through `Graph.CurvatureQuotient.localize`.  The
+  `not_replacementSupport` through `Graph.DeclaredQuotient.localize`.  The
   inclusion-minimality `[40]` asks of `Z` is row 68's committed clause: the
   certificate's support admits no proper subsupport carrying a determination
   certificate.  **All four columns pass.**
@@ -7149,7 +7521,7 @@ and no adapter is written.
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
 | `lem:curvature-dependence-routing`, case (iii) | lem | `Spine.delocalizationSupport` with `remainderSupport_ssubset_delocalizationSupport` | standalone |
-| `lem:proper-smearing` | lem | `Graph.CurvatureQuotient.localize` at a proper support, refuted by `InterfaceReplacement.not_replacementSupport`; the target-defect alternative is excluded by `Graph.CurvatureQuotient.contextUniversal` | standalone; consumed by `Spine.not_determinationCertificate` |
+| `lem:proper-smearing` | lem | `Graph.DeclaredQuotient.localize` at a proper support, refuted by `InterfaceReplacement.not_replacementSupport`; the target-defect alternative is excluded by `Graph.DeclaredQuotient.contextUniversal` | standalone; consumed by `Spine.not_determinationCertificate` |
 | `def:curvature-target-dependence`, minimality | def | the second conjunct of row 68's `branchDependence` | standalone |
 
 **CT composition at this row.** None.
@@ -7169,7 +7541,7 @@ and no adapter is written.
   `globalBarrier`.  `repairIdentity` is `Graph.OneThreeRepair.Component.identity`
   — the manuscript's own derivation from the handshake identity and the
   cycle-rank formula — stated at every `1`--`3` repair network up to surplus.
-  `globalBarrier` applies `Graph.CurvatureQuotient.localize` to the certificate,
+  `globalBarrier` applies `Graph.DeclaredQuotient.localize` to the certificate,
   committing the manuscript's own disjunction: a proper-support replacement, or
   a strictly smaller admissible closed representative meeting the baseline and
   transferring the target back to `G`.
@@ -7204,8 +7576,8 @@ and no adapter is written.
 |---|---|---|---|
 | `lem:smearing-support-repair` | lem | `Graph.OneThreeRepair.Component.identity` | standalone; committed as `[44]`'s fact |
 | `def:repair-network-terms` | def | `Graph.OneThreeRepair.Component` — its `boundaryDegree`, `internalDegreeThree` and `connected` fields are the definition's clauses, and `internal`, `surplus`, `cycleRank` are its `s`, `σ`, `β` | standalone |
-| `lem:no-silent-global-smearing` | lem | `Graph.CurvatureQuotient.localize`, committed as `[45]`'s disjunction | standalone |
-| `def:admissible-rank-quotient`, closed clause | def | `Graph.CurvatureQuotient.closedRepresentative` | standalone |
+| `lem:no-silent-global-smearing` | lem | `Graph.DeclaredQuotient.localize`, committed as `[45]`'s disjunction | standalone |
+| `def:admissible-rank-quotient`, closed clause | def | `Graph.DeclaredQuotient.closedRepresentative` | standalone |
 | `def:closed-quotient-representative` | def | the second disjunct of `[45]`'s fact: strictly smaller, meets the baseline, and transfers the target | standalone |
 
 **CT composition at this row.** None.  The row is a fact-only atomic Strategy
@@ -7222,7 +7594,7 @@ run by `AtomicCT.run`.
   on the ledger row 72 leaves, at the `Incompatible` instance
   `instIncompatibleGlobalBarrier`.  Its contradiction is
   `Spine.not_globalBarrierReading`, which consumes the disjunction node `[45]`
-  *stored* rather than recomputing it: `Graph.CurvatureQuotient.localize` is
+  *stored* rather than recomputing it: `Graph.DeclaredQuotient.localize` is
   applied once, in the row that commits `[45]`, and the terminal reads the
   result back by exact key.  The replacement reading is refuted by
   `InterfaceReplacement.not_replacementSupport`, and the closed-representative
@@ -7237,7 +7609,7 @@ run by `AtomicCT.run`.
   witnessing it does not exist, which is exactly what
   `def:admissible-rank-quotient`'s closed clause says when it demands
   label-injectivity unless a smaller closed representative exists.
-  `CurvatureQuotient.closedRepresentative` takes the rank reduction as its
+  `DeclaredQuotient.closedRepresentative` takes the rank reduction as its
   hypothesis for that reason.  **All four columns pass.**
 - **Ledger and residual.** `rankDropClosedKeys = closed :: repairIdentity ::
   globalBarrier :: globalDelocalization :: delocalizedSupportKeys`, so the
@@ -7256,7 +7628,7 @@ run by `AtomicCT.run`.
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
 | `lem:no-silent-global-smearing` | lem | `Spine.not_determinationCertificate`, closed branch | standalone |
-| `def:closed-quotient-representative` | def | `Graph.CurvatureQuotient.closedRepresentative`'s conclusion | standalone |
+| `def:closed-quotient-representative` | def | `Graph.DeclaredQuotient.closedRepresentative`'s conclusion | standalone |
 | minimality of `G` | — | the `selection` fact of nodes `[1]`--`[4]`, both halves | standalone; read by exact key at the closure |
 
 **CT composition at this row.** None.  The terminal is the framework's own
@@ -7291,11 +7663,16 @@ and a target that builds.
 mathematics is exact but whose transport is not: the canonical-ledger rewrite
 removed the detached-CT registrations that used to separate the two lists.
 
-**The 18 open rows** are 12–19, 26–28 and 30–36 — the Type A saturated-exit
+**The open rows** are 12–19, 26–28 and 30–36 — the Type A saturated-exit
 ladder below node `[93]`, the Type B bridge rows `[73]`–`[76]`, and the
-non-near-cubic surplus branch `[125]`–`[144]`.  All are `❌ ❌ ❌ ❌`: none has a
-live declaration, and the descriptions in their evidence sections are porting
-reference for the legacy `Blueprint` code, not claims about the current tree.
+non-near-cubic surplus branch `[125]`–`[144]`.  Rows 30–33 are now partly
+ported: they run live as `Graph/Strategy/SurplusRows.lean` composed by
+`Spine.runSurplusBranch`, so their Ledger, Transport and Residual columns are
+backed by a compiling target and only their **Facts** columns are open — each
+carries a **Gap** bullet naming the paper objects still missing.  The remaining
+open rows are `❌ ❌ ❌ ❌`: none has a live declaration, and the descriptions in
+their evidence sections are porting reference for the legacy `Blueprint` code,
+not claims about the current tree.
 
 **Part III (rows 68–73).**  Nodes `[35]`–`[46]` have no vertex at all: the
 rank-drop arm of `[32]` is the identity continuation, so `Blueprint.compression‑

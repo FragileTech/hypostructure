@@ -41,17 +41,17 @@ universe u w
 variable {V : Type u} [DecidableEq V] {Role : Type w} [DecidableEq Role]
 
 /-- **The role fibre at a colour**: the members of the family carrying it. -/
-def roleFibre (family : Finset (Sym2 V)) (role : Sym2 V → Role) (value : Role) :
-    Finset (Sym2 V) :=
+def roleFibre (family : Finset (Finset V)) (role : Finset V → Role) (value : Role) :
+    Finset (Finset V) :=
   family.filter fun edge => role edge = value
 
 omit [DecidableEq V] in
-theorem roleFibre_subset (family : Finset (Sym2 V)) (role : Sym2 V → Role)
+theorem roleFibre_subset (family : Finset (Finset V)) (role : Finset V → Role)
     (value : Role) : roleFibre family role value ⊆ family :=
   Finset.filter_subset _ _
 
 omit [DecidableEq V] in
-theorem roleFibre_mono {family sub : Finset (Sym2 V)} (role : Sym2 V → Role)
+theorem roleFibre_mono {family sub : Finset (Finset V)} (role : Finset V → Role)
     (value : Role) (inside : sub ⊆ family) :
     roleFibre sub role value ⊆ roleFibre family role value := by
   intro edge edgeMem
@@ -64,7 +64,7 @@ omit [DecidableEq V] in
   `ℓ_cap(t) = Σ_{r ∈ 𝔕_st} ℓ(t,r)`
 
 at any family whose colours all lie in the declared alphabet. -/
-theorem card_eq_sum_roleFibre (family : Finset (Sym2 V)) (role : Sym2 V → Role)
+theorem card_eq_sum_roleFibre (family : Finset (Finset V)) (role : Finset V → Role)
     (roles : Finset Role) (declared : ∀ edge ∈ family, role edge ∈ roles) :
     family.card = ∑ value ∈ roles, (roleFibre family role value).card :=
   Finset.card_eq_sum_card_fiberwise declared
@@ -80,9 +80,9 @@ If no role fibre carries a matching of size `L` or a star of size `L`, then the
 whole family has at most `Cap_hom(L)` members.  The manuscript's proof exactly:
 `lem:same-token-matching-star` charges each fibre by `(L−1)(2L−3)`, and the
 role-fibre partition sums those charges over the at most `Q_st` roles. -/
-theorem card_le_capCharge (family : Finset (Sym2 V)) (role : Sym2 V → Role)
+theorem card_le_capCharge (family : Finset (Finset V)) (role : Finset V → Role)
     (roles : Finset Role) (size : Nat) (positive : 1 ≤ size)
-    (nondiagonal : ∀ edge ∈ family, ¬ edge.IsDiag)
+    (pairs : ∀ edge ∈ family, edge.card = 2)
     (declared : ∀ edge ∈ family, role edge ∈ roles)
     (noHomogeneousMatching : ∀ value ∈ roles,
       ¬ ∃ sub ⊆ roleFibre family role value, IsMatching sub ∧ size ≤ sub.card)
@@ -98,17 +98,17 @@ theorem card_le_capCharge (family : Finset (Sym2 V)) (role : Sym2 V → Role)
         refine Finset.sum_le_sum fun value valueMem => ?_
         exact card_le_of_no_matching_no_star _ size positive
           (fun edge edgeMem =>
-            nondiagonal edge (roleFibre_subset family role value edgeMem))
+            pairs edge (roleFibre_subset family role value edgeMem))
           (noHomogeneousMatching value valueMem)
           (noHomogeneousStar value valueMem)
     _ = capCharge roles.card size := by
-        rw [Finset.sum_const, smul_eq_mul, capCharge]
+        rw [Finset.sum_const_nat fun _ _ => rfl, capCharge]
 
 /-- The colour class of a family, chosen to be as large as the pigeonhole
 allows.  Both halves of `lem:same-token-homogeneous-extraction` are this one
 selection: a colour class of a matching is a matching, and a colour class of a
 star is a star with the same centre, because both are subfamilies. -/
-theorem exists_large_roleFibre (family : Finset (Sym2 V)) (role : Sym2 V → Role)
+theorem exists_large_roleFibre (family : Finset (Finset V)) (role : Finset V → Role)
     (roles : Finset Role) (nonempty : roles.Nonempty)
     (declared : ∀ edge ∈ family, role edge ∈ roles) :
     ∃ value ∈ roles, family.card ≤ roles.card * (roleFibre family role value).card := by
@@ -122,15 +122,15 @@ theorem exists_large_roleFibre (family : Finset (Sym2 V)) (role : Sym2 V → Rol
         card_eq_sum_roleFibre family role roles declared
     _ ≤ ∑ _value ∈ roles, (roleFibre family role best).card :=
         Finset.sum_le_sum fun value valueMem => bestMax value valueMem
-    _ = roles.card * (roleFibre family role best).card := by
-        rw [Finset.sum_const, smul_eq_mul]
+    _ = roles.card * (roleFibre family role best).card :=
+        Finset.sum_const_nat fun _ _ => rfl
 
 /-- **`lem:same-token-homogeneous-extraction`, matching half.**  A same-token
 `K`-matching contains a role-homogeneous matching of size at least `⌈K/Q⌉`,
 written without a division. -/
-theorem exists_homogeneous_matching (family : Finset (Sym2 V)) (role : Sym2 V → Role)
+theorem exists_homogeneous_matching (family : Finset (Finset V)) (role : Finset V → Role)
     (roles : Finset Role) (nonempty : roles.Nonempty)
-    (pattern : Finset (Sym2 V)) (inside : pattern ⊆ family)
+    (pattern : Finset (Finset V)) (inside : pattern ⊆ family)
     (matching : IsMatching pattern)
     (declared : ∀ edge ∈ family, role edge ∈ roles) :
     ∃ value ∈ roles, roleFibre pattern role value ⊆ roleFibre family role value ∧
@@ -144,9 +144,9 @@ theorem exists_homogeneous_matching (family : Finset (Sym2 V)) (role : Sym2 V �
 
 /-- **`lem:same-token-homogeneous-extraction`, star half.**  The colour classes
 of a star are stars with the same centre, so the same selection applies. -/
-theorem exists_homogeneous_star (family : Finset (Sym2 V)) (role : Sym2 V → Role)
+theorem exists_homogeneous_star (family : Finset (Finset V)) (role : Finset V → Role)
     (roles : Finset Role) (nonempty : roles.Nonempty)
-    (pattern : Finset (Sym2 V)) (inside : pattern ⊆ family)
+    (pattern : Finset (Finset V)) (inside : pattern ⊆ family)
     (centre : V) (star : IsStar pattern centre)
     (declared : ∀ edge ∈ family, role edge ∈ roles) :
     ∃ value ∈ roles, roleFibre pattern role value ⊆ roleFibre family role value ∧
@@ -205,8 +205,8 @@ a matching or by a star.
 Read at a token fibre this is `cor:forced-same-token-scale`; read at a role
 fibre, where every member carries one colour, the pattern it produces is
 role-homogeneous, which is `cor:forced-homogeneous-same-token-scale`. -/
-theorem exists_matching_or_star_of_patternThreshold (family : Finset (Sym2 V))
-    (nondiagonal : ∀ edge ∈ family, ¬ edge.IsDiag) :
+theorem exists_matching_or_star_of_patternThreshold (family : Finset (Finset V))
+    (pairs : ∀ edge ∈ family, edge.card = 2) :
     (∃ sub ⊆ family, IsMatching sub ∧ patternThreshold family.card ≤ sub.card) ∨
       (∃ centre : V, ∃ sub ⊆ family, IsStar sub centre ∧
         patternThreshold family.card ≤ sub.card) := by
@@ -228,7 +228,7 @@ theorem exists_matching_or_star_of_patternThreshold (family : Finset (Sym2 V))
         have := noStar vertex sub inside star
         omega)
   have bound := card_le_matching_mul_two_mul_degree_sub_one family (scale - 1) (scale - 1)
-    nondiagonal matchings degrees
+    pairs matchings degrees
   have minimal : scale ≤ scale - 1 := patternThreshold_le _ _ bound
   -- `ψ = 0` is impossible here: the empty matching already realizes it.
   have positive : 1 ≤ scale := by

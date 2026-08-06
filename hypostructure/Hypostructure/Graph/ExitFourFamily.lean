@@ -88,7 +88,7 @@ structure Family (Target : FiniteObject.{u} → Prop) {object : FiniteObject.{u}
   /-- The canonical declared coordinate of a routed load. -/
   coordinate : object.Vertex → entry.Coordinate
   /-- Every routed load's canonical coordinate is declared by the reading. -/
-  coordinate_declared : ∀ load ∈ routedLoads support threshold receiver,
+  coordinate_declared : ∀ load ∈ object.routedLoads support threshold receiver,
     coordinate load ∈ entry.coordinates
   /-- The generation predicate of the five canonical constructions. -/
   Generated : Clause → Finset entry.Coordinate → Finset entry.Coordinate → Prop
@@ -130,13 +130,13 @@ noncomputable def declaredLoads
   letI : DecidablePred fun load : object.Vertex =>
       family.coordinate load ∈ identified :=
     fun _ => Classical.propDecidable _
-  (routedLoads support threshold receiver).filter fun load =>
+  (object.routedLoads support threshold receiver).filter fun load =>
     family.coordinate load ∈ identified
 
 theorem mem_declaredLoads {identified : Finset family.entry.Coordinate}
     {load : object.Vertex} :
     load ∈ family.declaredLoads identified ↔
-      load ∈ routedLoads support threshold receiver ∧
+      load ∈ object.routedLoads support threshold receiver ∧
         family.coordinate load ∈ identified := by
   letI : DecidablePred fun load : object.Vertex =>
       family.coordinate load ∈ identified :=
@@ -145,7 +145,7 @@ theorem mem_declaredLoads {identified : Finset family.entry.Coordinate}
 
 theorem declaredLoads_subset (identified : Finset family.entry.Coordinate) :
     family.declaredLoads identified ⊆
-      routedLoads support threshold receiver := by
+      object.routedLoads support threshold receiver := by
   intro load member
   exact (family.mem_declaredLoads.mp member).1
 
@@ -171,7 +171,7 @@ theorem occurs_of_witness {load : object.Vertex}
 
 theorem mem_routedLoads_of_witness {load : object.Vertex}
     (witness : family.Witness load) :
-    load ∈ routedLoads support threshold receiver := by
+    load ∈ object.routedLoads support threshold receiver := by
   obtain ⟨_, _, identified, _, declared⟩ := witness
   exact family.declaredLoads_subset identified declared
 
@@ -180,7 +180,7 @@ equipped with one exit-`(4)` witness, and with no routed load listed twice --
 the last clause being `Finset` membership itself. -/
 structure IsPeeling (peeled : Finset object.Vertex) : Prop where
   /-- `P₄(w) ⊆ ℒ(w)`. -/
-  inside : peeled ⊆ routedLoads support threshold receiver
+  inside : peeled ⊆ object.routedLoads support threshold receiver
   /-- Every listed load carries one exit-`(4)` witness. -/
   witnessed : ∀ load ∈ peeled, family.Witness load
 
@@ -204,7 +204,7 @@ theorem isPeeling_insert {peeled : Finset object.Vertex}
     family.IsPeeling (insert load peeled) ∧
       residualLoad support threshold receiver (insert load peeled) + 1 =
         residualLoad support threshold receiver peeled := by
-  have routed : load ∈ routedLoads support threshold receiver :=
+  have routed : load ∈ object.routedLoads support threshold receiver :=
     family.mem_routedLoads_of_witness witness
   refine ⟨⟨insert_subset_routedLoads support threshold receiver peeling.inside
       routed, ?_⟩, ?_⟩

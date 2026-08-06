@@ -176,6 +176,10 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   -- The quadrilateral the high-centre normal form excludes: `4 = 2 ^ 2` is a
   -- power-of-two length, so it is one of this problem's accepted cycles.
   quadrilateralAccepted := Core.DyadicLength.powerOfTwoLength_four
+  -- The degenerate closure `lem:labels` never counts: `2 = 2 ^ 1` is below the
+  -- exponent floor of this problem's accepted lengths, so a single attachment
+  -- counted twice closes nothing.
+  degenerateClosureRejected := by decide
   -- The marked-fan slack the local Type B fan ledger spends: the label algebra's
   -- own packing number at the registered order leaves the closed-neighbour
   -- deficit nonnegative slack against this problem's discharge scale.  The value

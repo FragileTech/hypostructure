@@ -3,7 +3,8 @@ import Hypostructure.Graph.Strategy.SpineRows
 /-!
 # The route-8 carrier closure: rows
 
-Figure 9 of the manuscript, nodes `[109]`--`[124]`.  The arm is entered at
+Figure 8's saturated exits `[101]`--`[105]` and Figure 9's route-8 arm, nodes
+`[109]`--`[124]`.  The arm is entered at
 `[109]` with the reduced silent core residual of
 `def:typeA-silent-core-residual`; nodes `[111]`--`[113]` read its burden and
 large-budget deficit; `[114]`--`[116]` establish that every indexed entry has at
@@ -251,6 +252,125 @@ noncomputable def typeAExitFiveDichotomy
         by_contra failing
         exact occurs ⟨residual, index, member, failing⟩)
     exitFresh freeFresh
+
+/-! ## Node `[105]`: exit `(6)`
+
+`def:typeA-saturated-exits` exit `(6)` is *"the equality of responses
+delocalizes to a proper support or to the whole graph"*, which
+`def:typeA-trace-basin` records as alternative (c): *"an equality among
+coordinates of `ρ_u(B_u)` becomes target-complete only after adjoining a larger
+connected support `Z ⊋ B_u`, either with `Z ⊊ G` or with `Z = G`"*.
+
+The yes arm is an indexed entry carrying that datum -- `Route8.Delocalization`,
+whose enlarging support, coordinate equality and inclusion-minimality are the
+clause's three parts.  The no arm is (R2) for exit `(6)`: no equality of any
+indexed entry of any route-8 collection of the object delocalizes.
+
+The split is taken on a `Prop`, so no entry is extracted to build the branch,
+and the arm not taken is absent from the taken branch's key index. -/
+noncomputable def typeAExitSixDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeAExitSix typeAExitSixFree :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeExit :
+      (∃ residual : Route8Data data current.object,
+        ∃ index ∈ residual.entries,
+          residual.Delocalizes
+            (Graph.MinimumDegreeAtLeast data.threshold) index) →
+        typeAExitSix.At current)
+    (encodeFree :
+      Graph.Route8.DelocalizationFree
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) current.object →
+        typeAExitSixFree.At current)
+    (exitFresh : typeAExitSix ∉ known)
+    (freeFresh : typeAExitSixFree ∉ known) :
+    Decision typeAExitSix typeAExitSixFree previous :=
+  Decision.run previous typeAExitSix typeAExitSixFree
+    `Hypostructure.Graph.Strategy.Spine.typeAExitSix
+    (by
+      classical
+      by_cases occurs :
+          ∃ residual : Route8Data data current.object,
+            ∃ index ∈ residual.entries,
+              residual.Delocalizes
+                (Graph.MinimumDegreeAtLeast data.threshold) index
+      · exact .inl (encodeExit occurs)
+      · refine .inr (encodeFree ?_)
+        intro residual index member delocalizes
+        exact occurs ⟨residual, index, member, delocalizes⟩)
+    exitFresh freeFresh
+
+/-! ## Node `[105]`: is the delocalization proper or global?
+
+`lem:typeA-exits-discharged`: *"Exit (6) is excluded by `lem:proper-smearing` in
+the proper-support case and by `lem:no-silent-global-smearing` in the
+whole-graph case."*
+
+That sentence is a dichotomy, and this is it.  The yes arm carries
+`lem:proper-smearing`'s conclusion -- the enlarging support is a replacement of
+a proper boundaried support -- and the no arm carries
+`lem:no-silent-global-smearing`'s -- a strictly smaller admissible closed
+representative.  Both are refuted by the selection, so both arms close.
+
+The row **reads node `[105]`'s exit by exact key** and applies
+`Route8.Delocalization.localize`, which is `def:admissible-rank-quotient`'s own
+scope split on the enlarging support.  Like the exit-`(5)` realization test, the
+question is asked of the object -- *does the object carry a replacement of some
+proper support* -- so the closing side has the weaker premise and the other side
+carries the stronger conclusion the manuscript's second case names. -/
+noncomputable def typeAExitSixScopeDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeAExitSix typeAExitSixProper typeAExitSixGlobal :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeAExitSix known]
+    (exitOf : typeAExitSix.At current →
+      ∃ residual : Route8Data data current.object,
+        ∃ index ∈ residual.entries,
+          residual.Delocalizes
+            (Graph.MinimumDegreeAtLeast data.threshold) index)
+    (encodeProper :
+      (∃ support : Finset current.object.Vertex,
+        Graph.Strategy.InterfaceReplacement.ReplacementSupport
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) current.object support) →
+        typeAExitSixProper.At current)
+    (encodeGlobal :
+      (∃ representative : Graph.FiniteObject.{u},
+        representative.LexicographicallySmaller current.object ∧
+          Graph.MinimumDegreeAtLeast data.threshold representative ∧
+            (Graph.HasCycleWithLength data.LengthOK representative →
+              Graph.HasCycleWithLength data.LengthOK current.object)) →
+        typeAExitSixGlobal.At current)
+    (properFresh : typeAExitSixProper ∉ known)
+    (globalFresh : typeAExitSixGlobal ∉ known) :
+    Decision typeAExitSixProper typeAExitSixGlobal previous :=
+  Decision.run previous typeAExitSixProper typeAExitSixGlobal
+    `Hypostructure.Graph.Strategy.Spine.typeAExitSixProper
+    (by
+      classical
+      by_cases proper :
+          ∃ support : Finset current.object.Vertex,
+            Graph.Strategy.InterfaceReplacement.ReplacementSupport
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) current.object support
+      · exact .inl (encodeProper proper)
+      · refine .inr (encodeGlobal ?_)
+        obtain ⟨_residual, _index, _member, delocalizes⟩ :=
+          exitOf (ExactLedger.get previous typeAExitSix)
+        rcases Graph.Route8.Data.localize_of_delocalizes delocalizes with
+          replacement | representative
+        · exact absurd replacement proper
+        · exact representative)
+    properFresh globalFresh
 
 /-! ## Node `[109]`: the route-8 arm placement
 

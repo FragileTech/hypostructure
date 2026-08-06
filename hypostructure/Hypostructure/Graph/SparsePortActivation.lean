@@ -1,12 +1,22 @@
+import Hypostructure.Graph.Contraction
 import Hypostructure.Graph.ExcessPortFamily
 import Hypostructure.Graph.TightVertexSuppression
+import Hypostructure.Graph.Contraction
 
 /-!
 # Port activation: the canonical response support `Γ(p)`
 
 `lem:sparse-port-activation`.  A selected port `p = (c(p), x(p))` whose endpoint
 carries exactly the shoulder pair `s(p) = {a_p, b_p}` is activated by the data
-its two cases supply:
+it carries in every case and the data its two cases supply.
+
+Every selected port carries the return path `R_p ⊆ G − c(p)x(p)` of clause (b):
+the port's own edge is not a bridge, because contracting it gives a strictly
+smaller object still meeting the baseline -- the endpoint's degree and the
+centre's surplus pay for the merged vertex -- so minimality supplies that
+contraction an accepted cycle and avoidance turns it into the return.  Its
+first edge after `x(p)` is a shoulder, since the only other incidence of the
+endpoint is the deleted port edge.  Then:
 
 * if `p` is *open* -- the shoulders are nonadjacent -- suppressing `x(p)` and
   joining its shoulders produces a strictly smaller object still meeting the
@@ -24,9 +34,10 @@ manuscript's `δ = 3` the endpoint has exactly `δ − 1 = 2` shoulders, which i
 `SurplusPort.card_shoulders`, and a caller at another baseline gets a statement
 about the ports that happen to carry a pair.  No numeral occurs here.
 
-The suppression operation, its minimum-degree preservation, and the cycle
+The contraction operation and its return theorem are `Contraction`'s, and the
+suppression operation, its minimum-degree preservation and the cycle
 reconstruction are all `TightVertexSuppression`'s; this module only reads a
-surplus port as one of its configurations.
+surplus port as one of their configurations.
 -/
 
 namespace Hypostructure.Graph
@@ -49,8 +60,9 @@ noncomputable def support (port : SurplusPort object threshold) :
 /-- A port is *open* when its two shoulders are nonadjacent, and *triangular*
 when they are adjacent.  This is the manuscript's dichotomy at the shoulder
 pair, and it is decidable on a finite object. -/
-def Open (port : SurplusPort object threshold) (left right : object.Vertex) :
-    Prop := ¬ object.graph.Adj left right
+def Open (_port : SurplusPort object threshold)
+    (left right : object.Vertex) : Prop :=
+  ¬ object.graph.Adj left right
 
 /-- **Clause (d): a triangular port carries the triangle `x a_p b_p x`.**
 
@@ -65,6 +77,87 @@ theorem triangle_of_shoulders_adj (port : SurplusPort object threshold)
       object.graph.Adj right port.endpoint :=
   ⟨((port.mem_shoulders_iff left).1 leftShoulder).2, adjacent,
     (((port.mem_shoulders_iff right).1 rightShoulder).2).symm⟩
+
+/-! ## Clause (b): the return path `R_p` -/
+
+/-- **`R_p`: the manuscript's return path at one selected port.**
+
+A simple path of the ambient object from the port's endpoint back to its centre
+which does not use the port's own edge, and whose first edge after the endpoint
+is one of the two shoulders. -/
+structure PortReturn (object : FiniteObject.{u})
+    (centre endpoint left right : object.Vertex) where
+  /-- `R_p ⊆ G − c(p)x(p)`. -/
+  path : (object.graph.deleteEdges {s(centre, endpoint)}).Walk endpoint centre
+  /-- `R_p` is simple. -/
+  isPath : path.IsPath
+  /-- The first edge of `R_p` after `x(p)` is `x a_p` or `x b_p`. -/
+  first_shoulder : path.snd = left ∨ path.snd = right
+
+/-- **`lem:sparse-port-activation`, clause (b).**
+
+The port's own edge is not a bridge: contracting it gives a strictly smaller
+object which still meets the baseline, because the endpoint degree and the
+centre's surplus together pay for the merged vertex, so minimality supplies that
+contraction an accepted cycle and avoidance turns it into a return.  The first
+edge of that return after the endpoint is a shoulder because the only other
+incidence of the endpoint is the deleted port edge itself.
+
+The hypotheses are the standing baseline, the selected object's own avoidance,
+and its own minimality, together with the port's shoulder pair -- the same three
+ledger facts clause (c) consumes. -/
+theorem portReturn_of_minimal {LengthOK : Nat → Prop}
+    (port : SurplusPort object threshold)
+    {left right : object.Vertex}
+    (shoulders : ∀ vertex : object.Vertex,
+      vertex ∈ port.shoulders ↔ (vertex = left ∨ vertex = right))
+    (baseline : threshold ≤ object.minDegree)
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (minimal : ∀ smaller : FiniteObject.{u},
+      smaller.LexicographicallySmaller object →
+      threshold ≤ smaller.minDegree → HasCycleWithLength LengthOK smaller) :
+    Nonempty (PortReturn object port.centre port.endpoint left right) := by
+  classical
+  let contraction : EdgeContraction object :=
+    { tail := port.centre
+      head := port.endpoint
+      adjacent := port.adjacent }
+  -- The endpoint pays the baseline and the centre pays one unit of surplus,
+  -- which is exactly the cost of the merged vertex.
+  have endpointPositive : 0 < object.degree port.endpoint := by
+    letI : FinEnum object.Vertex := object.vertices
+    letI : DecidableRel object.graph.Adj := object.decideAdj
+    change 0 < object.graph.degree port.endpoint
+    exact SimpleGraph.Adj.degree_pos_left port.adjacent.symm
+  have endpointBaseline : threshold ≤ object.degree port.endpoint :=
+    le_trans baseline (object.minDegree_le_degree port.endpoint)
+  have degreeSum : threshold + 2 ≤
+      object.degree contraction.tail + object.degree contraction.head := by
+    have centreHigh := port.centre_high
+    change threshold + 2 ≤
+      object.degree port.centre + object.degree port.endpoint
+    omega
+  obtain ⟨⟨forward, forwardPath⟩⟩ :=
+    contraction.hasReturn_of_minimal (LengthOK := LengthOK) degreeSum baseline
+      avoids minimal
+  -- Read the return from the endpoint, where its first edge is a shoulder.
+  let path := forward.reverse
+  have notNil : ¬ path.Nil :=
+    SimpleGraph.Walk.not_nil_of_ne
+      (fun equality => port.adjacent.ne equality.symm)
+  have firstAdj : contraction.severed.Adj port.endpoint path.snd :=
+    path.adj_snd notNil
+  obtain ⟨adjacent, different⟩ := contraction.severed_adj.mp firstAdj
+  have notCentre : path.snd ≠ port.centre := by
+    intro equality
+    rw [equality] at different
+    exact different Sym2.eq_swap
+  exact ⟨{
+    path := path
+    isPath := forwardPath.reverse
+    first_shoulder :=
+      shoulders path.snd |>.1
+        ((port.mem_shoulders_iff path.snd).2 ⟨notCentre, adjacent⟩) }⟩
 
 /-- **The port, read as a suppression configuration.**
 

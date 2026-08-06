@@ -1,4 +1,5 @@
-import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -42,50 +43,62 @@ variable {V : Type u} [DecidableEq V]
 /-- **The degree of a vertex in a pattern family**: the pairs of the family
 that contain it.  A star of size `K` centred at a vertex is exactly `K` such
 pairs, so this number *is* the largest star at the vertex. -/
-def degree (family : Finset (Sym2 V)) (vertex : V) : Nat :=
+def degree (family : Finset (Finset V)) (vertex : V) : Nat :=
   (family.filter fun edge => vertex ∈ edge).card
 
 /-- **The vertices a family covers.** -/
-def support (family : Finset (Sym2 V)) : Finset V :=
-  family.biUnion Sym2.toFinset
+def support (family : Finset (Finset V)) : Finset V :=
+  family.biUnion id
 
 /-- **A matching**: distinct members of the family share no vertex. -/
-def IsMatching (family : Finset (Sym2 V)) : Prop :=
+def IsMatching (family : Finset (Finset V)) : Prop :=
   ∀ edge ∈ family, ∀ other ∈ family, edge ≠ other →
     ∀ vertex : V, vertex ∈ edge → vertex ∉ other
 
 /-- **A star with a given centre**: every member of the family contains it. -/
-def IsStar (family : Finset (Sym2 V)) (centre : V) : Prop :=
+def IsStar (family : Finset (Finset V)) (centre : V) : Prop :=
   ∀ edge ∈ family, centre ∈ edge
 
-theorem mem_support {family : Finset (Sym2 V)} {vertex : V} :
+/-- Both notions are decidable at a finite vertex type: a matching is a bounded
+quantification over the family and its vertices, and a star is a bounded
+quantification over the family alone. -/
+instance decidableIsStar (family : Finset (Finset V)) (centre : V) :
+    Decidable (IsStar family centre) :=
+  inferInstanceAs (Decidable (∀ edge ∈ family, centre ∈ edge))
+
+instance decidableIsMatching [Fintype V] (family : Finset (Finset V)) :
+    Decidable (IsMatching family) :=
+  inferInstanceAs (Decidable (∀ edge ∈ family, ∀ other ∈ family, edge ≠ other →
+    ∀ vertex : V, vertex ∈ edge → vertex ∉ other))
+
+theorem mem_support {family : Finset (Finset V)} {vertex : V} :
     vertex ∈ support family ↔ ∃ edge ∈ family, vertex ∈ edge := by
   simp [support]
 
 omit [DecidableEq V] in
 /-- A subfamily of a matching is a matching. -/
-theorem IsMatching.subset {family sub : Finset (Sym2 V)} (matching : IsMatching family)
+theorem IsMatching.subset {family sub : Finset (Finset V)} (matching : IsMatching family)
     (inside : sub ⊆ family) : IsMatching sub :=
   fun edge edgeMem other otherMem distinct =>
     matching edge (inside edgeMem) other (inside otherMem) distinct
 
-/-- A matching covers at most two vertices per member. -/
-theorem card_support_le_two_mul (family : Finset (Sym2 V)) :
+/-- A family of pairs covers at most two vertices per member. -/
+theorem card_support_le_two_mul (family : Finset (Finset V))
+    (pairs : ∀ edge ∈ family, edge.card = 2) :
     (support family).card ≤ 2 * family.card := by
   classical
   calc (support family).card
-      ≤ ∑ edge ∈ family, edge.toFinset.card := Finset.card_biUnion_le
+      ≤ ∑ edge ∈ family, (id edge).card := Finset.card_biUnion_le
     _ ≤ ∑ _edge ∈ family, 2 := by
-        refine Finset.sum_le_sum fun edge _ => ?_
-        rw [Sym2.card_toFinset]
-        split <;> omega
+        refine Finset.sum_le_sum fun edge edgeMem => ?_
+        rw [id, pairs edge edgeMem]
     _ = 2 * family.card := by
-        rw [Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+        rw [Finset.sum_const_nat fun _ _ => rfl, Nat.mul_comm]
 
 /-- **The incidence count, read along both indices.**  Summing the family
 degree over a set of vertices is the same as summing, over the family, how many
 of those vertices each member contains. -/
-theorem sum_degree_eq_sum_card_filter (family : Finset (Sym2 V))
+theorem sum_degree_eq_sum_card_filter (family : Finset (Finset V))
     (cover : Finset V) :
     ∑ vertex ∈ cover, degree family vertex =
       ∑ edge ∈ family, (cover.filter fun vertex => vertex ∈ edge).card := by
@@ -96,7 +109,9 @@ theorem sum_degree_eq_sum_card_filter (family : Finset (Sym2 V))
     _ = ∑ edge ∈ family, ∑ vertex ∈ cover, (if vertex ∈ edge then 1 else 0) :=
         Finset.sum_comm
     _ = ∑ edge ∈ family, (cover.filter fun vertex => vertex ∈ edge).card :=
-        Finset.sum_congr rfl fun edge _ => by simp
+        Finset.sum_congr rfl fun edge _ => by
+          rw [Finset.sum_ite_mem, Finset.sum_const_nat fun _ _ => rfl,
+            Nat.mul_one, Finset.filter_mem_eq_inter]
 
 /-- The arithmetic step of the accounting: `e + ν ≤ 2νΔ` gives
 `e ≤ ν(2Δ − 1)`, with `Nat` truncation on the right handled at `Δ = 0`. -/
@@ -124,15 +139,15 @@ makes its covered vertices a vertex cover, so summing the family degree over
 that cover counts every member at least once and every matching member exactly
 twice, while the same sum is at most `|cover|·Δ ≤ 2ν·Δ`. -/
 theorem card_le_matching_mul_two_mul_degree_sub_one
-    (family : Finset (Sym2 V)) (matchingBound degreeBound : Nat)
-    (nondiagonal : ∀ edge ∈ family, ¬ edge.IsDiag)
+    (family : Finset (Finset V)) (matchingBound degreeBound : Nat)
+    (pairs : ∀ edge ∈ family, edge.card = 2)
     (matchings : ∀ sub ⊆ family, IsMatching sub → sub.card ≤ matchingBound)
     (degrees : ∀ vertex : V, degree family vertex ≤ degreeBound) :
     family.card ≤ matchingBound * (2 * degreeBound - 1) := by
   classical
   -- A maximum-size matching inside the family.
   set candidates := family.powerset.filter fun sub => IsMatching sub with candidatesDef
-  have emptyMem : (∅ : Finset (Sym2 V)) ∈ candidates := by
+  have emptyMem : (∅ : Finset (Finset V)) ∈ candidates := by
     simp [candidatesDef, IsMatching]
   obtain ⟨best, bestMem, bestMax⟩ :=
     Finset.exists_max_image candidates Finset.card ⟨∅, emptyMem⟩
@@ -149,10 +164,12 @@ theorem card_le_matching_mul_two_mul_degree_sub_one
       intro vertex inEdge
       by_contra covered
       exact missing vertex covered inEdge
+    obtain ⟨witness, inWitness⟩ : edge.Nonempty :=
+      Finset.card_pos.mp (by rw [pairs edge edgeMem]; omega)
     have notMem : edge ∉ best := by
       intro inBest
-      exact fresh _ (Sym2.out_fst_mem edge)
-        (mem_support.mpr ⟨edge, inBest, Sym2.out_fst_mem edge⟩)
+      exact fresh witness inWitness
+        (mem_support.mpr ⟨edge, inBest, inWitness⟩)
     have larger : insert edge best ∈ candidates := by
       refine Finset.mem_filter.mpr ⟨Finset.mem_powerset.mpr ?_, ?_⟩
       · exact Finset.insert_subset edgeMem bestInside
@@ -180,13 +197,12 @@ theorem card_le_matching_mul_two_mul_degree_sub_one
       intro edge edgeMem
       by_cases inBest : edge ∈ best
       · have equality :
-            ((support best).filter fun vertex => vertex ∈ edge) = edge.toFinset := by
+            ((support best).filter fun vertex => vertex ∈ edge) = edge := by
           ext vertex
-          simp only [Finset.mem_filter, Sym2.mem_toFinset]
+          simp only [Finset.mem_filter]
           exact ⟨fun both => both.2, fun inEdge =>
             ⟨mem_support.mpr ⟨edge, inBest, inEdge⟩, inEdge⟩⟩
-        rw [equality, Sym2.card_toFinset_of_not_isDiag _ (nondiagonal edge edgeMem),
-          if_pos inBest]
+        rw [equality, pairs edge edgeMem, if_pos inBest]
       · obtain ⟨vertex, covered, inEdge⟩ := covers edge edgeMem
         rw [if_neg inBest]
         have : vertex ∈ (support best).filter fun vertex => vertex ∈ edge :=
@@ -195,9 +211,10 @@ theorem card_le_matching_mul_two_mul_degree_sub_one
         omega
     calc family.card + best.card
         = ∑ edge ∈ family, (1 + if edge ∈ best then 1 else 0) := by
-          rw [Finset.sum_add_distrib, Finset.sum_const, smul_eq_mul, Nat.mul_one,
-            Finset.sum_ite_mem, Finset.inter_eq_right.mpr bestInside,
-            Finset.sum_const, smul_eq_mul, Nat.mul_one]
+          rw [Finset.sum_add_distrib, Finset.sum_const_nat fun _ _ => rfl,
+            Nat.mul_one, Finset.sum_ite_mem,
+            Finset.inter_eq_right.mpr bestInside,
+            Finset.sum_const_nat fun _ _ => rfl, Nat.mul_one]
       _ ≤ _ := Finset.sum_le_sum pointwise
   -- The same sum is at most the cover size times the degree bound.
   have upper : ∑ edge ∈ family,
@@ -207,10 +224,12 @@ theorem card_le_matching_mul_two_mul_degree_sub_one
     calc ∑ vertex ∈ support best, degree family vertex
         ≤ ∑ _vertex ∈ support best, degreeBound :=
           Finset.sum_le_sum fun vertex _ => degrees vertex
-      _ = (support best).card * degreeBound := by
-          rw [Finset.sum_const, smul_eq_mul]
+      _ = (support best).card * degreeBound :=
+          Finset.sum_const_nat fun _ _ => rfl
       _ ≤ 2 * best.card * degreeBound :=
-          Nat.mul_le_mul_right _ (card_support_le_two_mul best)
+          Nat.mul_le_mul_right _
+            (card_support_le_two_mul best fun edge edgeMem =>
+              pairs edge (bestInside edgeMem))
   have counted : family.card + best.card ≤ 2 * best.card * degreeBound :=
     le_trans lower upper
   calc family.card
@@ -221,7 +240,7 @@ theorem card_le_matching_mul_two_mul_degree_sub_one
 
 /-- A star of size `K` at a vertex is exactly `K` members containing it, so the
 family degree at that vertex decides whether one exists. -/
-theorem exists_star_iff (family : Finset (Sym2 V)) (centre : V) (size : Nat) :
+theorem exists_star_iff (family : Finset (Finset V)) (centre : V) (size : Nat) :
     (∃ sub ⊆ family, IsStar sub centre ∧ size ≤ sub.card) ↔
       size ≤ degree family centre := by
   classical
@@ -240,8 +259,8 @@ If `K ≥ 1` and the family contains neither a matching of size `K` nor a star o
 size `K`, then it has at most `(K−1)(2K−3)` members.  This is the first display
 at `ν = Δ = K − 1`. -/
 theorem card_le_of_no_matching_no_star
-    (family : Finset (Sym2 V)) (size : Nat) (positive : 1 ≤ size)
-    (nondiagonal : ∀ edge ∈ family, ¬ edge.IsDiag)
+    (family : Finset (Finset V)) (size : Nat) (positive : 1 ≤ size)
+    (pairs : ∀ edge ∈ family, edge.card = 2)
     (noMatching : ¬ ∃ sub ⊆ family, IsMatching sub ∧ size ≤ sub.card)
     (noStar : ¬ ∃ centre : V, ∃ sub ⊆ family, IsStar sub centre ∧ size ≤ sub.card) :
     family.card ≤ (size - 1) * (2 * size - 3) := by
@@ -254,7 +273,7 @@ theorem card_le_of_no_matching_no_star
     by_contra big
     exact noStar ⟨vertex, ((exists_star_iff family vertex size).mpr (by omega))⟩
   have := card_le_matching_mul_two_mul_degree_sub_one family (size - 1) (size - 1)
-    nondiagonal matchings degrees
+    pairs matchings degrees
   have rewrite : 2 * (size - 1) - 1 = 2 * size - 3 := by omega
   rwa [rewrite] at this
 
@@ -262,15 +281,15 @@ theorem card_le_of_no_matching_no_star
 `(K−1)(2K−3)` members contains a matching of size `K` or a star of size `K`.
 This is the form the geometric audits consume. -/
 theorem exists_matching_or_star_of_lt_card
-    (family : Finset (Sym2 V)) (size : Nat) (positive : 1 ≤ size)
-    (nondiagonal : ∀ edge ∈ family, ¬ edge.IsDiag)
+    (family : Finset (Finset V)) (size : Nat) (positive : 1 ≤ size)
+    (pairs : ∀ edge ∈ family, edge.card = 2)
     (large : (size - 1) * (2 * size - 3) < family.card) :
     (∃ sub ⊆ family, IsMatching sub ∧ size ≤ sub.card) ∨
       (∃ centre : V, ∃ sub ⊆ family, IsStar sub centre ∧ size ≤ sub.card) := by
   by_contra none
   push_neg at none
   obtain ⟨noMatching, noStar⟩ := none
-  have := card_le_of_no_matching_no_star family size positive nondiagonal
+  have := card_le_of_no_matching_no_star family size positive pairs
     (by rintro ⟨sub, inside, matching, big⟩; exact absurd big (by
       have := noMatching sub inside matching; omega))
     (by rintro ⟨centre, sub, inside, star, big⟩; exact absurd big (by
