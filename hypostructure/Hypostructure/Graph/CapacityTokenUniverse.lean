@@ -26,9 +26,10 @@ second spent against `lem:primitive-carrier-supply` and against `order·p ≤ n`
 which the packing itself supplies.
 
 The window order and the baseline are parameters throughout.  The manuscript's
-`15` is `δ·order − 2(order − 1)` and its `8n` is `6n + 2n`; neither numeral is
-written, and the two envelope steps that produce them stay antecedents rather
-than becoming hypotheses about the object.
+`15` is `δ·order − 2(order − 1)` and its `8n` is `capacityTokenSupply`, which is
+`3(δ − 1)n + 2n` at the registered baseline; neither numeral is written, and the
+two envelope steps that produce them stay antecedents here rather than becoming
+hypotheses about the object.
 -/
 
 namespace Hypostructure.Graph
@@ -175,6 +176,20 @@ theorem card_capacityTokens (object : FiniteObject.{u}) (threshold : Nat)
     obtain ⟨_, _, rfl⟩ := leftMember
     simp at rightMember)
 
+/-- **`𝔗_cap ≠ ∅`.**  The primitive summand contains the whole vertex set, so a
+single vertex already makes the declared token order an order. -/
+theorem capacityTokens_nonempty (object : FiniteObject.{u}) (threshold : Nat)
+    (packing : Finset (Finset object.Vertex)) (vertex : object.Vertex) :
+    (object.capacityTokens threshold packing).Nonempty := by
+  classical
+  refine ⟨CapacityToken.primitive (Sum.inl vertex), ?_⟩
+  rw [capacityTokens]
+  refine Finset.mem_union_right _
+    (Finset.mem_union_right _ (Finset.mem_union_right _ ?_))
+  refine Finset.mem_image_of_mem _ ?_
+  rw [primitiveCarrier]
+  exact Finset.inl_mem_disjSum.2 (object.mem_vertexFinset vertex)
+
 /-! ## `lem:capacity-token-supply` -/
 
 /-- **`lem:capacity-token-supply`, the exact display**, in subtraction-free form:
@@ -212,30 +227,44 @@ theorem order_mul_card_le_vertexCount (object : FiniteObject.{u})
   have split := object.remainderSupport_card_add_eq valid
   omega
 
-/-- **`lem:capacity-token-supply`, the displayed bound**: `|𝔗_cap| ≤ 8n + σ(G)`.
+/-- **The manuscript's `8n`, at the registered baseline.**
+
+`lem:capacity-token-supply`'s display is `|𝔗_cap| ≤ 8n + σ(G)`, and its `8n` is
+`6n + 2n`: `lem:primitive-carrier-supply`'s own supply plus the internal window
+mass `15p₁₃ < 2n`.  At the registered baseline the first summand is
+`3(δ − 1)n` and the second is unchanged, so the manuscript's `8` is `3(δ−1)+2`
+and no numeral is written. -/
+def capacityTokenSupply (object : FiniteObject.{u}) (threshold : Nat) : Nat :=
+  object.primitiveCarrierSupply threshold + 2 * object.vertexCount
+
+/-- **`lem:capacity-token-supply`, the displayed bound**:
+`|𝔗_cap| ≤ (3(δ−1)+2)n + σ(G)`, the manuscript's `≤ 8n + σ(G)` at its own
+`δ = 3`.
 
 The manuscript's own two steps, both kept as antecedents rather than becoming
 hypotheses about the object:
 
-* `|𝔘_sp(G)| ≤ 6n` on the sparse upper envelope `m ≤ 2n − 2`, which is
+* `|𝔘_sp(G)| ≤ 3(δ−1)n` on the sparse upper envelope `m + 2 ≤ (δ−1)n`, which is
   `lem:primitive-carrier-supply`;
-* `15p₁₃ < 2n`, which is `13p₁₃ ≤ n` -- derived here from the packing -- together
-  with the comparison `δ·order + 2 ≤ 4·order` between the two registered numbers,
-  the manuscript's `15 ≤ 2·13`.
+* `15p₁₃ < 2n`, which is `order·p ≤ n` -- derived here from the packing --
+  together with the comparison `δ·order + 2 ≤ 4·order` between the two registered
+  numbers, the manuscript's `15 ≤ 2·13`.
 
-The `8n` is `6n + 2n`, and the `6` and the `2` are those two steps; no numeral is
-written except as the coefficients of the envelopes that produce it. -/
+No numeral is written except as the coefficients of the envelopes that produce
+it. -/
 theorem card_capacityTokens_le (object : FiniteObject.{u})
     {order threshold : Nat} {packing : Finset (Finset object.Vertex)}
     (valid : object.IsWindowPacking order packing)
     (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
     (three : 3 ≤ threshold)
     (handshake : threshold * object.vertexCount ≤ 2 * object.edgeCount)
-    (envelope : object.edgeCount + 2 ≤ 2 * object.vertexCount)
+    (envelope : object.edgeCount + 2 ≤
+      (threshold - 1) * object.vertexCount)
     (orderPos : 0 < order)
     (joinSlack : threshold * order + 2 ≤ 4 * order) :
     (object.capacityTokens threshold packing).card ≤
-      8 * object.vertexCount + object.degreeSurplus threshold := by
+      object.capacityTokenSupply threshold + object.degreeSurplus threshold := by
+  rw [capacityTokenSupply]
   have identity := object.card_capacityTokens_add_internalMass valid baseline
   have primitive := card_primitiveCarrier_le baseline three handshake envelope
   have covered := object.order_mul_card_le_vertexCount valid

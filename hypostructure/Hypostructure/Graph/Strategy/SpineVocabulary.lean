@@ -162,6 +162,46 @@ structure Data where
   registered numbers — the manuscript's `12 < 13`. -/
   highCentreDeficitSlack :
     dischargeScale * threshold < 2 * dischargeScale + (threshold + 2)
+  /-- **The join comparison `lem:capacity-token-supply` spends.**
+
+  The manuscript's `|𝔗_cap| = |𝔘_sp(G)| + 15p₁₃ + σ(G)` is bounded by
+  `|𝔘_sp(G)| + 2n + σ(G)` because `15 ≤ 2·13`: the internal window mass
+  `δ·order − 2(order − 1)` per packed window is at most `2·order` per window, and
+  `order·p ≤ n` because the packed windows are vertex-disjoint.  Cleared of the
+  `−2(order−1)`, that is this comparison between the two registered numbers.
+
+  Registering it here is the analogue of `fanCapSlack` and
+  `highCentreDeficitSlack`: it relates the registered baseline to the registered
+  window order and nothing else, so it is a property of the presentation rather
+  than of any object.  A presentation whose window order is too short for its
+  baseline does not reach the capacity-token ledger. -/
+  joinSlack : threshold * windowOrder + 2 ≤ 4 * windowOrder
+  /-- **`def:same-token-routing-germs`' routing-label alphabet.**
+
+  *"The routing label of a pair in `Π_{t,r}` records the same-token role `r`,
+  the subtype of `t`, the ordered endpoint of the pair under discussion, the
+  local open/triangular status of the corresponding selected ports, the
+  boundary-degree profile of the bounded port supports `T(p),T(q)`, the
+  `P₁₃`-label entries appearing in the bounded part of the support, and the
+  suppressed-chord flag when the blocker has type (f).  These labels form a
+  finite set; denote its cardinality by `Q_geom`."*
+
+  `Q_geom` is a number the *registered declared-coordinate signature* fixes, not
+  one that varies with the object, which is why the alphabet is registered here
+  rather than quantified at the node: `L_geom = Q_geom + 1` has to be one
+  number, or nodes `[140]`--`[144]` are not testing the manuscript's threshold.
+  Only the boundary-degree profile alphabet is registered here.  The `P₁₃`
+  label is *not*: it is `Graph.WindowCurvature.Label windowOrder`, the
+  labelling's own computed alphabet, whose legality table node `[125]`'s
+  `localAlgebra` entry already carries -- so it is derived from the registered
+  window order rather than declared again.  The other five coordinates are the
+  framework's own finite alphabets, so `SameTokenRoutingGerms.RoutingLabel` at
+  the registered profile alphabet and that label type *is* the set `ρ_t` lands
+  in, and `Q_geom` is its cardinality. -/
+  BoundaryProfile : Type
+  /-- The profile alphabet is finite. -/
+  boundaryProfileFintype : Fintype BoundaryProfile
+
   /-- **`C_sp` of node `[19]`.**  The registered scale threshold is
   `C_sp·⌈√n⌉`; only its coefficient is registered, because the `⌈√n⌉` is the
   framework's own and the large-budget branch needs to *know* the threshold is a
@@ -1042,15 +1082,38 @@ inductive Key where
   canonical charge is single-valued, so `Π_blk` and `Π_free` exhaust the
   schedule and `|Π_blk| = Σ_B μ(B)`. -/
   | canonicalPairLedger
+  /-- Node `[132]`, exit arm of `lem:sparse-pair-dependence-exit`: the
+  dependence of a blocked pair's response coordinates is settled by a sparse
+  surplus exit of `def:named-surplus-exits` rather than by a canonical blocker.
+  It closes the branch against node `[125]`'s survivor entry at `[133]`. -/
+  | sparsePairExit
+  /-- Node `[132]`, blocker arm of `lem:sparse-pair-dependence-exit` with
+  `lem:mixed-sparse-spine-dependence` and
+  `prop:sparse-pair-independence-dichotomy`: no sparse surplus exit settles the
+  dependence, so at an object admitting no proper-support replacement a
+  rank-reducing attempted determination exhibits the blocker of type (d) or (e)
+  as concrete separated realizations, and the declared family attains full
+  target rank.  This is the arm the canonical blocker ledger `[134]` is
+  levied on. -/
+  | canonicalBlockerRoute
+  /-- `lem:sparse-upper-envelope`: `m + 2 ≤ (δ − 1)·n`, the manuscript's
+  `m ≤ 2n − 2` at its own `δ = 3`.  It is `lem:no-proper-core`'s degeneracy --
+  every proper subgraph misses the baseline, so the object less a vertex sitting
+  exactly at the baseline is `(δ − 1)`-degenerate -- spent against
+  `lem:deletion-critical`'s tight endpoint. -/
+  | sparseUpperEnvelope
   /-- Nodes `[134]`--`[136]`, `def:primitive-sparse-blocker-carrier` with
   `lem:primitive-carrier-supply`, `def:capacity-token-ledger` with
   `lem:capacity-token-supply` and `lem:token-ledger-no-overcount`, and
-  `def:same-token-patterns`: `|𝔘_sp(G)| = n + 2m + σ(G)`, which is `≤ 6n` on the
-  sparse upper envelope; the three-summand token universe
-  `𝔗_cap = 𝔗_prim ⊔ 𝔗_R ⊔ 𝔗_W` with `|𝔗_cap| = |𝔘_sp(G)| + 15p₁₃ + σ(G)` and
-  `|𝔗_cap| ≤ 8n + σ(G)`; the four-case charge `Θ_cap` landing in `𝔗_cap` with its
-  fibre identity `|Π_blk| = Σ_t ℓ_cap(t)` read at the whole blocked family; and
-  the fibre graph `H_t` with `e(H_t) = ℓ_cap(t)`. -/
+  `def:same-token-patterns`: `|𝔘_sp(G)| = n + 2m + σ(G) ≤ 3(δ−1)n`, the
+  manuscript's `≤ 6n`, spent against the sparse upper envelope the same node
+  proves; the three-summand token universe `𝔗_cap = 𝔗_prim ⊔ 𝔗_R ⊔ 𝔗_W` with
+  `|𝔗_cap| = |𝔘_sp(G)| + 15p₁₃ + σ(G)` and `|𝔗_cap| ≤ (3(δ−1)+2)n + σ(G)`, the
+  manuscript's `≤ 8n + σ(G)`, both unconditional; the four-case charge `Θ_cap`
+  landing in `𝔗_cap` with its fibre identity `|Π_blk| = Σ_t ℓ_cap(t)` read at the
+  whole blocked family; the fibre graph `H_t` with `e(H_t) = ℓ_cap(t)`; and the
+  existence of the object's capacity-token ledger at every declared
+  presentation. -/
   | capacityTokenLedger
   /-- Node `[137]`, `lem:exact-surplus-pair-charge-partition` with
   `thm:sharp-classwise-homogeneous-token-budget` (a)--(c) and
@@ -1087,13 +1150,55 @@ inductive Key where
   `Q_st|𝔗_cap|` slots carries a role-homogeneous same-token matching or star.
   `class(t)` routes to `[140]`, `[142]` or `[143]`. -/
   | sparsePressureOverload
-  /-- Nodes `[140]`, `[142]`, `[143]`, the three geometric class audits: a token
-  whose load exceeds `Cap_hom(L)` for the bound registered at its own token class
-  carries a role-homogeneous `L`-matching or `L`-star. -/
-  | bottleneckClassification
-  /-- Node `[144]`, `cor:homogeneous-same-token-caps-close`: fixed class caps
-  bound every token load by `M₀`, hence `|Π_blk| ≤ M₀|𝔗_cap|` and
-  `σ(G) ≤ 1 + 2M₀ + √(2E + 2M₀·scale)`. -/
+  /-- Node `[139]`, yes arm: the overloading token of node `[137]` lies in
+  `𝔗_W`, so the branch enters the window-incidence audit `[140]`. -/
+  | windowClassOverload
+  /-- Node `[139]`, no arm: no overloading token lies in `𝔗_W`, so the branch
+  falls through to node `[141]`. -/
+  | windowClassAbsent
+  /-- Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch
+  enters the remainder-surplus audit `[142]`. -/
+  | remainderClassOverload
+  /-- Node `[141]`, no arm: no overloading token lies in `𝔗_R` either, so the
+  branch enters the primitive-carrier audit `[143]`. -/
+  | remainderClassAbsent
+  /-- Node `[140]`, the window-incidence geometric audit: a token of `𝔗_W` whose
+  load exceeds `Cap_hom(L_geom)` carries a role-homogeneous `L_geom`-matching or
+  `L_geom`-star, at the counted routing-label alphabet of
+  `def:same-token-routing-germs`. -/
+  | windowIncidenceAudit
+  /-- Node `[142]`, the remainder-surplus geometric audit, at `𝔗_R`. -/
+  | remainderSurplusAudit
+  /-- Node `[143]`, the primitive-carrier geometric audit, at `𝔗_prim`. -/
+  | primitiveCarrierAudit
+  /-- Node `[143]`'s own class verdict: the overloading token lies in `𝔗_prim`.
+  It is *derived* at that node from node `[137]`'s overload and the two negative
+  arms of `[139]` and `[141]`, because `class(t)` has three values. -/
+  | primitiveClassOverload
+  /-- `cor:quantitative-homogeneous-overload`: the forced role-homogeneous
+  pattern scale `K_hom(G) ≥ ψ(N_*(G)/(Q_st(8n+σ(G))))`, cleared of division.
+  Committed on each of the three audit arms, because it is what makes the audit
+  a quantitative verdict rather than a bare alternative. -/
+  | quantitativeOverload
+  /-- Node `[144]`, the tested half of
+  `thm:homogeneous-overload-geometric-closure`: no capacity token of the object
+  supports a role-homogeneous same-token `L_geom`-matching or `L_geom`-star, at
+  the counted routing-label alphabet.  This is the subbranch the manuscript's
+  fixed caps `L_W = L_R = L_P = L_geom` hold on. -/
+  | homogeneousCapsHold
+  /-- Node `[144]`, the bottleneck arm: some capacity token *does* support such
+  a pattern.  `lem:same-token-bottleneck-routing` reads it as a sparse surplus
+  exit or as decorated Type B handoff fan data. -/
+  | homogeneousBottleneckPattern
+  /-- Node `[144]`, the bottleneck arm's own fact:
+  `thm:homogeneous-overload-geometric-closure`'s first assertion, which is
+  `lem:same-token-bottleneck-routing` at every declared routed bottleneck. -/
+  | bottleneckRouting
+  /-- Node `[144]`, `cor:homogeneous-same-token-caps-close` at the counted
+  `L_geom` and the ledger's own token supply: every token load is at most
+  `M₀ = Cap_hom(L_geom)`, hence `|Π_blk| ≤ M₀|𝔗_cap|`,
+  `σ(G) ≤ 1 + 2M₀ + √(2E + 2M₀·scale)`, and the edge-count half
+  `m = (3/2)n + O(√n)`. -/
   | homogeneousBottleneck
   /-- Node `[125]`, `def:named-surplus-exits`: the selected object survives the
   five sparse surplus exits.  This is the standing hypothesis every node of the
@@ -1279,6 +1384,8 @@ noncomputable abbrev jointPackageDemand (data : Data.{u})
       remainderStates data object packing *
     2 ^ (data.curvatureCost *
       remainderCurvatureTargetRank data object packing)
+
+attribute [instance] Data.boundaryProfileFintype
 
 /-! ## The exit-`(7)` handoff envelope, at the spine's registered data
 
@@ -3517,10 +3624,13 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .canonicalPairLedger, object =>
       -- `def:sparse-pair-response`, `def:surplus-blockers` instantiated,
       -- `def:canonical-blocker-ledger` and its no-overcount identity at that
-      -- instantiation, `lem:sparse-pair-dependence-exit` with
-      -- `lem:mixed-sparse-spine-dependence`,
-      -- `prop:sparse-pair-independence-dichotomy`, the two entropy sandwiches
-      -- and `cor:sparse-pair-entropy-saturation`.
+      -- instantiation, the two entropy sandwiches and
+      -- `cor:sparse-pair-entropy-saturation`.
+      --
+      -- `lem:sparse-pair-dependence-exit` is *not* here: it is a disjunction
+      -- about the object -- an exit or a blocker -- and it is node `[132]`'s
+      -- own branch, whose two arms are `sparsePairExit` and
+      -- `canonicalBlockerRoute` below.
       ((object.portPairSchedule data.threshold).card =
           (object.degreeSurplus data.threshold).choose 2 ∧
         (∀ Coordinate Chord : Type u,
@@ -3553,32 +3663,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             neighbor ∉ support) ∧
             ∀ family : Finset (Finset (object.Vertex × object.Vertex)),
               (activation.pairFamily family).card = family.card) ∧
-        (∀ Coordinate : Type u, ∀ family : Finset Coordinate,
-          ∀ coordinateSupport : Coordinate → Finset object.Vertex,
-            Graph.SurvivesSparseExits
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object →
-            (∀ support : Finset object.Vertex,
-              ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) object support) →
-            (∀ attempt :
-                Graph.AttemptedQuotient
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) object family
-                  coordinateSupport,
-                ¬ Set.InjOn attempt.label ↑family →
-                  (∃ left right, attempt.Identifies left right ∧
-                      left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
-                    (∃ left right, attempt.Identifies left right ∧
-                      Graph.Response.TargetDefect
-                        (Graph.HasCycleWithLength data.LengthOK) left right)) ∧
-              Core.TargetRank.targetRank
-                  (Graph.FiniteObject.declaredQuotientSystem
-                    (Graph.MinimumDegreeAtLeast data.threshold)
-                    (Graph.HasCycleWithLength data.LengthOK) object family
-                    coordinateSupport) =
-                family.card) ∧
         (∀ spineCount freeCount deficit : Nat,
           Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
             object.edgeCount →
@@ -3595,34 +3679,83 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             Graph.skeletonBudget object →
           2 ^ ((object.degreeSurplus data.threshold).choose 2) ≤
             Graph.skeletonBudget object))
+  | .sparsePairExit, object =>
+      -- Node `[132]`, exit arm: the first alternative of
+      -- `lem:sparse-pair-dependence-exit`.  Both refutations its proof spends
+      -- are exits in the manuscript's sense -- the delocalization exit of
+      -- `def:named-surplus-exits` and `lem:replacement`'s proper-support
+      -- obstruction -- so the arm is the negation of node `[125]`'s conjunction.
+      ¬ (Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∧
+        ∀ support : Finset object.Vertex,
+          ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object support)
+  | .canonicalBlockerRoute, object =>
+      -- Node `[132]`, blocker arm: the second alternative of
+      -- `lem:sparse-pair-dependence-exit`, together with
+      -- `lem:mixed-sparse-spine-dependence` and
+      -- `prop:sparse-pair-independence-dichotomy`.  The exit alternative is the
+      -- arm not taken, so it is discharged by the branch: nothing is left as a
+      -- hypothesis of the committed statement.
+      ∀ Coordinate : Type u, ∀ family : Finset Coordinate,
+        ∀ coordinateSupport : Coordinate → Finset object.Vertex,
+          (∀ attempt :
+              Graph.AttemptedQuotient
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object family
+                coordinateSupport,
+              ¬ Set.InjOn attempt.label ↑family →
+                (∃ left right, attempt.Identifies left right ∧
+                    left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
+                  (∃ left right, attempt.Identifies left right ∧
+                    Graph.Response.TargetDefect
+                      (Graph.HasCycleWithLength data.LengthOK) left right)) ∧
+            Core.TargetRank.targetRank
+                (Graph.FiniteObject.declaredQuotientSystem
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) object family
+                  coordinateSupport) =
+              family.card
+  | .sparseUpperEnvelope, object =>
+      -- `lem:sparse-upper-envelope`: `m + 2 ≤ (δ − 1)·n`, the manuscript's
+      -- `m ≤ 2n − 2` at its own `δ = 3`.
+      (object.edgeCount + 2 ≤ (data.threshold - 1) * object.vertexCount)
   | .capacityTokenLedger, object =>
       -- `lem:primitive-carrier-supply` in both displayed forms, and
       -- `def:capacity-token-ledger` with `lem:capacity-token-supply`,
       -- `lem:token-ledger-no-overcount` and `def:same-token-patterns`, at the
-      -- object's own token universe and its own four-case charge.
+      -- object's own token universe and its own four-case charge.  Both
+      -- displayed supply bounds are unconditional: the sparse upper envelope is
+      -- the node's own read and the join comparison is registered.
       (((object.primitiveCarrier data.threshold).card =
             object.vertexCount + 2 * object.edgeCount +
               object.degreeSurplus data.threshold ∧
-          (object.edgeCount + 2 ≤ 2 * object.vertexCount →
-            (object.primitiveCarrier data.threshold).card ≤
-              6 * object.vertexCount)) ∧
+          (object.primitiveCarrier data.threshold).card ≤
+            object.primitiveCarrierSupply data.threshold) ∧
         Graph.FiniteObject.CapacityTokenLedgerStatement object data.threshold
           data.windowOrder) ∧
-        -- The object *has* a capacity-token ledger: `𝔗_cap` with `Θ_cap`, node
-        -- `[130]`'s pair count, `lem:capacity-token-supply`'s `|𝔗_cap| ≤ 8n +
-        -- σ(G)` and the free-side sandwich, bundled by
-        -- `Graph.ObjectCapacityLedger.ofCapacityCharge`.  Nodes `[137]`--`[144]`
-        -- read this and nothing else about the token universe.
-        Nonempty (Graph.ObjectCapacityLedger object data.threshold)
+        -- The object *has* a capacity-token ledger at **every** declared
+        -- presentation: `𝔗_cap` with `Θ_cap`, node `[130]`'s pair count,
+        -- `𝔗_cap ≠ ∅`, `lem:capacity-token-supply`'s supply bound and the
+        -- free-side sandwich.  Nothing is selected here -- the packing, the
+        -- activation, the carrier presentation and the role reading are
+        -- quantified -- so the commitment is a property of the object rather
+        -- than of a choice, and nodes `[137]`--`[144]` read this and nothing
+        -- else about the token universe.
+        (∀ declared : Graph.CapacityPresentation object data.windowOrder,
+          Nonempty (Graph.ObjectCapacityLedger object data.threshold
+            data.windowOrder declared))
   | .roleFibrePartition, object =>
       -- `lem:exact-surplus-pair-charge-partition` with the classwise and
       -- subtype budgets, at the object's own capacity-token ledger.
-      Graph.RoleFibrePartitionStatement object data.threshold
+      Graph.RoleFibrePartitionStatement object data.threshold data.windowOrder
   | .fibrePressure, object =>
       -- `lem:capacity-token-high-load` with
       -- `cor:forced-homogeneous-same-token-scale` and the two sharp budgets,
-      -- existential in the object's own capacity-token ledger.
-      Graph.FibrePressureStatement object data.threshold
+      -- existential in the object's own capacity-token ledger at every declared
+      -- presentation.
+      Graph.FibrePressureStatement object data.threshold data.windowOrder
   | .spineSurplusEstimate, object =>
       -- `cor:spine-lower-bound-surplus-estimates`: node `[129]`'s ordering of
       -- the lower-bound packages, composed with node `[130]`'s pair count.
@@ -3637,21 +3770,96 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               (Graph.windowPackageBound data.windowRate packing scaleCount))
   | .sparsePressureNearCubic, object =>
       -- `prop:single-graph-sparse-pressure-routing` (a).
-      Graph.SparsePressureCapped object data.threshold
+      Graph.SparsePressureCapped object data.threshold data.windowOrder
   | .sparsePressureOverload, object =>
       -- `prop:single-graph-sparse-pressure-routing` (b) with
       -- `cor:coupled-single-graph-overload-budget`.
-      Graph.SparsePressureOverloadStatement object data.threshold
-  | .bottleneckClassification, object =>
-      -- The three geometric class audits `[140]`, `[142]`, `[143]`.
-      Graph.BottleneckClassificationStatement object data.threshold
+      Graph.SparsePressureOverloadStatement object data.threshold data.windowOrder
+  | .windowClassOverload, object =>
+      -- Node `[139]`, yes: the overload occurs at a window-incidence token.
+      Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
+        .windowIncidence
+  | .windowClassAbsent, object =>
+      -- Node `[139]`, no.
+      ¬ Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
+        .windowIncidence
+  | .remainderClassOverload, object =>
+      -- Node `[141]`, yes: the overload occurs at a remainder-surplus token.
+      Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
+        .remainderSurplus
+  | .remainderClassAbsent, object =>
+      -- Node `[141]`, no.
+      ¬ Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
+        .remainderSurplus
+  | .windowIncidenceAudit, object =>
+      -- Node `[140]`.
+      Graph.ClassAuditStatement object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) .windowIncidence
+  | .remainderSurplusAudit, object =>
+      -- Node `[142]`.
+      Graph.ClassAuditStatement object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) .remainderSurplus
+  | .primitiveCarrierAudit, object =>
+      -- Node `[143]`.
+      Graph.ClassAuditStatement object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) .primitiveCarrier
+  | .primitiveClassOverload, object =>
+      -- Node `[143]`'s class verdict, derived from the two negative arms.
+      Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
+        .primitiveCarrier
+  | .quantitativeOverload, object =>
+      -- `cor:quantitative-homogeneous-overload`.
+      Graph.QuantitativeOverloadStatement object data.threshold data.windowOrder
+  | .homogeneousCapsHold, object =>
+      -- The subbranch hypothesis of
+      -- `thm:homogeneous-overload-geometric-closure`.
+      Graph.HomogeneousCapsHold object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder))
+  | .homogeneousBottleneckPattern, object =>
+      -- Its complement: the same-token bottleneck, together with
+      -- `thm:homogeneous-overload-geometric-closure`'s first assertion at it --
+      -- `prop:nonnear-cubic-sharp-overload-routing`'s (b) or (c), which is what
+      -- the bottleneck *is*.
+      ¬ Graph.HomogeneousCapsHold object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder))
+  | .bottleneckRouting, object =>
+      -- `thm:homogeneous-overload-geometric-closure`'s first assertion:
+      -- `lem:same-token-bottleneck-routing` at every declared routed
+      -- bottleneck of the object.
+      -- and, at a survivor, the outcome itself: every declared routed
+      -- bottleneck produces admissible decorated Type B handoff fan data.
+      -- `prop:nonnear-cubic-sharp-overload-routing` opens *"if a sparse surplus
+      -- exit occurs, there is nothing to route; otherwise..."*, and node `[125]`
+      -- has already excluded that arm.
+      (Graph.BottleneckRoutingStatement object
+          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+          data.windowOrder ∧
+        Graph.TypeBHandoffStatement object
+          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+          data.windowOrder)
   | .homogeneousBottleneck, object =>
-      -- `cor:homogeneous-same-token-caps-close`.
-      Graph.HomogeneousBottleneckStatement object data.threshold
+      -- `cor:homogeneous-same-token-caps-close` at the counted `L_geom`, with
+      -- `thm:homogeneous-overload-geometric-closure`'s edge-count half.
+      Graph.HomogeneousCapsCloseStatement object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder))
   | .sparseSurplusSurvivor, object =>
-      -- `def:named-surplus-exits`: none of the five conclusions occurs.
+      -- `def:named-surplus-exits`: none of the five conclusions occurs, and
+      -- `lem:replacement` at the same selection: no proper support carries a
+      -- replacement either.  Both halves come from the node-`[1]`--`[4]`
+      -- selection entry, and both are what node `[132]`'s blocker arm needs, so
+      -- neither is left to be assumed downstream.
       Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∧
+        ∀ support : Finset object.Vertex,
+          ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object support
   | .activeSurplusDemands, object =>
       -- `def:active-surplus-demands` with `lem:surviving-active-family`.
       Graph.ActiveSurplusDemands (Graph.MinimumDegreeAtLeast data.threshold)
@@ -3780,13 +3988,27 @@ def label : Key → String
   | .sparsePortActivation => "sparsePortActivation"
   | .baselineSpineDemand => "baselineSpineDemand"
   | .canonicalPairLedger => "canonicalPairLedger"
+  | .sparsePairExit => "sparsePairExit"
+  | .canonicalBlockerRoute => "canonicalBlockerRoute"
+  | .sparseUpperEnvelope => "sparseUpperEnvelope"
   | .capacityTokenLedger => "capacityTokenLedger"
   | .roleFibrePartition => "roleFibrePartition"
   | .fibrePressure => "fibrePressure"
   | .spineSurplusEstimate => "spineSurplusEstimate"
   | .sparsePressureNearCubic => "sparsePressureNearCubic"
   | .sparsePressureOverload => "sparsePressureOverload"
-  | .bottleneckClassification => "bottleneckClassification"
+  | .windowClassOverload => "windowClassOverload"
+  | .windowClassAbsent => "windowClassAbsent"
+  | .remainderClassOverload => "remainderClassOverload"
+  | .remainderClassAbsent => "remainderClassAbsent"
+  | .windowIncidenceAudit => "windowIncidenceAudit"
+  | .remainderSurplusAudit => "remainderSurplusAudit"
+  | .primitiveCarrierAudit => "primitiveCarrierAudit"
+  | .primitiveClassOverload => "primitiveClassOverload"
+  | .quantitativeOverload => "quantitativeOverload"
+  | .homogeneousCapsHold => "homogeneousCapsHold"
+  | .homogeneousBottleneckPattern => "homogeneousBottleneckPattern"
+  | .bottleneckRouting => "bottleneckRouting"
   | .homogeneousBottleneck => "homogeneousBottleneck"
   | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
   | .activeSurplusDemands => "activeSurplusDemands"
@@ -3919,13 +4141,27 @@ example : label .activeSurplusFamily = "activeSurplusFamily" := rfl
 example : label .sparsePortActivation = "sparsePortActivation" := rfl
 example : label .baselineSpineDemand = "baselineSpineDemand" := rfl
 example : label .canonicalPairLedger = "canonicalPairLedger" := rfl
+example : label .sparsePairExit = "sparsePairExit" := rfl
+example : label .canonicalBlockerRoute = "canonicalBlockerRoute" := rfl
+example : label .sparseUpperEnvelope = "sparseUpperEnvelope" := rfl
 example : label .capacityTokenLedger = "capacityTokenLedger" := rfl
 example : label .roleFibrePartition = "roleFibrePartition" := rfl
 example : label .fibrePressure = "fibrePressure" := rfl
 example : label .spineSurplusEstimate = "spineSurplusEstimate" := rfl
 example : label .sparsePressureNearCubic = "sparsePressureNearCubic" := rfl
 example : label .sparsePressureOverload = "sparsePressureOverload" := rfl
-example : label .bottleneckClassification = "bottleneckClassification" := rfl
+example : label .windowClassOverload = "windowClassOverload" := rfl
+example : label .windowClassAbsent = "windowClassAbsent" := rfl
+example : label .remainderClassOverload = "remainderClassOverload" := rfl
+example : label .remainderClassAbsent = "remainderClassAbsent" := rfl
+example : label .windowIncidenceAudit = "windowIncidenceAudit" := rfl
+example : label .remainderSurplusAudit = "remainderSurplusAudit" := rfl
+example : label .primitiveCarrierAudit = "primitiveCarrierAudit" := rfl
+example : label .primitiveClassOverload = "primitiveClassOverload" := rfl
+example : label .quantitativeOverload = "quantitativeOverload" := rfl
+example : label .homogeneousCapsHold = "homogeneousCapsHold" := rfl
+example : label .homogeneousBottleneckPattern = "homogeneousBottleneckPattern" := rfl
+example : label .bottleneckRouting = "bottleneckRouting" := rfl
 example : label .homogeneousBottleneck = "homogeneousBottleneck" := rfl
 example : label .sparseSurplusSurvivor = "sparseSurplusSurvivor" := rfl
 example : label .activeSurplusDemands = "activeSurplusDemands" := rfl
@@ -4063,13 +4299,27 @@ def idx : Key → Nat
   | .sparsePortActivation => 111
   | .baselineSpineDemand => 112
   | .canonicalPairLedger => 113
+  | .sparsePairExit => 143
+  | .canonicalBlockerRoute => 144
+  | .sparseUpperEnvelope => 129
   | .capacityTokenLedger => 114
   | .roleFibrePartition => 115
   | .fibrePressure => 116
   | .spineSurplusEstimate => 126
   | .sparsePressureNearCubic => 127
   | .sparsePressureOverload => 128
-  | .bottleneckClassification => 117
+  | .windowClassOverload => 130
+  | .windowClassAbsent => 131
+  | .remainderClassOverload => 132
+  | .remainderClassAbsent => 133
+  | .windowIncidenceAudit => 134
+  | .remainderSurplusAudit => 135
+  | .primitiveCarrierAudit => 136
+  | .primitiveClassOverload => 139
+  | .quantitativeOverload => 137
+  | .homogeneousCapsHold => 140
+  | .homogeneousBottleneckPattern => 141
+  | .bottleneckRouting => 142
   | .homogeneousBottleneck => 118
   | .sparseSurplusSurvivor => 119
   | .activeSurplusDemands => 120
@@ -4191,10 +4441,24 @@ def ofIdx : Nat → Key
   | 111 => .sparsePortActivation
   | 112 => .baselineSpineDemand
   | 113 => .canonicalPairLedger
+  | 143 => .sparsePairExit
+  | 144 => .canonicalBlockerRoute
+  | 129 => .sparseUpperEnvelope
   | 114 => .capacityTokenLedger
   | 115 => .roleFibrePartition
   | 116 => .fibrePressure
-  | 117 => .bottleneckClassification
+  | 130 => .windowClassOverload
+  | 131 => .windowClassAbsent
+  | 132 => .remainderClassOverload
+  | 133 => .remainderClassAbsent
+  | 134 => .windowIncidenceAudit
+  | 135 => .remainderSurplusAudit
+  | 136 => .primitiveCarrierAudit
+  | 139 => .primitiveClassOverload
+  | 137 => .quantitativeOverload
+  | 140 => .homogeneousCapsHold
+  | 141 => .homogeneousBottleneckPattern
+  | 142 => .bottleneckRouting
   | 118 => .homogeneousBottleneck
   | 119 => .sparseSurplusSurvivor
   | 120 => .activeSurplusDemands
@@ -4474,6 +4738,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "baselineSpineDemand") 112
   | .canonicalPairLedger =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalPairLedger") 113
+  | .sparsePairExit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sparsePairExit") 143
+  | .canonicalBlockerRoute =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalBlockerRoute") 144
+  | .sparseUpperEnvelope =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sparseUpperEnvelope") 129
   | .capacityTokenLedger =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "capacityTokenLedger") 114
   | .roleFibrePartition =>
@@ -4488,9 +4758,33 @@ def name : Key → Lean.Name
   | .sparsePressureOverload =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "sparsePressureOverload") 128
-  | .bottleneckClassification =>
+  | .windowClassOverload =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowClassOverload") 130
+  | .windowClassAbsent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowClassAbsent") 131
+  | .remainderClassOverload =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
-        "bottleneckClassification") 117
+        "remainderClassOverload") 132
+  | .remainderClassAbsent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderClassAbsent") 133
+  | .windowIncidenceAudit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowIncidenceAudit") 134
+  | .remainderSurplusAudit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderSurplusAudit") 135
+  | .primitiveCarrierAudit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "primitiveCarrierAudit") 136
+  | .primitiveClassOverload =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "primitiveClassOverload") 139
+  | .quantitativeOverload =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "quantitativeOverload") 137
+  | .homogeneousCapsHold =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "homogeneousCapsHold") 140
+  | .homogeneousBottleneckPattern =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "homogeneousBottleneckPattern") 141
+  | .bottleneckRouting =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "bottleneckRouting") 142
   | .homogeneousBottleneck =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "homogeneousBottleneck") 118

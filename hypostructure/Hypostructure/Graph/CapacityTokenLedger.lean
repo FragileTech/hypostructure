@@ -393,179 +393,35 @@ either; it would follow from this bound and `lem:sparse-slack-surplus`, which
 node `[126]` carries. -/
 theorem CapacityTokenLedger.caps_close_at_geometricBound
     {demandCount : Nat} (ledger : CapacityTokenLedger.{u} demandCount)
-    (BoundaryProfile WindowLabel : Type)
-    [Fintype BoundaryProfile] [Fintype WindowLabel]
+    (Label : Type) [Fintype Label]
     (scale : Nat) (supply : ledger.tokens.card ≤ scale + demandCount)
     (noHomogeneousMatching : ∀ token ∈ ledger.tokens, ∀ value : Role,
       ¬ ∃ pattern ⊆ ledger.roleFibre token value,
         PatternFamily.IsMatching pattern ∧
-          SameTokenRoutingGerms.geometricPatternBound BoundaryProfile WindowLabel ≤
-            pattern.card)
+          SameTokenRoutingGerms.patternBound Label ≤ pattern.card)
     (noHomogeneousStar : ∀ token ∈ ledger.tokens, ∀ value : Role,
       ¬ ∃ centre : ledger.Demand, ∃ pattern ⊆ ledger.roleFibre token value,
         PatternFamily.IsStar pattern centre ∧
-          SameTokenRoutingGerms.geometricPatternBound BoundaryProfile WindowLabel ≤
-            pattern.card) :
+          SameTokenRoutingGerms.patternBound Label ≤ pattern.card) :
     (∀ token ∈ ledger.tokens, ledger.load token ≤
         homogeneousCapCharge
-          (SameTokenRoutingGerms.geometricPatternBound BoundaryProfile WindowLabel)) ∧
+          (SameTokenRoutingGerms.patternBound Label)) ∧
       ledger.blocked.card ≤
         homogeneousCapCharge
-            (SameTokenRoutingGerms.geometricPatternBound BoundaryProfile WindowLabel) *
+            (SameTokenRoutingGerms.patternBound Label) *
           ledger.tokens.card ∧
       demandCount ≤ 1 + 2 * homogeneousCapCharge
-          (SameTokenRoutingGerms.geometricPatternBound BoundaryProfile WindowLabel) +
+          (SameTokenRoutingGerms.patternBound Label) +
         Nat.sqrt (2 * ledger.entropyBudget +
           2 * (homogeneousCapCharge
-            (SameTokenRoutingGerms.geometricPatternBound BoundaryProfile WindowLabel) *
+            (SameTokenRoutingGerms.patternBound Label) *
               scale)) :=
   ledger.caps_close
-    (fun _ => SameTokenRoutingGerms.geometricPatternBound BoundaryProfile WindowLabel)
+    (fun _ => SameTokenRoutingGerms.patternBound Label)
     (homogeneousCapCharge
-      (SameTokenRoutingGerms.geometricPatternBound BoundaryProfile WindowLabel))
+      (SameTokenRoutingGerms.patternBound Label))
     scale
-    (fun _ => SameTokenRoutingGerms.one_le_geometricPatternBound BoundaryProfile
-      WindowLabel)
+    (fun _ => SameTokenRoutingGerms.one_le_patternBound Label)
     (fun _ => Nat.le_refl _) supply noHomogeneousMatching noHomogeneousStar
-
-/-! ## The four statements nodes `[137]`--`[144]` commit
-
-Each is written out once, here, and referenced by both the residual domain's
-value schema and the row that proves it, so that the schema and the row cannot
-drift apart.  All four quantify over the presentation node `[136]` has not
-built -- the declared token order, the eligibility relation whose first
-applicable label is `Θ_cap`, the role map, and the entropy budget with its
-sandwich bound -- and all four are stated at `ofPortSchedule`, so the pair
-schedule is the object's own and its cardinality is node `[130]`'s committed
-fact. -/
-
-/-- The presentation the four statements are quantified over, applied. -/
-noncomputable abbrev presented (object : FiniteObject.{u}) (threshold : Nat)
-    (pairCount : (object.portPairSchedule threshold).card =
-      (object.degreeSurplus threshold).choose 2)
-    {Token : Type u} (tokenDecidable : DecidableEq Token) (order : List Token)
-    (orderNonempty : order.toFinset.Nonempty)
-    (subtype : Token → TokenSubtype)
-    (Eligible : Token → Finset (object.Vertex × object.Vertex) → Prop)
-    (eligibleDecidable : ∀ token pair, Decidable (Eligible token pair))
-    (role : Finset (object.Vertex × object.Vertex) → Role) (entropyBudget : Nat)
-    (sandwich : (freeSide object.vertexPairDecidableEq
-      (object.portPairSchedule threshold) order Eligible eligibleDecidable).card ≤
-        entropyBudget) :
-    CapacityTokenLedger.{u} (object.degreeSurplus threshold) :=
-  CapacityTokenLedger.ofPortSchedule object threshold
-    (object.degreeSurplus threshold) pairCount tokenDecidable order orderNonempty
-    subtype Eligible eligibleDecidable role entropyBudget sandwich
-
-/-- **Nodes `[140]`, `[142]`, `[143]`, the three geometric class audits.** -/
-def BottleneckClassificationStatement (object : FiniteObject.{u}) (threshold : Nat) :
-    Prop :=
-  ∀ (pairCount : (object.portPairSchedule threshold).card =
-      (object.degreeSurplus threshold).choose 2)
-    (Token : Type u) (tokenDecidable : DecidableEq Token) (order : List Token)
-    (orderNonempty : order.toFinset.Nonempty) (subtype : Token → TokenSubtype)
-    (Eligible : Token → Finset (object.Vertex × object.Vertex) → Prop)
-    (eligibleDecidable : ∀ token pair, Decidable (Eligible token pair))
-    (role : Finset (object.Vertex × object.Vertex) → Role) (entropyBudget : Nat)
-    (sandwich : (freeSide object.vertexPairDecidableEq
-      (object.portPairSchedule threshold) order Eligible eligibleDecidable).card ≤
-        entropyBudget)
-    (patternBound : TokenClass → Nat) (token : Token),
-    1 ≤ patternBound ((presented object threshold pairCount tokenDecidable order
-        orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-        sandwich).tokenClass token) →
-    homogeneousCapCharge (patternBound ((presented object threshold pairCount
-          tokenDecidable order orderNonempty subtype Eligible eligibleDecidable role
-          entropyBudget sandwich).tokenClass token)) <
-        (presented object threshold pairCount tokenDecidable order orderNonempty
-          subtype Eligible eligibleDecidable role entropyBudget sandwich).load token →
-    ∃ value : Role,
-      (∃ pattern ⊆ (presented object threshold pairCount tokenDecidable order
-          orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-          sandwich).roleFibre token value,
-          PatternFamily.IsMatching pattern ∧
-            patternBound ((presented object threshold pairCount tokenDecidable order
-              orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-              sandwich).tokenClass token) ≤ pattern.card) ∨
-        (∃ centre, ∃ pattern ⊆ (presented object threshold pairCount tokenDecidable
-          order orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-          sandwich).roleFibre token value,
-          PatternFamily.IsStar pattern centre ∧
-            patternBound ((presented object threshold pairCount tokenDecidable order
-              orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-              sandwich).tokenClass token) ≤ pattern.card)
-
-/-- **Node `[144]`, `cor:homogeneous-same-token-caps-close`.** -/
-def HomogeneousBottleneckStatement (object : FiniteObject.{u}) (threshold : Nat) :
-    Prop :=
-  ∀ (pairCount : (object.portPairSchedule threshold).card =
-      (object.degreeSurplus threshold).choose 2)
-    (Token : Type u) (tokenDecidable : DecidableEq Token) (order : List Token)
-    (orderNonempty : order.toFinset.Nonempty) (subtype : Token → TokenSubtype)
-    (Eligible : Token → Finset (object.Vertex × object.Vertex) → Prop)
-    (eligibleDecidable : ∀ token pair, Decidable (Eligible token pair))
-    (role : Finset (object.Vertex × object.Vertex) → Role) (entropyBudget : Nat)
-    (sandwich : (freeSide object.vertexPairDecidableEq
-      (object.portPairSchedule threshold) order Eligible eligibleDecidable).card ≤
-        entropyBudget)
-    (patternBound : TokenClass → Nat) (cap scale : Nat),
-    (∀ class' : TokenClass, 1 ≤ patternBound class') →
-    (∀ class' : TokenClass, homogeneousCapCharge (patternBound class') ≤ cap) →
-    (presented object threshold pairCount tokenDecidable order orderNonempty subtype
-        Eligible eligibleDecidable role entropyBudget sandwich).tokens.card ≤
-      scale + object.degreeSurplus threshold →
-    (∀ token ∈ (presented object threshold pairCount tokenDecidable order
-        orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-        sandwich).tokens, ∀ value : Role,
-      ¬ ∃ pattern ⊆ (presented object threshold pairCount tokenDecidable order
-        orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-        sandwich).roleFibre token value,
-        PatternFamily.IsMatching pattern ∧
-          patternBound ((presented object threshold pairCount tokenDecidable order
-            orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-            sandwich).tokenClass token) ≤ pattern.card) →
-    (∀ token ∈ (presented object threshold pairCount tokenDecidable order
-        orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-        sandwich).tokens, ∀ value : Role,
-      ¬ ∃ centre, ∃ pattern ⊆ (presented object threshold pairCount tokenDecidable
-        order orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-        sandwich).roleFibre token value,
-        PatternFamily.IsStar pattern centre ∧
-          patternBound ((presented object threshold pairCount tokenDecidable order
-            orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-            sandwich).tokenClass token) ≤ pattern.card) →
-    (∀ token ∈ (presented object threshold pairCount tokenDecidable order
-        orderNonempty subtype Eligible eligibleDecidable role entropyBudget
-        sandwich).tokens,
-      (presented object threshold pairCount tokenDecidable order orderNonempty
-        subtype Eligible eligibleDecidable role entropyBudget sandwich).load token ≤
-        cap) ∧
-      (presented object threshold pairCount tokenDecidable order orderNonempty
-        subtype Eligible eligibleDecidable role entropyBudget sandwich).blocked.card ≤
-        cap * (presented object threshold pairCount tokenDecidable order orderNonempty
-          subtype Eligible eligibleDecidable role entropyBudget sandwich).tokens.card ∧
-      object.degreeSurplus threshold ≤ 1 + 2 * cap +
-        Nat.sqrt (2 * entropyBudget + 2 * (cap * scale))
-
-/-! ## The four statements, proved -/
-
-theorem bottleneckClassificationStatement (object : FiniteObject.{u}) (threshold : Nat) :
-    BottleneckClassificationStatement object threshold :=
-  fun pairCount _Token tokenDecidable order orderNonempty subtype Eligible
-      eligibleDecidable role entropyBudget sandwich patternBound token positive
-      overloaded =>
-    (presented object threshold pairCount tokenDecidable order orderNonempty subtype
-      Eligible eligibleDecidable role entropyBudget
-      sandwich).exists_homogeneous_pattern_of_capCharge_lt patternBound token positive
-        overloaded
-
-theorem homogeneousBottleneckStatement (object : FiniteObject.{u}) (threshold : Nat) :
-    HomogeneousBottleneckStatement object threshold :=
-  fun pairCount _Token tokenDecidable order orderNonempty subtype Eligible
-      eligibleDecidable role entropyBudget sandwich patternBound cap scale positive
-      uniform supply noMatching noStar =>
-    (presented object threshold pairCount tokenDecidable order orderNonempty subtype
-      Eligible eligibleDecidable role entropyBudget sandwich).caps_close patternBound
-        cap scale positive uniform supply noMatching noStar
 
 end Hypostructure.Graph

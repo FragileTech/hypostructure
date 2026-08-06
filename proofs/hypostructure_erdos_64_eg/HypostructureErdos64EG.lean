@@ -14,10 +14,11 @@ The application is exactly two modules:
   theorem (via `WindowAlgebra`) and the audited finite curvature table (via
   `FiniteChecks.P13Barrier`).  The framework reads them from here and names
   neither.
-* `StrategyDag` -- the authored topology.  It is currently a commented
-  reference: Block A now runs on `Graph.Strategy.Spine`, and re-rooting the DAG
-  on `Spine.run` with rows 11 onwards re-attached to `Spine.Result` is the next
-  step.
+* `StrategyDag` -- the authored topology.  Its single endpoint, `strategyDag`,
+  roots Block A on `Graph.Strategy.Spine` at this problem's registered data,
+  with Figure 8's Type A exit list and node `[19]`'s sparse surplus branch
+  attached.  It declares nothing else: the file authors topology, and every
+  statement it needs is the framework's.
 
 `WindowAlgebra` and `FiniteChecks.P13Barrier` are supporting inputs of
 `Problem` rather than entry points, so they are reached through it.

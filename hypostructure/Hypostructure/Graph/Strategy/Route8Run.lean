@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Strategy.Route8Rows
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.TypeAExitRun
 
 /-!
 # The route-8 carrier closure, run
@@ -8,19 +8,25 @@ The rows of `Route8Rows` are each quantified over the keys they consume and
 produce.  This module installs them at the spine's own vocabulary and runs them
 in the manuscript's order against the one canonical `ExactLedger`: the exit-`(4)`
 dichotomy of node `[101]`, the exit-`(5)` dichotomy of node `[103]`, the
-exit-`(6)` dichotomy of node `[105]`, the arm
+exit-`(6)` dichotomy of node `[105]`, the exit-`(7)` dichotomy of node `[107]`,
+the arm
 placement of node `[109]`, the burden and large-budget deficit of
 `[111]`--`[113]`, the carrier core of `[114]`--`[116]`, the private-carrier
 census of `[117]`--`[122]`, the pressure descent of `[123]`, and the terminal
 no-go of `[124]`.
 
-The three exit dichotomies come first, as Figure 8 places them: the arm is
-entered only on their no arms, so (R2) of `def:typeA-true-route8-residual` is
-three facts on the ledger rather than a clause anyone assumes.  Their yes arms
-leave the block -- `[101]`'s to the manuscript's target-defect peel, `[103]`'s to
-the uncompressibility contradiction, and `[105]`'s to the terminal `[106]`,
-whose two cases are `lem:proper-smearing` and `lem:no-silent-global-smearing`
--- and carry no route-8 fact.
+The four exit dichotomies come first, as Figure 8 places them: the arm is
+entered only on their no arms, so exits `(4)`--`(7)` of (R2) of
+`def:typeA-true-route8-residual` are four facts on the ledger rather than a
+clause anyone assumes.  Their yes arms leave the block -- `[101]`'s to the
+manuscript's target-defect peel, `[103]`'s to the uncompressibility
+contradiction, `[105]`'s to the terminal `[106]`,
+whose two cases are `lem:proper-smearing` and `lem:no-silent-global-smearing`,
+and `[107]`'s to node `[108]`, which returns the branch to the Type B handoff
+-- and carry no route-8 fact.  Exit `(7)`'s yes arm is the one of the four that
+is not a terminal: `lem:typeA-saturated-handoff` transfers it out of the Type A
+charge calculation, so it leaves the block as an open residual carrying
+`lem:decorated-fan-admissibility`'s interface.
 
 Inside the arm the wiring is the manuscript's: `[111]`--`[113]` reads the
 `[109]` collection, `[123]` reads `[122]`'s census, and `[124]` reads `[113]`,
@@ -196,11 +202,28 @@ abbrev exitSixGlobalKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   closed :: K .typeAExitSixGlobal :: K .typeAExitSix :: exitFiveFreeKeys known
 
-/-- The key index of nodes `[101]`, `[103]` and `[105]`'s no arms: (R2). -/
-abbrev exitFreeKeys
+/-- The key index of nodes `[101]`, `[103]` and `[105]`'s no arms — the cursor
+node `[107]` is asked on. -/
+abbrev exitSixFreeKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitSixFree :: exitFiveFreeKeys known
+
+/-- The key index of node `[107]`'s yes arm: the admissible decorated handoff
+fan envelope node `[108]` returns to the Type B handoff.  There is no closure
+key — exit `(7)` is the one exit of `def:typeA-saturated-exits` that neither
+closes nor stays in Type A. -/
+abbrev exitSevenHandoffKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSevenHandoff :: exitSixFreeKeys known
+
+/-- The key index of nodes `[101]`, `[103]`, `[105]` and `[107]`'s no arms:
+exits `(4)`--`(7)` of (R2) of `def:typeA-true-route8-residual`. -/
+abbrev exitFreeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSevenFree :: exitSixFreeKeys known
 
 /-- The key index a branch carries after the five rows of the route-8 arm. -/
 abbrev route8Keys
@@ -232,10 +255,12 @@ abbrev route8FreeKeys
 
 `exitFour` and `exitFive` are the yes arms of nodes `[101]` and `[103]`, which
 leave the block; `exitSixProper` and `exitSixGlobal` are the two cases of node
-`[105]`'s terminal `[106]`, each closed against the selection; `free` is node
-`[109]`'s complementary arm, which carries no route-8 collection; `closed` is
-Figure 9's terminal, with Core's closure key appended from the two incompatible
-facts. -/
+`[105]`'s terminal `[106]`, each closed against the selection;
+`exitSevenHandoff` is node `[107]`'s yes arm, which node `[108]` returns to the
+Type B handoff and which is an *open* residual rather than a terminal; `free` is
+node `[109]`'s complementary arm, which carries no route-8 collection; `closed`
+is Figure 9's terminal, with Core's closure key appended from the two
+incompatible facts. -/
 inductive Route8Result
     (selected : Input BranchState Presentation presentation data)
     (known : FactKeys (Input BranchState Presentation presentation data)) where
@@ -257,6 +282,9 @@ inductive Route8Result
   | exitSixGlobal
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (exitSixGlobalKeys known))
+  | exitSevenHandoff
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (exitSevenHandoffKeys known))
   | free
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (route8FreeKeys known))
@@ -296,6 +324,8 @@ noncomputable def runRouteEight
     (exitSixFreeFresh : K (data := data) .typeAExitSixFree ∉ known)
     (exitSixProperFresh : K (data := data) .typeAExitSixProper ∉ known)
     (exitSixGlobalFresh : K (data := data) .typeAExitSixGlobal ∉ known)
+    (exitSevenHandoffFresh : K (data := data) .typeAExitSevenHandoff ∉ known)
+    (exitSevenFreeFresh : K (data := data) .typeAExitSevenFree ∉ known)
     (residualFresh : K (data := data) .route8Residual ∉ known)
     (freeFresh : K (data := data) .route8Free ∉ known)
     (burdenFresh : K (data := data) .route8Burden ∉ known)
@@ -366,8 +396,17 @@ noncomputable def runRouteEight
             (closeIncompatible global (K .selection) (K .typeAExitSixGlobal)
               (by simp [closureFresh]))
   | .right exitSixFree =>
+  -- Node `[107]`: exit `(7)`, clause (d) of `def:typeA-trace-basin`.
+  match typeAExitSevenDichotomy exitSixFree (K .selection) (K .uncompressible)
+      (K .typeASaturatedExitEntry) (K .typeAExitSevenHandoff)
+      (K .typeAExitSevenFree)
+      (fun fact => fact.down.1) (fun fact => fact.down) (fun fact => fact.down)
+      (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+      (by simp [exitSevenHandoffFresh]) (by simp [exitSevenFreeFresh]) with
+  | .left handoff => exact .exitSevenHandoff handoff
+  | .right exitSevenFree =>
   -- Node `[109]`: the arm placement, on the ladder's no arms.
-  match route8Placement exitSixFree (K .route8Residual) (K .route8Free)
+  match route8Placement exitSevenFree (K .route8Residual) (K .route8Free)
       (fun value => ⟨value⟩) (fun value => ⟨value⟩)
       (by simp [residualFresh]) (by simp [freeFresh]) with
   | .right free => exact .free free
@@ -411,5 +450,195 @@ noncomputable def runRouteEight
       exact .closed
         (closeIncompatible afterClosed (K .route8Residual) (K .route8Closed)
           (by simp [closureFresh]))
+
+/-! ## Figure 8's visible path, walked in one piece
+
+Node `[93]`'s yes arm enters `def:typeA-saturated-exits` at exit `(1)` and
+Figure 8 walks the list to the end: `[95]` → `[97]` → `[99]` → `[101]` → `[103]`
+→ `[105]` → `[107]` → `[109]`.  `runExitChain` is the first half and
+`runRouteEight` is the second; the join is `lem:typeA-unpeeled-visible-routing`,
+which routes node `[99]`'s no arm into the shared exit segment, and the fact it
+commits there is the segment entry the second half is asked under.
+
+Nothing new is proved here.  The composition is what shows the list really is
+one walk on one immutable prefix: every freshness side condition of the second
+half is decided against the index the first half actually leaves, rather than
+supplied at a chosen cursor. -/
+
+/-- The cursor Figure 8 reaches after exits `(1)`--`(3)` are denied: node
+`[99]`'s no arm with the shared segment's entry committed on top. -/
+abbrev saturatedExitEntryKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeASaturatedExitEntry ::
+    typeAExitThreeFreeKeys (typeAExitTwoFreeKeys (typeAExitOneFreeKeys known))
+
+/-- **The exits of Figure 8's visible path.**
+
+The first three are the closed terminals `[96]`, `[98]` and `[100]`; `segment`
+is everything the shared exit segment `[101]`--`[107]` and the route-8 arm
+`[109]`--`[124]` produce, over the cursor node `[99]`'s no arm leaves. -/
+inductive SaturatedExitResult
+    (selected : Input BranchState Presentation presentation data)
+    (known : FactKeys (Input BranchState Presentation presentation data)) where
+  | exitOneClosed
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitOneClosedKeys known))
+  | exitTwoClosed
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitTwoClosedKeys (typeAExitOneFreeKeys known)))
+  | exitThreeClosed
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitThreeClosedKeys
+          (typeAExitTwoFreeKeys (typeAExitOneFreeKeys known))))
+  | segment
+      (result : Route8Result selected (saturatedExitEntryKeys known))
+
+set_option maxHeartbeats 1600000 in
+/-- **`def:typeA-saturated-exits`, walked from node `[95]` to node `[124]`.**
+
+Exits `(1)`--`(3)` first, then the shared segment `[101]`--`[107]` and the
+route-8 arm, in Figure 8's order.  Each block's requirements are discharged by
+instance resolution against the index the previous block leaves, and each
+block's freshness conditions are decided on the vocabulary's own finite `Key`
+against that same index. -/
+noncomputable def runSaturatedExits
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .selection) known]
+    [FactKeys.Has (K (data := data) .uncompressible) known]
+    [FactKeys.Has (K (data := data) .returnAvoidance) known]
+    [FactKeys.Has (K (data := data) .typeASaturatedReceiver) known]
+    [FactKeys.Has (K (data := data) .typeAVisibleEntry) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (returnFresh : K (data := data) .typeAExitOneReturn ∉ known)
+    (oneFreeFresh : K (data := data) .typeAExitOneFree ∉ known)
+    (thetaFresh : K (data := data) .typeAExitTwoTheta ∉ known)
+    (twoFreeFresh : K (data := data) .typeAExitTwoFree ∉ known)
+    (collisionFresh : K (data := data) .typeAExitThreeCollision ∉ known)
+    (threeFreeFresh : K (data := data) .typeAExitThreeFree ∉ known)
+    (entryFresh : K (data := data) .typeASaturatedExitEntry ∉ known)
+    (peelFresh : K (data := data) .typeAExitFourPeel ∉ known)
+    (noPeelFresh : K (data := data) .typeAExitFourNoPeel ∉ known)
+    (peeledChargeFresh : K (data := data) .typeAPeeledCharge ∉ known)
+    (compressionFresh : K (data := data) .typeAExitFiveCompression ∉ known)
+    (traceLevelFresh : K (data := data) .typeAExitFiveTraceLevel ∉ known)
+    (exitFourFresh : K (data := data) .typeAExitFour ∉ known)
+    (exitFourFreeFresh : K (data := data) .typeAExitFourFree ∉ known)
+    (exitFiveFresh : K (data := data) .typeAExitFive ∉ known)
+    (exitFiveFreeFresh : K (data := data) .typeAExitFiveFree ∉ known)
+    (exitSixFresh : K (data := data) .typeAExitSix ∉ known)
+    (exitSixFreeFresh : K (data := data) .typeAExitSixFree ∉ known)
+    (exitSixProperFresh : K (data := data) .typeAExitSixProper ∉ known)
+    (exitSixGlobalFresh : K (data := data) .typeAExitSixGlobal ∉ known)
+    (exitSevenHandoffFresh : K (data := data) .typeAExitSevenHandoff ∉ known)
+    (exitSevenFreeFresh : K (data := data) .typeAExitSevenFree ∉ known)
+    (residualFresh : K (data := data) .route8Residual ∉ known)
+    (freeFresh : K (data := data) .route8Free ∉ known)
+    (burdenFresh : K (data := data) .route8Burden ∉ known)
+    (coreFresh : K (data := data) .route8CarrierCore ∉ known)
+    (censusFresh : K (data := data) .route8Census ∉ known)
+    (descentFresh : K (data := data) .route8Descent ∉ known)
+    (closedFresh : K (data := data) .route8Closed ∉ known)
+    (closureFresh : closed (BranchState := BranchState)
+      (presentation := presentation) (data := data) ∉ known) :
+    SaturatedExitResult current known := by
+  classical
+  match runExitChain history returnFresh oneFreeFresh thetaFresh twoFreeFresh
+      collisionFresh threeFreeFresh entryFresh closureFresh with
+  | .exitOneClosed closedHistory => exact .exitOneClosed closedHistory
+  | .exitTwoClosed closedHistory => exact .exitTwoClosed closedHistory
+  | .exitThreeClosed closedHistory => exact .exitThreeClosed closedHistory
+  | .free entered =>
+      exact .segment
+        (runRouteEight entered (by simp [peelFresh]) (by simp [noPeelFresh])
+          (by simp [peeledChargeFresh]) (by simp [compressionFresh])
+          (by simp [traceLevelFresh]) (by simp [exitFourFresh])
+          (by simp [exitFourFreeFresh]) (by simp [exitFiveFresh])
+          (by simp [exitFiveFreeFresh]) (by simp [exitSixFresh])
+          (by simp [exitSixFreeFresh]) (by simp [exitSixProperFresh])
+          (by simp [exitSixGlobalFresh]) (by simp [exitSevenHandoffFresh])
+          (by simp [exitSevenFreeFresh]) (by simp [residualFresh])
+          (by simp [freeFresh]) (by simp [burdenFresh]) (by simp [coreFresh])
+          (by simp [censusFresh]) (by simp [descentFresh])
+          (by simp [closedFresh]) (by simp [closureFresh]))
+
+/-! ## Figure 8's branch, attached to `Spine.run`
+
+`Spine.run` reaches node `[93]`'s yes arm and node `[94]`; Figure 8 continues
+both into the saturated exit list.  The visible arm enters at exit `(1)` and
+walks `[95]`--`[124]`; the silent arm is routed by
+`lem:typeA-unpeeled-silent-routing` straight into the shared segment, so it
+already carries `typeASaturatedExitEntry` and enters the ladder at node `[101]`.
+
+Nothing here is a second copy of the spine: `Spine.run` is called once and its
+other arms are passed through unchanged. -/
+
+/-- **The spine, with Figure 8's saturated exit list attached.**
+
+`visibleExits` is node `[93]`'s yes arm continued through
+`Spine.runSaturatedExits`, `silentExits` is node `[94]` continued through
+`Spine.runRouteEight`, and `spine` is every arm of `Spine.run` that does not
+reach the saturated Type A branch. -/
+inductive SpineWithExitsResult
+    (selected : Input BranchState Presentation presentation data) where
+  | spine (result : Result selected)
+  | visibleExits
+      (result : SaturatedExitResult selected
+        (typeAVisibleEntryKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data)))
+  | silentExits
+      (result : Route8Result selected
+        (typeAVisibleFirstExcessKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data)))
+
+set_option maxHeartbeats 3200000 in
+/-- **Block A, run, with Figure 8's exit list attached.**
+
+The two saturated Type A arms of `Spine.run` are continued into the exit list
+in Figure 8's own order; every other arm is returned as it stands.  Each
+continuation's requirements are discharged by instance resolution against the
+index `Spine.run` actually leaves, and every freshness side condition is decided
+on the vocabulary's own finite `Key`. -/
+noncomputable def runWithSaturatedExits
+    (T : Core.Target (problem BranchState Presentation presentation data))
+    (targetPredicate : T.Predicate = Graph.HasCycleWithLength data.LengthOK)
+    (opened : OpenedScope
+      (P := problem BranchState Presentation presentation data) (K .selection)) :
+    SpineWithExitsResult opened.selected := by
+  classical
+  match Spine.run T targetPredicate opened with
+  | .typeAVisibleEntry visible =>
+      exact .visibleExits
+        (runSaturatedExits visible (returnFresh := by simp)
+          (oneFreeFresh := by simp) (thetaFresh := by simp)
+          (twoFreeFresh := by simp) (collisionFresh := by simp)
+          (threeFreeFresh := by simp) (entryFresh := by simp)
+          (peelFresh := by simp) (noPeelFresh := by simp)
+          (peeledChargeFresh := by simp) (compressionFresh := by simp)
+          (traceLevelFresh := by simp) (exitFourFresh := by simp)
+          (exitFourFreeFresh := by simp) (exitFiveFresh := by simp)
+          (exitFiveFreeFresh := by simp) (exitSixFresh := by simp)
+          (exitSixFreeFresh := by simp) (exitSixProperFresh := by simp)
+          (exitSixGlobalFresh := by simp) (exitSevenHandoffFresh := by simp)
+          (exitSevenFreeFresh := by simp) (residualFresh := by simp)
+          (freeFresh := by simp) (burdenFresh := by simp) (coreFresh := by simp)
+          (censusFresh := by simp) (descentFresh := by simp)
+          (closedFresh := by simp) (closureFresh := by simp))
+  | .typeAVisibleFirstExcess silent =>
+      exact .silentExits
+        (runRouteEight silent (peelFresh := by simp) (noPeelFresh := by simp)
+          (peeledChargeFresh := by simp) (compressionFresh := by simp)
+          (traceLevelFresh := by simp) (exitFourFresh := by simp)
+          (exitFourFreeFresh := by simp) (exitFiveFresh := by simp)
+          (exitFiveFreeFresh := by simp) (exitSixFresh := by simp)
+          (exitSixFreeFresh := by simp) (exitSixProperFresh := by simp)
+          (exitSixGlobalFresh := by simp) (exitSevenHandoffFresh := by simp)
+          (exitSevenFreeFresh := by simp) (residualFresh := by simp)
+          (freeFresh := by simp) (burdenFresh := by simp) (coreFresh := by simp)
+          (censusFresh := by simp) (descentFresh := by simp)
+          (closedFresh := by simp) (closureFresh := by simp))
+  | other => exact .spine other
 
 end Hypostructure.Graph.Strategy.Spine

@@ -1,5 +1,6 @@
 import Hypostructure.Graph.CommonPortReturnCycle
 import Hypostructure.Graph.Response
+import Hypostructure.Graph.Strategy.InterfaceReplacement
 
 /-!
 # Connector germs, surviving separators, and the decorated handoff fan envelope
@@ -35,12 +36,18 @@ Simplicity of the two germs then makes the root incidence and the two next
 incidences three distinct neighbours of `z`, which is `d_G(z) ≥ 3`; the
 separator being surviving rules out equality, which is `d_G(z) ≥ 4`.
 
-The absorbed classification is derived from `lem:context-universality`.  What
-the switch support *supplies* is `def:boundaried-gluing`'s bookkeeping: when `z`
-has no unused ambient incidence the two separated responses are a finite
-declared boundaried state, so they lie in one boundary-degree fibre.  That is
-the `fibre` field of `SwitchReading`, and it is the only clause of the argument
-this module does not prove.
+The absorbed classification is derived from `lem:context-universality`, and so
+is the fibre.  `def:typeA-continuation-classes` puts *"the two coordinates have
+the same image in the relevant boundary-degree fibre"* into what *separating at
+`z`* means, so `Separation` carries `S_z` — through the framework's own
+support-to-atom construction — and registers the two coordinates' declared
+readings in the certificate the framework *computes* for that atom.  Both
+`Separation.sameFibre` and `SwitchReading.fibre` are then read off that
+registration: they are node `[11]`'s `lem:degree-profile-fibres`, and this
+module restates neither.  What the switch support supplies is the manuscript's
+own registration step — *"the two separated responses therefore form a finite
+declared boundaried response state"* at an exhausted separator — which is the
+`registered` field of `SwitchReading`.
 
 Nothing here knows a manuscript, a baseline, a scale, a window order, or a
 proof.  The accepted-length predicate, the target, the boundary-degree profile,
@@ -217,9 +224,27 @@ end RootedGerm
 
 /-! ## Separation at a vertex, and the three incidences it uses -/
 
-/-- **Two germs through one completion port, separating at a vertex.**  This is
-`def:typeA-continuation-classes`' *"they separate at `z`"*, with the maximal
-common prefix exhibited, so `z` is the pair's first separator. -/
+/-- **Two germs through one completion port, separating at a vertex.**
+
+`def:typeA-continuation-classes`' *"they separate at `z`"*: the two germs have
+the same continuation class up to `z`, and their next incidences after `z` are
+distinct.  *Same continuation class up to `z`* is three conjuncts and all three
+are carried here — `z` occurs in both germs and they have the same ordered
+prefix from `h` to `z`, which the two decompositions below exhibit (and exhibit
+as maximal, so `z` is the pair's first separator), **and the two coordinates
+have the same image in the relevant boundary-degree fibre**, which is the last
+group of fields.
+
+That third conjunct is not a copied boundary profile.  `S_z` is the
+manuscript's own *"finite connected support consisting of the common prefix
+from `h` to `z`, the two connector tails from `z` to their first-entry
+receivers, the two receiver-entry channels in `X`, the completion port boundary
+datum, and the declared supports of the two response coordinates"*, presented
+through the framework's existing support-to-atom construction; the two
+coordinates' declared readings are then registered in that atom's *generated*
+profile certificate, whose constructor is private to the framework so that no
+caller registers a guessed profile.  `sameFibre` below reads the manuscript's
+conjunct off that registration. -/
 structure Separation (object : FiniteObject.{u}) (support : Finset object.Vertex)
     (receiver outside : object.Vertex) where
   /-- The first of the two declared coordinates' germs. -/
@@ -244,11 +269,71 @@ structure Separation (object : FiniteObject.{u}) (support : Finset object.Vertex
   rightEq : right.path = common ++ separator :: nextRight :: tailRight
   /-- The two next incidences are distinct: this is what *separating* means. -/
   distinct : nextLeft ≠ nextRight
+  /-- `S_z`, the switch support of `def:typeA-continuation-classes`. -/
+  switchSupport : Finset object.Vertex
+  /-- `S_z` carries the common prefix, the separator and the first connector
+  tail: the germ runs inside it. -/
+  leftGerm_subset : ∀ vertex ∈ left.path, vertex ∈ switchSupport
+  /-- and the second germ. -/
+  rightGerm_subset : ∀ vertex ∈ right.path, vertex ∈ switchSupport
+  /-- *"the finite **connected** support"*. -/
+  switchConnected :
+    Graph.SupportComponents.Connected.ConnectedOn object switchSupport
+  /-- `S_z` is proper: the manuscript's `Z = G` case is exit `(6)`, never `S_z`
+  itself. -/
+  switchProper : ∃ vertex, vertex ∉ switchSupport
+  /-- The first coordinate's declared reading on `S_z`'s interface. -/
+  leftReading : Graph.BoundaryPiece
+    (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
+      switchSupport switchConnected switchProper).decomposition.interface
+  /-- and the second's. -/
+  rightReading : Graph.BoundaryPiece
+    (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
+      switchSupport switchConnected switchProper).decomposition.interface
+  /-- The first coordinate lies in `S_z`'s registered boundary-degree fibre. -/
+  leftRegistered : leftReading.boundaryDegreeProfile =
+    (Graph.deriveBoundariedAtomProfile
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
+        switchSupport switchConnected switchProper)).boundaryDegreeProfile
+  /-- and so does the second. -/
+  rightRegistered : rightReading.boundaryDegreeProfile =
+    (Graph.deriveBoundariedAtomProfile
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
+        switchSupport switchConnected switchProper)).boundaryDegreeProfile
 
 namespace Separation
 
 variable {support : Finset object.Vertex} {receiver outside : object.Vertex}
 variable (separation : Separation object support receiver outside)
+
+/-- `S_z` as a proper boundaried atom of the ambient object.  Nothing is
+rebuilt: this is the framework's own support-to-atom construction. -/
+noncomputable def atom : Graph.ProperBoundariedAtom object :=
+  Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
+    separation.switchSupport separation.switchConnected separation.switchProper
+
+/-- The profile certificate generated for `S_z`.  The framework computes it
+from the atom; its constructor is private, so this is a registration and not a
+guess. -/
+noncomputable def certificate :
+    Graph.BoundariedAtomProfileCertificate separation.atom :=
+  Graph.deriveBoundariedAtomProfile separation.atom
+
+/-- The labelled interface `S_z` presents its declared readings on. -/
+noncomputable def interface : Graph.Boundary.{u} :=
+  separation.atom.decomposition.interface
+
+/-- **`def:typeA-continuation-classes`' third conjunct, read off the
+registration.**
+
+*"...and the two coordinates have the same image in the relevant boundary-degree
+fibre."*  Both readings were registered in `S_z`'s one generated certificate,
+so this is `lem:degree-profile-fibres` at node `[11]`; it is not restated
+here. -/
+theorem sameFibre :
+    separation.leftReading.boundaryDegreeProfile =
+      separation.rightReading.boundaryDegreeProfile :=
+  separation.leftRegistered.trans separation.rightRegistered.symm
 
 /-- **The common prefix is never empty.**  Both germs are rooted at `w` and
 step first to `h`, so an empty common prefix would make the two next incidences
@@ -390,6 +475,90 @@ theorem usedIncidences_eq_neighbors
         object.degree separation.separator := rfl
   rw [degreeEq, cubic, separation.card_usedIncidences]
 
+/-- **The three incidences `z` uses all lie in `S_z`.**  The root incidence is
+in the common prefix and the two next incidences are the germs' own next
+entries, so all three are germ vertices, and `S_z` carries both germs. -/
+theorem usedIncidences_subset_switchSupport :
+    ∀ vertex ∈ separation.usedIncidences, vertex ∈ separation.switchSupport := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  intro vertex member
+  rw [usedIncidences] at member
+  simp only [Finset.mem_insert, Finset.mem_singleton] at member
+  rcases member with rfl | rfl | rfl
+  · refine separation.leftGerm_subset separation.root ?_
+    rw [separation.leftEq]
+    exact List.mem_append_left _ separation.root_mem_common
+  · refine separation.leftGerm_subset separation.nextLeft ?_
+    rw [separation.leftEq]
+    simp
+  · refine separation.rightGerm_subset separation.nextRight ?_
+    rw [separation.rightEq]
+    simp
+
+/-- **`d_G(z) = 3` leaves `z` off the boundary of `S_z`.**
+
+*"Then the root incidence and the two next incidences used by the separated
+germs are all incidences of `z`.  Consequently the switch support `S_z` has no
+unused ambient incidence at `z`."*  This is that sentence, computed on the
+framework's own `cutBoundary`: at `d_G(z) = 3` the separator's three incidences
+are exactly its neighbours, all three lie in `S_z`, so `z` has no neighbour
+outside `S_z` and is an internal vertex of the atom rather than an interface
+label.  Nothing is assumed -- the manuscript's *"Assume `d_G(z)=3`"* is the
+branch `four_le_degree_of_surviving` splits on, and this is what that branch
+carries. -/
+theorem separator_notMem_cutBoundary
+    (cubic : object.degree separation.separator = 3) :
+    separation.separator ∉
+      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+        separation.switchSupport := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  intro onBoundary
+  obtain ⟨_inside, neighbour, adjacent, outsideSupport⟩ :=
+    (Graph.Strategy.InterfaceReplacement.SupportAtom.mem_cutBoundary_iff object
+      separation.switchSupport separation.separator).1 onBoundary
+  refine outsideSupport (separation.usedIncidences_subset_switchSupport
+    neighbour ?_)
+  rw [separation.usedIncidences_eq_neighbors cubic]
+  exact (object.graph.mem_neighborFinset separation.separator neighbour).mpr
+    adjacent
+
+/-- **`z` on the boundary of `S_z` has ambient degree at least `4`.**
+
+The converse branch of the previous theorem, and the one the manuscript takes
+when its *"Assume `d_G(z)=3`"* fails: an interface label of `S_z` has a
+neighbour outside `S_z`, that neighbour is none of the three incidences the
+separation uses -- those all lie in `S_z` -- so `z` has a fourth neighbour.
+Nothing is assumed on either side: the two theorems are the two arms of one
+decidable split on the framework's own `cutBoundary`. -/
+theorem four_le_degree_of_mem_cutBoundary
+    (onBoundary : separation.separator ∈
+      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+        separation.switchSupport) :
+    3 < object.degree separation.separator := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  obtain ⟨_inside, neighbour, adjacent, outsideSupport⟩ :=
+    (Graph.Strategy.InterfaceReplacement.SupportAtom.mem_cutBoundary_iff object
+      separation.switchSupport separation.separator).1 onBoundary
+  have unused : neighbour ∉ separation.usedIncidences := fun member =>
+    outsideSupport
+      (separation.usedIncidences_subset_switchSupport neighbour member)
+  have contained : insert neighbour separation.usedIncidences ⊆
+      object.graph.neighborFinset separation.separator := by
+    intro vertex member
+    rcases Finset.mem_insert.1 member with rfl | member
+    · exact (object.graph.mem_neighborFinset separation.separator vertex).mpr
+        adjacent
+    · exact (object.graph.mem_neighborFinset separation.separator vertex).mpr
+        (separation.usedIncidences_subset vertex member)
+  have counted := Finset.card_le_card contained
+  rw [Finset.card_insert_of_notMem unused, separation.card_usedIncidences]
+    at counted
+  exact counted
+
 end Separation
 
 /-! ## The switch support's declared reading, and absorption
@@ -410,19 +579,26 @@ that presentation: with no unused ambient incidence at `z` the boundary records
 exactly the root incidence, the two connector tails and the two receiver-entry
 channels, so the two realizations lie in one boundary-degree fibre. -/
 
-/-- **The declared reading the switch support carries.** -/
+/-- **The declared reading the switch support carries.**
+
+The reading is presented on `S_z`'s own interface, and its realizations are
+registered in `S_z`'s own generated profile certificate exactly where the
+manuscript registers them: *"Assume `d_G(z)=3`. ... Consequently the switch
+support `S_z` has no unused ambient incidence at `z`.  The two separated
+responses **therefore** form a finite declared boundaried response state with
+the same boundary-degree profile: the boundary records the root incidence, the
+two connector tails to their first entries in `X`, and the two receiver-entry
+channels."*  That sentence is the `registered` field, in the framework's own
+registration vocabulary and against the framework's own computed certificate;
+the *"same boundary-degree profile"* half is then derived below rather than
+declared. -/
 structure SwitchReading {support : Finset object.Vertex}
     {receiver outside : object.Vertex}
-    (separation : Separation object support receiver outside)
-    {Profile : Type v} (Target : FiniteObject.{u} → Prop) where
-  /-- The labelled boundary of `S_z`. -/
-  boundary : Graph.Boundary.{u}
+    (separation : Separation object support receiver outside) where
   /-- The declared coordinate universe of `S_z`. -/
   Coordinate : Type u
-  /-- The reading: a retained coordinate set presented on that boundary. -/
-  state : Finset Coordinate → Graph.BoundaryPiece boundary
-  /-- The boundary-degree profile the reading is compared in. -/
-  profile : Graph.BoundaryPiece boundary → Profile
+  /-- The reading: a retained coordinate set presented on `S_z`'s interface. -/
+  state : Finset Coordinate → Graph.BoundaryPiece separation.interface
   /-- The coordinate set before the identification. -/
   base : Finset Coordinate
   /-- The coordinate set the identification leaves: the two separated response
@@ -432,33 +608,78 @@ structure SwitchReading {support : Finset object.Vertex}
   something -- the two separated response coordinates are distinct, which is
   what makes the quotient nontrivial. -/
   reduced_ssubset : reduced ⊂ base
-  /-- **`def:boundaried-gluing` at an exhausted separator.**  When `S_z` leaves
-  no ambient incidence at `z` unused, the boundary records exactly the root
-  incidence, the two connector tails and the two receiver-entry channels, so the
-  two realizations lie in one boundary-degree fibre. -/
-  fibre :
-    (letI : FinEnum object.Vertex := object.vertices
-     letI : DecidableRel object.graph.Adj := object.decideAdj
-     separation.usedIncidences =
-       object.graph.neighborFinset separation.separator) →
-    profile (state reduced) = profile (state base)
+  /-- **The manuscript's step where `z` is internal to `S_z`.**  Off the
+  interface of `S_z` the identification of two declared coordinates cannot move
+  an interface label, so every realization of the reading is a finite declared
+  boundaried state in `S_z`'s own registered fibre.  The premise is a decidable
+  property of the residual's own `cutBoundary`, discharged on the branch by
+  `Separation.separator_notMem_cutBoundary`; it is not an assumption a caller
+  chooses. -/
+  registered :
+    separation.separator ∉
+      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+        separation.switchSupport →
+    ∀ retained : Finset Coordinate, retained ⊆ base →
+      (state retained).boundaryDegreeProfile =
+        separation.certificate.boundaryDegreeProfile
+  /-- **The realization before the identification is `S_z` itself.**  A reading
+  *of* the switch support reads that support: with no coordinate yet forgotten,
+  the declared boundaried state is the atom's own piece.  This is what makes the
+  identification a compression *of `S_z`* rather than of an unrelated piece. -/
+  baseIsPiece : state base = separation.atom.decomposition.piece
+  /-- **The identification descends.**  Forgetting a coordinate strictly shrinks
+  the glued realization, exactly as `Graph/ColdCorridor.lean`'s bounded germ
+  descends on the sign of its own increment; `lem:replacement`'s compression is
+  nontrivial for this reason and not by declaration. -/
+  descends :
+    (Graph.glue (state reduced)
+      separation.atom.decomposition.outside).vertexCount < object.vertexCount
 
 namespace SwitchReading
 
 variable {support : Finset object.Vertex} {receiver outside : object.Vertex}
 variable {separation : Separation object support receiver outside}
-variable {Profile : Type v} {Target : FiniteObject.{u} → Prop}
-variable (reading : SwitchReading separation (Profile := Profile) Target)
+variable (reading : SwitchReading separation)
 
 /-- The realization after the identification. -/
-def quotient : Graph.BoundaryPiece reading.boundary :=
+def quotient : Graph.BoundaryPiece separation.interface :=
   reading.state reading.reduced
 
 /-- The realization before it. -/
-def full : Graph.BoundaryPiece reading.boundary :=
+def full : Graph.BoundaryPiece separation.interface :=
   reading.state reading.base
 
+/-- **The two realizations lie in one boundary-degree fibre, derived.**
+
+*"The two separated responses therefore form a finite declared boundaried
+response state **with the same boundary-degree profile**."*  Both realizations
+are registered in `S_z`'s one generated certificate, so the equality is read
+off the registration; it is `lem:degree-profile-fibres` at node `[11]`, the same
+fact `Separation.sameFibre` reads for the two coordinates, and it is not
+restated. -/
+theorem fibre
+    (internal : separation.separator ∉
+      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+        separation.switchSupport) :
+    reading.quotient.boundaryDegreeProfile =
+      reading.full.boundaryDegreeProfile :=
+  (reading.registered internal reading.reduced
+      reading.reduced_ssubset.subset).trans
+    (reading.registered internal reading.base (subset_refl _)).symm
+
 end SwitchReading
+
+/-- **The compressed realization is lexicographically smaller**, derived from
+the reading's own descent by the framework's vertex-count comparison -- the same
+step `ColdCorridor.BoundedGerm.lexicographicallySmaller_of_increment_neg`
+makes. -/
+theorem SwitchReading.lexicographicallySmaller
+    {support : Finset object.Vertex} {receiver outside : object.Vertex}
+    {separation : Separation object support receiver outside}
+    (reading : SwitchReading separation) :
+    (Graph.glue reading.quotient
+        separation.atom.decomposition.outside).LexicographicallySmaller object :=
+  FiniteObject.lexicographicallySmaller_of_vertexCount_lt reading.descends
 
 /-- **`def:typeA-continuation-classes`: the separator is absorbed.**
 
@@ -469,21 +690,21 @@ exit `(6)`.  The third alternative is carried as a declared property of the
 switch, because it is a statement about supports strictly larger than `S_z`. -/
 def Absorbed {support : Finset object.Vertex} {receiver outside : object.Vertex}
     {separation : Separation object support receiver outside}
-    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
-    (reading : SwitchReading separation (Profile := Profile) Target)
+    (Target : FiniteObject.{u} → Prop)
+    (reading : SwitchReading separation)
     (Enlarges : Prop) : Prop :=
   Graph.Response.TargetDefect Target reading.quotient reading.full ∨
-    Graph.Response.TargetComplete reading.profile Target reading.quotient
-        reading.full ∨
+    Graph.Response.TargetComplete Graph.BoundaryPiece.boundaryDegreeProfile
+        Target reading.quotient reading.full ∨
       Enlarges
 
 /-- **`z` is surviving**: it is not absorbed. -/
 def Surviving {support : Finset object.Vertex} {receiver outside : object.Vertex}
     {separation : Separation object support receiver outside}
-    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
-    (reading : SwitchReading separation (Profile := Profile) Target)
+    (Target : FiniteObject.{u} → Prop)
+    (reading : SwitchReading separation)
     (Enlarges : Prop) : Prop :=
-  ¬ Absorbed reading Enlarges
+  ¬ Absorbed Target reading Enlarges
 
 /-- **A separator with no unused ambient incidence is absorbed.**
 
@@ -496,21 +717,19 @@ the identification is target-complete."*
 `Response.contextEquivalent_or_targetDefect`; the boundary-degree half of
 target-completeness is the reading's `fibre` clause at the exhausted
 separator. -/
-theorem absorbed_of_exhausted {support : Finset object.Vertex}
+theorem absorbed_of_internal {support : Finset object.Vertex}
     {receiver outside : object.Vertex}
     {separation : Separation object support receiver outside}
-    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
-    (reading : SwitchReading separation (Profile := Profile) Target)
+    (Target : FiniteObject.{u} → Prop)
+    (reading : SwitchReading separation)
     (Enlarges : Prop)
-    (exhausted :
-      letI : FinEnum object.Vertex := object.vertices
-      letI : DecidableRel object.graph.Adj := object.decideAdj
-      separation.usedIncidences =
-        object.graph.neighborFinset separation.separator) :
-    Absorbed reading Enlarges := by
+    (internal : separation.separator ∉
+      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+        separation.switchSupport) :
+    Absorbed Target reading Enlarges := by
   rcases Graph.Response.contextEquivalent_or_targetDefect Target
       reading.quotient reading.full with equivalent | defect
-  · exact Or.inr (Or.inl ⟨reading.fibre exhausted, equivalent⟩)
+  · exact Or.inr (Or.inl ⟨reading.fibre internal, equivalent⟩)
   · exact Or.inl defect
 
 /-- **`lem:typeA-cubic-switch-absorption`.**  A surviving first separator for
@@ -525,17 +744,17 @@ exactly the absorbed case ... This contradicts that `z` is surviving.  Thus
 theorem four_le_degree_of_surviving {support : Finset object.Vertex}
     {receiver outside : object.Vertex}
     {separation : Separation object support receiver outside}
-    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
-    {reading : SwitchReading separation (Profile := Profile) Target}
-    {Enlarges : Prop} (surviving : Surviving reading Enlarges) :
+    {Target : FiniteObject.{u} → Prop}
+    {reading : SwitchReading separation}
+    {Enlarges : Prop} (surviving : Surviving Target reading Enlarges) :
     3 < object.degree separation.separator := by
-  have three := separation.three_le_degree
-  rcases Nat.lt_or_ge 3 (object.degree separation.separator) with high | low
-  · exact high
-  · exact absurd
-      (absorbed_of_exhausted reading Enlarges
-        (separation.usedIncidences_eq_neighbors (Nat.le_antisymm low three)))
+  classical
+  by_cases internal : separation.separator ∉
+      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+        separation.switchSupport
+  · exact absurd (absorbed_of_internal Target reading Enlarges internal)
       surviving
+  · exact separation.four_le_degree_of_mem_cutBoundary (not_not.1 internal)
 
 /-- **`lem:typeA-continuation-routing`, at a pair of declared coordinates.**
 
@@ -549,10 +768,10 @@ is the surviving first separator. -/
 theorem absorbed_or_surviving {support : Finset object.Vertex}
     {receiver outside : object.Vertex}
     {separation : Separation object support receiver outside}
-    {Profile : Type v} {Target : FiniteObject.{u} → Prop}
-    (reading : SwitchReading separation (Profile := Profile) Target)
+    (Target : FiniteObject.{u} → Prop)
+    (reading : SwitchReading separation)
     (Enlarges : Prop) :
-    Absorbed reading Enlarges ∨ Surviving reading Enlarges := by
+    Absorbed Target reading Enlarges ∨ Surviving Target reading Enlarges := by
   classical
   exact em _
 

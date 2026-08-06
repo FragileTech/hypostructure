@@ -190,6 +190,26 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   -- `prop:fan-closed-port-typeB-routing` (b) at the smallest high-centre degree:
   -- the manuscript's `12 < 13`, decided on the registered numbers.
   highCentreDeficitSlack := by norm_num [erdosReceiverLoadProfile]
+  -- `lem:capacity-token-supply`'s `15 ≤ 2·13`, decided on the registered
+  -- baseline and the registered window order.
+  joinSlack := by norm_num [erdosReceiverLoadProfile, inducedPathOrder]
+  -- `def:same-token-routing-germs`' routing-label alphabet, at this
+  -- presentation's own two declared coordinates.  The boundary-degree profile of
+  -- a *bounded* port support is a degree function on at most `δ` boundary
+  -- vertices taking values below `δ` -- `T(p) = {a_p, b_p, x(p)}` is the
+  -- registered baseline's own size -- and the `P₁₃` label is the window's own
+  -- `order`-bit label code.  The five remaining coordinates are the framework's
+  -- own finite alphabets, so `Q_geom` is `Fintype.card` of the tuple and no
+  -- numeral is written.
+  -- Only the boundary-degree profile alphabet is registered: the `P₁₃` label is
+  -- the labelling's own `Graph.WindowCurvature.Label inducedPathOrder`, derived
+  -- from the window order this record already registers.  The profile of a
+  -- *bounded* port support `T(p) = {a_p, b_p, x(p)}` is a degree function on at
+  -- most `δ` boundary vertices taking values below `δ`.
+  BoundaryProfile :=
+    Fin erdosReceiverLoadProfile.baselineDegree →
+      Fin erdosReceiverLoadProfile.baselineDegree
+  boundaryProfileFintype := inferInstance
   surplusScale := surplusScaleCoefficient
   windowRate := FiniteChecks.P13Barrier.windowRate
   -- `lem:p13-window-package`'s selected dyadic scales.  The manuscript writes

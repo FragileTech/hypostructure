@@ -389,6 +389,49 @@ theorem exists_forced_pattern :
     have lower := ledger.forcedDemand_le_blocked
     omega
 
+/-- **`cor:quantitative-homogeneous-overload`, the displayed lower bound.**
+
+  `K_hom(G) ≥ ψ( N_*(G) / (Q_st |𝔗_cap|) )`,
+
+where `K_hom(G)` is the largest scale at which some capacity token supports a
+role-homogeneous same-token matching or star.  The display is stated
+multiplicatively, so no division and no rounding convention is introduced: a
+share `q` of the forced demand that the `Q_st|𝔗_cap|` slots must absorb is
+realized by some role fibre, and `ψ` is monotone, so the pattern
+`cor:forced-homogeneous-same-token-scale` produces has at least `ψ(q)` edges.
+
+Substituting `lem:capacity-token-supply`'s `|𝔗_cap| ≤ 8n + σ(G)` into the
+denominator and `E_spine(n) ≤ C_E n` into `N_*(G)` is the manuscript's own
+display; both substitutions are made by the caller, since both are facts about
+the object rather than about the ledger. -/
+theorem exists_homogeneous_pattern_of_share (share : Nat)
+    (slots : 0 < sameTokenRoleBound * ledger.tokens.card)
+    (absorbs : share * (sameTokenRoleBound * ledger.tokens.card) ≤
+      ledger.forcedDemand) :
+    ∃ token ∈ ledger.tokens, ∃ role : Role,
+      ((∃ pattern ⊆ ledger.roleFibre token role,
+          PatternFamily.IsMatching pattern ∧
+            PatternFamily.patternThreshold share ≤ pattern.card) ∨
+        (∃ centre : ledger.Demand, ∃ pattern ⊆ ledger.roleFibre token role,
+          PatternFamily.IsStar pattern centre ∧
+            PatternFamily.patternThreshold share ≤ pattern.card)) := by
+  obtain ⟨token, tokenMem, role, _display, _roleBound, forced, pattern⟩ :=
+    ledger.exists_forced_pattern
+  refine ⟨token, tokenMem, role, ?_⟩
+  -- The share is at most the realized fibre, so `ψ` of it is at most `ψ` of the
+  -- fibre, which the produced pattern already meets.
+  have quotient : share ≤ (ledger.roleFibre token role).card := by
+    refine Nat.le_of_mul_le_mul_left ?_ slots
+    calc sameTokenRoleBound * ledger.tokens.card * share
+        = share * (sameTokenRoleBound * ledger.tokens.card) := by ring
+      _ ≤ ledger.forcedDemand := absorbs
+      _ ≤ sameTokenRoleBound * ledger.tokens.card *
+            (ledger.roleFibre token role).card := forced
+  have monotone := PatternFamily.patternThreshold_mono quotient
+  rcases pattern with ⟨sub, inside, matching, large⟩ | ⟨centre, sub, inside, star, large⟩
+  · exact .inl ⟨sub, inside, matching, monotone.trans large⟩
+  · exact .inr ⟨centre, sub, inside, star, monotone.trans large⟩
+
 /-- The role-fibre excess `E_{t,r} = (ℓ(t,r) − b_C)_+` of
 `cor:coupled-single-graph-overload-budget`, at the cap proposed for the token's
 own grain. -/

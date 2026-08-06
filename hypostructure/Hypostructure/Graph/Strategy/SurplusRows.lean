@@ -5,6 +5,8 @@ import Hypostructure.Graph.SparsePairLedger
 import Hypostructure.Graph.SameTokenBlockerRoles
 import Hypostructure.Graph.SparseEntropySandwich
 import Hypostructure.Graph.CapacityTokenAssignment
+import Hypostructure.Graph.SparseUpperEnvelope
+import Hypostructure.Graph.ObjectCapacityLedger
 
 /-!
 # The sparse surplus branch: the activation rows
@@ -364,23 +366,28 @@ obstruction families the dependence analysis hands back.  At that activation:
   `|Π_blk| + |Π_free| = |Π(𝒜₀)|` and the no-overcount
   `|Π_blk| = Σ_B μ(B)`, where `Φ_can` is the first clause of
   `def:canonical-sparse-blocker-order` that applies;
-* `lem:sparse-pair-dependence-exit` and `lem:mixed-sparse-spine-dependence` are
-  committed in the form the manuscript's three consumers use: at an object that
-  survives the sparse surplus exits and admits no proper-support replacement, a
-  rank-reducing attempted determination exhibits the blocker of type (d) or (e)
-  as concrete separated realizations;
-* `prop:sparse-pair-independence-dichotomy` is the admissible reading of the
-  same: the declared family attains full target rank;
 * `prop:sparse-entropy-sandwich-with-blockers` and `prop:sparse-entropy-sandwich`
   are the entropy sandwich with the logarithms cleared, and
   `cor:sparse-pair-entropy-saturation` is its `ℐ_spine = ∅` reading.
 
-The dependence and sandwich clauses are committed as implications from their own
-hypotheses — survival, replacement-freeness, the entropy count and the baseline
-demand — which is the discipline `def:baseline-spine-demand` is already stated
-in and the same one the next row's sparse-envelope bound uses.  Nothing supplies
-a callback: every hypothesis is a statement the branch either already carries or
-is about to derive. -/
+`lem:sparse-pair-dependence-exit` is **not** committed here.  It is a
+disjunction about the object — *"either `G` has a sparse surplus exit, or some
+`π ∈ Π` has a blocker of type (d) or (e)"* — so it is node `[132]`'s branch,
+`blockedPairRoutingDichotomy` below, and not a clause of this node's fact.
+Committing it here would discharge the exit alternative silently from node
+`[125]`'s survivor entry, which is exactly the branch the manuscript draws and
+the terminal `[133]` it closes at.
+
+`Π_blk` and `Π_free` are a partition of the one schedule `Π(𝒜₀)`, not two arms:
+`lem:capacity-token-high-load` at node `[137]` reads *both* sides of
+`C(𝒜₀,2) = Π_free ⊔ Π_blk` in the same object.  So node `[130]`'s split is a
+fibre identity and belongs in this fact.
+
+The sandwich clauses are committed as implications from their own hypotheses —
+the entropy count and the baseline demand — which is the discipline
+`def:baseline-spine-demand` is already stated in and the same one the next row's
+sparse-envelope bound uses.  Nothing supplies a callback: every hypothesis is a
+statement the branch either already carries or is about to derive. -/
 @[reducible] noncomputable def canonicalPairLedgerRow
     (activeSurplusFamily canonicalPairLedger :
       FactKey (Input BranchState Presentation presentation data))
@@ -421,35 +428,6 @@ is about to derive. -/
                             neighbor ∉ support) ∧
             ∀ family : Finset (Finset (input.object.Vertex × input.object.Vertex)),
               (activation.pairFamily family).card = family.card) ∧
-        -- `lem:sparse-pair-dependence-exit`, `lem:mixed-sparse-spine-dependence`
-        -- and `prop:sparse-pair-independence-dichotomy`.
-        (∀ Coordinate : Type u, ∀ family : Finset Coordinate,
-          ∀ coordinateSupport : Coordinate → Finset input.object.Vertex,
-            Graph.SurvivesSparseExits
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
-                input.object →
-            (∀ support : Finset input.object.Vertex,
-              ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) input.object support) →
-            (∀ attempt :
-                Graph.AttemptedQuotient
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) input.object family
-                  coordinateSupport,
-                ¬ Set.InjOn attempt.label ↑family →
-                  (∃ left right, attempt.Identifies left right ∧
-                      left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
-                    (∃ left right, attempt.Identifies left right ∧
-                      Graph.Response.TargetDefect
-                        (Graph.HasCycleWithLength data.LengthOK) left right)) ∧
-              Core.TargetRank.targetRank
-                  (Graph.FiniteObject.declaredQuotientSystem
-                    (Graph.MinimumDegreeAtLeast data.threshold)
-                    (Graph.HasCycleWithLength data.LengthOK) input.object family
-                    coordinateSupport) =
-                family.card) ∧
         -- `prop:sparse-entropy-sandwich`, its blocked refinement, and
         -- `cor:sparse-pair-entropy-saturation`.
         (∀ spineCount freeCount deficit : Nat,
@@ -500,38 +478,124 @@ is about to derive. -/
                       Graph.FiniteObject.DemandActivation.mem_pairBoundary_iff
                         object _ vertex⟩,
                 fun family => activation.card_pairFamily family⟩,
-            fun _Coordinate _family _coordinateSupport survives noReplacement =>
-              ⟨fun attempt reducing =>
-                  Graph.blockerSeparation_of_reducing survives noReplacement
-                    attempt reducing,
-                Graph.targetRank_eq_card_of_exitFree survives noReplacement⟩,
             fun _spineCount _freeCount _deficit above entropy demand =>
               Graph.entropySandwich object two_le above entropy demand,
             fun entropy =>
               (Graph.FiniteObject.card_portPairSchedule baseline) ▸ entropy⟩)
         .nil)
 
-/-! ## Nodes `[134]`--`[136]`: the capacity-token ledger -/
+/-! ## Node `[132]`: the blocked-pair routing branch
 
-/-- `def:primitive-sparse-blocker-carrier` with `lem:primitive-carrier-supply`,
-`def:capacity-token-ledger` with `lem:capacity-token-supply` and
-`lem:token-ledger-no-overcount`, and `def:same-token-patterns`.
+`lem:sparse-pair-dependence-exit`:
+
+> Suppose the coordinate family `ℛ_Π` does not survive every admissible rank
+> quotient of `ρ^ex_{∂X_Π}(X_Π)`.  Then either `G` has a sparse surplus exit in
+> the sense of `def:named-surplus-exits`, or some `π ∈ Π` has a sparse surplus
+> blocker of type (d) or (e).
+
+That is a disjunction about the object, and it is a `Decision` here for the same
+reason node `[137]` is one: the arm not taken is absent from the taken arm's key
+index, so the canonical blocker ledger `[134]` cannot be levied on a branch
+whose dependence was settled by an exit.
+
+The test is `SurvivesSparseExits` itself, a property of the object, so the split
+is the excluded middle on it and nothing is assumed to make it exhaustive.  The
+exit arm is node `[133]`, *"sparse surplus exit closes"*: it collides with node
+`[125]`'s survivor entry, and the canonical closure key is appended from the two
+committed facts by Core's own `closeIncompatible` at the run site.
+
+The blocker arm carries `lem:mixed-sparse-spine-dependence`'s separated
+realizations and `prop:sparse-pair-independence-dichotomy`'s full target rank,
+both derived from the arm's own `survives` — which is why they are no longer
+hypotheses of a committed implication at node `[130]`. -/
+noncomputable def blockedPairRoutingDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (sparsePairExit canonicalBlockerRoute :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeExit :
+      (¬ (Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
+            current.object ∧
+          ∀ support : Finset current.object.Vertex,
+            ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) current.object
+              support)) →
+      sparsePairExit.At current)
+    (encodeBlocker :
+      (∀ Coordinate : Type u, ∀ family : Finset Coordinate,
+        ∀ coordinateSupport : Coordinate → Finset current.object.Vertex,
+          (∀ attempt :
+              Graph.AttemptedQuotient
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) current.object family
+                coordinateSupport,
+              ¬ Set.InjOn attempt.label ↑family →
+                (∃ left right, attempt.Identifies left right ∧
+                    left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
+                  (∃ left right, attempt.Identifies left right ∧
+                    Graph.Response.TargetDefect
+                      (Graph.HasCycleWithLength data.LengthOK) left right)) ∧
+            Core.TargetRank.targetRank
+                (Graph.FiniteObject.declaredQuotientSystem
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) current.object family
+                  coordinateSupport) =
+              family.card) →
+      canonicalBlockerRoute.At current)
+    (exitFresh : sparsePairExit ∉ known)
+    (blockerFresh : canonicalBlockerRoute ∉ known) :
+    Decision sparsePairExit canonicalBlockerRoute previous := by
+  classical
+  refine Decision.run previous sparsePairExit canonicalBlockerRoute
+    `Hypostructure.Graph.Strategy.Spine.blockedPairRouting ?_ exitFresh
+    blockerFresh
+  exact
+    if exitFree : Graph.SurvivesSparseExits
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
+          current.object ∧
+        ∀ support : Finset current.object.Vertex,
+          ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) current.object support then
+      .inr (encodeBlocker fun _Coordinate _family _coordinateSupport =>
+        ⟨fun attempt reducing =>
+            Graph.blockerSeparation_of_reducing exitFree.1 exitFree.2 attempt
+              reducing,
+          Graph.targetRank_eq_card_of_exitFree exitFree.1 exitFree.2⟩)
+    else
+      .inl (encodeExit exitFree)
+
+/-! ## Nodes `[134]`--`[136]`: the sparse upper envelope and the capacity-token
+ledger -/
+
+/-- `lem:sparse-upper-envelope`, `def:primitive-sparse-blocker-carrier` with
+`lem:primitive-carrier-supply`, `def:capacity-token-ledger` with
+`lem:capacity-token-supply` and `lem:token-ledger-no-overcount`, and
+`def:same-token-patterns`.
+
+The envelope is proved here rather than carried.  `lem:no-proper-core` is the
+node-`[8]` entry and `lem:deletion-critical` the node-`[9]` one, both read by
+exact key; the branch's own node-`[19]` entry makes the surplus positive, which
+exhibits an edge, which `lem:deletion-critical` puts one end of exactly at the
+baseline; and deleting that vertex leaves a `(δ − 1)`-degenerate graph because
+every proper subgraph misses the baseline.  The result is `m + 2 ≤ (δ − 1)·n`,
+the manuscript's `m ≤ 2n − 2` at its own `δ = 3`, committed as its own fact.
 
 The carrier `𝔘_sp(G) = V(G) ⊔ I_E(G) ⊔ 𝒫_exc` is built from the object's own
-data, and its supply is committed in both of the manuscript's forms: the
-identity `|𝔘_sp(G)| = n + 2m + σ(G)`, and the display `≤ 6n` on the sparse upper
-envelope `m ≤ 2n − 2`, which is committed as an implication because the envelope
-is a hypothesis the manuscript carries into the estimate rather than a property
-of every object.
-
-The token universe is the manuscript's three-summand
-`𝔗_cap = 𝔗_prim ⊔ 𝔗_R ⊔ 𝔗_W`: the primitive carrier, the remainder surplus units
-`{(v,j) : v ∈ R, 1 ≤ j ≤ d_G(v) − δ}`, and the window--remainder and cross-window
-incidence families of the packing.  `lem:capacity-token-supply` is committed in
-its exact form `|𝔗_cap| + 2(order−1)p = |𝔘_sp(G)| + δ·order·p + σ(G)` — the
-manuscript's `|𝔗_cap| = |𝔘_sp(G)| + 15p₁₃ + σ(G)` — and its displayed bound
-`|𝔗_cap| ≤ 8n + σ(G)` as an implication from the same envelope and the registered
-join comparison.
+data, and both of the manuscript's supply displays are now *unconditional*: the
+identity `|𝔘_sp(G)| = n + 2m + σ(G)` with the display
+`|𝔘_sp(G)| ≤ 3(δ − 1)n`, and `𝔗_cap`'s exact
+`|𝔗_cap| + 2(order−1)p = |𝔘_sp(G)| + δ·order·p + σ(G)` with the display
+`|𝔗_cap| ≤ (3(δ−1)+2)n + σ(G)`.  The two things the manuscript spends to reach
+them are the envelope just proved and the registered comparison
+`δ·order + 2 ≤ 4·order`, which `Data.joinSlack` relates between the registered
+baseline and the registered window order.
 
 `Θ_cap` is the four-case charge, built from the pair's canonical blocker
 `Φ_can(π)`, that blocker's declared support and its primitive carrier `κ`.  It
@@ -542,26 +606,68 @@ with the clause that makes the identity read at the whole blocked family.
 `def:same-token-patterns`' fibre graph `H_t` is the charge's own fibre, a simple
 graph on `𝒜₀` with `e(H_t) = ℓ_cap(t)`.
 
-The statement is quantified over exactly two things the branch does not fix: a
-maximal packing of induced windows, and the declared coordinate and shoulder-chord
-presentation of `def:declared-coordinate-signature`. -/
+Finally the node commits that the object *has* a capacity-token ledger, at every
+declared presentation: every valid packing of induced windows, every demand
+activation, every coordinate/shoulder-chord presentation and every role reading.
+Nothing is selected, so the commitment is a property of the object rather than of
+a choice, and the entropy budget is taken at the free side's own count, which is
+the sharpest reading of `prop:sparse-entropy-sandwich-with-blockers` and the only
+one that assumes no budget nobody supplied. -/
 @[reducible] noncomputable def capacityTokenLedgerRow
-    (canonicalPairLedger capacityTokenLedger :
+    (canonicalPairLedger noProperBaseline tightEndpoint surplusAbove
+      sparseUpperEnvelope capacityTokenLedger :
       FactKey (Input BranchState Presentation presentation data))
-    (distinct : canonicalPairLedger ≠ capacityTokenLedger)
+    (pairNeProper : canonicalPairLedger ≠ noProperBaseline)
+    (pairNeTight : canonicalPairLedger ≠ tightEndpoint)
+    (pairNeAbove : canonicalPairLedger ≠ surplusAbove)
+    (properNeTight : noProperBaseline ≠ tightEndpoint)
+    (properNeAbove : noProperBaseline ≠ surplusAbove)
+    (tightNeAbove : tightEndpoint ≠ surplusAbove)
+    (envelopeNeLedger : sparseUpperEnvelope ≠ capacityTokenLedger)
+    (pairCountOf : (input : Input BranchState Presentation presentation data) →
+      canonicalPairLedger.At input →
+      (input.object.portPairSchedule data.threshold).card =
+        (input.object.degreeSurplus data.threshold).choose 2)
+    (noProperOf : (input : Input BranchState Presentation presentation data) →
+      noProperBaseline.At input →
+      ∀ subgraph : Graph.ProperSubgraph input.object,
+        ¬ Graph.MinimumDegreeAtLeast data.threshold subgraph.value)
+    (tightOf : (input : Input BranchState Presentation presentation data) →
+      tightEndpoint.At input →
+      ∀ dart : input.object.graph.Dart,
+        input.object.degree dart.fst = data.threshold ∨
+          input.object.degree dart.snd = data.threshold)
+    (aboveOf : (input : Input BranchState Presentation presentation data) →
+      surplusAbove.At input →
+      data.surplusThreshold input.object.vertexCount <
+        input.object.degreeSurplus data.threshold)
+    (encodeEnvelope : (input : Input BranchState Presentation presentation data) →
+      (input.object.edgeCount + 2 ≤
+        (data.threshold - 1) * input.object.vertexCount) →
+      sparseUpperEnvelope.At input)
     (encode : (input : Input BranchState Presentation presentation data) →
       (((input.object.primitiveCarrier data.threshold).card =
             input.object.vertexCount + 2 * input.object.edgeCount +
               input.object.degreeSurplus data.threshold ∧
-          (input.object.edgeCount + 2 ≤ 2 * input.object.vertexCount →
-            (input.object.primitiveCarrier data.threshold).card ≤
-              6 * input.object.vertexCount)) ∧
+          (input.object.primitiveCarrier data.threshold).card ≤
+            input.object.primitiveCarrierSupply data.threshold) ∧
         Graph.FiniteObject.CapacityTokenLedgerStatement input.object
-          data.threshold data.windowOrder) →
+          data.threshold data.windowOrder) ∧
+        (∀ declared :
+            Graph.CapacityPresentation input.object data.windowOrder,
+          Nonempty (Graph.ObjectCapacityLedger input.object data.threshold
+            data.windowOrder declared)) →
       capacityTokenLedger.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
-    (rowManifest canonicalPairLedger capacityTokenLedger distinct)
+    { Requires :=
+        [canonicalPairLedger, noProperBaseline, tightEndpoint, surplusAbove]
+      Produces := [sparseUpperEnvelope, capacityTokenLedger]
+      requiresUnique := by
+        simp [pairNeProper, pairNeTight, pairNeAbove, properNeTight,
+          properNeAbove, tightNeAbove]
+      producesUnique := by simp [envelopeNeLedger]
+      producesNonempty := by simp }
     (fun inputs =>
       let object := inputs.current.object
       let baseline : ∀ vertex : object.Vertex,
@@ -573,15 +679,33 @@ presentation of `def:declared-coordinate-signature`. -/
         Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount object
           data.threshold baseline
       -- The demands the token map charges are the pair ledger's own schedule.
-      let _schedule := inputs.get canonicalPairLedger
-      .cons (key := capacityTokenLedger)
-        (encode inputs.current
-          ⟨⟨object.card_primitiveCarrier baseline,
-            fun envelope =>
-              object.card_primitiveCarrier_le baseline data.three_le_threshold
-                handshake envelope⟩,
-            Graph.FiniteObject.capacityTokenLedgerStatement object baseline
-              data.three_le_threshold data.windowOrder_pos handshake⟩)
-        .nil)
+      let scheduleCard := pairCountOf inputs.current (inputs.get canonicalPairLedger)
+      -- Node `[8]`, node `[9]` and the branch's own node-`[19]` entry.
+      let noProper := noProperOf inputs.current (inputs.get noProperBaseline)
+      let tight := tightOf inputs.current (inputs.get tightEndpoint)
+      let above := aboveOf inputs.current (inputs.get surplusAbove)
+      -- A positive surplus is a positive edge count: `2m > δn ≥ 0`.
+      let edges : 0 < object.edgeCount :=
+        object.edgeCount_pos_of_degreeSurplus_pos
+          (Nat.lt_of_le_of_lt (Nat.zero_le _) above)
+      let envelope : object.edgeCount + 2 ≤
+          (data.threshold - 1) * object.vertexCount :=
+        object.edgeCount_add_two_le data.three_le_threshold noProper tight edges
+      let vertex : object.Vertex :=
+        (object.exists_dart_of_edgeCount_pos edges).some.fst
+      .cons (key := sparseUpperEnvelope)
+        (encodeEnvelope inputs.current envelope)
+        (.cons (key := capacityTokenLedger)
+          (encode inputs.current
+            ⟨⟨⟨object.card_primitiveCarrier baseline,
+                  object.card_primitiveCarrier_le baseline
+                    data.three_le_threshold handshake envelope⟩,
+                Graph.FiniteObject.capacityTokenLedgerStatement object baseline
+                  data.three_le_threshold data.windowOrder_pos handshake envelope
+                  data.joinSlack⟩,
+              Graph.objectCapacityLedgerExists object baseline vertex scheduleCard
+                data.three_le_threshold data.windowOrder_pos handshake envelope
+                data.joinSlack⟩)
+          .nil))
 
 end Hypostructure.Graph.Strategy.Spine

@@ -11,8 +11,9 @@ and Residual columns claim:
 
 * the block elaborates against that branch cursor, with every prerequisite of a
   row discharged by resolution against the incoming index;
-* the closed arm's output index is the incoming one with the three exit-absence
-  facts of nodes `[101]`, `[103]` and `[105]`, the six route-8 facts, and Core's closure
+* the closed arm's output index is the incoming one with the four exit-absence
+  facts of nodes `[101]`, `[103]`, `[105]` and `[107]`, the six route-8 facts,
+  and Core's closure
   entry on top, so every earlier fact of the branch is still in the type and the
   terminal really is closed;
 * the audit accounts for every fact with chronological commits and no semantic
@@ -68,13 +69,14 @@ noncomputable def run
     (exitFourFreeFresh := by simp) (exitFiveFresh := by simp)
     (exitFiveFreeFresh := by simp) (exitSixFresh := by simp)
     (exitSixFreeFresh := by simp) (exitSixProperFresh := by simp)
-    (exitSixGlobalFresh := by simp)
+    (exitSixGlobalFresh := by simp) (exitSevenHandoffFresh := by simp)
+    (exitSevenFreeFresh := by simp)
     (residualFresh := by simp) (freeFresh := by simp)
     (burdenFresh := by simp) (coreFresh := by simp) (censusFresh := by simp)
     (descentFresh := by simp) (closedFresh := by simp)
     (closureFresh := by simp)
 
-/-- **The nine facts of the block are all on the ledger after it runs.**
+/-- **The ten facts of the block are all on the ledger after it runs.**
 
 Membership rather than position: later blocks add their own facts to the same
 index, and this check is about what the route-8 block contributes. -/
@@ -85,6 +87,7 @@ theorem run_audit_contains_route8_facts
     ∀ fact ∈ [(name .typeAExitFourFree),
         (name .typeAExitFiveFree),
         (name .typeAExitSixFree),
+        (name .typeAExitSevenFree),
         (name .route8Residual),
         (name .route8Burden),
         (name .route8CarrierCore),
@@ -94,10 +97,11 @@ theorem run_audit_contains_route8_facts
       fact ∈ (ExactLedger.audit history).facts := by
   intro fact member
   simp only [List.mem_cons, List.not_mem_nil, or_false] at member
-  rcases member with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases member with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   · exact List.mem_map.mpr ⟨K .typeAExitFourFree, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .typeAExitFiveFree, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .typeAExitSixFree, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .typeAExitSevenFree, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .route8Residual, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .route8Burden, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .route8CarrierCore, by simp, rfl⟩

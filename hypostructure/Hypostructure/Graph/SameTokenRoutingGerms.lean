@@ -80,11 +80,27 @@ abbrev RoutingLabel (BoundaryProfile WindowLabel : Type) : Type :=
   Role × TokenSubtype × Fin 2 × (PortStatus × PortStatus) ×
     (BoundaryProfile × BoundaryProfile) × WindowLabel × Bool
 
-/-- **`Q_geom`**: the cardinality of the routing-label alphabet.  It is
-`Fintype.card` of the declared tuple; no numeral is written. -/
+/-- **`Q_geom`**: the cardinality of a declared routing-label alphabet.
+
+The manuscript's *"These labels form a finite set; denote its cardinality by
+`Q_geom`"* is a statement about the *registered* declared-coordinate signature,
+not about any one object, so the alphabet enters as one finite type and this is
+its count.  `RoutingLabel` above is what a presentation builds that type with;
+`labelBound` at it is the seven-coordinate count. -/
+def labelBound (Label : Type) [Fintype Label] : Nat := Fintype.card Label
+
+/-- **`L_geom := Q_geom + 1`** at a declared routing-label alphabet. -/
+def patternBound (Label : Type) [Fintype Label] : Nat := labelBound Label + 1
+
+theorem one_le_patternBound (Label : Type) [Fintype Label] :
+    1 ≤ patternBound Label := Nat.le_add_left 1 _
+
+/-- **`Q_geom`** at the seven-coordinate tuple built from the two alphabets the
+manuscript leaves to `def:declared-coordinate-signature` and to the `P₁₃`
+labelling. -/
 def geometricLabelBound (BoundaryProfile WindowLabel : Type)
     [Fintype BoundaryProfile] [Fintype WindowLabel] : Nat :=
-  Fintype.card (RoutingLabel BoundaryProfile WindowLabel)
+  labelBound (RoutingLabel BoundaryProfile WindowLabel)
 
 /-- **`L_geom := Q_geom + 1`** of `thm:homogeneous-overload-geometric-closure`,
 at the counted routing-label alphabet.  This is
@@ -118,18 +134,15 @@ handoff data -- needs the germs of `Z(π;t,r)` and needs
 `def:named-surplus-exits` and `def:decorated-fan-envelope` to be live
 alternatives.  None of those exists here. -/
 theorem exists_same_routingLabel {Pattern : Type v} [DecidableEq Pattern]
-    {BoundaryProfile WindowLabel : Type}
-    [Fintype BoundaryProfile] [DecidableEq BoundaryProfile]
-    [Fintype WindowLabel] [DecidableEq WindowLabel]
-    (pattern : Finset Pattern)
-    (label : Pattern → RoutingLabel BoundaryProfile WindowLabel)
-    (large : geometricLabelBound BoundaryProfile WindowLabel < pattern.card) :
+    {Label : Type} [Fintype Label] [DecidableEq Label]
+    (pattern : Finset Pattern) (label : Pattern → Label)
+    (large : labelBound Label < pattern.card) :
     ∃ first ∈ pattern, ∃ second ∈ pattern,
       first ≠ second ∧ label first = label second := by
   classical
   refine Finset.exists_ne_map_eq_of_card_lt_of_maps_to ?_
     (fun member _ => Finset.mem_univ (label member))
-  rwa [Finset.card_univ, ← geometricLabelBound]
+  rwa [Finset.card_univ, ← labelBound]
 
 end Hypostructure.Graph.SameTokenRoutingGerms
 

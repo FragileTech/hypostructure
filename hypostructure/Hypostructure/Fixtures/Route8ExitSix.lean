@@ -52,10 +52,10 @@ abbrev globalKeys : FactKeys (Input BranchState Presentation presentation data) 
     (typeALowSurplusKeys (BranchState := BranchState)
       (presentation := presentation) (data := data))
 
-/-- The key index of node `[105]`'s no arm — the (R2) cursor node `[109]` is
-entered on. -/
+/-- The key index of node `[105]`'s no arm — the cursor node `[107]` is asked
+on, and behind it the (R2) entry of node `[109]`. -/
 abbrev freeKeys : FactKeys (Input BranchState Presentation presentation data) :=
-  Hypostructure.Graph.Strategy.Spine.exitFreeKeys
+  Hypostructure.Graph.Strategy.Spine.exitSixFreeKeys
     (typeALowSurplusKeys (BranchState := BranchState)
       (presentation := presentation) (data := data))
 
@@ -213,13 +213,13 @@ theorem global_arm_audit_commits_nonempty
 
 /-- **The no arm carries the exit-`(6)` absence clause.**
 
-This is the fact node `[109]`'s placement is entered behind, in the same shape
-as the exit-`(4)` and exit-`(5)` absences beside it. -/
+This is one of the four facts node `[109]`'s placement is entered behind, in the
+same shape as the exit-`(4)` and exit-`(5)` absences beside it. -/
 theorem free_arm_carries_exit_six_absence
     {known : FactKeys (Input BranchState Presentation presentation data)} :
     K (data := data) .typeAExitSixFree ∈
-      Hypostructure.Graph.Strategy.Spine.exitFreeKeys known := by
-  simp [Hypostructure.Graph.Strategy.Spine.exitFreeKeys]
+      Hypostructure.Graph.Strategy.Spine.exitSixFreeKeys known := by
+  simp [Hypostructure.Graph.Strategy.Spine.exitSixFreeKeys]
 
 /-- **The no arm is not a terminal.**
 
@@ -231,8 +231,8 @@ theorem free_arm_is_not_closed
       (data := data) ∉ known) :
     closed (BranchState := BranchState) (presentation := presentation)
         (data := data) ∉
-      Hypostructure.Graph.Strategy.Spine.exitFreeKeys known := by
-  simp [Hypostructure.Graph.Strategy.Spine.exitFreeKeys,
+      Hypostructure.Graph.Strategy.Spine.exitSixFreeKeys known := by
+  simp [Hypostructure.Graph.Strategy.Spine.exitSixFreeKeys,
     Hypostructure.Graph.Strategy.Spine.exitFiveFreeKeys, fresh]
 
 /-- **The no arm keeps the whole incoming branch too.** -/
@@ -240,8 +240,8 @@ theorem free_arm_retains_every_incoming_fact
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (key : FactKey (Input BranchState Presentation presentation data))
     (member : key ∈ known) :
-    key ∈ Hypostructure.Graph.Strategy.Spine.exitFreeKeys known := by
-  simp only [Hypostructure.Graph.Strategy.Spine.exitFreeKeys,
+    key ∈ Hypostructure.Graph.Strategy.Spine.exitSixFreeKeys known := by
+  simp only [Hypostructure.Graph.Strategy.Spine.exitSixFreeKeys,
     Hypostructure.Graph.Strategy.Spine.exitFiveFreeKeys, List.mem_cons]
   exact Or.inr (Or.inr (Or.inr (Or.inr member)))
 

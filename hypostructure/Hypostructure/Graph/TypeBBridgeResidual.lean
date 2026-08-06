@@ -111,9 +111,8 @@ instance decidableIncidencesAssigned (object : FiniteObject.{u})
 record the problem registers as its `Core.Problem.presentation`, never written
 as a literal.  This is the generic form of `prop:typeB-bridge-sublinear`'s
 global surplus: nothing about the definition mentions the cubic case, and the
-statements that quantify over an arbitrary registered presentation
-(`Graph.Strategy.SurplusAccounting.globalSurplusOf_le_of_homogeneousCaps` and
-its node-`[144]` wrapper) are stated with this one. -/
+statements that quantify over an arbitrary registered presentation are stated
+with this one. -/
 noncomputable def globalSurplusOf (profile : LoadCapacityProfile)
     (object : FiniteObject.{u}) : ℚ :=
   ∑ v ∈ object.vertexFinset,

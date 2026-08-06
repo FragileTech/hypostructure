@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Strategy.SpineRows
 import Hypostructure.Graph.ObjectCapacityLedger
+import Hypostructure.Graph.SameTokenBottleneckRouting
 import Hypostructure.Graph.NamedSurplusExits
 
 /-!
@@ -97,7 +98,9 @@ ledger witnesses the high-load display. -/
         (input.object.degreeSurplus data.threshold).choose 2)
     (tokenLedgerOf : (input : Input BranchState Presentation presentation data) →
       capacityTokenLedger.At input →
-      Nonempty (Graph.ObjectCapacityLedger input.object data.threshold))
+      ∀ declared : Graph.CapacityPresentation input.object data.windowOrder,
+        Nonempty (Graph.ObjectCapacityLedger input.object data.threshold
+          data.windowOrder declared))
     (packageOrderOf : (input : Input BranchState Presentation presentation data) →
       baselineSpineDemand.At input →
       ∀ packing remainder scaleCount : Nat,
@@ -113,10 +116,12 @@ ledger witnesses the high-load display. -/
           Graph.spineDeficit input.object.vertexCount data.threshold
             (Graph.windowPackageBound data.windowRate packing scaleCount))
     (encodePartition : (input : Input BranchState Presentation presentation data) →
-      Graph.RoleFibrePartitionStatement input.object data.threshold →
+      Graph.RoleFibrePartitionStatement input.object data.threshold
+        data.windowOrder →
       roleFibrePartition.At input)
     (encodePressure : (input : Input BranchState Presentation presentation data) →
-      Graph.FibrePressureStatement input.object data.threshold →
+      Graph.FibrePressureStatement input.object data.threshold
+        data.windowOrder →
       fibrePressure.At input)
     (encodeEstimate : (input : Input BranchState Presentation presentation data) →
       (∀ packing remainder scaleCount : Nat,
@@ -145,10 +150,12 @@ ledger witnesses the high-load display. -/
       let ordering := packageOrderOf inputs.current (inputs.get baselineSpineDemand)
       .cons (key := roleFibrePartition)
         (encodePartition inputs.current
-          (Graph.roleFibrePartitionStatement object data.threshold))
+          (Graph.roleFibrePartitionStatement object data.threshold
+            data.windowOrder))
         (.cons (key := fibrePressure)
           (encodePressure inputs.current
-            (Graph.fibrePressureStatement object data.threshold existing))
+            (Graph.fibrePressureStatement object data.threshold data.windowOrder
+              existing))
           (.cons (key := spineSurplusEstimate)
             (encodeEstimate inputs.current
               (fun packing remainder scaleCount budget =>
@@ -184,10 +191,12 @@ noncomputable def sparsePressureDichotomy
     (sparsePressureNearCubic sparsePressureOverload :
       FactKey (Input BranchState Presentation presentation data))
     (encodeNearCubic :
-      Graph.SparsePressureCapped current.object data.threshold →
+      Graph.SparsePressureCapped current.object data.threshold
+        data.windowOrder →
       sparsePressureNearCubic.At current)
     (encodeOverload :
-      Graph.SparsePressureOverloadStatement current.object data.threshold →
+      Graph.SparsePressureOverloadStatement current.object data.threshold
+        data.windowOrder →
       sparsePressureOverload.At current)
     (nearCubicFresh : sparsePressureNearCubic ∉ known)
     (overloadFresh : sparsePressureOverload ∉ known) :
@@ -197,89 +206,400 @@ noncomputable def sparsePressureDichotomy
     `Hypostructure.Graph.Strategy.Spine.sparsePressureRouting ?_ nearCubicFresh
     overloadFresh
   exact
-    if capped : Graph.SparsePressureCapped current.object data.threshold then
+    if capped : Graph.SparsePressureCapped current.object data.threshold
+        data.windowOrder then
       .inl (encodeNearCubic capped)
     else
       .inr (encodeOverload
-        ((Graph.sparsePressureRouting current.object data.threshold).resolve_left
+        ((Graph.sparsePressureRouting current.object data.threshold
+          data.windowOrder).resolve_left
           capped))
+
+/-! ## Nodes `[139]` and `[141]`: the class dispatch
+
+`prop:single-graph-sparse-pressure-routing` (b): "according to the class of the
+token, `G` is routed to node `[140]`, `[142]`, or `[143]`."  The manuscript draws
+that as two binary tests -- `[139]` "token in `𝔗_W`?" and `[141]` "token in
+`𝔗_R`?" -- and they are two `Decision`s here for the same reason node `[137]` is
+one: the arm not taken is absent from the taken arm's key index, so the
+window-incidence audit cannot read a remainder-surplus verdict and neither can
+read the other's.
+
+Each test is the excluded middle on a property of the object, so no fact is
+consumed to decide it and nothing is assumed to make the split exhaustive.
+What the two negative arms are *for* is node `[143]`: `class(t)` has three
+values, so failing both tests is the primitive-carrier case, and that is derived
+at `[143]` from the two negative facts rather than declared here. -/
+
+/-- **Node `[139]`**: is the overloading token of node `[137]` in `𝔗_W`? -/
+noncomputable def windowClassDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (windowClassOverload windowClassAbsent :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeOverload :
+      Graph.SparsePressureOverloadInClass current.object data.threshold
+        data.windowOrder .windowIncidence →
+      windowClassOverload.At current)
+    (encodeAbsent :
+      (¬ Graph.SparsePressureOverloadInClass current.object data.threshold
+        data.windowOrder .windowIncidence) →
+      windowClassAbsent.At current)
+    (overloadFresh : windowClassOverload ∉ known)
+    (absentFresh : windowClassAbsent ∉ known) :
+    Decision windowClassOverload windowClassAbsent previous := by
+  classical
+  refine Decision.run previous windowClassOverload windowClassAbsent
+    `Hypostructure.Graph.Strategy.Spine.windowClassDichotomy ?_ overloadFresh
+    absentFresh
+  exact
+    if inClass : Graph.SparsePressureOverloadInClass current.object data.threshold
+        data.windowOrder .windowIncidence then
+      .inl (encodeOverload inClass)
+    else
+      .inr (encodeAbsent inClass)
+
+/-- **Node `[141]`**: is it in `𝔗_R`? -/
+noncomputable def remainderClassDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (remainderClassOverload remainderClassAbsent :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeOverload :
+      Graph.SparsePressureOverloadInClass current.object data.threshold
+        data.windowOrder .remainderSurplus →
+      remainderClassOverload.At current)
+    (encodeAbsent :
+      (¬ Graph.SparsePressureOverloadInClass current.object data.threshold
+        data.windowOrder .remainderSurplus) →
+      remainderClassAbsent.At current)
+    (overloadFresh : remainderClassOverload ∉ known)
+    (absentFresh : remainderClassAbsent ∉ known) :
+    Decision remainderClassOverload remainderClassAbsent previous := by
+  classical
+  refine Decision.run previous remainderClassOverload remainderClassAbsent
+    `Hypostructure.Graph.Strategy.Spine.remainderClassDichotomy ?_ overloadFresh
+    absentFresh
+  exact
+    if inClass : Graph.SparsePressureOverloadInClass current.object data.threshold
+        data.windowOrder .remainderSurplus then
+      .inl (encodeOverload inClass)
+    else
+      .inr (encodeAbsent inClass)
 
 /-! ## Nodes `[140]`, `[142]`, `[143]`: the three geometric class audits
 
-`def:homogeneous-token-charge` fixes what a class may carry without a
+`def:homogeneous-token-charge` fixes what a token may carry without a
 role-homogeneous pattern:
 
   `Cap_hom(L) = Q_st(L−1)(2L−3)`,
 
 "the uniform token load allowed by charging each of the at most `Q_st` role
 fibres separately when no role-homogeneous same-token `L`-matching or `L`-star
-occurs at that token".  The row commits the contrapositive, which is what the
-audits produce.  The three audits are one statement because the class bound is a
-function of `class(t)` and the ledger is one presentation. -/
-@[reducible] noncomputable def bottleneckClassificationRow
-    (canonicalPairLedger bottleneckClassification :
+occurs at that token".  The audit commits its contrapositive at the manuscript's
+own fixed cap `L_geom = Q_geom + 1`, where `Q_geom` is the *counted* cardinality
+of `def:same-token-routing-germs`' routing-label alphabet, so nothing supplies
+the bound as a parameter.
+
+The audit is stated at the object's own `Graph.ObjectCapacityLedger`, which node
+`[136]` commits at every declared presentation, so it is a verdict about the
+branch's object rather than an implication about a token universe nobody built.
+It is committed together with `cor:quantitative-homogeneous-overload`, the
+forced pattern scale `K_hom(G) ≥ ψ(N_*(G)/(Q_st(8n+σ(G))))` cleared of division,
+which is what makes the audit quantitative.
+
+`Requires := []` is the honest declaration: both productions are theorems about
+the object, and an unread key would claim a dependency the executor does not
+have.  What places the audit at its class is the DAG -- the arm of `[139]` or
+`[141]` it runs on carries that class's verdict -- not a hypothesis inside it. -/
+@[reducible] noncomputable def classAuditRow
+    (value : Graph.SameTokenBlockerRoles.TokenClass)
+    (classAudit quantitativeOverload :
       FactKey (Input BranchState Presentation presentation data))
-    (distinct : canonicalPairLedger ≠ bottleneckClassification)
-    (pairCountOf : (input : Input BranchState Presentation presentation data) →
-      canonicalPairLedger.At input →
-      (input.object.portPairSchedule data.threshold).card =
-        (input.object.degreeSurplus data.threshold).choose 2)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      Graph.BottleneckClassificationStatement input.object data.threshold →
-      bottleneckClassification.At input) :
+    (distinct : classAudit ≠ quantitativeOverload)
+    (encodeAudit : (input : Input BranchState Presentation presentation data) →
+      Graph.ClassAuditStatement input.object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) value →
+      classAudit.At input)
+    (encodeScale : (input : Input BranchState Presentation presentation data) →
+      Graph.QuantitativeOverloadStatement input.object data.threshold
+        data.windowOrder →
+      quantitativeOverload.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.bottleneckClassification
-    (rowManifest canonicalPairLedger bottleneckClassification distinct)
+  factOnly `Hypostructure.Graph.Strategy.Spine.classAudit
+    { Requires := []
+      Produces := [classAudit, quantitativeOverload]
+      requiresUnique := by simp
+      producesUnique := by simp [distinct]
+      producesNonempty := by simp }
     (fun inputs =>
-      let _read := pairCountOf inputs.current (inputs.get canonicalPairLedger)
-      .cons (key := bottleneckClassification)
-        (encode inputs.current
-          (Graph.bottleneckClassificationStatement inputs.current.object
-            data.threshold))
-        .nil)
+      .cons (key := classAudit)
+        (encodeAudit inputs.current
+          (Graph.classAuditStatement inputs.current.object data.threshold
+            data.windowOrder (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) value))
+        (.cons (key := quantitativeOverload)
+          (encodeScale inputs.current
+            (Graph.quantitativeOverloadStatement inputs.current.object
+              data.threshold data.windowOrder))
+          .nil))
 
-/-! ## Node `[144]`: the homogeneous bottleneck
+/-- **Node `[143]`, the primitive-carrier audit.**
 
-`cor:homogeneous-same-token-caps-close`.  Its hypotheses are clauses (a), (b),
-(c) -- no token in `𝔗_W`, `𝔗_R` or `𝔗_prim` supports a role-homogeneous
-same-token `L_W`-, `L_R`- or `L_P`-matching or star -- and its proof forms
-`M₀ := max{Cap_hom(L_W), Cap_hom(L_R), Cap_hom(L_P)}`, bounds every token load
-by it through the role-fibre partition and `lem:same-token-matching-star`, sums
-the canonical ledger's own identity to `|Π_blk| ≤ M₀|𝔗_cap|`, and invokes
-`thm:tokenized-surplus-accounting-closure` to conclude `σ(G) = O(√n)`.
-
-The closure is exact rather than asymptotic:
-
-  `σ(G) ≤ 1 + 2M₀ + ⌊√(2·E + 2·M₀·scale)⌋`,
-
-which at `scale = 8n` and `E ≤ C_E n + ((1/2)σ+1)log₂ n` is the manuscript's
-`σ(G) = O(√n)` with the implicit constant written out.
-
-`thm:homogeneous-overload-geometric-closure`'s own contribution -- that
-`L_W = L_R = L_P = L_geom` may be taken once sparse exits are absent and every
-decorated Type B handoff has been routed to the Type B fan ledger -- is the
-branch structure that discharges these hypotheses, not part of this
-implication; `lem:same-token-bottleneck-routing` and
-`def:same-token-routing-germs` supply it and are not implemented. -/
-@[reducible] noncomputable def homogeneousBottleneckRow
-    (canonicalPairLedger homogeneousBottleneck :
+The fall-through case, and the only one of the three that owes a derivation of
+its own class verdict.  `class(t)` has three values, so node `[137]`'s overload
+together with the two negative arms of `[139]` and `[141]` puts the overloading
+token in `𝔗_prim`; all three are read by exact key and all three are spent by
+`Graph.overloadClassExhaustive`.  The audit itself and the quantitative scale are
+the same two theorems the other two arms commit. -/
+@[reducible] noncomputable def primitiveCarrierAuditRow
+    (sparsePressureOverload windowClassAbsent remainderClassAbsent
+      primitiveClassOverload primitiveCarrierAudit quantitativeOverload :
       FactKey (Input BranchState Presentation presentation data))
-    (distinct : canonicalPairLedger ≠ homogeneousBottleneck)
-    (pairCountOf : (input : Input BranchState Presentation presentation data) →
-      canonicalPairLedger.At input →
-      (input.object.portPairSchedule data.threshold).card =
-        (input.object.degreeSurplus data.threshold).choose 2)
+    (overloadNeWindow : sparsePressureOverload ≠ windowClassAbsent)
+    (overloadNeRemainder : sparsePressureOverload ≠ remainderClassAbsent)
+    (windowNeRemainder : windowClassAbsent ≠ remainderClassAbsent)
+    (verdictNeAudit : primitiveClassOverload ≠ primitiveCarrierAudit)
+    (verdictNeScale : primitiveClassOverload ≠ quantitativeOverload)
+    (auditNeScale : primitiveCarrierAudit ≠ quantitativeOverload)
+    (overloadOf : (input : Input BranchState Presentation presentation data) →
+      sparsePressureOverload.At input →
+      Graph.SparsePressureOverloadStatement input.object data.threshold
+        data.windowOrder)
+    (windowAbsentOf : (input : Input BranchState Presentation presentation data) →
+      windowClassAbsent.At input →
+      ¬ Graph.SparsePressureOverloadInClass input.object data.threshold
+        data.windowOrder .windowIncidence)
+    (remainderAbsentOf :
+      (input : Input BranchState Presentation presentation data) →
+      remainderClassAbsent.At input →
+      ¬ Graph.SparsePressureOverloadInClass input.object data.threshold
+        data.windowOrder .remainderSurplus)
+    (encodeVerdict : (input : Input BranchState Presentation presentation data) →
+      Graph.SparsePressureOverloadInClass input.object data.threshold
+        data.windowOrder .primitiveCarrier →
+      primitiveClassOverload.At input)
+    (encodeAudit : (input : Input BranchState Presentation presentation data) →
+      Graph.ClassAuditStatement input.object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) .primitiveCarrier →
+      primitiveCarrierAudit.At input)
+    (encodeScale : (input : Input BranchState Presentation presentation data) →
+      Graph.QuantitativeOverloadStatement input.object data.threshold
+        data.windowOrder →
+      quantitativeOverload.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.primitiveCarrierAudit
+    { Requires :=
+        [sparsePressureOverload, windowClassAbsent, remainderClassAbsent]
+      Produces :=
+        [primitiveClassOverload, primitiveCarrierAudit, quantitativeOverload]
+      requiresUnique := by
+        simp [overloadNeWindow, overloadNeRemainder, windowNeRemainder]
+      producesUnique := by
+        simp [verdictNeAudit, verdictNeScale, auditNeScale]
+      producesNonempty := by simp }
+    (fun inputs =>
+      let object := inputs.current.object
+      let overload := overloadOf inputs.current (inputs.get sparsePressureOverload)
+      let windowAbsent :=
+        windowAbsentOf inputs.current (inputs.get windowClassAbsent)
+      let remainderAbsent :=
+        remainderAbsentOf inputs.current (inputs.get remainderClassAbsent)
+      .cons (key := primitiveClassOverload)
+        (encodeVerdict inputs.current
+          (Graph.overloadClassExhaustive object data.threshold data.windowOrder
+            overload windowAbsent remainderAbsent))
+        (.cons (key := primitiveCarrierAudit)
+          (encodeAudit inputs.current
+            (Graph.classAuditStatement object data.threshold data.windowOrder
+              (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) .primitiveCarrier))
+          (.cons (key := quantitativeOverload)
+            (encodeScale inputs.current
+              (Graph.quantitativeOverloadStatement object data.threshold
+                data.windowOrder))
+            .nil)))
+
+/-! ## Node `[144]`: the homogeneous bottleneck, and the close of the branch
+
+`thm:homogeneous-overload-geometric-closure` has two assertions.  The first is
+`lem:same-token-bottleneck-routing`: every role-homogeneous same-token
+`L_geom`-matching or `L_geom`-star realizes a sparse surplus exit or a decorated
+Type B handoff fan envelope.  The second is that on the subbranch where neither
+survives, the three fixed caps `L_W = L_R = L_P = L_geom` hold, and then
+`cor:homogeneous-same-token-caps-close` gives `σ(G) = O(√n)` and
+`lem:sparse-slack-surplus` turns that into `m = (3/2)n + O(√n)`.
+
+`prop:nonnear-cubic-sharp-overload-routing` is the outcome: *"(a) `G` satisfies
+the near-cubic spine estimate; (b) a sparse surplus exit occurs; or (c) a
+role-homogeneous same-token bottleneck produces decorated Type B fan data and is
+routed to the Type B fan ledger."*
+
+That is a branch, and it is one here.  `homogeneousCapsDichotomy` decides the
+subbranch hypothesis itself — a property of the object, so the split is the
+excluded middle and nothing is assumed to make it exhaustive.  Its caps arm runs
+`homogeneousBottleneckRow`, which closes the branch with (a).  Its bottleneck
+arm carries the pattern, and `Graph.SameTokenRoutingGerms.bottleneckRouting`
+reads that pattern's separated routing germs as (b) or (c): absorbed at the
+first separator is the manuscript's quotient, compression and delocalization
+exits, and surviving gives `d_G(z) ≥ 4` and admissible decorated Type B fan
+data.  Splitting the bottleneck arm further into (b) and (c) needs the germs of
+`Z(π;t,r)` themselves, which are declared data of
+`def:declared-coordinate-signature` and not built by this branch, so the arm
+carries the bottleneck and the routing lemma is what the Type B ledger reads it
+with. -/
+
+/-- **Node `[144]`'s test**: do the fixed homogeneous caps hold? -/
+noncomputable def homogeneousCapsDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (homogeneousCapsHold homogeneousBottleneckPattern :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeCaps :
+      Graph.HomogeneousCapsHold current.object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) →
+      homogeneousCapsHold.At current)
+    (encodePattern :
+      (¬ Graph.HomogeneousCapsHold current.object data.threshold
+        data.windowOrder (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder))) →
+      homogeneousBottleneckPattern.At current)
+    (capsFresh : homogeneousCapsHold ∉ known)
+    (patternFresh : homogeneousBottleneckPattern ∉ known) :
+    Decision homogeneousCapsHold homogeneousBottleneckPattern previous := by
+  classical
+  refine Decision.run previous homogeneousCapsHold homogeneousBottleneckPattern
+    `Hypostructure.Graph.Strategy.Spine.homogeneousCapsRouting ?_ capsFresh
+    patternFresh
+  exact
+    if caps : Graph.HomogeneousCapsHold current.object data.threshold
+        data.windowOrder (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) then
+      .inl (encodeCaps caps)
+    else
+      -- The bottleneck arm carries `lem:same-token-bottleneck-routing` at it:
+      -- the pattern, and the exit-or-Type-B reading of its routed germs.
+      .inr (encodePattern caps)
+
+/-- **Node `[144]`, the near-cubic close.**
+
+`cor:homogeneous-same-token-caps-close` at the object's own capacity-token
+ledger.  Both reads are spent: the caps arm's own fact discharges clauses (a),
+(b), (c) — they are *facts a predecessor established*, not hypotheses of a
+committed implication — and node `[126]`'s `lem:sparse-slack-surplus` turns the
+surplus bound into the edge-count half `m = (3/2)n + O(√n)`.
+
+`M₀ = Cap_hom(L_geom)` is the counted routing-label alphabet's own cap charge
+and the token supply is `lem:capacity-token-supply`'s, carried by the ledger, so
+neither is a parameter of the committed statement. -/
+@[reducible] noncomputable def homogeneousBottleneckRow
+    (homogeneousCapsHold sparseSlackSurplus homogeneousBottleneck :
+      FactKey (Input BranchState Presentation presentation data))
+    (capsNeSlack : homogeneousCapsHold ≠ sparseSlackSurplus)
+    (capsOf : (input : Input BranchState Presentation presentation data) →
+      homogeneousCapsHold.At input →
+      Graph.HomogeneousCapsHold input.object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)))
+    (slackOf : (input : Input BranchState Presentation presentation data) →
+      sparseSlackSurplus.At input →
+      2 * input.object.edgeCount =
+        data.threshold * input.object.vertexCount +
+          input.object.degreeSurplus data.threshold)
     (encode : (input : Input BranchState Presentation presentation data) →
-      Graph.HomogeneousBottleneckStatement input.object data.threshold →
+      Graph.HomogeneousCapsCloseStatement input.object data.threshold
+        data.windowOrder (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) →
       homogeneousBottleneck.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.homogeneousBottleneck
-    (rowManifest canonicalPairLedger homogeneousBottleneck distinct)
+    { Requires := [homogeneousCapsHold, sparseSlackSurplus]
+      Produces := [homogeneousBottleneck]
+      requiresUnique := by simp [capsNeSlack]
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
-      let _read := pairCountOf inputs.current (inputs.get canonicalPairLedger)
+      let caps := capsOf inputs.current (inputs.get homogeneousCapsHold)
+      let slack := slackOf inputs.current (inputs.get sparseSlackSurplus)
       .cons (key := homogeneousBottleneck)
         (encode inputs.current
-          (Graph.homogeneousBottleneckStatement inputs.current.object data.threshold))
+          (Graph.homogeneousCapsCloseStatement inputs.current.object caps slack))
+        .nil)
+
+/-- **Node `[144]`, the bottleneck arm's own fact.**
+
+`thm:homogeneous-overload-geometric-closure`'s **first** assertion, which is
+`lem:same-token-bottleneck-routing` at every declared routed bottleneck of the
+object: the identification at the first separator is absorbed -- the quotient,
+compression and delocalization readings of `def:named-surplus-exits` -- or the
+separator survives, `d_G(z) ≥ 4`, and its separated tails are admissible
+decorated Type B handoff fan data.
+
+Both reads are spent and neither is assumed.  The node-`[1]`--`[4]` selection
+entry supplies the object's own avoidance, which is the envelope's
+`dyadicSafe`; and node `[11]`--`[14]`'s `cor:uncompressible` entry supplies the
+hereditary uncompressibility the admissibility clause asks for -- *at the
+ledger's own predicate*, so nothing is re-derived and nothing is parameterised
+into triviality. -/
+@[reducible] noncomputable def bottleneckRoutingRow
+    (selection uncompressible sparseSurplusSurvivor bottleneckRouting :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : selection ≠ uncompressible)
+    (selectionNeSurvivor : selection ≠ sparseSurplusSurvivor)
+    (uncompressibleNeSurvivor : uncompressible ≠ sparseSurplusSurvivor)
+    (survivesOf : (input : Input BranchState Presentation presentation data) →
+      sparseSurplusSurvivor.At input →
+      Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK input.object)
+    (avoidsOf : (input : Input BranchState Presentation presentation data) →
+      selection.At input →
+      ¬ Graph.HasCycleWithLength data.LengthOK input.object)
+    (uncompressibleOf :
+      (input : Input BranchState Presentation presentation data) →
+      uncompressible.At input →
+      ∀ piece : Finset input.object.Vertex,
+        ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) input.object piece)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (Graph.BottleneckRoutingStatement input.object
+          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+          data.windowOrder ∧
+        Graph.TypeBHandoffStatement input.object
+          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+          data.windowOrder) →
+      bottleneckRouting.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.bottleneckRouting
+    { Requires := [selection, uncompressible, sparseSurplusSurvivor]
+      Produces := [bottleneckRouting]
+      requiresUnique := by
+        simp [distinct, selectionNeSurvivor, uncompressibleNeSurvivor]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let avoids := avoidsOf inputs.current (inputs.get selection)
+      let uncompressed := uncompressibleOf inputs.current
+        (inputs.get uncompressible)
+      let survives := survivesOf inputs.current (inputs.get sparseSurplusSurvivor)
+      .cons (key := bottleneckRouting)
+        (encode inputs.current
+          ⟨Graph.bottleneckRoutingStatement inputs.current.object avoids
+            uncompressed,
+            Graph.typeBHandoffStatement inputs.current.object survives avoids
+              uncompressed⟩)
         .nil)
 
 /-! ## Node `[125]`: the survivor of the sparse surplus exits
@@ -327,8 +647,13 @@ The manifest lists the two keys the executor reads and nothing else. -/
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) input.object support)
     (encode : (input : Input BranchState Presentation presentation data) →
-      Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK input.object →
+      (Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
+            input.object ∧
+        ∀ support : Finset input.object.Vertex,
+          ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) input.object support) →
       sparseSurplusSurvivor.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseSurplusSurvivor
@@ -341,9 +666,18 @@ The manifest lists the two keys the executor reads and nothing else. -/
       let fact := inputs.get selection
       .cons (key := sparseSurplusSurvivor)
         (encode inputs.current
-          (Graph.survives_of_selection (avoidsOf inputs.current fact)
-            (minimalOf inputs.current fact)
-            (uncompressibleOf inputs.current (inputs.get uncompressible))))
+          ⟨Graph.survives_of_selection (avoidsOf inputs.current fact)
+              (minimalOf inputs.current fact)
+              (uncompressibleOf inputs.current (inputs.get uncompressible)),
+            -- `lem:replacement` at the same selection: a proper-support
+            -- replacement is the global barrier reading node `[45]`--`[46]`
+            -- refutes, and its two halves are the selection's own.
+            fun _support replacement =>
+              not_globalBarrierReading (BranchState := BranchState)
+                (Presentation := Presentation) (presentation := presentation)
+                (data := data) inputs.current.baseline
+                inputs.current.branchState (avoidsOf inputs.current fact)
+                (minimalOf inputs.current fact) (Or.inl replacement)⟩)
         .nil)
 
 /-! ## Node `[125]`, continued: the active surplus family

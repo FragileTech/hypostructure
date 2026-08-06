@@ -11,9 +11,10 @@ ledger the saturated exit chain leaves, and checks the four things the audit's
 Ledger, Transport, Residual and Facts columns claim:
 
 * the question elaborates only as a `Decision` against the literal incoming
-  branch cursor, and only where node `[93]`'s visible-entry fact, node `[1]`'s
-  selection and node `[14]`'s hereditary target-uncompressibility are all on the
-  index — the three the handoff's admissibility spends;
+  branch cursor, in its Figure 8 position inside `Spine.runRouteEight` — after
+  node `[105]`'s no arm and before node `[109]` — and only where the shared exit
+  segment's entry fact, node `[1]`'s selection and node `[14]`'s hereditary
+  target-uncompressibility are all on the index;
 * the arm not taken is absent from the taken branch's key index, so node `[109]`
   cannot read the handoff and the Type B entry cannot read the
   exit-`(7)`-free hypothesis;
@@ -50,49 +51,31 @@ variable {data : Data.{u}}
 
 /-! ## The cursor the saturated exit chain leaves -/
 
-/-- The index node `[107]` is asked on: node `[93]`'s port with exits `(1)`,
-`(2)` and `(3)` denied.  The manuscript reaches node `[107]` from node `[105]`,
-so this cursor is the chain as far as it is built; exits `(4)`--`(6)` are rows
-16--18 and are recorded there. -/
+/-- The index the shared exit segment is entered on from Figure 8's visible
+path: node `[93]`'s port with exits `(1)`, `(2)` and `(3)` denied, and
+`lem:typeA-exit4-residual-routing`'s hypothesis committed on node `[99]`'s no
+arm.  Nodes `[101]`--`[107]` are asked on top of it. -/
 abbrev entryKeys : FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeASaturatedExitEntry ::
-    typeAExitThreeFreeKeys
-      (typeAExitTwoFreeKeys (typeAExitOneFreeKeys typeAVisibleEntryKeys))
+  saturatedExitEntryKeys (typeAVisibleEntryKeys (BranchState := BranchState)
+    (presentation := presentation) (data := data))
 
-/-! ## Node `[107]`, asked on the chain's cursor -/
-
-/-- **Exit `(7)` is asked on the cursor the exit chain leaves.**  Its three
-requirements are discharged by instance resolution against the incoming index —
-the earlier exits retained node `[93]`'s port, and the selection and
-uncompressibility are on the standing prefix every branch of the spine carries —
-and both freshness side conditions are decided on the vocabulary's own finite
-`Key`. -/
-noncomputable def exitSeven
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected entryKeys) :
-    Decision (K .typeAExitSevenHandoff) (K .typeAExitSevenFree) history :=
-  typeAExitSeven history (by simp) (by simp)
-
-/-- **The whole node, run: one arm handed to Type B, one arm continuing to node
-`[109]`.** -/
-noncomputable def run
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected entryKeys) :
-    ExitSevenResult selected entryKeys :=
-  runExitSeven history (by simp) (by simp)
-
-/-! ## The exit segment is shared, not duplicated
+/-! ## Node `[107]`, in its Figure 8 position
 
 Figure 8 draws one segment `[101]`--`[107]` entered from node `[99]`'s no arm
 and from node `[94]`.  `lem:typeA-exit4-residual-routing` is the manuscript's
 statement that the two combine, and `typeASaturatedExitEntry` is its hypothesis.
-The check below is that the *same* ladder `Spine.runRouteEight` that
+Node `[107]` is a node of that one segment, asked on node `[105]`'s no arm and
+answered before node `[109]`'s placement, so there is no separate runner for it:
+the check below is that the *same* ladder `Spine.runRouteEight` that
 `Fixtures.Route8Run` runs on node `[94]` also elaborates here, on node `[99]`'s
-no arm: the segment is one chain of nodes asked under one entry fact, not two
-copies of the manuscript's list. -/
-noncomputable def routeEightOnVisibleEntry
+no arm, with exit `(7)` inside it.
+
+Its three requirements are discharged by instance resolution against the
+incoming index — the segment's entry fact, and the selection and
+uncompressibility on the standing prefix every branch of the spine carries — and
+both freshness side conditions are decided on the vocabulary's own finite
+`Key`. -/
+noncomputable def run
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected entryKeys) :
@@ -103,10 +86,56 @@ noncomputable def routeEightOnVisibleEntry
     (exitFourFreeFresh := by simp) (exitFiveFresh := by simp)
     (exitFiveFreeFresh := by simp) (exitSixFresh := by simp)
     (exitSixFreeFresh := by simp) (exitSixProperFresh := by simp)
-    (exitSixGlobalFresh := by simp) (residualFresh := by simp)
+    (exitSixGlobalFresh := by simp) (exitSevenHandoffFresh := by simp)
+    (exitSevenFreeFresh := by simp) (residualFresh := by simp)
     (freeFresh := by simp) (burdenFresh := by simp) (coreFresh := by simp)
     (censusFresh := by simp) (descentFresh := by simp) (closedFresh := by simp)
     (closureFresh := by simp)
+
+/-- **The whole of Figure 8's visible path runs from node `[93]`'s own cursor.**
+
+`[95]` → `[97]` → `[99]` → `[101]` → `[103]` → `[105]` → `[107]` → `[109]` →
+`[124]`, walked in one piece.  This is what makes the freshness conditions above
+statements about the chain rather than about a chosen cursor: each one is
+decided against the index the previous node actually leaves. -/
+noncomputable def runVisiblePath
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeAVisibleEntryKeys) :
+    SaturatedExitResult selected typeAVisibleEntryKeys :=
+  runSaturatedExits history (returnFresh := by simp) (oneFreeFresh := by simp)
+    (thetaFresh := by simp) (twoFreeFresh := by simp)
+    (collisionFresh := by simp) (threeFreeFresh := by simp)
+    (entryFresh := by simp) (peelFresh := by simp) (noPeelFresh := by simp)
+    (peeledChargeFresh := by simp) (compressionFresh := by simp)
+    (traceLevelFresh := by simp) (exitFourFresh := by simp)
+    (exitFourFreeFresh := by simp) (exitFiveFresh := by simp)
+    (exitFiveFreeFresh := by simp) (exitSixFresh := by simp)
+    (exitSixFreeFresh := by simp) (exitSixProperFresh := by simp)
+    (exitSixGlobalFresh := by simp) (exitSevenHandoffFresh := by simp)
+    (exitSevenFreeFresh := by simp) (residualFresh := by simp)
+    (freeFresh := by simp) (burdenFresh := by simp) (coreFresh := by simp)
+    (censusFresh := by simp) (descentFresh := by simp) (closedFresh := by simp)
+    (closureFresh := by simp)
+
+/-- **Figure 8's branch runs from the spine's own root.**
+
+`Spine.runWithSaturatedExits` calls `Spine.run` once and continues both of its
+saturated Type A arms into the exit list: node `[93]`'s yes arm walks
+`[95]`--`[124]`, and node `[94]` enters the shared segment at node `[101]`.
+This is the check that the branch is attached, not merely elaborable on a
+hand-supplied cursor. -/
+noncomputable def runAttached
+    (T : Core.Target
+      (Hypostructure.Graph.Strategy.Spine.problem BranchState Presentation
+        presentation data))
+    (targetPredicate :
+      T.Predicate = Graph.HasCycleWithLength data.LengthOK)
+    (opened : Core.Strategy.OpenedScope
+      (P := Hypostructure.Graph.Strategy.Spine.problem BranchState Presentation
+        presentation data) (K .selection)) :
+    SpineWithExitsResult opened.selected :=
+  runWithSaturatedExits T targetPredicate opened
 
 /-! ## What the two exits carry -/
 
@@ -115,14 +144,14 @@ contains the other's key. -/
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .typeAExitSevenFree) ∉
-      typeAExitSevenHandoffKeys (BranchState := BranchState)
+      exitSevenHandoffKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .typeAExitSevenHandoff) ∉
-      typeAExitSevenFreeKeys (BranchState := BranchState)
+      exitFreeKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
@@ -133,14 +162,14 @@ arm is the entry of node `[109]`. -/
 example :
     (closed (BranchState := BranchState) (presentation := presentation)
         (data := data)) ∉
-      typeAExitSevenHandoffKeys (BranchState := BranchState)
+      exitSevenHandoffKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
 example :
     (closed (BranchState := BranchState) (presentation := presentation)
         (data := data)) ∉
-      typeAExitSevenFreeKeys (BranchState := BranchState)
+      exitFreeKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
@@ -149,14 +178,14 @@ hypotheses.**  The exit list is a walk on one prefix. -/
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .typeAVisibleEntry) ∈
-      typeAExitSevenHandoffKeys (BranchState := BranchState)
+      exitSevenHandoffKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .typeAExitThreeFree) ∈
-      typeAExitSevenFreeKeys (BranchState := BranchState)
+      exitFreeKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
@@ -166,14 +195,14 @@ target-uncompressibility. -/
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .selection) ∈
-      typeAExitSevenHandoffKeys (BranchState := BranchState)
+      exitSevenHandoffKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .uncompressible) ∈
-      typeAExitSevenHandoffKeys (BranchState := BranchState)
+      exitSevenHandoffKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
@@ -181,14 +210,14 @@ example :
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .typeAExitOneReturn) ∉
-      typeAExitSevenFreeKeys (BranchState := BranchState)
+      exitFreeKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .typeAExitThreeCollision) ∉
-      typeAExitSevenHandoffKeys (BranchState := BranchState)
+      exitSevenHandoffKeys (BranchState := BranchState)
         (presentation := presentation) (entryKeys (data := data)) := by
   simp
 
@@ -216,9 +245,9 @@ alternatives exhaustive. -/
 example (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex)
     (receiver outside : object.Vertex)
     (separation : Separation object support receiver outside)
-    {Profile : Type v} {Target : Graph.FiniteObject.{u} → Prop}
-    (reading : SwitchReading separation (Profile := Profile) Target)
-    (Enlarges : Prop) (surviving : Surviving reading Enlarges) :
+    {Target : Graph.FiniteObject.{u} → Prop}
+    (reading : SwitchReading separation)
+    (Enlarges : Prop) (surviving : Surviving Target reading Enlarges) :
     3 < object.degree separation.separator :=
   four_le_degree_of_surviving surviving
 
@@ -270,7 +299,7 @@ example {Core Component : Type v} [DecidableEq Core] [DecidableEq Component]
 theorem handoff_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitSevenHandoffKeys entryKeys)) :
+      selected (exitSevenHandoffKeys entryKeys)) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=
@@ -279,7 +308,7 @@ theorem handoff_audit_accounts_for_every_fact
 theorem free_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitSevenFreeKeys entryKeys)) :
+      selected (exitFreeKeys entryKeys)) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=
@@ -288,21 +317,21 @@ theorem free_audit_accounts_for_every_fact
 theorem handoff_audit_facts_unique
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitSevenHandoffKeys entryKeys)) :
+      selected (exitSevenHandoffKeys entryKeys)) :
     (ExactLedger.audit history).facts.Nodup :=
   ExactLedger.audit_facts_unique history
 
 theorem free_audit_facts_unique
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitSevenFreeKeys entryKeys)) :
+      selected (exitFreeKeys entryKeys)) :
     (ExactLedger.audit history).facts.Nodup :=
   ExactLedger.audit_facts_unique history
 
 theorem handoff_audit_commits_nonempty
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitSevenHandoffKeys entryKeys)) :
+      selected (exitSevenHandoffKeys entryKeys)) :
     (ExactLedger.audit history).commits.Forall fun record =>
       record.produced ≠ [] :=
   ExactLedger.audit_commits_nonempty history

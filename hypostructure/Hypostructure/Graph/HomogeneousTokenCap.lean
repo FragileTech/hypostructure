@@ -195,6 +195,14 @@ theorem patternThreshold_le (load scale : Nat) (covers : load ≤ scale * (2 * s
     patternThreshold load ≤ scale :=
   Nat.find_le covers
 
+/-- `ψ` is monotone: a larger load needs at least as large a scale.  This is
+what lets `cor:quantitative-homogeneous-overload` read the manuscript's
+`ψ(N_*/(Q_st|𝔗_cap|))` off a realized fibre whose own load is at least the
+quotient. -/
+theorem patternThreshold_mono {smaller larger : Nat} (le : smaller ≤ larger) :
+    patternThreshold smaller ≤ patternThreshold larger :=
+  patternThreshold_le _ _ (le.trans (le_patternThreshold_mul larger))
+
 /-- **`cor:forced-same-token-scale`, combinatorial core.**
 
 A family of unordered pairs contains a matching or a star of size `ψ(e(H))`.

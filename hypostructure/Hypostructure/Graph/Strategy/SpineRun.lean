@@ -732,85 +732,171 @@ abbrev typeBDegreeFourProfileKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBDegreeFourProfile :: typeBDegreeFourFanCapKeys
 
+/-! ### The Type B fan ledger `[71]`--`[76]` / `[80]`--`[85]`, as one walk
+
+`prop:fan-closed-port-typeB-routing`, `cor:compatible-pair-typeB-routing` and
+`prop:triangular-port-typeB-routing` all enter the local Type B fan ledger at
+node `[72]`, and the manuscript walks `[80]`--`[85]` as *the same* ledger after
+the degree-four cursor.  The indices below are that walk over whatever index its
+entry cursor carries, so there is one spelling of each stage. -/
+
+/-- `[71]`/`[80]`, yes: every assigned Type B centre is certificate-marked. -/
+abbrev fanMarkedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .fanCertificateMarked :: known
+
+/-- `[71]`/`[80]`, no: a fan-certificate residual centre exists. -/
+abbrev fanCertResidualKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .fanCertificateResidual :: known
+
+/-- `[75]`/`[84]` on the certificate-residual cursor. -/
+abbrev fanCertResidualMassKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBBridgeMass :: fanCertResidualKeys known
+
+/-- `[72]`/`[81]`, first half, closing arm. -/
+abbrev fanDirectCycleClosedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  closed :: K .typeBDirectCycle :: known
+
+/-- `[72]`/`[81]`, first half, surviving arm. -/
+abbrev fanDirectCycleFreeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBDirectCycleFree :: known
+
+/-- `[72]`/`[81]`, second half, yes — the entry of `[74]`/`[82]`. -/
+abbrev fanDisjointAssignmentKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBDisjointAssignment :: fanDirectCycleFreeKeys known
+
+/-- `[74]`/`[82]`: the hybrid B1 fan ledger. -/
+abbrev fanHybridEntryKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBHybridEntry :: fanDisjointAssignmentKeys known
+
+/-- `[76]`/`[85]`: Step 1 of `lem:typeB-exclusion`. -/
+abbrev fanExclusionChargeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBExclusionCharge :: fanHybridEntryKeys known
+
+/-- `[76]`/`[85]`, excluded, *before* the closure.  What contradicts it is whichever residual the entering branch carries, so the closure is the caller's. -/
+abbrev fanExcludedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBExcluded :: fanExclusionChargeKeys known
+
+/-- `[76]`/`[85]`, closed against the node-`[64]` residual. -/
+abbrev fanBranchKillKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  closed :: fanExcludedKeys known
+
+/-- `[76]`/`[85]`, surviving: a retained leaf, no fan-mass bound. -/
+abbrev fanExclusionResidualKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBExclusionResidual :: fanExclusionChargeKeys known
+
+/-- `[72]`/`[81]`, second half, no — the entry of `[73]`/`[83]`. -/
+abbrev fanOverlapObstructionKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBOverlapObstruction :: fanDirectCycleFreeKeys known
+
+/-- `[75]`/`[84]` on the overlap-obstruction cursor. -/
+abbrev fanOverlapObstructionMassKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBBridgeMass :: fanOverlapObstructionKeys known
+
 /-- Node `[80]`, yes arm: the same certificate question at its second position. -/
 abbrev degreeFourMarkedKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .fanCertificateMarked :: typeBDegreeFourProfileKeys
+  fanMarkedKeys typeBDegreeFourProfileKeys
 
 /-- Node `[80]`, no arm: the fan-mass route `[84]`. -/
 abbrev degreeFourResidualKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .fanCertificateResidual :: typeBDegreeFourProfileKeys
+  fanCertResidualKeys typeBDegreeFourProfileKeys
 
 /-- Node `[81]`'s first half, closing arm. -/
 abbrev degreeFourDirectCycleClosedKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .typeBDirectCycle :: degreeFourMarkedKeys
+  fanDirectCycleClosedKeys degreeFourMarkedKeys
 
 /-- Node `[81]`'s first half, surviving arm. -/
 abbrev degreeFourDirectCycleFreeKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBDirectCycleFree :: degreeFourMarkedKeys
+  fanDirectCycleFreeKeys degreeFourMarkedKeys
 
 /-- Node `[81]`, yes arm — the entry of `[82]`. -/
 abbrev degreeFourDisjointAssignmentKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBDisjointAssignment :: degreeFourDirectCycleFreeKeys
+  fanDisjointAssignmentKeys degreeFourMarkedKeys
 
 /-- Node `[82]`: the same hybrid ledger row, on the degree-four B2 cursor. -/
 abbrev degreeFourHybridEntryKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBHybridEntry :: degreeFourDisjointAssignmentKeys
+  fanHybridEntryKeys degreeFourMarkedKeys
 
 /-- Node `[81]`, no arm — the entry of `[83]`, routed to `[84]`. -/
 abbrev degreeFourOverlapObstructionKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBOverlapObstruction :: degreeFourDirectCycleFreeKeys
+  fanOverlapObstructionKeys degreeFourMarkedKeys
 
 /-- Node `[71]`, yes arm: every assigned Type B centre is certificate-marked. -/
 abbrev typeBCertificateMarkedKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .fanCertificateMarked :: typeBHeavyFanCapKeys
+  fanMarkedKeys typeBHeavyFanCapKeys
 
 /-- Node `[72]`, the closing arm: an assigned centre carries one of the four
 direct fan-window configurations, so the branch collides with the selection's own
 avoidance and the closure entry is appended. -/
 abbrev typeBDirectCycleClosedKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .typeBDirectCycle :: typeBCertificateMarkedKeys
+  fanDirectCycleClosedKeys typeBCertificateMarkedKeys
 
 /-- Node `[72]`, the surviving arm: every closed fan-window pair is
 direct-cycle-free, so the local fan-window ledger is complete. -/
 abbrev typeBDirectCycleFreeKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBDirectCycleFree :: typeBCertificateMarkedKeys
+  fanDirectCycleFreeKeys typeBCertificateMarkedKeys
 
 /-- Node `[72]`/`[81]`, yes arm — the entry of `[74]`/`[82]`. -/
 abbrev typeBDisjointAssignmentKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBDisjointAssignment :: typeBDirectCycleFreeKeys
+  fanDisjointAssignmentKeys typeBCertificateMarkedKeys
 
 /-- Node `[74]`: the hybrid B1 fan ledger, on the heavy arm's B2 cursor. -/
 abbrev typeBHybridEntryKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBHybridEntry :: typeBDisjointAssignmentKeys
+  fanHybridEntryKeys typeBCertificateMarkedKeys
 
 /-- Node `[76]`: Step 1 of `lem:typeB-exclusion`, after `[74]`. -/
 abbrev typeBExclusionChargeKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExclusionCharge :: typeBHybridEntryKeys
+  fanExclusionChargeKeys typeBCertificateMarkedKeys
 
 /-- Node `[85]`: the same row, after `[82]`. -/
 abbrev degreeFourExclusionChargeKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExclusionCharge :: degreeFourHybridEntryKeys
+  fanExclusionChargeKeys degreeFourMarkedKeys
 
 /-- Node `[76]`, the closing arm of `thm:branch-kill` (b): the support is
 excluded-shaped, which collides with the node-`[64]` residual's own negative net
 charge. -/
 abbrev typeBBranchKillKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .typeBExcluded :: typeBExclusionChargeKeys
+  fanBranchKillKeys typeBCertificateMarkedKeys
 
 /-- Node `[76]`, the surviving arm.  B2 *holds* on this cursor, so by
 `lem:typeB-exclusion`'s "consequently" the support is **not** a bridge residual:
@@ -818,51 +904,51 @@ it carries a positive-deficit fan -- node `[74]`'s B1 case -- or a route-8
 residual.  It is therefore a retained leaf and no fan-mass bound applies. -/
 abbrev typeBExclusionResidualKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExclusionResidual :: typeBExclusionChargeKeys
+  fanExclusionResidualKeys typeBCertificateMarkedKeys
 
 /-- Node `[85]`, the closing arm. -/
 abbrev degreeFourBranchKillKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .typeBExcluded :: degreeFourExclusionChargeKeys
+  fanBranchKillKeys degreeFourMarkedKeys
 
 /-- Node `[85]`, the surviving arm, for the same reason. -/
 abbrev degreeFourExclusionResidualKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExclusionResidual :: degreeFourExclusionChargeKeys
+  fanExclusionResidualKeys degreeFourMarkedKeys
 
 /-- Node `[72]`/`[81]`, no arm — the entry of `[73]`/`[83]`, which the
 manuscript routes to the fan-mass node `[75]`/`[84]`. -/
 abbrev typeBOverlapObstructionKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBOverlapObstruction :: typeBDirectCycleFreeKeys
+  fanOverlapObstructionKeys typeBCertificateMarkedKeys
 
 /-- Node `[71]`, no arm: a fan-certificate residual centre exists, and the
 manuscript routes it to the fan-mass node `[75]`. -/
 abbrev typeBCertificateResidualKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .fanCertificateResidual :: typeBHeavyFanCapKeys
+  fanCertResidualKeys typeBHeavyFanCapKeys
 
 /-- Node `[75]`: the fan-mass estimate on the heavy arm's residual cursor. -/
 abbrev typeBCertificateResidualMassKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBBridgeMass :: typeBCertificateResidualKeys
+  fanCertResidualMassKeys typeBHeavyFanCapKeys
 
 /-- Node `[84]`: the same row, on the degree-four residual cursor. -/
 abbrev degreeFourResidualMassKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBBridgeMass :: degreeFourResidualKeys
+  fanCertResidualMassKeys typeBDegreeFourProfileKeys
 
 /-- Node `[75]` entered from `[73]`: the fan-mass estimate on the heavy arm's
 overlap-obstruction cursor. -/
 abbrev typeBOverlapObstructionMassKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBBridgeMass :: typeBOverlapObstructionKeys
+  fanOverlapObstructionMassKeys typeBCertificateMarkedKeys
 
 /-- Node `[84]` entered from `[83]`: the same row on the degree-four
 overlap-obstruction cursor. -/
 abbrev degreeFourOverlapObstructionMassKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBBridgeMass :: degreeFourOverlapObstructionKeys
+  fanOverlapObstructionMassKeys degreeFourMarkedKeys
 
 /-- The key index of the closed terminal `[39]`, proper atom compression. -/
 abbrev atomCompressionKeys :
@@ -912,6 +998,118 @@ abbrev barrierOverflowKeys :
     K .maximalPacking, K .uncompressible, K .tightEndpoint,
     K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
     K .selection]
+
+/-! ## The local Type B fan ledger, `[71]`--`[76]` and `[80]`--`[85]`
+
+One walk, run at whichever cursor enters it: `Decision`s and `AtomicCT`s carry
+no predecessor, so a second entry re-registers nothing.  The heavy arm and the
+degree-four arm were two inline copies of it inside `run`, differing only in
+which exit constructor each reached.
+
+Only `selection` comes from outside.  `[70]`'s cap is `sourceFreeManifest` and
+`[71]`'s certificate question is a `Decision` on a property of the object, so
+the walk supplies its own prerequisites -- which is what makes a *third* entry
+(node `[144]`'s decorated Type B handoff fan data, node `[107]`'s exit-`(7)`
+handoff) an attachment rather than a third copy.
+
+The excluded arm is handed back **open**.  `thm:branch-kill` (b) is contradicted
+by whichever residual the entering branch carries -- the node-`[64]` residual on
+these two cursors -- and only the caller knows which key that is. -/
+
+/-- **The exits of the local Type B fan ledger.** -/
+inductive TypeBFanLedgerResult
+    (selected : Input BranchState Presentation presentation data)
+    (known : FactKeys (Input BranchState Presentation presentation data)) where
+  /-- `[71]`/`[80]` no → `[75]`/`[84]`: fan-mass on the residual cursor. -/
+  | certificateResidualMass
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (fanCertResidualMassKeys known))
+  /-- `[72]`/`[81]`: a direct fan-window cycle, which collides with the
+  selection's own avoidance. -/
+  | directCycleClosed
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (fanDirectCycleClosedKeys (fanMarkedKeys known)))
+  /-- `[76]`/`[85]`: `thm:branch-kill` (b)'s excluded shape, open. -/
+  | excluded
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (fanExcludedKeys (fanMarkedKeys known)))
+  /-- `[76]`/`[85]`, surviving: a retained leaf. -/
+  | exclusionResidual
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (fanExclusionResidualKeys (fanMarkedKeys known)))
+  /-- `[73]`/`[83]` → `[75]`/`[84]`: fan-mass on the obstruction cursor. -/
+  | overlapObstructionMass
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (fanOverlapObstructionMassKeys (fanMarkedKeys known)))
+
+/-- **The local Type B fan ledger, run.** -/
+noncomputable def runTypeBFanLedger
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .selection) known]
+    [FactKeys.Has (K (data := data) .fanCertificateCap) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (markedFresh : K (data := data) .fanCertificateMarked ∉ known)
+    (certResidualFresh : K (data := data) .fanCertificateResidual ∉ known)
+    (cycleFresh : K (data := data) .typeBDirectCycle ∉ known)
+    (cycleFreeFresh : K (data := data) .typeBDirectCycleFree ∉ known)
+    (assignmentFresh : K (data := data) .typeBDisjointAssignment ∉ known)
+    (obstructionFresh : K (data := data) .typeBOverlapObstruction ∉ known)
+    (hybridFresh : K (data := data) .typeBHybridEntry ∉ known)
+    (chargeFresh : K (data := data) .typeBExclusionCharge ∉ known)
+    (excludedFresh : K (data := data) .typeBExcluded ∉ known)
+    (residualFresh : K (data := data) .typeBExclusionResidual ∉ known)
+    (massFresh : K (data := data) .typeBBridgeMass ∉ known)
+    (closureFresh : closed (BranchState := BranchState)
+      (presentation := presentation) (data := data) ∉ known) :
+    TypeBFanLedgerResult current known := by
+  classical
+  -- Node `[71]`/`[80]`: is a certificate labelling present?
+  match fanCertificateDichotomy history (K .fanCertificateMarked)
+      (K .fanCertificateResidual) (fun marked => ⟨marked⟩)
+      (fun residual => ⟨residual⟩)
+      (by simp [markedFresh]) (by simp [certResidualFresh]) with
+  | .right certResidual =>
+      exact .certificateResidualMass
+        ((bridgeFanMass (data := data)).run certResidual (by simp [massFresh]))
+  | .left marked =>
+  -- Node `[72]`/`[81]`, first half: are the direct fan-window cycles present?
+  match directCycleDichotomy marked (K .typeBDirectCycle)
+      (K .typeBDirectCycleFree) (fun present => ⟨present⟩) (fun free => ⟨free⟩)
+      (by simp [cycleFresh]) (by simp [cycleFreeFresh]) with
+  | .left cycleHistory =>
+      exact .directCycleClosed
+        (closeIncompatible cycleHistory (K .selection) (K .typeBDirectCycle)
+          (by simp [closureFresh]))
+  | .right freeHistory =>
+      -- Node `[72]`/`[81]`, second half: does the B2 disjoint ledger exist?
+      match b2AssignmentDichotomy freeHistory (K .typeBDisjointAssignment)
+          (K .typeBOverlapObstruction) (fun ledger => ⟨ledger⟩)
+          (fun obstruction => ⟨obstruction⟩)
+          (by simp [assignmentFresh]) (by simp [obstructionFresh]) with
+      | .left ledgerHistory =>
+          -- Node `[74]`/`[82]`, then `[76]`/`[85]`.
+          have afterExclusion :=
+            (typeBExclusionCharge (data := data)).run
+              ((hybridEntry (data := data)).run ledgerHistory
+                (by simp [hybridFresh]))
+              (by simp [chargeFresh])
+          match typeBExclusionDichotomy afterExclusion
+              (K .typeBExclusionCharge) (K .typeBExcluded)
+              (K .typeBExclusionResidual)
+              (fun fact packing valid piece inside connected charge positive =>
+                (fact.down packing valid piece inside connected charge
+                  positive).2)
+              (fun excluded => ⟨excluded⟩) (fun residual => ⟨residual⟩)
+              (by simp [excludedFresh]) (by simp [residualFresh]) with
+          | .left excludedHistory => exact .excluded excludedHistory
+          | .right residualHistory => exact .exclusionResidual residualHistory
+      | .right obstructionHistory =>
+          -- Node `[73]`/`[83]` → `[75]`/`[84]`.
+          exact .overlapObstructionMass
+            ((bridgeFanMass (data := data)).run obstructionHistory
+              (by simp [massFresh]))
 
 /-- **The exits of the entry spine.**
 
@@ -1273,88 +1471,28 @@ noncomputable def run
                                         (data := data)).run heavyHistory
                                         (by simp))
                                       (by simp)
-                                  -- Node `[71]`: is a certificate labelling
-                                  -- present at every assigned centre?
-                                  match fanCertificateDichotomy afterFanCap
-                                      (K .fanCertificateMarked)
-                                      (K .fanCertificateResidual)
-                                      (fun marked => ⟨marked⟩)
-                                      (fun residual => ⟨residual⟩)
-                                      (by simp) (by simp) with
-                                  | .left markedHistory =>
-                                      -- Node `[72]`, first half: are the direct
-                                      -- fan-window and two-window cycles
-                                      -- present?  The yes arm collides with the
-                                      -- selection's avoidance and closes.
-                                      match directCycleDichotomy markedHistory
-                                          (K .typeBDirectCycle)
-                                          (K .typeBDirectCycleFree)
-                                          (fun present => ⟨present⟩)
-                                          (fun free => ⟨free⟩)
-                                          (by simp) (by simp) with
-                                      | .left cycleHistory =>
-                                          exact .typeBDirectCycleClosed
-                                            (closeIncompatible cycleHistory
-                                              (K .selection)
-                                              (K .typeBDirectCycle) (by simp))
-                                      | .right freeHistory =>
-                                          -- Node `[72]`/`[81]`, second half:
-                                          -- does the B2 disjoint ledger exist?
-                                          match b2AssignmentDichotomy freeHistory
-                                              (K .typeBDisjointAssignment)
-                                              (K .typeBOverlapObstruction)
-                                              (fun ledger => ⟨ledger⟩)
-                                              (fun obstruction => ⟨obstruction⟩)
-                                              (by simp) (by simp) with
-                                          | .left ledgerHistory =>
-                                              -- Node `[74]`: the local hybrid B1
-                                              -- payment, on the B2 cursor.
-                                              -- Node `[76]`: the Type B
-                                              -- exclusion, then
-                                              -- `thm:branch-kill` (b).
-                                              have afterExclusion :=
-                                                (typeBExclusionCharge
-                                                    (data := data)).run
-                                                  ((hybridEntry (data := data)).run
-                                                    ledgerHistory (by simp))
-                                                  (by simp)
-                                              match typeBExclusionDichotomy
-                                                  afterExclusion
-                                                  (K .typeBExclusionCharge)
-                                                  (K .typeBExcluded)
-                                                  (K .typeBExclusionResidual)
-                                                  (fun fact packing valid piece
-                                                      inside connected charge
-                                                      positive =>
-                                                    (fact.down packing valid
-                                                      piece inside connected
-                                                      charge positive).2)
-                                                  (fun excluded => ⟨excluded⟩)
-                                                  (fun residual => ⟨residual⟩)
-                                                  (by simp) (by simp) with
-                                              | .left excludedHistory =>
-                                                  exact .typeBBranchKill
-                                                    (closeIncompatible
-                                                      excludedHistory
-                                                      (K .typeBHighSurplus)
-                                                      (K .typeBExcluded)
-                                                      (by simp))
-                                              | .right residualHistory =>
-                                                  exact .typeBExclusionResidual
-                                                    residualHistory
-                                          | .right obstructionHistory =>
-                                              -- Node `[73]` → `[75]`: the
-                                              -- fan-mass estimate on the
-                                              -- obstruction cursor.
-                                              exact .typeBOverlapObstructionMass
-                                                ((bridgeFanMass (data := data)).run
-                                                  obstructionHistory (by simp))
-                                  | .right residualHistory =>
-                                      -- Node `[75]`: the fan-mass estimate on
-                                      -- the fan-certificate residual cursor.
-                                      exact .typeBCertificateResidualMass
-                                        ((bridgeFanMass (data := data)).run
-                                          residualHistory (by simp))
+                                  -- Nodes `[71]`--`[76]`: the local Type B fan
+                                  -- ledger, run once and entered here.
+                                  match runTypeBFanLedger afterFanCap
+                                      (by simp) (by simp) (by simp) (by simp)
+                                      (by simp) (by simp) (by simp) (by simp)
+                                      (by simp) (by simp) (by simp)
+                                      (by simp) with
+                                  | .certificateResidualMass h =>
+                                      exact .typeBCertificateResidualMass h
+                                  | .directCycleClosed h =>
+                                      exact .typeBDirectCycleClosed h
+                                  | .excluded h =>
+                                      -- The node-`[64]` residual is what this
+                                      -- entry carries, so this entry closes it.
+                                      exact .typeBBranchKill
+                                        (closeIncompatible h
+                                          (K .typeBHighSurplus)
+                                          (K .typeBExcluded) (by simp))
+                                  | .exclusionResidual h =>
+                                      exact .typeBExclusionResidual h
+                                  | .overlapObstructionMass h =>
+                                      exact .typeBOverlapObstructionMass h
                               | .right degreeFourHistory =>
                                   -- Node `[70]` on the degree-four arm: the
                                   -- same executor after the other cursor.
@@ -1364,81 +1502,28 @@ noncomputable def run
                                       ((fanCertificateCap (data := data)).run
                                         degreeFourHistory (by simp))
                                       (by simp)
-                                  -- Node `[80]`: the certificate question at
-                                  -- its second position -- the same `Decision`
-                                  -- value, after the degree-four cursor.
-                                  match fanCertificateDichotomy afterProfile
-                                      (K .fanCertificateMarked)
-                                      (K .fanCertificateResidual)
-                                      (fun marked => ⟨marked⟩)
-                                      (fun residual => ⟨residual⟩)
-                                      (by simp) (by simp) with
-                                  | .right residualHistory =>
-                                      -- Node `[84]`: the same fan-mass row on
-                                      -- the degree-four residual cursor.
-                                      exact .degreeFourResidualMass
-                                        ((bridgeFanMass (data := data)).run
-                                          residualHistory (by simp))
-                                  | .left markedHistory =>
-                                      -- Node `[81]`, first half.
-                                      match directCycleDichotomy markedHistory
-                                          (K .typeBDirectCycle)
-                                          (K .typeBDirectCycleFree)
-                                          (fun present => ⟨present⟩)
-                                          (fun free => ⟨free⟩)
-                                          (by simp) (by simp) with
-                                      | .left cycleHistory =>
-                                          exact .degreeFourDirectCycleClosed
-                                            (closeIncompatible cycleHistory
-                                              (K .selection)
-                                              (K .typeBDirectCycle) (by simp))
-                                      | .right freeHistory =>
-                                          -- Node `[81]`, second half.
-                                          match b2AssignmentDichotomy freeHistory
-                                              (K .typeBDisjointAssignment)
-                                              (K .typeBOverlapObstruction)
-                                              (fun assignment => ⟨assignment⟩)
-                                              (fun obstruction => ⟨obstruction⟩)
-                                              (by simp) (by simp) with
-                                          | .left ledgerHistory =>
-                                              -- Node `[82]`, then node `[85]`:
-                                              -- the same two values after the
-                                              -- other B2 cursor.
-                                              have afterExclusion :=
-                                                (typeBExclusionCharge
-                                                    (data := data)).run
-                                                  ((hybridEntry (data := data)).run
-                                                    ledgerHistory (by simp))
-                                                  (by simp)
-                                              match typeBExclusionDichotomy
-                                                  afterExclusion
-                                                  (K .typeBExclusionCharge)
-                                                  (K .typeBExcluded)
-                                                  (K .typeBExclusionResidual)
-                                                  (fun fact packing valid piece
-                                                      inside connected charge
-                                                      positive =>
-                                                    (fact.down packing valid
-                                                      piece inside connected
-                                                      charge positive).2)
-                                                  (fun excluded => ⟨excluded⟩)
-                                                  (fun residual => ⟨residual⟩)
-                                                  (by simp) (by simp) with
-                                              | .left excludedHistory =>
-                                                  exact .degreeFourBranchKill
-                                                    (closeIncompatible
-                                                      excludedHistory
-                                                      (K .typeBHighSurplus)
-                                                      (K .typeBExcluded)
-                                                      (by simp))
-                                              | .right residualHistory =>
-                                                  exact .degreeFourExclusionResidual
-                                                    residualHistory
-                                          | .right obstructionHistory =>
-                                              -- Node `[83]` → `[84]`.
-                                              exact .degreeFourOverlapObstructionMass
-                                                ((bridgeFanMass (data := data)).run
-                                                  obstructionHistory (by simp))
+                                  -- Nodes `[80]`--`[85]`: the same ledger,
+                                  -- entered after the degree-four cursor.
+                                  match runTypeBFanLedger afterProfile
+                                      (by simp) (by simp) (by simp) (by simp)
+                                      (by simp) (by simp) (by simp) (by simp)
+                                      (by simp) (by simp) (by simp)
+                                      (by simp) with
+                                  | .certificateResidualMass h =>
+                                      exact .degreeFourResidualMass h
+                                  | .directCycleClosed h =>
+                                      exact .degreeFourDirectCycleClosed h
+                                  | .excluded h =>
+                                      -- The node-`[64]` residual is what this
+                                      -- entry carries, so this entry closes it.
+                                      exact .degreeFourBranchKill
+                                        (closeIncompatible h
+                                          (K .typeBHighSurplus)
+                                          (K .typeBExcluded) (by simp))
+                                  | .exclusionResidual h =>
+                                      exact .degreeFourExclusionResidual h
+                                  | .overlapObstructionMass h =>
+                                      exact .degreeFourOverlapObstructionMass h
 
 /-! ## What the run leaves behind -/
 

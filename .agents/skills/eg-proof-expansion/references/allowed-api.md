@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **440**.
+Compiled declarations: **468**.
 
-Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 60, **Minimum-degree cycle spine vocabulary** 190.
+Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 61, **Minimum-degree cycle spine vocabulary** 217.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -2719,6 +2719,17 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
 Type 1
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Data.BoundaryProfile`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Type
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Data.LengthOK`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -2728,6 +2739,17 @@ Type 1
 
 ```lean
 Graph.Strategy.Spine.Data → ℕ → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.boundaryProfileFintype`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(self : Graph.Strategy.Spine.Data) → Fintype self.BoundaryProfile
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Data.bridgeMassFactor`
@@ -2878,6 +2900,17 @@ Graph.Strategy.Spine.Data → ℕ
   self.dischargeScale * self.threshold < 2 * self.dischargeScale + (self.threshold + 2)
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Data.joinSlack`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data), self.threshold * self.windowOrder + 2 ≤ 4 * self.windowOrder
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Data.largeOrderExponent`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -2943,44 +2976,48 @@ Graph.Strategy.Spine.Data → ℕ
                   0 < dischargeScale →
                     Graph.WindowCurvature.fanPackingCap windowOrder + 1 ≤ dischargeScale * threshold →
                       dischargeScale * threshold < 2 * dischargeScale + (threshold + 2) →
-                        (surplusScale windowRate : ℕ) →
-                          (separatedScaleCount : ℕ → ℕ) →
-                            (∀ (size : ℕ), separatedScaleCount size ≤ size.log2) →
-                              (ℕ → ℕ) →
-                                ℕ →
-                                  (entropyDenominator : ℕ) →
-                                    0 < entropyDenominator →
-                                      (largeOrderExponent : ℕ) →
-                                        0 < largeOrderExponent →
-                                          (∀ (size : ℕ),
-                                              2 ^ largeOrderExponent ≤ size →
-                                                largeOrderExponent * (size.log2 + 1) ≤
-                                                  (largeOrderExponent + 1) * separatedScaleCount size) →
-                                            (dischargeScale * (threshold * windowOrder - 2 * (windowOrder - 1)) +
-                                                      windowOrder) *
-                                                    (largeOrderExponent + 1) *
-                                                  threshold <
-                                                2 * windowRate * largeOrderExponent →
-                                              4 *
-                                                      (((dischargeScale *
-                                                                (threshold * windowOrder - 2 * (windowOrder - 1)) +
-                                                              windowOrder) *
-                                                            (largeOrderExponent + 1) +
-                                                          2 * windowRate * largeOrderExponent * dischargeScale) *
-                                                        surplusScale) *
-                                                    (((dischargeScale *
-                                                              (threshold * windowOrder - 2 * (windowOrder - 1)) +
+                        threshold * windowOrder + 2 ≤ 4 * windowOrder →
+                          (BoundaryProfile : Type) →
+                            Fintype BoundaryProfile →
+                              (surplusScale windowRate : ℕ) →
+                                (separatedScaleCount : ℕ → ℕ) →
+                                  (∀ (size : ℕ), separatedScaleCount size ≤ size.log2) →
+                                    (ℕ → ℕ) →
+                                      ℕ →
+                                        (entropyDenominator : ℕ) →
+                                          0 < entropyDenominator →
+                                            (largeOrderExponent : ℕ) →
+                                              0 < largeOrderExponent →
+                                                (∀ (size : ℕ),
+                                                    2 ^ largeOrderExponent ≤ size →
+                                                      largeOrderExponent * (size.log2 + 1) ≤
+                                                        (largeOrderExponent + 1) * separatedScaleCount size) →
+                                                  (dischargeScale * (threshold * windowOrder - 2 * (windowOrder - 1)) +
                                                             windowOrder) *
-                                                          (largeOrderExponent + 1) +
-                                                        2 * windowRate * largeOrderExponent * dischargeScale) *
-                                                      surplusScale) ≤
-                                                  2 ^ largeOrderExponent →
-                                                (coldSignature : Graph.ColdCorridor.DeclaredSignature) →
-                                                  coldSignature.windowOrder = windowOrder →
-                                                    (bridgeMassFactor : ℕ) →
-                                                      threshold + 2 + dischargeScale ≤
-                                                          bridgeMassFactor * dischargeScale →
-                                                        Graph.Strategy.Spine.Data
+                                                          (largeOrderExponent + 1) *
+                                                        threshold <
+                                                      2 * windowRate * largeOrderExponent →
+                                                    4 *
+                                                            (((dischargeScale *
+                                                                      (threshold * windowOrder -
+                                                                        2 * (windowOrder - 1)) +
+                                                                    windowOrder) *
+                                                                  (largeOrderExponent + 1) +
+                                                                2 * windowRate * largeOrderExponent * dischargeScale) *
+                                                              surplusScale) *
+                                                          (((dischargeScale *
+                                                                    (threshold * windowOrder - 2 * (windowOrder - 1)) +
+                                                                  windowOrder) *
+                                                                (largeOrderExponent + 1) +
+                                                              2 * windowRate * largeOrderExponent * dischargeScale) *
+                                                            surplusScale) ≤
+                                                        2 ^ largeOrderExponent →
+                                                      (coldSignature : Graph.ColdCorridor.DeclaredSignature) →
+                                                        coldSignature.windowOrder = windowOrder →
+                                                          (bridgeMassFactor : ℕ) →
+                                                            threshold + 2 + dischargeScale ≤
+                                                                bridgeMassFactor * dischargeScale →
+                                                              Graph.Strategy.Spine.Data
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Data.netChargeCoefficient`
@@ -3317,7 +3354,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.bottleneckClassification`
+#### `Hypostructure.Graph.Strategy.Spine.Key.bottleneckRouting`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -3340,6 +3377,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.branchDependence`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.canonicalBlockerRoute`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -3702,6 +3750,28 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.homogeneousBottleneckPattern`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.homogeneousCapsHold`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.largeBudgetResidual`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3834,7 +3904,62 @@ Graph.Strategy.Spine.Key
 ∀ (x : Graph.Strategy.Spine.Key), Graph.Strategy.Spine.Key.ofNat x.ctorIdx = x
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.primitiveCarrierAudit`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.primitiveClassOverload`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.properDelocalization`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.quantitativeOverload`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.remainderClassAbsent`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.remainderClassOverload`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -3868,6 +3993,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.remainderNormalized`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.remainderSurplusAudit`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4021,7 +4157,40 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.sparsePairExit`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.sparsePortActivation`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.sparsePressureNearCubic`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.sparsePressureOverload`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4044,6 +4213,28 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.sparseSurplusSurvivor`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.sparseUpperEnvelope`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.spineSurplusEstimate`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4373,6 +4564,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeASaturatedExitEntry`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeASaturatedReceiver`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4594,6 +4796,39 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.wedgeSupply`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.windowClassAbsent`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.windowClassOverload`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.windowIncidenceAudit`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5968,6 +6203,28 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset object.Ve
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
+#### `Hypostructure.Graph.Strategy.Spine.idx`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.idx_injective`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Function.Injective Graph.Strategy.Spine.idx
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.instDecidableEqKey`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6048,6 +6305,17 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
             (Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation data))
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.label`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key → String
+```
+
 ### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.localAlgebraRow`
@@ -6087,6 +6355,19 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
 
 ```lean
 Graph.Strategy.Spine.Key → Name
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.name_eq`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (k : Graph.Strategy.Spine.Key),
+  Graph.Strategy.Spine.name k =
+    (`Hypostructure.Graph.Strategy.Spine.str (Graph.Strategy.Spine.label k)).num (Graph.Strategy.Spine.idx k)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.name_injective`
@@ -6440,6 +6721,32 @@ Function.Injective Graph.Strategy.Spine.name
                       maximalPacking.At input) →
                   Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.ofIdx`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+ℕ → Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.ofIdx_idx`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (k : Graph.Strategy.Spine.Key), Graph.Strategy.Spine.ofIdx (Graph.Strategy.Spine.idx k) = k
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.orderThresholdDichotomy`
 
@@ -6890,15 +7197,15 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
               (previous :
                   Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                     current known) →
-                (selection uncompressible typeAVisibleEntry typeAExitSevenHandoff typeAExitSevenFree :
+                (selection uncompressible typeASaturatedExitEntry typeAExitSevenHandoff typeAExitSevenFree :
                     Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
                   [Core.Residual.FactKeys.Has selection known] →
                     [Core.Residual.FactKeys.Has uncompressible known] →
-                      [Core.Residual.FactKeys.Has typeAVisibleEntry known] →
+                      [Core.Residual.FactKeys.Has typeASaturatedExitEntry known] →
                         (∀ (a : selection.At current), ¬Graph.HasCycleWithLength data.LengthOK current.object) →
                           (∀ (a : uncompressible.At current) (support : Finset current.object.Vertex),
                               Graph.Strategy.Spine.handoffUncompressible data current.object support) →
-                            (∀ (a : typeAVisibleEntry.At current),
+                            (∀ (a : typeASaturatedExitEntry.At current),
                                 ∃ packing,
                                   Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
                                     (∀ (window : Finset current.object.Vertex),
@@ -6912,15 +7219,12 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                               ∃ receiver,
                                                 Graph.FiniteObject.IsReceiver current.object piece data.threshold
                                                     receiver ∧
-                                                  Graph.FiniteObject.Saturated current.object piece data.threshold
-                                                      data.dischargeScale receiver ∧
-                                                    ∃
-                                                      outside ∈
-                                                        Graph.VisibleEntry.completionPorts current.object piece
-                                                          receiver,
-                                                      data.dischargeScale ≤
-                                                        (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                                                            data.threshold receiver outside).card) →
+                                                  ∃
+                                                    peeled ⊆
+                                                      Graph.FiniteObject.routedLoads current.object piece data.threshold
+                                                        receiver,
+                                                    Graph.ExitFour.SaturatedAfter piece data.threshold
+                                                      data.dischargeScale receiver peeled) →
                               ((∃ packing,
                                     Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
                                       (∀ (window : Finset current.object.Vertex),
@@ -6932,20 +7236,8 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                                 data.dischargeScale ∧
                                               Graph.FiniteObject.ambientSurplus current.object piece data.threshold =
                                                   0 ∧
-                                                ∃ receiver,
-                                                  Graph.FiniteObject.IsReceiver current.object piece data.threshold
-                                                      receiver ∧
-                                                    Graph.FiniteObject.Saturated current.object piece data.threshold
-                                                        data.dischargeScale receiver ∧
-                                                      ∃
-                                                        outside ∈
-                                                          Graph.VisibleEntry.completionPorts current.object piece
-                                                            receiver,
-                                                        data.dischargeScale ≤
-                                                            (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                                                                data.threshold receiver outside).card ∧
-                                                          Graph.Strategy.Spine.HandoffAdmissible data current.object
-                                                            packing piece) →
+                                                Graph.Strategy.Spine.HandoffAdmissible data current.object packing
+                                                  piece) →
                                   typeAExitSevenHandoff.At current) →
                                 ((∀ (packing : Finset (Finset current.object.Vertex)),
                                       Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
@@ -6958,20 +7250,8 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                                   data.dischargeScale →
                                                 Graph.FiniteObject.ambientSurplus current.object piece data.threshold =
                                                     0 →
-                                                  ∀ (receiver : current.object.Vertex),
-                                                    Graph.FiniteObject.IsReceiver current.object piece data.threshold
-                                                        receiver →
-                                                      Graph.FiniteObject.Saturated current.object piece data.threshold
-                                                          data.dischargeScale receiver →
-                                                        ∀
-                                                          outside ∈
-                                                            Graph.VisibleEntry.completionPorts current.object piece
-                                                              receiver,
-                                                          data.dischargeScale ≤
-                                                              (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                                                                  data.threshold receiver outside).card →
-                                                            ¬Graph.Strategy.Spine.HandoffProduced data current.object
-                                                                packing piece) →
+                                                  ¬Graph.Strategy.Spine.HandoffProduced data current.object packing
+                                                      piece) →
                                     typeAExitSevenFree.At current) →
                                   typeAExitSevenHandoff ∉ known →
                                     typeAExitSevenFree ∉ known →
@@ -7220,6 +7500,59 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                         data.dischargeScale * data.threshold) →
                     typeAReceiverRouting.At input) →
                 Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.typeASaturatedExitEntryRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (typeASaturatedReceiver typeASaturatedExitEntry :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            typeASaturatedReceiver ≠ typeASaturatedExitEntry →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : typeASaturatedReceiver.At input),
+                  ∃ packing,
+                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                      (∀ (window : Finset input.object.Vertex),
+                          Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
+                            ∃ member ∈ packing, ¬Disjoint window member) ∧
+                        ∃ piece ⊆ Graph.FiniteObject.remainderSupport input.object packing,
+                          Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
+                            Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold data.dischargeScale ∧
+                              Graph.FiniteObject.ambientSurplus input.object piece data.threshold = 0 ∧
+                                ∃ receiver,
+                                  Graph.FiniteObject.IsReceiver input.object piece data.threshold receiver ∧
+                                    Graph.FiniteObject.Saturated input.object piece data.threshold data.dischargeScale
+                                      receiver) →
+                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                    (∃ packing,
+                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                          (∀ (window : Finset input.object.Vertex),
+                              Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
+                                ∃ member ∈ packing, ¬Disjoint window member) ∧
+                            ∃ piece ⊆ Graph.FiniteObject.remainderSupport input.object packing,
+                              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
+                                Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold
+                                    data.dischargeScale ∧
+                                  Graph.FiniteObject.ambientSurplus input.object piece data.threshold = 0 ∧
+                                    ∃ receiver,
+                                      Graph.FiniteObject.IsReceiver input.object piece data.threshold receiver ∧
+                                        ∃
+                                          peeled ⊆
+                                            Graph.FiniteObject.routedLoads input.object piece data.threshold receiver,
+                                          Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
+                                            receiver peeled) →
+                      typeASaturatedExitEntry.At input) →
+                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.typeASaturationDichotomy`

@@ -120,6 +120,7 @@ import Hypostructure.Graph.TokenLoadClosure
 import Hypostructure.Graph.CapacityTokenLedger
 import Hypostructure.Graph.DeclaredCoordinateSignature
 import Hypostructure.Graph.SameTokenRoutingGerms
+import Hypostructure.Graph.SparseUpperEnvelope
 import Hypostructure.Graph.PortResponseSupport
 import Hypostructure.Graph.SparseEntropySandwich
 import Hypostructure.Graph.SparsePairResponse
@@ -134,6 +135,7 @@ import Hypostructure.Graph.ReceiverRouting
 import Hypostructure.Graph.VisibleReceiverEntry
 import Hypostructure.Graph.CommonPortReturnCycle
 import Hypostructure.Graph.DecoratedHandoffEnvelope
+import Hypostructure.Graph.SameTokenBottleneckRouting
 import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.WindowCurvatureAlgebra
 import Hypostructure.Graph.WindowCurvatureEnumeration

@@ -669,12 +669,12 @@ def CapacityTokenLedgerStatement (object : FiniteObject.{u}) (threshold order : 
             2 * (order - 1) * packing.card =
           (object.primitiveCarrier threshold).card +
             threshold * (order * packing.card) + object.degreeSurplus threshold) ∧
-        -- `lem:capacity-token-supply`, displayed: `|𝔗_cap| ≤ 8n + σ(G)` on the
-        -- sparse upper envelope and the registered join comparison.
-        (object.edgeCount + 2 ≤ 2 * object.vertexCount →
-          threshold * order + 2 ≤ 4 * order →
-          (object.capacityTokens threshold packing).card ≤
-            8 * object.vertexCount + object.degreeSurplus threshold) ∧
+        -- `lem:capacity-token-supply`, displayed:
+        -- `|𝔗_cap| ≤ (3(δ−1)+2)n + σ(G)`, the manuscript's `≤ 8n + σ(G)`.  The
+        -- sparse upper envelope and the registered join comparison are spent by
+        -- the node rather than carried, so the display is unconditional.
+        ((object.capacityTokens threshold packing).card ≤
+          object.capacityTokenSupply threshold + object.degreeSurplus threshold) ∧
         -- `def:capacity-token-ledger`: `Θ_cap` charges into `𝔗_cap`.
         (∀ (pair : Finset (object.Vertex × object.Vertex))
             (token : CapacityToken object),
@@ -718,12 +718,13 @@ registered `3 ≤ δ` and `0 < order`, and the handshake the baseline gives. -/
 theorem capacityTokenLedgerStatement (object : FiniteObject.{u}) {threshold order : Nat}
     (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
     (three : 3 ≤ threshold) (orderPos : 0 < order)
-    (handshake : threshold * object.vertexCount ≤ 2 * object.edgeCount) :
+    (handshake : threshold * object.vertexCount ≤ 2 * object.edgeCount)
+    (envelope : object.edgeCount + 2 ≤ (threshold - 1) * object.vertexCount)
+    (joinSlack : threshold * order + 2 ≤ 4 * order) :
     CapacityTokenLedgerStatement object threshold order := by
   intro packing valid _Coordinate _Chord activation presentation
   refine ⟨object.card_capacityTokens_add_internalMass valid baseline, ?_, ?_, ?_, ?_, ?_⟩
-  · intro envelope joinSlack
-    exact object.card_capacityTokens_le valid baseline three handshake envelope
+  · exact object.card_capacityTokens_le valid baseline three handshake envelope
       orderPos joinSlack
   · intro pair token charged
     exact capacityCharge_mem_capacityTokens activation presentation threshold packing

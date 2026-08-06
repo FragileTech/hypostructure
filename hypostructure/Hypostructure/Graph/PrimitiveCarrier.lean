@@ -14,13 +14,14 @@ and `lem:primitive-carrier-supply` counts it:
 The incidence family is the object's own ordered neighbour blocks -- the same
 `centreBlocks` construction the excess selector is built from -- so its count is
 `Σ_v d_G(v) = 2m` by the handshake, and the third summand is
-`lem:sparse-excess-port-extraction`'s `σ(G)`.  The displayed bound `≤ 6n` is the
-identity spent against the sparse upper envelope `m ≤ 2n − 2`, which is the
-hypothesis the manuscript carries into this estimate; it is a hypothesis here
-too, not an assumption about the object.
+`lem:sparse-excess-port-extraction`'s `σ(G)`.  The displayed bound is the
+identity spent against the sparse upper envelope, which
+`Graph/SparseUpperEnvelope.lean` proves and which enters here as an antecedent
+rather than as an assumption about the object.
 
-The baseline is a parameter and no numeral is written: the `6` of the display is
-`4·2 − 2` at the envelope's own coefficients.
+The baseline is a parameter and no numeral is written: the manuscript's `6n` is
+`primitiveCarrierSupply`, which is `3(δ − 1)n` at the registered baseline, and
+above `δ = 3` the manuscript's own shape is false.
 -/
 
 namespace Hypostructure.Graph
@@ -86,23 +87,50 @@ theorem card_primitiveCarrier
     card_incidences, object.card_excessPorts baseline, object.card_vertexFinset,
     Nat.add_assoc]
 
-/-- **`lem:primitive-carrier-supply`, the bound**: `|𝔘_sp(G)| ≤ 6n` on the
-sparse upper envelope.
+variable (object threshold)
+
+/-- **The manuscript's `6n`, at the registered baseline.**
+
+`lem:primitive-carrier-supply`'s display is `|𝔘_sp(G)| ≤ 6n`, and its `6` is
+`3(δ − 1)` at the manuscript's own `δ = 3`: the identity
+`|𝔘_sp(G)| = 4m − (δ − 1)n` spent against the sparse upper envelope
+`m + 2 ≤ (δ − 1)n` gives `3(δ − 1)n − 8`.  No numeral is written, and above the
+registered baseline the manuscript's `6n` is simply false. -/
+def primitiveCarrierSupply : Nat :=
+  3 * (threshold - 1) * object.vertexCount
+
+variable {object threshold}
+
+/-- **`lem:primitive-carrier-supply`, the bound**: `|𝔘_sp(G)| ≤ 3(δ − 1)n` on the
+sparse upper envelope, which at the manuscript's `δ = 3` is its `≤ 6n`.
 
 `n + 2m + σ(G) = 4m − (δ − 1)n` at the registered baseline, and the envelope
-`m ≤ 2n − 2` turns that into `8n − 8 − 2n ≤ 6n`.  Both the envelope and the
+`m + 2 ≤ (δ − 1)n` turns that into `3(δ − 1)n − 8`.  Both the envelope and the
 baseline's `3 ≤ δ` are hypotheses; nothing about the object is assumed here. -/
 theorem card_primitiveCarrier_le
     (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
     (three : 3 ≤ threshold)
     (handshake : threshold * object.vertexCount ≤ 2 * object.edgeCount)
-    (envelope : object.edgeCount + 2 ≤ 2 * object.vertexCount) :
-    (object.primitiveCarrier threshold).card ≤ 6 * object.vertexCount := by
-  rw [card_primitiveCarrier baseline]
+    (envelope : object.edgeCount + 2 ≤
+      (threshold - 1) * object.vertexCount) :
+    (object.primitiveCarrier threshold).card ≤
+      object.primitiveCarrierSupply threshold := by
+  rw [card_primitiveCarrier baseline, primitiveCarrierSupply]
   have surplus : object.degreeSurplus threshold =
       2 * object.edgeCount - threshold * object.vertexCount := rfl
-  have widened : 3 * object.vertexCount ≤ threshold * object.vertexCount :=
-    Nat.mul_le_mul_right object.vertexCount three
+  -- The two products are linear once the baseline is split off the coefficient.
+  have split : threshold * object.vertexCount =
+      (threshold - 1) * object.vertexCount + object.vertexCount := by
+    have restore : threshold - 1 + 1 = threshold := by omega
+    calc threshold * object.vertexCount
+        = ((threshold - 1) + 1) * object.vertexCount := by rw [restore]
+      _ = (threshold - 1) * object.vertexCount + object.vertexCount := by ring
+  have tripled : 3 * (threshold - 1) * object.vertexCount =
+      3 * ((threshold - 1) * object.vertexCount) := by ring
+  obtain ⟨room, roomDef⟩ :
+      ∃ room, (threshold - 1) * object.vertexCount = room := ⟨_, rfl⟩
+  rw [roomDef] at envelope split tripled
+  rw [tripled]
   omega
 
 end FiniteObject
