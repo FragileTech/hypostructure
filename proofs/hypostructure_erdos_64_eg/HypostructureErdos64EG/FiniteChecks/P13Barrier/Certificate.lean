@@ -4,8 +4,7 @@ import Hypostructure.Core.FiniteBitRelationBarrier
 namespace HypostructureErdos64EG.FiniteChecks.P13Barrier.Certificate
 
 
-set_option maxRecDepth 100000
-set_option maxHeartbeats 0
+set_option maxHeartbeats 8000000
 
 /-!
 Generated fixed certificate for all fifteen P13 compatibility relations.

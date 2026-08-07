@@ -1,7 +1,8 @@
 import Hypostructure.Graph.Strategy.SurplusRows
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.SpineAssembly
 import Hypostructure.Graph.Strategy.Route8Run
+import Hypostructure.Graph.Strategy.ColdCorridorRun
 
 /-!
 # The sparse surplus branch, run
@@ -77,16 +78,21 @@ exactly the raw hypothesis `TightVertexSuppression` asks for. -/
 /-- Node `[129]`: the common cubic baseline and the room above it. -/
 @[reducible] noncomputable def baselineSpineDemand :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  baselineSpineDemandRow (K .baselineSpineDemand) (fun _input value => ⟨value⟩)
+  baselineSpineDemandRow (K .windowPackageSeparated) (K .baselineSpineDemand)
+    (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
 
 /-- Nodes `[130]`--`[134]`: the pair schedule and the canonical blocker
 ledger. -/
 @[reducible] noncomputable def canonicalPairLedger :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   canonicalPairLedgerRow (K .activeSurplusFamily) (K .sparseSlackSurplus)
-    (K .surplusAbove) (K .canonicalPairLedger)
+    (K .surplusAbove) (K .baselineSpineDemand) (K .canonicalBlockerRoute)
+    (K .canonicalPairLedger)
+    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
     (by simp) (by simp) (by simp) (by simp)
     (fun _input fact => fact.down) (fun _input fact => fact.down)
+    (fun _input fact Coordinate family support =>
+      (fact.down Coordinate family support).2)
     (fun _input value => ⟨value⟩)
 
 /-- Node `[132]`: `lem:sparse-pair-dependence-exit`'s own disjunction.  The exit
@@ -118,6 +124,21 @@ noncomputable instance sparsePairExitClosed :
       (K (data := data) .sparsePairExit) where
   contradiction := fun _input survivor exit => exit.down survivor.down
 
+/-- Node `[138]`'s registered square-root bound contradicts the high-surplus
+entry that opened this branch. -/
+noncomputable instance spineSurplusEstimateClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .surplusAbove)
+      (K (data := data) .spineSurplusEstimate) where
+  contradiction := fun _input above estimate =>
+    have above' : data.surplusThreshold _input.object.vertexCount <
+        _input.object.degreeSurplus data.threshold := above.down
+    have estimate' : _input.object.degreeSurplus data.threshold ≤
+        data.spineScale * Core.ceilSqrt _input.object.vertexCount := estimate.down
+    (Nat.not_lt_of_ge estimate') (by
+      rw [Data.surplusThreshold] at above'
+      exact above')
+
 /-- Nodes `[134]`--`[136]`: `lem:sparse-upper-envelope`, the primitive carrier
 supply and the capacity-token ledger.
 
@@ -128,18 +149,21 @@ edge exactly at the baseline, and the branch's own node-`[19]` entry makes the
 surplus positive, which is what exhibits the edge. -/
 @[reducible] noncomputable def capacityTokenLedger :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  capacityTokenLedgerRow (K .canonicalPairLedger) (K .noProperBaseline)
-    (K .tightEndpoint) (K .surplusAbove) (K .sparseUpperEnvelope)
+  capacityTokenLedgerRow (K .canonicalPairLedger) (K .baselineSpineDemand)
+    (K .noProperBaseline) (K .tightEndpoint) (K .surplusAbove) (K .sparseUpperEnvelope)
     (K .capacityTokenLedger)
-    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
+    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
+    (by simp) (by simp) (by simp) (by simp) (by simp)
     (fun _input fact => fact.down.1)
+    (fun _input fact => fact.down.1)
+    (fun _input fact baseline Coordinate Chord activation =>
+      fact.down.2.2 baseline Coordinate Chord activation)
     (fun _input fact => fact.down)
     (fun _input fact => fact.down)
     (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
 
-/-- Nodes `[137]`--`[143]`: the coupled high-load test with its role split and
-the near-cubic surplus estimate.
+/-- Nodes `[137]`--`[143]`: the coupled high-load test with its role split.
 
 Three keys are read and all three are spent: node `[130]`'s pair count converts
 the lower-bound package bound, node `[136]`'s capacity-token ledger witnesses the
@@ -148,13 +172,23 @@ estimate is stated at. -/
 @[reducible] noncomputable def coupledFibrePressure :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   coupledFibrePressureRow (K .canonicalPairLedger) (K .capacityTokenLedger)
-    (K .baselineSpineDemand) (K .roleFibrePartition) (K .fibrePressure)
-    (K .spineSurplusEstimate)
-    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
+    (K .roleFibrePartition) (K .fibrePressure)
+    (by simp) (by simp)
     (fun _input fact => fact.down.1)
-    (fun _input fact => fact.down.2)
-    (fun _input fact => fact.down.2.2.2.2)
+    (fun _input fact declared =>
+      let certified := (fact.down.2.1 declared).some
+      ⟨certified.ledger⟩)
     (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
+
+/-- Node `[138]` commits the actual square-root surplus bound. -/
+@[reducible] noncomputable def spineSurplusEstimate :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  spineSurplusEstimateRow (K .sparsePressureNearCubic)
+    (K .capacityTokenLedger) (K .surplusAbove) (K .spineSurplusEstimate)
+    (by simp) (by simp) (by simp)
+    (fun _input fact => fact.down)
+    (fun _input fact => fact.down.2.2)
+    (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
 
 /-- Node `[140]`: the window-incidence geometric audit, on node `[139]`'s yes
@@ -211,6 +245,18 @@ fact discharges `cor:homogeneous-same-token-caps-close`'s clauses, and node
     (fun _input fact => fact.down) (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
 
+/-- Node `[144]` commits the exact square-root bound from its cap-close
+pressure and the certified capacity ledger. -/
+@[reducible] noncomputable def homogeneousSpineSurplusEstimate :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  homogeneousSpineSurplusEstimateRow (K .homogeneousBottleneck)
+    (K .capacityTokenLedger) (K .surplusAbove) (K .spineSurplusEstimate)
+    (by simp) (by simp) (by simp)
+    (fun _input fact => fact.down)
+    (fun _input fact => fact.down.2.2)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
+
 /-- Node `[125]`: the selected object survives the five sparse surplus exits.
 Derived from the selection entry; every later node of the block reads it. -/
 @[reducible] noncomputable def sparseSurplusSurvivor :
@@ -241,20 +287,25 @@ carries. -/
 
 /-- The key index a branch carries at node `[132]`: nodes `[126]`--`[130]`, with
 neither arm of the blocked-pair routing taken yet. -/
+abbrev pairRoutingKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .baselineSpineDemand :: K .activeSurplusDemands :: K .sparseSurplusSurvivor ::
+    K .sparsePortActivation :: K .activeSurplusFamily ::
+    K .sparseSlackSurplus :: known
+
+/-- Node `[131]` after the mixed dependence route has established full rank. -/
 abbrev pairLedgerKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .canonicalPairLedger :: K .baselineSpineDemand ::
-    K .activeSurplusDemands :: K .sparseSurplusSurvivor ::
-    K .sparsePortActivation :: K .activeSurplusFamily ::
-    K .sparseSlackSurplus :: known
+  K .canonicalPairLedger :: K .canonicalBlockerRoute :: pairRoutingKeys known
 
 /-- Node `[133]`'s index: node `[132]`'s exit arm and the canonical closure key
 Core appends from it and node `[125]`'s survivor entry. -/
 abbrev sparsePairExitKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .sparsePairExit :: pairLedgerKeys known
+  closed :: K .sparsePairExit :: pairRoutingKeys known
 
 /-- The key index a branch carries after nodes `[126]`--`[137]`, before the
 node-`[137]` branch.  It sits over node `[132]`'s *blocker* arm: the exit arm's
@@ -263,9 +314,9 @@ exit. -/
 abbrev sparseActivationKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .roleFibrePartition :: K .fibrePressure :: K .spineSurplusEstimate ::
-    K .sparseUpperEnvelope :: K .capacityTokenLedger ::
-    K .canonicalBlockerRoute :: pairLedgerKeys known
+  K .roleFibrePartition :: K .fibrePressure :: K .sparseUpperEnvelope ::
+    K .capacityTokenLedger ::
+    pairLedgerKeys known
 
 /-- The near-cubic arm's index: the block's facts plus
 `prop:single-graph-sparse-pressure-routing` (a).  The geometric audits are
@@ -274,7 +325,8 @@ occur. -/
 abbrev nearCubicKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .sparsePressureNearCubic :: sparseActivationKeys known
+  closed :: K .spineSurplusEstimate :: K .sparsePressureNearCubic ::
+    sparseActivationKeys known
 
 /-- The index common to the three overload arms: the block's facts and the
 forced role-homogeneous pattern of `prop:single-graph-sparse-pressure-routing`
@@ -313,7 +365,8 @@ abbrev primitiveAuditKeys
 abbrev capsClosedKeys
     (audited : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .homogeneousBottleneck :: K .homogeneousCapsHold :: audited
+  closed :: K .spineSurplusEstimate :: K .homogeneousBottleneck ::
+    K .homogeneousCapsHold :: audited
 
 /-- Node `[144]`'s bottleneck arm: the pattern
 `lem:same-token-bottleneck-routing` reads as a sparse surplus exit or as
@@ -397,6 +450,7 @@ noncomputable def runSparseActivation
     [FactKeys.Has (K (data := data) .noProperBaseline) known]
     [FactKeys.Has (K (data := data) .tightEndpoint) known]
     [FactKeys.Has (K (data := data) .surplusAbove) known]
+    [FactKeys.Has (K (data := data) .windowPackageSeparated) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
     (slackFresh : K (data := data) .sparseSlackSurplus ∉ known)
@@ -486,15 +540,8 @@ noncomputable def runSparseActivation
       subst isNew
       revert isOld
       simp [demandFresh])
-  have afterPairs :=
-    (canonicalPairLedger (data := data)).run afterDemand (by
-      intro key isNew isOld
-      simp only [List.mem_singleton] at isNew
-      subst isNew
-      revert isOld
-      simp [pairFresh])
   -- Node `[132]`: `lem:sparse-pair-dependence-exit`.
-  match blockedPairRouting afterPairs (by simp [exitFresh])
+  match blockedPairRouting afterDemand (by simp [exitFresh])
       (by simp [blockerFresh]) with
   | .left exitHistory =>
       -- Node `[133]`: the exit collides with node `[125]`'s survivor entry.
@@ -502,8 +549,15 @@ noncomputable def runSparseActivation
         (closeIncompatible exitHistory (K .sparseSurplusSurvivor)
           (K .sparsePairExit) (by simp [closureFresh]))
   | .right afterBlockers =>
+  have afterPairs :=
+    (canonicalPairLedger (data := data)).run afterBlockers (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [pairFresh])
   have afterTokens :=
-    (capacityTokenLedger (data := data)).run afterBlockers (by
+    (capacityTokenLedger (data := data)).run afterPairs (by
       intro key isNew isOld
       simp only [List.mem_cons, List.not_mem_nil, or_false] at isNew
       rcases isNew with rfl | rfl <;> revert isOld <;>
@@ -512,13 +566,23 @@ noncomputable def runSparseActivation
     (coupledFibrePressure (data := data)).run afterTokens (by
       intro key isNew isOld
       simp only [List.mem_cons, List.not_mem_nil, or_false] at isNew
-      rcases isNew with rfl | rfl | rfl <;> revert isOld <;>
-        simp [partitionFresh, pressureFresh, estimateFresh])
+      rcases isNew with rfl | rfl <;> revert isOld <;>
+        simp [partitionFresh, pressureFresh])
   -- Node `[137]`: `prop:single-graph-sparse-pressure-routing`.
   match sparsePressureDichotomy afterPressure (K .sparsePressureNearCubic)
       (K .sparsePressureOverload) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
       (by simp [nearCubicFresh]) (by simp [overloadFresh]) with
-  | .left nearCubicHistory => exact .nearCubic nearCubicHistory
+  | .left nearCubicHistory =>
+      have afterEstimate :=
+        (spineSurplusEstimate (data := data)).run nearCubicHistory (by
+          intro key isNew isOld
+          simp only [List.mem_singleton] at isNew
+          subst isNew
+          revert isOld
+          simp [estimateFresh])
+      exact .nearCubic
+        (closeIncompatible afterEstimate (K .surplusAbove)
+          (K .spineSurplusEstimate) (by simp [closureFresh]))
   | .right overloadHistory =>
       -- Node `[139]`: is the overloading token a window incidence?
       match windowClassDichotomy overloadHistory (K .windowClassOverload)
@@ -544,7 +608,16 @@ noncomputable def runSparseActivation
                   subst isNew
                   revert isOld
                   simp [bottleneckFresh])
-              exact .windowCapsClosed afterClose
+              have afterEstimate :=
+                (homogeneousSpineSurplusEstimate (data := data)).run afterClose (by
+                  intro key isNew isOld
+                  simp only [List.mem_singleton] at isNew
+                  subst isNew
+                  revert isOld
+                  simp [estimateFresh])
+              exact .windowCapsClosed
+                (closeIncompatible afterEstimate (K .surplusAbove)
+                  (K .spineSurplusEstimate) (by simp [closureFresh]))
           | .right patternHistory =>
               have afterRouting :=
                 (bottleneckRouting (data := data)).run patternHistory (by
@@ -596,7 +669,16 @@ noncomputable def runSparseActivation
                       subst isNew
                       revert isOld
                       simp [bottleneckFresh])
-                  exact .remainderCapsClosed afterClose
+                  have afterEstimate :=
+                    (homogeneousSpineSurplusEstimate (data := data)).run afterClose (by
+                      intro key isNew isOld
+                      simp only [List.mem_singleton] at isNew
+                      subst isNew
+                      revert isOld
+                      simp [estimateFresh])
+                  exact .remainderCapsClosed
+                    (closeIncompatible afterEstimate (K .surplusAbove)
+                      (K .spineSurplusEstimate) (by simp [closureFresh]))
               | .right patternHistory =>
               have afterRouting :=
                 (bottleneckRouting (data := data)).run patternHistory (by
@@ -642,7 +724,16 @@ noncomputable def runSparseActivation
                       subst isNew
                       revert isOld
                       simp [bottleneckFresh])
-                  exact .primitiveCapsClosed afterClose
+                  have afterEstimate :=
+                    (homogeneousSpineSurplusEstimate (data := data)).run afterClose (by
+                      intro key isNew isOld
+                      simp only [List.mem_singleton] at isNew
+                      subst isNew
+                      revert isOld
+                      simp [estimateFresh])
+                  exact .primitiveCapsClosed
+                    (closeIncompatible afterEstimate (K .surplusAbove)
+                      (K .spineSurplusEstimate) (by simp [closureFresh]))
               | .right patternHistory =>
               have afterRouting :=
                 (bottleneckRouting (data := data)).run patternHistory (by
@@ -676,13 +767,39 @@ The predecessor is the literal ledger of `Spine.Result.surplusAbove`: node
 prerequisites -- the selection entry and node `[10]`'s slack independence -- are
 in that index, so the block elaborates against it and nothing is re-selected or
 re-proved. -/
+abbrev surplusAbovePackageKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .windowPackageSeparated ::
+    surplusAboveKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data)
+
+abbrev surplusAbovePackageFailedKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .windowPackageCollided ::
+    surplusAboveKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data)
+
+/-- The high-surplus failure of node `[21]`, after the diagram's cold
+continuation `[145]`--`[157]` has consumed that exact residual. -/
+abbrev surplusAboveColdKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  coldKeys (surplusAbovePackageFailedKeys (BranchState := BranchState)
+    (presentation := presentation) (data := data))
+
+/-- The at-or-below failure of node `[21]`, continued through the same cold
+corridor on the residual accumulated before the package test. -/
+abbrev atOrBelowColdKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  coldKeys (windowPackageCollidedKeys (BranchState := BranchState)
+    (presentation := presentation) (data := data))
+
 noncomputable def runSurplusBranch
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (surplusAboveKeys (BranchState := BranchState)
+      selected (surplusAbovePackageKeys (BranchState := BranchState)
         (presentation := presentation) (data := data))) :
     SurplusResult selected
-      (surplusAboveKeys (BranchState := BranchState)
+      (surplusAbovePackageKeys (BranchState := BranchState)
         (presentation := presentation) (data := data)) :=
   runSparseActivation history (by simp) (by simp) (by simp)
     (by simp) (by simp) (by simp) (by simp) (by simp)
@@ -717,10 +834,17 @@ inductive SpineWithSurplusResult
   /-- Node `[19]`'s above arm, continued through `[125]`--`[144]`. -/
   | surplus
       (result : SurplusResult selected
-        (surplusAboveKeys (BranchState := BranchState)
+        (surplusAbovePackageKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data)))
+  | windowPackageCold
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (surplusAboveColdKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data)))
+  | atOrBelowPackageCold
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (atOrBelowColdKeys (BranchState := BranchState)
           (presentation := presentation) (data := data)))
 
-set_option maxHeartbeats 3200000 in
 /-- **Block A, run, with Figure 8's exit list and the sparse surplus branch
 attached.** -/
 noncomputable def runWithSurplusBranch
@@ -732,7 +856,21 @@ noncomputable def runWithSurplusBranch
   classical
   match runWithSaturatedExits T targetPredicate opened with
   | .spine (.surplusAbove aboveHistory) =>
-      exact .surplus (runSurplusBranch aboveHistory)
+      match windowPackageDichotomy aboveHistory (K .windowPackageSeparated)
+          (K .windowPackageCollided) (fun separated => ⟨separated⟩)
+          (fun collided => ⟨collided⟩) (by simp) (by simp) with
+      | .left packageHistory =>
+          exact .surplus (runSurplusBranch packageHistory)
+      | .right coldHistory =>
+          exact .windowPackageCold
+            (runCold coldHistory (by simp) (by simp) (by simp) (by simp)
+              (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
+              (by simp) (by simp) (by simp))
+  | .spine (.windowPackageCollided coldHistory) =>
+      exact .atOrBelowPackageCold
+        (runCold coldHistory (by simp) (by simp) (by simp) (by simp)
+          (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
+          (by simp) (by simp) (by simp))
   | other => exact .exits other
 
 end Hypostructure.Graph.Strategy.Spine

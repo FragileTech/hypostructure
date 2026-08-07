@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Strategy.ColdCorridorRows
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.SpineAssembly
 
 /-!
 # The cold return corridor, run

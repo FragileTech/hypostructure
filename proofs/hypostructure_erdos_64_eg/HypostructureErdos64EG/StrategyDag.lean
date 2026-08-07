@@ -1,5 +1,5 @@
 import HypostructureErdos64EG.Problem
-import Hypostructure.Graph.Strategy.SurplusRun
+import Hypostructure.Graph.Strategy.SpineRun
 
 /-!
 # Erdős--Gyárfás strategy DAG, rooted on the entry spine
@@ -71,7 +71,7 @@ noncomputable def strategyDag
         (presentation := erdosReceiverLoadProfile) (data := spineData.{u})
         .selection)) :
     SpineWithSurplusResult opened.selected :=
-  runWithSurplusBranch
+  run
     (BranchState := BranchState) (presentation := erdosReceiverLoadProfile)
     (data := spineData.{u}) target.{u} rfl opened
 

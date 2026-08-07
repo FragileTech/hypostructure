@@ -98,7 +98,6 @@ namespace WindowAlgebra
 open Hypostructure.Graph.WindowCurvature
 
 set_option maxRecDepth 100000
-set_option maxHeartbeats 0
 
 /-- The order of the induced windows this proof packs: the induced-path order
 of the registered external theorem. -/
@@ -115,6 +114,7 @@ listed in a definition; the numerals appear only in this conclusion.
 `Graph.TypeBMarkedFan.isDyadic_attachmentCycleLength_iff` at
 `Graph/TypeBMarkedFan.lean:127`, which this derives rather than repeats.
 -/
+set_option maxHeartbeats 8000000 in
 theorem forbiddenGaps_zero : forbiddenGaps windowOrder 0 = {2, 6} := by
   decide
 

@@ -56,12 +56,13 @@ noncomputable def attached
     SpineWithSurplusResult opened.selected :=
   runWithSurplusBranch T targetPredicate opened
 
-/-- **The block runs on the surplus-above residual of node `[19]`.** -/
+/-- **The block runs on the accumulated surplus/package residual reaching
+node `[125]`.** -/
 noncomputable def run
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected surplusAboveKeys) :
-    SurplusResult selected surplusAboveKeys :=
+      selected surplusAbovePackageKeys) :
+    SurplusResult selected surplusAbovePackageKeys :=
   runSurplusBranch history
 
 /-- **The seven facts of the block are all on the ledger after it runs.**

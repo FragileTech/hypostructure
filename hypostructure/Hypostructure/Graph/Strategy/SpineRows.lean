@@ -519,34 +519,10 @@ noncomputable def windowPackageDichotomy
     (windowPackageSeparated windowPackageCollided :
       FactKey (Input BranchState Presentation presentation data))
     (encodeSeparated :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∃ (coordinateCount : Nat)
-          (family : Graph.PackedWindowRealization.SeparatedFamily current.object
-            (Fin coordinateCount)),
-          2 ^ (data.windowRate *
-                data.separatedScaleCount current.object.vertexCount *
-                current.object.windowPackingNumber data.windowOrder) ≤
-              Nat.card (∀ coordinate, family.State coordinate) ∧
-            jointPackageDemand data current.object packing ≤
-              Nat.card (∀ coordinate, family.State coordinate) ∧
-            family.slots.card ≤ current.object.edgeCount ∧
-            current.object.edgeCount ≤ family.pool.card) →
+      WindowPackageStatement data current.object →
       windowPackageSeparated.At current)
     (encodeCollided :
-      (∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          ∀ (coordinateCount : Nat)
-            (family : Graph.PackedWindowRealization.SeparatedFamily current.object
-              (Fin coordinateCount)),
-            ¬ (2 ^ (data.windowRate *
-                    data.separatedScaleCount current.object.vertexCount *
-                    current.object.windowPackingNumber data.windowOrder) ≤
-                  Nat.card (∀ coordinate, family.State coordinate) ∧
-              jointPackageDemand data current.object packing ≤
-                  Nat.card (∀ coordinate, family.State coordinate) ∧
-              family.slots.card ≤ current.object.edgeCount ∧
-              current.object.edgeCount ≤ family.pool.card)) →
+      ¬ WindowPackageStatement data current.object →
       windowPackageCollided.At current)
     (separatedFresh : windowPackageSeparated ∉ known)
     (collidedFresh : windowPackageCollided ∉ known) :
@@ -555,29 +531,9 @@ noncomputable def windowPackageDichotomy
     `Hypostructure.Graph.Strategy.Spine.windowPackageDichotomy
     (by
       classical
-      by_cases separated :
-          ∀ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing →
-        ∃ (coordinateCount : Nat)
-          (family : Graph.PackedWindowRealization.SeparatedFamily current.object
-            (Fin coordinateCount)),
-          2 ^ (data.windowRate *
-                data.separatedScaleCount current.object.vertexCount *
-                current.object.windowPackingNumber data.windowOrder) ≤
-              Nat.card (∀ coordinate, family.State coordinate) ∧
-            jointPackageDemand data current.object packing ≤
-              Nat.card (∀ coordinate, family.State coordinate) ∧
-            family.slots.card ≤ current.object.edgeCount ∧
-            current.object.edgeCount ≤ family.pool.card
+      by_cases separated : WindowPackageStatement data current.object
       · exact .inl (encodeSeparated separated)
-      · refine .inr (encodeCollided ?_)
-        push Not at separated
-        obtain ⟨packing, valid, collides⟩ := separated
-        exact ⟨packing, valid, fun coordinateCount family conditions =>
-          absurd conditions.2.2.2
-            (Nat.not_le.mpr
-              (collides coordinateCount family conditions.1 conditions.2.1
-                conditions.2.2.1))⟩)
+      · exact .inr (encodeCollided separated))
     separatedFresh collidedFresh
 
 /-! ## Nodes `[22]`--`[24]`: the finite window-density budget

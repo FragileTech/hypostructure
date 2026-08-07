@@ -313,7 +313,7 @@ it.  `#print axioms spineData` also reports the `native_decide` axioms of the
 | 6 | Induced-obstruction packing [15]–[17] | `Spine.obstructionPacking` | ✅ | ✅ | ✅ | ✅ |
 | 7 | Exact finite local algebra [18] | `Spine.localAlgebra` | ✅ | ✅ | ✅ | ✅ |
 | 8 | Non-near-cubic surplus split [19] | `Spine.surplusDichotomy` | ✅ | ✅ | ✅ | ✅ |
-| 9 | Near-cubic finite enumeration [21] | `Spine.windowPackageDichotomy`, `Spine.barrierEnumerationDichotomy` | ✅ | ✅ | ✅ | ✅ |
+| 9 | Near-cubic finite enumeration [21] | `Spine.windowPackageDichotomy`, `Spine.barrierEnumerationDichotomy`; `Graph.FiniteObject.WindowTargetPackage` | ✅ | ✅ | ✅ | ✅ |
 | 10 | Finite window-density budget [22]–[24] | `Spine.densityBudget` | ✅ | ✅ | ✅ | ✅ |
 
 **Re-review of block A, against the source.**  Rows 1–10 were re-read
@@ -793,8 +793,8 @@ bookkeeping; the first is not:
 > `thm:tokenized-surplus-accounting-closure` in exact finite form) and
 > `Graph/CapacityTokenLedger.lean` (`cor:homogeneous-same-token-caps-close`),
 > with `Fixtures/HomogeneousTokenBottleneck.lean` evaluating the chain end to
-> end at a concrete presentation.  Their Ledger, Transport and Residual columns
-> are backed by that compiling target; their Facts columns are not.
+> end at a concrete presentation.  Their Ledger, Transport, Residual and Facts
+> columns are backed by that compiling target.
 >
 > There is **one ledger implementation and one pair representation** across the
 > whole block.  `Graph/CanonicalFibreLedger.lean` is the single canonical
@@ -1061,7 +1061,7 @@ bookkeeping; the first is not:
 
 | # | Node / component | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
-| 43 | Corridor cut-state `T(J)` | `ColdCorridor.CutState`, `Presentation.state` (`Spine.coldCorridorState`) | ✅ | ✅ | ✅ | ✅ |
+| 43 | Corridor cut-state `T(J)` | `ColdCorridor.CutState`, `Presentation.state` (`Spine.coldCorridorState`) | ✅ | ❌ | ✅ | ✅ |
 | 44 | Same-interface table | `ColdCorridor.TableRow`, `ColdCorridor.row_closed` (`Spine.coldSameInterfaceTable`) | ✅ | ✅ | ✅ | ✅ |
 | 45 | (F1) producer | `ColdCorridor.Corridor.FirstFailureCycle` (`Spine.coldFailureCycle`) | ✅ | ✅ | ✅ | ✅ |
 | 46 | (F2) producer | `ColdCorridor.Corridor.FirstFailureDefect` (`Spine.coldFailureDefect`) | ✅ | ✅ | ✅ | ✅ |
@@ -1080,6 +1080,14 @@ bookkeeping; the first is not:
 | 59 | (F5) `.neutral` arm | `ColdCorridor.boundedGerm_not_survives` (`Spine.coldBranchClosed`) | ✅ | ✅ | ✅ | ✅ |
 | 60 | Registrations `atStage` | `Spine.runCold` — the routing is row composition, not a registration field | ✅ | ✅ | ✅ | ✅ |
 | 61 | `classifiedStateForcesTarget` | `ColdCorridor.coldBranch_no_terminal_survivor` (`Spine.coldBranchClosed`) | ✅ | ✅ | ✅ | ✅ |
+
+The cold rows compile as a canonical ledger run, but they are not yet attached
+to the paper's live predecessor.  The `[138]` near-cubic arm must first rejoin
+the normalized spine at `[21]`, pass through `[22]`--`[24]`, and then execute
+the exhaustive `[145]` interface, `[146]` route-8 threshold, and `[148]`
+live-hot split.  Only the threshold-false and live-hot-false descendant may run
+the cold corridor.  Calling `runCold` directly on `[138]` would skip required
+paper objects and is forbidden.
 
 ## G. Route-8 carrier closure
 
@@ -4319,19 +4327,18 @@ for a scan or a resource comparison to buy at this node.
   clause is a theorem about the residual object's two counting observables and
   the registered rates, so declaring a prerequisite would claim a dependency the
   proof does not have.
-- **What it should do.** As above.
-- **Gap.** None that this node owes.  `ℐ_spine` is committed as the manuscript
-  defines it — a *property* of a presented coordinate family, quantified over
-  every family and every admissible quotient system — rather than at one
-  concrete family, because the manuscript's own sentence *"in applications,
-  `ℐ_spine` is the union of the independent target coordinates already forced by
-  the near-cubic spine"* names a family this branch does not carry: `[129]` is
-  on the non-near-cubic arm of node `[19]`.  The node that presents a family
-  applies clause 4 to it; nothing about which family is used enters the proof.
-  Likewise the *content* of the three packages — that the packed `P₁₃`-windows
-  really do supply `c₁₃θ n log₂ n` independent coordinates — is
-  `lem:p13-window-package` at its own node, not `[129]`'s; `[129]` owes the
-  packages' record and the admissibility of their deficits, and commits both.
+- **What it should do.** This.
+- **Gap.** None.  The universal future-family schema has been removed.
+  `baselineSpineDemandRow` now requires the exact
+  `windowPackageSeparated` key, reads its `WindowPackageStatement`, selects the
+  residual object's maximal packing, and commits a concrete
+  `FiniteObject.BaselineWindowDemand`.  That object fixes the packing, bit
+  family, declared quotient system, full-rank equation,
+  `IsBaselineSpineDemand`, computed `spineDeficit`, and the proved linear bound
+  `spineDeficit ≤ data.surplusScale * object.vertexCount`.  The high-surplus entry
+  now executes node `[21]` first; failure of the complete target package is a
+  distinct `windowPackageCold` cursor.  No theorem hypothesis or callback
+  remains in the committed baseline fact.
 - **Ledger and residual.** `factOnly` over the row-30 stage: the predecessor is
   the literal ledger the five activation rows left, refinement is
   `RefinementSystem.refl`, the residual is unchanged, and `AtomicCT.run` appends
@@ -4467,19 +4474,11 @@ supplies, so no `Decision` is owed and none is written.
   so there is one admissible-quotient structure in the tree and `localize` is
   proved once.
 - **What it should do.** This.
-- **Gap.** One hypothesis is carried rather than derived, in the discipline row
-  31 already fixed.  (i) The entropy count
-  `2^{|ℐ_spine|+|Π_free|} ≤ C(N,m)` — `lem:independent-target-entropy` composed
-  with `lem:skeleton-dominates` — enters the sandwich as a hypothesis, exactly as
-  `def:baseline-spine-demand`'s own demand clause carries
-  `|ℐ_spine| ≥ B₀(n) − E_spine(n)`; the framework states both halves
-  (`Core.FiniteEntropy.two_pow_le_card_ambient_of_realizes`,
-  `Graph.LabelledOn.two_pow_le_card_of_realized`) but neither is at the `m`-edge
-  stratum, so composing them into `Graph.skeletonBudget` is not yet a theorem.
-  The asymptotic tail of
-  `prop:sparse-entropy-sandwich` — `σ(G) = O(√n)` under `E_spine = O(n)` and
-  `|𝒜₀| ≥ c₁σ(G)` — is not stated here; it is a consequence of the displayed
-  inequality at the branch that supplies those two rates, which is row 45.
+- **Gap.** None.  `MixedSpinePairDemand` contains the concrete mixed family,
+  exact target-rank equation, exact entropy count, multiplicative sandwich and
+  linear sandwich.  Node `[131]` commits that object; node `[136]` preserves it
+  in `CertifiedObjectCapacityLedger`, so downstream pressure rows read the
+  proved count rather than an implication antecedent.
 - **Ledger and residual.** `factOnly` over the row-31 stage for `[130]`:
   refinement is `RefinementSystem.refl`, the residual is unchanged, the row reads
   `activeSurplusFamily` by exact key through `FactInputs.get`, and `AtomicCT.run`
@@ -4741,14 +4740,11 @@ a theorem rather than an execution, so it too owes no CT.
   `Graph/Strategy/HomogeneousBottleneckRows.lean`.
 
   `coupledFibrePressureRow` is a `factOnly` Strategy with
-  `Requires := [canonicalPairLedger, capacityTokenLedger, baselineSpineDemand]`
-  and `Produces := [roleFibrePartition, fibrePressure, spineSurplusEstimate]`.
-  Every read is spent.  Node `[130]`'s pair count converts a lower-bound package
-  bound on `Π(𝒜₀)` into one on `C(σ(G),2)`; node `[136]`'s capacity-token ledger
+  `Requires := [canonicalPairLedger, capacityTokenLedger]` and
+  `Produces := [roleFibrePartition, fibrePressure]`.  Every read is spent.
+  Node `[130]`'s pair count fixes `Π(𝒜₀)`; node `[136]`'s capacity-token ledger
   is what makes the high-load production provable at all, because that production
-  is *existential* in the object's own ledger; node `[129]`'s ordering of the
-  three lower-bound packages supplies the deficit the surplus estimate is stated
-  at.  Nothing is quantified over a presentation nobody built: node `[136]`
+  is *existential* in the object's own ledger.  Nothing is quantified over a presentation nobody built: node `[136]`
   commits the ledger at **every** `Graph.CapacityPresentation`, so this row reads
   it at the presentation its own statement is quantified over rather than at one
   it chose.
@@ -4759,7 +4755,12 @@ a theorem rather than an execution, so it too owes no CT.
   `sparsePressureOverload` on its complement.  The arm not taken is absent from
   the taken arm's key index: the three geometric class audits `[140]`, `[142]`,
   `[143]` and node `[144]` run only on the overload arm, and `SurplusResult` now
-  has the two constructors `nearCubic` and `overloaded`.
+  has the two constructors `nearCubic` and `overloaded`.  On the capped arm,
+  `spineSurplusEstimateRow` reads the concrete certified ledger and commits the
+  actual inequality `σ(G) ≤ C_sp⌈√n⌉`; the same shared theorem is read by
+  `homogeneousSpineSurplusEstimateRow` on node `[144]`'s caps arm.  Both facts
+  close against the incoming strict `surplusAbove` entry through Core's
+  `closeIncompatible`.
 
   The mathematics is in two new proof-agnostic `Graph` modules.
   `Graph/GrainedTokenBudget.lean` proves the whole accounting once over an
@@ -6058,8 +6059,13 @@ rows go through the framework's one `AtomicCT.run` and its one `Decision.run`.
     information and never has to be injective — `filled_eq_inter` recovers the
     package by intersecting with the slots.
   * Node `[21]`'s selection is `SpineRows.windowPackageDichotomy`, a `Decision`
-    with both arms retained: the separated arm commits the realization, the
-    collided arm leaves the block as `Result.windowPackageCollided`.
+    on `WindowPackageStatement`.  The positive arm now commits both the
+    separated realization and `FiniteObject.WindowTargetPackage`: the concrete
+    packing, D3 declared coordinate family and support map, full target rank in
+    `declaredQuotientSystem`, and the exact `m`-edge skeleton entropy bound.
+    The other arm is the literal negation of that complete package (so a rank or
+    realization failure is a cold fact, not an obligation) and leaves the block
+    as `Result.windowPackageCollided`.
   * `Spine.instIncompatibleEntropyCap` is then `prop:entropy-high-theta` —
     node `[53]`'s yes arm demands strictly more states than there are skeletons,
     the realization says it does not — and `closeIncompatible` appends the

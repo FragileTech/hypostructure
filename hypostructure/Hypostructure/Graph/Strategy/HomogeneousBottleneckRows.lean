@@ -2,6 +2,7 @@ import Hypostructure.Graph.Strategy.SpineRows
 import Hypostructure.Graph.ObjectCapacityLedger
 import Hypostructure.Graph.SameTokenBottleneckRouting
 import Hypostructure.Graph.NamedSurplusExits
+import Hypostructure.Graph.SparseUpperEnvelope
 
 /-!
 # The sparse surplus branch: the three homogeneous-bottleneck rows
@@ -83,15 +84,11 @@ before it branches.
 Both reads are spent: the pair count converts the package bound and the token
 ledger witnesses the high-load display. -/
 @[reducible] noncomputable def coupledFibrePressureRow
-    (canonicalPairLedger capacityTokenLedger baselineSpineDemand
-      roleFibrePartition fibrePressure spineSurplusEstimate :
+    (canonicalPairLedger capacityTokenLedger
+      roleFibrePartition fibrePressure :
       FactKey (Input BranchState Presentation presentation data))
     (pairNeToken : canonicalPairLedger ≠ capacityTokenLedger)
-    (pairNeDemand : canonicalPairLedger ≠ baselineSpineDemand)
-    (tokenNeDemand : capacityTokenLedger ≠ baselineSpineDemand)
     (partitionNePressure : roleFibrePartition ≠ fibrePressure)
-    (partitionNeEstimate : roleFibrePartition ≠ spineSurplusEstimate)
-    (pressureNeEstimate : fibrePressure ≠ spineSurplusEstimate)
     (pairCountOf : (input : Input BranchState Presentation presentation data) →
       canonicalPairLedger.At input →
       (input.object.portPairSchedule data.threshold).card =
@@ -101,20 +98,6 @@ ledger witnesses the high-load display. -/
       ∀ declared : Graph.CapacityPresentation input.object data.windowOrder,
         Nonempty (Graph.ObjectCapacityLedger input.object data.threshold
           data.windowOrder declared))
-    (packageOrderOf : (input : Input BranchState Presentation presentation data) →
-      baselineSpineDemand.At input →
-      ∀ packing remainder scaleCount : Nat,
-        Graph.spineDeficit input.object.vertexCount data.threshold
-            (Graph.curvaturePackageBound data.windowRate packing scaleCount
-              remainder data.entropyDenominator data.curvatureCost) ≤
-          Graph.spineDeficit input.object.vertexCount data.threshold
-            (Graph.highEntropyPackageBound data.windowRate packing scaleCount
-              remainder data.entropyDenominator) ∧
-        Graph.spineDeficit input.object.vertexCount data.threshold
-            (Graph.highEntropyPackageBound data.windowRate packing scaleCount
-              remainder data.entropyDenominator) ≤
-          Graph.spineDeficit input.object.vertexCount data.threshold
-            (Graph.windowPackageBound data.windowRate packing scaleCount))
     (encodePartition : (input : Input BranchState Presentation presentation data) →
       Graph.RoleFibrePartitionStatement input.object data.threshold
         data.windowOrder →
@@ -122,32 +105,19 @@ ledger witnesses the high-load display. -/
     (encodePressure : (input : Input BranchState Presentation presentation data) →
       Graph.FibrePressureStatement input.object data.threshold
         data.windowOrder →
-      fibrePressure.At input)
-    (encodeEstimate : (input : Input BranchState Presentation presentation data) →
-      (∀ packing remainder scaleCount : Nat,
-        (input.object.portPairSchedule data.threshold).card ≤
-            Graph.spineDeficit input.object.vertexCount data.threshold
-              (Graph.curvaturePackageBound data.windowRate packing scaleCount
-                remainder data.entropyDenominator data.curvatureCost) →
-          input.object.degreeSurplus data.threshold ≤
-            1 + Nat.sqrt (2 * Graph.spineDeficit input.object.vertexCount
-              data.threshold
-              (Graph.windowPackageBound data.windowRate packing scaleCount))) →
-      spineSurplusEstimate.At input) :
+      fibrePressure.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coupledFibrePressure
-    { Requires := [canonicalPairLedger, capacityTokenLedger, baselineSpineDemand]
-      Produces := [roleFibrePartition, fibrePressure, spineSurplusEstimate]
-      requiresUnique := by simp [pairNeToken, pairNeDemand, tokenNeDemand]
-      producesUnique := by
-        simp [partitionNePressure, partitionNeEstimate, pressureNeEstimate]
+    { Requires := [canonicalPairLedger, capacityTokenLedger]
+      Produces := [roleFibrePartition, fibrePressure]
+      requiresUnique := by simp [pairNeToken]
+      producesUnique := by simp [partitionNePressure]
       producesNonempty := by simp }
     (fun inputs =>
       let object := inputs.current.object
-      -- Node `[130]`'s count, node `[136]`'s ledger, node `[129]`'s ordering.
-      let pairCount := pairCountOf inputs.current (inputs.get canonicalPairLedger)
+      -- Node `[130]`'s count and node `[136]`'s ledger.
+      let _pairCount := pairCountOf inputs.current (inputs.get canonicalPairLedger)
       let existing := tokenLedgerOf inputs.current (inputs.get capacityTokenLedger)
-      let ordering := packageOrderOf inputs.current (inputs.get baselineSpineDemand)
       .cons (key := roleFibrePartition)
         (encodePartition inputs.current
           (Graph.roleFibrePartitionStatement object data.threshold
@@ -156,14 +126,7 @@ ledger witnesses the high-load display. -/
           (encodePressure inputs.current
             (Graph.fibrePressureStatement object data.threshold data.windowOrder
               existing))
-          (.cons (key := spineSurplusEstimate)
-            (encodeEstimate inputs.current
-              (fun packing remainder scaleCount budget =>
-                Graph.surplus_le_of_package object data.threshold _
-                  (le_trans (pairCount ▸ budget)
-                    (le_trans (ordering packing remainder scaleCount).1
-                      (ordering packing remainder scaleCount).2))))
-            .nil)))
+          .nil))
 
 /-! ## Node `[137]`: the branch
 
@@ -214,6 +177,92 @@ noncomputable def sparsePressureDichotomy
         ((Graph.sparsePressureRouting current.object data.threshold
           data.windowOrder).resolve_left
           capped))
+
+/-- The one arithmetic bridge used by both near-cubic exits `[138]` and
+`[144]`.  All graph-specific data is already inside the certified ledger. -/
+theorem certifiedDegreeSurplus_le_spineScale
+    (object : Graph.FiniteObject.{u})
+    (certified : Σ declared : Graph.CapacityPresentation object data.windowOrder,
+      Graph.CertifiedObjectCapacityLedger object data.threshold
+        data.windowOrder data.surplusScale declared)
+    (sizePos : 0 < object.vertexCount)
+    (pressure : object.degreeSurplus data.threshold ≤
+      1 + 2 * data.homogeneousCap +
+        Nat.sqrt (2 * certified.2.ledger.entropyBudget +
+          2 * (data.homogeneousCap * object.capacityTokenSupply data.threshold))) :
+    object.degreeSurplus data.threshold ≤
+      data.spineScale * Core.ceilSqrt object.vertexCount := by
+  have safety : Graph.TokenLoad.quadraticSafetyScale ≤
+      2 * (1 + 2 * data.homogeneousCap) +
+        (2 * data.surplusScale +
+          2 * data.homogeneousCap * (3 * (data.threshold - 1) + 2)) :=
+    le_trans data.quadraticSafetyScale_le_twiceAdditive
+      (Nat.le_add_right _ _)
+  have bound := certified.2.degreeSurplus_le_mul_ceilSqrt sizePos
+    data.homogeneousCap safety pressure
+  simpa [Data.spineScale, registeredSpineScale, Data.homogeneousCap,
+    registeredHomogeneousCap, Data.capacityTokenScale] using bound
+
+/-- Node `[138]`: turn node `[137]`'s capped pressure into the paper's actual
+`σ(G) ≤ C_sp⌈√n⌉`, reading the concrete node-`[129]`/`[131]` certified
+capacity ledger. -/
+@[reducible] noncomputable def spineSurplusEstimateRow
+    (sparsePressureNearCubic capacityTokenLedger surplusAbove
+      spineSurplusEstimate :
+      FactKey (Input BranchState Presentation presentation data))
+    (nearNeLedger : sparsePressureNearCubic ≠ capacityTokenLedger)
+    (nearNeAbove : sparsePressureNearCubic ≠ surplusAbove)
+    (ledgerNeAbove : capacityTokenLedger ≠ surplusAbove)
+    (nearOf : (input : Input BranchState Presentation presentation data) →
+      sparsePressureNearCubic.At input →
+      Graph.SparsePressureCapped input.object data.threshold data.windowOrder)
+    (certifiedOf : (input : Input BranchState Presentation presentation data) →
+      capacityTokenLedger.At input →
+      Nonempty (Σ declared : Graph.CapacityPresentation input.object data.windowOrder,
+        Graph.CertifiedObjectCapacityLedger input.object data.threshold
+          data.windowOrder data.surplusScale declared))
+    (aboveOf : (input : Input BranchState Presentation presentation data) →
+      surplusAbove.At input →
+      data.surplusThreshold input.object.vertexCount <
+        input.object.degreeSurplus data.threshold)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      input.object.degreeSurplus data.threshold ≤
+        data.spineScale * Core.ceilSqrt input.object.vertexCount →
+      spineSurplusEstimate.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.spineSurplusEstimate
+    { Requires := [sparsePressureNearCubic, capacityTokenLedger, surplusAbove]
+      Produces := [spineSurplusEstimate]
+      requiresUnique := by simp [nearNeLedger, nearNeAbove, ledgerNeAbove]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let object := inputs.current.object
+      let capped := nearOf inputs.current (inputs.get sparsePressureNearCubic)
+      let certified := (certifiedOf inputs.current
+        (inputs.get capacityTokenLedger)).some
+      let above := aboveOf inputs.current (inputs.get surplusAbove)
+      let positive : 0 < object.degreeSurplus data.threshold :=
+        Nat.lt_of_le_of_lt (Nat.zero_le _) above
+      let sizePos : 0 < object.vertexCount :=
+        object.vertexCount_pos_of_degreeSurplus_pos positive
+      let pressure := capped certified.1 certified.2.ledger
+        (Fintype.card (Graph.SameTokenRoutingGerms.RoutingLabel
+          data.BoundaryProfile (Graph.WindowCurvature.Label data.windowOrder)))
+      let normalized : object.degreeSurplus data.threshold ≤
+          1 + 2 * data.homogeneousCap +
+            Nat.sqrt (2 * certified.2.ledger.entropyBudget +
+              2 * (data.homogeneousCap *
+                object.capacityTokenSupply data.threshold)) := by
+        simpa [Graph.CapacityTokenLedger.sparsePressureBound,
+          Data.homogeneousCap, registeredHomogeneousCap,
+          Graph.SameTokenBlockerRoles.homogeneousTokenCap,
+          Graph.SameTokenBlockerRoles.geometricPatternBound,
+          Graph.SameTokenRoutingGerms.patternBound,
+          Graph.SameTokenRoutingGerms.labelBound] using pressure
+      let bound := certifiedDegreeSurplus_le_spineScale object certified
+        sizePos normalized
+      .cons (key := spineSurplusEstimate) (encode inputs.current bound) .nil)
 
 /-! ## Nodes `[139]` and `[141]`: the class dispatch
 
@@ -536,6 +585,54 @@ neither is a parameter of the committed statement. -/
       .cons (key := homogeneousBottleneck)
         (encode inputs.current
           (Graph.homogeneousCapsCloseStatement inputs.current.object caps slack))
+        .nil)
+
+/-- Node `[144]` spends its concrete cap-close pressure against the same
+certified node-`[129]`/`[131]` ledger and commits `σ(G) ≤ C_sp⌈√n⌉`. -/
+@[reducible] noncomputable def homogeneousSpineSurplusEstimateRow
+    (homogeneousBottleneck capacityTokenLedger surplusAbove
+      spineSurplusEstimate :
+      FactKey (Input BranchState Presentation presentation data))
+    (closeNeLedger : homogeneousBottleneck ≠ capacityTokenLedger)
+    (closeNeAbove : homogeneousBottleneck ≠ surplusAbove)
+    (ledgerNeAbove : capacityTokenLedger ≠ surplusAbove)
+    (closeOf : (input : Input BranchState Presentation presentation data) →
+      homogeneousBottleneck.At input →
+      Graph.HomogeneousCapsCloseStatement input.object data.threshold
+        data.windowOrder (Graph.SameTokenRoutingGerms.RoutingLabel
+          data.BoundaryProfile (Graph.WindowCurvature.Label data.windowOrder)))
+    (certifiedOf : (input : Input BranchState Presentation presentation data) →
+      capacityTokenLedger.At input →
+      Nonempty (Σ declared : Graph.CapacityPresentation input.object data.windowOrder,
+        Graph.CertifiedObjectCapacityLedger input.object data.threshold
+          data.windowOrder data.surplusScale declared))
+    (aboveOf : (input : Input BranchState Presentation presentation data) →
+      surplusAbove.At input →
+      data.surplusThreshold input.object.vertexCount <
+        input.object.degreeSurplus data.threshold)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      input.object.degreeSurplus data.threshold ≤
+        data.spineScale * Core.ceilSqrt input.object.vertexCount →
+      spineSurplusEstimate.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.homogeneousSpineSurplusEstimate
+    { Requires := [homogeneousBottleneck, capacityTokenLedger, surplusAbove]
+      Produces := [spineSurplusEstimate]
+      requiresUnique := by simp [closeNeLedger, closeNeAbove, ledgerNeAbove]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let object := inputs.current.object
+      let close := closeOf inputs.current (inputs.get homogeneousBottleneck)
+      let certified := (certifiedOf inputs.current
+        (inputs.get capacityTokenLedger)).some
+      let above := aboveOf inputs.current (inputs.get surplusAbove)
+      let sizePos := object.vertexCount_pos_of_degreeSurplus_pos
+        (Nat.lt_of_le_of_lt (Nat.zero_le _) above)
+      let pressure := (close certified.1 certified.2.ledger).2.2.1
+      .cons (key := spineSurplusEstimate)
+        (encode inputs.current
+          (certifiedDegreeSurplus_le_spineScale object certified sizePos pressure))
         .nil)
 
 /-- **Node `[144]`, the bottleneck arm's own fact.**

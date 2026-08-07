@@ -77,6 +77,31 @@ theorem two_mul_cubicBaselineEdgeCount_le (vertexCount baselineDegree : Nat) :
   unfold cubicBaselineEdgeCount
   omega
 
+/-- The number of edges above the cubic baseline is at most the degree
+surplus.  This is the exact form of `s <= sigma/2 + 1` needed by the final
+quadratic absorption (and is deliberately a slightly weaker integral bound). -/
+theorem edgeSlack_le_degreeSurplus (object : FiniteObject.{v})
+    (baselineDegree : Nat)
+    (above : cubicBaselineEdgeCount object.vertexCount baselineDegree ≤
+      object.edgeCount) :
+    object.edgeCount - cubicBaselineEdgeCount object.vertexCount baselineDegree ≤
+      object.degreeSurplus baselineDegree := by
+  have lower : baselineDegree * object.vertexCount ≤
+      2 * cubicBaselineEdgeCount object.vertexCount baselineDegree := by
+    unfold cubicBaselineEdgeCount
+    omega
+  unfold FiniteObject.degreeSurplus
+  omega
+
+/-- The handshake lower bound places the object at or above the cubic baseline
+stratum. -/
+theorem cubicBaselineEdgeCount_le_edgeCount_of_handshake
+    (object : FiniteObject.{v}) (baselineDegree : Nat)
+    (handshake : baselineDegree * object.vertexCount ≤ 2 * object.edgeCount) :
+    cubicBaselineEdgeCount object.vertexCount baselineDegree ≤ object.edgeCount := by
+  unfold cubicBaselineEdgeCount
+  omega
+
 /-- `N = C(n,2) ≤ n · k` whenever `n ≤ k`: the pair count is at most `n²`. -/
 theorem choose_two_le_mul (vertexCount bound : Nat)
     (large : vertexCount ≤ bound) :

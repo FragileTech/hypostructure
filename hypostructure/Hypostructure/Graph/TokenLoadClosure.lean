@@ -1,4 +1,5 @@
 import Hypostructure.Graph.CanonicalFibreLedger
+import Hypostructure.Core.CeilSqrt
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Finset.Max
@@ -179,6 +180,109 @@ theorem demand_le_of_bounded_load (demand entropyBudget loadBound tokenCount sca
     have := Nat.mul_le_mul_left 2 budget
     have expand2 : 2 * loadBound * demand = 2 * (loadBound * demand) := by ring
     omega
+  omega
+
+/-- The universal coefficient left by squaring the pressure estimate and
+feeding its mixed term back into the demand.  It is derived from the two
+doublings in that argument, rather than supplied by a graph presentation. -/
+def quadraticSafetyScale : Nat := (2 ^ 2) * (2 ^ 2 + 1)
+
+/-- Exact absorption of the sparse entropy/token estimate into the registered
+square-root scale.  Here `deficitScale` is `C_E`, `cap` is `M₀`, and
+`tokenScale` is the coefficient of the linear token supply. -/
+theorem demand_le_mul_ceilSqrt
+    (size demand deficit slack cap deficitScale tokenScale scale : Nat)
+    (sizePos : 0 < size)
+    (deficitBound : deficit ≤ deficitScale * size)
+    (slackBound : slack ≤ demand)
+    (pressure : demand ≤ 1 + 2 * cap +
+      Nat.sqrt (2 * (deficit + (Nat.log2 size + 1) * slack) +
+        2 * (cap * (tokenScale * size))))
+    (scaleCovers :
+      2 * (1 + 2 * cap) +
+          (2 * deficitScale + 2 * cap * tokenScale) ≤ scale)
+    (safetyCovers : quadraticSafetyScale ≤ scale) :
+    demand ≤ scale * Core.ceilSqrt size := by
+  let root := Core.ceilSqrt size
+  let additive := 1 + 2 * cap
+  let linear := 2 * deficitScale + 2 * cap * tokenScale
+  have sizeCovered : size ≤ root * root := by
+    simpa [root, pow_two] using Core.le_ceilSqrt_sq size
+  have rootPos : 0 < root := by
+    by_contra zero
+    have rootZero : root = 0 := Nat.eq_zero_of_not_pos zero
+    rw [rootZero] at sizeCovered
+    omega
+  have logBound : Nat.log2 size + 1 ≤ 2 * root := by
+    have logarithm := Core.log2_le_ceilSqrt size
+    omega
+  have radicandBound :
+      2 * (deficit + (Nat.log2 size + 1) * slack) +
+          2 * (cap * (tokenScale * size)) ≤
+        linear * (root * root) + 4 * root * demand := by
+    dsimp [linear]
+    have first := Nat.mul_le_mul_left 2 deficitBound
+    have second := Nat.mul_le_mul
+      (Nat.mul_le_mul logBound slackBound) (le_refl 2)
+    have token := Nat.mul_le_mul_left (2 * cap * tokenScale) sizeCovered
+    nlinarith
+  by_contra failure
+  push_neg at failure
+  have twiceAdditive : 2 * additive ≤ scale := by
+    dsimp [additive]
+    omega
+  have linearLe : linear ≤ scale := by
+    dsimp [linear]
+    omega
+  have largeAdditive : 2 * additive < demand := by
+    have bound : 2 * additive ≤ scale * root := by
+      calc
+        2 * additive ≤ scale := twiceAdditive
+        _ ≤ scale * root := by nlinarith
+    exact lt_of_le_of_lt bound failure
+  let radicand :=
+    2 * (deficit + (Nat.log2 size + 1) * slack) +
+      2 * (cap * (tokenScale * size))
+  have remainderLe : demand - additive ≤ Nat.sqrt radicand := by
+    dsimp [radicand]
+    omega
+  have remainderSq :
+      (demand - additive) * (demand - additive) ≤ radicand := by
+    calc
+      (demand - additive) * (demand - additive) ≤
+          Nat.sqrt radicand * Nat.sqrt radicand :=
+        Nat.mul_le_mul remainderLe remainderLe
+      _ ≤ radicand := Nat.sqrt_le radicand
+  have demandLeTwice : demand ≤ 2 * (demand - additive) := by omega
+  have demandSq : demand * demand ≤ 4 * radicand := by
+    have doubled := Nat.mul_le_mul demandLeTwice demandLeTwice
+    nlinarith
+  have radicandLe : radicand ≤
+      linear * (root * root) + 4 * root * demand := by
+    simpa [radicand] using radicandBound
+  have squareBound : demand * demand ≤
+      4 * linear * (root * root) + 16 * root * demand := by
+    nlinarith
+  have linearPart :
+      4 * linear * (root * root) < 4 * root * demand := by
+    have scaled : linear * root ≤ scale * root :=
+      Nat.mul_le_mul_right root linearLe
+    nlinarith
+  have belowSafety : demand * demand <
+      quadraticSafetyScale * root * demand := by
+    dsimp [quadraticSafetyScale]
+    nlinarith
+  have safetyLe : quadraticSafetyScale * root * demand ≤
+      scale * root * demand := by
+    calc
+      quadraticSafetyScale * root * demand =
+          quadraticSafetyScale * (root * demand) := by ring
+      _ ≤ scale * (root * demand) :=
+        Nat.mul_le_mul_right _ safetyCovers
+      _ = scale * root * demand := by ring
+  have scaleBelow : scale * root * demand < demand * demand := by
+    have demandPos : 0 < demand := by omega
+    exact Nat.mul_lt_mul_of_pos_right failure demandPos
   omega
 
 end Hypostructure.Graph.TokenLoad

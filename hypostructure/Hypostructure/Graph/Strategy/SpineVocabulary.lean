@@ -36,6 +36,7 @@ import Hypostructure.Graph.OneThreeRepair
 import Hypostructure.Graph.WindowCurvatureCode
 import Hypostructure.Core.CeilSqrt
 import Hypostructure.Graph.SeparatedPackageSkeleton
+import Hypostructure.Graph.WindowTargetPackage
 import Hypostructure.Graph.NetCharge
 import Hypostructure.Graph.RemainderEntropy
 import Hypostructure.Graph.SkeletonBudget
@@ -73,6 +74,24 @@ open Hypostructure.Core.Residual
 open Hypostructure.Core.Strategy
 
 universe u v
+
+/-- The homogeneous cap computed from a presentation's declared routing
+alphabet.  This pre-`Data` form lets the record certify arithmetic involving
+the derived cap without registering a duplicate numeric constant. -/
+def registeredHomogeneousCap (BoundaryProfile : Type)
+    [Fintype BoundaryProfile] (windowOrder : Nat) : Nat :=
+  Graph.SameTokenBlockerRoles.homogeneousCapCharge
+    (Graph.SameTokenRoutingGerms.patternBound
+      (Graph.SameTokenRoutingGerms.RoutingLabel BoundaryProfile
+        (Graph.WindowCurvature.Label windowOrder)))
+
+/-- The final square-root coefficient, entirely derived from the public
+presentation and the generic capacity-token accounting. -/
+def registeredSpineScale (BoundaryProfile : Type)
+    [Fintype BoundaryProfile] (threshold windowOrder deficitScale : Nat) : Nat :=
+  let cap := registeredHomogeneousCap BoundaryProfile windowOrder
+  2 * (1 + 2 * cap) +
+    (2 * deficitScale + 2 * cap * (3 * (threshold - 1) + 2))
 
 /-- **The registered data of a minimum-degree cycle spine.**
 
@@ -201,11 +220,11 @@ structure Data where
   BoundaryProfile : Type
   /-- The profile alphabet is finite. -/
   boundaryProfileFintype : Fintype BoundaryProfile
-
-  /-- **`C_sp` of node `[19]`.**  The registered scale threshold is
-  `C_sp·⌈√n⌉`; only its coefficient is registered, because the `⌈√n⌉` is the
-  framework's own and the large-budget branch needs to *know* the threshold is a
-  square-root scale in order to spend `σ(G) = O(√n) = o(n)` at node `[56]`. -/
+  /-- The declared boundary-profile alphabet has a realizable profile. -/
+  boundaryProfileInhabited : Inhabited BoundaryProfile
+  /-- The linear baseline-deficit scale certified by node `[21]` and consumed
+  at `[129]`.  The final `C_sp` is not registered: `registeredSpineScale`
+  derives it from this scale, the baseline degree, and the routing alphabet. -/
   surplusScale : Nat
   /-- The registered per-window barrier rate of the finite enumeration. -/
   windowRate : Nat
@@ -290,11 +309,13 @@ structure Data where
     4 * (((dischargeScale * (threshold * windowOrder -
               2 * (windowOrder - 1)) + windowOrder) * (largeOrderExponent + 1) +
           2 * windowRate * largeOrderExponent * dischargeScale) *
-        surplusScale) *
+        (@registeredSpineScale BoundaryProfile boundaryProfileFintype threshold
+          windowOrder surplusScale)) *
       (((dischargeScale * (threshold * windowOrder -
               2 * (windowOrder - 1)) + windowOrder) * (largeOrderExponent + 1) +
           2 * windowRate * largeOrderExponent * dischargeScale) *
-        surplusScale) ≤
+        (@registeredSpineScale BoundaryProfile boundaryProfileFintype threshold
+          windowOrder surplusScale)) ≤
       2 ^ largeOrderExponent
   /-- **`def:declared-coordinate-signature`, registered.**  The fixed
   response-coordinate signature the whole proof argues against: the finite
@@ -332,12 +353,71 @@ structure Data where
   bridgeMassSlack :
     threshold + 2 + dischargeScale ≤ bridgeMassFactor * dischargeScale
 
-/-- **The registered scale threshold `C_sp·⌈√n⌉` of node `[19]`**, derived from
-its coefficient and the framework's own ceiling square root.  Every node that
-compared against `surplusThreshold` before still does; what has changed is that
-the spine now knows the shape, which is what node `[56]` spends. -/
+/-- `M₀ = Cap_hom(L_geom)`, computed generically from the public declared
+coordinate signature.  No application repeats or hardcodes this alphabet. -/
+def Data.homogeneousCap (data : Data.{u}) : Nat :=
+  letI := data.boundaryProfileFintype
+  letI := data.boundaryProfileInhabited
+  registeredHomogeneousCap data.BoundaryProfile data.windowOrder
+
+/-- The coefficient of the linear capacity-token supply, derived from the
+public baseline degree. -/
+def Data.capacityTokenScale (data : Data.{u}) : Nat :=
+  3 * (data.threshold - 1) + 2
+
+/-- The routing alphabet's inhabitedness makes `L_geom ≥ 2`; hence its
+homogeneous cap already absorbs the safety coefficient derived by the generic
+quadratic estimate. -/
+theorem Data.quadraticSafetyScale_le_twiceAdditive (data : Data.{u}) :
+    Graph.TokenLoad.quadraticSafetyScale ≤
+      2 * (1 + 2 * data.homogeneousCap) := by
+  letI := data.boundaryProfileFintype
+  letI := data.boundaryProfileInhabited
+  let Label := Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+    (Graph.WindowCurvature.Label data.windowOrder)
+  let labelWitness : Label :=
+    (⟨Graph.SameTokenBlockerRoles.BlockerKind.sharedDeclaredSupport,
+        Graph.SameTokenBlockerRoles.TokenSubtype.boundaryWindow⟩,
+      .boundaryWindow, 0, (.openPort, .openPort),
+      (default, default), ∅, false)
+  letI : Nonempty Label := ⟨labelWitness⟩
+  have labelPositive : 0 < Fintype.card Label := Fintype.card_pos
+  have patternTwo : 2 ≤ Graph.SameTokenRoutingGerms.patternBound Label := by
+    simp only [Graph.SameTokenRoutingGerms.patternBound,
+      Graph.SameTokenRoutingGerms.labelBound]
+    omega
+  have roleLarge : 8 ≤ Graph.SameTokenBlockerRoles.sameTokenRoleBound := by
+    native_decide
+  change Graph.TokenLoad.quadraticSafetyScale ≤
+    2 * (1 + 2 *
+      (Graph.SameTokenBlockerRoles.sameTokenRoleBound *
+        ((Graph.SameTokenRoutingGerms.patternBound Label - 1) *
+          (2 * Graph.SameTokenRoutingGerms.patternBound Label - 3))))
+  have first : 1 ≤ Graph.SameTokenRoutingGerms.patternBound Label - 1 := by omega
+  have second : 1 ≤ 2 * Graph.SameTokenRoutingGerms.patternBound Label - 3 := by
+    omega
+  have capLarge : 8 ≤
+      Graph.SameTokenBlockerRoles.sameTokenRoleBound *
+        ((Graph.SameTokenRoutingGerms.patternBound Label - 1) *
+          (2 * Graph.SameTokenRoutingGerms.patternBound Label - 3)) := by
+    exact le_trans roleLarge (by
+      simpa [Nat.mul_comm] using
+        (Nat.le_mul_of_pos_left
+          Graph.SameTokenBlockerRoles.sameTokenRoleBound
+          (Nat.mul_pos first second)))
+  dsimp [Graph.TokenLoad.quadraticSafetyScale]
+  omega
+
+/-- The paper's `C_sp`, obtained by the generic quadratic absorption from the
+public presentation's baseline deficit scale and the computed token cap. -/
+def Data.spineScale (data : Data.{u}) : Nat :=
+  letI := data.boundaryProfileFintype
+  registeredSpineScale data.BoundaryProfile data.threshold data.windowOrder
+    data.surplusScale
+
+/-- **The registered scale threshold `C_sp·⌈√n⌉` of node `[19]`**. -/
 def Data.surplusThreshold (data : Data.{u}) (size : Nat) : Nat :=
-  data.surplusScale * Core.ceilSqrt size
+  data.spineScale * Core.ceilSqrt size
 
 /-- **`A`, the net-charge coefficient of `cor:global-window-join-pressure`.**
 `s·(δ·order − 2(order−1)) + order`, the manuscript's `73` at its own values.
@@ -375,7 +455,7 @@ theorem Data.surplusThreshold_sublinear (data : Data.{u}) (size : Nat)
   set weight :=
     (coefficient * (data.largeOrderExponent + 1) +
       2 * data.windowRate * data.largeOrderExponent * data.dischargeScale) *
-      data.surplusScale with weightDef
+      data.spineScale with weightDef
   set margin :=
     2 * data.windowRate * data.largeOrderExponent -
       coefficient * (data.largeOrderExponent + 1) *
@@ -1385,6 +1465,34 @@ noncomputable abbrev jointPackageDemand (data : Data.{u})
     2 ^ (data.curvatureCost *
       remainderCurvatureTargetRank data object packing)
 
+/-- The complete node-`[21]` assertion.  Besides the finite separated
+realization used by the counting argument, this records the manuscript's
+declared target coordinates, their support map, full target rank, and their
+realization in the exact `m`-edge skeleton stratum. -/
+def WindowPackageStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing →
+    ∃ (coordinateCount : Nat)
+      (family : Graph.PackedWindowRealization.SeparatedFamily object
+        (Fin coordinateCount)),
+      2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+            object.windowPackingNumber data.windowOrder) ≤
+          Nat.card (∀ coordinate, family.State coordinate) ∧
+        jointPackageDemand data object packing ≤
+          Nat.card (∀ coordinate, family.State coordinate) ∧
+        family.slots.card ≤ object.edgeCount ∧
+        object.edgeCount ≤ family.pool.card ∧
+        object.WindowTargetPackage
+          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+          data.windowOrder packing
+          (data.windowRate * data.separatedScaleCount object.vertexCount *
+            object.windowPackingNumber data.windowOrder) ∧
+        Graph.spineDeficit object.vertexCount data.threshold
+            (data.windowRate * data.separatedScaleCount object.vertexCount *
+              object.windowPackingNumber data.windowOrder) ≤
+          data.surplusScale * object.vertexCount
+
 attribute [instance] Data.boundaryProfileFintype
 
 /-! ## The exit-`(7)` handoff envelope, at the spine's registered data
@@ -2179,38 +2287,13 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                   (data.threshold * data.windowOrder -
                     2 * (data.windowOrder - 1)) * nonCubicBound)
   | .windowPackageSeparated, object =>
-      -- `lem:p13-window-package`.  One coordinate per packed window per selected
-      -- dyadic scale, separated, each carrying at least the audited rate, and
-      -- fitting the object's own edge count.  The family is data, so what the
-      -- ledger records is its existence -- exactly as the packing itself is
-      -- recorded by node `[17]` and never carried.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        ∃ (coordinateCount : Nat)
-          (family : Graph.PackedWindowRealization.SeparatedFamily object
-            (Fin coordinateCount)),
-          2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-                object.windowPackingNumber data.windowOrder) ≤
-              Nat.card (∀ coordinate, family.State coordinate) ∧
-            jointPackageDemand data object packing ≤
-              Nat.card (∀ coordinate, family.State coordinate) ∧
-            family.slots.card ≤ object.edgeCount ∧
-            object.edgeCount ≤ family.pool.card)
+      -- `lem:p13-window-package`, including the actual declared target family,
+      -- its support map, full rank, and exact-stratum entropy realization.
+      WindowPackageStatement data object
   | .windowPackageCollided, object =>
-      -- Nodes `[21]`--`[22]`, the collided arm: the exact negation.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          ∀ (coordinateCount : Nat)
-            (family : Graph.PackedWindowRealization.SeparatedFamily object
-              (Fin coordinateCount)),
-            ¬ (2 ^ (data.windowRate *
-                    data.separatedScaleCount object.vertexCount *
-                    object.windowPackingNumber data.windowOrder) ≤
-                  Nat.card (∀ coordinate, family.State coordinate) ∧
-              jointPackageDemand data object packing ≤
-                  Nat.card (∀ coordinate, family.State coordinate) ∧
-              family.slots.card ≤ object.edgeCount ∧
-              object.edgeCount ≤ family.pool.card))
+      -- Nodes `[21]`--`[22]`, the cold arm: the literal negation of the
+      -- complete package, including failure of independent target-testability.
+      ¬ WindowPackageStatement data object
   | .coldHandoffTransfer, object =>
       -- `lem:cold-corridor-first-failure` (iv), as a closure rather than an
       -- open arm.  A corridor that first enters the declared handoff
@@ -3558,6 +3641,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `def:baseline-spine-demand` at every declared coordinate family the
       -- branch may present, and `def:spine-lower-bound-deficits`' ordering of
       -- the three lower-bound packages.
+      (Nonempty (object.BaselineWindowDemand
+          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+          data.threshold data.windowOrder data.surplusScale) ∧
       ((∀ increment : Nat,
           Graph.cubicBaselineEdgeCount object.vertexCount data.threshold +
               increment ≤ 2 * object.vertexCount - 2 →
@@ -3592,20 +3678,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 (2 * (data.threshold + 1)) ^
                   Graph.cubicBaselineEdgeCount object.vertexCount
                     data.threshold)) ∧
-        -- `def:baseline-spine-demand` itself, at every family of declared
-        -- target coordinates the branch may present and every lower-bound
-        -- package it may realize.  `E_spine(n)` is the node's own output
-        -- `spineDeficit`, not a constant carried in.
-        (∀ Coordinate : Type u, ∀ family : Finset Coordinate,
-          ∀ system : Core.TargetRank.QuotientSystem.{u, u + 1} Coordinate
-              family,
-            ∀ lowerBound : Nat,
-              system.Survives ↑family →
-              lowerBound ≤ family.card →
-              Graph.IsBaselineSpineDemand system object.vertexCount
-                data.threshold
-                (Graph.spineDeficit object.vertexCount data.threshold
-                  lowerBound)) ∧
         -- `def:spine-lower-bound-deficits`: the window-only package, the
         -- high-remainder-entropy package and the forced-curvature package are
         -- increasing at the registered rates, so their deficits decrease.
@@ -3620,12 +3692,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               (Graph.highEntropyPackageBound data.windowRate packing scaleCount
                 remainder data.entropyDenominator) ≤
             Graph.spineDeficit object.vertexCount data.threshold
-              (Graph.windowPackageBound data.windowRate packing scaleCount)))
+              (Graph.windowPackageBound data.windowRate packing scaleCount))))
   | .canonicalPairLedger, object =>
       -- `def:sparse-pair-response`, `def:surplus-blockers` instantiated,
       -- `def:canonical-blocker-ledger` and its no-overcount identity at that
-      -- instantiation, the two entropy sandwiches and
-      -- `cor:sparse-pair-entropy-saturation`.
+      -- instantiation, and the concrete mixed spine/free-pair package counted
+      -- by `prop:sparse-entropy-sandwich-with-blockers`.
       --
       -- `lem:sparse-pair-dependence-exit` is *not* here: it is a disjunction
       -- about the object -- an exit or a blocker -- and it is node `[132]`'s
@@ -3663,23 +3735,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             neighbor ∉ support) ∧
             ∀ family : Finset (Finset (object.Vertex × object.Vertex)),
               (activation.pairFamily family).card = family.card) ∧
-        (∀ spineCount freeCount deficit : Nat,
-          -- `m₀ ≤ m` is *not* a hypothesis: `[126]`'s slack identity
-          -- `2m = δn + σ` and `[19]`'s positive surplus give it, and the row
-          -- reads both by exact key.
-          2 ^ (spineCount + freeCount) ≤ Graph.skeletonBudget object →
-          Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
-            2 ^ (spineCount + deficit) →
-          2 ^ freeCount ≤
-            2 ^ deficit *
-              object.vertexCount ^
-                (object.edgeCount -
-                  Graph.cubicBaselineEdgeCount object.vertexCount
-                    data.threshold)) ∧
-        (2 ^ (object.portPairSchedule data.threshold).card ≤
-            Graph.skeletonBudget object →
-          2 ^ ((object.degreeSurplus data.threshold).choose 2) ≤
-            Graph.skeletonBudget object))
+        ∀ baseline : object.BaselineWindowDemand
+            (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+            data.threshold data.windowOrder data.surplusScale,
+          ∀ Coordinate Chord : Type u,
+            ∀ activation :
+              Graph.FiniteObject.DemandActivation object Coordinate Chord,
+              object.MixedSpinePairDemand
+                (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+                data.threshold data.windowOrder data.surplusScale
+                baseline activation)
   | .sparsePairExit, object =>
       -- Node `[132]`, exit arm: the first alternative of
       -- `lem:sparse-pair-dependence-exit`.  Both refutations its proof spends
@@ -3744,9 +3809,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         -- quantified -- so the commitment is a property of the object rather
         -- than of a choice, and nodes `[137]`--`[144]` read this and nothing
         -- else about the token universe.
-        (∀ declared : Graph.CapacityPresentation object data.windowOrder,
-          Nonempty (Graph.ObjectCapacityLedger object data.threshold
-            data.windowOrder declared))
+        ((∀ declared : Graph.CapacityPresentation object data.windowOrder,
+          Nonempty (Graph.CertifiedObjectCapacityLedger object data.threshold
+            data.windowOrder data.surplusScale declared)) ∧
+          Nonempty (Σ declared : Graph.CapacityPresentation object data.windowOrder,
+            Graph.CertifiedObjectCapacityLedger object data.threshold
+              data.windowOrder data.surplusScale declared))
   | .roleFibrePartition, object =>
       -- `lem:exact-surplus-pair-charge-partition` with the classwise and
       -- subtype budgets, at the object's own capacity-token ledger.
@@ -3758,17 +3826,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- presentation.
       Graph.FibrePressureStatement object data.threshold data.windowOrder
   | .spineSurplusEstimate, object =>
-      -- `cor:spine-lower-bound-surplus-estimates`: node `[129]`'s ordering of
-      -- the lower-bound packages, composed with node `[130]`'s pair count.
-      ∀ packing remainder scaleCount : Nat,
-        (object.portPairSchedule data.threshold).card ≤
-            Graph.spineDeficit object.vertexCount data.threshold
-              (Graph.curvaturePackageBound data.windowRate packing scaleCount
-                remainder data.entropyDenominator data.curvatureCost) →
-          object.degreeSurplus data.threshold ≤
-            1 + Nat.sqrt (2 * Graph.spineDeficit object.vertexCount
-              data.threshold
-              (Graph.windowPackageBound data.windowRate packing scaleCount))
+      -- The actual node-`[138]` conclusion, derived from the concrete
+      -- node-`[129]` deficit and node-`[131]` entropy ledger.
+      object.degreeSurplus data.threshold ≤
+        data.spineScale * Core.ceilSqrt object.vertexCount
   | .sparsePressureNearCubic, object =>
       -- `prop:single-graph-sparse-pressure-routing` (a).
       Graph.SparsePressureCapped object data.threshold data.windowOrder

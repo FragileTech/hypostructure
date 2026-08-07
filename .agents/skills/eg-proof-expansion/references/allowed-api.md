@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **468**.
+Compiled declarations: **469**.
 
-Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 61, **Minimum-degree cycle spine vocabulary** 217.
+Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 61, **Minimum-degree cycle spine vocabulary** 218.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -4901,6 +4901,17 @@ Graph.Strategy.Spine.Key
           Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation data) → Type
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.WindowPackageStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
 ### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.atomCompressionDichotomy`
@@ -8085,33 +8096,9 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                     current known) →
                 (windowPackageSeparated windowPackageCollided :
                     Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                  ((∀ (packing : Finset (Finset current.object.Vertex)),
-                        Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
-                          ∃ coordinateCount family,
-                            2 ^
-                                  (data.windowRate *
-                                      data.separatedScaleCount (Graph.FiniteObject.vertexCount current.object) *
-                                    Graph.FiniteObject.windowPackingNumber current.object data.windowOrder) ≤
-                                Nat.card ((coordinate : Fin coordinateCount) → family.State coordinate) ∧
-                              Graph.Strategy.Spine.jointPackageDemand data current.object packing ≤
-                                  Nat.card ((coordinate : Fin coordinateCount) → family.State coordinate) ∧
-                                family.slots.card ≤ Graph.FiniteObject.edgeCount current.object ∧
-                                  Graph.FiniteObject.edgeCount current.object ≤ family.pool.card) →
+                  (Graph.Strategy.Spine.WindowPackageStatement data current.object →
                       windowPackageSeparated.At current) →
-                    ((∃ packing,
-                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                            ∀ (coordinateCount : ℕ)
-                              (family :
-                                Graph.PackedWindowRealization.SeparatedFamily current.object (Fin coordinateCount)),
-                              ¬(2 ^
-                                      (data.windowRate *
-                                          data.separatedScaleCount (Graph.FiniteObject.vertexCount current.object) *
-                                        Graph.FiniteObject.windowPackingNumber current.object data.windowOrder) ≤
-                                    Nat.card ((coordinate : Fin coordinateCount) → family.State coordinate) ∧
-                                  Graph.Strategy.Spine.jointPackageDemand data current.object packing ≤
-                                      Nat.card ((coordinate : Fin coordinateCount) → family.State coordinate) ∧
-                                    family.slots.card ≤ Graph.FiniteObject.edgeCount current.object ∧
-                                      Graph.FiniteObject.edgeCount current.object ≤ family.pool.card)) →
+                    (¬Graph.Strategy.Spine.WindowPackageStatement data current.object →
                         windowPackageCollided.At current) →
                       windowPackageSeparated ∉ known →
                         windowPackageCollided ∉ known →

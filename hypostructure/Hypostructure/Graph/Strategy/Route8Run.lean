@@ -608,7 +608,7 @@ noncomputable def runWithSaturatedExits
       (P := problem BranchState Presentation presentation data) (K .selection)) :
     SpineWithExitsResult opened.selected := by
   classical
-  match Spine.run T targetPredicate opened with
+  match Spine.runCore T targetPredicate opened with
   | .typeAVisibleEntry visible =>
       exact .visibleExits
         (runSaturatedExits visible (returnFresh := by simp)

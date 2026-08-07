@@ -243,16 +243,21 @@ exact `Nat` inequalities rather than asymptotic ones:
 * `def:spine-lower-bound-deficits`' three packages, at the registered window
   rate, entropy denominator and curvature cost, with their deficits ordered.
 
-`m₀ = ⌈δn/2⌉` is the least edge count a `δ`-regular object can carry, so the
-only thing consumed is the registered baseline's own `2 ≤ δ`, which
-`three_le_threshold` supplies.  The row reads no fact: every statement is a
-theorem about the residual object's own counting observables and the registered
-rates, and declaring a prerequisite it does not read would claim a dependency it
-does not have. -/
+`m₀ = ⌈δn/2⌉` is the least edge count a `δ`-regular object can carry.  The
+concrete family is read from node `[21]`; the remaining numerical clauses are
+generic theorems about the residual object's counting observables and the
+registered rates. -/
 @[reducible] noncomputable def baselineSpineDemandRow
-    (baselineSpineDemand :
+    (windowPackageSeparated baselineSpineDemand :
       FactKey (Input BranchState Presentation presentation data))
+    (distinct : windowPackageSeparated ≠ baselineSpineDemand)
+    (packageOf : (input : Input BranchState Presentation presentation data) →
+      windowPackageSeparated.At input →
+      WindowPackageStatement data input.object)
     (encode : (input : Input BranchState Presentation presentation data) →
+      (Nonempty (input.object.BaselineWindowDemand
+          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+          data.threshold data.windowOrder data.surplusScale) ∧
       ((∀ increment : Nat,
           Graph.cubicBaselineEdgeCount input.object.vertexCount
               data.threshold + increment ≤ 2 * input.object.vertexCount - 2 →
@@ -286,16 +291,6 @@ does not have. -/
                 (2 * (data.threshold + 1)) ^
                   Graph.cubicBaselineEdgeCount input.object.vertexCount
                     data.threshold)) ∧
-        (∀ Coordinate : Type u, ∀ family : Finset Coordinate,
-          ∀ system : Core.TargetRank.QuotientSystem.{u, u + 1} Coordinate
-              family,
-            ∀ lowerBound : Nat,
-              system.Survives ↑family →
-              lowerBound ≤ family.card →
-              Graph.IsBaselineSpineDemand system input.object.vertexCount
-                data.threshold
-                (Graph.spineDeficit input.object.vertexCount data.threshold
-                  lowerBound)) ∧
         (∀ packing remainder scaleCount : Nat,
           Graph.spineDeficit input.object.vertexCount data.threshold
               (Graph.curvaturePackageBound data.windowRate packing scaleCount
@@ -307,27 +302,40 @@ does not have. -/
               (Graph.highEntropyPackageBound data.windowRate packing scaleCount
                 remainder data.entropyDenominator) ≤
             Graph.spineDeficit input.object.vertexCount data.threshold
-              (Graph.windowPackageBound data.windowRate packing scaleCount))) →
+              (Graph.windowPackageBound data.windowRate packing scaleCount)))) →
       baselineSpineDemand.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
-    (sourceFreeManifest baselineSpineDemand)
+    { Requires := [windowPackageSeparated]
+      Produces := [baselineSpineDemand]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let baseline : 2 ≤ data.threshold :=
         le_trans (by omega) data.three_le_threshold
       let order := inputs.current.object.vertexCount
+      let packageFact :=
+        packageOf inputs.current (inputs.get windowPackageSeparated)
+      let concrete : Nonempty (inputs.current.object.BaselineWindowDemand
+          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+          data.threshold data.windowOrder data.surplusScale) := by
+        obtain ⟨packing, valid, _card⟩ :=
+          inputs.current.object.exists_windowPacking_card_eq data.windowOrder
+        obtain ⟨_coordinateCount, _family, _windowBound, _jointBound,
+          _slotsFit, _poolRoom, targetPackage, deficitBound⟩ :=
+          packageFact packing valid
+        exact ⟨inputs.current.object.baselineWindowDemandOfPackage
+          baseline targetPackage deficitBound⟩
       .cons (key := baselineSpineDemand)
         (encode inputs.current
-          ⟨fun increment _envelope =>
+          ⟨concrete, ⟨fun increment _envelope =>
               Graph.incremental_skeleton_room order baseline increment,
             fun above =>
               Graph.skeletonBudget_le_cubicBaselineBudget_mul_pow
                 inputs.current.object baseline above,
             ⟨Graph.cubicBaselineBudget_le_pow order baseline,
               fun room => Graph.pow_pred_le_cubicBaselineBudget_mul order room⟩,
-            fun _Coordinate _family system lowerBound testable supply =>
-              Graph.isBaselineSpineDemand_of_package system order baseline
-                lowerBound testable supply,
             fun packing remainder scaleCount =>
               ⟨Graph.spineDeficit_le_of_le order data.threshold
                   (Graph.highEntropyPackageBound_le_curvaturePackageBound
@@ -336,7 +344,7 @@ does not have. -/
                 Graph.spineDeficit_le_of_le order data.threshold
                   (Graph.windowPackageBound_le_highEntropyPackageBound
                     data.windowRate packing scaleCount remainder
-                    data.entropyDenominator)⟩⟩)
+                    data.entropyDenominator)⟩⟩⟩)
         .nil)
 
 /-! ## Nodes `[130]`--`[134]`: the canonical pair-response ledger -/
@@ -383,18 +391,26 @@ the terminal `[133]` it closes at.
 `C(𝒜₀,2) = Π_free ⊔ Π_blk` in the same object.  So node `[130]`'s split is a
 fibre identity and belongs in this fact.
 
-The sandwich clauses are committed as implications from their own hypotheses —
-the entropy count and the baseline demand — which is the discipline
-`def:baseline-spine-demand` is already stated in and the same one the next row's
-sparse-envelope bound uses.  Nothing supplies a callback: every hypothesis is a
-statement the branch either already carries or is about to derive. -/
+The mixed count is committed as an actual `MixedSpinePairDemand`: node `[129]`
+supplies the concrete baseline object and node `[132]`'s survivor arm supplies
+full rank of its tagged union with the free-pair response family.  The positive
+node-`[21]` package then gives the entropy inequality, and `entropySandwich`
+cancels the spine count.  No entropy or demand antecedent remains. -/
 @[reducible] noncomputable def canonicalPairLedgerRow
-    (activeSurplusFamily sparseSlackSurplus surplusAbove canonicalPairLedger :
+    (activeSurplusFamily sparseSlackSurplus surplusAbove baselineSpineDemand
+      canonicalBlockerRoute canonicalPairLedger :
       FactKey (Input BranchState Presentation presentation data))
     (distinct : activeSurplusFamily ≠ canonicalPairLedger)
     (familyNeSlack : activeSurplusFamily ≠ sparseSlackSurplus)
     (familyNeAbove : activeSurplusFamily ≠ surplusAbove)
     (slackNeAbove : sparseSlackSurplus ≠ surplusAbove)
+    (familyNeDemand : activeSurplusFamily ≠ baselineSpineDemand)
+    (familyNeRoute : activeSurplusFamily ≠ canonicalBlockerRoute)
+    (slackNeDemand : sparseSlackSurplus ≠ baselineSpineDemand)
+    (slackNeRoute : sparseSlackSurplus ≠ canonicalBlockerRoute)
+    (aboveNeDemand : surplusAbove ≠ baselineSpineDemand)
+    (aboveNeRoute : surplusAbove ≠ canonicalBlockerRoute)
+    (demandNeRoute : baselineSpineDemand ≠ canonicalBlockerRoute)
     (slackOf : (input : Input BranchState Presentation presentation data) →
       sparseSlackSurplus.At input →
       2 * input.object.edgeCount =
@@ -404,6 +420,15 @@ statement the branch either already carries or is about to derive. -/
       surplusAbove.At input →
       data.surplusThreshold input.object.vertexCount <
         input.object.degreeSurplus data.threshold)
+    (rankOf : (input : Input BranchState Presentation presentation data) →
+      canonicalBlockerRoute.At input →
+      ∀ Coordinate : Type u, ∀ family : Finset Coordinate,
+        ∀ coordinateSupport : Coordinate → Finset input.object.Vertex,
+          Core.TargetRank.targetRank
+              (Graph.FiniteObject.declaredQuotientSystem
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) input.object family
+                coordinateSupport) = family.card)
     (encode : (input : Input BranchState Presentation presentation data) →
       ((input.object.portPairSchedule data.threshold).card =
           (input.object.degreeSurplus data.threshold).choose 2 ∧
@@ -440,28 +465,26 @@ statement the branch either already carries or is about to derive. -/
                             neighbor ∉ support) ∧
             ∀ family : Finset (Finset (input.object.Vertex × input.object.Vertex)),
               (activation.pairFamily family).card = family.card) ∧
-        -- `prop:sparse-entropy-sandwich`, its blocked refinement, and
-        -- `cor:sparse-pair-entropy-saturation`.
-        (∀ spineCount freeCount deficit : Nat,
-          2 ^ (spineCount + freeCount) ≤ Graph.skeletonBudget input.object →
-          Graph.cubicBaselineBudget input.object.vertexCount data.threshold ≤
-            2 ^ (spineCount + deficit) →
-          2 ^ freeCount ≤
-            2 ^ deficit *
-              input.object.vertexCount ^
-                (input.object.edgeCount -
-                  Graph.cubicBaselineEdgeCount input.object.vertexCount
-                    data.threshold)) ∧
-        (2 ^ (input.object.portPairSchedule data.threshold).card ≤
-            Graph.skeletonBudget input.object →
-          2 ^ ((input.object.degreeSurplus data.threshold).choose 2) ≤
-            Graph.skeletonBudget input.object)) →
+        ∀ baseline : input.object.BaselineWindowDemand
+            (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+            data.threshold data.windowOrder data.surplusScale,
+          ∀ Coordinate Chord : Type u,
+            ∀ activation :
+              Graph.FiniteObject.DemandActivation input.object Coordinate Chord,
+              input.object.MixedSpinePairDemand
+                (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+                data.threshold data.windowOrder data.surplusScale
+                baseline activation) →
       canonicalPairLedger.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.canonicalPairLedger
-    { Requires := [activeSurplusFamily, sparseSlackSurplus, surplusAbove]
+    { Requires := [activeSurplusFamily, sparseSlackSurplus, surplusAbove,
+        baselineSpineDemand, canonicalBlockerRoute]
       Produces := [canonicalPairLedger]
-      requiresUnique := by simp [familyNeSlack, familyNeAbove, slackNeAbove]
+      requiresUnique := by
+        simp [familyNeSlack, familyNeAbove, slackNeAbove, familyNeDemand,
+          familyNeRoute, slackNeDemand, slackNeRoute, aboveNeDemand,
+          aboveNeRoute, demandNeRoute]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -499,10 +522,10 @@ statement the branch either already carries or is about to derive. -/
                       Graph.FiniteObject.DemandActivation.mem_pairBoundary_iff
                         object _ vertex⟩,
                 fun family => activation.card_pairFamily family⟩,
-            fun _spineCount _freeCount _deficit entropy demand =>
-              Graph.entropySandwich object two_le above entropy demand,
-            fun entropy =>
-              (Graph.FiniteObject.card_portPairSchedule baseline) ▸ entropy⟩)
+            fun concrete _Coordinate _Chord activation =>
+              object.mixedSpinePairDemand two_le above concrete activation
+                (rankOf inputs.current (inputs.get canonicalBlockerRoute)
+                  _ _ _)⟩)
         .nil)
 
 /-! ## Node `[132]`: the blocked-pair routing branch
@@ -631,11 +654,11 @@ Finally the node commits that the object *has* a capacity-token ledger, at every
 declared presentation: every valid packing of induced windows, every demand
 activation, every coordinate/shoulder-chord presentation and every role reading.
 Nothing is selected, so the commitment is a property of the object rather than of
-a choice, and the entropy budget is taken at the free side's own count, which is
-the sharpest reading of `prop:sparse-entropy-sandwich-with-blockers` and the only
-one that assumes no budget nobody supplied. -/
+a choice.  Its entropy budget is node `[131]`'s concrete linear mixed-family
+sandwich, read through the presentation's own activation; it is not the free
+side's count restated as its own bound. -/
 @[reducible] noncomputable def capacityTokenLedgerRow
-    (canonicalPairLedger noProperBaseline tightEndpoint surplusAbove
+    (canonicalPairLedger baselineSpineDemand noProperBaseline tightEndpoint surplusAbove
       sparseUpperEnvelope capacityTokenLedger :
       FactKey (Input BranchState Presentation presentation data))
     (pairNeProper : canonicalPairLedger ≠ noProperBaseline)
@@ -644,11 +667,32 @@ one that assumes no budget nobody supplied. -/
     (properNeTight : noProperBaseline ≠ tightEndpoint)
     (properNeAbove : noProperBaseline ≠ surplusAbove)
     (tightNeAbove : tightEndpoint ≠ surplusAbove)
+    (pairNeDemand : canonicalPairLedger ≠ baselineSpineDemand)
+    (demandNeProper : baselineSpineDemand ≠ noProperBaseline)
+    (demandNeTight : baselineSpineDemand ≠ tightEndpoint)
+    (demandNeAbove : baselineSpineDemand ≠ surplusAbove)
     (envelopeNeLedger : sparseUpperEnvelope ≠ capacityTokenLedger)
     (pairCountOf : (input : Input BranchState Presentation presentation data) →
       canonicalPairLedger.At input →
       (input.object.portPairSchedule data.threshold).card =
         (input.object.degreeSurplus data.threshold).choose 2)
+    (baselineOf : (input : Input BranchState Presentation presentation data) →
+      baselineSpineDemand.At input →
+      Nonempty (input.object.BaselineWindowDemand
+        (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+        data.threshold data.windowOrder data.surplusScale))
+    (mixedOf : (input : Input BranchState Presentation presentation data) →
+      canonicalPairLedger.At input →
+      ∀ baseline : input.object.BaselineWindowDemand
+          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+          data.threshold data.windowOrder data.surplusScale,
+        ∀ Coordinate Chord : Type u,
+          ∀ activation :
+            Graph.FiniteObject.DemandActivation input.object Coordinate Chord,
+            input.object.MixedSpinePairDemand
+              (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+              data.threshold data.windowOrder data.surplusScale
+              baseline activation)
     (noProperOf : (input : Input BranchState Presentation presentation data) →
       noProperBaseline.At input →
       ∀ subgraph : Graph.ProperSubgraph input.object,
@@ -674,19 +718,25 @@ one that assumes no budget nobody supplied. -/
             input.object.primitiveCarrierSupply data.threshold) ∧
         Graph.FiniteObject.CapacityTokenLedgerStatement input.object
           data.threshold data.windowOrder) ∧
-        (∀ declared :
+        ((∀ declared :
             Graph.CapacityPresentation input.object data.windowOrder,
-          Nonempty (Graph.ObjectCapacityLedger input.object data.threshold
-            data.windowOrder declared)) →
+          Nonempty (Graph.CertifiedObjectCapacityLedger input.object
+            data.threshold data.windowOrder data.surplusScale declared)) ∧
+          Nonempty (Σ declared : Graph.CapacityPresentation input.object
+              data.windowOrder,
+            Graph.CertifiedObjectCapacityLedger input.object data.threshold
+              data.windowOrder data.surplusScale declared)) →
       capacityTokenLedger.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
     { Requires :=
-        [canonicalPairLedger, noProperBaseline, tightEndpoint, surplusAbove]
+        [canonicalPairLedger, baselineSpineDemand, noProperBaseline,
+          tightEndpoint, surplusAbove]
       Produces := [sparseUpperEnvelope, capacityTokenLedger]
       requiresUnique := by
         simp [pairNeProper, pairNeTight, pairNeAbove, properNeTight,
-          properNeAbove, tightNeAbove]
+          properNeAbove, tightNeAbove, pairNeDemand, demandNeProper,
+          demandNeTight, demandNeAbove]
       producesUnique := by simp [envelopeNeLedger]
       producesNonempty := by simp }
     (fun inputs =>
@@ -701,6 +751,8 @@ one that assumes no budget nobody supplied. -/
           data.threshold baseline
       -- The demands the token map charges are the pair ledger's own schedule.
       let scheduleCard := pairCountOf inputs.current (inputs.get canonicalPairLedger)
+      let spine := (baselineOf inputs.current
+        (inputs.get baselineSpineDemand)).some
       -- Node `[8]`, node `[9]` and the branch's own node-`[19]` entry.
       let noProper := noProperOf inputs.current (inputs.get noProperBaseline)
       let tight := tightOf inputs.current (inputs.get tightEndpoint)
@@ -724,9 +776,18 @@ one that assumes no budget nobody supplied. -/
                 Graph.FiniteObject.capacityTokenLedgerStatement object baseline
                   data.three_le_threshold data.windowOrder_pos handshake envelope
                   data.joinSlack⟩,
-              Graph.objectCapacityLedgerExists object baseline vertex scheduleCard
+              let certified := Graph.objectCapacityLedgerExists object baseline
+                vertex scheduleCard
                 data.three_le_threshold data.windowOrder_pos handshake envelope
-                data.joinSlack⟩)
+                data.joinSlack spine
+                (fun declared => mixedOf inputs.current
+                  (inputs.get canonicalPairLedger) spine declared.Coordinate
+                  declared.Chord declared.activation)
+              ⟨certified,
+                ⟨⟨Graph.CapacityPresentation.canonical object data.windowOrder
+                    data.windowOrder_pos,
+                  (certified (Graph.CapacityPresentation.canonical object
+                    data.windowOrder data.windowOrder_pos)).some⟩⟩⟩⟩)
           .nil))
 
 end Hypostructure.Graph.Strategy.Spine

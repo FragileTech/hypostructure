@@ -51,12 +51,11 @@ same statement at the *full* pair schedule, and
 `cor:sparse-pair-entropy-saturation` is its `ℐ_spine = ∅` reading,
 `2^{C(|𝒜₀|,2)} ≤ C(N,m)`.
 
-The entropy count itself — `lem:independent-target-entropy` composed with
-`lem:skeleton-dominates`, *"independent target-testable coordinates each consume
-skeleton entropy"* — enters as the hypothesis `entropy`, in exactly the way
-`def:baseline-spine-demand`'s own demand clause carries `|ℐ_spine| ≥ B₀(n) −
-E_spine(n)`: it is the interface the branch is handed, not a fact about an
-arbitrary family.  The framework owns both halves of it
+The theorem below is the reusable cancellation step, so its two inputs are the
+two inequalities it cancels.  The strategy does not publish those inputs as an
+obligation: `WindowTargetPackage.mixedSpinePairDemand` constructs the tagged
+mixed family, proves its full rank, obtains its exact entropy count, and applies
+this theorem before node `[131]` is committed.  The framework owns the count
 (`Core.FiniteEntropy.two_pow_le_card_ambient_of_realizes` and
 `Graph.LabelledOn.two_pow_le_card_of_realized`), and `Graph.skeletonBudget` is
 `lem:skeleton-dominates`' own `C(N,m)`.

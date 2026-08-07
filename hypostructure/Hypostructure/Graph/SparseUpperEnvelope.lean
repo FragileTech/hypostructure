@@ -371,6 +371,18 @@ theorem edgeCount_pos_of_degreeSurplus_pos (object : FiniteObject.{u})
   rw [coverDef] at surplus
   omega
 
+/-- Positive surplus exhibits a vertex, hence the order used by the
+square-root closure is positive. -/
+theorem vertexCount_pos_of_degreeSurplus_pos (object : FiniteObject.{u})
+    {threshold : Nat} (positive : 0 < object.degreeSurplus threshold) :
+    0 < object.vertexCount := by
+  letI : FinEnum object.Vertex := object.vertices
+  let vertex : object.Vertex :=
+    (object.exists_dart_of_edgeCount_pos
+      (object.edgeCount_pos_of_degreeSurplus_pos positive)).some.fst
+  change 0 < object.vertices.card
+  exact FinEnum.card_pos_iff.mpr ⟨vertex⟩
+
 /-- **`lem:sparse-upper-envelope` as the branch reads it.**
 
 The tight endpoint is not assumed: the branch's own positive surplus exhibits an

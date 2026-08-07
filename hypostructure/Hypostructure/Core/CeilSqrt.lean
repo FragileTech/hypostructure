@@ -31,6 +31,32 @@ theorem ceilSqrt_le_sqrt_succ (size : Nat) :
   · simp [ceilSqrt, perfect]
   · simp [ceilSqrt, if_neg perfect]
 
+/-- The binary logarithm is bounded by the integer ceiling square root.  This
+is the exact finite estimate used when the sparse entropy sandwich absorbs its
+`sigma log₂ n` term. -/
+theorem log2_le_ceilSqrt (size : Nat) : Nat.log2 size ≤ ceilSqrt size := by
+  have sq_lt_pow : ∀ root : Nat, root * root < 2 ^ (root + 1) := by
+    intro root
+    by_cases small : root ≤ 2
+    · interval_cases root <;> norm_num
+    · have three_le : 3 ≤ root := by omega
+      induction root, three_le using Nat.le_induction with
+      | base => norm_num
+      | succ root three_le ih =>
+          rw [show root + 1 + 1 = (root + 1) + 1 by omega, pow_succ]
+          have ih' := ih (by omega)
+          have linear : 2 * root + 1 ≤ root * root := by nlinarith
+          nlinarith
+  by_cases zero : size = 0
+  · simp [zero]
+  · have covered := le_ceilSqrt_sq size
+    have below : size < 2 ^ (ceilSqrt size + 1) :=
+      lt_of_le_of_lt covered (by
+        simpa [pow_two] using sq_lt_pow (ceilSqrt size))
+    rw [Nat.log2_eq_log_two]
+    have := Nat.log_lt_of_lt_pow zero below
+    omega
+
 /-- **A `√n`-scaled quantity is eventually below any positive linear one.**
 
 `scale · ⌈√n⌉ ≤ rate · n + scale` as soon as `scale² ≤ rate²·n`, which is the

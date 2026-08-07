@@ -1,6 +1,7 @@
 import Hypostructure.Graph.GrainedTokenBudget
 import Hypostructure.Graph.CapacityTokenAssignment
 import Hypostructure.Graph.SameTokenBottleneckRouting
+import Hypostructure.Graph.WindowTargetPackage
 
 /-!
 # The capacity-token ledger of an object, and the statements read off it
@@ -59,6 +60,15 @@ structure CapacityPresentation (object : FiniteObject.{u}) (order : Nat) where
   /-- The declared support and shoulder-chord data the two selecting clauses of
   `def:capacity-token-ledger` read. -/
   carrier : FiniteObject.CarrierPresentation object Coordinate Chord
+  /-- Every declared canonical blocker has the primitive carrier prescribed by
+  `def:primitive-sparse-blocker-carrier`.  This is well-formedness of the
+  presentation, not a graph hypothesis; it makes the fourth charge clause
+  total on the blocked side. -/
+  carrierComplete : ∀ threshold : Nat,
+    ∀ pair ∈ object.portPairSchedule threshold,
+      ∀ blocker ∈ activation.blockers pair,
+        (FiniteObject.Blocker.carrier object threshold carrier.coordinateSupport
+          carrier.chordPort blocker).isSome
   /-- The packing of induced windows the two halves of `𝔗_W` are built from. -/
   packing : Finset (Finset object.Vertex)
   /-- The packing is one: its members are induced windows and they are pairwise
@@ -80,6 +90,45 @@ structure CapacityPresentation (object : FiniteObject.{u}) (order : Nat) where
 namespace CapacityPresentation
 
 variable {object : FiniteObject.{u}} {order : Nat}
+
+/-- A canonical empty-obstruction presentation.  It is used only to witness
+that the universally certified node-`[136]` ledger is inhabited; all numerical
+facts still come from the concrete mixed package stored in that ledger. -/
+noncomputable def canonical (object : FiniteObject.{u}) (order : Nat)
+    (orderPos : 0 < order) : CapacityPresentation object order := by
+  classical
+  let activation : object.DemandActivation (ULift.{u} (Fin 0))
+      (ULift.{u} (Fin 0)) := {
+    declaredSupport := fun _ => ∅
+    returnSupport := fun _ => ∅
+    localBuffer := fun _ => ∅
+    profileObstructions := fun _ => ∅
+    responseObstructions := fun _ => ∅
+    chordObstructions := fun _ => ∅ }
+  let carrier : object.CarrierPresentation (ULift.{u} (Fin 0))
+      (ULift.{u} (Fin 0)) := {
+    coordinateSupport := fun value => Fin.elim0 value.down
+    chordEnds := fun value => Fin.elim0 value.down
+    chordPort := fun value => Fin.elim0 value.down }
+  let packing := (object.exists_windowPacking_card_eq order).choose
+  have valid := (object.exists_windowPacking_card_eq order).choose_spec.1
+  have maximal := (object.exists_windowPacking_card_eq order).choose_spec.2
+  exact {
+    Coordinate := ULift.{u} (Fin 0)
+    Chord := ULift.{u} (Fin 0)
+    activation := activation
+    carrier := carrier
+    carrierComplete := by
+      intro threshold pair pairMem blocker blockerMem
+      exfalso
+      simpa [activation, FiniteObject.DemandActivation.blockers,
+        FiniteObject.DemandActivation.sharedItems] using blockerMem
+    packing := packing
+    packingValid := valid
+    packingMaximal := maximal
+    packingMeets := fun support window =>
+      object.exists_mem_not_disjoint_of_card_eq orderPos valid maximal window
+    role := fun _ => default }
 
 /-- **The remainder of `𝒫` is window-free.**
 
@@ -125,6 +174,42 @@ theorem tokenOrder_toFinset (data : CapacityPresentation object order)
     (threshold : Nat) :
     (data.tokenOrder threshold).toFinset = data.tokens threshold :=
   FiniteObject.capacityTokenOrder_toFinset threshold data.packing
+
+/-- The capacity ledger's uncharged side is contained in the canonical
+blocker-free side.  Totality of the primitive carrier is exactly what rules out
+a blocked pair falling through the fourth charge clause. -/
+theorem freeSide_subset_activationFree
+    (data : CapacityPresentation object order) (threshold : Nat) :
+    freeSide object.vertexPairDecidableEq (object.portPairSchedule threshold)
+        (data.tokenOrder threshold) (data.Eligible threshold)
+        (data.eligibleDecidable threshold) ⊆
+      data.activation.freePairs threshold := by
+  classical
+  letI := object.vertexPairDecidableEq
+  intro pair free
+  have freeParts := Finset.mem_filter.mp free
+  have chargeNone :
+      ¬ (FiniteObject.capacityCharge data.activation data.carrier threshold
+        data.packing pair).isSome := by
+    have labelNone := Option.not_isSome_iff_eq_none.mp freeParts.2
+    change CanonicalFibreLedger.canonicalLabel
+        (FiniteObject.capacityTokenOrder object threshold data.packing)
+        (FiniteObject.Charges data.activation data.carrier threshold data.packing)
+        pair = none at labelNone
+    rw [FiniteObject.canonicalLabel_eq_capacityCharge data.activation
+      data.carrier threshold data.packing] at labelNone
+    simpa [labelNone]
+  rw [FiniteObject.DemandActivation.freePairs, FiniteObject.freePairs,
+    CanonicalFibreLedger.unassigned, Finset.mem_filter]
+  refine ⟨freeParts.1, ?_⟩
+  intro blockerLabel
+  obtain ⟨kind, selected⟩ := Option.isSome_iff_exists.mp blockerLabel
+  obtain ⟨kind, blocks⟩ : ∃ kind, data.activation.Blocks kind pair :=
+    ⟨kind, CanonicalFibreLedger.applies_canonicalLabel selected⟩
+  have blocked : (data.activation.blockers pair).Nonempty :=
+    (data.activation.exists_blocks_iff_blockers_nonempty pair).mp ⟨kind, blocks⟩
+  exact chargeNone (FiniteObject.isSome_capacityCharge data.activation data.carrier
+    threshold data.packing blocked (data.carrierComplete threshold pair freeParts.1))
 
 end CapacityPresentation
 
@@ -189,29 +274,82 @@ theorem tokens_card_le (ledger : ObjectCapacityLedger object threshold order dat
 /-- **The object's capacity-token ledger at a declared presentation, built.**
 
 Nothing is selected: the token universe, the declared token order, `sub(t)` and
-the eligibility are the presentation's own, and the entropy budget is taken at
-the free side's own count -- the sharpest
-`prop:sparse-entropy-sandwich-with-blockers` can be, and the only reading that
-assumes nothing about a budget nobody supplied.  What the caller owes is what
-lives on other ledger entries: node `[130]`'s pair count, `𝔗_cap ≠ ∅`, and
-`lem:capacity-token-supply`'s displayed bound. -/
+the eligibility are the presentation's own.  The entropy budget and its bound
+are the concrete linear sandwich produced by the mixed spine/free-pair package;
+the constructor therefore cannot manufacture a reflexive free-side budget. -/
 noncomputable def ofCapacityCharge (data : CapacityPresentation object order)
     (scheduleCard : (object.portPairSchedule threshold).card =
       (object.degreeSurplus threshold).choose 2)
     (orderNonempty : (data.tokens threshold).Nonempty)
+    (entropyBudget : Nat)
+    (sandwich :
+      (freeSide object.vertexPairDecidableEq (object.portPairSchedule threshold)
+        (data.tokenOrder threshold) (data.Eligible threshold)
+        (data.eligibleDecidable threshold)).card ≤ entropyBudget)
     (supply : (data.tokens threshold).card ≤
       object.capacityTokenSupply threshold + object.degreeSurplus threshold) :
     ObjectCapacityLedger object threshold order data where
   scheduleCard := scheduleCard
   orderNonempty := orderNonempty
-  entropyBudget :=
-    (freeSide object.vertexPairDecidableEq (object.portPairSchedule threshold)
-      (data.tokenOrder threshold) (data.Eligible threshold)
-      (data.eligibleDecidable threshold)).card
-  sandwich := Nat.le_refl _
+  entropyBudget := entropyBudget
+  sandwich := sandwich
   supply := supply
 
 end ObjectCapacityLedger
+
+/-- Node `[136]`'s concrete ledger together with the node-`[129]` deficit and
+node-`[131]` mixed-sandwich data from which its entropy budget was built. -/
+structure CertifiedObjectCapacityLedger (object : FiniteObject.{u})
+    (threshold order deficitScale : Nat)
+    (data : CapacityPresentation object order) where
+  ledger : ObjectCapacityLedger object threshold order data
+  spineDeficit : Nat
+  edgeSlack : Nat
+  entropyBudget_eq : ledger.entropyBudget =
+    spineDeficit + (Nat.log2 object.vertexCount + 1) * edgeSlack
+  spineDeficit_le : spineDeficit ≤ deficitScale * object.vertexCount
+  edgeSlack_le : edgeSlack ≤ object.degreeSurplus threshold
+
+namespace CertifiedObjectCapacityLedger
+
+variable {object : FiniteObject.{u}} {threshold order deficitScale : Nat}
+  {data : CapacityPresentation object order}
+
+/-- The certified node-`[129]`/`[131]` ledger turns the fixed-cap pressure
+estimate into the paper's exact square-root bound. -/
+theorem degreeSurplus_le_mul_ceilSqrt
+    (certified : CertifiedObjectCapacityLedger object threshold order
+      deficitScale data)
+    (sizePos : 0 < object.vertexCount) (cap : Nat)
+    (safety : TokenLoad.quadraticSafetyScale ≤
+      2 * (1 + 2 * cap) +
+        (2 * deficitScale + 2 * cap * (3 * (threshold - 1) + 2)))
+    (pressure : object.degreeSurplus threshold ≤
+      1 + 2 * cap + Nat.sqrt (2 * certified.ledger.entropyBudget +
+        2 * (cap * object.capacityTokenSupply threshold))) :
+    object.degreeSurplus threshold ≤
+      (2 * (1 + 2 * cap) +
+        (2 * deficitScale +
+          2 * cap * (3 * (threshold - 1) + 2))) *
+        Core.ceilSqrt object.vertexCount := by
+  apply TokenLoad.demand_le_mul_ceilSqrt object.vertexCount
+    (object.degreeSurplus threshold) certified.spineDeficit certified.edgeSlack
+    cap deficitScale (3 * (threshold - 1) + 2)
+  · exact sizePos
+  · exact certified.spineDeficit_le
+  · exact certified.edgeSlack_le
+  · rw [certified.entropyBudget_eq] at pressure
+    have supply_eq : object.capacityTokenSupply threshold =
+        (3 * (threshold - 1) + 2) * object.vertexCount := by
+      simp only [FiniteObject.capacityTokenSupply,
+        FiniteObject.primitiveCarrierSupply]
+      ring
+    rw [supply_eq] at pressure
+    convert pressure using 1 <;> ring
+  · exact le_rfl
+  · exact safety
+
+end CertifiedObjectCapacityLedger
 
 /-- **Node `[136]`'s existence commitment, proved.**
 
@@ -223,6 +361,8 @@ the vertex the branch's positive surplus exhibits, and
 `lem:capacity-token-supply` at the sparse upper envelope and the registered join
 comparison. -/
 theorem objectCapacityLedgerExists (object : FiniteObject.{u})
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {deficitScale : Nat}
     {threshold order : Nat}
     (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
     (vertex : object.Vertex)
@@ -231,14 +371,44 @@ theorem objectCapacityLedgerExists (object : FiniteObject.{u})
     (three : 3 ≤ threshold) (orderPos : 0 < order)
     (handshake : threshold * object.vertexCount ≤ 2 * object.edgeCount)
     (envelope : object.edgeCount + 2 ≤ (threshold - 1) * object.vertexCount)
-    (joinSlack : threshold * order + 2 ≤ 4 * order) :
+    (joinSlack : threshold * order + 2 ≤ 4 * order)
+    (spine : object.BaselineWindowDemand Baseline LengthOK threshold order
+      deficitScale)
+    (mixed : ∀ declared : CapacityPresentation.{u} object order,
+      object.MixedSpinePairDemand Baseline LengthOK threshold order deficitScale spine
+        declared.activation) :
     ∀ declared : CapacityPresentation.{u} object order,
-      Nonempty (ObjectCapacityLedger.{u} object threshold order declared) :=
-  fun declared =>
-    ⟨ObjectCapacityLedger.ofCapacityCharge declared scheduleCard
+      Nonempty (CertifiedObjectCapacityLedger.{u} object threshold order
+        deficitScale declared) :=
+  fun declared => by
+    let budget :=
+      spineDeficit object.vertexCount threshold spine.bits +
+        (Nat.log2 object.vertexCount + 1) *
+          (object.edgeCount - cubicBaselineEdgeCount object.vertexCount threshold)
+    have freeSubset := declared.freeSide_subset_activationFree threshold
+    have freeBound :
+        (freeSide object.vertexPairDecidableEq (object.portPairSchedule threshold)
+          (declared.tokenOrder threshold) (declared.Eligible threshold)
+          (declared.eligibleDecidable threshold)).card ≤ budget := by
+      calc
+        _ ≤ (declared.activation.freePairs threshold).card :=
+          Finset.card_le_card freeSubset
+        _ ≤ budget := (mixed declared).linearSandwich
+    let ledger := ObjectCapacityLedger.ofCapacityCharge declared scheduleCard
       (object.capacityTokens_nonempty threshold declared.packing vertex)
+      budget freeBound
       (object.card_capacityTokens_le declared.packingValid baseline three
-        handshake envelope orderPos joinSlack)⟩
+        handshake envelope orderPos joinSlack)
+    exact ⟨{
+      ledger := ledger
+      spineDeficit := spineDeficit object.vertexCount threshold spine.bits
+      edgeSlack := object.edgeCount -
+        cubicBaselineEdgeCount object.vertexCount threshold
+      entropyBudget_eq := rfl
+      spineDeficit_le := spine.deficitBound
+      edgeSlack_le := edgeSlack_le_degreeSurplus object threshold
+        (cubicBaselineEdgeCount_le_edgeCount_of_handshake object threshold
+          handshake) }⟩
 
 /-! ## The statements nodes `[137]`--`[143]` commit -/
 

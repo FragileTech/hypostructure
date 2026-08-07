@@ -210,6 +210,7 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
     Fin erdosReceiverLoadProfile.baselineDegree →
       Fin erdosReceiverLoadProfile.baselineDegree
   boundaryProfileFintype := inferInstance
+  boundaryProfileInhabited := inferInstance
   surplusScale := surplusScaleCoefficient
   windowRate := FiniteChecks.P13Barrier.windowRate
   -- `lem:p13-window-package`'s selected dyadic scales.  The manuscript writes
