@@ -944,6 +944,10 @@ inductive Key where
   /-- Node `[106]`, global scope: `lem:no-silent-global-smearing` gives a
   strictly smaller closed representative. -/
   | typeAExitSixGlobal
+  /-- Node `[107]`, yes arm: the selected saturated-handoff residual, after
+  exits `(4)`--`(6)` have failed, produces the exit-`(7)` decorated handoff
+  envelope.  The admissibility interface is committed separately at `[108]`. -/
+  | typeAExitSevenProduced
   /-- Node `[109]`, the route-8 arm: the object carries an admissible true
   large-budget route-8 carrier residual -- `def:typeA-silent-core-residual`'s
   reduced silent profile, `def:typeA-true-route8-residual`'s absence clause
@@ -951,34 +955,19 @@ inductive Key where
   deficit of `def:typeA-large-budget-deficit` with its burden and rate
   readings. -/
   | route8Residual
-  /-- Node `[109]`, the complementary arm: the object carries no such residual,
-  so the route-8 exit is not entered and the branch leaves this block. -/
+  /-- Node `[109]`, old Route-8 complement fact.  Kept as a vocabulary fact for
+  the later Route-8 refactor; Route A no longer uses it as transport. -/
   | route8Free
-  /-- Nodes `[111]`--`[113]`: the collection's own burden `N_basin ≥ 4·D_A`
-  (`lem:typeA-route8-burden`) and the large-budget deficit bound
-  (`def:typeA-large-budget-deficit`), read off every route-8 residual of the
-  object. -/
+  /-- Nodes `[111]`--`[113]`: the route-8 burden/deficit implication kept for
+  the later Route-8 refactor. -/
   | route8Burden
-  /-- Nodes `[114]`--`[116]`: `lem:typeA-one-terminal-collapse`.  Every indexed
-  entry of a true route-8 residual has at least two essential carriers, because
-  a smaller carrier core makes the internal-forgetting reading target-complete
-  (`lem:typeA-carrier-cut-parity`) and target-complete-minimality of the basin
-  then fires one of exits `(4)`--`(7)`, which (R2) denies. -/
+  /-- Nodes `[114]`--`[116]`: carrier-core collapse in a route-8 residual. -/
   | route8CarrierCore
-  /-- Nodes `[117]`--`[122]`: `prop:typeA-route8-carrier-reduction`.  Private
-  essential carriers of distinct indexed entries are disjoint boundary
-  incidences, so three per entry would exceed the boundary supply the burden
-  already spends; hence some indexed entry is two-carrier. -/
+  /-- Nodes `[117]`--`[122]`: the route-8 carrier census theorem. -/
   | route8Census
-  /-- Node `[123]`: the pressure descent.  No indexed entry of a true route-8
-  residual is exit-`(4)` peelable, and every peel of the active entry set
-  strictly decreases it, so the descent terminates at the terminal package of
-  node `[124]`. -/
+  /-- Node `[123]`: the route-8 descent package. -/
   | route8Descent
-  /-- Node `[124]`: `thm:typeA-two-carrier-nogo` and
-  `prop:typeA-route8-closure-from-nogo`.  There is no terminal two-carrier
-  route-8 obstruction, so the object carries no route-8 carrier residual at
-  all and the arm closes. -/
+  /-- Node `[124]`: route-8 branch closure by the two-carrier no-go. -/
   | route8Closed
   /-- Node `[126]`, `lem:sparse-slack-surplus`: the sparse slack identity
   `m = (3/2)n + (1/2)σ(G)`, cleared of division at the registered baseline. -/
@@ -1373,27 +1362,15 @@ abbrev handoffHighDegree (object : Graph.FiniteObject.{u}) :
 `lem:typeA-high-degree-handoff` reads them off the exit list: *"failures of the
 other four fan-safe conditions are exactly the label, target-defect,
 target-compression, and delocalization exits already removed before exit (7)"*.
-So the four clauses are exits `(3)`, `(4)`, `(5)` and `(6)` occurring, verbatim
-as nodes `[99]`, `[101]`, `[103]` and `[105]` state them; the handoff never
-restates one and never proves one, it reads the four denials off the index the
-exit list leaves. -/
+The exit `(3)` label clause is the only local fan predicate.  The denials of
+exits `(4)`, `(5)`, and `(6)` are ledger facts in `SelectedNoExitSixWith`, not
+secondary route-8 objects smuggled through this predicate. -/
 abbrev handoffAbsorbing (data : Data.{u}) (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex)) :
     object.Vertex → object.Vertex → object.Vertex → Prop :=
   fun _centre _first _second =>
     Graph.WindowLabelCollision.LabelCollision object data.windowOrder
-        data.LengthOK packing ∨
-      (∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        ∃ index ∈ residual.entries, residual.ExitFour index) ∨
-      (∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        ∃ index ∈ residual.entries, ¬ residual.SurvivingTrace index) ∨
-      (∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        ∃ index ∈ residual.entries,
-          residual.Delocalizes
-            (Graph.MinimumDegreeAtLeast data.threshold) index)
+      data.LengthOK packing
 
 /-- `cor:uncompressible` at node `[14]`, as the envelope's admissibility reads
 it. -/
@@ -1434,6 +1411,59 @@ def HandoffAdmissible (data : Data.{u}) (object : Graph.FiniteObject.{u})
       Graph.DecoratedHandoff.Admissible object data.LengthOK
         (handoffUncompressible data object) (handoffWindowFree data object)
         envelope
+
+/-- The exact selected saturated Type A state after exits `(4)`, `(5)`, and
+`(6)` have failed, with one additional local clause on its selected packing and
+support.  This is a fact-schema abbreviation only: rows still read it from the
+incoming `ExactLedger` and commit descendants through `Decision.run` or
+`factOnly`. -/
+abbrev SelectedNoExitSixWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (extra : (packing : Finset (Finset object.Vertex)) →
+      Finset object.Vertex → Prop) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+      (∀ window : Finset object.Vertex,
+        object.InducesWindow data.windowOrder window →
+        ∃ member ∈ packing, ¬ Disjoint window member) ∧
+      ∃ component ∈ object.canonicalPieces
+          (object.remainderSupport packing),
+        let piece := object.pieceSupport
+          (object.remainderSupport packing) component
+        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+          object.ambientSurplus piece data.threshold = 0 ∧
+          ∃ receiver : object.Vertex,
+            object.IsReceiver piece data.threshold receiver ∧
+              ∃ peeled : Finset object.Vertex,
+                peeled ⊆ object.routedLoads piece data.threshold receiver ∧
+                  Graph.ExitFour.SaturatedAfter piece data.threshold
+                    data.dischargeScale receiver peeled ∧
+                  ((∃ package :
+                      Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                        data.threshold data.dischargeScale receiver peeled,
+                    ¬ ∃ witness : Graph.ExitFour.Witness
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver peeled,
+                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                          piece data.threshold data.dischargeScale receiver
+                          package.outside peeled,
+                        witness.load = load) ∨
+                    (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                        data.threshold data.dischargeScale receiver peeled ∧
+                      ¬ ∃ witness : Graph.ExitFour.Witness
+                          (Graph.HasCycleWithLength data.LengthOK) piece
+                          data.threshold receiver peeled,
+                        witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                          data.threshold data.dischargeScale receiver peeled)) ∧
+                  (¬ ∃ support : Finset object.Vertex,
+                    Graph.Strategy.InterfaceReplacement.CompressibleSupport
+                      (Graph.MinimumDegreeAtLeast data.threshold)
+                      (Graph.HasCycleWithLength data.LengthOK) object support) ∧
+                  (¬ ∃ presented : Graph.Route8.PresentedEntry object,
+                    Nonempty
+                      (Graph.Route8.Delocalization
+                        (Graph.MinimumDegreeAtLeast data.threshold)
+                        (Graph.HasCycleWithLength data.LengthOK) presented)) ∧
+                  extra packing piece
 
 /-- The value schema of each spine fact, stated of the *object* alone.
 
@@ -2736,52 +2766,21 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                       Graph.ExitFour.SaturatedAfter piece data.threshold
                         data.dischargeScale receiver peeled)
+  | .typeAExitSevenProduced, object =>
+      -- Node `[107]`, yes: exit `(7)` is produced on the exact selected
+      -- no-exit-`(6)` residual.
+      SelectedNoExitSixWith data object
+        (fun packing piece => HandoffProduced data object packing piece)
   | .typeAExitSevenHandoff, object =>
-      -- Node `[107]`, yes -- exit `(7)` of `def:typeA-saturated-exits`: *"a
-      -- high-degree decorated handoff fan envelope is produced"*.
-      --
-      -- Like clause (3), and unlike clauses (1) and (2), clause (7) names no
-      -- receiver and no completion port.  `lem:typeA-unpeeled-visible-routing`
-      -- reaches it from the four visible returns through one port and
-      -- `lem:typeA-unpeeled-silent-routing` reaches it from the residual excess
-      -- basin, and node `[107]` is the *same* node on both paths; writing
-      -- either path's port here would fork the node in two.  The branch's
-      -- warrant for being on the exit list stays where it belongs, on the
-      -- ledger: `typeASaturatedExitEntry` is what the node is asked under.
-      --
-      -- What the fact carries is `def:decorated-fan-envelope`'s envelope on the
-      -- Type A support together with `lem:decorated-fan-admissibility`'s
-      -- interface record, because `lem:typeA-exits-discharged` does not close
-      -- this exit -- it hands the branch to Type B at node `[108]`.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset object.Vertex,
-            piece ⊆ object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn object piece ∧
-              object.NegativeNetCharge piece data.threshold
-                data.dischargeScale ∧
-              object.ambientSurplus piece data.threshold = 0 ∧
-              HandoffAdmissible data object packing piece)
+      -- Node `[108]`: the produced envelope is committed with the admissible
+      -- Type B handoff interface.
+      SelectedNoExitSixWith data object
+        (fun packing piece => HandoffAdmissible data object packing piece)
   | .typeAExitSevenFree, object =>
-      -- Node `[107]`, no -- the entry of node `[109]`: the same configuration
-      -- with the exit-`(7)` test denied.  This is the last clause of
-      -- `def:typeA-silent-core-residual`'s *"none of the target, quotient,
-      -- compression, delocalization, or decorated handoff fan alternatives
-      -- applies"*, and it is the hypothesis exit `(8)` is read under.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset object.Vertex,
-          object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset object.Vertex,
-          piece ⊆ object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn object piece →
-          object.NegativeNetCharge piece data.threshold data.dischargeScale →
-          object.ambientSurplus piece data.threshold = 0 →
-          ¬ HandoffProduced data object packing piece)
+      -- Node `[107]`, no: the same selected residual has no decorated
+      -- handoff envelope and therefore enters the route-8 test.
+      SelectedNoExitSixWith data object
+        (fun packing piece => ¬ HandoffProduced data object packing piece)
   | .typeAVisibleEntryClause, object =>
       -- Node `[93]`, yes arm: the exact selected visible package and the
       -- response/germ prefix derived from it before any semantic quotient.
@@ -3688,24 +3687,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (Graph.HasCycleWithLength data.LengthOK representative →
               Graph.HasCycleWithLength data.LengthOK object))
   | .route8Residual, object =>
-      -- Node `[109]` with `[111]`--`[112]`: the arm is entered with a
-      -- *large-budget* route-8 collection.  The collection is data, so the fact
-      -- records that one exists; the three readings that depend on it -- the
-      -- burden, the large-budget deficit and the registered rate -- are the
-      -- statement of this key.  The exit clauses (R2) are *not* here: they are
-      -- nodes `[101]` and `[103]`'s own facts.
-      (∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.LargeBudget)
+      -- Node `[109]`: the selected no-exit-`(7)` residual carries a
+      -- route-8 residual.  The selected support and all denied exits stay in
+      -- this ledger fact; later route-8 accounting reads this exact key.
+      SelectedNoExitSixWith data object (fun packing piece =>
+        ¬ HandoffProduced data object packing piece)
   | .route8Free, object =>
-      -- Node `[109]`, the complementary arm.
-      (¬ ∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.LargeBudget)
+      -- Preserved for the later Route-8 refactor.  Route A does not use this
+      -- complement to transport data.
+      False
   | .route8Burden, object =>
-      -- Nodes `[111]`--`[113]`: the same residual with `lem:typeA-route8-burden`
-      -- substituted into `def:typeA-large-budget-deficit`, which is the reading
-      -- the census of node `[122]` spends.
+      -- Nodes `[111]`--`[113]`: the same residual with
+      -- `lem:typeA-route8-burden` substituted into
+      -- `def:typeA-large-budget-deficit`.
       (∃ residual : Graph.Route8.Data
           (Graph.HasCycleWithLength data.LengthOK) object,
         residual.Reduced)
@@ -3716,28 +3710,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         ∀ index ∈ residual.entries,
           residual.SurvivingTrace index → 2 ≤ residual.alpha index)
   | .route8Census, object =>
-      -- Nodes `[117]`--`[122]`, `prop:typeA-route8-carrier-reduction`: a reduced
-      -- large-budget route-8 residual contains the terminal two-carrier package
-      -- of `def:typeA-terminal-two-carrier`.
+      -- Nodes `[117]`--`[122]`, `prop:typeA-route8-carrier-reduction`.
       (∀ residual : Graph.Route8.Data
           (Graph.HasCycleWithLength data.LengthOK) object,
         residual.Reduced → residual.TwoCarrierEntry)
   | .route8Descent, object =>
-      -- Node `[123]`.  The first clause is the manuscript's routing: the
-      -- remaining ledger forces a two-carrier route-8 entry, which is the
-      -- terminal package node `[124]` is entered with.  The second is the
-      -- descent's own measure -- peeling an entry strictly decreases the active
-      -- set -- which is why the loop back to `[89]` terminates.
+      -- Node `[123]`, route-8 pressure descent.
       (∀ residual : Graph.Route8.Data
           (Graph.HasCycleWithLength data.LengthOK) object,
         (residual.Reduced → residual.TwoCarrierEntry) ∧
           ∀ active : Finset residual.Index, ∀ index ∈ active,
             (active.erase index).card < active.card)
   | .route8Closed, object =>
-      -- Node `[124]`, `thm:typeA-two-carrier-nogo` with
-      -- `prop:typeA-route8-closure-from-nogo`: no large-budget route-8
-      -- collection exists, which is what closes the arm against node `[109]`'s
-      -- own fact.
+      -- Node `[124]`, route-8 closure.
       (¬ ∃ residual : Graph.Route8.Data
           (Graph.HasCycleWithLength data.LengthOK) object,
         residual.LargeBudget)
@@ -4182,6 +4167,7 @@ def label : Key → String
   | .typeAExitSixFree => "typeAExitSixFree"
   | .typeAExitSixProper => "typeAExitSixProper"
   | .typeAExitSixGlobal => "typeAExitSixGlobal"
+  | .typeAExitSevenProduced => "typeAExitSevenProduced"
   | .route8Residual => "route8Residual"
   | .route8Free => "route8Free"
   | .route8Burden => "route8Burden"
@@ -4342,6 +4328,7 @@ example : label .typeAExitSix = "typeAExitSix" := rfl
 example : label .typeAExitSixFree = "typeAExitSixFree" := rfl
 example : label .typeAExitSixProper = "typeAExitSixProper" := rfl
 example : label .typeAExitSixGlobal = "typeAExitSixGlobal" := rfl
+example : label .typeAExitSevenProduced = "typeAExitSevenProduced" := rfl
 example : label .route8Residual = "route8Residual" := rfl
 example : label .route8Free = "route8Free" := rfl
 example : label .route8Burden = "route8Burden" := rfl
@@ -4501,6 +4488,7 @@ def idx : Key → Nat
   | .typeAExitSixFree => 99
   | .typeAExitSixProper => 100
   | .typeAExitSixGlobal => 101
+  | .typeAExitSevenProduced => 158
   | .route8Residual => 102
   | .route8Free => 103
   | .route8Burden => 104
@@ -4644,6 +4632,7 @@ def ofIdx : Nat → Key
   | 99 => .typeAExitSixFree
   | 100 => .typeAExitSixProper
   | 101 => .typeAExitSixGlobal
+  | 158 => .typeAExitSevenProduced
   | 102 => .route8Residual
   | 103 => .route8Free
   | 104 => .route8Burden
@@ -4937,6 +4926,9 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixProper") 100
   | .typeAExitSixGlobal =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixGlobal") 101
+  | .typeAExitSevenProduced =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeAExitSevenProduced") 158
   | .route8Residual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8Residual") 102
   | .route8Free =>

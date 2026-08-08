@@ -56,14 +56,6 @@ noncomputable def exitOne
     Decision (K .typeAExitOneReturn) (K .typeAExitOneFree) history :=
   typeAExitOne history (by simp) (by simp)
 
-/-- **The whole node, run: one arm closed, one arm continuing to node `[97]`.** -/
-noncomputable def run
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeAVisibleEntryKeys) :
-    ExitOneResult selected typeAVisibleEntryKeys :=
-  runExitOne history (by simp) (by simp) (by simp)
-
 /-! ## What the two exits carry -/
 
 /-- **The two arms of node `[95]` are distinct branches.**  Neither index

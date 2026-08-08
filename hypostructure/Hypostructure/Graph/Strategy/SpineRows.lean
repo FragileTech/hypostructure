@@ -5244,6 +5244,155 @@ noncomputable def typeAExitSixScopeDichotomy
       · exact ⟨.inr (encodeGlobal global)⟩)
     properFresh globalFresh
 
+/-! ## Nodes `[107]`--`[109]`: exit `(7)` and route-8 residual
+
+The predecessor is the exact selected no-exit-`(6)` fact.  Node `[107]`
+decides only whether that same selected saturated handoff state produces a
+decorated handoff envelope.  Node `[108]` records the admissible Type B
+interface for the produced envelope.  Node `[109]` commits the route-8 residual
+fact from the selected no-handoff branch.
+-/
+
+noncomputable def typeAExitSevenDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeAExitSixFree typeAExitSevenProduced typeAExitSevenFree :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeAExitSixFree known]
+    (freeOf : typeAExitSixFree.At current →
+      SelectedNoExitSixWith data current.object (fun _ _ => True))
+    (encodeProduced :
+      SelectedNoExitSixWith data current.object
+        (fun packing piece =>
+          HandoffProduced data current.object packing piece) →
+        typeAExitSevenProduced.At current)
+    (encodeFree :
+      SelectedNoExitSixWith data current.object
+        (fun packing piece =>
+          ¬ HandoffProduced data current.object packing piece) →
+        typeAExitSevenFree.At current)
+    (producedFresh : typeAExitSevenProduced ∉ known)
+    (freeFresh : typeAExitSevenFree ∉ known) :
+    Decision typeAExitSevenProduced typeAExitSevenFree previous :=
+  Decision.run previous typeAExitSevenProduced typeAExitSevenFree
+    `Hypostructure.Graph.Strategy.Spine.typeAExitSevenDichotomy
+    (by
+      classical
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
+        noCompression, noDelocalization, _⟩ :=
+        freeOf (ExactLedger.get previous typeAExitSixFree)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      by_cases produced :
+          HandoffProduced data current.object packing piece
+      · exact ⟨.inl (encodeProduced
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
+            noCompression, noDelocalization, produced⟩)⟩
+      · exact ⟨.inr (encodeFree
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
+            noCompression, noDelocalization, produced⟩)⟩)
+    producedFresh freeFresh
+
+@[reducible] noncomputable def typeAExitSevenHandoffRow
+    (selection uncompressible typeAExitSevenProduced typeAExitSevenHandoff :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinctRequired :
+      [selection, uncompressible, typeAExitSevenProduced].Nodup)
+    (avoidsOf : (input : Input BranchState Presentation presentation data) →
+      selection.At input →
+        ¬ Graph.HasCycleWithLength data.LengthOK input.object)
+    (uncompressibleOf :
+      (input : Input BranchState Presentation presentation data) →
+        uncompressible.At input →
+          ∀ support : Finset input.object.Vertex,
+            ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) input.object support)
+    (producedOf :
+      (input : Input BranchState Presentation presentation data) →
+        typeAExitSevenProduced.At input →
+          SelectedNoExitSixWith data input.object
+            (fun packing piece =>
+              HandoffProduced data input.object packing piece))
+    (encode :
+      (input : Input BranchState Presentation presentation data) →
+        SelectedNoExitSixWith data input.object
+          (fun packing piece =>
+            HandoffAdmissible data input.object packing piece) →
+        typeAExitSevenHandoff.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeAExitSevenHandoff
+    { Requires := [selection, uncompressible, typeAExitSevenProduced]
+      Produces := [typeAExitSevenHandoff]
+      requiresUnique := distinctRequired
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let produced :=
+        producedOf inputs.current (inputs.get typeAExitSevenProduced)
+      .cons (key := typeAExitSevenHandoff)
+        (encode inputs.current (by
+          obtain ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
+            noCompression, noDelocalization, producedEnvelope⟩ := produced
+          let piece := inputs.current.object.pieceSupport
+            (inputs.current.object.remainderSupport packing) component
+          obtain ⟨envelope, coreEq, decorated⟩ := producedEnvelope
+          have inside : piece ⊆
+              inputs.current.object.remainderSupport packing :=
+            inputs.current.object.pieceSupport_subset
+              (inputs.current.object.remainderSupport packing) component
+          have windowFree :
+              handoffWindowFree data inputs.current.object envelope.core := by
+            intro window subset windowInduces
+            exact
+              (inputs.current.object.not_inducesWindow_of_subset_remainderSupport
+                maximal (fun vertex member => inside (by
+                  simpa [piece, coreEq] using subset member))) windowInduces
+          have admissible :
+              Graph.DecoratedHandoff.Admissible inputs.current.object
+                data.LengthOK (handoffUncompressible data inputs.current.object)
+                (handoffWindowFree data inputs.current.object) envelope :=
+            Graph.DecoratedHandoff.admissible_of_envelope
+              (avoidsOf inputs.current (inputs.get selection)) windowFree
+              (uncompressibleOf inputs.current (inputs.get uncompressible))
+          exact
+            ⟨packing, valid, maximal, component, present, negative, zero,
+              receiver, isReceiver, peeled, peeledSubset, saturated,
+              noExitFour, noCompression, noDelocalization,
+              ⟨envelope, coreEq, decorated, admissible⟩⟩))
+        .nil)
+
+@[reducible] noncomputable def route8ResidualRow
+    (typeAExitSevenFree route8Residual :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : typeAExitSevenFree ≠ route8Residual)
+    (freeOf :
+      (input : Input BranchState Presentation presentation data) →
+        typeAExitSevenFree.At input →
+          SelectedNoExitSixWith data input.object
+            (fun packing piece =>
+              ¬ HandoffProduced data input.object packing piece))
+    (encode :
+      (input : Input BranchState Presentation presentation data) →
+        SelectedNoExitSixWith data input.object
+          (fun packing piece =>
+            ¬ HandoffProduced data input.object packing piece) →
+        route8Residual.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8Residual
+    (rowManifest typeAExitSevenFree route8Residual distinct)
+    (fun inputs =>
+      let free := freeOf inputs.current (inputs.get typeAExitSevenFree)
+      .cons (key := route8Residual) (encode inputs.current free) .nil)
+
 /-! ## Node `[95]`: exit `(1)`, the Mersenne anchored return
 
 `def:typeA-saturated-exits` (1): *"an anchored return through a completion port

@@ -100,16 +100,6 @@ abbrev visibleExitKeys :
   [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
     K .returnAvoidance, K .selection]
 
-noncomputable def exitsOneThroughThree
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected visibleExitKeys) :
-    ExitChainResult selected visibleExitKeys :=
-  runExitChain history (by simp [visibleExitKeys])
-    (by simp [visibleExitKeys]) (by simp [visibleExitKeys])
-    (by simp [visibleExitKeys]) (by simp [visibleExitKeys])
-    (by simp [visibleExitKeys]) (by simp [visibleExitKeys])
-
 end
 
 end Hypostructure.Fixtures.TypeASelectedResidualWiring

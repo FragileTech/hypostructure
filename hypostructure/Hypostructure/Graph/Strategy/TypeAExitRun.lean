@@ -103,48 +103,6 @@ abbrev typeAExitOneFreeKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitOneFree :: known
 
-/-- **The exits of node `[95]`.**
-
-`closed` is the terminal `lem:typeA-exits-discharged` records for exit `(1)`,
-with Core's closure key appended from the two incompatible facts; `free` is the
-alternative the saturated exit list continues on at node `[97]`. -/
-inductive ExitOneResult
-    (selected : Input BranchState Presentation presentation data)
-    (known : FactKeys (Input BranchState Presentation presentation data)) where
-  | closed
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitOneClosedKeys known))
-  | free
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitOneFreeKeys known))
-
-/-- **Exit `(1)` of `def:typeA-saturated-exits`, run.**
-
-The decision commits one arm; on the arm that carries the accepted return the
-closure key is appended by `closeIncompatible` from node `[95]`'s fact and the
-return-avoidance invariant, both read by exact key off the incoming index.
-Nothing is transported between the two arms, and the arm not taken is absent
-from the taken branch's index. -/
-noncomputable def runExitOne
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    [FactKeys.Has (K (data := data) .returnAvoidance) known]
-    [FactKeys.Has (K (data := data) .typeAVisibleEntry) known]
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current known)
-    (returnFresh : K (data := data) .typeAExitOneReturn ∉ known)
-    (freeFresh : K (data := data) .typeAExitOneFree ∉ known)
-    (closureFresh : closed (BranchState := BranchState)
-      (presentation := presentation) (data := data) ∉ known) :
-    ExitOneResult current known := by
-  classical
-  match typeAExitOne history returnFresh freeFresh with
-  | .left realized =>
-      exact .closed
-        (closeIncompatible realized (K .returnAvoidance) (K .typeAExitOneReturn)
-          (by simp [closureFresh]))
-  | .right free => exact .free free
-
 /-! ## What the two exits carry -/
 
 theorem exitOneClosed_audit_accounts_for_every_fact
@@ -252,48 +210,6 @@ abbrev typeAExitTwoFreeKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitTwoFree :: known
-
-/-- **The exits of node `[97]`.**
-
-`closed` is the terminal `lem:typeA-exits-discharged` records for exit `(2)`;
-`free` is the alternative the saturated exit list continues on at node
-`[99]`. -/
-inductive ExitTwoResult
-    (selected : Input BranchState Presentation presentation data)
-    (known : FactKeys (Input BranchState Presentation presentation data)) where
-  | closed
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitTwoClosedKeys known))
-  | free
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitTwoFreeKeys known))
-
-/-- **Exit `(2)` of `def:typeA-saturated-exits`, run.**
-
-The decision commits one arm; on the arm that carries the theta the closure key
-is appended by `closeIncompatible` from node `[97]`'s fact and node `[1]`'s
-selection, both read by exact key off the incoming index.  Nothing is
-transported between the two arms, and the arm not taken is absent from the
-taken branch's index. -/
-noncomputable def runExitTwo
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    [FactKeys.Has (K (data := data) .selection) known]
-    [FactKeys.Has (K (data := data) .typeAVisibleEntry) known]
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current known)
-    (thetaFresh : K (data := data) .typeAExitTwoTheta ∉ known)
-    (freeFresh : K (data := data) .typeAExitTwoFree ∉ known)
-    (closureFresh : closed (BranchState := BranchState)
-      (presentation := presentation) (data := data) ∉ known) :
-    ExitTwoResult current known := by
-  classical
-  match typeAExitTwo history thetaFresh freeFresh with
-  | .left realized =>
-      exact .closed
-        (closeIncompatible realized (K .selection) (K .typeAExitTwoTheta)
-          (by simp [closureFresh]))
-  | .right free => exact .free free
 
 /-! ## What the two exits carry -/
 
@@ -416,48 +332,6 @@ abbrev typeAExitThreeFreeKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitThreeFree :: known
-
-/-- **The exits of node `[99]`.**
-
-`closed` is the terminal `lem:typeA-exits-discharged` records for exit `(3)`;
-`free` is the exact exit-`(3)`-free alternative; no later exit key is appended
-here. -/
-inductive ExitThreeResult
-    (selected : Input BranchState Presentation presentation data)
-    (known : FactKeys (Input BranchState Presentation presentation data)) where
-  | closed
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitThreeClosedKeys known))
-  | free
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitThreeFreeKeys known))
-
-/-- **Exit `(3)` of `def:typeA-saturated-exits`, run.**
-
-The decision commits one arm; on the arm that carries the collision the closure
-key is appended by `closeIncompatible` from node `[99]`'s fact and node `[1]`'s
-selection, both read by exact key off the incoming index.  Nothing is
-transported between the two arms, and the arm not taken is absent from the taken
-branch's index. -/
-noncomputable def runExitThree
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    [FactKeys.Has (K (data := data) .selection) known]
-    [FactKeys.Has (K (data := data) .typeAVisibleEntry) known]
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current known)
-    (collisionFresh : K (data := data) .typeAExitThreeCollision ∉ known)
-    (freeFresh : K (data := data) .typeAExitThreeFree ∉ known)
-    (closureFresh : closed (BranchState := BranchState)
-      (presentation := presentation) (data := data) ∉ known) :
-    ExitThreeResult current known := by
-  classical
-  match typeAExitThree history collisionFresh freeFresh with
-  | .left realized =>
-      exact .closed
-        (closeIncompatible realized (K .selection)
-          (K .typeAExitThreeCollision) (by simp [closureFresh]))
-  | .right free => exact .free free
 
 /-! ## Node `[101]`: exit `(4)`, the target-defect peeling witness -/
 
@@ -610,6 +484,44 @@ noncomputable def typeAExitSixScope
     (fun fact => fact.down) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
     properFresh globalFresh
 
+noncomputable def typeAExitSeven
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .typeAExitSixFree) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (producedFresh : K (data := data) .typeAExitSevenProduced ∉ known)
+    (freeFresh : K (data := data) .typeAExitSevenFree ∉ known) :
+    Decision (K (data := data) .typeAExitSevenProduced)
+      (K (data := data) .typeAExitSevenFree) history :=
+  typeAExitSevenDichotomy history (K .typeAExitSixFree)
+    (K .typeAExitSevenProduced) (K .typeAExitSevenFree)
+    (fun fact => by
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
+        noCompression, noDelocalization⟩ := fact.down
+      exact
+        ⟨packing, valid, maximal, component, present, negative, zero,
+          receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
+          noCompression, noDelocalization, trivial⟩)
+    (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+    producedFresh freeFresh
+
+@[reducible] noncomputable def typeAExitSevenHandoff :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  typeAExitSevenHandoffRow (K .selection) (K .uncompressible)
+    (K .typeAExitSevenProduced) (K .typeAExitSevenHandoff)
+    (by simp)
+    (fun _ fact => fact.down.1)
+    (fun _ fact => fact.down)
+    (fun _ fact => fact.down)
+    (fun _ value => ⟨value⟩)
+
+@[reducible] noncomputable def route8Residual :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  route8ResidualRow (K .typeAExitSevenFree) (K .route8Residual)
+    (by simp) (fun _ fact => fact.down) (fun _ value => ⟨value⟩)
+
 abbrev typeAExitFourLoopKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -669,6 +581,26 @@ abbrev typeAExitSixGlobalKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitSixGlobal :: typeAExitSixKeys known
+
+abbrev typeAExitSevenProducedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSevenProduced :: typeAExitSixFreeKeys known
+
+abbrev typeAExitSevenHandoffKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSevenHandoff :: typeAExitSevenProducedKeys known
+
+abbrev typeAExitSevenFreeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSevenFree :: typeAExitSixFreeKeys known
+
+abbrev route8ResidualKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .route8Residual :: typeAExitSevenFreeKeys known
 
 abbrev typeAExitFourReceiverDischargedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
@@ -940,59 +872,5 @@ The three rows compose on one immutable prefix: each exit's free arm is the
 cursor the next exit is asked on, and every fact of the prefix -- the selection,
 the return avoidance, node `[93]`'s port -- remains in the index each later row
 receives. -/
-
-/-- **The exits of the chain `[95]` → `[97]` → `[99]`.** -/
-inductive ExitChainResult
-    (selected : Input BranchState Presentation presentation data)
-    (known : FactKeys (Input BranchState Presentation presentation data)) where
-  | exitOneClosed
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitOneClosedKeys known))
-  | exitTwoClosed
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitTwoClosedKeys (typeAExitOneFreeKeys known)))
-  | exitThreeClosed
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitThreeClosedKeys
-          (typeAExitTwoFreeKeys (typeAExitOneFreeKeys known))))
-  | free
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitThreeFreeKeys
-          (typeAExitTwoFreeKeys (typeAExitOneFreeKeys known))))
-
-/-- **Exits `(1)`, `(2)` and `(3)`, run in the manuscript's order.**
-
-Each later row's requirements are discharged against the previous exit's free
-index, which still carries them: `def:typeA-saturated-exits` is a list walked on
-one branch, not a set of independent questions. -/
-noncomputable def runExitChain
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    [FactKeys.Has (K (data := data) .selection) known]
-    [FactKeys.Has (K (data := data) .returnAvoidance) known]
-    [FactKeys.Has (K (data := data) .typeAVisibleEntry) known]
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current known)
-    (returnFresh : K (data := data) .typeAExitOneReturn ∉ known)
-    (oneFreeFresh : K (data := data) .typeAExitOneFree ∉ known)
-    (thetaFresh : K (data := data) .typeAExitTwoTheta ∉ known)
-    (twoFreeFresh : K (data := data) .typeAExitTwoFree ∉ known)
-    (collisionFresh : K (data := data) .typeAExitThreeCollision ∉ known)
-    (threeFreeFresh : K (data := data) .typeAExitThreeFree ∉ known)
-    (closureFresh : closed (BranchState := BranchState)
-      (presentation := presentation) (data := data) ∉ known) :
-    ExitChainResult current known := by
-  classical
-  match runExitOne history returnFresh oneFreeFresh closureFresh with
-  | .closed closedHistory => exact .exitOneClosed closedHistory
-  | .free freeHistory =>
-      match runExitTwo freeHistory (by simp [thetaFresh])
-          (by simp [twoFreeFresh]) (by simp [closureFresh]) with
-      | .closed closedHistory => exact .exitTwoClosed closedHistory
-      | .free continuing =>
-          match runExitThree continuing (by simp [collisionFresh])
-              (by simp [threeFreeFresh]) (by simp [closureFresh]) with
-          | .closed closedHistory => exact .exitThreeClosed closedHistory
-          | .free surviving => exact .free surviving
 
 end Hypostructure.Graph.Strategy.Spine

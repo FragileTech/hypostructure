@@ -64,15 +64,6 @@ noncomputable def exitThree
     Decision (K .typeAExitThreeCollision) (K .typeAExitThreeFree) history :=
   typeAExitThree history (by simp) (by simp)
 
-/-- **The whole node, run: one arm closed, one arm continuing to node
-`[101]`.** -/
-noncomputable def run
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected entryKeys) :
-    ExitThreeResult selected entryKeys :=
-  runExitThree history (by simp) (by simp) (by simp)
-
 /-! ## What the two exits carry -/
 
 /-- **The two arms of node `[99]` are distinct branches.**  Neither index

@@ -58,24 +58,6 @@ noncomputable def exitTwo
     Decision (K .typeAExitTwoTheta) (K .typeAExitTwoFree) history :=
   typeAExitTwo history (by simp) (by simp)
 
-/-- **The whole node, run: one arm closed, one arm continuing to node `[99]`.** -/
-noncomputable def run
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitOneFreeKeys typeAVisibleEntryKeys)) :
-    ExitTwoResult selected (typeAExitOneFreeKeys typeAVisibleEntryKeys) :=
-  runExitTwo history (by simp) (by simp) (by simp)
-
-/-- **The chain `[95]` → `[97]` → `[99]`, run on node `[93]`'s cursor.**  The
-exits are walked in the manuscript's order on one immutable prefix. -/
-noncomputable def runChain
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeAVisibleEntryKeys) :
-    ExitChainResult selected typeAVisibleEntryKeys :=
-  runExitChain history (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp)
-
 /-! ## What the two exits carry -/
 
 /-- **The two arms of node `[97]` are distinct branches.**  Neither index

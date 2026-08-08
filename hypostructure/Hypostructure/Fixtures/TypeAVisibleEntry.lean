@@ -386,8 +386,8 @@ noncomputable def visibleExitOne
     [FactKeys.Has (K (data := data) .returnAvoidance) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected (residualCTypeAVisibleEntryKeys known)) :
-    ExitOneResult selected (residualCTypeAVisibleEntryKeys known) :=
-  runExitOne history (by simp) (by simp) (by simp)
+    Decision (K .typeAExitOneReturn) (K .typeAExitOneFree) history :=
+  typeAExitOne history (by simp) (by simp)
 
 theorem unsaturatedClosed_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
