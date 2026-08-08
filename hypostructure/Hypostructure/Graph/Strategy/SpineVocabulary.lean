@@ -931,26 +931,18 @@ inductive Key where
   after no exit `(4)` carries no target-complete proper-support compression,
   so the branch may continue to exit `(6)`. -/
   | typeAExitFiveFree
-  /-- Node `[105]`, yes arm: some indexed route-8 entry has an equality among
-  the declared coordinates of its trace-basin reading that becomes
-  target-complete only after adjoining a larger connected support `Z ⊋ B_u`.
-  This is clause (c) of `def:typeA-trace-basin`, which is exit `(6)`, the
-  response delocalization. -/
+  /-- Node `[105]`, yes arm: the selected saturated-handoff residual, after
+  exits `(4)` and `(5)` have failed, has a response equality that becomes
+  target-complete only after adjoining a larger connected support. -/
   | typeAExitSix
-  /-- Node `[105]`, no arm: exit `(6)` is absent, which is (R2) of
-  `def:typeA-true-route8-residual` for exit `(6)`: no equality among an indexed
-  entry's declared coordinates delocalizes to a larger connected support. -/
+  /-- Node `[105]`, no arm: that same selected residual has no exit-`(6)`
+  delocalization, so it can continue to exit `(7)`. -/
   | typeAExitSixFree
-  /-- Node `[105]`, the scope test's yes arm — the terminal `[106]`, proper
-  case: the enlarging support is proper in `G`, so by `lem:proper-smearing` the
-  dependence is a replacement of that proper boundaried support, which the
-  selection's own uncompressibility and minimality exclude. -/
+  /-- Node `[106]`, proper scope: the enlarging support is proper in `G`, so
+  `lem:proper-smearing` gives the replacement contradiction. -/
   | typeAExitSixProper
-  /-- Node `[105]`, the same test's no arm — the terminal `[106]`, global case:
-  the enlarging support is the whole graph, so by
-  `lem:no-silent-global-smearing` the quotient supplies a strictly smaller
-  admissible closed representative, which contradicts the selection's
-  minimality. -/
+  /-- Node `[106]`, global scope: `lem:no-silent-global-smearing` gives a
+  strictly smaller closed representative. -/
   | typeAExitSixGlobal
   /-- Node `[109]`, the route-8 arm: the object carries an admissible true
   large-budget route-8 carrier residual -- `def:typeA-silent-core-residual`'s
@@ -3582,29 +3574,114 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                           (Graph.MinimumDegreeAtLeast data.threshold)
                           (Graph.HasCycleWithLength data.LengthOK) object support)
   | .typeAExitSix, object =>
-      -- Node `[105]`, yes: some indexed entry carries clause (c) of
-      -- `def:typeA-trace-basin` -- an equality among its declared coordinates
-      -- that becomes target-complete only at a larger connected support.
-      (∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        ∃ index ∈ residual.entries,
-          residual.Delocalizes
-            (Graph.MinimumDegreeAtLeast data.threshold) index)
+      -- Node `[105]`, yes: the selected saturated handoff state, after exits
+      -- `(4)` and `(5)` have failed, carries an equality of declared response
+      -- coordinates that becomes target-complete only after adjoining a larger
+      -- connected support.  The witness is tied to the incoming residual; it is
+      -- not an arbitrary route-8 collection.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset object.Vertex,
+            object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ object.canonicalPieces
+              (object.remainderSupport packing),
+            let piece := object.pieceSupport
+              (object.remainderSupport packing) component
+            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+              object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : object.Vertex,
+                object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset object.Vertex,
+                    peeled ⊆ object.routedLoads piece data.threshold receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ((∃ package :
+                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                            data.threshold data.dischargeScale receiver peeled,
+                        ¬ ∃ witness : Graph.ExitFour.Witness
+                            (Graph.HasCycleWithLength data.LengthOK) piece
+                            data.threshold receiver peeled,
+                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                              piece data.threshold data.dischargeScale receiver
+                              package.outside peeled,
+                            witness.load = load) ∨
+                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                            data.threshold data.dischargeScale receiver peeled ∧
+                          ¬ ∃ witness : Graph.ExitFour.Witness
+                              (Graph.HasCycleWithLength data.LengthOK) piece
+                              data.threshold receiver peeled,
+                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                              data.threshold data.dischargeScale receiver peeled)) ∧
+                      (¬ ∃ support : Finset object.Vertex,
+                        Graph.Strategy.InterfaceReplacement.CompressibleSupport
+                          (Graph.MinimumDegreeAtLeast data.threshold)
+                          (Graph.HasCycleWithLength data.LengthOK) object
+                          support) ∧
+                      ∃ presented : Graph.Route8.PresentedEntry object,
+                        Nonempty
+                          (Graph.Route8.Delocalization
+                            (Graph.MinimumDegreeAtLeast data.threshold)
+                            (Graph.HasCycleWithLength data.LengthOK)
+                            presented))
   | .typeAExitSixFree, object =>
-      -- Node `[105]`, no -- (R2) for exit `(6)`.
-      (Graph.Route8.DelocalizationFree
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object)
+      -- Node `[105]`, no: the same selected saturated handoff state has no
+      -- exit-`(6)` delocalization witness.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset object.Vertex,
+            object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ object.canonicalPieces
+              (object.remainderSupport packing),
+            let piece := object.pieceSupport
+              (object.remainderSupport packing) component
+            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+              object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : object.Vertex,
+                object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset object.Vertex,
+                    peeled ⊆ object.routedLoads piece data.threshold receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ((∃ package :
+                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                            data.threshold data.dischargeScale receiver peeled,
+                        ¬ ∃ witness : Graph.ExitFour.Witness
+                            (Graph.HasCycleWithLength data.LengthOK) piece
+                            data.threshold receiver peeled,
+                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                              piece data.threshold data.dischargeScale receiver
+                              package.outside peeled,
+                            witness.load = load) ∨
+                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                            data.threshold data.dischargeScale receiver peeled ∧
+                          ¬ ∃ witness : Graph.ExitFour.Witness
+                              (Graph.HasCycleWithLength data.LengthOK) piece
+                              data.threshold receiver peeled,
+                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                              data.threshold data.dischargeScale receiver peeled)) ∧
+                      (¬ ∃ support : Finset object.Vertex,
+                        Graph.Strategy.InterfaceReplacement.CompressibleSupport
+                          (Graph.MinimumDegreeAtLeast data.threshold)
+                          (Graph.HasCycleWithLength data.LengthOK) object
+                          support) ∧
+                      ¬ ∃ presented : Graph.Route8.PresentedEntry object,
+                        Nonempty
+                          (Graph.Route8.Delocalization
+                            (Graph.MinimumDegreeAtLeast data.threshold)
+                            (Graph.HasCycleWithLength data.LengthOK)
+                            presented))
   | .typeAExitSixProper, object =>
-      -- Node `[105]`, the scope test's proper case: `lem:proper-smearing`'s
-      -- conclusion at the enlarging support `Z ⊊ G`.
+      -- Node `[106]`, proper scope: `lem:proper-smearing` returns a
+      -- proper-support replacement for the selected delocalization.
       (∃ support : Finset object.Vertex,
         Graph.Strategy.InterfaceReplacement.ReplacementSupport
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object support)
   | .typeAExitSixGlobal, object =>
-      -- Node `[105]`, the scope test's global case:
-      -- `lem:no-silent-global-smearing`'s conclusion at `Z = G`.
+      -- Node `[106]`, global scope: `lem:no-silent-global-smearing` returns a
+      -- strictly smaller closed representative.
       (∃ representative : Graph.FiniteObject.{u},
         representative.LexicographicallySmaller object ∧
           Graph.MinimumDegreeAtLeast data.threshold representative ∧

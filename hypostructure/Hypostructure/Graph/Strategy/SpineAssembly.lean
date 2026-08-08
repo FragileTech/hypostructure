@@ -369,8 +369,13 @@ run after either of the two B2 cursors. -/
 /-- Nodes `[73]`/`[75]` and `[83]`/`[84]`, run on each Type B bridge residual
 cursor that the local fan walk produces. -/
 @[reducible] noncomputable def bridgeFanMass :
+    (bridgeResidual :
+      FactKey (Input BranchState Presentation presentation data)) →
+    bridgeResidual ≠ K .typeBBridgeMass →
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  bridgeFanMassRow (K .typeBBridgeMass) (fun _input value => ⟨value⟩)
+  fun bridgeResidual distinct =>
+  bridgeFanMassRow bridgeResidual (K .typeBBridgeMass) distinct
+    (fun _input _bridgeResidual value => ⟨value⟩)
 
 end Rows
 
@@ -422,6 +427,22 @@ noncomputable instance instIncompatibleGlobalBarrier :
     obtain ⟨_packing, _valid, _quotient, _certified, reading⟩ := barrier.down
     exact not_globalBarrierReading residual.baseline residual.branchState
       selected.down.1 selected.down.2 reading
+
+noncomputable instance instIncompatibleTypeAExitSixProper :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .selection) (K .typeAExitSixProper) where
+  contradiction := fun residual selected proper => by
+    obtain ⟨_support, replacement⟩ := proper.down
+    exact not_globalBarrierReading residual.baseline residual.branchState
+      selected.down.1 selected.down.2 (Or.inl replacement)
+
+noncomputable instance instIncompatibleTypeAExitSixGlobal :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .selection) (K .typeAExitSixGlobal) where
+  contradiction := fun residual selected global => by
+    exact not_globalBarrierReading residual.baseline residual.branchState
+      selected.down.1 selected.down.2
+      (support := (∅ : Finset residual.object.Vertex)) (Or.inr global.down)
 
 /-- **The node-`[72]` closing arm is uninhabited**, at the spine's own keys.
 
@@ -1263,7 +1284,8 @@ noncomputable def runTypeBFanLedger
       (by simp [markedFresh]) (by simp [certResidualFresh]) with
   | .right certResidual =>
       exact .certificateResidualMass
-        ((bridgeFanMass (data := data)).run certResidual (by simp [massFresh]))
+        ((bridgeFanMass (data := data) (K .fanCertificateResidual) (by simp)).run
+          certResidual (by simp [massFresh]))
   | .left marked =>
   -- Node `[72]`/`[81]`, first half: are the direct fan-window cycles present?
   match directCycleDichotomy marked (K .typeBDirectCycle)
@@ -1290,8 +1312,9 @@ noncomputable def runTypeBFanLedger
               (by simp [disjointFresh]))
       | .right obstructionHistory =>
           exact .overlapObstructionMass
-            ((bridgeFanMass (data := data)).run obstructionHistory
-              (by simp [massFresh]))
+            ((bridgeFanMass (data := data) (K .typeBOverlapObstruction)
+                (by simp)).run
+              obstructionHistory (by simp [massFresh]))
 
 /-- The exact exits of the node-`[64]` Type B entry walk.  The heavy and
 degree-four arms share `runTypeBFanLedger`; only their immutable prefixes
@@ -1524,10 +1547,10 @@ inductive Result (selected : Input BranchState Presentation presentation data)
                     (typeAExitTwoFreeKeys
                       (typeAExitOneFreeKeys
                         (residualCTypeAVisibleEntryKeys known))))))))))
-  | typeASaturatedVisibleExitFiveFree
+  | typeASaturatedVisibleExitSixProperClosed
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitFiveFreeKeys
+        selected (closed :: typeAExitSixProperKeys (typeAExitFiveFreeKeys
           (typeASaturatedHandoffExitFourFreeKeys
             (typeASaturatedHandoffVisibleKeys
               (typeAExitFourFiniteDescentKeys
@@ -1535,7 +1558,31 @@ inductive Result (selected : Input BranchState Presentation presentation data)
                   (typeAExitThreeFreeKeys
                     (typeAExitTwoFreeKeys
                       (typeAExitOneFreeKeys
-                        (residualCTypeAVisibleEntryKeys known))))))))))
+                        (residualCTypeAVisibleEntryKeys known)))))))))))
+  | typeASaturatedVisibleExitSixGlobalClosed
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (closed :: typeAExitSixGlobalKeys (typeAExitFiveFreeKeys
+          (typeASaturatedHandoffExitFourFreeKeys
+            (typeASaturatedHandoffVisibleKeys
+              (typeAExitFourFiniteDescentKeys
+                (typeAExitFourLoopKeys
+                  (typeAExitThreeFreeKeys
+                    (typeAExitTwoFreeKeys
+                      (typeAExitOneFreeKeys
+                        (residualCTypeAVisibleEntryKeys known)))))))))))
+  | typeASaturatedVisibleExitSixFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitSixFreeKeys (typeAExitFiveFreeKeys
+          (typeASaturatedHandoffExitFourFreeKeys
+            (typeASaturatedHandoffVisibleKeys
+              (typeAExitFourFiniteDescentKeys
+                (typeAExitFourLoopKeys
+                  (typeAExitThreeFreeKeys
+                    (typeAExitTwoFreeKeys
+                      (typeAExitOneFreeKeys
+                        (residualCTypeAVisibleEntryKeys known)))))))))))
   | typeASaturatedSilentExitFour
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
@@ -1570,10 +1617,10 @@ inductive Result (selected : Input BranchState Presentation presentation data)
                     (typeAExitTwoFreeKeys
                       (typeAExitOneFreeKeys
                         (residualCTypeAVisibleEntryKeys known))))))))))
-  | typeASaturatedSilentExitFiveFree
+  | typeASaturatedSilentExitSixProperClosed
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (typeAExitFiveFreeKeys
+        selected (closed :: typeAExitSixProperKeys (typeAExitFiveFreeKeys
           (typeASaturatedHandoffExitFourFreeKeys
             (typeASaturatedHandoffSilentKeys
               (typeAExitFourFiniteDescentKeys
@@ -1581,7 +1628,31 @@ inductive Result (selected : Input BranchState Presentation presentation data)
                   (typeAExitThreeFreeKeys
                     (typeAExitTwoFreeKeys
                       (typeAExitOneFreeKeys
-                        (residualCTypeAVisibleEntryKeys known))))))))))
+                        (residualCTypeAVisibleEntryKeys known)))))))))))
+  | typeASaturatedSilentExitSixGlobalClosed
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (closed :: typeAExitSixGlobalKeys (typeAExitFiveFreeKeys
+          (typeASaturatedHandoffExitFourFreeKeys
+            (typeASaturatedHandoffSilentKeys
+              (typeAExitFourFiniteDescentKeys
+                (typeAExitFourLoopKeys
+                  (typeAExitThreeFreeKeys
+                    (typeAExitTwoFreeKeys
+                      (typeAExitOneFreeKeys
+                        (residualCTypeAVisibleEntryKeys known)))))))))))
+  | typeASaturatedSilentExitSixFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitSixFreeKeys (typeAExitFiveFreeKeys
+          (typeASaturatedHandoffExitFourFreeKeys
+            (typeASaturatedHandoffSilentKeys
+              (typeAExitFourFiniteDescentKeys
+                (typeAExitFourLoopKeys
+                  (typeAExitThreeFreeKeys
+                    (typeAExitTwoFreeKeys
+                      (typeAExitOneFreeKeys
+                        (residualCTypeAVisibleEntryKeys known)))))))))))
   | typeAExitFourReceiverDischarged
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
@@ -1685,6 +1756,12 @@ noncomputable def continueNegativeSupport
       K (data := data) .typeASaturatedHandoffExitFourFree ∉ known)
     (typeAExitFiveFresh : K (data := data) .typeAExitFive ∉ known)
     (typeAExitFiveFreeFresh : K (data := data) .typeAExitFiveFree ∉ known)
+    (typeAExitSixFresh : K (data := data) .typeAExitSix ∉ known)
+    (typeAExitSixFreeFresh : K (data := data) .typeAExitSixFree ∉ known)
+    (typeAExitSixProperFresh :
+      K (data := data) .typeAExitSixProper ∉ known)
+    (typeAExitSixGlobalFresh :
+      K (data := data) .typeAExitSixGlobal ∉ known)
     (typeAExitFourReceiverDischargedFresh :
       K (data := data) .typeAExitFourReceiverDischarged ∉ known)
     (typeAExitFourFreeFresh : K (data := data) .typeAExitFourFree ∉ known)
@@ -1793,8 +1870,34 @@ noncomputable def continueNegativeSupport
                                           (K .typeAExitFive)
                                           (by simp [closedFresh]))
                                   | .right exitFiveFreeHistory =>
-                                      exact .typeASaturatedVisibleExitFiveFree
-                                        exitFiveFreeHistory
+                                      match typeAExitSix exitFiveFreeHistory
+                                          (by simp [typeAExitSixFresh])
+                                          (by simp [typeAExitSixFreeFresh]) with
+                                      | .left exitSixHistory =>
+                                          match typeAExitSixScope exitSixHistory
+                                              (by
+                                                simp [typeAExitSixProperFresh])
+                                              (by
+                                                simp [typeAExitSixGlobalFresh]) with
+                                          | .left properHistory =>
+                                              exact
+                                                .typeASaturatedVisibleExitSixProperClosed
+                                                  (closeIncompatible
+                                                    properHistory
+                                                    (K .selection)
+                                                    (K .typeAExitSixProper)
+                                                    (by simp [closedFresh]))
+                                          | .right globalHistory =>
+                                              exact
+                                                .typeASaturatedVisibleExitSixGlobalClosed
+                                                  (closeIncompatible
+                                                    globalHistory
+                                                    (K .selection)
+                                                    (K .typeAExitSixGlobal)
+                                                    (by simp [closedFresh]))
+                                      | .right exitSixFreeHistory =>
+                                          exact .typeASaturatedVisibleExitSixFree
+                                            exitSixFreeHistory
                           | .right silentLoopHistory =>
                               match typeASaturatedHandoffSilentExitFour
                                   silentLoopHistory
@@ -1815,8 +1918,34 @@ noncomputable def continueNegativeSupport
                                           (K .typeAExitFive)
                                           (by simp [closedFresh]))
                                   | .right exitFiveFreeHistory =>
-                                      exact .typeASaturatedSilentExitFiveFree
-                                        exitFiveFreeHistory
+                                      match typeAExitSix exitFiveFreeHistory
+                                          (by simp [typeAExitSixFresh])
+                                          (by simp [typeAExitSixFreeFresh]) with
+                                      | .left exitSixHistory =>
+                                          match typeAExitSixScope exitSixHistory
+                                              (by
+                                                simp [typeAExitSixProperFresh])
+                                              (by
+                                                simp [typeAExitSixGlobalFresh]) with
+                                          | .left properHistory =>
+                                              exact
+                                                .typeASaturatedSilentExitSixProperClosed
+                                                  (closeIncompatible
+                                                    properHistory
+                                                    (K .selection)
+                                                    (K .typeAExitSixProper)
+                                                    (by simp [closedFresh]))
+                                          | .right globalHistory =>
+                                              exact
+                                                .typeASaturatedSilentExitSixGlobalClosed
+                                                  (closeIncompatible
+                                                    globalHistory
+                                                    (K .selection)
+                                                    (K .typeAExitSixGlobal)
+                                                    (by simp [closedFresh]))
+                                      | .right exitSixFreeHistory =>
+                                          exact .typeASaturatedSilentExitSixFree
+                                            exitSixFreeHistory
                       | .right dischargedHistory =>
                           exact .typeAExitFourReceiverDischarged
                             dischargedHistory
@@ -2032,6 +2161,10 @@ noncomputable def runCore
                             (typeASaturatedHandoffExitFourFreeFresh := by simp)
                             (typeAExitFiveFresh := by simp)
                             (typeAExitFiveFreeFresh := by simp)
+                            (typeAExitSixFresh := by simp)
+                            (typeAExitSixFreeFresh := by simp)
+                            (typeAExitSixProperFresh := by simp)
+                            (typeAExitSixGlobalFresh := by simp)
                             (typeAExitFourReceiverDischargedFresh := by simp)
                             (typeAExitFourFreeFresh := by simp)
                             (normalFresh := by simp) (heavyFresh := by simp)
@@ -2090,6 +2223,10 @@ noncomputable def runCore
                         (typeASaturatedHandoffExitFourFreeFresh := by simp)
                         (typeAExitFiveFresh := by simp)
                         (typeAExitFiveFreeFresh := by simp)
+                        (typeAExitSixFresh := by simp)
+                        (typeAExitSixFreeFresh := by simp)
+                        (typeAExitSixProperFresh := by simp)
+                        (typeAExitSixGlobalFresh := by simp)
                         (typeAExitFourReceiverDischargedFresh := by simp)
                         (typeAExitFourFreeFresh := by simp)
                         (normalFresh := by simp) (heavyFresh := by simp)

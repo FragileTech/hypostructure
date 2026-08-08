@@ -580,6 +580,36 @@ noncomputable def typeAExitFive
     (fun fact => fact.down) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
     exitFresh freeFresh
 
+noncomputable def typeAExitSix
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .typeAExitFiveFree) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (exitFresh : K (data := data) .typeAExitSix ∉ known)
+    (freeFresh : K (data := data) .typeAExitSixFree ∉ known) :
+    Decision (K (data := data) .typeAExitSix)
+      (K (data := data) .typeAExitSixFree) history :=
+  typeAExitSixDichotomy history (K .typeAExitFiveFree)
+    (K .typeAExitSix) (K .typeAExitSixFree)
+    (fun fact => fact.down) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+    exitFresh freeFresh
+
+noncomputable def typeAExitSixScope
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .typeAExitSix) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (properFresh : K (data := data) .typeAExitSixProper ∉ known)
+    (globalFresh : K (data := data) .typeAExitSixGlobal ∉ known) :
+    Decision (K (data := data) .typeAExitSixProper)
+      (K (data := data) .typeAExitSixGlobal) history :=
+  typeAExitSixScopeDichotomy history (K .typeAExitSix)
+    (K .typeAExitSixProper) (K .typeAExitSixGlobal)
+    (fun fact => fact.down) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+    properFresh globalFresh
+
 abbrev typeAExitFourLoopKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -619,6 +649,26 @@ abbrev typeAExitFiveFreeKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitFiveFree :: known
+
+abbrev typeAExitSixKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSix :: known
+
+abbrev typeAExitSixFreeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSixFree :: known
+
+abbrev typeAExitSixProperKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSixProper :: typeAExitSixKeys known
+
+abbrev typeAExitSixGlobalKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeAExitSixGlobal :: typeAExitSixKeys known
 
 abbrev typeAExitFourReceiverDischargedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :

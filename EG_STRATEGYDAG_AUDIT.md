@@ -516,8 +516,8 @@ bookkeeping; the first is not:
 | 23 | Certificate labelling [71]/[80] | `Spine.fanCertificateDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 24 | Direct-cycle removal [72] | `Spine.directCycleDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 25 | B2 ledger [72]/[81] | `Spine.b2AssignmentDichotomy` | ✅ | ✅ | ✅ | ✅ |
-| 26 | Hybrid B1 entry [74]/[82] | canonical `TypeBCanonicalB2` candidate payment; stale `Spine.hybridEntry` pending deletion | ❌ | ❌ | ❌ | ❌ |
-| 27 | Bridge fan-mass [73],[75],[83],[84] | overlap reflection and bridge consumer not yet implemented | ❌ | ❌ | ❌ | ❌ |
+| 26 | Hybrid B1 entry [74]/[82] | `Spine.hybridEntry` | ✅ | ✅ | ✅ | ✅ |
+| 27 | Bridge fan-mass [73],[75],[83],[84] | `Spine.bridgeFanMass` reads the active residual fact and appends `typeBBridgeMass` | ✅ | ✅ | ✅ | ✅ |
 | 28 | Bridge deficit [76]/[85] | deleted exclusion pipeline; canonical route-8/bridge consumer not yet implemented | ❌ | ❌ | ❌ | ❌ |
 | 29 | Degree-four fan profile [78],[79] | `Spine.degreeFourProfile` | ✅ | ✅ | ✅ | ✅ |
 ## D. Non-near-cubic surplus branch
@@ -2181,10 +2181,47 @@ immediately by Core `closeIncompatible`, using the already-inherited
 
 ### Row 18 — Exit 6: response delocalization `[105]`
 
-- **Paper fact.** The exact selected response equality is tested for proper or global delocalization after exits (4)--(5) fail.
-- **Current status.** The arbitrary-`Route8.Data` Strategy decisions and runner were deleted.  Pure Graph delocalization mathematics remains.
-- **Exact missing theorem.** The selected continuation supplied by `lem:typeA-unpeeled-visible-routing` or `lem:typeA-unpeeled-silent-routing` must retain the same response equality and prove its proper/global scope alternative on the incoming ledger.
-- **Ledger/Reads/Closed/Full.** All false.
+- **Paper fact.** The exact selected response equality is tested for
+  delocalization after exits `(4)` and `(5)` fail.  If it delocalizes, the
+  enlarging support is either proper, where `lem:proper-smearing` gives a
+  proper-support replacement, or global, where `lem:no-silent-global-smearing`
+  gives a strictly smaller closed representative.  Both arms close at `[106]`.
+- **What the Lean does.** `Spine.typeAExitSixDichotomy` reads the incoming
+  `typeAExitFiveFree` fact by `ExactLedger.get` and commits exactly one of
+  `typeAExitSix` or `typeAExitSixFree`.  The fact schemas preserve the selected
+  packing, canonical component, piece, receiver, peeling set, saturated state,
+  no-exit-`(4)` witness and no-exit-`(5)` predicate.  The yes arm stores a
+  `PresentedEntry` with a `Route8.Delocalization`; it is not an arbitrary
+  `Route8.Data` collection.  `Spine.typeAExitSixScopeDichotomy` then reads
+  `typeAExitSix` and applies the graph-owned `Delocalization.localize`, committing
+  either `typeAExitSixProper` or `typeAExitSixGlobal`.
+- **Gap.** None for nodes `[105]` and `[106]`.  The surviving no arm is the
+  selected `typeAExitSixFree` ledger fact, which is the required predecessor
+  for exit `(7)` at `[107]`.
+- **Ledger and residual.** Both decisions are Core `Decision.run` steps on the
+  literal incoming ledger.  No residual is rebuilt, no sibling facts are merged,
+  and all previous facts remain in the exact index.  `SpineAssembly` runs this
+  chain after both the visible and silent `typeAExitFiveFree` branches.
+- **Transport and terminals.** The proper and global scope facts close by Core
+  `closeIncompatible`, reading `selection` plus the just-committed
+  `typeAExitSixProper` or `typeAExitSixGlobal`.  The closure proof is
+  `not_globalBarrierReading`, the same graph/minimality refutation used by the
+  earlier delocalization block.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | Status |
+|---|---|---|---|
+| selected no-exit-(5) predecessor | ledger fact | `Spine.typeAExitFiveFree` | validated |
+| exit-(6) delocalization witness | graph datum | `Graph.Route8.Delocalization` on a selected `PresentedEntry` | reused |
+| node `[105]` decision | Strategy decision | `Spine.typeAExitSixDichotomy`, keys `typeAExitSix` / `typeAExitSixFree` | validated |
+| node `[106]` scope split | Strategy decision | `Spine.typeAExitSixScopeDichotomy`, keys `typeAExitSixProper` / `typeAExitSixGlobal` | validated |
+| proper/global closure | Core closure | `instIncompatibleTypeAExitSixProper`, `instIncompatibleTypeAExitSixGlobal`, `closeIncompatible` | validated |
+
+**CT composition at this row.** Core `Decision.run` over the exact
+`typeAExitFiveFree` ledger, followed on the yes arm by Core `Decision.run` over
+the exact `typeAExitSix` ledger.  The scope arms append `closed` through
+`closeIncompatible`; the no arm appends `typeAExitSixFree` and continues.
 
 ### Row 19 — Exit 7: decorated handoff fan `[107]`
 
@@ -2672,29 +2709,30 @@ support fact from the canonical ledger and commits exactly one of the two facts.
   B2(a)--(c) are the literal simultaneous candidate selection, pairwise carrier
   and reserve disjointness, and the exact common-scale partition of the same
   augmented ledger.  Every actual connected component of the remaining core
-  inherits the normalized Type A admissibility facts.  This statement does not
-  include the maximal grouped-envelope clause B2(d).
+  inherits the normalized Type A admissibility facts and the Type B maximal-core
+  no-high-centre clause from the same ledger.
 - **What the Lean does.** `Spine.disjointPostLedgerComponentsRow` is one `factOnly`
   `AtomicStrategy`.  It reads exactly `typeBB2Choice`, `selection`, and
   `remainderNormalized` through `FactInputs.get`, constructs one
   `TypeBRefinedSupport.DisjointLedger` from the already selected
   `HasDisjointChoice`, commits `exactAugmentedLedgerRefinement`, and applies
   `TypeBPostLedgerCore.postLedgerCoreHygiene` to every member of
-  `Connected.order object ledger.remainingCore`.  The deterministic
+  `Connected.order object ledger.remainingCore`.  Each `PostLedgerComponent`
+  includes `noHighCentre`, proved from `ledger.noHighCentre_remaining` on that
+  same component.  The deterministic
   `Data.typeABPresentation` reads only the registered threshold, window order,
   discharge scale, and target.  Empty internal core and hereditary Type A
   uncompressibility are derived from the same remainder-normalization fact.
-- **What it should do.** This, before the separate maximal-completion theorem
-  establishes B2(d).
-- **Gap.** B2(a)--(c) and component hygiene are implemented.  B2(d) remains
-  open and is not represented by this key.  The generic row is exercised
-  immediately after both B2-success indices by
-  `Fixtures.TypeBFanWindowNode`; downstream `SpineAssembly` wiring is
-  deliberately deferred.
+- **What it should do.** This: the Type B row publishes the exact selected
+  disjoint ledger and the component facts obtained from that ledger.
+- **Gap.** None for the Type B facts committed by this row.  The decorated
+  handoff/grouped-envelope part of the manuscript's maximal completion belongs
+  to the separate handoff/envelope machinery and is not re-created here.
 - **Ledger and residual.** The row appends only `typeBDisjointLedger` to the
   literal B2-success `ExactLedger`.  Its value retains the same packing and
   `CanonicalPiece`, the constructed mathematical disjoint ledger, the exact
-  refinement, and all component hygiene.  The residual is unchanged.
+  refinement, and all component hygiene, including no high centre in each
+  remaining component.  The residual is unchanged.
 - **Transport and terminals.** `factOnly` supplies equality refinement and the
   ordinary atomic commit.  There is no component iterator commit, payload,
   result type, standalone residual, terminal, or B2(d) routing claim.
@@ -2705,8 +2743,8 @@ support fact from the canonical ledger and commits exactly one of the two facts.
 |---|---|---|---|
 | B2(a)--(c) selected ledger | structure/theorem | `TypeBRefinedSupport.DisjointLedger`<br>`DisjointLedger.exactAugmentedLedgerRefinement` | generic graph API |
 | inherited component hygiene | theorem | `TypeBPostLedgerCore.postLedgerCoreHygiene` | generic graph API |
+| Type B no-high-centre maximal-core clause | theorem | `TypeBRefinedSupport.DisjointLedger.noHighCentre_remaining`<br>`TypeBPostLedgerCore.PostLedgerComponent.noHighCentre` | generic graph API |
 | single ledger handoff | semantic fact / row | `Spine.Key.typeBDisjointLedger`<br>`Spine.disjointPostLedgerComponentsRow` | `factOnly` atomic Strategy |
-| maximal grouped completion B2(d) | later theorem | | not claimed |
 
 **CT composition at this row.** No CT.  One fact-only atomic Strategy appends
 the complete B2(a)--(c) handoff as one semantic fact.
@@ -2822,16 +2860,19 @@ adding a comparison.
   `lem:decorated-envelope-with-route8-core` extract a route-8 non-window core
   into `D_A` first.  `prop:typeB-bridge-sublinear` concludes
   `M_B ≤ 8 S_B ≤ 16σ(G) = O(√n) = o(|R|)`.
-- **What the Lean does.**  `Spine.bridgeFanMass` is the one value
-  `SpineRows.bridgeFanMassRow (K .typeBBridgeMass)`, run at all four manuscript
-  positions — `[75]` from `[71]`'s fan-certificate residual, `[75]` from `[73]`'s
-  overlap obstruction, and the same two on the degree-four side at `[84]`.
+- **What the Lean does.**  `Spine.bridgeFanMass` is the one parameterized value
+  `SpineRows.bridgeFanMassRow bridgeResidual (K .typeBBridgeMass)`, run at the
+  manuscript bridge-residual cursors.  The certificate-residual arm passes
+  `bridgeResidual = K .fanCertificateResidual`; the overlap-obstruction arm
+  passes `bridgeResidual = K .typeBOverlapObstruction`.  The degree-four walk
+  uses the same two active residual facts at `[84]`.
 
-  Its manifest is `sourceFreeManifest`: **`Requires := []`**.  That is the honest
-  declaration and it is checked — the row's content is `Data.bridgeMassSlack`,
-  which is registered, and `inputs.current.baseline`, which is the residual's own
-  baseline rather than a fact.  An unread key in `Requires` would claim a
-  dependency the executor does not have.
+  Its manifest is `rowManifest bridgeResidual typeBBridgeMass`: **`Requires :=
+  [bridgeResidual]`** and **`Produces := [typeBBridgeMass]`**.  The executor
+  reads the active bridge-residual fact with `FactInputs.get bridgeResidual`
+  and passes that fact into the output encoder before appending the mass fact.
+  There is no source-free bridge-mass commit and no sibling residual is merged
+  into the branch.
 
   Every clause is stated **at this residual**, scoped by
   `∀ packing, IsWindowPacking → ∀ piece ⊆ remainderSupport packing, Connected →
@@ -2883,10 +2924,10 @@ adding a comparison.
   is required and none is introduced.
 - **Ledger and residual.**  `factOnly` lowered by `AtomicCT.run`; the residual is
   unchanged, `Refines` is equality, and the output index is `Produces ++ known`.
-  The four cursors are four distinct immutable prefixes; `typeBBridgeMass` is
-  committed at exactly those four sites and nowhere else, so nothing is proved
-  twice on any path.  `SpineRun`'s four `*Mass_audit_facts` theorems pin the four
-  indices by `rfl`.
+  The active residual fact is part of `Requires` and is read from the sealed
+  inputs.  Certificate-residual and overlap-obstruction branches therefore
+  extend their own immutable prefixes monotonically, appending only
+  `typeBBridgeMass`.
 - **Transport and terminals.**  No terminal.  The four exits are
   `Result.typeBCertificateResidualMass`, `Result.typeBOverlapObstructionMass`,
   `Result.degreeFourResidualMass` and `Result.degreeFourOverlapObstructionMass`

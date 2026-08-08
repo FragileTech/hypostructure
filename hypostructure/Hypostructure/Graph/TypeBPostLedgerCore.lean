@@ -413,6 +413,9 @@ structure PostLedgerComponent
       object.remainderSupport packing
   connected : Connected.ConnectedOn object
     (Connected.vertices object ledger.remainingCore component)
+  noHighCentre : ∀ vertex,
+    vertex ∈ Connected.vertices object ledger.remainingCore component →
+      ¬ Graph.IsHighCentre object threshold vertex
   p13Free : InducedPathFree
     (object.induce (Connected.vertices object ledger.remainingCore component))
     presentation.inducedPathOrder
@@ -610,6 +613,8 @@ theorem postLedgerCoreHygiene
     containedInPiece := containedInPiece
     containedInRemainder := containedInRemainder
     connected := refinedComponent_connected ledger component componentMember
+    noHighCentre := fun vertex member =>
+      refinedComponent_has_no_highCentre ledger component member
     p13Free := inducedPathFree_of_subset presentation.inducedPathOrder
       containedInPiece p13Free
     contextualTargetSafe := contextualTargetSafe
