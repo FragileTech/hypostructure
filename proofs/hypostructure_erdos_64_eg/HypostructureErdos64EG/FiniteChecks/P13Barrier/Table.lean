@@ -89,4 +89,11 @@ def windowRate : Nat :=
   Hypostructure.Core.Finite.CertifiedTableAggregation.binaryRateFloor
     certifiedTable
 
+set_option maxHeartbeats 8000000 in
+/-- The exact natural rate projected from the certified stored counts.  Native
+evaluation is confined to this closed table projection; downstream arithmetic
+rewrites this theorem and never unfolds the certificate rows. -/
+lemma windowRate_eq : windowRate = 118 := by
+  native_decide
+
 end HypostructureErdos64EG.FiniteChecks.P13Barrier

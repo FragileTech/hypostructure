@@ -33,6 +33,11 @@ open Hypostructure
 
 universe u
 
+-- The concrete routing label is a deeply nested product.  This affects only
+-- elaboration depth in this problem module; no memory or heartbeat limit is
+-- changed.
+set_option maxRecDepth 100000
+
 /-! ## The public statement
 
 Pinned verbatim against the right-hand side of `Erdos64.erdos_64` in Google
@@ -156,6 +161,150 @@ read off the table rather than copied out of the manuscript. -/
 
 Every number the spine compares comes from this record.  No row writes one. -/
 
+/-- The boundary-profile alphabet declared by this presentation. -/
+abbrev SpineBoundaryProfile : Type :=
+  Fin erdosReceiverLoadProfile.baselineDegree →
+    Fin erdosReceiverLoadProfile.baselineDegree
+
+/-- `Q_geom` as the product of the seven declared factor cardinalities.  This
+is the paper's routed alphabet count without an executable product `Fintype`. -/
+def spineRoutingLabelCard : Nat :=
+  Fintype.card Graph.SameTokenBlockerRoles.Role *
+    Fintype.card Graph.SameTokenBlockerRoles.TokenSubtype * 2 *
+    (Fintype.card Graph.SameTokenRoutingGerms.PortStatus *
+      Fintype.card Graph.SameTokenRoutingGerms.PortStatus) *
+    ((3 ^ 3) * (3 ^ 3)) * (2 ^ 13) * 2
+
+/-- The registered structural product is exactly the cardinality of the
+paper's routed seven-coordinate label type. -/
+lemma spineRoutingLabel_card_eq :
+    Fintype.card (Graph.SameTokenRoutingGerms.RoutingLabel SpineBoundaryProfile
+      (Graph.WindowCurvature.Label inducedPathOrder)) = spineRoutingLabelCard := by
+  rw [Graph.SameTokenRoutingGerms.card_routingLabel]
+  unfold spineRoutingLabelCard SpineBoundaryProfile
+  simp only [Fintype.card_fun, Fintype.card_fin, Fintype.card_bool,
+    Graph.WindowCurvature.Label]
+  norm_num [erdosReceiverLoadProfile, inducedPathOrder]
+
+/-- A conservative arithmetic bound for the registered structural product. -/
+lemma spineRoutingLabelCard_le : spineRoutingLabelCard ≤ 2 ^ 35 := by
+  have status : Fintype.card Graph.SameTokenRoutingGerms.PortStatus = 2 := by
+    decide
+  unfold spineRoutingLabelCard
+  rw [Graph.SameTokenBlockerRoles.card_role,
+    Graph.SameTokenBlockerRoles.card_blockerKind,
+    Graph.SameTokenBlockerRoles.card_tokenSubtype, status]
+  norm_num
+
+/-- Generic arithmetic absorption of a routing-cardinality bound into the
+paper's homogeneous-cap formula. -/
+lemma homogeneousCap_formula_le (q : Nat) (qBound : q ≤ 2 ^ 35) :
+    Graph.SameTokenBlockerRoles.sameTokenRoleBound *
+      (((q + 1) - 1) * (2 * (q + 1) - 3)) ≤ 2 ^ 78 := by
+  rw [Graph.SameTokenBlockerRoles.sameTokenRoleBound,
+    Graph.SameTokenBlockerRoles.card_role,
+    Graph.SameTokenBlockerRoles.card_blockerKind,
+    Graph.SameTokenBlockerRoles.card_tokenSubtype]
+  have second : 2 * (q + 1) - 3 ≤ 2 * q := by omega
+  have first : q + 1 - 1 = q := by omega
+  rw [first]
+  calc
+    36 * (q * (2 * (q + 1) - 3)) ≤ 36 * (q * (2 * q)) :=
+      Nat.mul_le_mul_left 36 (Nat.mul_le_mul_left q second)
+    _ ≤ 36 * ((2 ^ 35) * (2 * (2 ^ 35))) := by
+      exact Nat.mul_le_mul_left 36
+        (Nat.mul_le_mul qBound (Nat.mul_le_mul_left 2 qBound))
+    _ ≤ 2 ^ 78 := by norm_num
+
+/-- The routed homogeneous cap is bounded without evaluating `Fintype.card` of
+the routing-label product. -/
+lemma registeredHomogeneousCap_le :
+    Graph.Strategy.Spine.registeredHomogeneousCap spineRoutingLabelCard ≤
+      2 ^ 78 := by
+  unfold Graph.Strategy.Spine.registeredHomogeneousCap
+  unfold Graph.SameTokenBlockerRoles.homogeneousTokenCap
+  unfold Graph.SameTokenBlockerRoles.homogeneousCapCharge
+  unfold Graph.SameTokenBlockerRoles.geometricPatternBound
+  apply homogeneousCap_formula_le
+  exact spineRoutingLabelCard_le
+
+/-- The manuscript's registered baseline surplus scale is small independently
+of the routed geometric alphabet. -/
+lemma surplusScaleCoefficient_le : surplusScaleCoefficient ≤ 2 ^ 10 := by
+  norm_num [surplusScaleCoefficient, erdosReceiverLoadProfile,
+    Graph.SameTokenBlockerRoles.homogeneousTokenCap,
+    Graph.SameTokenBlockerRoles.geometricPatternBound,
+    Graph.SameTokenBlockerRoles.homogeneousCapCharge,
+    Graph.SameTokenBlockerRoles.sameTokenRoleBound,
+    Graph.SameTokenBlockerRoles.card_role]
+
+/-- A conservative bound for `C_sp`, derived from the routed cap and the
+registered surplus scale without computing either finite alphabet. -/
+lemma registeredSpineScale_le :
+    Graph.Strategy.Spine.registeredSpineScale spineRoutingLabelCard
+      erdosReceiverLoadProfile.baselineDegree
+      surplusScaleCoefficient ≤ 2 ^ 85 := by
+  change 2 * (1 + 2 *
+      (Graph.Strategy.Spine.registeredHomogeneousCap spineRoutingLabelCard)) +
+    (2 * surplusScaleCoefficient +
+      2 * (Graph.Strategy.Spine.registeredHomogeneousCap
+        spineRoutingLabelCard) *
+        (3 * (erdosReceiverLoadProfile.baselineDegree - 1) + 2)) ≤ 2 ^ 85
+  have cap := registeredHomogeneousCap_le
+  have surplus := surplusScaleCoefficient_le
+  norm_num [erdosReceiverLoadProfile] at *
+  omega
+
+/-- The registered rate has the strict margin needed by the paper's
+net-charge comparison at the chosen sufficiently-large exponent. -/
+lemma registeredNetChargeRate :
+    (erdosReceiverLoadProfile.loadMultiplier *
+        (erdosReceiverLoadProfile.baselineDegree * inducedPathOrder -
+          2 * (inducedPathOrder - 1)) + inducedPathOrder) * (512 + 1) *
+        erdosReceiverLoadProfile.baselineDegree <
+      2 * FiniteChecks.P13Barrier.windowRate * 512 := by
+  rw [FiniteChecks.P13Barrier.windowRate_eq]
+  norm_num [erdosReceiverLoadProfile, inducedPathOrder]
+
+/-- The registered order is past the square of the exact surplus coefficient.
+The proof uses only the structural bound on `C_sp`; it never evaluates the
+routed homogeneous cap. -/
+lemma registeredLargeOrder_dominates_surplus :
+    4 * (((erdosReceiverLoadProfile.loadMultiplier *
+            (erdosReceiverLoadProfile.baselineDegree * inducedPathOrder -
+              2 * (inducedPathOrder - 1)) + inducedPathOrder) * (512 + 1) +
+          2 * FiniteChecks.P13Barrier.windowRate * 512 *
+            erdosReceiverLoadProfile.loadMultiplier) *
+        (Graph.Strategy.Spine.registeredSpineScale spineRoutingLabelCard
+          erdosReceiverLoadProfile.baselineDegree
+          surplusScaleCoefficient)) *
+      (((erdosReceiverLoadProfile.loadMultiplier *
+            (erdosReceiverLoadProfile.baselineDegree * inducedPathOrder -
+              2 * (inducedPathOrder - 1)) + inducedPathOrder) * (512 + 1) +
+          2 * FiniteChecks.P13Barrier.windowRate * 512 *
+            erdosReceiverLoadProfile.loadMultiplier) *
+        (Graph.Strategy.Spine.registeredSpineScale spineRoutingLabelCard
+          erdosReceiverLoadProfile.baselineDegree
+          surplusScaleCoefficient)) ≤ 2 ^ 512 := by
+  let scale := Graph.Strategy.Spine.registeredSpineScale spineRoutingLabelCard
+    erdosReceiverLoadProfile.baselineDegree
+    surplusScaleCoefficient
+  have scaleBound : scale ≤ 2 ^ 85 := by
+    simpa [scale] using registeredSpineScale_le
+  rw [FiniteChecks.P13Barrier.windowRate_eq]
+  change 4 * (520777 * scale) * (520777 * scale) ≤ 2 ^ 512
+  have coefficientBound : 520777 ≤ 2 ^ 19 := by norm_num
+  have productBound : 520777 * scale ≤ 2 ^ 104 := by
+    calc
+      520777 * scale ≤ (2 ^ 19) * (2 ^ 85) :=
+        Nat.mul_le_mul coefficientBound scaleBound
+      _ = 2 ^ 104 := by rw [← pow_add]
+  calc
+    4 * (520777 * scale) * (520777 * scale)
+        ≤ 4 * (2 ^ 104) * (2 ^ 104) := by gcongr
+    _ = 2 ^ 210 := by norm_num [← pow_add]
+    _ ≤ 2 ^ 512 := Nat.pow_le_pow_right (n := 2) (by norm_num) (by norm_num)
+
 /-- **The data this problem registers with the framework's entry spine.**
 
 `freeForcesTarget` is the Hegde--Sandeep--Shashank theorem of
@@ -199,18 +348,30 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   -- vertices taking values below `δ` -- `T(p) = {a_p, b_p, x(p)}` is the
   -- registered baseline's own size -- and the `P₁₃` label is the window's own
   -- `order`-bit label code.  The five remaining coordinates are the framework's
-  -- own finite alphabets, so `Q_geom` is `Fintype.card` of the tuple and no
-  -- numeral is written.
+  -- own finite alphabets, so `Q_geom` is certified against `Fintype.card` of
+  -- the tuple while its arithmetic uses the structural factor product above.
   -- Only the boundary-degree profile alphabet is registered: the `P₁₃` label is
   -- the labelling's own `Graph.WindowCurvature.Label inducedPathOrder`, derived
   -- from the window order this record already registers.  The profile of a
   -- *bounded* port support `T(p) = {a_p, b_p, x(p)}` is a degree function on at
   -- most `δ` boundary vertices taking values below `δ`.
-  BoundaryProfile :=
-    Fin erdosReceiverLoadProfile.baselineDegree →
-      Fin erdosReceiverLoadProfile.baselineDegree
+  BoundaryProfile := SpineBoundaryProfile
   boundaryProfileFintype := inferInstance
-  boundaryProfileInhabited := inferInstance
+  boundaryProfileInhabited :=
+    ⟨fun _ => ⟨0, by norm_num [erdosReceiverLoadProfile]⟩⟩
+  routingLabelBound := spineRoutingLabelCard
+  routingLabelBound_eq := spineRoutingLabel_card_eq.symm
+  -- The universal quadratic absorption coefficient is covered by this
+  -- problem's declared same-token role alphabet.  Both finite cardinalities
+  -- are derived from the constructor lists in `SameTokenBlockerRoles`; the
+  -- framework does not assume a hardcoded role lower bound.
+  roleSafety := by
+    rw [Graph.TokenLoad.quadraticSafetyScale,
+      Graph.SameTokenBlockerRoles.sameTokenRoleBound,
+      Graph.SameTokenBlockerRoles.card_role,
+      Graph.SameTokenBlockerRoles.card_blockerKind,
+      Graph.SameTokenBlockerRoles.card_tokenSubtype]
+    norm_num
   surplusScale := surplusScaleCoefficient
   windowRate := FiniteChecks.P13Barrier.windowRate
   -- `lem:p13-window-package`'s selected dyadic scales.  The manuscript writes
@@ -241,33 +402,33 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   -- The manuscript's "for all sufficiently large `n`" of
   -- `prop:negative-net-charge`, as a binary exponent.  It is a presentation
   -- choice, like the two-budget denominator and the discharge scale; the two
-  -- obligations below are what make it a *valid* one, and both are decided on
-  -- the registered numbers rather than restated as numerals here.
-  largeOrderExponent := 56
+  -- obligations below are what make it a *valid* one, and both are proved from
+  -- the registered numbers rather than computed by unfolding the routed cap.
+  largeOrderExponent := 512
   largeOrderExponent_pos := by norm_num
   -- With no discard the reach is the registered exponent lying below the
   -- object's own scale count, which is what `2 ^ k ≤ n` says.
   separatedScaleReach := by
     intro size large
-    have reach : 56 ≤ Nat.log2 size := by
+    have reach : 512 ≤ Nat.log2 size := by
       have monotone := Nat.log_mono_right (b := 2) large
       rw [Nat.log_pow (by norm_num)] at monotone
       simpa [Nat.log2_eq_log_two] using monotone
-    calc 56 * (Nat.log2 size + 1)
-        = 56 * Nat.log2 size + 56 := by
+    calc 512 * (Nat.log2 size + 1)
+        = 512 * Nat.log2 size + 512 := by
           ring
-      _ ≤ 56 * Nat.log2 size + Nat.log2 size :=
+      _ ≤ 512 * Nat.log2 size + Nat.log2 size :=
           Nat.add_le_add_left reach _
-      _ = (56 + 1) * Nat.log2 size := by ring
+      _ = (512 + 1) * Nat.log2 size := by ring
   -- `τ_win < ¼` cleared of denominators.  Every factor is registered -- the
   -- baseline, the window order, the discharge scale, the order exponent, and
   -- the audited table's own rate -- so the comparison is decided, not written.
-  netChargeRate := by native_decide
+  netChargeRate := registeredNetChargeRate
   -- The registered order is past the square of the coefficient the net-charge
   -- collision carries against the surplus.  `Data.surplusThreshold_sublinear`
   -- derives `σ(G) = O(√n) = o(n)` from this; no decimal or intermediate
   -- product is spelled anywhere.
-  largeOrder_dominates_surplus := by native_decide
+  largeOrder_dominates_surplus := registeredLargeOrder_dominates_surplus
   -- `def:declared-coordinate-signature` at this problem's own window order.
   -- The signature is "fixed once and for all" in the manuscript, so the
   -- framework registers it once, complete: all thirty-two generating kinds of

@@ -3,7 +3,10 @@
 
 The generator deliberately uses only integer bit operations.  Lean rechecks
 the emitted relation rows against `P13CodeCompatibleSparse` and rechecks the
-emitted counts through `Hypostructure.Core.FiniteBitRelationBarrier` in independent shards.
+emitted counts through `Hypostructure.Core.FiniteBitRelationBarrier`.  The
+audit shards form a serial import chain, and each count theorem evaluates one
+concrete right length at a time, bounding peak memory without changing any
+paper count.
 """
 
 from pathlib import Path
@@ -95,7 +98,7 @@ namespace HypostructureErdos64EG.FiniteChecks.P13Barrier.Certificate
 
 
 set_option maxRecDepth 100000
-set_option maxHeartbeats 0
+set_option maxHeartbeats 8000000
 
 /-!
 Generated fixed certificate for all fifteen P13 compatibility relations.
@@ -129,7 +132,7 @@ def flatCount (leftLength rightLength : Nat) : Nat :=
 theorem shape : rows.size = 15 ∧
     (∀ length : Fin 15, (rows.getD length.1 #[]).size = {LABEL_COUNT}) ∧
     safeCounts.size = 225 ∧ flatCounts.size = 225 := by
-  native_decide
+  decide +kernel
 
 end HypostructureErdos64EG.FiniteChecks.P13Barrier.Certificate
 """
@@ -137,14 +140,19 @@ end HypostructureErdos64EG.FiniteChecks.P13Barrier.Certificate
 
 
 def write_audit_shard(shift: int) -> None:
-    text = f"""import HypostructureErdos64EG.FiniteChecks.P13Barrier.Certificate
+    prerequisite = (
+        "HypostructureErdos64EG.FiniteChecks.P13Barrier.Certificate"
+        if shift == 0
+        else f"HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit{shift - 1:02d}"
+    )
+    text = f"""import {prerequisite}
 
 namespace HypostructureErdos64EG.FiniteChecks.P13Barrier
 
 open Certificate
 
 set_option maxRecDepth 100000
-set_option maxHeartbeats 0
+set_option maxHeartbeats 8000000
 
 /-! Independent audit shard for connector length `{shift}`. -/
 
@@ -157,13 +165,15 @@ theorem p13MultiScaleSafeCounts_audit_{shift:02d} : ∀ right : Fin 15,
     if 0 < {shift} ∧ 0 < right.1 ∧ {shift} + right.1 ≤ 14 then
       safeCount {shift} right.1 = profile.safeCount {shift} right.1
     else safeCount {shift} right.1 = 0 := by
-  native_decide
+  intro right
+  fin_cases right <;> native_decide
 
 theorem p13MultiScaleFlatCounts_audit_{shift:02d} : ∀ right : Fin 15,
     if 0 < {shift} ∧ 0 < right.1 ∧ {shift} + right.1 ≤ 14 then
       flatCount {shift} right.1 = profile.flatCount {shift} right.1
     else flatCount {shift} right.1 = 0 := by
-  native_decide
+  intro right
+  fin_cases right <;> native_decide
 
 end HypostructureErdos64EG.FiniteChecks.P13Barrier
 """
@@ -171,10 +181,7 @@ end HypostructureErdos64EG.FiniteChecks.P13Barrier
 
 
 def write_aggregate_audit() -> None:
-    imports = "\n".join(
-        f"import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit{shift:02d}"
-        for shift in range(15)
-    )
+    imports = "import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit14"
     row_cases = "\n".join(
         f"  · exact p13MultiScaleRows_codeAudit_{shift:02d} source target"
         for shift in range(15)

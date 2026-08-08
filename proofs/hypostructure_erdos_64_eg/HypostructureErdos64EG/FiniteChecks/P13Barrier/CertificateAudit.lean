@@ -1,17 +1,3 @@
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit00
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit01
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit02
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit03
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit04
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit05
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit06
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit07
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit08
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit09
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit10
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit11
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit12
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit13
 import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit14
 
 namespace HypostructureErdos64EG.FiniteChecks.P13Barrier

@@ -80,6 +80,19 @@ abbrev RoutingLabel (BoundaryProfile WindowLabel : Type) : Type :=
   Role × TokenSubtype × Fin 2 × (PortStatus × PortStatus) ×
     (BoundaryProfile × BoundaryProfile) × WindowLabel × Bool
 
+/-- The routed seven-coordinate alphabet is counted factor by factor.  This is
+the structural form of `Q_geom`; it avoids enumerating the product alphabet. -/
+theorem card_routingLabel (BoundaryProfile WindowLabel : Type)
+    [Fintype BoundaryProfile] [Fintype WindowLabel] :
+    Fintype.card (RoutingLabel BoundaryProfile WindowLabel) =
+      Fintype.card Role * Fintype.card TokenSubtype * 2 *
+        (Fintype.card PortStatus * Fintype.card PortStatus) *
+        (Fintype.card BoundaryProfile * Fintype.card BoundaryProfile) *
+        Fintype.card WindowLabel * 2 := by
+  simp only [RoutingLabel, Fintype.card_prod, Fintype.card_fin,
+    Fintype.card_bool]
+  ac_rfl
+
 /-- **`Q_geom`**: the cardinality of a declared routing-label alphabet.
 
 The manuscript's *"These labels form a finite set; denote its cardinality by

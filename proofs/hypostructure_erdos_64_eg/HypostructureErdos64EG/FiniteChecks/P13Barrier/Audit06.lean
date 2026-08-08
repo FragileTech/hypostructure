@@ -1,11 +1,11 @@
-import HypostructureErdos64EG.FiniteChecks.P13Barrier.Certificate
+import HypostructureErdos64EG.FiniteChecks.P13Barrier.Audit05
 
 namespace HypostructureErdos64EG.FiniteChecks.P13Barrier
 
 open Certificate
 
 set_option maxRecDepth 100000
-set_option maxHeartbeats 0
+set_option maxHeartbeats 8000000
 
 /-! Independent audit shard for connector length `6`. -/
 
@@ -18,12 +18,14 @@ theorem p13MultiScaleSafeCounts_audit_06 : ∀ right : Fin 15,
     if 0 < 6 ∧ 0 < right.1 ∧ 6 + right.1 ≤ 14 then
       safeCount 6 right.1 = profile.safeCount 6 right.1
     else safeCount 6 right.1 = 0 := by
-  native_decide
+  intro right
+  fin_cases right <;> native_decide
 
 theorem p13MultiScaleFlatCounts_audit_06 : ∀ right : Fin 15,
     if 0 < 6 ∧ 0 < right.1 ∧ 6 + right.1 ≤ 14 then
       flatCount 6 right.1 = profile.flatCount 6 right.1
     else flatCount 6 right.1 = 0 := by
-  native_decide
+  intro right
+  fin_cases right <;> native_decide
 
 end HypostructureErdos64EG.FiniteChecks.P13Barrier

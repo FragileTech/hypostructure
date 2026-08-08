@@ -246,9 +246,7 @@ capacity ledger. -/
         Nat.lt_of_le_of_lt (Nat.zero_le _) above
       let sizePos : 0 < object.vertexCount :=
         object.vertexCount_pos_of_degreeSurplus_pos positive
-      let pressure := capped certified.1 certified.2.ledger
-        (Fintype.card (Graph.SameTokenRoutingGerms.RoutingLabel
-          data.BoundaryProfile (Graph.WindowCurvature.Label data.windowOrder)))
+      let pressure := capped certified.1 certified.2.ledger data.routingLabelBound
       let normalized : object.degreeSurplus data.threshold ≤
           1 + 2 * data.homogeneousCap +
             Nat.sqrt (2 * certified.2.ledger.entropyBudget +
@@ -632,7 +630,13 @@ certified node-`[129]`/`[131]` ledger and commits `σ(G) ≤ C_sp⌈√n⌉`. -/
       let pressure := (close certified.1 certified.2.ledger).2.2.1
       .cons (key := spineSurplusEstimate)
         (encode inputs.current
-          (certifiedDegreeSurplus_le_spineScale object certified sizePos pressure))
+          (certifiedDegreeSurplus_le_spineScale object certified sizePos (by
+            simpa only [Data.homogeneousCap, registeredHomogeneousCap,
+              Graph.SameTokenBlockerRoles.homogeneousTokenCap,
+              Graph.SameTokenBlockerRoles.geometricPatternBound,
+              Graph.SameTokenRoutingGerms.patternBound,
+              Graph.SameTokenRoutingGerms.labelBound,
+              data.routingLabelBound_eq] using pressure)))
         .nil)
 
 /-- **Node `[144]`, the bottleneck arm's own fact.**

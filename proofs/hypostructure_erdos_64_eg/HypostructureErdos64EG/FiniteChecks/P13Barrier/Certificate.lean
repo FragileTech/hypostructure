@@ -4,6 +4,7 @@ import Hypostructure.Core.FiniteBitRelationBarrier
 namespace HypostructureErdos64EG.FiniteChecks.P13Barrier.Certificate
 
 
+set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 
 /-!
@@ -6504,6 +6505,6 @@ def flatCount (leftLength rightLength : Nat) : Nat :=
 theorem shape : rows.size = 15 ∧
     (∀ length : Fin 15, (rows.getD length.1 #[]).size = 399) ∧
     safeCounts.size = 225 ∧ flatCounts.size = 225 := by
-  native_decide
+  decide +kernel
 
 end HypostructureErdos64EG.FiniteChecks.P13Barrier.Certificate

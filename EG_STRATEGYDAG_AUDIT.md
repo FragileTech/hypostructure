@@ -40,6 +40,40 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 
 ## Build status
 
+### 2026-08-08 OOM repair and canonical endpoint check
+
+The current working tree was repaired and checked through the canonical sealed
+endpoint.  This note supersedes older build counts and every later statement
+that says the frontend or `StrategyDag.lean` is retired, commented out, or not
+executed.  Those statements are retained only as historical porting context.
+
+- `make erdos-build` is green: the framework build completed all 8755 jobs and
+  the Erdős application build completed all 8734 jobs.
+- `lake build HypostructureErdos64EG.StrategyDag` is green.  The application
+  endpoint is the active canonical `Spine.run`; no legacy `Blueprint` endpoint
+  was restored.
+- The former `SpineVocabulary` OOM came from reducing the executable
+  `Fintype.card` instance for the full routed label product.  The framework now
+  stores the paper's `Q_geom` as a registered natural together with an equality
+  certificate to the declared routing alphabet.  The generic graph API proves
+  `card_routingLabel` by product-cardinality laws and `ac_rfl`; it does not
+  enumerate that alphabet.
+- The concrete application derives its routing count from the paper's declared
+  seven factors, proves the registered equality structurally, proves
+  `Cap_hom(L_geom) ≤ 2^78` and `C_sp ≤ 2^85`, and uses the validated
+  sufficiently-large threshold `2^512`.  The framework contains none of these
+  application-specific values.
+- No project-wide Lean memory cap and no namespace-wide `maxHeartbeats 0` was
+  added.  The only new unbounded-product accommodation is elaboration depth in
+  `Problem.lean`; finite enumeration work remains isolated in the generated
+  `P13Barrier` certificate shards with finite heartbeat budgets.
+- The P13 generator, not only its generated files, now emits the serial audit
+  dependency chain and the finite budgets used by the checked shards.
+
+This repair does not by itself re-audit any row's paper statement, exact-ledger
+traffic, residual, or terminal.  The row matrix below is unchanged; its status
+claims continue to require the row-specific evidence recorded there.
+
 **The framework, the application and every fixture compile.**  Re-measured on
 2026-08-06 after the row-32 port, in the working tree:
 

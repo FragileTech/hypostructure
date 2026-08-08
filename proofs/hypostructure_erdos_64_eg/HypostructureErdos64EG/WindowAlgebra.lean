@@ -114,7 +114,6 @@ listed in a definition; the numerals appear only in this conclusion.
 `Graph.TypeBMarkedFan.isDyadic_attachmentCycleLength_iff` at
 `Graph/TypeBMarkedFan.lean:127`, which this derives rather than repeats.
 -/
-set_option maxHeartbeats 8000000 in
 theorem forbiddenGaps_zero : forbiddenGaps windowOrder 0 = {2, 6} := by
   decide
 
@@ -159,6 +158,7 @@ theorem legal_iff_dist {label : Label windowOrder} :
     simp only [Finset.mem_insert, Finset.mem_singleton] at member
     exact member.elim left right
 
+set_option maxHeartbeats 8000000 in
 /-- **`lem:labels`, kernel-checked.**  Both halves of the manuscript's lemma
 in one traversal of the powerset of the registered window order.
 
@@ -167,7 +167,7 @@ in one traversal of the powerset of the registered window order.
 kernel-`decide`d finite count on this algebra; consumes
 `WindowCurvature.Labels` and `windowOrder`.
 -/
-theorem labels_enumeration :
+lemma labels_enumeration :
     (Labels windowOrder).card = 399 ∧
       sizeDistribution windowOrder = [13, 60, 122, 122, 63, 17, 2, 0, 0, 0, 0, 0, 0] := by
   decide
@@ -409,13 +409,14 @@ theorem mem_windowResponse (shift : Nat) (index : Fin 399)
     codeCompatible_eq_true_iff, labelOfCode_coordinateCode]
   exact ⟨fun holds => holds.2, fun holds => ⟨Finset.mem_univ _, holds⟩⟩
 
+set_option maxHeartbeats 8000000 in
 /-- **Invariant 25, on the executable presentation.**  Two row indices whose
 responses agree at outside lengths `1`, `2` and `3` are the same index.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.packingCap_eq_eight` at
 `Graph/TypeBMarkedFan.lean:294`, a finite verdict on this algebra; evaluated
 over the presentation of this section. -/
-theorem windowResponse_separates : ∀ source target : Fin 399,
+lemma windowResponse_separates : ∀ source target : Fin 399,
     (∀ shift ∈ [1, 2, 3], windowResponse shift source = windowResponse shift target) →
       source = target := by
   native_decide

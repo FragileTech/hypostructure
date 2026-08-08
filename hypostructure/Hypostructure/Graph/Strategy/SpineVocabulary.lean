@@ -78,18 +78,14 @@ universe u v
 /-- The homogeneous cap computed from a presentation's declared routing
 alphabet.  This pre-`Data` form lets the record certify arithmetic involving
 the derived cap without registering a duplicate numeric constant. -/
-def registeredHomogeneousCap (BoundaryProfile : Type)
-    [Fintype BoundaryProfile] (windowOrder : Nat) : Nat :=
-  Graph.SameTokenBlockerRoles.homogeneousCapCharge
-    (Graph.SameTokenRoutingGerms.patternBound
-      (Graph.SameTokenRoutingGerms.RoutingLabel BoundaryProfile
-        (Graph.WindowCurvature.Label windowOrder)))
+def registeredHomogeneousCap (routingLabelBound : Nat) : Nat :=
+  Graph.SameTokenBlockerRoles.homogeneousTokenCap routingLabelBound
 
 /-- The final square-root coefficient, entirely derived from the public
 presentation and the generic capacity-token accounting. -/
-def registeredSpineScale (BoundaryProfile : Type)
-    [Fintype BoundaryProfile] (threshold windowOrder deficitScale : Nat) : Nat :=
-  let cap := registeredHomogeneousCap BoundaryProfile windowOrder
+def registeredSpineScale
+    (routingLabelBound threshold deficitScale : Nat) : Nat :=
+  let cap := registeredHomogeneousCap routingLabelBound
   2 * (1 + 2 * cap) +
     (2 * deficitScale + 2 * cap * (3 * (threshold - 1) + 2))
 
@@ -222,6 +218,23 @@ structure Data where
   boundaryProfileFintype : Fintype BoundaryProfile
   /-- The declared boundary-profile alphabet has a realizable profile. -/
   boundaryProfileInhabited : Inhabited BoundaryProfile
+  /-- `Q_geom`, registered as a number so strategy arithmetic never evaluates
+  the potentially enormous `Fintype` enumeration. -/
+  routingLabelBound : Nat
+  /-- The registered number is exactly the cardinality of the paper's routed
+  seven-coordinate label alphabet. -/
+  routingLabelBound_eq :
+    letI := boundaryProfileFintype
+    routingLabelBound = Fintype.card
+      (Graph.SameTokenRoutingGerms.RoutingLabel BoundaryProfile
+        (Graph.WindowCurvature.Label windowOrder))
+  /-- The problem's declared same-token role alphabet covers the universal
+  coefficient left by the generic quadratic absorption estimate.  This is a
+  presentation check: the framework neither writes nor reconstructs a numeric
+  lower bound for the problem's role alphabet. -/
+  roleSafety :
+    Graph.TokenLoad.quadraticSafetyScale ≤
+      2 * (1 + 2 * Graph.SameTokenBlockerRoles.sameTokenRoleBound)
   /-- The linear baseline-deficit scale certified by node `[21]` and consumed
   at `[129]`.  The final `C_sp` is not registered: `registeredSpineScale`
   derives it from this scale, the baseline degree, and the routing alphabet. -/
@@ -309,13 +322,11 @@ structure Data where
     4 * (((dischargeScale * (threshold * windowOrder -
               2 * (windowOrder - 1)) + windowOrder) * (largeOrderExponent + 1) +
           2 * windowRate * largeOrderExponent * dischargeScale) *
-        (@registeredSpineScale BoundaryProfile boundaryProfileFintype threshold
-          windowOrder surplusScale)) *
+        (registeredSpineScale routingLabelBound threshold surplusScale)) *
       (((dischargeScale * (threshold * windowOrder -
               2 * (windowOrder - 1)) + windowOrder) * (largeOrderExponent + 1) +
           2 * windowRate * largeOrderExponent * dischargeScale) *
-        (@registeredSpineScale BoundaryProfile boundaryProfileFintype threshold
-          windowOrder surplusScale)) ≤
+        (registeredSpineScale routingLabelBound threshold surplusScale)) ≤
       2 ^ largeOrderExponent
   /-- **`def:declared-coordinate-signature`, registered.**  The fixed
   response-coordinate signature the whole proof argues against: the finite
@@ -356,9 +367,7 @@ structure Data where
 /-- `M₀ = Cap_hom(L_geom)`, computed generically from the public declared
 coordinate signature.  No application repeats or hardcodes this alphabet. -/
 def Data.homogeneousCap (data : Data.{u}) : Nat :=
-  letI := data.boundaryProfileFintype
-  letI := data.boundaryProfileInhabited
-  registeredHomogeneousCap data.BoundaryProfile data.windowOrder
+  registeredHomogeneousCap data.routingLabelBound
 
 /-- The coefficient of the linear capacity-token supply, derived from the
 public baseline degree. -/
@@ -381,39 +390,42 @@ theorem Data.quadraticSafetyScale_le_twiceAdditive (data : Data.{u}) :
       .boundaryWindow, 0, (.openPort, .openPort),
       (default, default), ∅, false)
   letI : Nonempty Label := ⟨labelWitness⟩
-  have labelPositive : 0 < Fintype.card Label := Fintype.card_pos
-  have patternTwo : 2 ≤ Graph.SameTokenRoutingGerms.patternBound Label := by
-    simp only [Graph.SameTokenRoutingGerms.patternBound,
-      Graph.SameTokenRoutingGerms.labelBound]
+  have labelPositive : 0 < data.routingLabelBound := by
+    rw [data.routingLabelBound_eq]
+    exact Fintype.card_pos
+  have patternTwo : 2 ≤
+      Graph.SameTokenBlockerRoles.geometricPatternBound data.routingLabelBound := by
+    simp only [Graph.SameTokenBlockerRoles.geometricPatternBound]
     omega
-  have roleLarge : 8 ≤ Graph.SameTokenBlockerRoles.sameTokenRoleBound := by
-    native_decide
   change Graph.TokenLoad.quadraticSafetyScale ≤
     2 * (1 + 2 *
       (Graph.SameTokenBlockerRoles.sameTokenRoleBound *
-        ((Graph.SameTokenRoutingGerms.patternBound Label - 1) *
-          (2 * Graph.SameTokenRoutingGerms.patternBound Label - 3))))
-  have first : 1 ≤ Graph.SameTokenRoutingGerms.patternBound Label - 1 := by omega
-  have second : 1 ≤ 2 * Graph.SameTokenRoutingGerms.patternBound Label - 3 := by
+        ((Graph.SameTokenBlockerRoles.geometricPatternBound
+              data.routingLabelBound - 1) *
+          (2 * Graph.SameTokenBlockerRoles.geometricPatternBound
+              data.routingLabelBound - 3))))
+  have first : 1 ≤ Graph.SameTokenBlockerRoles.geometricPatternBound
+      data.routingLabelBound - 1 := by omega
+  have second : 1 ≤ 2 * Graph.SameTokenBlockerRoles.geometricPatternBound
+      data.routingLabelBound - 3 := by
     omega
-  have capLarge : 8 ≤
+  have roleLeCap : Graph.SameTokenBlockerRoles.sameTokenRoleBound ≤
       Graph.SameTokenBlockerRoles.sameTokenRoleBound *
-        ((Graph.SameTokenRoutingGerms.patternBound Label - 1) *
-          (2 * Graph.SameTokenRoutingGerms.patternBound Label - 3)) := by
-    exact le_trans roleLarge (by
-      simpa [Nat.mul_comm] using
-        (Nat.le_mul_of_pos_left
-          Graph.SameTokenBlockerRoles.sameTokenRoleBound
-          (Nat.mul_pos first second)))
-  dsimp [Graph.TokenLoad.quadraticSafetyScale]
+        ((Graph.SameTokenBlockerRoles.geometricPatternBound
+              data.routingLabelBound - 1) *
+          (2 * Graph.SameTokenBlockerRoles.geometricPatternBound
+              data.routingLabelBound - 3)) := by
+    simpa [Nat.mul_comm] using
+      (Nat.le_mul_of_pos_left
+        Graph.SameTokenBlockerRoles.sameTokenRoleBound
+        (Nat.mul_pos first second))
+  have safety := data.roleSafety
   omega
 
 /-- The paper's `C_sp`, obtained by the generic quadratic absorption from the
 public presentation's baseline deficit scale and the computed token cap. -/
 def Data.spineScale (data : Data.{u}) : Nat :=
-  letI := data.boundaryProfileFintype
-  registeredSpineScale data.BoundaryProfile data.threshold data.windowOrder
-    data.surplusScale
+  registeredSpineScale data.routingLabelBound data.threshold data.surplusScale
 
 /-- **The registered scale threshold `C_sp·⌈√n⌉` of node `[19]`**. -/
 def Data.surplusThreshold (data : Data.{u}) (size : Nat) : Nat :=

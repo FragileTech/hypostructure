@@ -59,6 +59,10 @@ inductive BlockerKind
   | arithmeticChordSet
 deriving DecidableEq, Fintype, Repr
 
+/-- The cardinality of the declared blocker clause list, derived from its
+constructors rather than supplied by a caller. -/
+@[simp] theorem card_blockerKind : Fintype.card BlockerKind = 6 := by decide
+
 /-- **`def:canonical-sparse-blocker-order`**: the declared total order on the
 blocker types, in the clause order (a)--(f) of `def:surplus-blockers`.
 
@@ -103,6 +107,10 @@ inductive TokenSubtype
   | primitiveIncidence
   | primitivePort
 deriving DecidableEq, Fintype, Repr
+
+/-- The cardinality of the declared capacity-token subtype list, derived from
+its constructors rather than supplied by a caller. -/
+@[simp] theorem card_tokenSubtype : Fintype.card TokenSubtype = 6 := by decide
 
 /-- `class(t)` read off `sub(t)`: the subtype already names its summand of
 `𝔗_cap`, so the class coordinate of the role triple is redundant. -/
