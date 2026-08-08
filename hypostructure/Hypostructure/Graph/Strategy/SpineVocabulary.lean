@@ -47,7 +47,6 @@ import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.Strategy.InterfaceReplacement
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
-import Hypostructure.Graph.ColdBranchClosure
 import Hypostructure.Graph.SparsePortActivation
 import Hypostructure.Graph.BaselineSpineDemand
 import Hypostructure.Graph.PrimitiveCarrier
@@ -782,9 +781,8 @@ inductive Key where
   (F3) never occurs (`lem:cold-corridor-first-failure` (iii)). -/
   | coldFailureCompression
   /-- Nodes `[154]`, `[156]`, the (F4) producer and its handoff exit.  A
-  corridor that first enters the declared handoff interfaces recorded in the
-  branch state reaches *precisely one* of them, and the charge transfers to that
-  already existing ledger (`lem:cold-corridor-first-failure` (iv)). -/
+  corridor that first enters a support already marked by the incoming ledger
+  transfers to that existing ledger (`lem:cold-corridor-first-failure` (iv)). -/
   | coldFailureHandoff
   /-- Node `[154]`, the classified state.  Every cold return corridor has a
   first failure: either it reaches its successor stub inside `Q_cold` states, or
@@ -794,10 +792,8 @@ inductive Key where
   (`lem:cold-corridor-first-failure`, existence half). -/
   | coldFailureRouting
   /-- Node `[156]`, the (F4) dispatch arm.  A corridor that enters the declared
-  handoff interfaces transfers its charge to that already existing ledger, and
-  `def:surviving-cold-branch` (iv)--(v) is what makes the transfer a closure
-  rather than an open residual: no Type B or route-8 residual remains outside
-  its ledger. -/
+  handoff interfaces transfers its charge to a support already carried by the
+  incoming branch ledger. -/
   | coldHandoffTransfer
   /-- Nodes `[153]`, `[154]`, the (F5) arm.  `lem:hot-failure-cold-mass` bounds
   the hot windows by the skeleton budget, so the cold count carries the rest;
@@ -808,10 +804,8 @@ inductive Key where
   empty. -/
   | coldGermExtraction
   /-- Nodes `[145]`--`[157]`, `thm:cold-branch-quantitative-closure`.  No
-  terminal cold branch survives: every germ the extraction produces is
-  distinguishing, and a distinguishing germ's identification is a
-  target-defective quotient the branch does not carry.  This is the total
-  closure -- no arm returns "no target". -/
+  length-changing cold germ survives the two ledger-closed arms except through
+  the target-defect route. -/
   | coldBranchClosed
   /-- Node `[68]`, the standing law: every high centre of the object has its
   neighbourhood in the normal form of `lem:heavy-neighbourhood-normal-form` --
@@ -1459,11 +1453,61 @@ abbrev SelectedNoExitSixWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
                   ¬ ExitSixDelocalizes data object piece ∧
                   extra packing piece
 
+/-- The same selected no-exit-`(6)` residual, but with the selected receiver
+and current peeling set exposed to the next local route-`8` fact.  This is a
+schema helper only: the framework still carries the full `ExactLedger`, and
+rows still read the predecessor facts by key. -/
+abbrev SelectedNoExitSixReceiverWith (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (extra : (packing : Finset (Finset object.Vertex)) →
+      (piece : Finset object.Vertex) → object.Vertex →
+      Finset object.Vertex → Prop) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+      (∀ window : Finset object.Vertex,
+        object.InducesWindow data.windowOrder window →
+        ∃ member ∈ packing, ¬ Disjoint window member) ∧
+      ∃ component ∈ object.canonicalPieces
+          (object.remainderSupport packing),
+        let piece := object.pieceSupport
+          (object.remainderSupport packing) component
+        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+          object.ambientSurplus piece data.threshold = 0 ∧
+          ∃ receiver : object.Vertex,
+            object.IsReceiver piece data.threshold receiver ∧
+              ∃ peeled : Finset object.Vertex,
+                peeled ⊆ object.routedLoads piece data.threshold receiver ∧
+                  Graph.ExitFour.SaturatedAfter piece data.threshold
+                    data.dischargeScale receiver peeled ∧
+                  ((∃ package :
+                      Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                        data.threshold data.dischargeScale receiver peeled,
+                    ¬ ∃ witness : Graph.ExitFour.Witness
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver peeled,
+                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                          piece data.threshold data.dischargeScale receiver
+                          package.outside peeled,
+                        witness.load = load) ∨
+                    (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                        data.threshold data.dischargeScale receiver peeled ∧
+                      ¬ ∃ witness : Graph.ExitFour.Witness
+                          (Graph.HasCycleWithLength data.LengthOK) piece
+                          data.threshold receiver peeled,
+                        witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                          data.threshold data.dischargeScale receiver peeled)) ∧
+                  (¬ ∃ support : Finset object.Vertex,
+                    Graph.Strategy.InterfaceReplacement.CompressibleSupport
+                      (Graph.MinimumDegreeAtLeast data.threshold)
+                      (Graph.HasCycleWithLength data.LengthOK) object support) ∧
+                  ¬ ExitSixDelocalizes data object piece ∧
+                  extra packing piece receiver peeled
+
 /-- The value schema of each spine fact, stated of the *object* alone.
 
-Every spine fact is a statement about the selected graph, never about the
-branch state carried beside it.  Making that explicit is what lets a fact
-transport along a refinement by a rewrite: refinement is object equality.
+Every spine fact is a statement about the selected graph, never about a side
+payload carried beside it.  Making that explicit is what lets a fact transport
+along a refinement by a rewrite: refinement is object equality.
 
 `localAlgebra` is the one clause that does not mention the object: the window
 algebra is a property of the registered order, and saying so is what makes it
@@ -1854,8 +1898,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- The first clause closes every row of `def:cold-same-interface-table`:
       -- no row is realizing, and every row is either handed off to an already
       -- closed ledger or distinguishing.  It is quantified over every handoff
-      -- ledger the branch state might carry, so a row cannot escape by naming
-      -- its own; a row that is not handed off and not distinguishing is a
+      -- support predicate supplied by the incoming ledger, so a row cannot
+      -- escape by naming its own; a row that is not handed off and not distinguishing is a
       -- target-complete compression of its own proper support, which node
       -- `[14]` has already excluded.
       --
@@ -2063,18 +2107,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             presentation.state (index left) = presentation.state (index right) →
               Graph.Response.ContextEquivalent
                 (Graph.HasCycleWithLength data.LengthOK)
-                (carrier (index left)) (carrier (index right))) ∧
-          -- `lem:cold-corridor-first-failure` (ii)'s routing, against the
-          -- branch: `def:surviving-cold-branch` (ii) says every identification
-          -- the branch makes is context-universal, so an (F2) discrepancy is
-          -- not one of them.  The branch is quantified, so no row supplies one.
-          ∀ branch : Graph.ColdCorridor.SurvivingColdBranch data.coldSignature
-              (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) object,
-            Graph.ColdCorridor.Corridor.FirstFailureDefect corridor presentation
-                index (Graph.HasCycleWithLength data.LengthOK) carrier left right →
-              ¬ branch.Identified boundary
-                (carrier (index left)) (carrier (index right)))
+                (carrier (index left)) (carrier (index right))))
   | .coldFailureCompression, object =>
       -- `lem:cold-corridor-first-failure` (iii).  An (F3) pair is a
       -- target-complete compression of the later prefix's own proper support --
@@ -2092,17 +2125,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           (Graph.HasCycleWithLength data.LengthOK) support)
   | .coldFailureHandoff, object =>
       -- `lem:cold-corridor-first-failure` (iv).  A corridor that first enters
-      -- the declared handoff interfaces already recorded in the branch state
-      -- reaches *precisely* one of them -- the declared supports are disjoint --
-      -- and the charge transfers to that envelope.  Nothing is closed at the
-      -- corridor, and the ledger is the branch's, quantified here so no row
-      -- manufactures one.
+      -- a support already recorded in the incoming ledger transfers there.
+      -- The cold row records only the local membership; it constructs no
+      -- envelope object.
       (∀ (windows component : Finset object.Vertex)
         (corridor : Graph.ColdCorridor.Corridor object windows component)
-        (envelopes : Graph.ColdCorridor.Corridor.HandoffEnvelopes object)
+        (Handoff : Finset object.Vertex → Prop)
         (segment : corridor.Segment),
-        Graph.ColdCorridor.Corridor.FirstFailureHandoff corridor envelopes segment →
-          ∃! envelope, corridor.head segment ∈ envelopes.support envelope)
+        Graph.ColdCorridor.Corridor.FirstFailureHandoff corridor Handoff segment →
+          ∃ support, Handoff support ∧ corridor.head segment ∈ support)
   | .coldFailureRouting, object =>
       -- `lem:cold-corridor-first-failure`, the existence half, together with
       -- the two ledgers it is counted against.
@@ -2166,20 +2197,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- complete package, including failure of independent target-testability.
       ¬ WindowPackageStatement data object
   | .coldHandoffTransfer, object =>
-      -- `lem:cold-corridor-first-failure` (iv), as a closure rather than an
-      -- open arm.  A corridor that first enters the declared handoff
-      -- interfaces reaches precisely one, and the charge transfers to *that*
-      -- envelope of the branch's own recorded ledger.  The ledger is the
-      -- branch's, quantified here, so nothing manufactures an empty schedule
-      -- and discharges the arm against it.
+      -- `lem:cold-corridor-first-failure` (iv), as a ledger transfer.  The
+      -- support is already marked by the incoming ledger; this row does not
+      -- allocate a handoff carrier.
       (∀ (windows component : Finset object.Vertex)
         (corridor : Graph.ColdCorridor.Corridor object windows component)
-        (envelopes : Graph.ColdCorridor.Corridor.HandoffEnvelopes object)
+        (Handoff : Finset object.Vertex → Prop)
         (segment : corridor.Segment)
         (failure : Graph.ColdCorridor.Corridor.FirstFailureHandoff corridor
-          envelopes segment),
-        corridor.head segment ∈
-          envelopes.support (Graph.ColdCorridor.Corridor.handoffExit failure).1)
+          Handoff segment),
+        ∃ support, Handoff support ∧ corridor.head segment ∈ support)
   | .coldGermExtraction, _object =>
       -- `lem:hot-failure-cold-mass` and `lem:cold-germ-extraction`.
       --
@@ -2227,52 +2254,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           candidates.card ≤ disjointFamily.card * denominator →
             0 < candidates.card → 0 < disjointFamily.card)
   | .coldBranchClosed, object =>
-      -- `thm:cold-branch-quantitative-closure`: "no terminal cold branch
-      -- survives after the near-cubic spine estimate has been supplied".
-      --
-      -- Every length-changing bounded germ is distinguishing.  That is the
-      -- elimination of `lem:cold-bounded-germ-trichotomy` against its two
-      -- already-closed arms: node `[155]` committed that no germ realizes and
-      -- node `[157]` that no oriented germ is silent, so exhaustiveness leaves
-      -- G2.  The first clause therefore mentions no branch — it is a statement
-      -- about the germ alone, and the branch enters only at the second.
-      --
-      -- A distinguishing germ's identification is a target-defective quotient,
-      -- which `def:surviving-cold-branch` (ii) says the branch does not carry.
-      -- So a branch that reaches a germ contradicts its own clause (ii): there
-      -- is no terminal cold residual.
-      ((∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object,
-          germ.increment < 0 → germ.Distinguishing) ∧
-        -- `lem:cold-bounded-germ-trichotomy` in full: no length-changing germ
-        -- survives, in *either* orientation.  The manuscript's "oriented so
-        -- `δ ≥ 0`" names which representative is `E`; `OrientedGerm` records
-        -- both occurrences, so the naming is always available and `δ ≠ 0` is
-        -- the only hypothesis.
-        (∀ branch : Graph.ColdCorridor.SurvivingColdBranch data.coldSignature
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object,
-          ∀ germ : Graph.ColdCorridor.OrientedGerm data.coldSignature
-              (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) object,
-            germ.forward.increment ≠ 0 → False) ∧
-        -- The other two germ families of the manuscript.  A row of
-        -- `def:cold-same-interface-table` -- an equal-length germ or a short
-        -- self-return exception -- cannot be realizing and cannot be
-        -- distinguishing either, because clause (ii) forbids a distinguishing
-        -- germ.  So it is *handed off*: its charge is in the recorded ledger
-        -- and nothing is retained at the corridor.  With the clause above, all
-        -- three families are closed and the cold branch has no terminal
-        -- residual.
-        ∀ (Handoff : Finset object.Vertex → Prop)
-          (branch : Graph.ColdCorridor.SurvivingColdBranch data.coldSignature
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object)
-          (row : Graph.ColdCorridor.TableRow data.coldSignature
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object Handoff),
-          Handoff row.support)
+      -- The length-changing germ conclusion obtained by eliminating G1 and G3
+      -- against the facts already committed at nodes `[155]` and `[157]`.
+      ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object,
+        germ.increment < 0 → germ.Distinguishing
   | .forcedCurvatureCost, object =>
       -- `cor:forced-curvature-cost` after substituting the exact equality
       -- proved by `lem:full-rank` into node `[30]`'s demand floor.
@@ -3705,8 +3692,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               Graph.HasCycleWithLength data.LengthOK object))
   | .route8Residual, object =>
       -- Node `[109]`: the selected no-exit-`(7)` residual enters the route-8
-      -- arm.  No secondary object is constructed; later route-8 accounting
-      -- must read this exact ledger fact and the prefix facts it preserves.
+      -- arm.  This is only the residual fact; Part IX may later read this
+      -- exact ledger state, but no route-8 carrier package is registered here.
       SelectedNoExitSixWith data object (fun packing piece =>
         ¬ HandoffProduced data object packing piece)
   | .sparseSlackSurplus, object =>

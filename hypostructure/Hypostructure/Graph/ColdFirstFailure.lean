@@ -14,8 +14,8 @@ import Hypostructure.Graph.ColdCorridor
 >      response against some compatible outside context;
 > (F3) two prefixes have the same exact target response against every outside
 >      context and one gives a strictly smaller proper representative;
-> (F4) the corridor first enters a declared Type B handoff envelope or the
->      route-8 carrier support already recorded in the branch state;
+> (F4) the corridor first enters a declared Type B handoff support or the
+>      route-8 support already recorded in the incoming ledger;
 > (F5) no earlier alternative occurs and either the corridor reaches its
 >      successor boundary stub before `Q_cold + 1` states have been read, or a
 >      cold corridor state repeats.
@@ -355,67 +355,35 @@ theorem not_occurs
 
 end FirstFailureCompression
 
-/-! ## (F4): the corridor enters a declared handoff envelope
+/-! ## (F4): the corridor enters a declared handoff support
 
-Clause (F4) is *"the corridor first enters a declared Type B handoff envelope or
-the route-8 carrier support already recorded in the branch state"*, and
+Clause (F4) is *"the corridor first enters a declared Type B handoff support or
+the route-8 support already recorded in the incoming ledger"*, and
 `lem:cold-corridor-first-failure` (iv) routes it: *"the corridor has reached
 precisely one of the declared interfaces of `def:decorated-fan-envelope` or the
-route-8 carrier support, so the charge is transferred to the already existing
+route-8 support, so the charge is transferred to the already existing
 Type B or route-8 ledger."*
 
-The ledger is a parameter -- it is *"already recorded in the branch state"*, so
-it is supplied by the branch and never manufactured here.  "First enters" is
+The ledger interface is a predicate -- it is *"already recorded"* upstream, so
+it is supplied by the ledger and never manufactured here.  "First enters" is
 encoded: no earlier prefix has met any declared interface. -/
 
-/-- **The declared handoff interfaces already recorded in the branch state**:
-the envelopes of `def:decorated-fan-envelope` together with the route-8 carrier
-support, each with its declared support.  The supports are pairwise disjoint,
-which is what makes "precisely one" in clause (iv) a theorem. -/
-structure HandoffEnvelopes (object : Graph.FiniteObject.{u}) where
-  /-- The declared envelopes and carrier supports the branch has recorded. -/
-  Envelope : Type
-  /-- The declared support of each. -/
-  support : Envelope → Finset object.Vertex
-  /-- Distinct declared interfaces do not share a vertex. -/
-  disjoint : ∀ left right : Envelope, ∀ vertex : object.Vertex,
-    vertex ∈ support left → vertex ∈ support right → left = right
-
-/-- **Clause (F4)**: the corridor *first* enters a declared handoff envelope at
+/-- **Clause (F4)**: the corridor *first* enters a declared handoff support at
 this initial segment. -/
 def FirstFailureHandoff (corridor : Corridor object windows component)
-    (envelopes : HandoffEnvelopes object) (segment : corridor.Segment) : Prop :=
-  (∃ envelope, corridor.head segment ∈ envelopes.support envelope) ∧
+    (Handoff : Finset object.Vertex → Prop) (segment : corridor.Segment) : Prop :=
+  (∃ support, Handoff support ∧ corridor.head segment ∈ support) ∧
     ∀ earlier : corridor.Segment, earlier.1 < segment.1 →
-      ∀ envelope, corridor.head earlier ∉ envelopes.support envelope
+      ∀ support, Handoff support → corridor.head earlier ∉ support
 
-/-- **`lem:cold-corridor-first-failure` (iv): "the corridor has reached
-precisely one of the declared interfaces".**
-
-Precisely one, not at least one: the declared supports are disjoint, so the
-envelope the charge transfers to is determined by the corridor. -/
-theorem exists_unique_handoff {corridor : Corridor object windows component}
-    {envelopes : HandoffEnvelopes object} {segment : corridor.Segment}
-    (failure : FirstFailureHandoff corridor envelopes segment) :
-    ∃! envelope, corridor.head segment ∈ envelopes.support envelope := by
-  obtain ⟨⟨envelope, member⟩, _first⟩ := failure
-  exact ⟨envelope, member, fun other otherMember =>
-    envelopes.disjoint other envelope _ otherMember member⟩
-
-/-- **The (F4) handoff exit.**  The charge is transferred to the already
-existing ledger: what leaves the corridor is the declared envelope the corridor
-entered, and nothing else.  It is not closed at the corridor. -/
-noncomputable def handoffExit {corridor : Corridor object windows component}
-    {envelopes : HandoffEnvelopes object} {segment : corridor.Segment}
-    (failure : FirstFailureHandoff corridor envelopes segment) :
-    {envelope : envelopes.Envelope // corridor.head segment ∈ envelopes.support envelope} :=
-  ⟨failure.1.choose, failure.1.choose_spec⟩
-
-@[simp] theorem handoffExit_mem {corridor : Corridor object windows component}
-    {envelopes : HandoffEnvelopes object} {segment : corridor.Segment}
-    (failure : FirstFailureHandoff corridor envelopes segment) :
-    corridor.head segment ∈ envelopes.support (handoffExit failure).1 :=
-  (handoffExit failure).2
+/-- **`lem:cold-corridor-first-failure` (iv)**, in ledger form.
+The corridor has reached a support already marked by the incoming branch
+ledger.  The cold theorem does not construct a handoff object. -/
+theorem handoff_mem {corridor : Corridor object windows component}
+    {Handoff : Finset object.Vertex → Prop} {segment : corridor.Segment}
+    (failure : FirstFailureHandoff corridor Handoff segment) :
+    ∃ support, Handoff support ∧ corridor.head segment ∈ support :=
+  failure.1
 
 /-! ## (F5) and the existence of a first failure
 
@@ -656,92 +624,167 @@ theorem mem_coldWindows_iff {Window Coordinate : Type} [DecidableEq Window]
         ¬ ((retained window).length = packageLength ∧ (retained window).Nodup)) := by
   simp [coldWindows, ← isHot_iff retained packageLength window]
 
-/-! ## `def:surviving-cold-branch`
-
-> The *surviving cold branch* is the branch on which: (i) no target cycle has
-> been found; (ii) no sparse surplus exit, target-defective quotient,
-> target-complete compression, or delocalization exit is active; (iii) no unpaid
-> exit-(4) peel remains; (iv) no Type B bridge or handoff residual remains
-> outside its ledger; (v) no Type A route-8 residual remains outside
-> `thm:large-budget-route8-only`; and (vi) the sparse surplus branch has already
-> supplied the spine estimate `m = 3n/2 + o(n)` and `σ(G) = 2m − 3n = o(n)`.
-
-Six clauses, six fields.  A row that consumes the branch consumes exactly the
-clauses it needs, and clauses (ii), (iv) and (v) are what close (F2) and route
-(F4). -/
-
-/-- **`def:surviving-cold-branch`.** -/
-structure SurvivingColdBranch (S : DeclaredSignature)
-    (Baseline Target : Graph.FiniteObject.{u} → Prop)
-    (object : Graph.FiniteObject.{u}) where
-  /-- (i) no target cycle has been found. -/
-  noTargetCycle : ¬ Target object
-  /-- (ii) no target-complete compression of a proper support is active. -/
-  noCompression : ∀ region : Finset object.Vertex,
-    ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline Target
-      object region
-  /-- The identifications the branch's quotients actually make.  Clause (ii)
-  constrains *these*; without them the clause would be a disjunction that
-  excluded middle already proves, and would encode nothing. -/
-  Identified : ∀ boundary : Graph.Boundary.{u},
-    Graph.BoundaryPiece boundary → Graph.BoundaryPiece boundary → Prop
-  /-- (ii) no target-defective quotient is active: every identification the
-  branch makes survives *every* compatible outside context.  This is
-  `lem:context-universality` read as a branch invariant -- "any identification
-  valid only for the actual outside context `G − X`, but not for all
-  `T`-boundaried contexts, is target-defective", and the branch carries
-  none. -/
-  noTargetDefect : ∀ (boundary : Graph.Boundary.{u})
-    (left right : Graph.BoundaryPiece boundary),
-    Identified boundary left right →
-      Graph.Response.ContextEquivalent Target left right
-  /-- **A bounded germ's two representatives are one of the identifications the
-  branch makes.**
-
-  `def:cold-bounded-germ` defines a germ as "a finite boundaried support with
-  two boundary interfaces `x, y` and two same-interface `x`--`y` representatives
-  `Q[x,y]` and `E`", and the local replacement of
-  `lem:cold-same-interface-table` is the quotient identifying them.  So a germ
-  *is* an identification, and this field says so.
-
-  It is the link `lem:cold-bounded-germ-trichotomy` G2 needs: with it,
-  "the induced quotient is target-defective, so it is routed to the sparse exit
-  or exit-(4) ledger" becomes a consequence of the clause above rather than a
-  separate assumption. -/
-  germIdentified : ∀ germ : BoundedGerm S Baseline Target object,
-    Identified germ.atom.interface germ.piece germ.canonical
-  /-- (iii) no unpaid exit-(4) peel remains, (iv) no Type B handoff residual
-  remains outside its ledger, and (v) no route-8 residual remains outside its
-  theorem: what is left of them is exactly the recorded ledger. -/
-  handoffEnvelopes : Corridor.HandoffEnvelopes object
-  /-- (vi) the spine estimate the sparse surplus branch supplied:
-  `σ(G) = 2m − 3n` is within the registered `o(n)`. -/
-  surplusBound : Nat
-  spineEstimate : object.degreeSurplus 3 ≤ surplusBound
-
-/-- **`lem:cold-bounded-germ-trichotomy` G2, routed.**
-
-*"Some compatible outside context distinguishes the two representatives by
-dyadic truth value without already realizing the cycle in the current graph.
-The induced quotient is target-defective, so it is routed to the sparse exit or
-exit-\textup{(4)} ledger."*  Both are excluded by
-`def:surviving-cold-branch` (ii).
-
-This is **derived**, not assumed: the germ's two representatives are an
-identification the branch makes (`germIdentified`), a distinguishing germ
-separates them against a compatible outside context, and clause (ii) says every
-identification the branch makes survives every such context.  The manuscript's
-chain, with no step collapsed. -/
-theorem SurvivingColdBranch.noGermDefect {S : DeclaredSignature}
-    {Baseline Target : Graph.FiniteObject.{u} → Prop}
+/-- The length-changing part of `lem:cold-bounded-germ-trichotomy` after the
+two ledger-closed arms have been read back by key. -/
+theorem boundedGerm_not_survives
+    {S : DeclaredSignature} {Baseline Target : Graph.FiniteObject.{u} → Prop}
     {object : Graph.FiniteObject.{u}}
-    (branch : SurvivingColdBranch S Baseline Target object)
-    (germ : BoundedGerm S Baseline Target object) :
-    ¬ germ.Distinguishing := by
-  rintro ⟨outside, separated⟩
-  exact separated
-    (branch.noTargetDefect germ.atom.interface germ.piece germ.canonical
-      (branch.germIdentified germ) outside)
+    (notRealizing : ∀ germ : BoundedGerm S Baseline Target object,
+      ¬ germ.Realizing)
+    (notSilent : ∀ germ : BoundedGerm S Baseline Target object,
+      germ.increment < 0 → ¬ germ.Neutral)
+    (germ : BoundedGerm S Baseline Target object)
+    (shorter : germ.increment < 0) :
+    germ.Distinguishing := by
+  rcases germ.trichotomy with realizing | distinguishing | neutral
+  · exact absurd realizing (notRealizing germ)
+  · exact distinguishing
+  · exact absurd neutral (notSilent germ shorter)
+
+/-! ## Greedy independence and cold mass -/
+
+section Greedy
+
+variable {α : Type u} [DecidableEq α]
+
+/-- A subfamily is independent for an overlap relation when no two distinct
+members overlap. -/
+def IndependentFor (Overlaps : α → α → Prop) (independent : Finset α) : Prop :=
+  ∀ left ∈ independent, ∀ right ∈ independent, left ≠ right →
+    ¬ Overlaps left right
+
+/-- Greedy independence with the division cleared. -/
+theorem exists_independent_card_le_mul (Overlaps : α → α → Prop)
+    [DecidableRel Overlaps] (symmetric : ∀ left right, Overlaps left right →
+      Overlaps right left) (degree : Nat) :
+    ∀ family : Finset α,
+      (∀ member ∈ family,
+        (family.filter fun other => Overlaps member other).card ≤ degree) →
+      ∃ independent ⊆ family, IndependentFor Overlaps independent ∧
+        family.card ≤ independent.card * (degree + 1) := by
+  classical
+  intro family
+  induction family using Finset.strongInduction with
+  | _ family recurse =>
+    intro bounded
+    rcases Finset.eq_empty_or_nonempty family with rfl | ⟨chosen, member⟩
+    · exact ⟨∅, Finset.Subset.refl _, by simp [IndependentFor], by simp⟩
+    · set blocked : Finset α :=
+        family.filter fun other => other = chosen ∨ Overlaps chosen other
+        with blockedDef
+      have chosenBlocked : chosen ∈ blocked := by
+        simp [blockedDef, member]
+      have blockedSubset : blocked ⊆ family := Finset.filter_subset _ _
+      have blockedCard : blocked.card ≤ degree + 1 := by
+        have split : blocked ⊆
+            insert chosen (family.filter fun other => Overlaps chosen other) := by
+          intro other otherMember
+          simp only [blockedDef, Finset.mem_filter] at otherMember
+          rcases otherMember.2 with rfl | overlap
+          · exact Finset.mem_insert_self _ _
+          · exact Finset.mem_insert_of_mem
+              (Finset.mem_filter.2 ⟨otherMember.1, overlap⟩)
+        refine le_trans (Finset.card_le_card split) ?_
+        refine le_trans (Finset.card_insert_le _ _) ?_
+        exact Nat.succ_le_succ (bounded chosen member)
+      set rest : Finset α := family \ blocked with restDef
+      have restSubset : rest ⊆ family := Finset.sdiff_subset
+      have restSmaller : rest ⊂ family := by
+        refine Finset.ssubset_iff_of_subset restSubset |>.2 ⟨chosen, member, ?_⟩
+        simp [restDef, chosenBlocked]
+      obtain ⟨independent, independentSubset, independentFor, cover⟩ :=
+        recurse rest restSmaller (fun other otherMember =>
+          le_trans (Finset.card_le_card (Finset.filter_subset_filter _ restSubset))
+            (bounded other (restSubset otherMember)))
+      have chosenFree : ∀ other ∈ rest, ¬ Overlaps chosen other := by
+        intro other otherMember overlap
+        have : other ∈ blocked := by
+          simp only [blockedDef, Finset.mem_filter]
+          exact ⟨restSubset otherMember, Or.inr overlap⟩
+        simp only [restDef, Finset.mem_sdiff] at otherMember
+        exact otherMember.2 this
+      have chosenNotMem : chosen ∉ independent := by
+        intro chosenMember
+        have : chosen ∈ rest := independentSubset chosenMember
+        simp only [restDef, Finset.mem_sdiff] at this
+        exact this.2 chosenBlocked
+      refine ⟨insert chosen independent, ?_, ?_, ?_⟩
+      · exact Finset.insert_subset member
+          (Finset.Subset.trans independentSubset restSubset)
+      · intro left leftMember right rightMember different
+        simp only [Finset.mem_insert] at leftMember rightMember
+        rcases leftMember with leftEq | leftMember
+        · rcases rightMember with rightEq | rightMember
+          · exact absurd (leftEq.trans rightEq.symm) different
+          · subst leftEq
+            exact chosenFree right (independentSubset rightMember)
+        · rcases rightMember with rightEq | rightMember
+          · subst rightEq
+            exact fun overlap =>
+              chosenFree left (independentSubset leftMember) (symmetric _ _ overlap)
+          · exact independentFor left leftMember right rightMember different
+      · have decompose : family.card = blocked.card + rest.card := by
+          have total := Finset.card_sdiff_add_card_eq_card blockedSubset
+          rw [restDef]
+          omega
+        rw [Finset.card_insert_of_notMem chosenNotMem]
+        calc family.card = blocked.card + rest.card := decompose
+          _ ≤ (degree + 1) + independent.card * (degree + 1) := by
+              exact Nat.add_le_add blockedCard cover
+          _ = (independent.card + 1) * (degree + 1) := by ring
+
+end Greedy
+
+/-- `lem:hot-failure-cold-mass`, cleared of logarithms and division. -/
+theorem hotFailure_coldMass (hotRate skeletonRate order slack : Nat)
+    (hotCount coldCount packing : Nat)
+    (partition : packing = hotCount + coldCount)
+    (hotBound : hotRate * hotCount ≤ skeletonRate * order + slack) :
+    hotRate * packing ≤ hotRate * coldCount + (skeletonRate * order + slack) := by
+  subst partition
+  calc hotRate * (hotCount + coldCount)
+      = hotRate * hotCount + hotRate * coldCount := by ring
+    _ ≤ (skeletonRate * order + slack) + hotRate * coldCount :=
+        Nat.add_le_add_right hotBound _
+    _ = hotRate * coldCount + (skeletonRate * order + slack) := by ring
+
+/-- `lem:cold-germ-extraction`, as greedy finite-family extraction. -/
+theorem coldGermExtraction {Germ : Type u} [DecidableEq Germ]
+    (Overlaps : Germ → Germ → Prop) [DecidableRel Overlaps]
+    (symmetric : ∀ left right, Overlaps left right → Overlaps right left)
+    (exchangeBound overlapBound : Nat) (candidates : Finset Germ)
+    (boundedOverlap : ∀ candidate ∈ candidates,
+      (candidates.filter fun other => Overlaps candidate other).card ≤
+        exchangeBound * overlapBound) :
+    ∃ disjointFamily ⊆ candidates,
+      IndependentFor Overlaps disjointFamily ∧
+        candidates.card ≤
+          disjointFamily.card * (exchangeBound * overlapBound + 1) :=
+  exists_independent_card_le_mul Overlaps symmetric (exchangeBound * overlapBound)
+    candidates boundedOverlap
+
+/-- A positive candidate family gives a nonempty extracted independent family. -/
+theorem coldGerm_nonempty {Germ : Type u} [DecidableEq Germ]
+    {candidates disjointFamily : Finset Germ}
+    {denominator : Nat}
+    (cover : candidates.card ≤ disjointFamily.card * denominator)
+    (positive : 0 < candidates.card) : 0 < disjointFamily.card := by
+  by_contra empty
+  have : disjointFamily.card = 0 := by omega
+  rw [this] at cover
+  omega
+
+/-- The quantitative chain proving a remaining cold candidate is nonempty. -/
+theorem coldGerm_positive {Germ : Type u} [DecidableEq Germ]
+    {candidates disjointFamily : Finset Germ}
+    (perWindow coldCount branchExcess denominator slack : Nat)
+    (stubExcess : perWindow * coldCount ≤ branchExcess + slack)
+    (candidateLoss : branchExcess ≤ candidates.card + slack)
+    (cover : candidates.card ≤ disjointFamily.card * denominator)
+    (linear : 2 * slack < perWindow * coldCount) :
+    0 < disjointFamily.card := by
+  refine coldGerm_nonempty cover ?_
+  omega
 
 /-! ## `def:cold-skeleton-excess` and `lem:cold-window-stub-excess`
 
@@ -799,61 +842,14 @@ theorem branchExcess_ge_of_cubic (perWindow cubicCount coldCount nonCubicBound :
 
 /-! ## `lem:cold-corridor-first-failure`, assembled
 
-> Assume `def:surviving-cold-branch`.  For every `ε ∈ 𝓔_br`, the cold return
-> corridor of `ε` has a first failure.  The first failure is routed as follows:
-> (i) case (F1) is a dyadic cycle in `G`; (ii) case (F2) is a target-defective
-> quotient, hence belongs to the sparse exit or to the exit-(4) ledger; (iii)
-> case (F3) is a target-complete compression of a proper support; (iv) case (F4)
-> is an already named Type B or route-8 handoff; (v) case (F5) is a cold bounded
-> germ in the sense of `def:cold-bounded-germ`.
-
-The existence half is `Corridor.exists_firstFailure` above.  Of the four routing
-clauses only two are theorems here, and only because no earlier node proves
-them: (F2)'s and (F4)'s.  (F1) and (F3) are *not* restated against the branch
-record -- nodes `[155]` and `[157]` commit them to the ledger from the
-selection's own target avoidance and from `cor:uncompressible`, and a second
-proof against `SurvivingColdBranch` would be the same theorem twice. -/
+The existence half is `Corridor.exists_firstFailure` above.  The exclusions
+used by the paper's cold residual are ledger facts in the Strategy layer; this
+graph file only supplies the local corridor and germ statements. -/
 
 section Routing
 
 variable {S : DeclaredSignature} {order : Nat}
 variable {Baseline Target : Graph.FiniteObject.{u} → Prop}
-
-/-- **(ii) "case (F2) is a target-defective quotient" -- and the branch has
-none.**
-
-`lem:context-universality` denies target-completeness of an (F2)
-identification, and `def:surviving-cold-branch` (ii) says every identification
-the branch makes is context-equivalent.  So an (F2) discrepancy is not one of
-the branch's identifications: the two prefixes it separates are not identified
-here. -/
-theorem not_identified_of_firstFailureDefect {boundary : Graph.Boundary.{u}}
-    (branch : SurvivingColdBranch S Baseline Target object)
-    (corridor : Corridor object windows component)
-    (presentation : Presentation.{u} S object)
-    (index : corridor.Segment → presentation.Segment)
-    (carrier : presentation.Segment → Graph.BoundaryPiece boundary)
-    {left right : corridor.Segment}
-    (failure : Corridor.FirstFailureDefect corridor presentation index Target
-      carrier left right) :
-    ¬ branch.Identified boundary (carrier (index left)) (carrier (index right)) := by
-  intro identified
-  obtain ⟨_same, outside, separated⟩ := failure
-  exact separated (branch.noTargetDefect _ _ _ identified outside)
-
-/-- **(iv) "case (F4) is an already named Type B or route-8 handoff".**
-
-The corridor has reached precisely one of the declared interfaces recorded in
-the branch state, and the charge transfers to it.  The exit carries the envelope
-and nothing else: the corridor closes nothing. -/
-noncomputable def firstFailureHandoffExit
-    (branch : SurvivingColdBranch S Baseline Target object)
-    (corridor : Corridor object windows component)
-    {segment : corridor.Segment}
-    (failure : Corridor.FirstFailureHandoff corridor branch.handoffEnvelopes segment) :
-    {envelope : branch.handoffEnvelopes.Envelope //
-      corridor.head segment ∈ branch.handoffEnvelopes.support envelope} :=
-  Corridor.handoffExit failure
 
 /-! **(v) "case (F5) is a cold bounded germ".**
 

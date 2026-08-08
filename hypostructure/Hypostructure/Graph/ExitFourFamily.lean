@@ -44,14 +44,15 @@ open Hypostructure
 
 universe u
 
-/-- **The four pre-route generating constructions of `def:typeA-exit4-family`.**
+/-- **The five generating constructions of `def:typeA-exit4-family`.**
 
 A member of `𝒬₄(w)` records which construction generated it; the mathematical
 content the exit consumes -- target-defectiveness and the declared routed-load
 support -- is the same for all five, exactly as `lem:typeA-exit4-discharge`
-uses them. The route-8-only carrier-deletion construction is deliberately not
-present: it is an extension indexed by the later selected exit-8 ledger
-residual. -/
+uses them.  The route-8-only carrier-deletion construction is present in the
+common clause vocabulary, but no pre-route row generates it; it can appear only
+after the selected exit-`(8)` ledger residual supplies the Part IX carrier
+deletion facts. -/
 inductive ReceiverClause where
   /-- (Q1): the visible receiver-entry coordinate identifications. -/
   | visibleEntry
@@ -61,6 +62,9 @@ inductive ReceiverClause where
   | traceBasin
   /-- (Q4): the finite continuation or cubic-switch quotient. -/
   | continuationSwitch
+  /-- (Q5): the two-carrier carrier-deletion quotient, available only in the
+  route-`8` branch after the selected indexed entry has been committed. -/
+  | carrierDeletion
   deriving DecidableEq, Repr
 
 /-- **`𝒬₄(w)`**, at a receiver of a support.
@@ -73,7 +77,7 @@ family's own generation predicate: `Generated clause base identified` says the
 listed construction `clause` generates, from the reading `base`, the quotient
 that identifies or forgets exactly `identified`.
 
-No construction is generated here.  A node that owns one of the four clauses
+No construction is generated here.  A node that owns one of the five clauses
 supplies it through `Generated`; every statement below is quantified over the
 family, so no row invents a member and none is dropped. -/
 structure ReceiverFamily (Target : FiniteObject.{u} → Prop) {object : FiniteObject.{u}}
@@ -166,6 +170,64 @@ namespace Witness
 variable {Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
 variable {support : Finset object.Vertex} {threshold : Nat}
 variable {receiver : object.Vertex} {peeled : Finset object.Vertex}
+variable {Carrier : Type u}
+
+/-- A generated route-`8` carrier-deletion quotient with a target-defect is an
+ordinary exit-`(4)` witness at the same selected receiver.  This is the generic
+constructor used by Part IX after the ledger has already committed the selected
+two-carrier entry and its declared deletion witness. -/
+def of_carrierDeletion
+    (family : ReceiverFamily Target support threshold receiver Carrier)
+    {base identified : Finset family.entry.Coordinate}
+    (generated :
+      family.Generated ReceiverClause.carrierDeletion base identified)
+    {load : object.Vertex}
+    (unpeeled : load ∈ unpeeledLoads support threshold receiver peeled)
+    (declared : load ∈ family.declaredLoads identified)
+    {boundary : Boundary} {left right : BoundaryPiece boundary}
+    (sameBoundaryProfile :
+      left.boundaryDegreeProfile = right.boundaryDegreeProfile)
+    (targetDefect : Response.TargetDefect Target left right) :
+    Witness Target support threshold receiver peeled where
+  Carrier := Carrier
+  family := family
+  clause := ReceiverClause.carrierDeletion
+  base := base
+  identified := identified
+  generated := generated
+  load := load
+  unpeeled := unpeeled
+  declared := declared
+  boundary := boundary
+  left := left
+  right := right
+  sameBoundaryProfile := sameBoundaryProfile
+  targetDefect := targetDefect
+
+/-- A committed no-exit-`(4)` fact is incompatible with a target-defective Q5
+carrier-deletion quotient supporting a load in its recorded domain.  The domain
+predicate is supplied by the ledger branch: in the silent route-`8` arm it is
+the selected unpaid silent residual set. -/
+theorem carrierDeletion_contradicts_noExitFour
+    {eligible : object.Vertex → Prop}
+    (noExitFour :
+      ¬ ∃ witness : Witness Target support threshold receiver peeled,
+        eligible witness.load)
+    (family : ReceiverFamily Target support threshold receiver Carrier)
+    {base identified : Finset family.entry.Coordinate}
+    (generated :
+      family.Generated ReceiverClause.carrierDeletion base identified)
+    {load : object.Vertex}
+    (unpeeled : load ∈ unpeeledLoads support threshold receiver peeled)
+    (declared : load ∈ family.declaredLoads identified)
+    (eligibleLoad : eligible load)
+    {boundary : Boundary} {left right : BoundaryPiece boundary}
+    (sameBoundaryProfile :
+      left.boundaryDegreeProfile = right.boundaryDegreeProfile)
+    (targetDefect : Response.TargetDefect Target left right) :
+    False :=
+  noExitFour ⟨of_carrierDeletion family generated unpeeled declared
+    sameBoundaryProfile targetDefect, eligibleLoad⟩
 
 attribute [local instance] vertexDecEq
 

@@ -198,4 +198,59 @@ theorem deficit_le_basins {discharge deficiency basins supply ambient : Nat}
     ambient ≤ basins + discharge * supply := by
   omega
 
+/-- **The indexed route-`8` reduction.**
+
+This is the carrier-reduction step without a secondary collection object.  The
+selected residual supplies a finite family of entries and a finite carrier
+supply through the ledger.  If every selected entry had more than `threshold`
+private carriers, the indexed private-carrier census would contradict the
+registered rate bound; hence the ledger can append the selected terminal
+two-carrier fact for one entry of the same incoming family. -/
+theorem exists_indexedTwoCarrier
+    {Target : FiniteObject.{u} → Prop} {Carrier Index : Type u}
+    [DecidableEq Carrier] [DecidableEq Index]
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (supply : Finset Carrier)
+    (carriers_subset :
+      ∀ index ∈ entries, (entry index).carriers.toFinset ⊆ supply)
+    {threshold discharge ambient : Nat}
+    (deficit : ambient ≤ entries.card + discharge * supply.card)
+    (rate : ((threshold + 1) * discharge + 1) * supply.card <
+      (threshold + 1) * ambient) :
+    ∃ index ∈ entries, IndexedTwoCarrier entries entry threshold index := by
+  classical
+  by_contra missing
+  simp only [not_exists, not_and] at missing
+  have lower :
+      ∀ index ∈ entries,
+        threshold + 1 ≤ indexedPrivateCount entries entry index := by
+    intro index index_mem
+    have not_two : ¬ IndexedTwoCarrier entries entry threshold index :=
+      missing index index_mem
+    unfold IndexedTwoCarrier at not_two
+    omega
+  exact census_contradiction deficit
+    (indexedCardMul_le_supply entries entry supply carriers_subset lower) rate
+
+/-- **`prop:typeA-route8-carrier-reduction`, ledger-input form.**
+
+This is the form used by the spine: burden and large-budget are separate facts
+on the incoming route-`8` residual ledger.  Their only job here is to produce
+the cleared deficit inequality spent by `exists_indexedTwoCarrier`. -/
+theorem exists_indexedTwoCarrier_of_burden_of_largeBudget
+    {Target : FiniteObject.{u} → Prop} {Carrier Index : Type u}
+    [DecidableEq Carrier] [DecidableEq Index]
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (supply : Finset Carrier)
+    (carriers_subset :
+      ∀ index ∈ entries, (entry index).carriers.toFinset ⊆ supply)
+    {threshold discharge deficiency ambient : Nat}
+    (burden : discharge * deficiency ≤ entries.card)
+    (largeBudget : ambient ≤ discharge * deficiency + discharge * supply.card)
+    (rate : ((threshold + 1) * discharge + 1) * supply.card <
+      (threshold + 1) * ambient) :
+    ∃ index ∈ entries, IndexedTwoCarrier entries entry threshold index :=
+  exists_indexedTwoCarrier entries entry supply carriers_subset
+    (deficit_le_basins burden largeBudget) rate
+
 end Hypostructure.Graph.Route8

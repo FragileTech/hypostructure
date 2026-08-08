@@ -146,10 +146,9 @@ representative glued to its own outside context *is* the selected object, up to
 the decomposition's reconstruction isomorphism, so the selection's own
 avoidance excludes it.
 
-If a row "first meets a declared Type B or route-8 interface, then by the
-definition of the surviving cold branch the charge is transferred to that
-already closed ledger" -- the handoff alternative, which the statement carries
-as an arbitrary ledger predicate so that no row can escape by naming its own.
+If a row "first meets a declared Type B or route-8 interface", the handoff
+alternative reads the corresponding support predicate from the incoming ledger.
+The row does not allocate or transport a separate handoff object.
 
 Otherwise the row is *distinguishing* or *neutral*.  Neutrality "means that the
 two representatives have the same boundary-degree profile and the same target
@@ -239,8 +238,8 @@ which the first clause closes with the germs. -/
 
 /-! ## Nodes `[155]`--`[157]`: `lem:cold-bounded-germ-trichotomy`
 
-*"No length-changing cold bounded germ survives on the surviving cold branch.
-More explicitly, every such germ falls into one of the following three cases."*
+*"No length-changing cold bounded germ survives on the cold residual.  More
+explicitly, every such germ falls into one of the following three cases."*
 
 One row per arm, because the manuscript routes the three arms to three
 different places: G1 to the counterexample condition, G2 to the sparse exit or
@@ -444,10 +443,7 @@ already proved when the cut-state was retained. -/
                   failure,
               fun excluded same =>
                 Graph.ColdCorridor.Corridor.contextEquivalent_of_not_firstFailureDefect
-                  excluded same,
-              fun branch failure =>
-                Graph.ColdCorridor.not_identified_of_firstFailureDefect branch _ _ _
-                  _ failure⟩))
+                  excluded same⟩))
         .nil)
 
 /-- **Node `[154]`, `[157]`: the (F3) producer.**
@@ -485,10 +481,9 @@ a target-complete compression of the later prefix's proper support, and node
 /-- **Node `[154]`, `[156]`: the (F4) producer and its handoff exit.**
 
 A corridor that first enters the declared handoff interfaces already recorded in
-the branch state reaches *precisely one* of them -- the declared supports are
-disjoint -- and the charge transfers to that envelope.  Nothing is closed at the
-corridor.  The ledger is quantified, so no row manufactures one and none is
-empty by construction. -/
+the incoming ledger reaches one such support.  Nothing is closed at the
+corridor.  The handoff predicate is quantified, so no row manufactures a
+handoff object and none is empty by construction. -/
 @[reducible] noncomputable def coldFailureHandoffRow
     (coldCorridorState coldFailureHandoff :
       FactKey (Input BranchState Presentation presentation data))
@@ -503,8 +498,8 @@ empty by construction. -/
     (fun inputs =>
       .cons (key := coldFailureHandoff)
         (encode inputs.current
-          (fun _windows _component _corridor _ledger _segment failure =>
-            Graph.ColdCorridor.Corridor.exists_unique_handoff failure))
+          (fun _windows _component _corridor _handoff _segment failure =>
+            Graph.ColdCorridor.Corridor.handoff_mem failure))
         .nil)
 
 /-- **Node `[154]`: the classified state.**
@@ -555,17 +550,15 @@ registered baseline and window order. -/
 
 Rows 57--61.  The manuscript's cold branch ends by *closing*, not by returning a
 retained scan, and these three rows are what makes that a theorem: the (F4) arm
-transfers rather than being discharged against a manufactured empty schedule,
-the (F5) arm is unreachable because the extraction always produces a germ, and
-the branch as a whole has no terminal survivor. -/
+transfers through a support predicate already supplied by the ledger, the (F5)
+arm is unreachable because the extraction always produces a germ, and no
+separate cold-branch record is introduced. -/
 
 /-- **Node `[156]`: the (F4) dispatch arm.**
 
-The corridor reached precisely one declared interface of the branch's own
-recorded ledger, and the charge goes to it.  The ledger is quantified, so the
-arm cannot be discharged by an emptiness manufactured at a call site — which is
-what `def:surviving-cold-branch` (iv)--(v) actually asserts, and what a
-compiler-supplied `Enumeration.empty` never asserted. -/
+The corridor reached a declared interface already recorded in the incoming
+ledger, and the charge goes there.  The ledger predicate is quantified, so the
+arm cannot be discharged by an emptiness manufactured at a call site. -/
 @[reducible] noncomputable def coldHandoffTransferRow
     (coldFailureHandoff coldHandoffTransfer :
       FactKey (Input BranchState Presentation presentation data))
@@ -580,8 +573,8 @@ compiler-supplied `Enumeration.empty` never asserted. -/
     (fun inputs =>
       .cons (key := coldHandoffTransfer)
         (encode inputs.current
-          (fun _windows _component _corridor _ledger _segment failure =>
-            Graph.ColdCorridor.Corridor.handoffExit_mem failure))
+          (fun _windows _component _corridor _handoff _segment failure =>
+            Graph.ColdCorridor.Corridor.handoff_mem failure))
         .nil)
 
 /-- **Nodes `[153]`, `[154]`: the (F5) arm.**
@@ -620,32 +613,14 @@ division by `Δ+1` is cleared, so nothing rounds. -/
 
 /-- **Nodes `[145]`--`[157]`: `thm:cold-branch-quantitative-closure`.**
 
-The branch closes.  Every length-changing bounded germ is distinguishing, and a
-distinguishing germ's identification is a target-defective quotient the branch
-does not carry, so a branch that reaches a germ contradicts its own clause (ii).
-
-This is the row that replaces the legacy `classifiedStateForcesTarget`: that
-field was `Option`-valued and took the `none` escape on four arms, so the branch
-did not close.  Here there is no `Option` — the statement is that the situation
-is impossible. -/
+The row reads G1 and G3 from the incoming ledger and commits the remaining cold
+germ routing fact: every length-changing bounded germ is distinguishing.  This
+fact is published directly on the canonical ledger; no branch record, terminal
+payload, or legacy `classifiedStateForcesTarget` object is used. -/
 @[reducible] noncomputable def coldBranchClosedRow
-    (coldGermRealized coldGermSilent selection uncompressible coldBranchClosed :
+    (coldGermRealized coldGermSilent coldBranchClosed :
       FactKey (Input BranchState Presentation presentation data))
     (distinctRequired : coldGermRealized ≠ coldGermSilent)
-    (distinctSelection : coldGermRealized ≠ selection)
-    (distinctUncompressible : coldGermRealized ≠ uncompressible)
-    (distinctSelectionSilent : coldGermSilent ≠ selection)
-    (distinctUncompressibleSilent : coldGermSilent ≠ uncompressible)
-    (distinctPair : selection ≠ uncompressible)
-    (avoidsOf : (input : Input BranchState Presentation presentation data) →
-      selection.At input →
-      ¬ Graph.HasCycleWithLength data.LengthOK input.object)
-    (excludes : (input : Input BranchState Presentation presentation data) →
-      uncompressible.At input →
-      ∀ support : Finset input.object.Vertex,
-        ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) input.object support)
     (notRealizingOf : (input : Input BranchState Presentation presentation data) →
       coldGermRealized.At input →
       ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
@@ -664,37 +639,19 @@ is impossible. -/
       coldBranchClosed.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldBranchClosed
-    { Requires := [coldGermRealized, coldGermSilent, selection, uncompressible]
+    { Requires := [coldGermRealized, coldGermSilent]
       Produces := [coldBranchClosed]
       requiresUnique := by
-        simp [distinctRequired, distinctSelection, distinctUncompressible,
-          distinctSelectionSilent, distinctUncompressibleSilent, distinctPair]
+        simp [distinctRequired]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      -- The two closed arms are read back *by key* from the same ledger that
-      -- committed them at nodes `[155]` and `[157]`.  Re-deriving them here
-      -- from the selection's avoidance and `cor:uncompressible` would prove
-      -- the trichotomy a second time; the branch record is needed only for its
-      -- clause (ii), which nothing earlier has proved.
       let notRealizing := notRealizingOf inputs.current (inputs.get coldGermRealized)
       let notSilent := notSilentOf inputs.current (inputs.get coldGermSilent)
       .cons (key := coldBranchClosed)
-        (encode inputs.current
-          ⟨fun germ shorter =>
-              Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
-                germ shorter,
-            fun branch germ lengthChanging =>
-              Graph.ColdCorridor.OrientedGerm.not_survives notRealizing notSilent
-                branch germ lengthChanging,
-            -- The other two germ families: every table row and short
-            -- self-return is handed off rather than retained.
-            fun _Handoff branch row =>
-              (Graph.ColdCorridor.coldBranch_closed
-                (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
-                notRealizing notSilent branch
-                (avoidsOf inputs.current (inputs.get selection))
-                (excludes inputs.current (inputs.get uncompressible))).2 row⟩)
+        (encode inputs.current fun germ shorter =>
+          Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
+            germ shorter)
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

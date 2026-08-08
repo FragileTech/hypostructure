@@ -1149,10 +1149,11 @@ representative determined by the repeated cold corridor state, and the two
 share an interface, a boundary-degree profile, and -- this being the
 equal-length half of the table -- an internal size.
 
-`Handoff` is the already-closed ledger the manuscript hands a row's charge to:
-"the corridor first enters a declared Type B handoff envelope or the route-8
-carrier support **already recorded in the branch state**".  It is a parameter
-supplied by whoever owns that ledger, never a field the row may choose. -/
+`Handoff` is the already-closed ledger predicate the manuscript hands a row's
+charge to: "the corridor first enters a declared Type B handoff support or the
+route-8 support **already recorded in the incoming ledger**".  It is a
+parameter supplied by whoever owns that ledger, never a field the row may
+choose. -/
 
 variable {object : FiniteObject.{u}}
 

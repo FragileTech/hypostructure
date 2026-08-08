@@ -6432,19 +6432,36 @@ are not evidence for the EG cold proof.
 
 ### Row 62 — `[109]` route-8 arm placement
 
-The Strategy placement and runner were deleted.  The exact missing theorem is the selected-ledger form of `lem:typeA-saturated-handoff`: after genuine Q1--Q4 exit tests and exits (5)--(7), it must construct `def:typeA-true-route8-residual` on the same selected support.  Ledger/Reads/Closed/Full are all false.
+`Spine.route8ResidualRow` now has the correct ledger shape: its manifest
+requires the finite descent fact, the selected silent-residual fact, and the
+no-exit `(4)`, `(5)`, `(6)`, and `(7)` facts, then appends only
+`route8Residual`.  The full residual is carried by the `ExactLedger` prefix; the
+new fact is not a transport wrapper and does not replace or erase any upstream
+fact.  The remaining mathematical work is to strengthen the committed
+`route8Residual` schema from the current no-handoff residual to the full
+`def:typeA-true-route8-residual` clauses once the selected Q1--Q4/Q5 response
+facts are available.  Ledger/Reads are partially repaired; Closed/Full remain
+false.
 
-### Row 63 — `[111]`–`[113]` collection, burden, deficit bound
+### Row 63 — `[111]`–`[113]` selected residual burden and deficit bound
 
-Pure `Graph.Route8` burden and deficit theorems remain.  The missing predecessor is the exact selected exit-8 ledger residual produced by `lem:typeA-saturated-handoff`; no Strategy fact or read exists.  Ledger/Reads/Closed/Full are all false.
+Pure `Graph.Route8` burden and deficit theorems remain.  The missing predecessor is the exact selected exit-8 ledger residual produced by `lem:typeA-saturated-handoff`; no Strategy fact or read exists.  No route-8 collection or secondary carrier may be introduced here.  Ledger/Reads/Closed/Full are all false.
 
 ### Row 64 — `[114]`–`[116]` carrier core
 
 Pure carrier-core mathematics remains.  The missing predecessor is the same selected exit-8 ledger residual and its canonical target-complete-minimal entries.  Ledger/Reads/Closed/Full are all false.
 
-### Row 65 — `[117]`–`[122]` private-carrier census
+### Row 65 — `[117]`–`[122]` indexed private-carrier census
 
-Pure private-carrier reduction remains.  The missing predecessor is the selected carrier-core fact derived on the exact true-route8 collection.  Ledger/Reads/Closed/Full are all false.
+Pure private-carrier reduction remains available as reusable graph arithmetic,
+including `Route8.exists_indexedTwoCarrier_of_burden_of_largeBudget`.  No
+Strategy row or spine key is currently registered for `[117]`--`[122]`: the
+previous intermediate carrier surfaces were removed because they were not the
+selected residual itself.  A future implementation must read the `[109]`
+route-8 residual directly with `FactInputs.get` and commit exactly the
+paper-prescribed downstream fact.  There is no route-8 collection wrapper and no
+intermediate carrier key.  Ledger/Reads/Closed/Full remain false for this row
+until that exact ledger step is implemented.
 
 ### Row 66 — `[123]` pressure descent
 
@@ -6452,4 +6469,4 @@ Pure pressure-descent mathematics remains.  The missing predecessor is the selec
 
 ### Row 67 — `[124]` terminal two-carrier no-go
 
-The pure no-go theorem remains, but no canonical Strategy closure exists.  The exact missing chain is the selected true-route8 collection from `lem:typeA-saturated-handoff`, the carrier reduction, and the later Q5 carrier-deletion pressure descent on that same collection.  Ledger/Reads/Closed/Full are all false.
+The pure no-go theorem remains, but no canonical Strategy closure exists.  The exact missing chain is the selected true-route8 residual from `lem:typeA-saturated-handoff`, the indexed carrier reduction, and the later Q5 carrier-deletion pressure descent on that same residual.  Ledger/Reads/Closed/Full are all false.

@@ -8,8 +8,7 @@ The rows of `ColdCorridorRows` are each quantified over the keys they consume
 and produce.  This module installs them all at the spine's own vocabulary and
 runs them in the manuscript's order against the one canonical `ExactLedger`,
 from the cut-state of `def:cold-corridor-first-failure` through the three arms
-of `lem:cold-bounded-germ-trichotomy` to the existence half of
-`lem:cold-corridor-first-failure`.
+of `lem:cold-bounded-germ-trichotomy` and the remaining cold-germ routing fact.
 
 The block is entered from any branch cursor whose key index already carries the
 selection of node `[1]` and the uncompressibility of node `[14]`.  Those are the
@@ -119,16 +118,14 @@ cold key *is* the manuscript statement, so nothing is re-encoded. -/
 /-- Nodes `[145]`--`[157]`: `thm:cold-branch-quantitative-closure`. -/
 @[reducible] noncomputable def coldBranchClosed :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  coldBranchClosedRow (K .coldGermRealized) (K .coldGermSilent) (K .selection)
-    (K .uncompressible) (K .coldBranchClosed)
-    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
-    (fun _input fact => fact.down.1) (fun _input fact => fact.down)
+  coldBranchClosedRow (K .coldGermRealized) (K .coldGermSilent)
+    (K .coldBranchClosed) (by simp)
     (fun _input fact => fact.down.1) (fun _input fact => fact.down.1)
     (fun _input value => ⟨value⟩)
 
 /-! ## The block, run -/
 
-/-- The key index a branch carries after the cold corridor block. -/
+/-- The key index the ledger carries after the cold corridor block. -/
 abbrev coldKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -140,11 +137,11 @@ abbrev coldKeys
 
 /-- **The cold corridor block, run.**
 
-The ten rows are composed by `AtomicCT.run`, which appends each row's declared
+The thirteen rows are composed by `AtomicCT.run`, which appends each row's declared
 productions to the incoming index while retaining the literal ancestry.  The
-output index is the incoming one with the ten cold facts on top, so every
-earlier fact of the branch remains readable and no cold fact can be read by a
-branch that did not run this block. -/
+output index is the incoming one with the cold facts on top, so every earlier
+ledger fact remains readable and no cold fact can be read by a branch that did
+not run this block. -/
 noncomputable def runCold
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}

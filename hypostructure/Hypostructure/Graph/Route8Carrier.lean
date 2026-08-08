@@ -37,6 +37,17 @@ open Hypostructure.Core.Finite
 
 universe u
 
+/-- The paper's ambient carriers for route-`8`: oriented boundary incidences of
+the selected support, represented by the inside vertex and the ambient edge. -/
+abbrev BoundaryCarrier (object : FiniteObject.{u}) : Type u :=
+  object.Vertex × Sym2 object.Vertex
+
+/-- Decidable equality on the concrete graph-owned route-`8` carriers. -/
+noncomputable def boundaryCarrierDecEq (object : FiniteObject.{u}) :
+    DecidableEq (BoundaryCarrier object) := by
+  classical
+  infer_instance
+
 /-- **One indexed reading with its declared carrier signature.**
 
 `carriers` is the ambient supply `∂_E X` of oriented boundary incidences the
@@ -231,5 +242,110 @@ theorem exists_forgotten_coordinate {carrier : Carrier}
     exact missing r inCore.1 inCore.2 (same ▸ used)
 
 end Entry
+
+section IndexedCarrierAccounting
+
+variable {Target : FiniteObject.{u} → Prop} {Carrier Index : Type u}
+variable [DecidableEq Carrier] [DecidableEq Index]
+
+/-- The carriers private to one indexed route-`8` entry, inside the selected
+finite family read from the ledger.  This is pure carrier arithmetic, not a
+secondary residual object. -/
+noncomputable def indexedPrivateCarriers
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (index : Index) : Finset Carrier :=
+  (entry index).carriers.toFinset.filter fun carrier =>
+    ∀ other ∈ entries, other ≠ index → carrier ∉ (entry other).carriers.toFinset
+
+/-- The number of private carriers of one indexed route-`8` entry. -/
+noncomputable def indexedPrivateCount
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (index : Index) : Nat :=
+  (indexedPrivateCarriers entries entry index).card
+
+/-- The terminal two-carrier condition of Part IX, stated on the selected
+indexed family rather than packaged in a carrier object. -/
+def IndexedTwoCarrier
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (threshold : Nat) (index : Index) : Prop :=
+  indexedPrivateCount entries entry index ≤ threshold
+
+theorem indexedPrivateCarriers_subset_entry
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (index : Index) :
+    indexedPrivateCarriers entries entry index ⊆ (entry index).carriers.toFinset := by
+  intro carrier hcarrier
+  exact (Finset.mem_filter.mp hcarrier).1
+
+theorem indexedPrivateCarriers_subset_supply
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (supply : Finset Carrier)
+    (carriers_subset :
+      ∀ index ∈ entries, (entry index).carriers.toFinset ⊆ supply)
+    {index : Index} (index_mem : index ∈ entries) :
+    indexedPrivateCarriers entries entry index ⊆ supply := by
+  exact subset_trans (indexedPrivateCarriers_subset_entry entries entry index)
+    (carriers_subset index index_mem)
+
+theorem indexedPrivateCarriers_disjoint
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    {left right : Index} (left_mem : left ∈ entries) (right_mem : right ∈ entries)
+    (distinct : left ≠ right) :
+    Disjoint (indexedPrivateCarriers entries entry left)
+      (indexedPrivateCarriers entries entry right) := by
+  rw [Finset.disjoint_left]
+  intro carrier hleft hright
+  have hleft_private := (Finset.mem_filter.mp hleft).2
+  exact hleft_private right right_mem (fun same => distinct same.symm)
+    ((indexedPrivateCarriers_subset_entry entries entry right) hright)
+
+theorem indexedPrivateCarriers_card_biUnion_le_supply
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (supply : Finset Carrier)
+    (carriers_subset :
+      ∀ index ∈ entries, (entry index).carriers.toFinset ⊆ supply) :
+    (entries.biUnion fun index => indexedPrivateCarriers entries entry index).card ≤
+      supply.card := by
+  refine Finset.card_le_card ?_
+  intro carrier hcarrier
+  rcases Finset.mem_biUnion.mp hcarrier with ⟨index, index_mem, carrier_mem⟩
+  exact indexedPrivateCarriers_subset_supply entries entry supply carriers_subset
+    index_mem carrier_mem
+
+theorem indexedPrivateCarriers_card_sum_le_supply
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (supply : Finset Carrier)
+    (carriers_subset :
+      ∀ index ∈ entries, (entry index).carriers.toFinset ⊆ supply) :
+    (∑ index ∈ entries, indexedPrivateCount entries entry index) ≤
+      supply.card := by
+  change (∑ index ∈ entries,
+      (indexedPrivateCarriers entries entry index).card) ≤ supply.card
+  rw [← Finset.card_biUnion]
+  · exact indexedPrivateCarriers_card_biUnion_le_supply entries entry supply
+      carriers_subset
+  intro left left_mem right right_mem distinct
+  exact indexedPrivateCarriers_disjoint entries entry left_mem right_mem distinct
+
+theorem indexedCardMul_le_supply
+    (entries : Finset Index) (entry : Index → Entry Target Carrier)
+    (supply : Finset Carrier)
+    (carriers_subset :
+      ∀ index ∈ entries, (entry index).carriers.toFinset ⊆ supply)
+    {floor : Nat}
+    (lower : ∀ index ∈ entries, floor ≤ indexedPrivateCount entries entry index) :
+    floor * entries.card ≤ supply.card := by
+  calc
+    floor * entries.card
+        = ∑ _index ∈ entries, floor := by
+          rw [Finset.sum_const]
+          simpa [mul_comm]
+    _ ≤ ∑ index ∈ entries, indexedPrivateCount entries entry index := by
+          exact Finset.sum_le_sum fun index index_mem => lower index index_mem
+    _ ≤ supply.card :=
+          indexedPrivateCarriers_card_sum_le_supply entries entry supply
+            carriers_subset
+
+end IndexedCarrierAccounting
 
 end Hypostructure.Graph.Route8

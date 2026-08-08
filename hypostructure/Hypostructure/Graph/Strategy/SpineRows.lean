@@ -3191,7 +3191,7 @@ noncomputable def b2AssignmentDichotomy
             obstruction⟩)⟩)
     choiceFresh obstructionFresh
 
-/-! ## B2(a)--(c) and the live Type B post-ledger core
+/-! ## B2 and the live Type B post-ledger core
 
 The successful finite choice above is turned into the manuscript's literal
 augmented-ledger partition.  Remainder normalization supplies both window
@@ -3199,7 +3199,10 @@ freeness and the empty internal baseline core; the latter implies hereditary
 Type A uncompressibility.  Selection supplies contextual target safety.  Every
 remaining connected component is therefore passed to the existing Type A
 hygiene theorem on the same ledger, and the component fact reads the ledger's
-own `noHighCentre_remaining` theorem for the Type B maximal-core clause. -/
+own `noHighCentre_remaining` theorem for the Type B maximal-core clause.  The
+same fact also reads the branch's `uncompressible` entry and packages actual
+component-indexed exit-`(7)` productions into the canonical grouped decorated
+envelope. -/
 @[reducible] noncomputable def disjointPostLedgerComponentsRow
     (typeBB2Choice selection uncompressible remainderNormalized
       typeBDisjointLedger :
@@ -5470,9 +5473,14 @@ noncomputable def typeAExitSevenDichotomy
         .nil)
 
 @[reducible] noncomputable def route8ResidualRow
-    (typeAExitSevenFree route8Residual :
+    (typeAExitFourFiniteDescent typeASaturatedHandoffSilent
+      typeASaturatedHandoffExitFourFree typeAExitFiveFree typeAExitSixFree
+      typeAExitSevenFree route8Residual :
       FactKey (Input BranchState Presentation presentation data))
-    (distinct : typeAExitSevenFree ≠ route8Residual)
+    (distinctRequired :
+      [typeAExitFourFiniteDescent, typeASaturatedHandoffSilent,
+        typeASaturatedHandoffExitFourFree, typeAExitFiveFree, typeAExitSixFree,
+        typeAExitSevenFree].Nodup)
     (freeOf :
       (input : Input BranchState Presentation presentation data) →
         typeAExitSevenFree.At input →
@@ -5487,8 +5495,19 @@ noncomputable def typeAExitSevenDichotomy
         route8Residual.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8Residual
-    (rowManifest typeAExitSevenFree route8Residual distinct)
+    { Requires := [typeAExitFourFiniteDescent, typeASaturatedHandoffSilent,
+        typeASaturatedHandoffExitFourFree, typeAExitFiveFree, typeAExitSixFree,
+        typeAExitSevenFree]
+      Produces := [route8Residual]
+      requiresUnique := distinctRequired
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
+      let _finiteDescent := inputs.get typeAExitFourFiniteDescent
+      let _silent := inputs.get typeASaturatedHandoffSilent
+      let _exitFourFree := inputs.get typeASaturatedHandoffExitFourFree
+      let _exitFiveFree := inputs.get typeAExitFiveFree
+      let _exitSixFree := inputs.get typeAExitSixFree
       let free := freeOf inputs.current (inputs.get typeAExitSevenFree)
       .cons (key := route8Residual) (encode inputs.current free) .nil)
 

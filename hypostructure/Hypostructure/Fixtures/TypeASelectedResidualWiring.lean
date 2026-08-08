@@ -104,7 +104,9 @@ abbrev visibleExitKeys :
 
 The route-8 arm is an ordinary one-fact append.  These checks pin the exact
 index shape: `[109]` adds `route8Residual` on top of the no-exit-`(7)` ledger
-and leaves every incoming fact in `known` available downstream.
+and leaves every incoming fact in the prefix available downstream.  The row's
+manifest requires the finite descent, silent residual, and no-exit facts; the
+framework carries them through this prefix, not through a custom payload.
 -/
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
@@ -133,6 +135,38 @@ example {known : FactKeys (Input BranchState Presentation presentation data)} :
       route8ResidualKeys (BranchState := BranchState)
         (presentation := presentation) (data := data) known := by
   simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    (member : K .typeAExitFourFiniteDescent ∈ known) :
+    K .typeAExitFourFiniteDescent ∈
+      route8ResidualKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+    member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    (member : K .typeASaturatedHandoffSilent ∈ known) :
+    K .typeASaturatedHandoffSilent ∈
+      route8ResidualKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+    member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    (member : K .typeASaturatedHandoffExitFourFree ∈ known) :
+    K .typeASaturatedHandoffExitFourFree ∈
+      route8ResidualKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+    member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    (member : K .typeAExitFiveFree ∈ known) :
+    K .typeAExitFiveFree ∈
+      route8ResidualKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+    member]
 
 end
 
