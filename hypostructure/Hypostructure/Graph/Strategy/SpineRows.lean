@@ -5072,12 +5072,7 @@ noncomputable def typeAExitSixDichotomy
                           (Graph.MinimumDegreeAtLeast data.threshold)
                           (Graph.HasCycleWithLength data.LengthOK)
                           current.object support) ∧
-                      ∃ presented : Graph.Route8.PresentedEntry current.object,
-                        Nonempty
-                          (Graph.Route8.Delocalization
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            presented)) →
+                      ExitSixDelocalizes data current.object piece) →
       typeAExitSix.At current)
     (encodeFree :
       (∃ packing : Finset (Finset current.object.Vertex),
@@ -5121,12 +5116,7 @@ noncomputable def typeAExitSixDichotomy
                           (Graph.MinimumDegreeAtLeast data.threshold)
                           (Graph.HasCycleWithLength data.LengthOK)
                           current.object support) ∧
-                      ¬ ∃ presented : Graph.Route8.PresentedEntry current.object,
-                        Nonempty
-                          (Graph.Route8.Delocalization
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            presented)) →
+                      ¬ ExitSixDelocalizes data current.object piece) →
       typeAExitSixFree.At current)
     (exitFresh : typeAExitSix ∉ known)
     (freeFresh : typeAExitSixFree ∉ known) :
@@ -5141,11 +5131,9 @@ noncomputable def typeAExitSixDichotomy
         noExitFour, noCompression⟩ :=
         freeOf (ExactLedger.get previous typeAExitFiveFree)
       by_cases delocalizes :
-          ∃ presented : Graph.Route8.PresentedEntry current.object,
-            Nonempty
-              (Graph.Route8.Delocalization
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) presented)
+          ExitSixDelocalizes data current.object
+            (current.object.pieceSupport
+              (current.object.remainderSupport packing) component)
       · exact ⟨.inl (encodeExit
           ⟨packing, valid, maximal, component, present, negative, zero,
             receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
@@ -5207,12 +5195,7 @@ noncomputable def typeAExitSixScopeDichotomy
                           (Graph.MinimumDegreeAtLeast data.threshold)
                           (Graph.HasCycleWithLength data.LengthOK)
                           current.object support) ∧
-                      ∃ presented : Graph.Route8.PresentedEntry current.object,
-                        Nonempty
-                          (Graph.Route8.Delocalization
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            presented))
+                      ExitSixDelocalizes data current.object piece)
     (encodeProper :
       (∃ support : Finset current.object.Vertex,
         Graph.Strategy.InterfaceReplacement.ReplacementSupport
@@ -5236,7 +5219,7 @@ noncomputable def typeAExitSixScopeDichotomy
       apply Classical.choice
       obtain ⟨_packing, _valid, _maximal, _component, _present, _negative,
         _zero, _receiver, _isReceiver, _peeled, _peeledSubset, _saturated,
-        _noExitFour, _noCompression, presented, delocalizes⟩ :=
+        _noExitFour, _noCompression, presented, _supportEq, delocalizes⟩ :=
         exitOf (ExactLedger.get previous typeAExitSix)
       obtain ⟨delocalization⟩ := delocalizes
       rcases delocalization.localize with proper | global

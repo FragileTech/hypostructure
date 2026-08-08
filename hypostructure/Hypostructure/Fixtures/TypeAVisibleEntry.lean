@@ -51,11 +51,16 @@ cursor carrying it. -/
 /-- **The port non-vacuity, committed on the cursor node `[89]` left.** -/
 noncomputable def portReturn
     {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
+  (history : ExactLedger (Input BranchState Presentation presentation data)
       selected typeASaturatedReceiverKeys) :
     ExactLedger (Input BranchState Presentation presentation data) selected
       typeAPortReturnKeys :=
-  (typeAPortReturn (data := data)).run history (by simp)
+  (typeAPortReturnRow (BranchState := BranchState)
+    (presentation := presentation) (data := data)
+    (K .selection) (K .typeAPortReturn) (by simp)
+    (fun _input fact => fact.down.1)
+    (fun _input fact => fact.down.2)
+    (fun _input value => ⟨value⟩)).run history (by simp)
 
 /-! ## Node `[93]`, asked on the port-return cursor -/
 
@@ -74,7 +79,7 @@ noncomputable def visibleEntry
     (K .typeASaturatedReceiver) (K .typeAVisibleEntry)
     (K .typeAVisibleFirstExcess)
     (fun fact packing valid maximal piece inside surplus =>
-      (fact.down packing valid maximal piece inside surplus).1)
+      fact.down packing valid maximal piece inside surplus)
     (fun fact => fact.down) (fun visible => ⟨visible⟩)
     (fun excess => ⟨excess⟩) (by simp) (by simp)
 
@@ -83,11 +88,14 @@ canonical family row 16 quantifies over is exhibited at its visible-entry
 generator, on the cursor that carries the port. -/
 noncomputable def visibleEntryClause
     {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
+  (history : ExactLedger (Input BranchState Presentation presentation data)
       selected (K .typeAVisibleEntry :: typeAPortReturnKeys)) :
     ExactLedger (Input BranchState Presentation presentation data) selected
       typeAVisibleEntryKeys :=
-  (typeAVisibleEntryClause (data := data)).run history (by simp)
+  (typeAVisibleEntryClauseRow (K .typeAVisibleEntry)
+    (K .typeAVisibleEntryClause) (by simp)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history (by simp)
 
 /-! ## What the two exits carry -/
 
@@ -361,33 +369,50 @@ example (object : Graph.FiniteObject.{u}) (Target : Graph.FiniteObject.{u} → P
 noncomputable def unsaturatedDischarge
     {selected : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
+    (dischargeFresh : K (data := data) .typeAUnsaturatedDischarge ∉ known)
+  (history : ExactLedger (Input BranchState Presentation presentation data)
       selected (residualCTypeAUnsaturatedReceiverKeys known)) :
     ExactLedger (Input BranchState Presentation presentation data) selected
       (residualCTypeAUnsaturatedDischargeKeys known) :=
-  (typeAUnsaturatedDischarge (data := data)).run history (by simp)
+  (typeAUnsaturatedDischargeRow (BranchState := BranchState)
+    (presentation := presentation) (data := data)
+    (K .typeAReceiverRouting)
+    (K .typeAUnsaturatedReceivers) (K .typeAUnsaturatedDischarge) (by simp)
+    (fun _input fact => fact.down) (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history (by
+      simp [residualCTypeAUnsaturatedReceiverKeys, dischargeFresh])
 
 /-- The new node `[91]` fact closes against the negative Type A support already
 present in the same ancestry. -/
 noncomputable def unsaturatedClosed
     {selected : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
+    (dischargeFresh : K (data := data) .typeAUnsaturatedDischarge ∉ known)
+    (closedFresh : closed ∉ known)
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected (residualCTypeAUnsaturatedReceiverKeys known)) :
     ExactLedger (Input BranchState Presentation presentation data) selected
       (residualCTypeAUnsaturatedClosedKeys known) :=
-  closeIncompatible (unsaturatedDischarge history) (K .typeALowSurplus)
-    (K .typeAUnsaturatedDischarge) (by simp)
+  closeIncompatible (unsaturatedDischarge dischargeFresh history)
+    (K .typeALowSurplus) (K .typeAUnsaturatedDischarge) (by
+      simp [residualCTypeAUnsaturatedDischargeKeys,
+        residualCTypeAUnsaturatedReceiverKeys, closedFresh])
 
 /-- Node `[93]`'s visible arm advances through exactly exit `(1)` at `[95]`. -/
 noncomputable def visibleExitOne
     {selected : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .returnAvoidance) known]
+    (returnFresh : K (data := data) .typeAExitOneReturn ∉ known)
+    (freeFresh : K (data := data) .typeAExitOneFree ∉ known)
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected (residualCTypeAVisibleEntryKeys known)) :
     Decision (K .typeAExitOneReturn) (K .typeAExitOneFree) history :=
-  typeAExitOne history (by simp) (by simp)
+  typeAExitOneDichotomy history (K .typeAVisibleEntry)
+    (K .typeAExitOneReturn) (K .typeAExitOneFree) (fun fact => fact.down)
+    (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+    (by simp [residualCTypeAVisibleEntryKeys, returnFresh])
+    (by simp [residualCTypeAVisibleEntryKeys, freeFresh])
 
 theorem unsaturatedClosed_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}

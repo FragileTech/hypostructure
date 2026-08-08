@@ -143,8 +143,8 @@ They also include the row 11 port: the new generic module
 `Fixtures/TypeAReceiverNode.lean`.  With row 11 ported, the Type A residual of
 node `[63]` is no longer an exit of `Spine.run`: node `[88]` commits the
 canonical receiver routing and the threshold algebra on it, and node `[89]`
-splits into `Result.typeASaturatedReceiver` (row 12's entry) and
-`Result.typeAUnsaturatedReceivers` (node `[90]`).  `#print axioms` on
+splits into exact ledgers indexed by `typeASaturatedReceiverKeys` (row 12's
+entry) and `typeAUnsaturatedReceiverKeys` (node `[90]`).  `#print axioms` on
 `FiniteObject.degree_induce_eq_internalDegree`,
 `FiniteObject.exists_traceTo_of_no_baseline_subsupport`,
 `FiniteObject.traceTo_of_traceReceiver?_eq_some`,
@@ -177,7 +177,7 @@ in the live tree: the legacy vertex ids `v8`–`v14`, `v21`, `v25`–`v28`,
 topology.  A ticked column is a claim about the current tree, so rows 12–19 and
 30–36 were reset to `❌ ❌ ❌ ❌`; rows 30–33 have since been partly ported and
 their Ledger, Transport and Residual cells are claims about
-`Spine.runSurplusBranch`.  Row 15, which had been ticked in all four,
+the exact surplus row chain rooted at `surplusAboveKeys`.  Row 15, which had been ticked in all four,
 is included and carries its own correction note.  Rows 26–28 were reset by the
 same correction and have since been ported; their cells below are claims about
 `Spine.hybridEntry`, `Spine.bridgeFanMass` and `Spine.typeBExclusionCharge`, and
@@ -194,8 +194,8 @@ declaration that elaborates in the live tree and a target that builds.**  A
 faithful description of deleted code is porting reference, not a passing
 column.
 
-**Correction — the earlier `SpineRun` failure was Block A's, not rows 41–42's.**
-An earlier revision of this section recorded four `SpineRun` errors (a
+**Correction — the earlier composed-spine failure was Block A's, not rows 41–42's.**
+An earlier revision of this section recorded four composed-spine errors (a
 `closeIncompatible`/`rankDropClosedKeys` key-index mismatch at `:649` and three
 heartbeat exhaustions) and attributed them to rows 39–42's in-flight port,
 because every error site named a rank-drop or net-charge declaration.  That
@@ -207,7 +207,7 @@ four-step tactic block, and the elaboration cost of that block inside the
 (`?m.620`), the signature of a cascade from a timeout upstream, not a real
 key-order disagreement.  Replacing that tactic block with a call to the
 framework lemma `Graph.skeletonBudget_le_variableEdgeBudget` (see Row 9)
-makes `SpineRun` build with no other change; this was verified by reverting the
+made the former composed spine build with no other change; this was verified by reverting the
 Row 7 manifest fix independently and rebuilding, which still succeeds.  The
 lesson for this document: an error *sited* in a row is not evidence the defect
 *belongs* to that row, and elaboration-budget failures relocate freely.
@@ -319,7 +319,7 @@ it.  `#print axioms spineData` also reports the `native_decide` axioms of the
 > |---|---|
 > | `Graph/Strategy/SpineVocabulary.lean` | the `Data` record and the thirteen semantic keys with their `Holds` clauses |
 > | `Graph/Strategy/SpineRows.lean` | the ten rows, each an `AtomicStrategy` or a `Decision` |
-> | `Graph/Strategy/SpineRun.lean` | the composition, its three-exit `Result`, and the audit theorems |
+> | `Graph/Strategy/SpineAssembly.lean` | vocabulary-instantiated rows, closure instances, and exact key-index aliases; no custom result or continuation carrier |
 >
 > What is compiler-checked, rather than asserted here: `Spine.run` elaborates,
 > so every row's prerequisites were present in the branch index when it ran;
@@ -375,7 +375,7 @@ bookkeeping; the first is not:
    compiler-confirmed.  An earlier revision of this item said the tree does not
    build, citing a parse error in `Core/Strategy/Dag.lean` and an unsolved goal
    in `PDE/.../PackingNormalization.lean`; both modules have since left this
-   block's slice.  What does not build is `SpineRun`, on rows 41–42's
+   block's slice.  What previously failed was the former composed spine, on rows 41–42's
    in-flight port — outside Block A and recorded there.
 2. **Row 9, Facts.**  "The continuation applies
    [`sum_edgeStratumCount_le_variableEdgeBudget`] to edge counts read from its
@@ -415,8 +415,8 @@ bookkeeping; the first is not:
 > Row 11 is ported.  It runs on the Type A residual of node `[63]` that
 > `Spine.run` already reaches, and its `Where` column names the live spine
 > declarations.  Both of its exits — the saturated arm that enters row 12 and
-> the unsaturated arm that enters node `[90]` — are `Spine.Result`
-> constructors; the `Spine.Result.typeALowSurplus` exit they replace is gone.
+> the unsaturated arm that enters node `[90]` — are exact ledgers indexed by
+> their committed decision keys; the previous Type A low-surplus leaf is gone.
 >
 > Every theorem row 11 rests on has been checked with `#print axioms` and
 > depends on `propext`, `Classical.choice` and `Quot.sound` alone — no
@@ -523,21 +523,16 @@ bookkeeping; the first is not:
 ## D. Non-near-cubic surplus branch
 
 > **Partly ported.**  Rows 30--33 now run live, as
-> `Graph/Strategy/SurplusRows.lean` installed and composed by
-> `Graph/Strategy/SurplusRun.lean`'s `Spine.runSurplusBranch`, over the literal
-> ledger of `Spine.Result.surplusAbove` -- node `[19]`'s above arm, with its nine
-> facts -- and `Spine.runWithSurplusBranch` *attaches* it to the entry spine:
-> `Spine.runWithSaturatedExits` is called once, its `surplusAbove` arm is
-> continued through `[125]`--`[144]`, and every other arm is returned as it
-> stands.  `Hypostructure/Fixtures/SurplusRun.lean` runs the block on that cursor
-> and checks the audit invariants, and `Fixtures.SurplusRun.attached` is the
-> check that the spine enters it.  Their Ledger, Transport and Residual columns
+> `Graph/Strategy/SurplusRows.lean` installs the row declarations over the
+> literal `surplusAboveKeys` ledger -- node `[19]`'s above arm, with its nine
+> facts -- and the surplus block continues that exact cursor through
+> `[125]`--`[144]`.  `Hypostructure/Fixtures/SurplusRun.lean` checks those exact
+> key indices and audit invariants.  Their Ledger, Transport and Residual columns
 > are backed by that compiling target, and so are the Facts columns of rows
-> 30--35.  The block runs end to end and `Spine.runWithSurplusBranch` attaches it
-> to the entry spine: `Spine.SurplusResult` has seven exits -- the near-cubic
-> route of `prop:single-graph-sparse-pressure-routing` (a), and, over each of the
-> three geometric audits `class(t)` dispatches to, node `[144]`'s capped close
-> and its bottleneck.
+> 30--35.  The block's exits are exact branch ledgers: the near-cubic route of
+> `prop:single-graph-sparse-pressure-routing` (a), and, over each of the three
+> geometric audits `class(t)` dispatches to, node `[144]`'s capped close and its
+> bottleneck.
 >
 > The block is closed.  `[144]` has two arms because the manuscript's
 > trichotomy is a dichotomy at a survivor:
@@ -588,8 +583,8 @@ bookkeeping; the first is not:
 > dichotomy can be written and `[125]`'s survivor hypothesis is absent from every
 > row of this block.
 >
-> Rows 34--36 now run live too, installed in the same
-> `Spine.runSurplusBranch` after node `[136]`, so the block is nodes
+> Rows 34--36 now run live too, installed after node `[136]` on the same exact
+> surplus cursor, so the block is nodes
 > `[126]`--`[144]` end to end.  Their mathematics is
 > `Graph/MatchingStar.lean` (`lem:same-token-matching-star`),
 > `Graph/HomogeneousTokenCap.lean` (the role-fibre partition,
@@ -638,13 +633,13 @@ bookkeeping; the first is not:
 
 | # | Node | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
-| 30 | Ordered surplus activation [125]–[128] | `Spine.sparseSlackSurplus`, `Spine.activeSurplusFamily`, `Spine.sparsePortActivation`, `Spine.sparseSurplusSurvivor`, `Spine.activeSurplusDemands` (`SurplusRows`, `HomogeneousBottleneckRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
-| 31 | Baseline demand accounting [129] | `Spine.baselineSpineDemand` (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
-| 32 | Canonical pair-response [130]–[134] | `Spine.canonicalPairLedger`, `Spine.blockedPairRouting` ([132]), `Spine.sparsePairExitClosed` ([133]) (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
-| 33 | Capacity-token accounting [134]–[136] | `Spine.sparseUpperEnvelope`, `Spine.capacityTokenLedger` (`SurplusRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
-| 34 | Coupled homogeneous fibre pressure [137]–[143] | `Spine.coupledFibrePressure`, `Spine.sparsePressureDichotomy` (`HomogeneousBottleneckRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
-| 35 | Finite bottleneck classification [139]–[143] | `Spine.windowClassDichotomy`, `Spine.remainderClassDichotomy`, `Spine.windowIncidenceAudit`, `Spine.remainderSurplusAudit`, `Spine.primitiveCarrierAudit` (`HomogeneousBottleneckRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
-| 36 | Homogeneous bottleneck [144] | `Spine.homogeneousCapsDichotomy`, `Spine.bottleneckRouting`, `Spine.homogeneousBottleneck` (`HomogeneousBottleneckRows`, run by `Spine.runSurplusBranch`) | ✅ | ✅ | ✅ | ✅ |
+| 30 | Ordered surplus activation [125]–[128] | `Spine.sparseSlackSurplus`, `Spine.activeSurplusFamily`, `Spine.sparsePortActivation`, `Spine.sparseSurplusSurvivor`, `Spine.activeSurplusDemands` (`SurplusRows`, `HomogeneousBottleneckRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
+| 31 | Baseline demand accounting [129] | `Spine.baselineSpineDemand` (`SurplusRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
+| 32 | Canonical pair-response [130]–[134] | `Spine.canonicalPairLedger`, `Spine.blockedPairRouting` ([132]), `Spine.sparsePairExitClosed` ([133]) (`SurplusRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
+| 33 | Capacity-token accounting [134]–[136] | `Spine.sparseUpperEnvelope`, `Spine.capacityTokenLedger` (`SurplusRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
+| 34 | Coupled homogeneous fibre pressure [137]–[143] | `Spine.coupledFibrePressure`, `Spine.sparsePressureDichotomy` (`HomogeneousBottleneckRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
+| 35 | Finite bottleneck classification [139]–[143] | `Spine.windowClassDichotomy`, `Spine.remainderClassDichotomy`, `Spine.windowIncidenceAudit`, `Spine.remainderSurplusAudit`, `Spine.primitiveCarrierAudit` (`HomogeneousBottleneckRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
+| 36 | Homogeneous bottleneck [144] | `Spine.homogeneousCapsDichotomy`, `Spine.bottleneckRouting`, `Spine.homogeneousBottleneck` (`HomogeneousBottleneckRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
 
 ## E. Remainder, rank, and net charge
 
@@ -664,8 +659,8 @@ bookkeeping; the first is not:
 | 38 | Boundary-demand accounting [28]–[29] | `Spine.boundaryDemand` (`SpineRows.boundaryDemandRow`) | ✅ | ✅ | ✅ | ✅ |
 | 39 | Wedge lower bound [30] | `Spine.wedgeSupply` (`SpineRows.wedgeSupplyRow`) | ✅ | ✅ | ✅ | ✅ |
 | 40 | Target-relative rank dichotomy [31]–[32] | `Spine.curvatureTargetRank`, `Spine.curvatureRankDichotomy` (`SpineRows`) | ✅ | ✅ | ✅ | ✅ |
-| 41 | Full-rank finite-state capacity [47]–[56] | `Spine.forcedCurvatureCost`, `Spine.remainderEntropyDichotomy`, `Spine.entropyPackage`, `Spine.entropyCapDichotomy`, `Spine.lowEntropyLargeBudget`, `Spine.runResidualC` | ✅ | ✅ | ✅ | ✅ |
-| 42 | Net-charge continuation [57]–[64] | `Spine.runResidualC`, `Spine.netChargeOrderDichotomy`, `Spine.netChargeCap`, `Spine.netChargeLocalization`, `Spine.netChargeDichotomy`, `Spine.negativeSupport`, `Spine.runNegativeSupport`, `Spine.typeSplitDichotomy`, `Spine.continueNegativeSupport` | ✅ | ✅ | ✅ | ✅ |
+| 41 | Full-rank finite-state capacity [47]–[56] | `Spine.forcedCurvatureCost`, `Spine.remainderEntropyDichotomy`, `Spine.entropyPackage`, `Spine.entropyCapDichotomy`, `Spine.lowEntropyLargeBudget` | ✅ | ✅ | ✅ | ✅ |
+| 42 | Net-charge continuation [57]–[64] | `Spine.netChargeOrderDichotomy`, `Spine.netChargeCap`, `Spine.netChargeLocalization`, `Spine.netChargeDichotomy`, `Spine.negativeSupport`, `Spine.typeSplitDichotomy` | ✅ | ✅ | ✅ | ✅ |
 
 ## F. Cold-window corridor
 
@@ -927,12 +922,12 @@ reached from this arm.
 
 | # | Node | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
-| 68 | Branch D entry [33], [35] | `Spine.branchDependenceRow`, run in `SpineRun.run` | ✅ | ✅ | ✅ | ✅ |
-| 69 | Context-validity test [36]–[37] | `Spine.contextValidityDichotomy` + `closeImpossible`, run in `SpineRun.run` | ✅ | ✅ | ✅ | ✅ |
-| 70 | Proper-atom compression [38]–[39] | `Spine.atomCompressionDichotomy` + `closeIncompatible`, run in `SpineRun.run` | ✅ | ✅ | ✅ | ✅ |
-| 71 | Enlarged delocalization support [40]–[42] | `Spine.delocalizationScopeDichotomy` + `closeIncompatible`, run in `SpineRun.run` | ✅ | ✅ | ✅ | ✅ |
-| 72 | Whole-graph delocalization [43]–[45] | `Spine.globalBarrierRow`, run in `SpineRun.run` | ✅ | ✅ | ✅ | ✅ |
-| 73 | Rank-drop branch closed [46] | `Spine.Result.rankDropClosed` via `closeIncompatible`, run in `SpineRun.run` | ✅ | ✅ | ✅ | ✅ |
+| 68 | Branch D entry [33], [35] | `Spine.branchDependenceRow`, exact Branch-D ledger | ✅ | ✅ | ✅ | ✅ |
+| 69 | Context-validity test [36]–[37] | `Spine.contextValidityDichotomy` + `closeImpossible`, exact Branch-D ledger | ✅ | ✅ | ✅ | ✅ |
+| 70 | Proper-atom compression [38]–[39] | `Spine.atomCompressionDichotomy` + `closeIncompatible`, exact Branch-D ledger | ✅ | ✅ | ✅ | ✅ |
+| 71 | Enlarged delocalization support [40]–[42] | `Spine.delocalizationScopeDichotomy` + `closeIncompatible`, exact Branch-D ledger | ✅ | ✅ | ✅ | ✅ |
+| 72 | Whole-graph delocalization [43]–[45] | `Spine.globalBarrierRow`, exact Branch-D ledger | ✅ | ✅ | ✅ | ✅ |
+| 73 | Rank-drop branch closed [46] | `closeIncompatible` appends `closed` on `rankDropClosedKeys` | ✅ | ✅ | ✅ | ✅ |
 
 ## Row evidence
 
@@ -943,7 +938,7 @@ reached from this arm.
 > and the `CTAdapters.ct1` / `ct9` / `ct14` / `ct16` executions they ran through
 > — is **deleted**.  The live Block A is nine declarations in
 > `Graph/Strategy/SpineRows.lean`: seven `factOnly` `AtomicStrategy` rows and two
-> `Decision`s, composed in `Graph/Strategy/SpineRun.lean`.  **No Block A row
+> `Decision`s, instantiated in `Graph/Strategy/SpineAssembly.lean`.  **No Block A row
 > executes a CT at all.**  Where a row's evidence names a deleted module, that
 > text is historical and is marked as such at the row.
 
@@ -988,7 +983,7 @@ live code, not the row prose:
   only things Block A accepts from outside are the registered `Spine.Data`, the
   target `T` with its identification `targetPredicate`, and the framework's
   `OpenedScope`.  Every `encode` / `avoidsOf` / `minimalOf` argument at the
-  `SpineRun` instantiations is a pure projection or injection of a fact *value*
+  spine-assembly instantiations is a pure projection or injection of a fact *value*
   (`fun _input fact => fact.down.1`, `fun _input value => ⟨value⟩`) and carries
   no mathematics — `FactSystem.value_subsingleton` makes a data-carrying fact
   unelaborable, so this is enforced rather than conventional.  The one external
@@ -1024,7 +1019,7 @@ live code, not the row prose:
 - **What the Lean does.**  `Spine.returnAvoidanceRow`
   (`Graph/Strategy/SpineRows.lean`), a `factOnly` `AtomicStrategy`:
   `Requires := [selection]`, `Produces := [returnAvoidance]`, installed at
-  `SpineRun.lean:113`.  It reads the selection fact with `FactInputs.get`,
+  `SpineAssembly.lean`.  It reads the selection fact with `FactInputs.get`,
   projects its avoidance half, and transports it through
   `Graph.not_hasCycleWithLength_iff_returnLengthSets_disjoint data.LengthOK`,
   committing `∀ dart, Disjoint (returnLengthSet object dart)
@@ -1058,7 +1053,7 @@ certificate machinery earlier revisions described is deleted.
 - **Paper fact.** `lem:no-proper-core`: "Every proper subgraph `H\subsetneq G` satisfies `\delta(H)\le2`." Proof: a proper subgraph with `\delta(H)\ge3` has no power-of-two cycle, because every cycle of `H` is a cycle of `G`; it would be a smaller counterexample. Node `[8]` is "no proper subgraph with minimum degree 3".
 - **What the Lean does.**  `Spine.noProperBaselineRow`, a `factOnly`
   `AtomicStrategy`: `Requires := [selection]`,
-  `Produces := [noProperBaseline]`, installed at `SpineRun.lean:119`.  It reads
+  `Produces := [noProperBaseline]`, installed in `SpineAssembly.lean`.  It reads
   the selection fact once and uses *both* halves — avoidance and minimality —
   composing them through `Graph.cycleProperSubgraphTargetMonotone`: a proper
   subgraph meeting the baseline is strictly smaller, so minimality gives it the
@@ -1091,7 +1086,7 @@ certificate machinery earlier revisions described is deleted.
   `AtomicStrategy` with a two-key production:
   `Requires := [noProperBaseline]`,
   `Produces := [tightEndpoint, slackIndependent]` (`pairManifest`), installed at
-  `SpineRun.lean:127`.  Node `[9]` is proved by contradiction: if some dart had
+  `SpineAssembly.lean`.  Node `[9]` is proved by contradiction: if some dart had
   both endpoints strictly above the threshold, then
   `Graph.minimumDegreeDeletionCriticalityProfile data.threshold
   |>.baseline_of_not_critical` gives the edge-deleted object the baseline, and
@@ -1159,7 +1154,7 @@ two-key production.
 - **Paper fact.** `thm:p13free` (Hegde–Sandeep–Shashank, cited): "Every `P_{13}`-free graph of minimum degree at least `3` contains a cycle whose length is a power of two." `cor:p13-exists`: "The minimal counterexample `G` contains an induced `P_{13}`", proved by contradiction against the counterexample condition. The prose that follows fixes `p_{13}` as "the maximum size of a vertex-disjoint family of induced copies of `P_{13}` in `G`" and `\theta=p_{13}/n`; the branch table records that "a vertex-disjoint induced-`P_{13}` family is chosen maximal" and that "every unchosen induced window meets the packing". Node `[15]` is the freeness test, `[16]` the HSS terminal, `[17]` the maximal packing.
 - **What the Lean does.**  `Spine.obstructionPackingRow`, a `factOnly`
   `AtomicStrategy`: `Requires := [selection]`, `Produces := [maximalPacking]`,
-  installed at `SpineRun.lean:150`.  `cor:p13-exists` is proved by
+  installed in `SpineAssembly.lean`.  `cor:p13-exists` is proved by
   contradiction: were the object free of induced windows of the registered
   order, `Graph.FiniteObject.inducedPathFree_of_forall_not_inducesWindow` would
   make it window-free and `data.freeForcesTarget` — the registered
@@ -1205,10 +1200,10 @@ two-key production.
 > about `data.windowOrder` alone.  `Holds .localAlgebra` takes `_object`: the
 > statement ignores the residual entirely, so there was no dependency to
 > declare.  Declaring one used the manifest to express paper order, which the
-> composition in `SpineRun` already expresses, and asserted a prerequisite the
+> row order in `SpineAssembly` already expresses, and asserted a prerequisite the
 > row does not have.  The row now uses a new `sourceFreeManifest` with
 > `Requires := []` (legal — `List.Nodup []` holds, and `producesNonempty`
-> constrains only `Produces`), and the `SpineRun` instantiation drops the key and
+> constrains only `Produces`), and the spine-assembly instantiation drops the key and
 > its freshness argument.  Ledger, Transport, Residual and Facts are unaffected:
 > the row commits the same fact, from the same theorems, through the same runner.
 
@@ -1216,7 +1211,7 @@ two-key production.
 - **Paper fact.** Node `[18]` is "`P_{13}` label algebra: `399` labels; relations `C_s`; curvature `\Omega_2`". The manuscript defines the attachment label `S(x)=\{i:xv_i\in E(G)\}\subseteq\{0,\ldots,12\}`, shows a label is legal iff `|i-j|\notin\{2,6\}` for all `i,j\in S` (because `(j-i)+2\in\{4,8\}` are the only dyadic closing lengths available), and sets `\labels=\{S\subseteq\{0,\ldots,12\}: S\ne\varnothing\text{ and }|i-j|\notin\{2,6\}\ \forall i,j\in S\}`. `lem:labels`: "`|\labels|=399`. The distribution by size is `13,60,122,122,63,17,2` for sizes `1,\ldots,7`", proved by direct enumeration. `lem:curv-enum` introduces `\Omega_2(S,A,T)` as the two-step curvature test `C_1(S,A)C_1(A,T)(1-C_2(S,T))` and counts `543958`, `432672`, `111286`, giving `c_\Omega=\log_2(543958/111286)`; the counts and `c_\Omega` belong to node `[21]`, only `\Omega_2` itself is named at `[18]`.
 - **What the Lean does.**  `Spine.localAlgebraRow`, a `factOnly`
   `AtomicStrategy`: `Requires := []`, `Produces := [localAlgebra]`, installed at
-  `SpineRun.lean:156`.  The committed fact is the conjunction of
+  `SpineAssembly.lean`.  The committed fact is the conjunction of
   `Graph.WindowCurvature.legalCodeList_length data.windowOrder` — the legal-label
   enumeration has exactly as many entries as there are legal labels — and
   `Graph.WindowCurvature.curvatureTwo_eq_true_iff`, which characterizes `Ω₂` as
@@ -1260,7 +1255,7 @@ prerequisite.
 - **Paper fact.** Node `[19]` is the diamond "non-near-cubic surplus? `\sigma(G)>C_{\rm sp}\sqrt n`". `def:surplus-ports` fixes the quantity: `|\mathcal P_{\rm exc}|=\sum_{h\in H}(d_G(h)-3)=\sigma(G)` with `H=V_{\ge4}(G)`. `def:near-cubic-spine` is the complementary arm: "every lexicographically minimal counterexample surviving to the entropy/net-charge spine satisfies `m=\frac32 n+O(\sqrt n)`, `\sigma(G)=O(\sqrt n)`", and it records that "this estimate is supplied by `prop:nonnear-cubic-sharp-overload-routing` before either the normalized skeleton budget … or the fan-mass estimate … is invoked". The strict arm enters node `[20]`, the surplus-pair accounting branch, whose exhaustion is `prop:nonnear-cubic-sharp-overload-routing` (outcomes: near-cubic spine estimate, a sparse surplus exit, or decorated Type B fan data).
 - **What the Lean does.**  `Spine.surplusDichotomy`
   (`Graph/Strategy/SpineRows.lean`), a two-arm `Decision` — not a CT and not a
-  `factOnly` row — taken at `SpineRun.lean` in the `run` body.  It branches on
+  `factOnly` row in the spine assembly.  It branches on
   the decidable comparison
 
   ```
@@ -1289,9 +1284,9 @@ prerequisite.
   observables of the active object.  One arm committed, residual unchanged, the
   other arm's key absent from this branch.
 - **Transport and terminals.**  No CT, no carrier, no routing helper.  The
-  strict arm leaves Block A as `Result.surplusAbove` at `surplusAboveKeys` and
-  is where node `[20]`'s surplus-pair accounting chain begins; the at-or-below
-  arm continues into node `[21]`.  Neither is a paper terminal.
+  strict arm is the exact ledger indexed by `surplusAboveKeys` and is where
+  node `[20]`'s surplus-pair accounting chain begins; the at-or-below arm
+  continues into node `[21]`.  Neither is a paper terminal.
 
 **Paper objects at this row.**
 
@@ -1373,7 +1368,7 @@ the CT14 aggregate-member comparison earlier revisions described is deleted.
   `Graph.skeletonBudget_le_variableEdgeBudget` (`Graph/SkeletonBudget.lean`,
   which now imports `FiniteEdgeBudget` so the identification is *stated* rather
   than left to unfolding).  This also removed the elaboration cost that was
-  breaking `SpineRun`; see the correction in **Build status**.  **Correction to a previous
+  breaking the spine assembly; see the correction in **Build status**.  **Correction to a previous
   revision:** `Graph/FiniteEdgeBudget.lean` is no longer an unimported island.
   It is imported by `Graph/Strategy/SpineVocabulary.lean:7` and by
   `Hypostructure.lean:67`, and `Graph.edgeStratumCount` /
@@ -1393,8 +1388,8 @@ the CT14 aggregate-member comparison earlier revisions described is deleted.
   fact: its demand and budget are both observables of the active object.
 - **Transport and terminals.**  No EG-specific carrier, executor, or routing.
   The arms are `Decision`'s own two branches, taken at
-  `Graph/Strategy/SpineRun.lean:579`. The overflow arm leaves Block A as
-  `Result.barrierOverflow` at `barrierOverflowKeys`; the cap arm continues into
+  the spine assembly. The overflow arm leaves Block A as
+  the exact ledger indexed by `barrierOverflowKeys`; the cap arm continues into
   node `[22]`–`[24]`. Neither arm is a paper terminal.
 
 **Paper objects at this row.**
@@ -1423,7 +1418,7 @@ computation, and no `properSupport`/`mismatch` terminal to discharge.
 
 **Validation.**  `lake build Hypostructure.Graph.Strategy.SpineRows` succeeds.
 With the scale-factor correction as the only delta against `1e39f3a`,
-`lake build Hypostructure.Graph.Strategy.SpineRun` also succeeds (8618 jobs),
+`lake build Hypostructure.Graph.Strategy.SpineAssembly` also succeeds,
 together with the canonical API modules and all fifteen positive/negative
 enforcement fixtures (8573 jobs).  The earlier `Validation` paragraph here
 described a parse error in `Core/Strategy/Dag.lean` and an unsolved goal in
@@ -1460,7 +1455,7 @@ touch this row.
   Produces := [densityCap]
   ```
 
-  instantiated at `Graph/Strategy/SpineRun.lean:166` as
+  instantiated in `Graph/Strategy/SpineAssembly.lean` as
   `densityBudgetRow (K .barrierCap) (K .surplusAtOrBelow) (K .densityCap)`.
   The executor reads both prerequisites by semantic key through
   `FactInputs.get` — never by producer, position, or depth — takes the
@@ -1525,8 +1520,8 @@ touch this row.
   **Facts passes at rows 9 and 10.**
 
   Verified by elaboration: with this change as the only delta against
-  `1e39f3a`, `lake build Hypostructure.Graph.Strategy.SpineRun` succeeds
-  (8618 jobs), as do the canonical API modules and all fifteen
+  `1e39f3a`, `lake build Hypostructure.Graph.Strategy.SpineAssembly` succeeds,
+  as do the canonical API modules and all fifteen
   positive/negative enforcement fixtures (8573 jobs).  The misleading
   `2 ^ (rate · p)` / `2 · rate · p` docstrings on both rows were rewritten to
   the scaled statement in the same change.
@@ -1558,8 +1553,8 @@ touch this row.
   is the registered `Spine.Data`.  The row has no terminal: it is a fact-only
   step, entered from node `[21]`'s cap arm and continuing into node `[25]`–`[27]`
   (`remainderNormalization`).  The paper's terminal `[23]` is reached on the
-  *other* side of node `[21]`'s decision, as `Result.barrierOverflow`, and is
-  Row 9's arm rather than this row's.
+  *other* side of node `[21]`'s decision, at `barrierOverflowKeys`, and is Row
+  9's arm rather than this row's.
 
 **Paper objects at this row.**
 
@@ -1690,7 +1685,7 @@ needs no CT machinery.
   `typeALowSurplus` through `ExactLedger.get` at the decision boundary.  No
   support, packing, receiver or routing travels: every clause is quantified
   over the object the residual carries, which is what makes the facts
-  refinement-stable.  `typeAUnsaturatedReceivers_audit_facts` in `SpineRun`
+  refinement-stable.  `typeAUnsaturatedReceivers_audit_facts` in `SpineAssembly`
   pins the unsaturated exit's audit to its exact thirty facts in commit order,
   and both exits carry `audit_complete` and `audit_facts_unique`.
 - **Transport and terminals.** No EG-specific carrier, result, residual,
@@ -1699,10 +1694,9 @@ needs no CT machinery.
   quantified over the keys they commit, and the mathematics is in
   `Hypostructure.Graph`, parametric in the baseline and the scale.  Neither arm
   of `[89]` is a terminal — the saturated arm is node `[93]`'s entry (row 12)
-  and the unsaturated arm is node `[90]`'s (unported) — so both are
-  `Spine.Result` exits, `Result.typeASaturatedReceiver` and
-  `Result.typeAUnsaturatedReceivers`.  The `Result.typeALowSurplus` exit they
-  replace is deleted; there is no second path to the Type A residual.
+  and the unsaturated arm is node `[90]`'s (unported) — so both are exact branch
+  ledgers indexed by the committed saturation key.  The previous Type A
+  low-surplus leaf is deleted; there is no second path to the Type A residual.
 
   The legacy apparatus this row replaces is deleted rather than shimmed.
   `Graph/ReceiverLoad.lean` kept a `Support`/`FullVertex`/`ReceiverVertex`
@@ -2159,7 +2153,11 @@ response realization exists.
 - **What it should do.** The selected `typeAExitFive` arm must close by reading the already-ledgered `uncompressible` fact and the selected compression support.  The `typeAExitFiveFree` arm must be the sole predecessor for exit `(6)`.
 - **Gap.** Node `[103]` is implemented and validated as a selected ledger decision, and node `[104]` closes the yes arm by Core's `closeIncompatible`.  The next open step is exit `(6)` from the selected `typeAExitFiveFree` ledger.
 - **Ledger and residual.** The row appends exactly one fact to the incoming branch by Core `Decision.run`.  Both arms retain the full prefix, including `[61]`, `[62]`, receiver routing, saturation, visible/silent handoff state, finite descent, and `typeASaturatedHandoffExitFourFree`.  The yes arm then appends `closed` by reading the existing `uncompressible` fact from that same ledger prefix.  No global `Route8.Data` witness is quantified and no residual fact is dropped.
-- **Transport and terminals.** Transport is Core-owned: `SpineAssembly.continueNegativeSupport` calls `typeAExitFive` only after the selected no-exit-(4) ledger fact, the decision commits either `typeAExitFive` or `typeAExitFiveFree`, and the yes arm closes with `closeIncompatible` from `uncompressible` and `typeAExitFive`.  The no arm remains open for exit `(6)`.
+- **Transport and terminals.** Transport is Core-owned: the `typeAExitFive`
+  decision runs only after the selected no-exit-(4) ledger fact, commits either
+  `typeAExitFive` or `typeAExitFiveFree`, and the yes arm closes with
+  `closeIncompatible` from `uncompressible` and `typeAExitFive`.  The no arm
+  remains open for exit `(6)`.
 
 **Paper objects at this row.**
 
@@ -2173,11 +2171,11 @@ response realization exists.
 
 **CT composition at this row.** Core `Decision.run` over the exact incoming
 `typeASaturatedHandoffExitFourFree` ledger, producing either `typeAExitFive ::
-known` or `typeAExitFiveFree :: known`.  The adapter is exposed through
-`TypeAExitRun.typeAExitFive` and wired in `SpineAssembly.continueNegativeSupport`
-on both visible and silent no-exit-(4) arms.  The `typeAExitFive` arm is closed
-immediately by Core `closeIncompatible`, using the already-inherited
-`uncompressible` fact and the just-committed selected compression fact.
+known` or `typeAExitFiveFree :: known`.  The `TypeAExitRun.typeAExitFive`
+decision is used on both visible and silent no-exit-(4) ledgers.  The
+`typeAExitFive` arm is closed immediately by Core `closeIncompatible`, using
+the already-inherited `uncompressible` fact and the just-committed selected
+compression fact.
 
 ### Row 18 — Exit 6: response delocalization `[105]`
 
@@ -2277,9 +2275,9 @@ the exact `typeAExitSix` ledger.  The scope arms append `closed` through
   reason node `[64]`'s own fact does.
 - **Transport and terminals.**  Core owns execution: `factOnly` for the normal
   form, `Decision.run` for the split, `AtomicCT.run` for both.  Neither arm
-  closes — `[68]` certifies nothing — so `Spine.Result` gains the two exits
-  `typeBHeavyCentre` and `typeBDegreeFourCentres` and loses the
-  `typeBHighSurplus` leaf, which is no longer where the branch stops.
+  closes — `[68]` certifies nothing — so the branch continues as exact ledgers
+  indexed by `typeBHeavyCentreKeys` and `typeBDegreeFourKeys`; the
+  `typeBHighSurplus` cursor is no longer where the branch stops.
   `typeBHeavyCentre_audit_facts` and `typeBDegreeFourCentres_audit_facts` pin
   each arm's twenty-eight facts in commit order by `rfl`, and the two
   `_audit_accounts_for_every_fact` theorems certify through
@@ -2350,8 +2348,9 @@ atomic Strategy and the split is a `Decision`; both are lowered by
   the node.
 - **Transport and terminals.**  Core owns execution: `factOnly` lowered by
   `AtomicCT.run`.  The node has no terminal and does not close.
-  `Spine.Result.typeBLocalDichotomy` replaces the `typeBHeavyCentre` exit, which
-  is no longer where the heavy arm stops.  `typeBLocalDichotomy_audit_facts`
+  The ledger indexed by `typeBLocalDichotomyKeys` replaces the
+  `typeBHeavyCentreKeys` cursor, which is no longer where the heavy arm stops.
+  `typeBLocalDichotomy_audit_facts`
   pins the arm's twenty-nine facts in commit order by `rfl`, and
   `typeBLocalDichotomy_audit_accounts_for_every_fact` certifies through
   `ExactLedger.audit_complete` that nothing was archived, rebased or dropped.
@@ -2438,8 +2437,8 @@ Strategy lowered by `AtomicCT.run` against the one canonical `ExactLedger`.
   after both arms of node `[68]` — the heavy arm after `[69]`, and the
   degree-four arm — which is exactly the manuscript's placement of `[70]` and
   the reason the legacy export had two vertices (`v43`, `v45`) for one
-  registration.  `Spine.Result` now exits at `typeBHeavyFanCap` and
-  `typeBDegreeFourFanCap`.  `typeBHeavyFanCap_audit_facts` and
+  registration.  The exact successors are indexed by `typeBHeavyFanCapKeys`
+  and `typeBDegreeFourFanCapKeys`.  `typeBHeavyFanCap_audit_facts` and
   `typeBDegreeFourFanCap_audit_facts` pin each arm's facts in commit order by
   `rfl`, and the two `_audit_accounts_for_every_fact` theorems certify through
   `ExactLedger.audit_complete` that nothing was archived, rebased or dropped.
@@ -2506,9 +2505,9 @@ Strategy lowered by `AtomicCT.run` against the one canonical `ExactLedger`.
 - **Transport and terminals.**  Core owns execution: `Decision.run`.  Neither
   arm closes — `[71]` certifies nothing.  The residual arm is the exit
   `typeBCertificateResidual`; the marked arm is **no longer an exit**, because
-  rows 24 and 25 now continue on it, so `Result.typeBCertificateMarked` was
-  deleted rather than kept beside the new exits.  Its audit theorems moved with
-  it: the three indices that now terminate this arm are pinned by
+  rows 24 and 25 now continue on it, so the marked cursor is not retained as a
+  terminal leaf beside the new successors.  Its audit theorems moved with it:
+  the three indices that now terminate this arm are pinned by
   `typeBDirectCycleClosed_audit_facts`, `typeBB2Choice_audit_facts`
   and `typeBOverlapObstruction_audit_facts`, each of which still lists the
   marked arm's whole prefix, and every exit's
@@ -2582,7 +2581,7 @@ cap through the entry arithmetic rather than by re-reading the label count.
   the configuration through
   `hasCycleWithLength_of_directCycleConfiguration` and collides it with the
   selection's own avoidance, so `closeIncompatible` appends the reserved closure
-  key and the exit is `Result.typeBDirectCycleClosed`.
+  key on `typeBDirectCycleClosedKeys`.
 - **What it should do.**  This is what it does.
 - **Gap.**  None.  **Facts passes**, and two things are worth recording.
 
@@ -2818,8 +2817,9 @@ the complete B2(a)--(c) handoff as one semantic fact.
   named.
 - **Transport and terminals.**  No terminal.  The cursor continues into row 28
   at `[76]` and `[85]`, whose excluded arm closes the branch and whose
-  complementary arm is the positive-deficit fan this row pays.  `SpineRun.typeBHybridEntry_audit_facts` and
-  `degreeFourHybridEntry_audit_facts` pin the two indices by `rfl`, and
+  complementary arm is the positive-deficit fan this row pays.  The exact
+  `typeBHybridEntryKeys` and `degreeFourHybridEntryKeys` audits pin the two
+  indices by `rfl`, and
   `Fixtures.TypeBBridgeNode` installs the same executor value at both.
 
 **Paper objects at this row.**
@@ -2928,10 +2928,10 @@ adding a comparison.
   inputs.  Certificate-residual and overlap-obstruction branches therefore
   extend their own immutable prefixes monotonically, appending only
   `typeBBridgeMass`.
-- **Transport and terminals.**  No terminal.  The four exits are
-  `Result.typeBCertificateResidualMass`, `Result.typeBOverlapObstructionMass`,
-  `Result.degreeFourResidualMass` and `Result.degreeFourOverlapObstructionMass`
-  — retained leaves, which is what a bridge *residual* is.
+- **Transport and terminals.**  No terminal.  The four retained leaves are the
+  exact ledgers indexed by `typeBCertificateResidualMassKeys`,
+  `typeBOverlapObstructionMassKeys`, `degreeFourResidualMassKeys` and
+  `degreeFourOverlapObstructionMassKeys`, which is what a bridge *residual* is.
 
 **Paper objects at this row.**
 
@@ -3029,12 +3029,11 @@ and the row consumes directly.
   output index `Produces ++ known`.  The row reads B2 and nothing else, and the
   dichotomy reads the charge fact and nothing else.
 - **Transport and terminals.**  `[76]` and `[85]` are **closed terminals** on
-  their excluded arm — `Result.typeBBranchKill` and
-  `Result.degreeFourBranchKill` carry Core's reserved closure key — and their
-  surviving arms are `Result.typeBExclusionResidual` and
-  `Result.degreeFourExclusionResidual`.  B2 *holds* on those cursors, so by
-  `lem:typeB-exclusion`'s "consequently" the survivor is not a bridge residual
-  and no fan-mass bound applies to it; it is a retained leaf.
+  their excluded arm, where Core appends the reserved closure key.  Their
+  surviving arms are exact ledgers for the Type B and degree-four exclusion
+  residuals.  B2 *holds* on those cursors, so by `lem:typeB-exclusion`'s
+  "consequently" the survivor is not a bridge residual and no fan-mass bound
+  applies to it; it is a retained leaf.
 
   There is no join and no autoroute.  Branches commit against one immutable
   prefix, so the two B1 cursors carry the exclusion, the four bridge-residual
@@ -3140,9 +3139,10 @@ this row does not make.
   production.  Graph supplies `TypeBFanIncidence` and the activation theorem.  No
   terminal — `[79]` is a profile, not a decision.  With this row in place Part VII
   is wired: the degree-four arm runs `[70]`, `[79]`, `[80]`, then `[81]`'s two
-  halves, so `Result.typeBDegreeFourFanCap` is **deleted** and replaced by the
-  four exits `degreeFourCertificateResidual`, `degreeFourDirectCycleClosed`,
-  `degreeFourB2Choice` and `degreeFourOverlapObstruction`, each with its
+  halves, so the degree-four fan-cap cursor is replaced by the four exact
+  successor ledgers `degreeFourCertificateResidual`,
+  `degreeFourDirectCycleClosed`, `degreeFourB2Choice` and
+  `degreeFourOverlapObstruction`, each with its
   `_audit_facts` pinned by `rfl` and its `_audit_accounts_for_every_fact`.
 
 **Paper objects at this row.**
@@ -3195,8 +3195,7 @@ shape for it.
   `lem:surviving-active-family` concludes `𝒜₀ := 𝒫_exc` with `|𝒜₀| = σ(G)`.
 - **What the Lean does.** Three fact-only rows of
   `Hypostructure/Graph/Strategy/SurplusRows.lean`, installed at the spine's own
-  keys in `SurplusRun.lean` and run by `Spine.runSurplusBranch` over the literal
-  ledger of `Spine.Result.surplusAbove`.
+  keys and checked over the literal ledger indexed by `surplusAboveKeys`.
   `sparseSlackSurplusRow` commits `2m = δn + σ(G)` — `lem:sparse-slack-surplus`
   cleared of division and of the abbreviation `λ = 2n − 3 − m` — from the
   standing baseline read off the residual (`Requires := []`).
@@ -3313,7 +3312,7 @@ shape for it.
   `runSparseActivation` was missing the `FactKeys.Has (K .uncompressible)`
   instance parameter node `[125]`'s survivor row reads, so the block did not
   elaborate at all; `surplusAboveKeys` carries `uncompressible`, so declaring
-  the requirement is all that was owed and `runSurplusBranch` discharges it.
+  the requirement is all that was owed and the exact surplus ledger discharges it.
   Transport passes.
 
 **Paper objects at this row.**
@@ -3542,7 +3541,8 @@ supplies, so no `Decision` is owed and none is written.
     carries both conjuncts, and `Spine.sparsePairExitClosed` is the `Incompatible`
     instance read off the two committed statements — neither node knows the other
     exists.  Core's own `closeIncompatible` appends the canonical closure key, so
-    the arm leaves `SurplusResult.sparsePairExit` and nothing downstream runs.
+    the arm is the closed ledger indexed by `sparsePairExitKeys` and nothing
+    downstream runs.
   - `prop:sparse-entropy-sandwich-with-blockers`, `prop:sparse-entropy-sandwich`
     and `cor:sparse-pair-entropy-saturation` are `entropySandwich` and its two
     readings, with the logarithms cleared exactly as
@@ -3838,8 +3838,8 @@ a theorem rather than an execution, so it too owes no CT.
   where every capacity ledger of the object respects the geometric caps and
   `sparsePressureOverload` on its complement.  The arm not taken is absent from
   the taken arm's key index: the three geometric class audits `[140]`, `[142]`,
-  `[143]` and node `[144]` run only on the overload arm, and `SurplusResult` now
-  has the two constructors `nearCubic` and `overloaded`.  On the capped arm,
+  `[143]` and node `[144]` run only on the overload arm, while the capped arm is
+  a separate exact ledger.  On the capped arm,
   `spineSurplusEstimateRow` reads the concrete certified ledger and commits the
   actual inequality `σ(G) ≤ C_sp⌈√n⌉`; the same shared theorem is read by
   `homogeneousSpineSurplusEstimateRow` on node `[144]`'s caps arm.  Both facts
@@ -4073,8 +4073,8 @@ decide nothing that is not already decided.
   prefix and none can see another's key.  Ledger and Residual pass.
 - **Transport and terminals.** `[140]`, `[142]` and `[143]` are now three arms a
   router selected, not three instances of one universally quantified statement:
-  `SurplusResult` has the four constructors `nearCubic`, `windowBottleneck`,
-  `remainderBottleneck` and `primitiveBottleneck`, and
+  the exact successor ledgers are the near-cubic, window-bottleneck,
+  remainder-bottleneck and primitive-bottleneck branches, and
   `Hypostructure/Fixtures/SurplusRun.lean` checks that each arm carries its own
   verdict and audit and that the window arm's index omits the other two audits.
   No EG code, no payload, no terminal, no routing helper: the branch is the
@@ -4290,9 +4290,9 @@ this change; its whole module was already orphaned, importing eight
   `Hypostructure/Fixtures/SurplusRun.lean` checks that `[144]`'s two arms are
   disjoint — the caps arm carries `homogeneousCapsHold` and the near-cubic close,
   the bottleneck arm carries neither — and that the block is *entered* by the
-  spine: `Spine.runWithSurplusBranch` calls `Spine.runWithSaturatedExits` once
-  and continues node `[19]`'s above arm through `[125]`--`[144]`, returning every
-  other arm as it stands.
+  spine: the fixture checks that node `[19]`'s above-arm ledger is the one
+  continued through `[125]`--`[144]`, while every sibling arm keeps its own exact
+  branch index.
 - **What it should do.** Additionally *extract* the two routing germs from node
   `[128]`'s canonical return and response supports at the pattern the branch
   forces, so that the bottleneck arm splits into
@@ -4389,7 +4389,7 @@ this change; its whole module was already orphaned, importing eight
   a `Decision` against that same literal ledger, so both arms extend one
   immutable prefix.  Ledger and Residual pass.
 - **Transport and terminals.** `[144]`'s outcomes are arms, not conjuncts:
-  `SurplusResult` now has seven constructors — the near-cubic route of
+  the exact successor ledgers are the near-cubic route of
   `prop:single-graph-sparse-pressure-routing` (a), and, over each of the three
   geometric audits, the capped close and the bottleneck.  No EG code, no payload,
   no routing helper, no closing callback; the branch is the framework's own
@@ -4403,7 +4403,7 @@ this change; its whole module was already orphaned, importing eight
 | `thm:homogeneous-overload-geometric-closure` | the | first assertion: `Graph.BottleneckRoutingStatement`, `Graph.bottleneckRoutingStatement`, committed on the bottleneck arm<br>second assertion: `Graph.HomogeneousCapsHold`, `Graph.HomogeneousCapsCloseStatement`, `Graph.homogeneousCapsCloseStatement`, `CapacityTokenLedger.caps_close_at_geometricBound` | standalone |
 | `cor:homogeneous-same-token-caps-close` | cor | `CapacityTokenLedger.caps_close`, `TokenLoad.card_assigned_le_mul_of_multiplicity_le`, `TokenLoad.demand_le_of_bounded_load`, `TokenLoad.le_one_add_of_quadratic_le` | standalone |
 | `cor:same-token-pattern-caps-close` | cor |  |  |
-| `prop:nonnear-cubic-sharp-overload-routing` | pro | `Graph.homogeneousCapsRouting`, `Spine.homogeneousCapsDichotomy`, `Spine.bottleneckRoutingRow`, `Spine.SurplusResult` | standalone; (a) is an arm, (b) and (c) share one and are committed as a disjunction |
+| `prop:nonnear-cubic-sharp-overload-routing` | pro | `Graph.homogeneousCapsRouting`, `Spine.homogeneousCapsDichotomy`, `Spine.bottleneckRoutingRow`, exact surplus branch ledgers | standalone; (a) is an arm, (b) and (c) share one and are committed as a disjunction |
 
 `thm:homogeneous-overload-geometric-closure` now carries **both** assertions.
 The first is `bottleneckRouting`, of every separated pair of routing germs; the
@@ -4779,7 +4779,7 @@ involved.  The row is a single `factOnly` Strategy through `AtomicCT.run`.
   output index is definitionally `Produces ++ known`, so every earlier fact stays
   indexed and queryable.  It is a fact-only step: the residual is unchanged and
   the refinement is equality, so no object, packing, region, or count travels.
-  `SpineRun.completedKeys` carries `wedgeSupply` and `curvatureDemandFloor`
+  `Spine.completedKeys` carries `wedgeSupply` and `curvatureDemandFloor`
   ahead of `boundaryDemand`, and `complete_audit_facts` pins the audit of a
   completed block to exactly that index, in commit order, by `rfl`.
   `complete_audit_accounts_for_every_fact` is `ExactLedger.audit_complete` on the
@@ -4984,7 +4984,7 @@ no capability, member schedule, label, or terminal.  The row is a single
   other's.  Both are fact-only: the residual is unchanged, the refinement is
   equality, and nothing travels — no packing, family, quotient, support,
   realization, or subfamily, each being quantified inside the fact it belongs
-  to.  `SpineRun.completedKeys` is the seventeen-key full-rank index and
+  to.  `Spine.completedKeys` is the seventeen-key full-rank index and
   `curvatureRankDropKeys` the seventeen-key Branch-D index differing in exactly
   the arm taken; `complete_audit_facts` and `curvatureRankDrop_audit_facts` pin
   both audits to those indices in commit order, by `rfl`, and
@@ -4996,11 +4996,11 @@ no capability, member schedule, label, or terminal.  The row is a single
   `AtomicCT.run` for `[31]`, and the framework's `Decision.run` for `[32]`.
   There is no adapter chain, no registration, no capability record, no contract
   field, no terminal, and no payload; no CT10, CT15 or CT16 is involved.
-  `Spine.Result` grows a fourth constructor, `curvatureRankDrop`, carrying the
-  Branch-D ledger; the spine's exits are now node `[19]`, node `[21]`, node
-  `[32]`-yes, and completion on Residual B.  Neither row names a producer, a
-  predecessor depth, or an execution position: both are quantified over the
-  keys they consume and produce.  `#print axioms` on `Spine.run`,
+  The Branch-D successor is the exact ledger indexed by
+  `curvatureRankDropKeys`; the spine's retained cursors are node `[19]`, node
+  `[21]`, node `[32]`-yes, and completion on Residual B.  Neither row names a
+  producer, a predecessor depth, or an execution position: both are quantified
+  over the keys they consume and produce.  `#print axioms` on `Spine.run`,
   `curvatureRankDichotomy`, both audit theorems, `curvatureTargetRank`,
   `DeclaredQuotient.localize` and every `Core.TargetRank` theorem reports
   `[propext, Classical.choice, Quot.sound]` and nothing else.
@@ -5069,12 +5069,13 @@ rows go through the framework's one `AtomicCT.run` and its one `Decision.run`.
   The implementation now proves only the common conclusion actually consumed
   downstream, so it neither evaluates a type table nor asserts an unproved
   equivalence.
-- **Residual C consumption.** `runResidualC` is polymorphic in the literal tail
-  `known` of `residualCKeys known`. It appends the generic localization theorem
-  and performs the exact finite net-charge sign decision. The negative arm
-  appends a connected negative support. The nonnegative arm appends the exact
-  inequality of `cor:global-window-join-pressure`. Every production is through
-  `AtomicCT.run` or `Decision.run`; no residual is reconstructed or rebased.
+- **Residual C consumption.** The Residual C row chain is polymorphic in the
+  literal tail `known` of `residualCKeys known`. It appends the generic
+  localization theorem and performs the exact finite net-charge sign decision.
+  The negative arm appends a connected negative support. The nonnegative arm
+  appends the exact inequality of `cor:global-window-join-pressure`. Every
+  production is through `AtomicCT.run` or `Decision.run`; no residual is
+  reconstructed or rebased.
 - **Removed cutoff.** `largeOrderExponent`, `largeOrderResidual`,
   `smallOrderResidual`, `netDeficiencyCap`, the application proof of the
   512-bit threshold, and the specialized cap row are deleted. Indices
@@ -5098,8 +5099,8 @@ rows go through the framework's one `AtomicCT.run` and its one `Decision.run`.
   charge has a connected negative piece. On the complementary nonnegative arm,
   the density cap and surplus-aware stub supply contradict one another for all
   sufficiently large orders, exactly as `prop:negative-net-charge` prescribes.
-- **Node `[60]`.** `runResidualC` decides the paper's sufficiently-large regime
-  with `netChargeOrderDichotomy` at the registered `spineScale = C_sp`. The
+- **Node `[60]`.** `netChargeOrderDichotomy` decides the paper's
+  sufficiently-large regime at the registered `spineScale = C_sp`. The
   surviving `netChargeLarge` ledger is passed directly to `netChargeCapRow`.
   That row reads exactly `densityCap`, `stubSupply`, and `netChargeLarge`, applies
   `FiniteObject.strictCap_of_densityCap_of_sufficientlyLarge` followed by
@@ -5144,7 +5145,7 @@ rows go through the framework's one `AtomicCT.run` and its one `Decision.run`.
 | net-charge sign split | routing | `Spine.netChargeDichotomy` | `Decision` |
 | node `[60]` nonnegative-arm contradiction | incompatibility | `Spine.instIncompatibleNetChargeCapNonNegative` | sealed `Incompatible`; canonical maximum packing |
 | node `[61]` support arm | proposition | `Spine.negativeSupport` | `AtomicStrategy` reading the existing localization fact |
-| generic continuation | routing | `Spine.runResidualC`, `Spine.runNegativeSupport` | dependent `ExactLedger` continuation |
+| node `[62]` Type A / Type B split | routing | `Spine.typeSplitDichotomy` | exact `Decision`; no continuation payload |
 
 ### Row 43 — Corridor cut-state `T(J)` `[145]`–`[157]`
 

@@ -5,9 +5,8 @@ import Hypostructure.Graph.Strategy.SpineContinuationRun
 # Erdős--Gyárfás strategy DAG, rooted on the entry spine
 
 This application-owned file contains only the root topology.  The generic
-`runChapterOne` endpoint invokes `runCore` once, attaches every implemented
-continuation immediately, and returns only the genuine next continuation
-families with their literal `ExactLedger` ancestry.
+spine rows commit through the canonical ledger APIs; this file does not export
+an application-local continuation or result carrier.
 -/
 
 namespace HypostructureErdos64EG
@@ -39,30 +38,5 @@ here would be an application-local helper.  The endpoint below passes the same
 example :
     (target.{u}).Predicate =
       Graph.HasCycleWithLength (spineData.{u}).LengthOK := rfl
-
-/-! ## One root execution, with no exported intermediate
-
-This unnamed check is the complete application topology currently available.
-Because it is an `example`, the surviving internal phase boundary is not an
-application endpoint.
--/
-
-noncomputable example
-    (opened : Core.Strategy.OpenedScope
-      (P := Hypostructure.Graph.Strategy.Spine.problem BranchState
-        Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile
-        spineData.{u})
-      (Hypostructure.Graph.Strategy.Spine.K (BranchState := BranchState)
-        (presentation := erdosReceiverLoadProfile) (data := spineData.{u})
-        .selection))
-    (sufficientlyLarge :
-      Graph.FiniteObject.SufficientlyLargeForNetCap (spineData.{u}).threshold
-        (spineData.{u}).dischargeScale (spineData.{u}).windowOrder
-        (spineData.{u}).windowRate (spineData.{u}).spineScale
-        opened.selected.object.vertexCount) :
-    ChapterOneContinuation opened.selected :=
-  runChapterOne (BranchState := BranchState)
-    (presentation := erdosReceiverLoadProfile) (data := spineData.{u})
-    target.{u} rfl opened sufficientlyLarge
 
 end HypostructureErdos64EG

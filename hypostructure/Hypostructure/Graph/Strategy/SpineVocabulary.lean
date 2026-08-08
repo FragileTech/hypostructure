@@ -955,20 +955,6 @@ inductive Key where
   deficit of `def:typeA-large-budget-deficit` with its burden and rate
   readings. -/
   | route8Residual
-  /-- Node `[109]`, old Route-8 complement fact.  Kept as a vocabulary fact for
-  the later Route-8 refactor; Route A no longer uses it as transport. -/
-  | route8Free
-  /-- Nodes `[111]`--`[113]`: the route-8 burden/deficit implication kept for
-  the later Route-8 refactor. -/
-  | route8Burden
-  /-- Nodes `[114]`--`[116]`: carrier-core collapse in a route-8 residual. -/
-  | route8CarrierCore
-  /-- Nodes `[117]`--`[122]`: the route-8 carrier census theorem. -/
-  | route8Census
-  /-- Node `[123]`: the route-8 descent package. -/
-  | route8Descent
-  /-- Node `[124]`: route-8 branch closure by the two-carrier no-go. -/
-  | route8Closed
   /-- Node `[126]`, `lem:sparse-slack-surplus`: the sparse slack identity
   `m = (3/2)n + (1/2)σ(G)`, cleared of division at the registered baseline. -/
   | sparseSlackSurplus
@@ -1412,6 +1398,19 @@ def HandoffAdmissible (data : Data.{u}) (object : Graph.FiniteObject.{u})
         (handoffUncompressible data object) (handoffWindowFree data object)
         envelope
 
+/-- Exit `(6)` at the selected Type A support.
+
+The delocalizing declared response entry is not a free route-8 object: it is
+presented at the same support `piece` currently carried by the ledger branch. -/
+def ExitSixDelocalizes (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) : Prop :=
+  ∃ presented : Graph.Route8.PresentedEntry object,
+    presented.support = piece ∧
+      Nonempty
+        (Graph.Route8.Delocalization
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) presented)
+
 /-- The exact selected saturated Type A state after exits `(4)`, `(5)`, and
 `(6)` have failed, with one additional local clause on its selected packing and
 support.  This is a fact-schema abbreviation only: rows still read it from the
@@ -1458,11 +1457,7 @@ abbrev SelectedNoExitSixWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
                     Graph.Strategy.InterfaceReplacement.CompressibleSupport
                       (Graph.MinimumDegreeAtLeast data.threshold)
                       (Graph.HasCycleWithLength data.LengthOK) object support) ∧
-                  (¬ ∃ presented : Graph.Route8.PresentedEntry object,
-                    Nonempty
-                      (Graph.Route8.Delocalization
-                        (Graph.MinimumDegreeAtLeast data.threshold)
-                        (Graph.HasCycleWithLength data.LengthOK) presented)) ∧
+                  ¬ ExitSixDelocalizes data object piece ∧
                   extra packing piece
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -3617,12 +3612,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                           (Graph.MinimumDegreeAtLeast data.threshold)
                           (Graph.HasCycleWithLength data.LengthOK) object
                           support) ∧
-                      ∃ presented : Graph.Route8.PresentedEntry object,
-                        Nonempty
-                          (Graph.Route8.Delocalization
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            presented))
+                      ExitSixDelocalizes data object piece)
   | .typeAExitSixFree, object =>
       -- Node `[105]`, no: the same selected saturated handoff state has no
       -- exit-`(6)` delocalization witness.
@@ -3665,12 +3655,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                           (Graph.MinimumDegreeAtLeast data.threshold)
                           (Graph.HasCycleWithLength data.LengthOK) object
                           support) ∧
-                      ¬ ∃ presented : Graph.Route8.PresentedEntry object,
-                        Nonempty
-                          (Graph.Route8.Delocalization
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            presented))
+                      ¬ ExitSixDelocalizes data object piece)
   | .typeAExitSixProper, object =>
       -- Node `[106]`, proper scope: `lem:proper-smearing` returns a
       -- proper-support replacement for the selected delocalization.
@@ -3692,40 +3677,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- this ledger fact; later route-8 accounting reads this exact key.
       SelectedNoExitSixWith data object (fun packing piece =>
         ¬ HandoffProduced data object packing piece)
-  | .route8Free, object =>
-      -- Preserved for the later Route-8 refactor.  Route A does not use this
-      -- complement to transport data.
-      False
-  | .route8Burden, object =>
-      -- Nodes `[111]`--`[113]`: the same residual with
-      -- `lem:typeA-route8-burden` substituted into
-      -- `def:typeA-large-budget-deficit`.
-      (∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.Reduced)
-  | .route8CarrierCore, object =>
-      -- Nodes `[114]`--`[116]`, `lem:typeA-one-terminal-collapse`.
-      (∀ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        ∀ index ∈ residual.entries,
-          residual.SurvivingTrace index → 2 ≤ residual.alpha index)
-  | .route8Census, object =>
-      -- Nodes `[117]`--`[122]`, `prop:typeA-route8-carrier-reduction`.
-      (∀ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.Reduced → residual.TwoCarrierEntry)
-  | .route8Descent, object =>
-      -- Node `[123]`, route-8 pressure descent.
-      (∀ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        (residual.Reduced → residual.TwoCarrierEntry) ∧
-          ∀ active : Finset residual.Index, ∀ index ∈ active,
-            (active.erase index).card < active.card)
-  | .route8Closed, object =>
-      -- Node `[124]`, route-8 closure.
-      (¬ ∃ residual : Graph.Route8.Data
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        residual.LargeBudget)
   | .sparseSlackSurplus, object =>
       -- `lem:sparse-slack-surplus`: `2m = δn + σ(G)`, the manuscript's
       -- `m = (3/2)n + (1/2)σ(G)` cleared of division.
@@ -4169,12 +4120,6 @@ def label : Key → String
   | .typeAExitSixGlobal => "typeAExitSixGlobal"
   | .typeAExitSevenProduced => "typeAExitSevenProduced"
   | .route8Residual => "route8Residual"
-  | .route8Free => "route8Free"
-  | .route8Burden => "route8Burden"
-  | .route8CarrierCore => "route8CarrierCore"
-  | .route8Census => "route8Census"
-  | .route8Descent => "route8Descent"
-  | .route8Closed => "route8Closed"
   | .sparseSlackSurplus => "sparseSlackSurplus"
   | .activeSurplusFamily => "activeSurplusFamily"
   | .sparsePortActivation => "sparsePortActivation"
@@ -4330,12 +4275,6 @@ example : label .typeAExitSixProper = "typeAExitSixProper" := rfl
 example : label .typeAExitSixGlobal = "typeAExitSixGlobal" := rfl
 example : label .typeAExitSevenProduced = "typeAExitSevenProduced" := rfl
 example : label .route8Residual = "route8Residual" := rfl
-example : label .route8Free = "route8Free" := rfl
-example : label .route8Burden = "route8Burden" := rfl
-example : label .route8CarrierCore = "route8CarrierCore" := rfl
-example : label .route8Census = "route8Census" := rfl
-example : label .route8Descent = "route8Descent" := rfl
-example : label .route8Closed = "route8Closed" := rfl
 example : label .sparseSlackSurplus = "sparseSlackSurplus" := rfl
 example : label .activeSurplusFamily = "activeSurplusFamily" := rfl
 example : label .sparsePortActivation = "sparsePortActivation" := rfl
@@ -4490,12 +4429,6 @@ def idx : Key → Nat
   | .typeAExitSixGlobal => 101
   | .typeAExitSevenProduced => 158
   | .route8Residual => 102
-  | .route8Free => 103
-  | .route8Burden => 104
-  | .route8CarrierCore => 105
-  | .route8Census => 106
-  | .route8Descent => 107
-  | .route8Closed => 108
   | .sparseSlackSurplus => 109
   | .activeSurplusFamily => 110
   | .sparsePortActivation => 111
@@ -4634,12 +4567,6 @@ def ofIdx : Nat → Key
   | 101 => .typeAExitSixGlobal
   | 158 => .typeAExitSevenProduced
   | 102 => .route8Residual
-  | 103 => .route8Free
-  | 104 => .route8Burden
-  | 105 => .route8CarrierCore
-  | 106 => .route8Census
-  | 107 => .route8Descent
-  | 108 => .route8Closed
   | 109 => .sparseSlackSurplus
   | 110 => .activeSurplusFamily
   | 111 => .sparsePortActivation
@@ -4931,18 +4858,6 @@ def name : Key → Lean.Name
         "typeAExitSevenProduced") 158
   | .route8Residual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8Residual") 102
-  | .route8Free =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Free") 103
-  | .route8Burden =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Burden") 104
-  | .route8CarrierCore =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8CarrierCore") 105
-  | .route8Census =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Census") 106
-  | .route8Descent =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Descent") 107
-  | .route8Closed =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Closed") 108
   | .sparseSlackSurplus =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sparseSlackSurplus") 109
   | .activeSurplusFamily =>

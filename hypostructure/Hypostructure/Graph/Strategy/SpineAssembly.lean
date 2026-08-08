@@ -101,22 +101,6 @@ noncomputable def spineTargetInvariant
     (fun _input fact => fact.down.2)
     (fun _input value => ⟨value⟩)
 
-/-- Nodes `[89]`--`[94]`: `lem:typeA-port-return`, the port non-vacuity. -/
-@[reducible] noncomputable def typeAPortReturn :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeAPortReturnRow (K .selection) (K .typeAPortReturn) (by simp)
-    (fun _input fact => fact.down.1)
-    (fun _input fact => fact.down.2)
-    (fun _input value => ⟨value⟩)
-
-/-- Node `[91]`: the exact `3/7/11` discharging inequality. -/
-@[reducible] noncomputable def typeAUnsaturatedDischarge :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeAUnsaturatedDischargeRow (K .typeAReceiverRouting)
-    (K .typeAUnsaturatedReceivers) (K .typeAUnsaturatedDischarge) (by simp)
-    (fun _input fact => fact.down) (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
-
 /-- Node `[91]` closes because its nonnegative discharging conclusion is
 incompatible with the retained negative Type A support. -/
 noncomputable instance typeAUnsaturatedDischargeClosed :
@@ -140,14 +124,6 @@ noncomputable instance typeAExitFiveClosed :
       _zero, _receiver, _isReceiver, _peeled, _peeledSubset, _saturated,
       _noExitFour, support, compressible⟩ := exitFive.down
     exact (uncompressible.down support) compressible
-
-/-- Node `[93]`, yes arm: clause (Q1) of `def:typeA-exit4-family`. -/
-@[reducible] noncomputable def typeAVisibleEntryClause :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeAVisibleEntryClauseRow (K .typeAVisibleEntry)
-    (K .typeAVisibleEntryClause) (by simp)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
 
 /-- Nodes `[9]`--`[10]`. -/
 @[reducible] noncomputable def deletionCriticality :
@@ -286,13 +262,6 @@ conclusion and leaves the complete incoming ledger intact. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   negativeSupportRow (K .netChargeNegative) (K .netChargeLocalization)
     (K .negativeSupport) (by simp) (fun _input fact => fact.down)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
-
-/-- Node `[88]`. -/
-@[reducible] noncomputable def typeAReceiverRouting :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeAReceiverRoutingRow (K .remainderNormalized) (K .typeAReceiverRouting)
     (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
 
@@ -656,83 +625,6 @@ noncomputable instance instIncompatibleNetChargeCapNonNegative :
           valid cardinality windowInduces
     exact Nat.not_lt_of_ge (nonNegative.down packing valid maximal)
       (cap.down packing valid cardinality)
-
-/-- The exhaustive result of consuming one arbitrary Residual C ledger.  Node
-`[60]` has no constructor: only its negative arm reaches node `[61]`. -/
-inductive ResidualCResult
-    (selected : Input BranchState Presentation presentation data)
-    (known : FactKeys (Input BranchState Presentation presentation data)) where
-  | negativeSupport
-      (history : ExactLedger
-        (Input BranchState Presentation presentation data) selected
-        (residualCNegativeSupportKeys known))
-
-/-- Nodes `[56]`--`[61]`, over the literal incoming Residual C ledger.
-
-The sign decision is exhaustive at every finite order.  Its negative arm is
-localized to a connected support.  The nonnegative arm contradicts the exact
-net-cap theorem at the canonical maximum packing and is eliminated.  Before
-that decision the one ledger is extended by the sufficiently-large routing
-fact and then the unconditional net-cap fact valid on that branch. -/
-noncomputable def runResidualC
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger
-      (Input BranchState Presentation presentation data) current
-      (residualCKeys known))
-    (sufficientlyLarge :
-      Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
-        data.dischargeScale data.windowOrder data.windowRate
-        data.spineScale current.object.vertexCount)
-    (densityCapPresent :
-      FactKeys.Has (K (data := data) .densityCap) (residualCKeys known))
-    (stubSupplyPresent :
-      FactKeys.Has (K (data := data) .stubSupply) (residualCKeys known))
-    (largeFresh : K (data := data) .netChargeLarge ∉ known)
-    (smallFresh : K (data := data) .netChargeSmall ∉ known)
-    (capFresh : K (data := data) .netChargeCap ∉ known)
-    (localizationFresh : K (data := data) .netChargeLocalization ∉ known)
-    (nonNegativeFresh : K (data := data) .netChargeNonNegative ∉ known)
-    (negativeFresh : K (data := data) .netChargeNegative ∉ known)
-    (closedFresh : closed ∉ known)
-    (supportFresh : K (data := data) .negativeSupport ∉ known) :
-    ResidualCResult current known := by
-  classical
-  letI := densityCapPresent
-  letI := stubSupplyPresent
-  match netChargeOrderDichotomy history (K .netChargeLarge) (K .netChargeSmall)
-      (fun value => ⟨value⟩) (fun value => ⟨value⟩)
-      (by simp [residualCKeys, largeFresh])
-      (by simp [residualCKeys, smallFresh]) with
-  | .right smallHistory =>
-      exact ((smallHistory.get (K .netChargeSmall)).down sufficientlyLarge).elim
-  | .left largeHistory =>
-      have capped :=
-        (netChargeCap (data := data)).run largeHistory
-          (by simp [residualCKeys, capFresh])
-      have localized :=
-        (netChargeLocalization (data := data)).run capped
-          (by simp [residualCKeys, localizationFresh])
-      match netChargeDichotomy localized (K .netChargeNonNegative)
-          (K .netChargeNegative) (fun value => ⟨value⟩)
-          (fun value => ⟨value⟩)
-          (by simp [residualCKeys, nonNegativeFresh])
-          (by simp [residualCKeys, negativeFresh]) with
-      | .left nonNegativeHistory =>
-          have closedHistory :=
-            closeIncompatible nonNegativeHistory (K .netChargeCap)
-              (K .netChargeNonNegative) (by simp [residualCKeys, closedFresh])
-          have impossible : False := by
-            apply ExactLedger.elimClosed
-              (system := factSystem BranchState Presentation presentation data)
-              closedHistory
-            rw [closureKey_eq_closed]
-            infer_instance
-          exact impossible.elim
-      | .right negativeHistory =>
-          exact .negativeSupport
-            ((negativeSupport (data := data)).run negativeHistory
-              (by simp [residualCKeys, supportFresh]))
 
 /-- Node `[62]`'s Type A arm over the literal Residual C ancestry. -/
 abbrev residualCTypeALowSurplusKeys
@@ -1209,199 +1101,6 @@ certificate-residual and overlap-obstruction arms are immediately extended by
 the fan-mass row on the same ledger; the direct-cycle arm closes; and the B2
 success arm records the disjoint post-ledger component fact.
 -/
-
-/-- **The exits of the local Type B fan ledger.** -/
-inductive TypeBFanLedgerResult
-    (selected : Input BranchState Presentation presentation data)
-    (known : FactKeys (Input BranchState Presentation presentation data)) where
-  /-- `[75]`/`[84]`: a fan-certificate residual centre has its mass bound. -/
-  | certificateResidualMass
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (fanCertResidualMassKeys known))
-  /-- `[72]`/`[81]`: a direct fan-window cycle, which collides with the
-  selection's own avoidance. -/
-  | directCycleClosed
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (fanDirectCycleClosedKeys (fanMarkedKeys known)))
-  /-- `[76]`/`[85]`: B2(a)--(c) and post-ledger components on the same history. -/
-  | disjointLedger
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (fanDisjointLedgerKeys (fanMarkedKeys known)))
-  /-- `[75]`/`[84]`: a minimal overlap obstruction has its mass bound. -/
-  | overlapObstructionMass
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (fanOverlapObstructionMassKeys (fanMarkedKeys known)))
-
-/-- **The local Type B fan ledger, run.** -/
-noncomputable def runTypeBFanLedger
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    [FactKeys.Has (K (data := data) .selection) known]
-    [FactKeys.Has (K (data := data) .fanCertificateCap) known]
-    [FactKeys.Has (K (data := data) .typeBHighSurplus) known]
-    [FactKeys.Has (K (data := data) .remainderNormalized) known]
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current known)
-    (markedFresh : K (data := data) .fanCertificateMarked ∉ known)
-    (certResidualFresh : K (data := data) .fanCertificateResidual ∉ known)
-    (cycleFresh : K (data := data) .typeBDirectCycle ∉ known)
-    (cycleFreeFresh : K (data := data) .typeBDirectCycleFree ∉ known)
-    (b2ChoiceFresh : K (data := data) .typeBB2Choice ∉ known)
-    (obstructionFresh : K (data := data) .typeBOverlapObstruction ∉ known)
-    (hybridFresh : K (data := data) .typeBHybridEntry ∉ known)
-    (disjointFresh : K (data := data) .typeBDisjointLedger ∉ known)
-    (massFresh : K (data := data) .typeBBridgeMass ∉ known)
-    (closureFresh : closed (BranchState := BranchState)
-      (presentation := presentation) (data := data) ∉ known) :
-    TypeBFanLedgerResult current known := by
-  classical
-  -- Node `[71]`/`[80]`: is a certificate labelling present?
-  match fanCertificateDichotomy history (K .typeBHighSurplus)
-      (K .fanCertificateMarked) (K .fanCertificateResidual)
-      (fun fact => fact.down) (fun marked => ⟨marked⟩)
-      (fun residual => ⟨residual⟩)
-      (by simp [markedFresh]) (by simp [certResidualFresh]) with
-  | .right certResidual =>
-      exact .certificateResidualMass
-        ((bridgeFanMass (data := data) (K .fanCertificateResidual) (by simp)).run
-          certResidual (by simp [massFresh]))
-  | .left marked =>
-  -- Node `[72]`/`[81]`, first half: are the direct fan-window cycles present?
-  match directCycleDichotomy marked (K .typeBDirectCycle)
-      (K .typeBDirectCycleFree) (K .typeBHighSurplus)
-      (fun fact => fact.down) (fun present => ⟨present⟩) (fun free => ⟨free⟩)
-      (by simp [cycleFresh]) (by simp [cycleFreeFresh]) with
-  | .left cycleHistory =>
-      exact .directCycleClosed
-        (closeIncompatible cycleHistory (K .selection) (K .typeBDirectCycle)
-          (by simp [closureFresh]))
-  | .right freeHistory =>
-      -- Node `[72]`/`[81]`, second half: does the B2 disjoint ledger exist?
-      match b2AssignmentDichotomy freeHistory (K .typeBB2Choice)
-          (K .typeBOverlapObstruction) (K .typeBDirectCycleFree)
-          (fun fact => fact.down) (fun ledger => ⟨ledger⟩)
-          (fun obstruction => ⟨obstruction⟩)
-          (by simp [b2ChoiceFresh]) (by simp [obstructionFresh]) with
-      | .left ledgerHistory =>
-          -- Node `[74]`/`[82]`, then the exact disjoint post-ledger fact.
-          exact .disjointLedger
-            ((disjointPostLedgerComponents (data := data)).run
-              ((hybridEntry (data := data)).run ledgerHistory
-                (by simp [hybridFresh]))
-              (by simp [disjointFresh]))
-      | .right obstructionHistory =>
-          exact .overlapObstructionMass
-            ((bridgeFanMass (data := data) (K .typeBOverlapObstruction)
-                (by simp)).run
-              obstructionHistory (by simp [massFresh]))
-
-/-- The exact exits of the node-`[64]` Type B entry walk.  The heavy and
-degree-four arms share `runTypeBFanLedger`; only their immutable prefixes
-differ. -/
-inductive TypeBEntryResult
-    (selected : Input BranchState Presentation presentation data)
-    (known : FactKeys (Input BranchState Presentation presentation data)) where
-  | directCycleClosed
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBDirectCycleClosedKeys known))
-  | disjointLedger
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBDisjointLedgerKeys known))
-  | certificateResidualMass
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBCertificateResidualMassKeys known))
-  | overlapObstructionMass
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBOverlapObstructionMassKeys known))
-  | degreeFourResidualMass
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCDegreeFourResidualMassKeys known))
-  | degreeFourDirectCycleClosed
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCDegreeFourDirectCycleClosedKeys known))
-  | degreeFourDisjointLedger
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCDegreeFourDisjointLedgerKeys known))
-  | degreeFourOverlapObstructionMass
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCDegreeFourOverlapObstructionMassKeys known))
-
-/-- Nodes `[65]`--`[85]`, entered from node `[64]` on the literal ledger. -/
-noncomputable def runTypeBEntry
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    [FactKeys.Has (K (data := data) .selection) known]
-    [FactKeys.Has (K (data := data) .tightEndpoint) known]
-    [FactKeys.Has (K (data := data) .remainderNormalized) known]
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current (residualCTypeBHighSurplusKeys known))
-    (normalFresh : K (data := data) .highCentreNormalForm ∉ known)
-    (heavyFresh : K (data := data) .typeBHeavyCentre ∉ known)
-    (degreeFourFresh : K (data := data) .typeBDegreeFourCentres ∉ known)
-    (localFresh : K (data := data) .typeBLocalDichotomy ∉ known)
-    (capFresh : K (data := data) .fanCertificateCap ∉ known)
-    (profileFresh : K (data := data) .typeBDegreeFourProfile ∉ known)
-    (markedFresh : K (data := data) .fanCertificateMarked ∉ known)
-    (certResidualFresh : K (data := data) .fanCertificateResidual ∉ known)
-    (cycleFresh : K (data := data) .typeBDirectCycle ∉ known)
-    (cycleFreeFresh : K (data := data) .typeBDirectCycleFree ∉ known)
-    (b2ChoiceFresh : K (data := data) .typeBB2Choice ∉ known)
-    (obstructionFresh : K (data := data) .typeBOverlapObstruction ∉ known)
-    (hybridFresh : K (data := data) .typeBHybridEntry ∉ known)
-    (disjointFresh : K (data := data) .typeBDisjointLedger ∉ known)
-    (massFresh : K (data := data) .typeBBridgeMass ∉ known)
-    (closedFresh : closed (BranchState := BranchState)
-      (presentation := presentation) (data := data) ∉ known) :
-    TypeBEntryResult current known := by
-  classical
-  have normal :=
-    (highCentreNormalForm (data := data)).run history (by simp [normalFresh])
-  match heavyCentreDichotomy normal (K .typeBHighSurplus)
-      (K .typeBHeavyCentre) (K .typeBDegreeFourCentres)
-      (fun fact => fact.down) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
-      (by simp [heavyFresh]) (by simp [degreeFourFresh]) with
-  | .left heavyHistory =>
-      have capped :=
-        (fanCertificateCap (data := data)).run
-          ((heavyCentreLocalDichotomy (data := data)).run heavyHistory
-            (by simp [localFresh]))
-          (by simp [capFresh])
-      match runTypeBFanLedger capped
-          (markedFresh := by simp [markedFresh])
-          (certResidualFresh := by simp [certResidualFresh])
-          (cycleFresh := by simp [cycleFresh])
-          (cycleFreeFresh := by simp [cycleFreeFresh])
-          (b2ChoiceFresh := by simp [b2ChoiceFresh])
-          (obstructionFresh := by simp [obstructionFresh])
-          (hybridFresh := by simp [hybridFresh])
-          (disjointFresh := by simp [disjointFresh])
-          (massFresh := by simp [massFresh])
-          (closureFresh := by simp [closedFresh]) with
-      | .certificateResidualMass h => exact .certificateResidualMass h
-      | .directCycleClosed h => exact .directCycleClosed h
-      | .disjointLedger h => exact .disjointLedger h
-      | .overlapObstructionMass h => exact .overlapObstructionMass h
-  | .right degreeFourHistory =>
-      have profiled :=
-        (degreeFourProfile (data := data)).run
-          ((fanCertificateCap (data := data)).run degreeFourHistory
-            (by simp [capFresh]))
-          (by simp [profileFresh])
-      match runTypeBFanLedger profiled
-          (markedFresh := by simp [markedFresh])
-          (certResidualFresh := by simp [certResidualFresh])
-          (cycleFresh := by simp [cycleFresh])
-          (cycleFreeFresh := by simp [cycleFreeFresh])
-          (b2ChoiceFresh := by simp [b2ChoiceFresh])
-          (obstructionFresh := by simp [obstructionFresh])
-          (hybridFresh := by simp [hybridFresh])
-          (disjointFresh := by simp [disjointFresh])
-          (massFresh := by simp [massFresh])
-          (closureFresh := by simp [closedFresh]) with
-      | .certificateResidualMass h => exact .degreeFourResidualMass h
-      | .directCycleClosed h => exact .degreeFourDirectCycleClosed h
-      | .disjointLedger h => exact .degreeFourDisjointLedger h
-      | .overlapObstructionMass h => exact .degreeFourOverlapObstructionMass h
 
 /-! ## What the run leaves behind -/
 

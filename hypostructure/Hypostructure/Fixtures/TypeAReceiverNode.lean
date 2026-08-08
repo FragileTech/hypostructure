@@ -53,17 +53,22 @@ vocabulary's own finite `Key`.  The output index is
 appended — the row reconstructs no cursor and re-reads no root. -/
 noncomputable def receiverRouting
     {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
+  (history : ExactLedger (Input BranchState Presentation presentation data)
       selected typeALowSurplusKeys) :
     ExactLedger (Input BranchState Presentation presentation data) selected
       typeAReceiverRoutingKeys :=
-  (typeAReceiverRouting (data := data)).run history (by simp)
+  (typeAReceiverRoutingRow (K .remainderNormalized) (K .typeAReceiverRouting)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history (by simp)
 
 /-- **The row's declared output is exactly the routing key.**  A row that
 committed a second fact, or none, would not have this manifest. -/
 example :
-    (typeAReceiverRouting (BranchState := BranchState)
-        (presentation := presentation) (data := data)).manifest.Produces =
+    (typeAReceiverRoutingRow (BranchState := BranchState)
+        (presentation := presentation) (data := data)
+        (K .remainderNormalized) (K .typeAReceiverRouting)
+        (fun _input fact => fact.down)
+        (fun _input value => ⟨value⟩)).manifest.Produces =
       [K .typeAReceiverRouting] :=
   rfl
 
