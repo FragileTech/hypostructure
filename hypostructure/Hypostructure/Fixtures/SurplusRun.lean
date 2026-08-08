@@ -52,9 +52,13 @@ noncomputable def attached
     (T : Core.Target (problem BranchState Presentation presentation data))
     (targetPredicate : T.Predicate = Graph.HasCycleWithLength data.LengthOK)
     (opened : OpenedScope
-      (P := problem BranchState Presentation presentation data) (K .selection)) :
+      (P := problem BranchState Presentation presentation data) (K .selection))
+    (sufficientlyLarge :
+      Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
+        data.dischargeScale data.windowOrder data.windowRate data.spineScale
+        opened.selected.object.vertexCount) :
     ChapterOneContinuation opened.selected :=
-  runChapterOne T targetPredicate opened
+  runChapterOne T targetPredicate opened sufficientlyLarge
 
 /-- **The block runs on the accumulated surplus/package residual reaching
 node `[125]`.** -/

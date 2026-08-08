@@ -1,4 +1,5 @@
 import Hypostructure.Graph.TypeBHybridLedger
+import Hypostructure.Graph.TypeBHybridIncidence
 
 /-!
 # The enumerable schedule of assigned Type B fan-window profiles
@@ -70,10 +71,9 @@ membership, so no theorem below carries them as hypotheses.
 namespace Hypostructure.Graph.TypeBProfileSchedule
 
 open Hypostructure.Graph
-open Hypostructure.Graph.TypeBOpenPorts
 open Hypostructure.Graph.TypeBMarkedFan
 open Hypostructure.Graph.TypeBFanClosedPorts
-open Hypostructure.Graph.Strategy.Official.Features.DeletionFanIncidence
+open Hypostructure.Graph.TypeBHybridIncidence
 open Hypostructure.Graph.ReceiverLoad (LoadCapacityProfile)
 
 universe u
@@ -182,29 +182,18 @@ def canonicalMarked (object : FiniteObject.{u}) (center : object.Vertex)
 
 /-! ## The canonical fan envelope -/
 
-/-- Membership in the framework's outside-incidence schedule, at the generality
-needed below.  This is the one-line unfolding already used for
-`Port.mem_shoulders_iff` and `Profile.mem_outsideNeighbours_iff`. -/
-private theorem mem_outsideIncidences_iff (object : FiniteObject.{u})
-    (center endpoint vertex : object.Vertex) :
-    vertex ∈ outsideIncidences object center endpoint ↔
-      vertex ≠ center ∧ object.graph.Adj endpoint vertex := by
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  rw [outsideIncidences, (object.orderedNeighbors_nodup endpoint).mem_erase_iff,
-    object.mem_orderedNeighbors_iff]
-
 /-- **The canonical assigned fan envelope at a centre**: the centre, its
 neighbours, and the non-central incidences of its neighbours, all read off the
 object's own schedules.  This is the same shape as
 `TypeBDegreeFour.TriangularCore.support`, with the full neighbour schedule in
 place of a chosen family of ports. -/
-def canonicalEnvelope (object : FiniteObject.{u}) (center : object.Vertex) :
-    Finset object.Vertex :=
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  insert center
-    ((object.orderedNeighbors center ++
-      (object.orderedNeighbors center).flatMap
-        (outsideIncidences object center)).toFinset)
+noncomputable def canonicalEnvelope (object : FiniteObject.{u})
+    (center : object.Vertex) : Finset object.Vertex := by
+  classical
+  exact insert center
+    ((object.orderedNeighbors center).toFinset ∪
+      (object.orderedNeighbors center).toFinset.biUnion fun endpoint =>
+        nonHubIncidences object center endpoint)
 
 theorem mem_canonicalEnvelope_iff (center vertex : object.Vertex) :
     vertex ∈ canonicalEnvelope object center ↔
@@ -212,9 +201,9 @@ theorem mem_canonicalEnvelope_iff (center vertex : object.Vertex) :
         (vertex ≠ center ∧ ∃ neighbour, object.graph.Adj center neighbour ∧
           object.graph.Adj neighbour vertex) := by
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  simp only [canonicalEnvelope, Finset.mem_insert, List.mem_toFinset,
-    List.mem_append, List.mem_flatMap, object.mem_orderedNeighbors_iff,
-    mem_outsideIncidences_iff]
+  simp only [canonicalEnvelope, Finset.mem_insert, Finset.mem_union,
+    List.mem_toFinset, Finset.mem_biUnion, object.mem_orderedNeighbors_iff,
+    mem_nonHubIncidences_iff]
   constructor
   · rintro (rfl | isNeighbour | ⟨neighbour, centerAdj, notCentre, incidence⟩)
     · exact Or.inl rfl
@@ -242,7 +231,8 @@ given packed-window union `W`.  Every field is fixed by the object's own data,
 exactly as `TypeBDegreeFour.canonicalCore` fixes its generating port family:
 the certificate-marked fan is `canonicalMarked`, the envelope is
 `canonicalEnvelope`, and the recorded window is the ambient `W`. -/
-def canonicalProfile (object : FiniteObject.{u}) (window : Finset object.Vertex)
+noncomputable def canonicalProfile (object : FiniteObject.{u})
+    (window : Finset object.Vertex)
     (center : object.Vertex) (high : 4 ≤ object.degree center)
     (cap : object.degree center ≤ 8) : Profile object where
   marked := canonicalMarked object center high cap
@@ -386,7 +376,7 @@ theorem isFanCertificateResidual_iff (object : FiniteObject.{u})
 given packed-window union `W`: one canonical profile per centre in the fan
 degree window, built from the object's own vertex, neighbour and
 outside-incidence schedules.  A downstream node scans this list. -/
-def profileCandidatesWith (object : FiniteObject.{u})
+noncomputable def profileCandidatesWith (object : FiniteObject.{u})
     (window : Finset object.Vertex) : List (Profile object) :=
   (fanCentres object).pmap
     (fun center (degrees : 4 ≤ object.degree center ∧ object.degree center ≤ 8) =>
@@ -417,7 +407,7 @@ theorem profileCandidatesWith_nodup (object : FiniteObject.{u})
 /-- **The enumerable carrier of assigned Type B fan-window profiles** of the
 object, at the packed-window union that does not meet the fan.  The general
 form `profileCandidatesWith` covers every packed-window union `W`. -/
-def profileCandidates (object : FiniteObject.{u}) : List (Profile object) :=
+noncomputable def profileCandidates (object : FiniteObject.{u}) : List (Profile object) :=
   profileCandidatesWith object ∅
 
 theorem mem_profileCandidates_iff (object : FiniteObject.{u})
@@ -531,34 +521,43 @@ strict positivity, read off at this very instance `c = 2`, `k = 4`) and
 nonnegative and so is what makes the reserve available). -/
 theorem hybridEntry_of_isHybridEligible (profile : Profile object)
     (ledger : LoadCapacityProfile)
+    (scale : ledger.loadMultiplier = 4)
     (eligible : IsHybridEligible profile) :
     profile.closedNeighbourDeficit ledger ≤ profile.hybridCapacity ledger ∧
       profile.hybridNonWindowDemand ledger ≤ profile.nonWindowCredit ∧
-      ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate - 1
+      ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+          (1 / (ledger.loadMultiplier : ℚ)) - 1
         ≤ profile.closedNeighbourDeficit ledger ∧
-      5 * ledger.dischargeRate - 1 ≤ profile.closedNeighbourDeficit ledger ∧
+      5 * (1 / (ledger.loadMultiplier : ℚ)) - 1 ≤
+        profile.closedNeighbourDeficit ledger ∧
       0 < profile.closedNeighbourDeficit ledger := by
   have total := Profile.windowCredit_add_nonWindowCredit (profile := profile)
   have deficit : profile.closedNeighbourDeficit ledger
       = (profile.closedCount : ℚ)
         - (3 - ((object.degree profile.marked.fan.hub : ℚ) + 1)
-            * ledger.dischargeRate) := rfl
+            * (1 / (ledger.loadMultiplier : ℚ))) := rfl
   have twoCast : (2 : ℚ) ≤ (profile.closedCount : ℚ) := by
     exact_mod_cast eligible
   have highCast : (4 : ℚ) ≤ (object.degree profile.marked.fan.hub : ℚ) := by
     exact_mod_cast profile.marked.highDegree
   have capCast : (object.degree profile.marked.fan.hub : ℚ) ≤ 8 := by
     exact_mod_cast profile.marked.degree_le_eight
-  have rateNonneg := ledger.dischargeRate_nonneg
-  have sharp := ledger.one_lt_five_mul_dischargeRate
-  have credit := ledger.nine_mul_dischargeRate_le_three
+  have rateNonneg : (0 : ℚ) ≤ 1 / (ledger.loadMultiplier : ℚ) := by positivity
+  have sharp : (1 : ℚ) < 5 * (1 / (ledger.loadMultiplier : ℚ)) := by
+    rw [scale]
+    norm_num
+  have credit : 9 * (1 / (ledger.loadMultiplier : ℚ)) ≤ (3 : ℚ) := by
+    rw [scale]
+    norm_num
   have lowRate :
-      5 * ledger.dischargeRate
-        ≤ ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate :=
+      5 * (1 / (ledger.loadMultiplier : ℚ)) ≤
+        ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+          (1 / (ledger.loadMultiplier : ℚ)) :=
     mul_le_mul_of_nonneg_right (by linarith) rateNonneg
   have highRate :
-      ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate
-        ≤ 9 * ledger.dischargeRate :=
+      ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+          (1 / (ledger.loadMultiplier : ℚ)) ≤
+        9 * (1 / (ledger.loadMultiplier : ℚ)) :=
     mul_le_mul_of_nonneg_right (by linarith) rateNonneg
   have windowNonneg : (0 : ℚ) ≤ profile.windowCredit := by
     have : (0 : ℚ) ≤ (profile.windowIncidenceTotal : ℚ) := by positivity
@@ -584,183 +583,36 @@ passes the decidable scan predicate satisfies the hybrid ledger conclusion of
 `prop:fan-closed-port-typeB-routing` (b).  The scan predicate is evaluated as
 the local count of remainder-side cubic neighbours of the centre. -/
 theorem profileCandidatesWith_scan (object : FiniteObject.{u})
-    (ledger : LoadCapacityProfile) (window : Finset object.Vertex) :
+    (ledger : LoadCapacityProfile) (scale : ledger.loadMultiplier = 4)
+    (window : Finset object.Vertex) :
     ∀ profile ∈ profileCandidatesWith object window,
       2 ≤ (cubicRemainderNeighbours object window profile.marked.fan.hub).card →
         profile.closedNeighbourDeficit ledger ≤ profile.hybridCapacity ledger ∧
           profile.hybridNonWindowDemand ledger ≤ profile.nonWindowCredit ∧
           ((object.degree profile.marked.fan.hub : ℚ) + 1)
-                * ledger.dischargeRate - 1
+                * (1 / (ledger.loadMultiplier : ℚ)) - 1
             ≤ profile.closedNeighbourDeficit ledger ∧
-          5 * ledger.dischargeRate - 1 ≤ profile.closedNeighbourDeficit ledger ∧
+          5 * (1 / (ledger.loadMultiplier : ℚ)) - 1 ≤
+            profile.closedNeighbourDeficit ledger ∧
           0 < profile.closedNeighbourDeficit ledger := by
   intro profile member counted
-  exact hybridEntry_of_isHybridEligible profile ledger
+  exact hybridEntry_of_isHybridEligible profile ledger scale
     ((isHybridEligible_iff_of_mem member).2 counted)
 
 /-- The same scan at the packed-window union that does not meet the fan. -/
 theorem profileCandidates_scan (object : FiniteObject.{u})
-    (ledger : LoadCapacityProfile) :
+    (ledger : LoadCapacityProfile) (scale : ledger.loadMultiplier = 4) :
     ∀ profile ∈ profileCandidates object,
       2 ≤ (cubicRemainderNeighbours object ∅ profile.marked.fan.hub).card →
         profile.closedNeighbourDeficit ledger ≤ profile.hybridCapacity ledger ∧
           profile.hybridNonWindowDemand ledger ≤ profile.nonWindowCredit ∧
           ((object.degree profile.marked.fan.hub : ℚ) + 1)
-                * ledger.dischargeRate - 1
+                * (1 / (ledger.loadMultiplier : ℚ)) - 1
             ≤ profile.closedNeighbourDeficit ledger ∧
-          5 * ledger.dischargeRate - 1 ≤ profile.closedNeighbourDeficit ledger ∧
+          5 * (1 / (ledger.loadMultiplier : ℚ)) - 1 ≤
+            profile.closedNeighbourDeficit ledger ∧
           0 < profile.closedNeighbourDeficit ledger :=
-  profileCandidatesWith_scan object ledger ∅
-
-/-! ## Non-vacuity
-
-The witness graph `TypeBFanClosedPorts.Witness.fanObject` — a degree-four centre
-with four cubic neighbours, each carrying a private shoulder pair — is reused
-with the packed-window union `TypeBFanClosedPorts.Witness.hybridWindow`, which
-carries both non-`h` incidences of one fan neighbour, exactly one of the two of
-a second, and neither of the remaining two.
-
-On that object the schedule `profileCandidatesWith` has exactly one entry, the
-canonical profile at the centre; the scan predicate holds there; and the entry
-is non-degenerate: all three support classes of `def:typeB-hybrid-incidence` are
-occupied, so `I_W ≠ 0` and `D_N ≠ 0`, and the ledger inequality proved above is
-not attained by a trivial configuration. -/
-
-namespace Witness
-
-open Hypostructure.Graph.TypeBFanClosedPorts.Witness
-
-local instance witnessDecEq : DecidableEq fanObject.Vertex :=
-  inferInstanceAs (DecidableEq (Fin 13))
-
-local instance witnessFintype : Fintype fanObject.Vertex :=
-  inferInstanceAs (Fintype (Fin 13))
-
-local instance witnessAdj : DecidableRel fanObject.graph.Adj := fanObject.decideAdj
-
-theorem hub_high : 4 ≤ fanObject.degree hub := by rw [degree_hub]
-
-theorem hub_cap : fanObject.degree hub ≤ 8 := by rw [degree_hub]; omega
-
-/-- The canonical assigned profile at the witness centre, over the packed-window
-union `hybridWindow`. -/
-def witnessProfile : Profile fanObject :=
-  canonicalProfile fanObject hybridWindow hub hub_high hub_cap
-
-/-- The witness centre is the only centre in the fan degree window, so the
-schedule has exactly one entry. -/
-theorem fanCentres_witness : fanCentres fanObject = [hub] := by decide
-
-theorem witnessProfile_mem :
-    witnessProfile ∈ profileCandidatesWith fanObject hybridWindow :=
-  (mem_profileCandidatesWith_iff fanObject hybridWindow witnessProfile).2
-    ⟨hub, hub_high, hub_cap, rfl⟩
-
-theorem profileCandidatesWith_witness_length :
-    (profileCandidatesWith fanObject hybridWindow).length = 1 := by
-  rw [profileCandidatesWith, List.length_pmap, fanCentres_witness]
-  rfl
-
-/-- All four fan neighbours are cubic and lie off the packed-window union. -/
-theorem cubicRemainderNeighbours_witness :
-    cubicRemainderNeighbours fanObject hybridWindow hub
-      = ({rimOne, rimTwo, rimThree, rimFour} : Finset fanObject.Vertex) := by
-  decide
-
-theorem witness_closedCount : witnessProfile.closedCount = 4 := by
-  rw [closedCount_of_mem_profileCandidatesWith witnessProfile_mem]
-  rw [show witnessProfile.marked.fan.hub = hub from rfl,
-    cubicRemainderNeighbours_witness]
-  decide
-
-/-- The scan predicate fires at the enumerated candidate.  It is not merely
-formally decidable: it *evaluates*, so a scan can actually run it. -/
-theorem witness_eligible : IsHybridEligible witnessProfile := by decide
-
-theorem witness_windowIncidenceTotal : witnessProfile.windowIncidenceTotal = 3 := by
-  rw [Profile.windowIncidenceTotal, Profile.windowSupportedCount,
-    Profile.mixedSupportedCount, Profile.windowSupported, Profile.mixedSupported,
-    closedNeighbours_of_mem_profileCandidatesWith witnessProfile_mem,
-    show witnessProfile.marked.fan.hub = hub from rfl,
-    cubicRemainderNeighbours_witness]
-  decide
-
-theorem witness_nonWindowIncidenceTotal :
-    witnessProfile.nonWindowIncidenceTotal = 5 := by
-  rw [Profile.nonWindowIncidenceTotal, Profile.mixedSupportedCount,
-    Profile.internalSupportedCount, Profile.mixedSupported,
-    Profile.internalSupported,
-    closedNeighbours_of_mem_profileCandidatesWith witnessProfile_mem,
-    show witnessProfile.marked.fan.hub = hub from rfl,
-    cubicRemainderNeighbours_witness]
-  decide
-
-theorem witness_degree : fanObject.degree witnessProfile.marked.fan.hub = 4 :=
-  degree_hub
-
-/-- The ledger of `def:typeB-hybrid-incidence` evaluated at the enumerated
-candidate: `c = 4`, `k = 4`, `D_B = 1 + 5α`, `I_W = 3`, `I_N = 5`,
-`D_N = 5α - 1/2`, and the hybrid capacity is exactly `1 + 5α = D_B`.  At the
-registered `α = 1/4` these are the manuscript's `9/4`, `3/2`, `5/2`, `3/4` and
-`9/4`.
-
-As in `TypeBHybridLedger.Witness.hybrid_ledger`, the demand is a strictly
-positive proper part of the deficit at *every* admissible profile: `D_N > 1/2`
-is exactly the recorded `5α > 1`. -/
-theorem witness_ledger (ledger : LoadCapacityProfile) :
-    witnessProfile.closedNeighbourDeficit ledger
-        = 1 + 5 * ledger.dischargeRate ∧
-      witnessProfile.windowCredit = 3 / 2 ∧
-      witnessProfile.nonWindowCredit = 5 / 2 ∧
-      witnessProfile.hybridNonWindowDemand ledger
-        = 5 * ledger.dischargeRate - 1 / 2 ∧
-      witnessProfile.hybridCapacity ledger = 1 + 5 * ledger.dischargeRate := by
-  have sharp := ledger.one_lt_five_mul_dischargeRate
-  have deficit : witnessProfile.closedNeighbourDeficit ledger
-      = 1 + 5 * ledger.dischargeRate := by
-    rw [Profile.closedNeighbourDeficit, witness_closedCount, witness_degree]
-    push_cast
-    ring
-  have windowValue : witnessProfile.windowCredit = 3 / 2 := by
-    rw [Profile.windowCredit, witness_windowIncidenceTotal]
-    norm_num
-  have nonWindowValue : witnessProfile.nonWindowCredit = 5 / 2 := by
-    rw [Profile.nonWindowCredit, witness_nonWindowIncidenceTotal]
-    norm_num
-  have demand : witnessProfile.hybridNonWindowDemand ledger
-      = 5 * ledger.dischargeRate - 1 / 2 := by
-    rw [Profile.hybridNonWindowDemand, deficit, windowValue,
-      max_eq_right (by linarith)]
-    ring
-  exact ⟨deficit, windowValue, nonWindowValue, demand, by
-    rw [Profile.hybridCapacity, windowValue, demand]; ring⟩
-
-/-- **The scan fires on a concrete graph.**  The enumerated candidate at the
-witness centre passes the scan predicate and satisfies the hybrid ledger
-conclusion, with both `½ I_W(𝔉) > 0` and `D_N(𝔉) > 0`: neither side of the
-hybrid entry is degenerate. -/
-theorem scan_fires (ledger : LoadCapacityProfile) :
-    witnessProfile ∈ profileCandidatesWith fanObject hybridWindow ∧
-      2 ≤ (cubicRemainderNeighbours fanObject hybridWindow
-        witnessProfile.marked.fan.hub).card ∧
-      witnessProfile.closedNeighbourDeficit ledger
-        ≤ witnessProfile.hybridCapacity ledger ∧
-      witnessProfile.hybridNonWindowDemand ledger
-        ≤ witnessProfile.nonWindowCredit ∧
-      0 < witnessProfile.closedNeighbourDeficit ledger ∧
-      0 < witnessProfile.windowCredit ∧
-      0 < witnessProfile.hybridNonWindowDemand ledger := by
-  have sharp := ledger.one_lt_five_mul_dischargeRate
-  have counted : 2 ≤ (cubicRemainderNeighbours fanObject hybridWindow
-      witnessProfile.marked.fan.hub).card :=
-    (isHybridEligible_iff_of_mem witnessProfile_mem).1 witness_eligible
-  obtain ⟨capacity, feasible, -, -, positive⟩ :=
-    hybridEntry_of_isHybridEligible witnessProfile ledger witness_eligible
-  obtain ⟨-, windowValue, -, demand, -⟩ := witness_ledger ledger
-  exact ⟨witnessProfile_mem, counted, capacity, feasible, positive,
-    by rw [windowValue]; norm_num, by rw [demand]; linarith⟩
-
-end Witness
+  profileCandidatesWith_scan object ledger scale ∅
 
 /-! ## What is deliberately absent
 

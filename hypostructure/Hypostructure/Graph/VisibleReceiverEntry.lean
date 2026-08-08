@@ -53,6 +53,7 @@ family.
 namespace Hypostructure.Graph.VisibleEntry
 
 open Hypostructure
+open Hypostructure.Core.Finite
 
 universe u
 
@@ -398,6 +399,105 @@ theorem firstEntry?_toAnchoredReturn
   simp only [SimpleGraph.Walk.support_append, List.find?_append, connectorFinds,
     Option.some_or]
 
+/-! ## The exact finite receiver-entry-return schedule
+
+The manuscript quantifies over the receiver-entry returns through one fixed
+completion port.  Both halves of such a return are simple paths in the finite
+ambient object, so this is an exact finite family.  The schedule below is
+obtained only from the object's vertex order and the complete path schedules;
+the filter is precisely the fields of `ReceiverEntryReturn`.
+-/
+
+/-- The finite candidate list before duplicate proof representations are
+removed.  Every member is already an actual receiver-entry return. -/
+private noncomputable def candidateSchedule
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (receiver outside : object.Vertex) :
+    List (ReceiverEntryReturn object support receiver outside) := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := FinEnum.instFintype
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  classical
+  exact object.orderedVertices.flatMap fun entry =>
+    (FinitePathSelection.pathSchedule object.graph outside entry).flatMap fun connector =>
+      (FinitePathSelection.pathSchedule object.graph entry receiver).filterMap fun channel =>
+        if valid :
+            (forall vertex, vertex ∈ connector.1.support -> vertex ≠ entry ->
+              vertex ∉ support) /\
+            (forall vertex, vertex ∈ channel.1.support -> vertex ∈ support) /\
+            (connector.1.append channel.1).IsPath /\
+            s(receiver, outside) ∉ (connector.1.append channel.1).edges then
+          some {
+            entry := entry
+            connector := connector.1
+            channel := channel.1
+            connectorOutside := valid.1
+            isChannel := ⟨channel.2, valid.2.1⟩
+            isPath := valid.2.2.1
+            avoidsPort := valid.2.2.2 }
+        else
+          none
+
+/-- **The exact finite schedule of receiver-entry returns through a fixed
+completion port.**  Its only data are finite vertex and simple-path schedules;
+`eraseDups` removes duplicate proof representations without changing the
+mathematical family. -/
+noncomputable def schedule (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (receiver outside : object.Vertex) :
+    Enumeration (ReceiverEntryReturn object support receiver outside) := by
+  classical
+  let candidates := candidateSchedule object support receiver outside
+  exact Enumeration.ofNodupList candidates.toFinset.toList
+    (Finset.nodup_toList candidates.toFinset)
+
+/-- The finite schedule is complete: every receiver-entry return through the
+fixed port occurs in it. -/
+theorem mem_schedule
+    (return' : ReceiverEntryReturn object support receiver outside) :
+    return' ∈ (schedule object support receiver outside).values := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := FinEnum.instFintype
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  classical
+  rw [schedule, Enumeration.ofNodupList_values, Finset.mem_toList,
+    List.mem_toFinset]
+  let connector : object.graph.Path outside return'.entry :=
+    ⟨return'.connector, return'.isPath.of_append_left⟩
+  let channel : object.graph.Path return'.entry receiver :=
+    ⟨return'.channel, return'.isChannel.1⟩
+  have connectorMember : connector ∈
+      FinitePathSelection.pathSchedule object.graph outside return'.entry :=
+    FinitePathSelection.mem_pathSchedule object.graph connector
+  have channelMember : channel ∈
+      FinitePathSelection.pathSchedule object.graph return'.entry receiver :=
+    FinitePathSelection.mem_pathSchedule object.graph channel
+  have valid :
+      (forall vertex, vertex ∈ connector.1.support -> vertex ≠ return'.entry ->
+        vertex ∉ support) /\
+      (forall vertex, vertex ∈ channel.1.support -> vertex ∈ support) /\
+      (connector.1.append channel.1).IsPath /\
+      s(receiver, outside) ∉ (connector.1.append channel.1).edges := by
+    exact ⟨return'.connectorOutside, return'.isChannel.2,
+      return'.isPath, return'.avoidsPort⟩
+  unfold candidateSchedule
+  rw [List.mem_flatMap]
+  refine ⟨return'.entry, object.mem_orderedVertices return'.entry, ?_⟩
+  rw [List.mem_flatMap]
+  refine ⟨connector, connectorMember, ?_⟩
+  rw [List.mem_filterMap]
+  refine ⟨channel, channelMember, ?_⟩
+  rw [dif_pos valid]
+
+/-- Every scheduled return carries its canonical first-entry/channel
+decomposition: the stored entry is exactly `ent_X(Γ ∘ Q)`. -/
+theorem firstEntry?_of_mem_schedule
+    (return' : ReceiverEntryReturn object support receiver outside)
+    (_member : return' ∈ (schedule object support receiver outside).values) :
+    firstEntry? support return'.toAnchoredReturn = some return'.entry :=
+  return'.firstEntry?_toAnchoredReturn
+
 end ReceiverEntryReturn
 
 /-! ## Visibility
@@ -444,6 +544,89 @@ def VisibleFor (object : FiniteObject.{u}) (support : Finset object.Vertex)
             canonicalChannel? object support return'.entry receiver
                 terminalEdge =
               some ⟨return'.channel, return'.isChannel.1⟩)
+
+namespace ReceiverEntryReturn
+
+variable {support : Finset object.Vertex} {threshold : Nat}
+variable {receiver outside load : object.Vertex}
+
+/-- A finite declared support belongs to a receiver-entry return when every
+declared vertex lies on that return and its internal channel is visible for the
+canonical trace of the routed load. -/
+def OwnsDeclaredSupport
+    (return' : ReceiverEntryReturn object support receiver outside)
+    (declaredSupport : Finset object.Vertex) (load : object.Vertex) : Prop :=
+  declaredSupport ⊆ return'.toAnchoredReturn.path.support.toFinset /\
+    VisibleFor object support threshold return' load
+
+/-- A boundary-degree coordinate belongs to a receiver-entry return when its
+singleton declared support lies on that return and the return's internal
+channel is visible for the canonical trace of the routed load.  The second
+conjunct is exactly the manuscript's two-way condition: containment of the
+trace, or canonical ownership of its terminal receiver edge. -/
+def OwnsBoundaryEntry
+    (return' : ReceiverEntryReturn object support receiver outside)
+    (boundary : object.Vertex)
+    (load : object.Vertex) : Prop :=
+  OwnsDeclaredSupport (threshold := threshold) return' {boundary} load
+
+/-- The manuscript's two visibility alternatives produce ownership of a D1
+boundary-degree entry directly. -/
+theorem ownsBoundaryEntry_of_trace
+    (return' : ReceiverEntryReturn object support receiver outside)
+    (boundary : object.Vertex)
+    (trace : object.graph.Path load receiver)
+    (boundaryMember : boundary ∈ return'.toAnchoredReturn.path.support)
+    (selected : object.tracePath? support threshold load receiver = some trace)
+    (channelOwns :
+      trace.1.support.IsSuffix return'.channel.support \/
+        exists terminalEdge : Sym2 object.Vertex,
+          trace.1.edges.getLast? = some terminalEdge /\
+            canonicalChannel? object support return'.entry receiver terminalEdge =
+              some ⟨return'.channel, return'.isChannel.1⟩) :
+    OwnsBoundaryEntry (threshold := threshold) return' boundary load :=
+  ⟨by
+      intro vertex member
+      simp only [Finset.mem_singleton] at member
+      subst vertex
+      simpa using boundaryMember,
+    trace, selected, channelOwns⟩
+
+end ReceiverEntryReturn
+
+/-- A finite declared support is owned at a receiver when one of its actual
+completion ports has a scheduled visible receiver-entry return containing the
+support. -/
+def ownsDeclaredSupport (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex) (declaredSupport : Finset object.Vertex) :
+    Prop :=
+  exists outside, outside ∈ completionPorts object support receiver /\
+    exists return' : ReceiverEntryReturn object support receiver outside,
+      return' ∈ (ReceiverEntryReturn.schedule object support receiver outside).values /\
+        return'.OwnsDeclaredSupport (threshold := threshold) declaredSupport load
+
+/-- **The finite D1 ownership predicate.**  A boundary-degree coordinate is
+owned at a receiver exactly when one of its actual completion ports has a
+scheduled receiver-entry return satisfying the manuscript's ownership rule. -/
+def ownsBoundaryEntry (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex)
+    (boundary : object.Vertex) :
+    Prop :=
+  ownsDeclaredSupport object support threshold receiver load {boundary}
+
+/-- An actual owned receiver-entry return is never lost by the finite D1
+schedule. -/
+theorem ownsBoundaryEntry_of_return
+    {support : Finset object.Vertex} {threshold : Nat}
+    {receiver outside load : object.Vertex}
+    (boundary : object.Vertex)
+    (port : outside ∈ completionPorts object support receiver)
+    (return' : ReceiverEntryReturn object support receiver outside)
+    (owns : return'.OwnsBoundaryEntry (threshold := threshold) boundary load) :
+    ownsBoundaryEntry object support threshold receiver load boundary :=
+  ⟨outside, port, return', return'.mem_schedule, owns⟩
 
 /-- **`L_vis(w, ⃗e)`'s set.**  The routed loads of `w` for which some
 receiver-entry return through the port `⃗e = (w,h)` is visible.  The manuscript

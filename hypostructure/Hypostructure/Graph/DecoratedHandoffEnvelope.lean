@@ -1153,127 +1153,299 @@ theorem admissible_of_envelope {LengthOK : Nat → Prop}
       different => (envelope.fanSafe centre member first firstMember second
     secondMember different).1
 
-/-! ## `def:decorated-typeB-envelope-support` and the exact transfer
+/-! ## `def:decorated-typeB-envelope-support` and the exact transfer -/
 
-The grouped envelope support is read off the core--center incidence graph: its
-connected components partition both the cores and the handoff centers.  That
-partition is the whole content of `lem:decorated-envelope-no-double-count`, so
-it is what the structure below carries, and the displayed identity is the
-fiberwise sum it forces. -/
+/-- **`def:decorated-typeB-envelope-support`.**  A finite family of actual
+exit-`(7)` envelopes.  Its Type A cores are pairwise vertex-disjoint, every
+envelope is admissible, and every core has a handoff decoration.
 
-/-- **`def:decorated-typeB-envelope-support`.**  A family of pairwise disjoint
-Type A cores producing exit-`(7)` handoffs, the ambient handoff centers, and
-the assignment of each to its connected component of the core--center incidence
-graph. -/
-structure GroupedEnvelopes (Core Component : Type v) where
-  /-- `𝒴`, the family of Type A cores. -/
+No component assignment is stored here.  The core--centre incidence relation
+and its connected components are derived below from `Envelope.decorations`.
+Thus a caller cannot group unrelated cores or split two cores sharing a centre. -/
+structure GroupedEnvelopes (object : FiniteObject.{u}) (LengthOK : Nat → Prop)
+    (Uncompressible WindowFree : Finset object.Vertex → Prop)
+    (HighDegree : object.Vertex → Prop)
+    (Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop)
+    (Core : Type v) where
+  /-- `𝒴`, the finite family of Type A cores producing exit-`(7)` handoffs. -/
   cores : Finset Core
-  /-- The ambient high-degree handoff centers. -/
-  centres : Finset Component
-  /-- The incidence component a core belongs to. -/
-  coreComponent : Core → Component
-  /-- The incidence component a center belongs to. -/
-  centreComponent : Component → Component
-  /-- The components themselves. -/
-  components : Finset Component
-  /-- `def⁺(Y)`. -/
-  deficiency : Core → Nat
-  /-- `|V(Y)|`. -/
-  size : Core → Nat
-  /-- `ω(h) = d_G(h) − 3`. -/
-  token : Component → Nat
-  /-- Every core lies in a listed component. -/
-  coreComponent_mem : ∀ core ∈ cores, coreComponent core ∈ components
-  /-- and every center does. -/
-  centreComponent_mem : ∀ centre ∈ centres, centreComponent centre ∈ components
+  /-- The actual decorated envelope carried by a core. -/
+  envelope : Core → Envelope object LengthOK HighDegree Absorbing
+  /-- Every listed envelope is the admissible Type B handoff supplied by the
+  Type A exit. -/
+  admissible : ∀ core ∈ cores,
+    Admissible object LengthOK Uncompressible WindowFree (envelope core)
+  /-- Exit `(7)` supplies at least one high-degree decoration. -/
+  decorated : ∀ core ∈ cores, (envelope core).decorations.Nonempty
+  /-- The canonical Type A cores are pairwise vertex-disjoint. -/
+  pairwiseCoreDisjoint : ∀ ⦃left right : Core⦄,
+    left ∈ cores → right ∈ cores → left ≠ right →
+      Disjoint (envelope left).core (envelope right).core
 
 namespace GroupedEnvelopes
 
-variable {Core Component : Type v} [DecidableEq Component]
-variable (grouped : GroupedEnvelopes Core Component)
+variable {LengthOK : Nat → Prop}
+variable {Uncompressible WindowFree : Finset object.Vertex → Prop}
+variable {HighDegree : object.Vertex → Prop}
+variable {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
+variable {Core : Type v} [DecidableEq Core]
+variable (grouped : GroupedEnvelopes object LengthOK Uncompressible WindowFree
+  HighDegree Absorbing Core)
 
-/-- `𝒴_𝔆`, the cores of one incidence component. -/
-def componentCores (component : Component) : Finset Core :=
-  grouped.cores.filter fun core => grouped.coreComponent core = component
+/-- The centre type is the ambient vertex type, not a second carrier. -/
+abbrev Centre := object.Vertex
 
-/-- `H_𝔆`, the handoff centers of one incidence component. -/
-def componentCentres (component : Component) : Finset Component :=
-  grouped.centres.filter fun centre => grouped.centreComponent centre = component
+/-- All and only decorations appearing in the listed envelopes. -/
+noncomputable def centres : Finset object.Vertex := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact grouped.cores.biUnion fun core => (grouped.envelope core).decorations
 
-/-- `ω(𝔆) = Σ_{h ∈ H_𝔆} ω(h)`, the center-token sum of one component. -/
-def componentTokens (component : Component) : Nat :=
-  ∑ centre ∈ grouped.componentCentres component, grouped.token centre
+/-- The core--centre incidence relation, derived from the actual envelope. -/
+def Incident (core : Core) (centre : object.Vertex) : Prop :=
+  core ∈ grouped.cores ∧ centre ∈ (grouped.envelope core).decorations
 
-/-- **`No(𝔛*_𝔆)` at the discharge scale**, cleared of the division:
-`s·Σ_{Y ∈ 𝒴_𝔆} def⁺(Y) − s·ω(𝔆) − Σ_{Y ∈ 𝒴_𝔆} |V(Y)|`, as an integer. -/
-def componentCharge (dischargeScale : Nat) (component : Component) : Int :=
-  (dischargeScale : Int) *
-      (∑ core ∈ grouped.componentCores component, grouped.deficiency core : Nat) -
-    (dischargeScale : Int) * (grouped.componentTokens component : Nat) -
-      (∑ core ∈ grouped.componentCores component, grouped.size core : Nat)
+/-- The finite bipartite incidence graph of the envelope family. -/
+noncomputable def incidenceGraph : SimpleGraph (Core ⊕ object.Vertex) :=
+  SimpleGraph.fromRel fun left right =>
+    match left, right with
+    | .inl core, .inr centre => grouped.Incident core centre
+    | _, _ => False
 
-/-- **The Type A core deficiencies are counted exactly once.**  The components
-partition the cores, so the fiberwise sum is the whole sum. -/
+/-- The component type is the connected-component quotient of the actual
+incidence graph. -/
+abbrev Component := grouped.incidenceGraph.ConnectedComponent
+
+/-- The incidence component containing a core. -/
+noncomputable def coreComponent (core : Core) : grouped.Component :=
+  grouped.incidenceGraph.connectedComponentMk (.inl core)
+
+/-- The incidence component containing an ambient handoff centre. -/
+noncomputable def centreComponent (centre : object.Vertex) : grouped.Component :=
+  grouped.incidenceGraph.connectedComponentMk (.inr centre)
+
+/-- The components met by the declared finite core and centre families. -/
+noncomputable def components : Finset grouped.Component := by
+  classical
+  exact grouped.cores.image grouped.coreComponent ∪
+    grouped.centres.image grouped.centreComponent
+
+/-- `𝒴_𝔆`, the cores in one actual incidence component. -/
+noncomputable def componentCores (component : grouped.Component) : Finset Core := by
+  classical
+  exact grouped.cores.filter fun core => grouped.coreComponent core = component
+
+/-- `H_𝔆`, the ambient centres in one actual incidence component. -/
+noncomputable def componentCentres (component : grouped.Component) :
+    Finset object.Vertex := by
+  classical
+  exact grouped.centres.filter fun centre =>
+    grouped.centreComponent centre = component
+
+@[simp] theorem mem_centres_iff (centre : object.Vertex) :
+    centre ∈ grouped.centres ↔
+      ∃ core ∈ grouped.cores,
+        centre ∈ (grouped.envelope core).decorations := by
+  classical
+  simp [centres]
+
+@[simp] theorem mem_componentCores_iff (component : grouped.Component)
+    (core : Core) :
+    core ∈ grouped.componentCores component ↔
+      core ∈ grouped.cores ∧ grouped.coreComponent core = component := by
+  classical
+  simp [componentCores]
+
+@[simp] theorem mem_componentCentres_iff (component : grouped.Component)
+    (centre : object.Vertex) :
+    centre ∈ grouped.componentCentres component ↔
+      centre ∈ grouped.centres ∧ grouped.centreComponent centre = component := by
+  classical
+  simp [componentCentres]
+
+theorem coreComponent_mem_components {core : Core} (member : core ∈ grouped.cores) :
+    grouped.coreComponent core ∈ grouped.components := by
+  classical
+  exact Finset.mem_union_left _ (Finset.mem_image.2 ⟨core, member, rfl⟩)
+
+theorem centreComponent_mem_components {centre : object.Vertex}
+    (member : centre ∈ grouped.centres) :
+    grouped.centreComponent centre ∈ grouped.components := by
+  classical
+  exact Finset.mem_union_right _ (Finset.mem_image.2 ⟨centre, member, rfl⟩)
+
+/-- An envelope and one of its decorations lie in the same graph-derived
+incidence component. -/
+theorem coreComponent_eq_centreComponent {core : Core} {centre : object.Vertex}
+    (incident : grouped.Incident core centre) :
+    grouped.coreComponent core = grouped.centreComponent centre := by
+  apply SimpleGraph.ConnectedComponent.sound
+  refine ⟨SimpleGraph.Walk.cons ?_ SimpleGraph.Walk.nil⟩
+  simpa [incidenceGraph, Incident] using incident
+
+/-- Distinct incidence components contain disjoint core families. -/
+theorem disjoint_componentCores {left right : grouped.Component}
+    (different : left ≠ right) :
+    Disjoint (grouped.componentCores left) (grouped.componentCores right) := by
+  classical
+  rw [Finset.disjoint_left]
+  intro core leftMember rightMember
+  have leftEq := (grouped.mem_componentCores_iff left core).1 leftMember |>.2
+  have rightEq := (grouped.mem_componentCores_iff right core).1 rightMember |>.2
+  exact different (leftEq.symm.trans rightEq)
+
+/-- Distinct incidence components contain disjoint centre families.  This is
+the manuscript's at-most-once grouped-role property. -/
+theorem disjoint_componentCentres {left right : grouped.Component}
+    (different : left ≠ right) :
+    Disjoint (grouped.componentCentres left) (grouped.componentCentres right) := by
+  classical
+  rw [Finset.disjoint_left]
+  intro centre leftMember rightMember
+  have leftEq := (grouped.mem_componentCentres_iff left centre).1 leftMember |>.2
+  have rightEq := (grouped.mem_componentCentres_iff right centre).1 rightMember |>.2
+  exact different (leftEq.symm.trans rightEq)
+
+/-- Every listed core occurs in exactly one actual incidence component. -/
+theorem existsUnique_component_of_core {core : Core} (member : core ∈ grouped.cores) :
+    ∃! component : grouped.Component,
+      component ∈ grouped.components ∧ core ∈ grouped.componentCores component := by
+  refine ⟨grouped.coreComponent core,
+    ⟨grouped.coreComponent_mem_components member, ?_⟩, ?_⟩
+  · exact (grouped.mem_componentCores_iff _ _).2 ⟨member, rfl⟩
+  · intro component property
+    exact ((grouped.mem_componentCores_iff component core).1 property.2).2.symm
+
+/-- Every ambient handoff centre occurs in exactly one actual incidence
+component. -/
+theorem existsUnique_component_of_centre {centre : object.Vertex}
+    (member : centre ∈ grouped.centres) :
+    ∃! component : grouped.Component,
+      component ∈ grouped.components ∧
+        centre ∈ grouped.componentCentres component := by
+  refine ⟨grouped.centreComponent centre,
+    ⟨grouped.centreComponent_mem_components member, ?_⟩, ?_⟩
+  · exact (grouped.mem_componentCentres_iff _ _).2 ⟨member, rfl⟩
+  · intro component property
+    exact ((grouped.mem_componentCentres_iff component centre).1 property.2).2.symm
+
+/-- The union of the pairwise-disjoint counted Type A cores. -/
+noncomputable def coreSupport : Finset object.Vertex := by
+  classical
+  exact grouped.cores.biUnion fun core => (grouped.envelope core).core
+
+/-- Pairwise core coverage is exact: the cardinality of the grouped counted
+core is the sum of the cardinalities of its Type A cores. -/
+theorem card_coreSupport :
+    grouped.coreSupport.card =
+      ∑ core ∈ grouped.cores, (grouped.envelope core).core.card := by
+  classical
+  rw [coreSupport, Finset.card_biUnion]
+  exact fun left leftMember right rightMember different =>
+    grouped.pairwiseCoreDisjoint leftMember rightMember different
+
+/-- A vertex covered by the grouped counted core belongs to a unique Type A
+core of the family. -/
+theorem mem_coreSupport_existsUnique (vertex : object.Vertex) :
+    vertex ∈ grouped.coreSupport ↔
+      ∃! core : Core,
+        core ∈ grouped.cores ∧ vertex ∈ (grouped.envelope core).core := by
+  classical
+  constructor
+  · intro member
+    obtain ⟨core, coreMember, vertexMember⟩ :=
+      Finset.mem_biUnion.1 (show vertex ∈ grouped.cores.biUnion
+        (fun core => (grouped.envelope core).core) from member)
+    refine ⟨core, ⟨coreMember, vertexMember⟩, ?_⟩
+    intro other property
+    by_contra different
+    exact Finset.disjoint_left.1
+      (grouped.pairwiseCoreDisjoint property.1 coreMember different)
+      property.2 vertexMember
+  · rintro ⟨core, ⟨coreMember, vertexMember⟩, _⟩
+    exact Finset.mem_biUnion.2 ⟨core, coreMember, vertexMember⟩
+
+/-- Every listed core is counted exactly once across incidence components. -/
 theorem sum_componentCores (weight : Core → Nat) :
     ∑ component ∈ grouped.components,
         ∑ core ∈ grouped.componentCores component, weight core =
       ∑ core ∈ grouped.cores, weight core := by
   classical
-  exact Finset.sum_fiberwise_of_maps_to grouped.coreComponent_mem weight
+  exact Finset.sum_fiberwise_of_maps_to
+    (fun core member => grouped.coreComponent_mem_components member) weight
 
-/-- **Each ambient handoff-center token is counted exactly once.** -/
-theorem sum_componentTokens :
-    ∑ component ∈ grouped.components, grouped.componentTokens component =
-      ∑ centre ∈ grouped.centres, grouped.token centre := by
-  classical
-  exact Finset.sum_fiberwise_of_maps_to grouped.centreComponent_mem grouped.token
-
-/-- **`lem:decorated-envelope-no-double-count`.**
-
-  `Σ_𝔆 No(𝔛*_𝔆) = Σ_{Y ∈ 𝒴} (def⁺(Y) − ¼|V(Y)|) − Σ_𝔆 ω(𝔆)`.
-
-*"Consequently a negative Type A handoff contribution is not discarded when the
-branch leaves the Type A calculation; it is transferred to the grouped Type B
-envelope ledger."*  Both sides are at the discharge scale, so no rounding is
-introduced, and the identity is exactly the two partition statements above. -/
-theorem sum_componentCharge (dischargeScale : Nat) :
+/-- Every ambient handoff centre is counted exactly once across incidence
+components. -/
+theorem sum_componentCentres (weight : object.Vertex → Nat) :
     ∑ component ∈ grouped.components,
-        grouped.componentCharge dischargeScale component =
+        ∑ centre ∈ grouped.componentCentres component, weight centre =
+      ∑ centre ∈ grouped.centres, weight centre := by
+  classical
+  exact Finset.sum_fiberwise_of_maps_to
+    (fun centre member => grouped.centreComponent_mem_components member) weight
+
+/-- `ω(𝔆) = Σ_{h ∈ H_𝔆}(d_G(h)-δ)`, using the ambient centre itself. -/
+noncomputable def componentTokens (threshold : Nat)
+    (component : grouped.Component) : Nat :=
+  ∑ centre ∈ grouped.componentCentres component,
+    (object.degree centre - threshold)
+
+/-- Each ambient handoff-centre token is counted exactly once in the grouped
+role. -/
+theorem sum_componentTokens (threshold : Nat) :
+    ∑ component ∈ grouped.components,
+        grouped.componentTokens threshold component =
+      ∑ centre ∈ grouped.centres, (object.degree centre - threshold) := by
+  simpa [componentTokens] using
+    grouped.sum_componentCentres fun centre => object.degree centre - threshold
+
+/-- `No(𝔛*_𝔆)` at the discharge scale, computed from the actual cores and
+ambient centres in the incidence component. -/
+noncomputable def componentCharge (threshold dischargeScale : Nat)
+    (component : grouped.Component) : Int :=
+  (dischargeScale : Int) *
+      (∑ core ∈ grouped.componentCores component,
+        object.positiveDeficiency (grouped.envelope core).core threshold : Nat) -
+    (dischargeScale : Int) * (grouped.componentTokens threshold component : Nat) -
+      (∑ core ∈ grouped.componentCores component,
+        (grouped.envelope core).core.card : Nat)
+
+/-- **`lem:decorated-envelope-no-double-count`.**  The graph-derived incidence
+components partition both the pairwise-disjoint Type A cores and the ambient
+handoff centres.  Hence neither a core deficiency nor a grouped-role centre
+token is counted twice. -/
+theorem sum_componentCharge (threshold dischargeScale : Nat) :
+    ∑ component ∈ grouped.components,
+        grouped.componentCharge threshold dischargeScale component =
       ((dischargeScale : Int) *
-            (∑ core ∈ grouped.cores, grouped.deficiency core : Nat) -
-          (∑ core ∈ grouped.cores, grouped.size core : Nat)) -
+            (∑ core ∈ grouped.cores,
+              object.positiveDeficiency (grouped.envelope core).core threshold : Nat) -
+          (∑ core ∈ grouped.cores, (grouped.envelope core).core.card : Nat)) -
         (dischargeScale : Int) *
-          (∑ component ∈ grouped.components,
-            grouped.componentTokens component : Nat) := by
+          (∑ centre ∈ grouped.centres,
+            (object.degree centre - threshold) : Nat) := by
   classical
   simp only [componentCharge, Finset.sum_sub_distrib, ← Finset.mul_sum,
     ← Nat.cast_sum]
-  rw [grouped.sum_componentCores grouped.deficiency,
-    grouped.sum_componentCores grouped.size]
+  rw [grouped.sum_componentCores (fun core =>
+      object.positiveDeficiency (grouped.envelope core).core threshold),
+    grouped.sum_componentCores (fun core => (grouped.envelope core).core.card),
+    grouped.sum_componentTokens threshold]
   push_cast
   ring
 
-/-- **`lem:window-handoff-center-accounting`.**
-
-*"Let `h` be an exit-(7) handoff center lying in a packed `P₁₃`-window.  Then
-either exit (3) occurs at the saturated receiver that produced the handoff, or
-the grouped envelope containing `h` is charged to the surplus token `d_G(h) − 3`
-of the window vertex `h`."*
-
-The disjunction is the branch's, and the second alternative is proved outright:
-`h`'s token is one of the center tokens of its own incidence component, which is
-exactly what "the grouped envelope containing `h` is charged to `ω(h)`" says.
-The first alternative is therefore never needed to discharge the lemma, which is
-the strongest form of the manuscript's statement. -/
-theorem token_le_componentTokens (Collision : Prop) {centre : Component}
+/-- A handoff centre's surplus token belongs to the token sum of its unique
+incidence component. -/
+theorem token_le_componentTokens (threshold : Nat) {centre : object.Vertex}
     (member : centre ∈ grouped.centres) :
-    Collision ∨
-      grouped.token centre ≤
-        grouped.componentTokens (grouped.centreComponent centre) := by
+    object.degree centre - threshold ≤
+      grouped.componentTokens threshold (grouped.centreComponent centre) := by
   classical
-  refine Or.inr (Finset.single_le_sum (f := grouped.token)
-    (fun _ _ => Nat.zero_le _) ?_)
-  exact Finset.mem_filter.mpr ⟨member, rfl⟩
+  simpa [componentTokens] using
+    (Finset.single_le_sum (s := grouped.componentCentres
+        (grouped.centreComponent centre))
+      (f := fun h => object.degree h - threshold)
+      (fun _ _ => Nat.zero_le _)
+      ((grouped.mem_componentCentres_iff _ _).2 ⟨member, rfl⟩))
 
 end GroupedEnvelopes
 

@@ -1,6 +1,5 @@
-import Hypostructure.Graph.Strategy.NormalizationRank
+import Hypostructure.Graph.BoundaryDemand
 import Hypostructure.Graph.MinimumDegreeCycleTarget
-import Hypostructure.Core.Strategy.LocalSupplyLowerBoundSemantics
 
 /-!
 # The global Type-A / Type-B alternative on the ledger's own carriers
@@ -76,9 +75,7 @@ Nothing is recomputed: this is the same per-vertex number the local-supply
 Strategy aggregates into `Summary.requiredMass`. -/
 noncomputable def positiveDeficiency
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Nat :=
-  support.sum fun vertex =>
-    presentation.baselineDegree -
-      Graph.Strategy.NormalizationRank.supportIncidence object support vertex
+  object.positiveDeficiency support presentation.baselineDegree
 
 /-- `def:canonical-decomp`'s assigned surplus `σ(X)`, written with the
 *registered* CT14 surplus observation
@@ -87,7 +84,7 @@ over the support itself, exactly as the ledger aggregates it: members at or
 below the baseline contribute zero, so no separate centre family is carried. -/
 noncomputable def assignedSurplus
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Nat :=
-  support.sum fun vertex => object.degree vertex - presentation.baselineDegree
+  object.ambientSurplus support presentation.baselineDegree
 
 /-- The members of the support that actually carry assigned surplus: the
 manuscript's high-degree fan centres.  This is a *derived* subset of the
@@ -130,8 +127,9 @@ arbitrary sub-support of CT9's complement it is
 `NormalizationRank.exactInducedPathSubset_minDegree_lt`. -/
 def EmptyInternalThreeCore
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
-  ¬ Graph.Strategy.NormalizationRank.HasInternalCore object
-      presentation.baselineDegree support
+  ¬ ∃ smaller : Finset object.Vertex,
+      smaller ⊆ support ∧ smaller.Nonempty ∧
+        Baseline presentation (object.induce smaller)
 
 /-- `lem:stub-positive`'s pointwise half in the registered CT14 observations:
 every baseline deficiency inside the support is paid by a literal incidence
@@ -140,9 +138,8 @@ def BoundarySupplied
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
   ∀ vertex ∈ support,
     presentation.baselineDegree -
-        Graph.Strategy.NormalizationRank.supportIncidence object support
-          vertex ≤
-      Graph.Strategy.NormalizationRank.boundaryIncidence object support vertex
+        object.internalDegree support vertex ≤
+      object.degree vertex - object.internalDegree support vertex
 
 /-- `cor:uncompressible` at the A/B checkpoint: every proper baseline-preserving
 induced sub-support already realizes the registered target. -/
@@ -219,21 +216,12 @@ The multiplier below is `presentation.dischargeScale`, the registered
 `def:net-charge`'s `α = 1/loadMultiplier` is what turns `def⁺(R) - σ_R < α|R|`
 into the integer comparison stated here.  At the registered profile
 `loadMultiplier = 4` this is the manuscript's quarter bound verbatim. -/
-def NegativeNetCharge
-    (summary : Core.Strategy.LocalSupplyLowerBound.Summary) : Prop :=
+def NegativeNetCharge (object : FiniteObject.{u})
+    (support : Finset object.Vertex) : Prop :=
   (presentation.dischargeScale : Int) *
-      ((summary.requiredMass : Int) - (summary.assignedSurplus : Int)) <
-    (summary.netDeficiency.remainder : Int)
-
-/-- What the ledger *does* publish in the same coordinates: the net deficiency
-is bounded by the observed supply.  Recorded here so the distance between the
-published cap and `NegativeNetCharge` is visible in the source. -/
-theorem netDeficiency_le_publishedCap
-    (summary : Core.Strategy.LocalSupplyLowerBound.Summary) :
-    (summary.requiredMass : Int) - (summary.assignedSurplus : Int) ≤
-      (summary.observedSupply : Int) := by
-  have cap := summary.netDeficiencyCap
-  omega
+      ((positiveDeficiency presentation object support : Int) -
+        (assignedSurplus presentation object support : Int)) <
+    (support.card : Int)
 
 /-- **The common global certificate assembled before the A/B split, on the
 ledger's own carriers.**
@@ -252,18 +240,6 @@ can carry is `R`. -/
 structure AdmissibleNegativeSupport (object : FiniteObject.{u}) where
   /-- CT9's normalized support, supplied by the residual. -/
   support : Finset object.Vertex
-  /-- The local-supply ledger entry published for that support. -/
-  summary : Core.Strategy.LocalSupplyLowerBound.Summary
-  /-- `netDeficiency.remainder` is `|R|`. -/
-  remainder_eq : summary.netDeficiency.remainder = support.card
-  /-- `requiredMass` is `def⁺(R)`, aggregated from the registered CT14
-  required-mass observation over the same members. -/
-  requiredMass_eq : summary.requiredMass =
-    positiveDeficiency presentation object support
-  /-- `assignedSurplus` is `σ_R`, aggregated from the registered CT14 surplus
-  observation over the same members. -/
-  assignedSurplus_eq : summary.assignedSurplus =
-    assignedSurplus presentation object support
   /-- `NormalizationRank.exactInducedPathSubset_free`. -/
   p13Free : InducedPathFree (object.induce support)
     presentation.inducedPathOrder
@@ -278,7 +254,7 @@ structure AdmissibleNegativeSupport (object : FiniteObject.{u}) where
   /-- The target-avoiding arm's own datum. -/
   dyadicSafe : ContextuallyDyadicSafe presentation object
   /-- `def:net-charge` at the registered `α`; see `NegativeNetCharge`. -/
-  negative : NegativeNetCharge presentation summary
+  negative : NegativeNetCharge presentation object support
 
 /-- A simple return avoiding the center would close with two fan edges. -/
 def FanReturnSafe (object : FiniteObject.{u})
@@ -347,7 +323,7 @@ together with the residual's `Baseline`, i.e.
 `NegativeSupport.Support.ambientDegree_eq_of_noHigh`). -/
 structure TypeACertificate (object : FiniteObject.{u}) where
   common : AdmissibleNegativeSupport presentation object
-  noSurplus : common.summary.assignedSurplus = 0
+  noSurplus : assignedSurplus presentation object common.support = 0
   ambientCubic :
     ∀ vertex ∈ common.support,
       object.degree vertex = presentation.baselineDegree
@@ -360,13 +336,16 @@ registered `dischargeScale = 4` this is the manuscript's `def⁺(X) < |X|/4`. -/
 theorem TypeACertificate.strictQuarter
     {presentation : Presentation.{u}} {object : FiniteObject.{u}}
     (certificate : TypeACertificate presentation object) :
-    presentation.dischargeScale * certificate.common.summary.requiredMass <
-      certificate.common.summary.netDeficiency.remainder := by
+    presentation.dischargeScale *
+        positiveDeficiency presentation object certificate.common.support <
+      certificate.common.support.card := by
   have negative :
       (presentation.dischargeScale : Int) *
-          ((certificate.common.summary.requiredMass : Int) -
-            (certificate.common.summary.assignedSurplus : Int)) <
-        (certificate.common.summary.netDeficiency.remainder : Int) :=
+          ((positiveDeficiency presentation object
+              certificate.common.support : Int) -
+            (assignedSurplus presentation object
+              certificate.common.support : Int)) <
+        (certificate.common.support.card : Int) :=
     certificate.common.negative
   rw [certificate.noSurplus] at negative
   simp only [Nat.cast_zero, sub_zero] at negative
@@ -378,7 +357,8 @@ high-degree fan certificate or decorated handoff.  The centre family is
 here. -/
 structure TypeBCertificate (object : FiniteObject.{u}) where
   common : AdmissibleNegativeSupport presentation object
-  positiveSurplus : 0 < common.summary.assignedSurplus
+  positiveSurplus :
+    0 < assignedSurplus presentation object common.support
   decoration :
     TypeBDecoration presentation object common.support
       (assignedCenters presentation object common.support)
@@ -391,17 +371,15 @@ theorem TypeBCertificate.centers_nonempty
     (assignedCenters presentation object
       certificate.common.support).Nonempty := by
   refine assignedCenters_nonempty_of_assignedSurplus_pos ?_
-  have identity := certificate.common.assignedSurplus_eq
-  have positive := certificate.positiveSurplus
-  omega
+  exact certificate.positiveSurplus
 
 /-- The two alternatives are disjoint on the one ledger entry the execution
 selects: the split node reads exactly this published aggregate. -/
 theorem selectedSupport_typeA_typeB_disjoint
     {presentation : Presentation.{u}} (object : FiniteObject.{u})
     (common : AdmissibleNegativeSupport presentation object) :
-    ¬ (common.summary.assignedSurplus = 0 ∧
-        0 < common.summary.assignedSurplus) := by
+    ¬ (assignedSurplus presentation object common.support = 0 ∧
+        0 < assignedSurplus presentation object common.support) := by
   omega
 
 /-- A finite graph carried as a literal subgraph of an ambient graph.  The

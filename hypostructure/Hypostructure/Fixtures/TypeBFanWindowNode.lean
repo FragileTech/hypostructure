@@ -50,6 +50,7 @@ noncomputable def directCycle
       selected typeBCertificateMarkedKeys) :
     Decision (K .typeBDirectCycle) (K .typeBDirectCycleFree) history :=
   directCycleDichotomy history (K .typeBDirectCycle) (K .typeBDirectCycleFree)
+    (K .typeBHighSurplus) (fun fact => fact.down)
     (fun present => ⟨present⟩) (fun free => ⟨free⟩) (by simp) (by simp)
 
 /-- **The closing arm closes.**  `closeIncompatible` consumes the selection's
@@ -70,10 +71,47 @@ noncomputable def b2Assignment
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected typeBDirectCycleFreeKeys) :
-    Decision (K .typeBDisjointAssignment) (K .typeBOverlapObstruction) history :=
-  b2AssignmentDichotomy history (K .typeBDisjointAssignment)
-    (K .typeBOverlapObstruction) (fun assignment => ⟨assignment⟩)
+    Decision (K .typeBB2Choice) (K .typeBOverlapObstruction) history :=
+  b2AssignmentDichotomy history (K .typeBB2Choice)
+    (K .typeBOverlapObstruction) (K .typeBDirectCycleFree)
+    (fun fact => fact.down) (fun assignment => ⟨assignment⟩)
     (fun obstruction => ⟨obstruction⟩) (by simp) (by simp)
+
+/-! ## Immediate B2(a)--(c) success handoff -/
+
+/-- The B2-success arm commits one exact disjoint ledger and all of its
+post-ledger component hygiene in one fact-only step. -/
+noncomputable def disjointLedgerHandoff
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBB2ChoiceKeys) :
+    ExactLedger (Input BranchState Presentation presentation data) selected
+      (K .typeBDisjointLedger :: typeBB2ChoiceKeys) :=
+  (typeBDisjointLedgerRow (K .typeBB2Choice) (K .selection)
+    (K .remainderNormalized) (K .typeBDisjointLedger) (by simp)
+    (fun fact => fact.down) (fun fact => fact.down.1)
+    (fun fact => fact.down) (fun handoff => ⟨handoff⟩)).run history (by simp)
+
+/-- The same executor runs after node `[81]`'s B2-success cursor. -/
+noncomputable def degreeFourDisjointLedgerHandoff
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourB2ChoiceKeys) :
+    ExactLedger (Input BranchState Presentation presentation data) selected
+      (K .typeBDisjointLedger :: degreeFourB2ChoiceKeys) :=
+  (typeBDisjointLedgerRow (K .typeBB2Choice) (K .selection)
+    (K .remainderNormalized) (K .typeBDisjointLedger) (by simp)
+    (fun fact => fact.down) (fun fact => fact.down.1)
+    (fun fact => fact.down) (fun handoff => ⟨handoff⟩)).run history (by simp)
+
+theorem disjointLedgerHandoff_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (K .typeBDisjointLedger :: typeBB2ChoiceKeys)) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
 
 /-! ## What the three exits carry
 
@@ -89,10 +127,10 @@ theorem directCycleClosed_audit_accounts_for_every_fact
         (fun record => record.produced) :=
   ExactLedger.audit_complete history
 
-theorem disjointAssignment_audit_accounts_for_every_fact
+theorem b2Choice_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBDisjointAssignmentKeys) :
+      selected typeBB2ChoiceKeys) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=
@@ -116,10 +154,10 @@ theorem directCycleClosed_audit_facts_unique
     (ExactLedger.audit history).facts.Nodup :=
   ExactLedger.audit_facts_unique history
 
-theorem disjointAssignment_audit_facts_unique
+theorem b2Choice_audit_facts_unique
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBDisjointAssignmentKeys) :
+      selected typeBB2ChoiceKeys) :
     (ExactLedger.audit history).facts.Nodup :=
   ExactLedger.audit_facts_unique history
 
@@ -137,13 +175,13 @@ bridge-reduction row the obstruction. -/
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .typeBOverlapObstruction) ∉
-      typeBDisjointAssignmentKeys (BranchState := BranchState)
+      typeBB2ChoiceKeys (BranchState := BranchState)
         (presentation := presentation) (data := data) := by
   simp
 
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
-        .typeBDisjointAssignment) ∉
+        .typeBB2Choice) ∉
       typeBOverlapObstructionKeys (BranchState := BranchState)
         (presentation := presentation) (data := data) := by
   simp
@@ -182,6 +220,7 @@ noncomputable def degreeFourDirectCycle
       selected degreeFourMarkedKeys) :
     Decision (K .typeBDirectCycle) (K .typeBDirectCycleFree) history :=
   directCycleDichotomy history (K .typeBDirectCycle) (K .typeBDirectCycleFree)
+    (K .typeBHighSurplus) (fun fact => fact.down)
     (fun present => ⟨present⟩) (fun free => ⟨free⟩) (by simp) (by simp)
 
 /-- **The B2 question at `[81]`**: the row of `[72]`'s second half, on the
@@ -190,9 +229,10 @@ noncomputable def degreeFourB2
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected degreeFourDirectCycleFreeKeys) :
-    Decision (K .typeBDisjointAssignment) (K .typeBOverlapObstruction) history :=
-  b2AssignmentDichotomy history (K .typeBDisjointAssignment)
-    (K .typeBOverlapObstruction) (fun assignment => ⟨assignment⟩)
+    Decision (K .typeBB2Choice) (K .typeBOverlapObstruction) history :=
+  b2AssignmentDichotomy history (K .typeBB2Choice)
+    (K .typeBOverlapObstruction) (K .typeBDirectCycleFree)
+    (fun fact => fact.down) (fun assignment => ⟨assignment⟩)
     (fun obstruction => ⟨obstruction⟩) (by simp) (by simp)
 
 /-- **The two positions are disjoint branches.**  Node `[81]`'s indices carry
@@ -202,14 +242,14 @@ the rows are the same values. -/
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .typeBHeavyCentre) ∉
-      degreeFourDisjointAssignmentKeys (BranchState := BranchState)
+      degreeFourB2ChoiceKeys (BranchState := BranchState)
         (presentation := presentation) (data := data) := by
   simp
 
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
         .typeBDegreeFourCentres) ∉
-      typeBDisjointAssignmentKeys (BranchState := BranchState)
+      typeBB2ChoiceKeys (BranchState := BranchState)
         (presentation := presentation) (data := data) := by
   simp
 

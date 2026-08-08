@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.TypeADischarge
 
 /-!
 # The minimum-degree cycle spine: entry rows
@@ -1830,6 +1831,143 @@ noncomputable def entropyCapDichotomy
     activeFresh largeFresh
 
 
+/-! ## Node `[60]`: enter the asymptotic order regime
+
+The manuscript uses the net-charge cap only "for all sufficiently large
+`n`".  This is the exhaustive pointwise routing of that regime; the canonical
+asymptotic endpoint eliminates the complementary arm, and the selected arm is
+then an ordinary fact in the exact ledger. -/
+noncomputable def netChargeOrderDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (netChargeLarge netChargeSmall :
+      FactKey (Input BranchState Presentation presentation data))
+    (encodeLarge :
+      Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
+          data.dischargeScale data.windowOrder data.windowRate
+          data.spineScale current.object.vertexCount →
+        netChargeLarge.At current)
+    (encodeSmall :
+      ¬ Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
+          data.dischargeScale data.windowOrder data.windowRate
+          data.spineScale current.object.vertexCount →
+        netChargeSmall.At current)
+    (largeFresh : netChargeLarge ∉ known)
+    (smallFresh : netChargeSmall ∉ known) :
+    Decision netChargeLarge netChargeSmall previous := by
+  classical
+  exact Decision.run previous netChargeLarge netChargeSmall
+    `Hypostructure.Graph.Strategy.Spine.netChargeOrderDichotomy
+    (if large : Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
+        data.dischargeScale data.windowOrder data.windowRate
+        data.spineScale current.object.vertexCount then
+      .inl (encodeLarge large)
+    else
+      .inr (encodeSmall large))
+    largeFresh smallFresh
+
+/-! ## Node `[60]`: the asymptotic net-charge cap
+
+`prop:negative-net-charge` is an eventual statement.  The density cap, the
+surplus-aware stub supply, and the paper's sufficiently-large comparison imply
+that every canonical maximum-packing remainder has negative net charge.  This
+row appends exactly that conclusion; it introduces no retained reserve. -/
+@[reducible] noncomputable def netChargeCapRow
+    (densityCap stubSupply netChargeLarge netChargeCap :
+      FactKey (Input BranchState Presentation presentation data))
+    (requiredUnique : [densityCap, stubSupply, netChargeLarge].Nodup)
+    (densityOf : (input : Input BranchState Presentation presentation data) →
+      densityCap.At input →
+      2 * (data.windowRate * data.separatedScaleCount input.object.vertexCount *
+        input.object.windowPackingNumber data.windowOrder) ≤
+        (Graph.dyadicScaleCount input.object + 1) *
+          (data.threshold * input.object.vertexCount +
+            data.surplusThreshold input.object.vertexCount))
+    (stubOf : (input : Input BranchState Presentation presentation data) →
+      stubSupply.At input →
+      ∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        input.object.positiveDeficiency
+              (input.object.remainderSupport packing) data.threshold +
+            2 * (data.windowOrder - 1) * packing.card ≤
+          data.threshold * (data.windowOrder * packing.card) +
+            data.surplusThreshold input.object.vertexCount)
+    (largeOf : (input : Input BranchState Presentation presentation data) →
+      netChargeLarge.At input →
+      Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
+        data.dischargeScale data.windowOrder data.windowRate data.spineScale
+        input.object.vertexCount)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        packing.card = input.object.windowPackingNumber data.windowOrder →
+          input.object.NegativeNetCharge
+            (input.object.remainderSupport packing) data.threshold
+            data.dischargeScale) →
+      netChargeCap.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.netChargeCap
+    { Requires := [densityCap, stubSupply, netChargeLarge]
+      Produces := [netChargeCap]
+      requiresUnique := requiredUnique
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := netChargeCap)
+        (encode inputs.current (by
+          intro packing valid cardinality
+          have density := densityOf inputs.current (inputs.get densityCap)
+          have density' :
+              2 * (data.windowRate * Nat.log2 inputs.current.object.vertexCount *
+                packing.card) ≤
+              (Nat.log2 inputs.current.object.vertexCount + 1) *
+                (data.threshold * inputs.current.object.vertexCount +
+                  data.spineScale * Core.ceilSqrt inputs.current.object.vertexCount) := by
+            rw [data.separatedScaleCount_eq_log2, Graph.dyadicScaleCount,
+              ← cardinality] at density
+            simpa [Data.surplusThreshold] using density
+          have supply := stubOf inputs.current (inputs.get stubSupply) packing valid
+          have supply' :
+              inputs.current.object.positiveDeficiency
+                    (inputs.current.object.remainderSupport packing) data.threshold +
+                  2 * (data.windowOrder - 1) * packing.card ≤
+                data.threshold * (data.windowOrder * packing.card) +
+                  data.spineScale * Core.ceilSqrt inputs.current.object.vertexCount := by
+            simpa [Data.surplusThreshold] using supply
+          have cardinality' :
+              data.windowOrder * packing.card +
+                  (inputs.current.object.remainderSupport packing).card =
+                inputs.current.object.vertexCount := by
+            simpa [Nat.add_comm] using
+              inputs.current.object.remainderSupport_card_add_eq valid
+          have thresholdPos : 0 < data.threshold :=
+            lt_of_lt_of_le (by omega) data.three_le_threshold
+          have debitLe :
+              2 * (data.windowOrder - 1) ≤ data.threshold * data.windowOrder := by
+            calc
+              2 * (data.windowOrder - 1) ≤ 2 * data.windowOrder := by omega
+              _ ≤ data.threshold * data.windowOrder :=
+                Nat.mul_le_mul_right data.windowOrder
+                  (le_trans (by omega) data.three_le_threshold)
+          have strictCap :=
+            Graph.FiniteObject.strictCap_of_densityCap_of_sufficientlyLarge
+              data.threshold data.dischargeScale data.windowOrder data.windowRate
+              data.spineScale inputs.current.object.vertexCount packing.card
+              (inputs.current.object.remainderSupport packing).card
+              data.windowOrder_pos thresholdPos debitLe data.netCapRateSlack
+              (largeOf inputs.current (inputs.get netChargeLarge)) density'
+              cardinality'
+          exact Graph.FiniteObject.negativeNetCharge_of_stubSupply_of_strictCap
+            inputs.current.object (inputs.current.object.remainderSupport packing)
+            data.threshold data.dischargeScale
+            (2 * (data.windowOrder - 1) * packing.card)
+            (data.threshold * (data.windowOrder * packing.card) +
+              data.spineScale * Core.ceilSqrt inputs.current.object.vertexCount)
+            supply' strictCap))
+        .nil)
+
 /-! ## Nodes `[57]`--`[58]`: net charge and its localization
 
 `def:net-charge` measures an admissible support by
@@ -1855,11 +1993,12 @@ prerequisite. -/
         input.object.NegativeNetCharge
             (input.object.remainderSupport packing) data.threshold
             data.dischargeScale →
-          ∃ piece : Finset input.object.Vertex,
-            piece ⊆ input.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
-              input.object.NegativeNetCharge piece data.threshold
-                data.dischargeScale) →
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            input.object.NegativeNetCharge
+              (input.object.pieceSupport
+                (input.object.remainderSupport packing) component)
+              data.threshold data.dischargeScale) →
       netChargeLocalization.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.netChargeLocalization
@@ -1871,17 +2010,19 @@ prerequisite. -/
     (fun inputs =>
       .cons (key := netChargeLocalization)
         (encode inputs.current fun packing _valid negative =>
-          inputs.current.object.exists_connected_negativeNetCharge
+          inputs.current.object.exists_canonicalPiece_negativeNetCharge
             (inputs.current.object.remainderSupport packing) data.threshold
             data.dischargeScale negative)
         .nil)
 
 /-! ## Node `[59]`: the net-charge sign test
 
-`N₀(R) ≥ 0?`  The yes arm is the manuscript's node `[60]`, the net-cap
-contradiction; the no arm is node `[61]`, where a connected negative support is
-selected.  Both sides are the two halves of one excluded middle on the exact
-integer comparison `def:net-charge` reduces to, so they are exhaustive. -/
+`N₀(R) ≥ 0?`  The yes arm is the manuscript's node `[60]`; the no arm is
+node `[61]`, where a connected negative support is selected.  Both sides are
+the two halves of one excluded middle on the exact integer comparison
+`def:net-charge` reduces to, so they are exhaustive.  The decision itself does
+not close `[60]`: that terminal additionally needs the strict net-cap estimate
+used by `prop:negative-net-charge`. -/
 noncomputable def netChargeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -1945,7 +2086,9 @@ eliminating the packing with `|R| + order·p = n` leaves
 
 which at the manuscript's registered values is `σ_W − σ_R ≥ (n − 73p₁₃)/4`.
 `rem:window-join-pressure-meaning` reads it back: avoiding a negative support
-requires a linear excess of window surplus over remainder surplus. -/
+requires a linear excess of window surplus over remainder surplus.  This row
+proves that exact corollary only; it does not manufacture the asymptotic
+quarter-cap needed to turn the corollary into the diagram's terminal. -/
 @[reducible] noncomputable def windowJoinPressureRow
     (netChargeNonNegative boundaryDemand windowJoinPressure :
       FactKey (Input BranchState Presentation presentation data))
@@ -2028,16 +2171,11 @@ requires a linear excess of window surplus over remainder surplus. -/
 
 /-! ## Node `[61]`: the selected connected negative support
 
-`prop:negative-net-charge`.  The negative arm of node `[59]` and the
-localization of node `[58]` compose to a connected admissible support of
-negative net charge.
-
-The support itself is data and cannot travel: what the ledger records is its
-existence, together with the two clauses of `def:admissible` the decomposition
-supplies -- that it is a connected piece of the remainder, and that its charge
-is negative.  Every other clause of `def:admissible` is inherited from the
-remainder by node `[27]`, which holds at every subregion, so none has to be
-carried here. -/
+`prop:negative-net-charge`.  The negative arm of node `[59]` already contains
+the canonical maximal packing and its negative remainder.  Node `[57]`--`[58]`
+localizes that charge through the canonical component decomposition.  This row
+reads exactly those two facts and appends only the selected connected negative
+piece and its containment in the same remainder. -/
 @[reducible] noncomputable def negativeSupportRow
     (netChargeNegative netChargeLocalization negativeSupport :
       FactKey (Input BranchState Presentation presentation data))
@@ -2059,22 +2197,24 @@ carried here. -/
         input.object.NegativeNetCharge
             (input.object.remainderSupport packing) data.threshold
             data.dischargeScale →
-          ∃ piece : Finset input.object.Vertex,
-            piece ⊆ input.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
-              input.object.NegativeNetCharge piece data.threshold
-                data.dischargeScale)
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            input.object.NegativeNetCharge
+              (input.object.pieceSupport
+                (input.object.remainderSupport packing) component)
+              data.threshold data.dischargeScale)
     (encode : (input : Input BranchState Presentation presentation data) →
       (∃ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset input.object.Vertex,
             input.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset input.object.Vertex,
-            piece ⊆ input.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
-              input.object.NegativeNetCharge piece data.threshold
-                data.dischargeScale) →
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            input.object.NegativeNetCharge
+              (input.object.pieceSupport
+                (input.object.remainderSupport packing) component)
+              data.threshold data.dischargeScale) →
       negativeSupport.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.negativeSupport
@@ -2088,10 +2228,10 @@ carried here. -/
         (encode inputs.current (by
           obtain ⟨packing, valid, maximal, negative⟩ :=
             negativeOf inputs.current (inputs.get netChargeNegative)
-          obtain ⟨piece, inside, connected, charge⟩ :=
-            localizeOf inputs.current (inputs.get netChargeLocalization) packing
-              valid negative
-          exact ⟨packing, valid, maximal, piece, inside, connected, charge⟩))
+          obtain ⟨component, present, charge⟩ :=
+            localizeOf inputs.current (inputs.get netChargeLocalization)
+              packing valid negative
+          exact ⟨packing, valid, maximal, component, present, charge⟩))
         .nil)
 
 /-! ## Node `[62]`: the Type A / Type B split
@@ -2120,12 +2260,12 @@ noncomputable def typeSplitDichotomy
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
-                data.dischargeScale)
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            current.object.NegativeNetCharge
+              (current.object.pieceSupport
+                (current.object.remainderSupport packing) component)
+              data.threshold data.dischargeScale)
     (encodeTypeA :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
@@ -2143,11 +2283,14 @@ noncomputable def typeSplitDichotomy
     (encodeTypeB :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               0 < current.object.ambientSurplus piece data.threshold) →
       typeBHighSurplus.At current)
@@ -2158,6 +2301,7 @@ noncomputable def typeSplitDichotomy
     `Hypostructure.Graph.Strategy.Spine.typeSplitDichotomy
     (by
       classical
+      apply Classical.choice
       -- The decision is taken on a `Prop`, so no witness is extracted to build
       -- the branch: the arm not taken supplies the other arm's clause.
       by_cases typeA :
@@ -2173,11 +2317,23 @@ noncomputable def typeSplitDichotomy
                   current.object.NegativeNetCharge piece data.threshold
                     data.dischargeScale ∧
                   current.object.ambientSurplus piece data.threshold = 0
-      · exact .inl (encodeTypeA typeA)
-      · refine .inr (encodeTypeB ?_)
-        obtain ⟨packing, valid, maximal, piece, inside, connected, charge⟩ :=
+      · exact ⟨.inl (encodeTypeA typeA)⟩
+      ·
+        obtain ⟨packing, valid, maximal, component, present, charge⟩ :=
           supportOf (ExactLedger.get previous negativeSupport)
-        refine ⟨packing, valid, piece, inside, connected, charge, ?_⟩
+        let piece := current.object.pieceSupport
+          (current.object.remainderSupport packing) component
+        have inside : piece ⊆ current.object.remainderSupport packing :=
+          current.object.pieceSupport_subset
+            (current.object.remainderSupport packing) component
+        have connected :
+            Graph.SupportComponents.Connected.ConnectedOn current.object piece :=
+          Graph.SupportComponents.Connected.connectedOn_of_mem_order
+            current.object (current.object.remainderSupport packing)
+            ((current.object.mem_canonicalPieces
+              (current.object.remainderSupport packing)).mp present)
+        refine ⟨.inr (encodeTypeB
+          ⟨packing, valid, maximal, component, present, charge, ?_⟩)⟩
         rcases Nat.eq_zero_or_pos
             (current.object.ambientSurplus piece data.threshold) with
           zero | positive
@@ -2269,11 +2425,14 @@ noncomputable def heavyCentreDichotomy
     (supportOf : typeBHighSurplus.At current →
       ∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               0 < current.object.ambientSurplus piece data.threshold)
     (encodeHeavy :
@@ -2772,14 +2931,33 @@ noncomputable def directCycleDichotomy
         current known)
     (typeBDirectCycle typeBDirectCycleFree :
       FactKey (Input BranchState Presentation presentation data))
+    (typeBHighSurplus : FactKey
+      (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeBHighSurplus known]
+    (supportOf : typeBHighSurplus.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold)
     (encodeConfiguration :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               0 < current.object.ambientSurplus piece data.threshold ∧
               ∃ centre ∈ piece,
@@ -2788,18 +2966,22 @@ noncomputable def directCycleDichotomy
                     data.windowOrder data.LengthOK packing centre) →
       typeBDirectCycle.At current)
     (encodeFree :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          0 < current.object.ambientSurplus piece data.threshold →
-          ∀ centre ∈ piece,
-            Graph.IsHighCentre current.object data.threshold centre →
-            Graph.TypeBDirectCycle.DirectCycleFree current.object
-              data.windowOrder data.LengthOK packing centre) →
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold ∧
+              ∀ centre ∈ piece,
+                Graph.IsHighCentre current.object data.threshold centre →
+                Graph.TypeBDirectCycle.DirectCycleFree current.object
+                  data.windowOrder data.LengthOK packing centre) →
       typeBDirectCycleFree.At current)
     (cycleFresh : typeBDirectCycle ∉ known)
     (freeFresh : typeBDirectCycleFree ∉ known) :
@@ -2808,38 +2990,32 @@ noncomputable def directCycleDichotomy
     `Hypostructure.Graph.Strategy.Spine.directCycleDichotomy
     (by
       classical
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, charge,
+        positive⟩ := supportOf (ExactLedger.get previous typeBHighSurplus)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
       by_cases configuration :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  0 < current.object.ambientSurplus piece data.threshold ∧
-                  ∃ centre ∈ piece,
-                    Graph.IsHighCentre current.object data.threshold centre ∧
-                      Graph.TypeBDirectCycle.DirectCycleConfiguration
-                        current.object data.windowOrder data.LengthOK packing
-                        centre
-      · exact .inl (encodeConfiguration configuration)
-      · refine .inr (encodeFree ?_)
-        -- No assigned centre carries a configuration, so every closed
-        -- fan-window pair at every one of them is direct-cycle-free.
-        intro packing valid piece inside connected charge positive centre member
-          high
-        exact fun present => configuration ⟨packing, valid, piece, inside,
-          connected, charge, positive, centre, member, high, present⟩)
+          ∃ centre ∈ piece,
+            Graph.IsHighCentre current.object data.threshold centre ∧
+              Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
+                data.windowOrder data.LengthOK packing centre
+      · exact ⟨.inl (encodeConfiguration
+          ⟨packing, valid, maximal, component, present, charge, positive,
+            configuration⟩)⟩
+      · exact ⟨.inr (encodeFree
+          ⟨packing, valid, maximal, component, present, charge, positive,
+            fun centre member high present =>
+              configuration ⟨centre, member, high, present⟩⟩)⟩)
     cycleFresh freeFresh
 
 /-! ## Node `[72]`/`[81]`, second half: does the B2 disjoint ledger exist?
 
 (B2) of `def:typeB-bridge-statements`.  With the local fan-window ledger complete
 -- the direct configurations removed by the row above -- the question is whether
-the assigned high-degree centres of every connected assigned Type B support admit
+the assigned high-degree centres of the selected canonical Type B support admit
 a *simultaneous* choice of candidate ledger entries with pairwise disjoint
-carriers, maximal for the support assignment.  It is a global question: an entry
+carriers.  It is a global question: an entry
 that pays at one centre may need a carrier another centre has already spent, so
 no local count decides it.
 
@@ -2847,8 +3023,9 @@ Both arms are the manuscript's own mathematics rather than a proposition and its
 negation.  The no arm is `lem:typeB-bridge-to-overlap`: a disjoint-carrier
 failure is *represented* by a minimal Type B overlap obstruction, the smallest
 failing subfamily of demands, which is the object node `[73]`/`[83]` hands to the
-fan-mass accounting.  The yes arm is `lem:typeB-maximal-completion`: a support
-carrying no obstruction admits the maximal disjoint refined ledger.
+fan-mass accounting.  The yes arm records only the disjoint choice.  Its exact
+B2(a)--(c) refinement is committed by the fact-only row below; B2(d) is not
+claimed by either row.
 
 This is a `Decision`, so the arm not taken is absent from the taken branch's key
 index; the fan-mass row can no more read the ledger than the bridge-reduction row
@@ -2859,62 +3036,214 @@ noncomputable def b2AssignmentDichotomy
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (typeBDisjointAssignment typeBOverlapObstruction :
+    (typeBB2Choice typeBOverlapObstruction :
       FactKey (Input BranchState Presentation presentation data))
-    (encodeLedger :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          0 < current.object.ambientSurplus piece data.threshold →
-          Nonempty (Graph.TypeBRefinedSupport.RefinedSupportAssignment current.object
-            data.threshold data.dischargeScale piece)) →
-      typeBDisjointAssignment.At current)
+    (typeBDirectCycleFree : FactKey
+      (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeBDirectCycleFree known]
+    (freeOf : typeBDirectCycleFree.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold ∧
+              ∀ centre ∈ piece,
+                Graph.IsHighCentre current.object data.threshold centre →
+                Graph.TypeBDirectCycle.DirectCycleFree current.object
+                  data.windowOrder data.LengthOK packing centre)
+    (encodeChoice :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ canonicalPiece :
+              Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
+            current.object.NegativeNetCharge canonicalPiece.vertices data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus canonicalPiece.vertices
+                data.threshold ∧
+              Graph.TypeBRefinedSupport.HasDisjointChoice current.object
+                data.threshold data.dischargeScale canonicalPiece
+                (Graph.TypeBRefinedSupport.centres current.object data.threshold
+                  canonicalPiece.vertices)) →
+      typeBB2Choice.At current)
     (encodeObstruction :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ canonicalPiece :
+              Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
+            current.object.NegativeNetCharge canonicalPiece.vertices data.threshold
                 data.dischargeScale ∧
-              0 < current.object.ambientSurplus piece data.threshold ∧
+              0 < current.object.ambientSurplus canonicalPiece.vertices
+                data.threshold ∧
               Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction
-                current.object data.threshold data.dischargeScale piece)) →
+                current.object data.threshold data.dischargeScale canonicalPiece)) →
       typeBOverlapObstruction.At current)
-    (ledgerFresh : typeBDisjointAssignment ∉ known)
+    (choiceFresh : typeBB2Choice ∉ known)
     (obstructionFresh : typeBOverlapObstruction ∉ known) :
-    Decision typeBDisjointAssignment typeBOverlapObstruction previous :=
-  Decision.run previous typeBDisjointAssignment typeBOverlapObstruction
+    Decision typeBB2Choice typeBOverlapObstruction previous :=
+  Decision.run previous typeBB2Choice typeBOverlapObstruction
     `Hypostructure.Graph.Strategy.Spine.b2AssignmentDichotomy
     (by
       classical
-      by_cases obstruction :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  0 < current.object.ambientSurplus piece data.threshold ∧
-                  Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction
-                    current.object data.threshold data.dischargeScale piece)
-      · exact .inr (encodeObstruction obstruction)
-      · refine .inl (encodeLedger ?_)
-        -- No assigned support carries an overlap obstruction, so
-        -- `lem:typeB-maximal-completion` completes each one's ledger.
-        intro packing valid piece inside connected charge positive
-        exact Graph.TypeBRefinedSupport.typeBMaximalCompletion current.object
-          data.threshold data.dischargeScale piece
-          (fun carried => obstruction ⟨packing, valid, piece, inside, connected,
-            charge, positive, carried⟩))
-    ledgerFresh obstructionFresh
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, componentMem, negative,
+        positive, _directFree⟩ :=
+        freeOf (ExactLedger.get previous typeBDirectCycleFree)
+      let canonicalPiece :
+          Graph.TypeBRefinedSupport.CanonicalPiece current.object packing :=
+        ⟨component, componentMem⟩
+      rcases Graph.TypeBRefinedSupport.b2_or_overlap current.object
+          data.threshold data.dischargeScale canonicalPiece with
+        choice | obstruction
+      · exact ⟨.inl (encodeChoice
+          ⟨packing, valid, maximal, canonicalPiece, negative, positive, choice⟩)⟩
+      · exact ⟨.inr (encodeObstruction
+          ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+            obstruction⟩)⟩)
+    choiceFresh obstructionFresh
+
+/-! ## B2(a)--(c): the exact disjoint-ledger handoff
+
+The successful finite choice above is turned into the manuscript's literal
+augmented-ledger partition.  Remainder normalization supplies both window
+freeness and the empty internal baseline core; the latter implies hereditary
+Type A uncompressibility.  Selection supplies contextual target safety.  Every
+remaining connected component is therefore passed to the existing Type A
+hygiene theorem on the same ledger.  This row deliberately states no maximal
+grouped-envelope property and no B2(d). -/
+@[reducible] noncomputable def typeBDisjointLedgerRow
+    (typeBB2Choice selection remainderNormalized typeBDisjointLedger :
+      FactKey (Input BranchState Presentation presentation data))
+    (requiredUnique : [typeBB2Choice, selection, remainderNormalized].Nodup)
+    (choiceOf : (input : Input BranchState Presentation presentation data) →
+      typeBB2Choice.At input →
+      ∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ canonicalPiece :
+              Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+            input.object.NegativeNetCharge canonicalPiece.vertices data.threshold
+                data.dischargeScale ∧
+              0 < input.object.ambientSurplus canonicalPiece.vertices
+                data.threshold ∧
+              Graph.TypeBRefinedSupport.HasDisjointChoice input.object
+                data.threshold data.dischargeScale canonicalPiece
+                (Graph.TypeBRefinedSupport.centres input.object data.threshold
+                  canonicalPiece.vertices))
+    (avoidsOf : (input : Input BranchState Presentation presentation data) →
+      selection.At input →
+        ¬ Graph.HasCycleWithLength data.LengthOK input.object)
+    (normalizedOf : (input : Input BranchState Presentation presentation data) →
+      remainderNormalized.At input →
+      ∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ support : Finset input.object.Vertex,
+          support ⊆ input.object.remainderSupport packing →
+          ¬ input.object.InducesWindow data.windowOrder support ∧
+            ¬ Graph.MinimumDegreeAtLeast data.threshold
+              (input.object.induce support))
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ canonicalPiece :
+              Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+            input.object.NegativeNetCharge canonicalPiece.vertices data.threshold
+                data.dischargeScale ∧
+              0 < input.object.ambientSurplus canonicalPiece.vertices
+                data.threshold ∧
+              ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
+                  data.threshold data.dischargeScale canonicalPiece,
+                ledger.ExactAugmentedLedgerRefinement ∧
+                  ∀ component : Graph.SupportComponents.Connected.Component
+                      input.object ledger.remainingCore,
+                    component ∈ Graph.SupportComponents.Connected.order
+                        input.object ledger.remainingCore →
+                      Graph.TypeBPostLedgerCore.PostLedgerComponent
+                        data.typeABPresentation ledger component) →
+        typeBDisjointLedger.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeBDisjointLedger
+    { Requires := [typeBB2Choice, selection, remainderNormalized]
+      Produces := [typeBDisjointLedger]
+      requiresUnique := requiredUnique
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let choiceFact := choiceOf inputs.current (inputs.get typeBB2Choice)
+      let avoids := avoidsOf inputs.current (inputs.get selection)
+      let normalized := normalizedOf inputs.current
+        (inputs.get remainderNormalized)
+      .cons (key := typeBDisjointLedger)
+        (encode inputs.current (by
+          classical
+          obtain ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+            choice⟩ := choiceFact
+          let ledger : Graph.TypeBRefinedSupport.DisjointLedger
+              inputs.current.object data.threshold data.dischargeScale
+                canonicalPiece :=
+            ⟨Classical.choice choice⟩
+          have noBaselineSubsupport : ∀ support : Finset inputs.current.object.Vertex,
+              support ⊆ inputs.current.object.remainderSupport packing →
+                ¬ Graph.MinimumDegreeAtLeast data.threshold
+                  (inputs.current.object.induce support) := by
+            intro support subset
+            exact (normalized packing valid maximal support subset).2
+          have pieceFree : Graph.InducedPathFree
+              (inputs.current.object.induce canonicalPiece.vertices)
+              data.windowOrder :=
+            Graph.FiniteObject.inducedPathFree_induce_of_forall
+              inputs.current.object
+              (fun support subset =>
+                (normalized packing valid maximal support
+                  (subset.trans canonicalPiece.vertices_subset_remainder)).1)
+          have emptyInternal : Graph.TypeAB.EmptyInternalThreeCore
+              data.typeABPresentation inputs.current.object
+                canonicalPiece.vertices :=
+            Graph.TypeBPostLedgerCore.emptyInternalThreeCore_of_noBaselineSubsupport
+              (threshold := data.threshold) rfl
+              (fun support subset =>
+                noBaselineSubsupport support
+                  (subset.trans canonicalPiece.vertices_subset_remainder))
+          have targetSafe : Graph.TypeAB.ContextuallyDyadicSafe
+              data.typeABPresentation inputs.current.object := by
+            simpa [Graph.TypeAB.ContextuallyDyadicSafe,
+              Data.typeABPresentation] using avoids
+          have hereditary : Graph.TypeAB.HereditarilyTargetUncompressible
+              data.typeABPresentation inputs.current.object
+                canonicalPiece.vertices :=
+            Graph.TypeAB.hereditarilyTargetUncompressible_of_emptyInternalThreeCore
+              emptyInternal
+          have baseline : ∀ vertex : inputs.current.object.Vertex,
+              data.threshold ≤ inputs.current.object.degree vertex := fun vertex =>
+            le_trans inputs.current.baseline
+              (inputs.current.object.minDegree_le_degree vertex)
+          exact ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+            ledger, ledger.exactAugmentedLedgerRefinement,
+            fun component componentMember =>
+              Graph.TypeBPostLedgerCore.postLedgerCoreHygiene
+                data.typeABPresentation ledger component componentMember rfl
+                noBaselineSubsupport pieceFree targetSafe hereditary baseline⟩))
+        .nil)
 
 /-! ## Nodes `[73]`/`[75]` and `[83]`/`[84]`: the Type B bridge fan-mass
 
@@ -3070,259 +3399,6 @@ restate them and does not ask them again. -/
               data.bridgeMassSlack baseline ordinarySurplus groupedSurplus
               ordinaryComponents groupedComponents))
         .nil)
-
-
-/-! ## Nodes `[76]`/`[85]`: `lem:typeB-exclusion`
-
-`prop:typeB-bridge-reduction`.  The row commits two things and invents neither.
-
-The first is `(B-ledger)` of `def:typeB-assigned-ledger`:
-`No(X) = Ĉh_B(X) + α|H_X|`, and the line the manuscript spends it on --
-`Ĉh_B(X) ≥ 0` gives `defp(X) − σ(X) ≥ α|V(X)|`.
-
-The second is Step 2, and every ingredient of it is *read*.  The refined ledger
-B2 is node `[72]`/`[81]`'s `Spine.Key.typeBDisjointAssignment`, and the row
-requires it: the entries `A_h`, their carriers, their pairwise disjointness and
-their payment `ch_X(h) + Σ_{v∈A_h} ch_X(v) + ½|chosen| ≥ 0` are
-`def:typeB-candidate-ledger`'s own fields, not restated here.  What Step 2 adds
-is the summation over those disjoint blocks and the in-place discharge of the
-core outside them.
-
-The `chosen = ∅` condition is `def:typeB-multiclosed-residual`'s
-certificate-closed case; a positive-deficit fan is the one whose entry spends the
-half-incidence credits, and node `[74]`/`[82]` -- row 26 -- is what supplies
-them.  The core conditions are nodes `[88]` and `[90]`. -/
-@[reducible] noncomputable def typeBExclusionChargeRow
-    (typeBDisjointAssignment typeBExclusionCharge :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : typeBDisjointAssignment ≠ typeBExclusionCharge)
-    (ledgerOf : (input : Input BranchState Presentation presentation data) →
-      typeBDisjointAssignment.At input →
-      ∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset input.object.Vertex,
-          piece ⊆ input.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
-          input.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          0 < input.object.ambientSurplus piece data.threshold →
-          Nonempty (Graph.TypeBRefinedSupport.RefinedSupportAssignment
-            input.object data.threshold data.dischargeScale piece))
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset input.object.Vertex,
-          piece ⊆ input.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
-          input.object.NegativeNetCharge piece data.threshold data.dischargeScale →
-          0 < input.object.ambientSurplus piece data.threshold →
-          -- `(B-ledger)` at this support, and the line it is spent on.
-          (Graph.TypeBEnvelopeCharge.augmentedLedger input.object data.threshold
-                  data.dischargeScale piece +
-                ((Graph.TypeBRefinedSupport.centres input.object data.threshold
-                  piece).card : Int) =
-              ((data.dischargeScale *
-                  input.object.positiveDeficiency piece data.threshold : Nat) : Int) -
-                ((data.dischargeScale *
-                  input.object.ambientSurplus piece data.threshold : Nat) : Int) -
-                (piece.card : Int) ∧
-            (0 ≤ Graph.TypeBEnvelopeCharge.augmentedLedger input.object data.threshold
-                data.dischargeScale piece →
-              input.object.NonNegativeNetCharge piece data.threshold
-                data.dischargeScale)) ∧
-            -- Step 2, read off B2: the entries, their carriers, their
-            -- disjointness and their payment are node `[72]`/`[81]`'s.
-            ∃ assignment : Graph.TypeBRefinedSupport.RefinedSupportAssignment
-                input.object data.threshold data.dischargeScale piece,
-              ∀ entry : ∀ hub ∈ assignment.demands,
-                  Graph.TypeBRefinedSupport.CandidateEntry input.object data.threshold
-                    data.dischargeScale piece hub,
-                (∀ (left : input.object.Vertex) (leftMember : left ∈ assignment.demands)
-                  (right : input.object.Vertex)
-                  (rightMember : right ∈ assignment.demands), left ≠ right →
-                  Disjoint (entry left leftMember).carriers
-                    (entry right rightMember).carriers) →
-                (∀ (hub : input.object.Vertex) (member : hub ∈ assignment.demands),
-                  (entry hub member).chosen = ∅) →
-                Graph.TypeBEnvelopeCharge.PostLedgerCore input.object piece assignment
-                  entry →
-                input.object.NonNegativeNetCharge piece data.threshold
-                  data.dischargeScale)
- →
-      typeBExclusionCharge.At input) :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.typeBExclusionCharge
-    (rowManifest typeBDisjointAssignment typeBExclusionCharge distinct)
-    (fun inputs =>
-      let ledger :=
-        ledgerOf inputs.current (inputs.get typeBDisjointAssignment)
-      .cons (key := typeBExclusionCharge)
-        (encode inputs.current
-          (fun packing valid piece inside connected charge positive => by
-            refine ⟨⟨Graph.TypeBEnvelopeCharge.augmentedLedger_add_card_centres
-                inputs.current.object data.threshold data.dischargeScale piece,
-              Graph.TypeBEnvelopeCharge.nonNegativeNetCharge_of_augmentedLedger_nonneg
-                inputs.current.object data.threshold data.dischargeScale piece⟩,
-              ?_⟩
-            -- B2 is read back: the assignment is node `[72]`/`[81]`'s.
-            obtain ⟨assignment⟩ :=
-              ledger packing valid piece inside connected charge positive
-            exact ⟨assignment, fun entry disjointCarriers vertexOnly core =>
-              Graph.TypeBEnvelopeCharge.typeBExclusion inputs.current.object
-                piece assignment entry disjointCarriers vertexOnly core⟩))
-        .nil)
-
-
-/-! ## Nodes `[76]`/`[85]`: `thm:branch-kill` (b), the Type B closure
-
-`lem:typeB-exclusion` assumes the support "contains neither an admissible
-route-8 residual profile nor an admissible positive-deficit Type B fan-window
-residual".  That is a branch test, and this node is it.
-
-The split is on those two hypotheses, not on the conclusion.  The arm that meets
-them **derives** `No(X) ≥ 0` by applying the implication node `[76]`'s own cursor
-already carries -- `Spine.Key.typeBExclusionCharge`, read with
-`ExactLedger.get` -- so `prop:typeB-bridge-reduction` is proved once, at the row
-that owns it, and consumed here rather than restated.  The node-`[64]` residual
-denies `No(X) ≥ 0`, so that arm closes.
-
-The complementary arm is the excluded alternative itself: an entry that spends
-half-incidence credits, which is `def:typeB-multiclosed-residual`'s
-positive-deficit fan and which node `[74]`/`[82]` pays, or a post-ledger core
-that does not discharge, which is the route-8 residual profile.
-
-This is a `Decision`: the arm not taken is absent from the taken branch's key
-index. -/
-noncomputable def typeBExclusionDichotomy
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous :
-      ExactLedger (Input BranchState Presentation presentation data)
-        current known)
-    (typeBExclusionCharge typeBExcluded typeBExclusionResidual :
-      FactKey (Input BranchState Presentation presentation data))
-    [Core.Residual.FactKeys.Has typeBExclusionCharge known]
-    (chargeOf : typeBExclusionCharge.At current →
-      ∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          0 < current.object.ambientSurplus piece data.threshold →
-          ∃ assignment : Graph.TypeBRefinedSupport.RefinedSupportAssignment
-              current.object data.threshold data.dischargeScale piece,
-            ∀ entry : ∀ hub ∈ assignment.demands,
-                Graph.TypeBRefinedSupport.CandidateEntry current.object
-                  data.threshold data.dischargeScale piece hub,
-              (∀ (left : current.object.Vertex)
-                (leftMember : left ∈ assignment.demands)
-                (right : current.object.Vertex)
-                (rightMember : right ∈ assignment.demands), left ≠ right →
-                Disjoint (entry left leftMember).carriers
-                  (entry right rightMember).carriers) →
-              (∀ (hub : current.object.Vertex)
-                (member : hub ∈ assignment.demands),
-                (entry hub member).chosen = ∅) →
-              Graph.TypeBEnvelopeCharge.PostLedgerCore current.object piece
-                assignment entry →
-              current.object.NonNegativeNetCharge piece data.threshold
-                data.dischargeScale)
-    (encodeExcluded :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          0 < current.object.ambientSurplus piece data.threshold →
-          current.object.NonNegativeNetCharge piece data.threshold
-            data.dischargeScale) →
-      typeBExcluded.At current)
-    (encodeResidual :
-      (∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
-                data.dischargeScale ∧
-              0 < current.object.ambientSurplus piece data.threshold ∧
-              ∃ assignment : Graph.TypeBRefinedSupport.RefinedSupportAssignment
-                  current.object data.threshold data.dischargeScale piece,
-                ∃ entry : ∀ hub ∈ assignment.demands,
-                    Graph.TypeBRefinedSupport.CandidateEntry current.object
-                      data.threshold data.dischargeScale piece hub,
-                  (∀ (left : current.object.Vertex)
-                    (leftMember : left ∈ assignment.demands)
-                    (right : current.object.Vertex)
-                    (rightMember : right ∈ assignment.demands), left ≠ right →
-                    Disjoint (entry left leftMember).carriers
-                      (entry right rightMember).carriers) ∧
-                    ¬ ((∀ (hub : current.object.Vertex)
-                          (member : hub ∈ assignment.demands),
-                        (entry hub member).chosen = ∅) ∧
-                      Graph.TypeBEnvelopeCharge.PostLedgerCore current.object
-                        piece assignment entry)) →
-      typeBExclusionResidual.At current)
-    (excludedFresh : typeBExcluded ∉ known)
-    (residualFresh : typeBExclusionResidual ∉ known) :
-    Decision typeBExcluded typeBExclusionResidual previous :=
-  Decision.run previous typeBExcluded typeBExclusionResidual
-    `Hypostructure.Graph.Strategy.Spine.typeBExclusionDichotomy
-    (by
-      classical
-      -- `prop:typeB-bridge-reduction`, read off the cursor rather than reproved.
-      have reduction := chargeOf (ExactLedger.get previous typeBExclusionCharge)
-      by_cases residual :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  0 < current.object.ambientSurplus piece data.threshold ∧
-                  ∃ assignment :
-                      Graph.TypeBRefinedSupport.RefinedSupportAssignment
-                        current.object data.threshold data.dischargeScale piece,
-                    ∃ entry : ∀ hub ∈ assignment.demands,
-                        Graph.TypeBRefinedSupport.CandidateEntry current.object
-                          data.threshold data.dischargeScale piece hub,
-                      (∀ (left : current.object.Vertex)
-                        (leftMember : left ∈ assignment.demands)
-                        (right : current.object.Vertex)
-                        (rightMember : right ∈ assignment.demands),
-                        left ≠ right →
-                        Disjoint (entry left leftMember).carriers
-                          (entry right rightMember).carriers) ∧
-                        ¬ ((∀ (hub : current.object.Vertex)
-                              (member : hub ∈ assignment.demands),
-                            (entry hub member).chosen = ∅) ∧
-                          Graph.TypeBEnvelopeCharge.PostLedgerCore
-                            current.object piece assignment entry)
-      · exact .inr (encodeResidual residual)
-      · refine .inl (encodeExcluded ?_)
-        -- No assigned support carries the excluded alternative, so at every one
-        -- of them the committed implication fires.
-        intro packing valid piece inside connected charge positive
-        obtain ⟨assignment, apply⟩ :=
-          reduction packing valid piece inside connected charge positive
-        obtain ⟨entry, disjointCarriers⟩ := assignment.disjointChoice
-        have met : (∀ (hub : current.object.Vertex)
-              (member : hub ∈ assignment.demands),
-            (entry hub member).chosen = ∅) ∧
-              Graph.TypeBEnvelopeCharge.PostLedgerCore current.object piece
-                assignment entry := by
-          by_contra unmet
-          exact residual ⟨packing, valid, piece, inside, connected, charge,
-            positive, assignment, entry, disjointCarriers, unmet⟩
-        exact apply entry disjointCarriers met.1 met.2)
-    excludedFresh residualFresh
 
 
 /-! ## Node `[88]`: the routing and threshold algebra of a Type A support
@@ -3560,6 +3636,120 @@ noncomputable def typeASaturationDichotomy
         exact fun full => saturated ⟨packing, valid, maximal, piece, inside,
           connected, charge, surplus, receiver, isReceiver, full⟩)
     saturatedFresh unsaturatedFresh
+
+/-! ## Nodes `[90]`--`[91]`: unsaturated Type A discharging -/
+
+/-- **`lem:typeA-unsaturated-discharge`, read from nodes `[88]` and `[90]`.**
+
+The row publishes the exact integral conclusion `|V(X)| ≤ s * def⁺(X)` for
+the same negative Type A support quantified by the incoming facts.  The
+canonical routing and the unsaturated receiver inequalities are both read by
+semantic key. -/
+@[reducible] noncomputable def typeAUnsaturatedDischargeRow
+    (typeAReceiverRouting typeAUnsaturatedReceivers
+      typeAUnsaturatedDischarge :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinctRequired : typeAReceiverRouting ≠ typeAUnsaturatedReceivers)
+    (routingOf : (input : Input BranchState Presentation presentation data) →
+      typeAReceiverRouting.At input →
+      ∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ piece : Finset input.object.Vertex,
+          piece ⊆ input.object.remainderSupport packing →
+          input.object.ambientSurplus piece data.threshold = 0 →
+          (∀ vertex ∈ piece,
+            input.object.internalDegree piece vertex = data.threshold →
+            ∃ receiver : input.object.Vertex,
+              input.object.traceReceiver? piece data.threshold vertex =
+                  some receiver ∧
+                input.object.IsReceiver piece data.threshold receiver) ∧
+            (∀ receiver : input.object.Vertex,
+              input.object.IsReceiver piece data.threshold receiver →
+              data.dischargeScale *
+                    input.object.missingPorts piece data.threshold receiver =
+                  data.dischargeScale *
+                    (data.threshold - 1 -
+                      input.object.internalDegree piece receiver + 1) ∧
+                data.dischargeScale *
+                    input.object.missingPorts piece data.threshold receiver ≤
+                  data.dischargeScale * data.threshold))
+    (unsaturatedOf :
+      (input : Input BranchState Presentation presentation data) →
+      typeAUnsaturatedReceivers.At input →
+      ∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ piece : Finset input.object.Vertex,
+          piece ⊆ input.object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
+          input.object.NegativeNetCharge piece data.threshold
+            data.dischargeScale →
+          input.object.ambientSurplus piece data.threshold = 0 →
+          ∀ receiver : input.object.Vertex,
+            input.object.IsReceiver piece data.threshold receiver →
+            1 + input.object.routedLoad piece data.threshold receiver ≤
+              data.dischargeScale *
+                input.object.missingPorts piece data.threshold receiver)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ piece : Finset input.object.Vertex,
+          piece ⊆ input.object.remainderSupport packing →
+          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
+          input.object.NegativeNetCharge piece data.threshold
+            data.dischargeScale →
+          input.object.ambientSurplus piece data.threshold = 0 →
+          piece.card ≤ data.dischargeScale *
+            input.object.positiveDeficiency piece data.threshold) →
+      typeAUnsaturatedDischarge.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeAUnsaturatedDischarge
+    { Requires := [typeAReceiverRouting, typeAUnsaturatedReceivers]
+      Produces := [typeAUnsaturatedDischarge]
+      requiresUnique := by simp [distinctRequired]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let routing :=
+        routingOf inputs.current (inputs.get typeAReceiverRouting)
+      let unsaturated :=
+        unsaturatedOf inputs.current (inputs.get typeAUnsaturatedReceivers)
+      .cons (key := typeAUnsaturatedDischarge)
+        (encode inputs.current (by
+          intro packing valid maximal piece inside connected negative surplus
+          have exactDegree : ∀ vertex ∈ piece,
+              inputs.current.object.degree vertex = data.threshold := by
+            intro vertex member
+            have lower : data.threshold ≤ inputs.current.object.degree vertex :=
+              le_trans inputs.current.baseline
+                (inputs.current.object.minDegree_le_degree vertex)
+            have summand :
+                inputs.current.object.degree vertex - data.threshold = 0 :=
+              Nat.eq_zero_of_le_zero
+                (surplus ▸ Finset.single_le_sum
+                  (f := fun other =>
+                    inputs.current.object.degree other - data.threshold)
+                  (fun _ _ => Nat.zero_le _) member)
+            omega
+          have capped : ∀ vertex ∈ piece,
+              inputs.current.object.internalDegree piece vertex ≤
+                data.threshold :=
+            fun vertex member => (exactDegree vertex member) ▸
+              inputs.current.object.internalDegree_le_degree piece vertex
+          exact Graph.FiniteObject.unsaturatedDischarge inputs.current.object
+            piece data.threshold data.dischargeScale capped
+            (routing packing valid maximal piece inside surplus).1
+            (unsaturated packing valid maximal piece inside connected negative
+              surplus)))
+        .nil)
 
 /-! ## Node `[93]`: does a port of the saturated receiver see `s` visible
 receiver-entry returns?

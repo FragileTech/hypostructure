@@ -23,7 +23,10 @@ only thing this module has to supply is the manuscript's *datum*: the enlarging
 support, the equality it makes target-complete, and the fact that no smaller
 support does.
 
-`Delocalization` is that datum at one presented route-8 entry.  Its
+`PresentedEntry.declaredSupport` is the total declared-support field of the
+coordinate presentation; it is not reconstructed from an event, because the
+boundary-degree and other non-event coordinates also have declared supports.
+`Delocalization` is the enlargement datum at one presented route-8 entry.  Its
 `quotient` is the admissible rank quotient carried by `Z`; `enlarges` is
 `Z ⊋ B_u`; `left`, `right`, `distinct` and `identified` are the *equality among
 coordinates* the clause names; and `minimal` is *"only after adjoining"* —
@@ -43,19 +46,6 @@ open Hypostructure
 universe u
 
 variable {object : FiniteObject.{u}}
-
-/-- The declared support of a presented coordinate: the vertices of the target
-event that records it.
-
-`def:typeA-trace-basin` fixes this reading — *"each local target-response
-coordinate used in this paper has a declared finite support"* — and
-`PresentedEntry` already stores the event.  A support `Z` *carries* the
-coordinate exactly when it contains this set, which is the `carries` clause an
-admissible quotient at `Z` has to discharge. -/
-noncomputable def PresentedEntry.declaredSupport (presented : PresentedEntry object)
-    (coordinate : presented.Coordinate) : Finset object.Vertex :=
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  (presented.event coordinate).support.toFinset
 
 /-- **`def:typeA-trace-basin` clause (c), at one presented entry.**
 

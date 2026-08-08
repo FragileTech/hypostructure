@@ -559,11 +559,11 @@ bookkeeping; the first is not:
 | # | Node | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
 | 11 | Saturated receiver [89] | `Spine.typeAReceiverRouting`, `Spine.typeASaturationDichotomy` (`SpineRows`, run in `SpineRun.run`) | ✅ | ✅ | ✅ | ✅ |
-| 12 | Visible receiver-entry returns [93] | `Spine.typeAPortReturn`, `Spine.typeAVisibleEntryDichotomy`, `Spine.typeAVisibleEntryClause` over `Graph/VisibleReceiverEntry.lean`, `Graph/PortReturnExistence.lean` and `Graph/VisibleEntryQuotient.lean` (`SpineRows`, run in `SpineRun.run`, checked in `Fixtures/TypeAVisibleEntry.lean`) | ✅ | ✅ | ✅ | ✅ |
+| 12 | Visible receiver-entry returns [93] | selected returns are canonical; the stale arbitrary `Spine.typeAVisibleEntryClause` reading must be replaced by the paper's `(e,x_g,g(Γ),Q)` response reading | ✅ | ✅ | ✅ | ❌ |
 | 13 | Exit 1: Mersenne return [95] | `Spine.typeAExitOneDichotomy` over `Graph/AnchoredReturnCompletion.lean` (`SpineRows`, run in `Spine.runExitOne` of `TypeAExitRun`, checked in `Fixtures/TypeAExitOne.lean`) | ✅ | ✅ | ✅ | ✅ |
 | 14 | Exit 2: power-of-two theta [97] | `Spine.typeAExitTwoDichotomy` over `Graph/CommonPortReturnCycle.lean` (`SpineRows`, run in `Spine.runExitTwo`/`Spine.runExitChain` of `TypeAExitRun`, checked in `Fixtures/TypeAExitTwo.lean`) | ✅ | ✅ | ✅ | ✅ |
 | 15 | Exit 3: P13 label collision [99] | `Spine.typeAExitThreeDichotomy` over `Graph/WindowLabelCollision.lean` (`SpineRows`, run in `Spine.runExitThree`/`Spine.runExitChain` of `TypeAExitRun`, checked in `Fixtures/TypeAExitThree.lean`) | ✅ | ✅ | ✅ | ✅ |
-| 16 | Exit 4: target-defective quotient [101] | `Spine.typeAExitFourPeelDichotomy`, `Spine.typeAPeeledCharge`, `Spine.typeAExitFourDichotomy` over `Graph/ExitFourFamily.lean` and `Graph/ExitFourPeeling.lean` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`) | ✅ | ✅ | ✅ | ✅ |
+| 16 | Exit 4: target-defective quotient [101] | generic peeling decision exists, but the canonical Q1 same-fibre response presentation feeding it is not yet constructed | ✅ | ✅ | ✅ | ❌ |
 | 17 | Exit 5: target-complete compression [103] | `Spine.typeAExitFiveDichotomy`, `Spine.typeAExitFiveRealizationDichotomy`, `Spine.typeAExitFiveCompressionClosed` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`, checked in `Fixtures/Route8ExitFive.lean`) | ✅ | ✅ | ✅ | ✅ |
 | 18 | Exit 6: response delocalization [105] | `Spine.typeAExitSixDichotomy`, `Spine.typeAExitSixScopeDichotomy`, `Spine.typeAExitSixProperClosed`, `Spine.typeAExitSixGlobalClosed` over `Graph/ResponseDelocalization.lean` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`, checked in `Fixtures/Route8ExitSix.lean`) | ✅ | ✅ | ✅ | ✅ |
 | 19 | Exit 7: decorated handoff fan [107] | `Spine.typeAExitSevenDichotomy` over `Graph/DecoratedHandoffEnvelope.lean` (`SpineRows`, run in `Spine.runRouteEight`/`Spine.runSaturatedExits` of `Route8Run`, checked in `Fixtures/TypeAExitSeven.lean`) | ✅ | ✅ | ✅ | ✅ |
@@ -679,7 +679,7 @@ bookkeeping; the first is not:
 > each replaced an earlier attempt that was doing more than the manuscript asks.
 >
 > **Nothing is rebuilt that the branch already carries.**  Row 28 reads B2 --
-> `Spine.Key.typeBDisjointAssignment`, committed at node `[72]`/`[81]` -- and
+> `Spine.Key.typeBB2Choice`, committed at node `[72]`/`[81]` -- and
 > takes the entries `A_h`, their carriers, their disjointness and their payment
 > from `def:typeB-candidate-ledger`'s own `CandidateEntry` fields.  An earlier
 > pass had invented a parallel envelope-and-block apparatus
@@ -744,9 +744,9 @@ bookkeeping; the first is not:
 | 23 | Certificate labelling [71]/[80] | `Spine.fanCertificateDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 24 | Direct-cycle removal [72] | `Spine.directCycleDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 25 | B2 ledger [72]/[81] | `Spine.b2AssignmentDichotomy` | ✅ | ✅ | ✅ | ✅ |
-| 26 | Hybrid B1 entry [74]/[82] | `Spine.hybridEntry` | ✅ | ✅ | ✅ | ✅ |
-| 27 | Bridge fan-mass [73],[75],[83],[84] | `Spine.bridgeFanMass` | ✅ | ✅ | ✅ | ✅ |
-| 28 | Bridge deficit [76]/[85] | `Spine.typeBExclusionCharge`, `Spine.typeBExclusionDichotomy` | ✅ | ✅ | ✅ | ✅ |
+| 26 | Hybrid B1 entry [74]/[82] | canonical `TypeBCanonicalB2` candidate payment; stale `Spine.hybridEntry` pending deletion | ❌ | ❌ | ❌ | ❌ |
+| 27 | Bridge fan-mass [73],[75],[83],[84] | overlap reflection and bridge consumer not yet implemented | ❌ | ❌ | ❌ | ❌ |
+| 28 | Bridge deficit [76]/[85] | deleted exclusion pipeline; canonical route-8/bridge consumer not yet implemented | ❌ | ❌ | ❌ | ❌ |
 | 29 | Degree-four fan profile [78],[79] | `Spine.degreeFourProfile` | ✅ | ✅ | ✅ | ✅ |
 ## D. Non-near-cubic surplus branch
 
@@ -893,7 +893,7 @@ bookkeeping; the first is not:
 | 39 | Wedge lower bound [30] | `Spine.wedgeSupply` (`SpineRows.wedgeSupplyRow`) | ✅ | ✅ | ✅ | ✅ |
 | 40 | Target-relative rank dichotomy [31]–[32] | `Spine.curvatureTargetRank`, `Spine.curvatureRankDichotomy` (`SpineRows`) | ✅ | ✅ | ✅ | ✅ |
 | 41 | Full-rank finite-state capacity [47]–[56] | `Spine.forcedCurvatureCost`, `Spine.remainderEntropyDichotomy`, `Spine.entropyPackage`, `Spine.entropyCapDichotomy`, `Spine.lowEntropyLargeBudget`, `Spine.runResidualC` | ✅ | ✅ | ✅ | ✅ |
-| 42 | Net-charge continuation [57]–[64] | `Spine.runResidualC`, `Spine.netChargeLocalization`, `Spine.netChargeDichotomy`, `Spine.windowJoinPressure`, `Spine.negativeSupport` | ✅ | ✅ | ✅ | ✅ |
+| 42 | Net-charge continuation [57]–[64] | `Spine.runResidualC`, `Spine.netChargeOrderDichotomy`, `Spine.netChargeCap`, `Spine.netChargeLocalization`, `Spine.netChargeDichotomy`, `Spine.negativeSupport`, `Spine.runNegativeSupport`, `Spine.typeSplitDichotomy`, `Spine.continueNegativeSupport` | ✅ | ✅ | ✅ | ✅ |
 
 ## F. Cold-window corridor
 
@@ -2040,6 +2040,14 @@ routing is a definition of the framework, not a search result, and the
 threshold algebra is an exact integer identity.
 
 
+**Immediate continuation repair.**  The no arm at `[90]` no longer survives as
+an inert continuation.  `Spine.typeAUnsaturatedDischarge` reads exactly
+`typeAReceiverRouting` and `typeAUnsaturatedReceivers`, applies
+`FiniteObject.unsaturatedDischarge`, and appends
+`typeAUnsaturatedDischarge`.  Core then appends `closed` from that fact and the
+retained `typeALowSurplus` negative support.  No support, route, or receiver is
+carried outside the canonical ledger.
+
 ### Row 12 — Visible receiver-entry returns `[93]`
 
 - **Paper fact.** Node `[93]` asks whether some completion port of the
@@ -2315,6 +2323,13 @@ finite search that the manuscript does not perform.  The composition is
 `Decision.run` followed by `closeIncompatible`, both framework-owned; the row
 contributes the alternative and the two schema bridges, which are the identity
 on `PLift`.
+
+**Immediate continuation repair.**  The `[93]` yes ledger is now consumed by
+`runExitOne` before the existential Residual-C tail is hidden by the chapter
+continuation.  The only new branch facts are `typeAExitOneReturn` or
+`typeAExitOneFree`; the first closes against the inherited `returnAvoidance`,
+and the second is the exact cursor of `[97]`.  Nodes `[97]` and later are not
+executed by this repair.
 
 ### Row 14 — Exit 2: power-of-two theta `[97]`
 
@@ -2632,6 +2647,13 @@ is clause (Q5) at an indexed entry and is the route-8 `(R2)` carrier nodes
 `[116]` and `[124]` read.  The EG package itself does not elaborate at the time
 of writing, for a reason outside this row: `Problem.lean`'s registration is
 mid-edit and is missing `bridgeMassFactor` / `bridgeMassSlack`.
+
+**Immediate continuation repair.**  The `[94]` ledger now enters only node
+`[101]`.  `typeAExitFourPeelDichotomy` appends the peel/no-peel decision; the
+peel arm runs the existing atomic `typeAPeeledCharge`, while the no-peel arm
+runs only `typeAExitFourDichotomy` and stops at `typeAExitFour` or
+`typeAExitFourFree`.  The arbitrary Residual-C ancestry is the literal tail of
+all three indices.  Nodes `[103]` and later are not executed by this repair.
 
 ### Row 17 — Exit 5: target-complete compression `[103]`
 
@@ -3388,7 +3410,7 @@ Strategy lowered by `AtomicCT.run` against the one canonical `ExactLedger`.
   rows 24 and 25 now continue on it, so `Result.typeBCertificateMarked` was
   deleted rather than kept beside the new exits.  Its audit theorems moved with
   it: the three indices that now terminate this arm are pinned by
-  `typeBDirectCycleClosed_audit_facts`, `typeBDisjointAssignment_audit_facts`
+  `typeBDirectCycleClosed_audit_facts`, `typeBB2Choice_audit_facts`
   and `typeBOverlapObstruction_audit_facts`, each of which still lists the
   marked arm's whole prefix, and every exit's
   `_audit_accounts_for_every_fact` certifies through
@@ -3444,13 +3466,13 @@ cap through the entry arithmetic rather than by re-reading the label count.
   distinct packed windows are vertex-disjoint.
 - **What the Lean does.**  `Spine.directCycleDichotomy` is a `Decision` on the
   literal certificate-marked cursor, producing `typeBDirectCycle` on the left and
-  `typeBDirectCycleFree` on the right.  The left fact is "some connected assigned
-  Type B support of some packing carries a high centre with a
-  `TypeBDirectCycle.DirectCycleConfiguration`"; the right is the universally
-  quantified complement, `TypeBDirectCycle.DirectCycleFree` at every high centre
-  of every such support over every packing.  The branch is `by_cases` on the left
-  `Prop`, and the arm not taken supplies the other arm's clause directly (no
-  `push_neg` is needed: `DirectCycleFree` *is* the negation).
+  `typeBDirectCycleFree` on the right. It reads the selected Type B fact by its
+  exact `typeBHighSurplus` key, retaining the same maximal packing and the same
+  member of `canonicalPieces (remainderSupport packing)`. The decision is only
+  whether a high centre of that selected component carries a
+  `TypeBDirectCycle.DirectCycleConfiguration`; the complementary fact records
+  `DirectCycleFree` at every high centre of that same component. No arbitrary
+  second support or packing is quantified.
   `DirectCycleConfiguration` is the disjunction of the four displays,
   `SameWindowAttachment`, `CrossWindowWedge`, `InterlacedWindowPair`,
   `TwoWindowPair`, each binding a `TypeBDirectCycle.Presentation` whose support
@@ -3487,11 +3509,10 @@ cap through the entry arithmetic rather than by re-reading the label count.
   `hasCycleWithLength_of_twoWindowPair`.  Only the manuscript's genuinely
   positive side condition, `u, v ∉ W`, is a binder.
 - **Ledger and residual.**  The `Decision` runs on the literal ledger the marked
-  arm of `[71]` produced, so the residual is unchanged (a fact-only step) and
-  every earlier fact stays in the output index.  It reads no prerequisite fact:
-  the question is a `Prop` about the object and its packed windows and the branch
-  is taken classically, so nothing is consumed and nothing is declared — a
-  declared requirement the executor does not read would be a false dependency.
+  arm of `[71]` produced, so the residual is unchanged and every earlier fact
+  stays in the output index. It reads `typeBHighSurplus` with `ExactLedger.get`;
+  this is the selected support and packing established upstream, not a recreated
+  object-level existential.
   The closure step is the only read, and it reads by key: `closeIncompatible`
   fetches `selection` and `typeBDirectCycle` with `ExactLedger.get` at the
   framework-owned closure boundary.  Ledger passes.
@@ -3537,164 +3558,96 @@ disjunction to an accepted cycle, and the framework's registered-incompatibility
 path carries it with the contradiction recorded in the closure entry's own
 `reason`.
 
-### Row 25 — B2 ledger `[72]`/`[81]` (ported: `Spine.b2AssignmentDichotomy`)
+### Row 25 — Selected B2 decision `[72]`/`[81]` (`Spine.b2AssignmentDichotomy`)
 
-- **Paper fact.**  The global half of node `[72]`, and node `[81]` asking the
-  same question on the degree-four branch.  (B2) of
-  `def:typeB-bridge-statements`: for a connected assigned Type B support `X` with
-  no fan-certificate residual centre, the high-degree fan centres of `X` admit a
-  canonical refined ledger in the sense of `def:typeB-candidate-ledger` — (a) a
-  certificate-closed centre is assigned `A_h ⊆ N(h) \ H_X` with
-  `ch_X(h) + Σ_{v ∈ A_h} ch_X(v) ≥ 0` and no carrier assigned to two centres;
-  (b) each positive-deficit centre carries its hybrid B1 entry, whose window and
-  non-window half-credits are disjoint from the ordinary deficiency reserve;
-  (c) all entries are mutually disjoint refinements of `Ĉh_B(X)`; (d) the ledger
-  is maximal for the support assignment.  Carriers are enumerated by
-  `def:typeB-ledger-carriers`: a non-centre vertex, an assigned centre, a
-  packed-window incidence of capacity `½`, a non-window fan incidence of capacity
-  `½`, an internal/mixed reserve block.  Failure of the disjoint-carrier part
-  produces a *minimal* Type B overlap obstruction
-  (`lem:typeB-bridge-to-overlap`, `def:typeB-overlap-obstruction`), and absence
-  of any obstruction gives the maximal disjoint ledger
-  (`lem:typeB-maximal-completion`).
-- **What the Lean does.**  `Spine.b2AssignmentDichotomy` is a `Decision` on the
-  literal direct-cycle-free cursor, producing `typeBDisjointAssignment` on the
-  left and `typeBOverlapObstruction` on the right.  The left fact is "every
-  connected assigned Type B support of every packing carries a
-  `TypeBRefinedSupport.RefinedSupportAssignment`" — a demand family drawn from
-  the support's assigned centres, a `HasDisjointChoice`, and `IsMaximal`.  The
-  right fact is "some such support carries a
-  `TypeBRefinedSupport.OverlapObstruction`" — a nonempty demand family with no
-  disjoint choice *every proper nonempty subfamily of which has one*.
-
-  Both arms are theorems, not a proposition and its negation.  The split is
-  `by_cases` on the *obstruction* existential; the yes arm of the paper's
-  question is then derived, support by support, by
-  `TypeBRefinedSupport.typeBMaximalCompletion` — which is
-  `lem:typeB-maximal-completion` — and the no arm carries the obstruction the
-  minimization in `exists_overlapObstruction_of_not_hasDisjointChoice` builds,
-  which is `lem:typeB-bridge-to-overlap`: among the nonempty subfamilies whose
-  disjoint choice fails, one of least cardinality is minimal by construction,
-  and `hasDisjointChoice_mono` is what makes the restriction to a subfamily
-  meaningful.
-
-  `CandidateEntry` carries `assigned`, `assigned_adjacent`, `assigned_subset`,
-  `assigned_notCentre`, `chosen`, `chosen_owned` and the paying field `pays`.
-  `carriers` is the disjoint sum of the vertex carriers (`insert hub assigned`)
-  and the chosen incidences, so `Disjoint` over `Carrier object` is
-  simultaneously the manuscript's "no carrier is assigned to two different fan
-  centres" and its disjointness of the half-incidence entries;
-  `hub_ne_of_disjoint_carriers` reads the centre half of that back.
-- **What it should do.**  This is what it does.
-- **Gap.**  None *for this row's own fact*, which is the B2 alternative and is
-  correct as stated.  **Facts passes.**
-
-  **Correction.**  An earlier version of this note claimed that
-  `TypeBRefinedSupport.CandidateEntry` carries carrier *supports* and not
-  *charges*.  That is false and I withdraw it: the structure has a `pays` field,
-
-  > `2s·(d_G(h) − δ) + 2 + 2|A_h| ≤ 2s·Σ_{v∈A_h}(δ − d_X(v)) + s·|chosen|`,
-
-  which is exactly `def:typeB-candidate-ledger`'s
-  `ch_X(h) + Σ_{v∈A_h} ch_X(v) + ½|chosen| ≥ 0` cleared of denominators at the
-  scale `2s`.  Clause (a)'s charge condition, clause (c)'s half-capacity
-  packed-window incidences and clause (d)'s non-window ones are all in the
-  structure, and `HasDisjointChoice` carries B2's disjointness of their
-  carriers.  This row's coverage of `def:typeB-ledger-carriers` is therefore
-  materially better than the withdrawn note said.
-
-  What is genuinely unimplemented is clause (e), the local internal/mixed reserve
-  block, together with the *ordinary deficiency reserve* -- and neither is
-  consumed by any live row, because rows 27 and 28 run their accounting without
-  deleting a carrier and so create no boundary deficit to charge.  Three notes
-  follow on this row's own reading.
-
-  *The failed legacy row is not what is here.*  The retired `b2Split` payload was
-  `∃ profile, 2 ≤ profile.closedCount` — a local count at one centre, with the
-  window and envelope free `Finset` fields of the binder, containing no
-  `Disjoint`, no carrier, no candidate entry and no maximality.  That is why the
-  legacy row's Facts column was `❌`.  The ported row asks the simultaneous-choice
-  question the manuscript asks, and the negative arm is the overlap obstruction
-  rather than a bare negation.
-
-  *Charges are scaled integers.*  `ch_X(v) = δ_X^+(v) − α` and
-  `ch_X(h) = −(d_G(h) − δ) − α` at `α = 1/s`, and a chosen incidence carries
-  `½`; `pays` is that inequality cleared of denominators at `2s`, exactly as
-  `Graph.NegativeNetCharge` clears at `s`.  No reciprocal appears, nothing
-  rounds, and `α = 1/4` is never written — the discharge scale is
-  `data.dischargeScale`.  Clauses (a) and (b) are the one inequality at
-  `chosen = ∅` and at `chosen ≠ ∅` respectively.
-
-  *What clause (b) defers.*  The *content* of the hybrid B1 entry — the split of
-  `D_B` into the window credit `½I_W` and the remaining non-window demand `D_N`
-  — is `lem:typeB-hybrid-B1`, which is node `[74]`/`[82]`, row 26.  Row 25 asks
-  only whether the entries can be chosen disjointly, which is what the
-  manuscript's node `[72]`/`[81]` diamond asks; the entry's *existence* at a
-  positive-deficit centre is a binder of `HasDisjointChoice`, not an assumption
-  this row makes about the graph, and row 26 is what will supply it.
-- **Ledger and residual.**  The `Decision` runs on the literal ledger row 24's
-  free arm produced, so the residual is unchanged and every earlier fact stays in
-  the output index — including `typeBDirectCycleFree`, which is why the local
-  fan-window ledger's completeness is *available* here rather than re-proved.
-  The row declares no requirement, for the same reason rows 23 and 24 declare
-  none: the branch is taken classically on a `Prop` about the object, and
-  `typeBMaximalCompletion` consumes no ledger fact, so declaring one would be a
-  false dependency.  The legacy row's failure mode is gone: the old read was
-  through `residualOf stage`, which yielded only `ProblemInput` and therefore
-  could not even express the `Residual object` the B2 machinery wanted; the
-  ported row states B2 over the packing and support the spine's own facts already
-  quantify over.  Ledger passes.
-- **Transport and terminals.**  Core owns execution: `Decision.run`.  Neither arm
-  closes — `[72]`'s second half certifies nothing — so `Spine.Result` gains the
-  two exits `typeBDisjointAssignment` (the entry of `[74]`/`[82]`) and
-  `typeBOverlapObstruction` (the entry of `[73]`/`[83]`, which the manuscript
-  routes to the fan-mass node `[75]`/`[84]`).  The two indices differ in exactly
-  one entry; `typeBDisjointAssignment_audit_facts` and
-  `typeBOverlapObstruction_audit_facts` pin both in commit order by `rfl`, and
-  the fixture `Fixtures.TypeBFanWindowNode` checks by `simp` that neither key
-  appears in the other's index.  No EG-specific declaration exists at this row.
+- **Paper fact.** For the connected assigned Type B support selected upstream,
+  the finite candidate families at its assigned high centres either admit one
+  pairwise-disjoint choice, or a minimal nonempty subfamily has no such choice.
+  The latter is the minimal overlap obstruction of
+  `def:typeB-overlap-obstruction`.
+- **What the Lean does.** `b2AssignmentDichotomy` runs on the literal
+  `typeBDirectCycleFree` cursor and reads that fact with `ExactLedger.get`. The
+  fact retains one maximal packing and one member of
+  `canonicalPieces (remainderSupport packing)`; `piece` is definitionally that
+  component's `pieceSupport`. The row calls
+  `TypeBRefinedSupport.b2_or_overlap object threshold dischargeScale packing
+  piece` exactly once. Its left arm appends `typeBB2Choice`, retaining the same
+  packing, maximality proof, component membership, negative net charge, positive
+  surplus, and `HasDisjointChoice ... (centres ... piece)`. Its right arm appends
+  `typeBOverlapObstruction`, retaining the same tuple and the current-arity
+  `Nonempty (OverlapObstruction ... packing piece)`.
+- **Gap.** None for this finite decision. It does not claim the later maximal
+  post-ledger core theorem, Type B exclusion, or fan-mass estimate. Those
+  successors remain open and must consume these exact ledgers when implemented;
+  the obsolete universal `RefinedSupportAssignment` path has been removed rather
+  than adapted.
+- **Ledger and residual.** Both arms append one semantic fact to the same
+  incoming `ExactLedger`; every earlier fact, including
+  `typeBDirectCycleFree`, remains in the exact index. No support, packing, or
+  component is reselected, and the residual is unchanged.
+- **Transport and terminals.** Core owns the split through `Decision.run`.
+  Neither arm closes at this node, and no custom result or payload transports
+  the witnesses. The immediate indices are `typeBB2ChoiceKeys` and
+  `typeBOverlapObstructionKeys`; the fixture checks branch separation at both
+  `[72]` and `[81]`.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:typeB-ledger-carriers` | def | `TypeBRefinedSupport.Carrier`<br>`TypeBRefinedSupport.CandidateEntry.assigned`<br>`TypeBRefinedSupport.CandidateEntry.chosen`<br>`TypeBRefinedSupport.CandidateEntry.pays`<br>`TypeBRefinedSupport.CandidateEntry.carriers` | no CT; carrier *supports*, which is what the disjointness question consumes.  Clause (a)'s charge is at row 28; clauses (b) and (e) are unimplemented and unconsumed, see **Gap** |
-| `def:typeB-candidate-ledger` | def | `TypeBRefinedSupport.CandidateEntry`<br>`TypeBRefinedSupport.HasDisjointChoice`<br>`TypeBRefinedSupport.IsMaximal` | no CT |
-| `def:typeB-bridge-statements`, (B2) | def | `TypeBRefinedSupport.RefinedSupportAssignment`<br>key `Spine.Key.typeBDisjointAssignment` | no CT; the B1 half is row 26 and the bridge-residual classification row 27 |
-| `def:typeB-overlap-obstruction` | def | `TypeBRefinedSupport.OverlapObstruction`<br>key `Spine.Key.typeBOverlapObstruction` | no CT |
-| `lem:typeB-bridge-to-overlap` | lem | `TypeBRefinedSupport.exists_overlapObstruction_of_not_hasDisjointChoice`<br>`TypeBRefinedSupport.hasDisjointChoice_or_overlapObstruction`<br>`TypeBRefinedSupport.hasDisjointChoice_mono` | no CT |
-| `lem:typeB-maximal-completion` | lem | `TypeBRefinedSupport.typeBMaximalCompletion` | no CT |
-| `lem:typeB-global-local-reflection` | lem | | consumed at row 27, not here |
-| `prop:typeB-global-local-bridge` | pro | | consumed at row 27, not here |
-| `def:typeB-window-incidence-profile` | def | | row 26 |
-| `def:fan-closed-port` | def | | row 26 |
-| `prop:fan-closed-port-typeB-routing` | pro | | row 26 |
-| `def:typeB-multiclosed-residual` | def | | row 29 supplies `[79]`'s profile |
+| finite candidate families | definition | `TypeBRefinedSupport.candidateFamily`, `centres` | generic graph API |
+| disjoint-carrier B2 choice | proposition | `TypeBRefinedSupport.HasDisjointChoice`, key `Spine.Key.typeBB2Choice` | generic graph API / `Decision` arm |
+| minimal overlap obstruction | structure | `TypeBRefinedSupport.OverlapObstruction`, key `Spine.Key.typeBOverlapObstruction` | generic graph API / `Decision` arm |
+| finite exhaustive split | theorem | `TypeBRefinedSupport.b2_or_overlap`, `Spine.b2AssignmentDichotomy` | generic theorem / framework `Decision` |
+| maximal post-ledger continuation | later theorem | | not claimed at this row; downstream open |
 
-Both lemmas of this row are *reached by the run*: the arm the branch takes calls
-either `typeBMaximalCompletion` or the minimization, so neither is a faithful
-implementation without a call site — which is what the eleven-row table of the
-retired legacy row recorded, and what is now false of these two.  The remaining
-empty cells are deliberate: they are other nodes' paper objects, listed so a
-reader tracking node `[72]` sees what this row does *not* claim.
+**CT composition at this row.** No CT. One `Decision.run` reads the selected
+support fact from the canonical ledger and commits exactly one of the two facts.
 
-**Both positions are wired.**  `[72]` and `[81]` are one row at two positions,
-and because a `Decision` carries no predecessor, the same `directCycleDichotomy`
-and `b2AssignmentDichotomy` values run after the degree-four cursor.  With row 29
-ported they do: `[81]` is entered on `degreeFourMarkedKeys` and exits at
-`degreeFourDirectCycleClosedKeys`, `degreeFourDisjointAssignmentKeys` and
-`degreeFourOverlapObstructionKeys` — the last two being the entries of `[82]` and
-`[83]`.  All three carry `[79]`'s profile fact, which is what lets `[82]` read the
-closed-neighbour deficit without re-deriving it.  The fixture installs both rows
-at both cursors.
+### Row 25a — Immediate B2(a)--(c) disjoint-ledger handoff
 
-**CT composition at this row.**  No CT.  A `Decision` lowered by `Decision.run`
-against the one canonical `ExactLedger`.  No CT decides B2 either, and the reason
-is structural rather than a gap: `HasDisjointChoice` is a simultaneous choice with
-a disjointness side condition over a finite family, so there is no enumeration,
-capacity comparison or descent for a CT to own — the mathematics is the
-minimization that turns its failure into a minimal obstruction, and that is a
-theorem the row calls, not an aggregation the framework performs.
+- **Paper fact.** On the successful arm of the finite B2 choice, clauses
+  B2(a)--(c) are the literal simultaneous candidate selection, pairwise carrier
+  and reserve disjointness, and the exact common-scale partition of the same
+  augmented ledger.  Every actual connected component of the remaining core
+  inherits the normalized Type A admissibility facts.  This statement does not
+  include the maximal grouped-envelope clause B2(d).
+- **What the Lean does.** `Spine.typeBDisjointLedgerRow` is one `factOnly`
+  `AtomicStrategy`.  It reads exactly `typeBB2Choice`, `selection`, and
+  `remainderNormalized` through `FactInputs.get`, constructs one
+  `TypeBRefinedSupport.DisjointLedger` from the already selected
+  `HasDisjointChoice`, commits `exactAugmentedLedgerRefinement`, and applies
+  `TypeBPostLedgerCore.postLedgerCoreHygiene` to every member of
+  `Connected.order object ledger.remainingCore`.  The deterministic
+  `Data.typeABPresentation` reads only the registered threshold, window order,
+  discharge scale, and target.  Empty internal core and hereditary Type A
+  uncompressibility are derived from the same remainder-normalization fact.
+- **What it should do.** This, before the separate maximal-completion theorem
+  establishes B2(d).
+- **Gap.** B2(a)--(c) and component hygiene are implemented.  B2(d) remains
+  open and is not represented by this key.  The generic row is exercised
+  immediately after both B2-success indices by
+  `Fixtures.TypeBFanWindowNode`; downstream `SpineAssembly` wiring is
+  deliberately deferred.
+- **Ledger and residual.** The row appends only `typeBDisjointLedger` to the
+  literal B2-success `ExactLedger`.  Its value retains the same packing and
+  `CanonicalPiece`, the constructed mathematical disjoint ledger, the exact
+  refinement, and all component hygiene.  The residual is unchanged.
+- **Transport and terminals.** `factOnly` supplies equality refinement and the
+  ordinary atomic commit.  There is no component iterator commit, payload,
+  result type, standalone residual, terminal, or B2(d) routing claim.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| B2(a)--(c) selected ledger | structure/theorem | `TypeBRefinedSupport.DisjointLedger`<br>`DisjointLedger.exactAugmentedLedgerRefinement` | generic graph API |
+| inherited component hygiene | theorem | `TypeBPostLedgerCore.postLedgerCoreHygiene` | generic graph API |
+| single ledger handoff | semantic fact / row | `Spine.Key.typeBDisjointLedger`<br>`Spine.typeBDisjointLedgerRow` | `factOnly` atomic Strategy |
+| maximal grouped completion B2(d) | later theorem | | not claimed |
+
+**CT composition at this row.** No CT.  One fact-only atomic Strategy appends
+the complete B2(a)--(c) handoff as one semantic fact.
 
 ### Row 26 — Hybrid B1 entry `[74]`/`[82]` (ported: `Spine.hybridEntry`)
 
@@ -3911,8 +3864,8 @@ and the row consumes directly.
 - **What the Lean does.**  Two values.
 
   `Spine.typeBExclusionCharge` is
-  `SpineRows.typeBExclusionChargeRow (K .typeBDisjointAssignment)
-  (K .typeBExclusionCharge)`, with `Requires := [typeBDisjointAssignment]` — B2,
+  `SpineRows.typeBExclusionChargeRow (K .typeBB2Choice)
+  (K .typeBExclusionCharge)`, with `Requires := [typeBB2Choice]` — B2,
   committed at node `[72]`/`[81]` — read through `FactInputs.get`.  At every
   connected assigned Type B support of this residual it commits:
 
@@ -4086,7 +4039,7 @@ this row does not make.
   is wired: the degree-four arm runs `[70]`, `[79]`, `[80]`, then `[81]`'s two
   halves, so `Result.typeBDegreeFourFanCap` is **deleted** and replaced by the
   four exits `degreeFourCertificateResidual`, `degreeFourDirectCycleClosed`,
-  `degreeFourDisjointAssignment` and `degreeFourOverlapObstruction`, each with its
+  `degreeFourB2Choice` and `degreeFourOverlapObstruction`, each with its
   `_audit_facts` pinned by `rfl` and its `_audit_accounts_for_every_fact`.
 
 **Paper objects at this row.**
@@ -6037,37 +5990,58 @@ rows go through the framework's one `AtomicCT.run` and its one `Decision.run`.
 
 ### Row 42 — Net-charge continuation `[57]`–`[64]`
 
-- **Paper fact.** The canonical support decomposition is exact on vertex
-  count, assigned surplus, and positive deficiency. Thus negative total charge
-  localizes to a connected negative support. If no such support exists, the
-  exact complement is `cor:global-window-join-pressure`:
-  `σ_W - σ_R ≥ (n - 73 p₁₃)/4` in the registered integer form.
-- **Live implementation.** `runResidualC` first runs
-  `netChargeLocalizationRow`. `netChargeDichotomy` then decides, over maximal
-  window packings, whether the remainder charge is nonnegative or whether one
-  packing has negative charge. The negative arm runs `negativeSupportRow`; the
-  nonnegative arm runs `windowJoinPressureRow`, which composes the two
-  boundary-demand inequalities and the exact support-card identity.
-- **Exhaustiveness and routing.** This is ordinary excluded middle on the exact
-  finite inequality, not an asymptotic decision. `ResidualCResult` and
-  `BudgetContinuation` have dependent `negativeSupport` and
-  `windowJoinPressure` constructors indexed by the original `known`. The
-  pressure arm has no closure key and is not coerced to `surplusAbove`; it is
-  the paper's explicit pressure continuation. There is no small-order leaf.
-- **Ledger.** Both arms retain `largeBudgetResidual`, their high- or
-  low-entropy prefix, and every fact before it. The pressure audit uses
-  `ExactLedger.audit_complete` on its dependent index.
+- **Paper fact.** The canonical support decomposition is exact on vertex count,
+  assigned surplus, and positive deficiency. Hence a remainder of negative net
+  charge has a connected negative piece. On the complementary nonnegative arm,
+  the density cap and surplus-aware stub supply contradict one another for all
+  sufficiently large orders, exactly as `prop:negative-net-charge` prescribes.
+- **Node `[60]`.** `runResidualC` decides the paper's sufficiently-large regime
+  with `netChargeOrderDichotomy` at the registered `spineScale = C_sp`. The
+  surviving `netChargeLarge` ledger is passed directly to `netChargeCapRow`.
+  That row reads exactly `densityCap`, `stubSupply`, and `netChargeLarge`, applies
+  `FiniteObject.strictCap_of_densityCap_of_sufficientlyLarge` followed by
+  `negativeNetCharge_of_stubSupply_of_strictCap`, and appends `netChargeCap`.
+  There is no enlarged scale, retained-reserve margin, or intermediate margin
+  fact. The `netChargeNonNegative` sign arm is then eliminated against this cap
+  at the canonical maximum packing.
+- **Node `[61]`.** `netChargeLocalizationRow` publishes the generic consequence
+  of `lem:netcharge-superadd`. On the negative sign arm,
+  `negativeSupportRow` reads exactly `netChargeNegative` and
+  `netChargeLocalization`. It keeps the selected maximal packing from the sign
+  decision, applies localization to that same remainder, and appends the actual
+  component together with its membership in `canonicalPieces` and the
+  `NegativeNetCharge` proof of its definitionally recovered `pieceSupport`.
+  Subset and connectivity are derived from that membership only where a later
+  branch consumes them. No Type B bridge reserve or later charge estimate is
+  smuggled into this node.
+- **Exhaustiveness and routing.** Both refinements are ordinary excluded middle
+  on their exact propositions. The small-order arm is eliminated only by the
+  canonical endpoint's explicit sufficiently-large premise. No table,
+  `native_decide`, finite-order cap, isolated residual, or second ledger is
+  introduced. The surviving node-`[61]` ledger continues through the existing
+  exhaustive Type A / Type B split at `[62]`.
+- **Ledger.** Starting from `residualCKeys known`, the live order arm appends
+  `netChargeLarge`; node `[60]` appends `netChargeCap`; localization appends
+  `netChargeLocalization`; the sign decision appends `netChargeNegative`; and
+  node `[61]` appends `negativeSupport`. Thus the exact surviving prefix is
+  `negativeSupport :: netChargeNegative :: netChargeLocalization ::
+  netChargeCap :: netChargeLarge :: largeBudgetResidual :: known`, with the
+  literal high- or low-entropy ancestry retained as `known`.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
 | `def:canonical-decomp` | definition | `FiniteObject.canonicalPieces`, `pieceSupport` | generic graph API |
-| `lem:netcharge-superadd` | lemma | `FiniteObject.exists_connected_negativeNetCharge`, `Spine.netChargeLocalization` | `AtomicStrategy` |
+| `lem:netcharge-superadd` | lemma | `FiniteObject.exists_canonicalPiece_negativeNetCharge`, `Spine.netChargeLocalization` | generic graph API / `AtomicStrategy` |
+| sufficiently-large net-cap predicate and cutoff | definition / lemma | `FiniteObject.SufficientlyLargeForNetCap`, `netCapCutoff`, `sufficientlyLargeForNetCap_of_cutoff` | generic graph API; symbolic arithmetic |
+| sufficiently-large routing | routing | `Spine.netChargeOrderDichotomy` | exhaustive `Decision`; facts `netChargeLarge` / `netChargeSmall` |
+| exact strict cap from density | lemma | `FiniteObject.strictCap_of_densityCap_of_sufficientlyLarge` | generic graph API |
+| `prop:negative-net-charge` total-remainder conclusion | proposition | `FiniteObject.negativeNetCharge_of_stubSupply_of_strictCap`, `Spine.netChargeCap` | generic graph API / `AtomicStrategy` |
 | net-charge sign split | routing | `Spine.netChargeDichotomy` | `Decision` |
-| `prop:negative-net-charge` support arm | proposition | `Spine.negativeSupport` | `AtomicStrategy` |
-| `cor:global-window-join-pressure` complement | corollary | `Spine.windowJoinPressure` | `AtomicStrategy` |
-| generic continuation | routing | `Spine.runResidualC` | dependent `ExactLedger` result |
+| node `[60]` nonnegative-arm contradiction | incompatibility | `Spine.instIncompatibleNetChargeCapNonNegative` | sealed `Incompatible`; canonical maximum packing |
+| node `[61]` support arm | proposition | `Spine.negativeSupport` | `AtomicStrategy` reading the existing localization fact |
+| generic continuation | routing | `Spine.runResidualC`, `Spine.runNegativeSupport` | dependent `ExactLedger` continuation |
 
 ### Row 43 — Corridor cut-state `T(J)` `[145]`–`[157]`
 

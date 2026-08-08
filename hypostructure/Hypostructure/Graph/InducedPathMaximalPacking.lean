@@ -50,6 +50,132 @@ def support (object : FiniteObject.{u}) (order : Nat)
       Finset.card_image_of_injective _ window.injective
     _ = order := by simp
 
+/-! ## Canonical orientation of a packed P13 window -/
+
+namespace P13
+
+/-- Reversal of the thirteen path positions. -/
+def reverseIndex (index : Fin 13) : Fin 13 :=
+  ⟨12 - index.1, by omega⟩
+
+@[simp] theorem reverseIndex_involutive (index : Fin 13) :
+    reverseIndex (reverseIndex index) = index := by
+  apply Fin.ext
+  simp [reverseIndex]
+  omega
+
+theorem reverseIndex_injective : Function.Injective reverseIndex :=
+  Function.LeftInverse.injective reverseIndex_involutive
+
+theorem pathGraph_adj_reverse_iff (left right : Fin 13) :
+    (SimpleGraph.pathGraph 13).Adj (reverseIndex left) (reverseIndex right) ↔
+      (SimpleGraph.pathGraph 13).Adj left right := by
+  rw [SimpleGraph.pathGraph_adj, SimpleGraph.pathGraph_adj]
+  simp only [reverseIndex]
+  omega
+
+/-- The opposite orientation of one induced P13 occurrence. -/
+def reverseWindow (window : Window object 13) : Window object 13 where
+  toFun index := window (reverseIndex index)
+  inj' := by
+    intro left right equal
+    exact reverseIndex_injective (window.injective equal)
+  map_rel_iff' := by
+    intro left right
+    change object.graph.Adj (window (reverseIndex left))
+        (window (reverseIndex right)) ↔ _
+    rw [window.map_adj_iff, pathGraph_adj_reverse_iff]
+
+@[simp] theorem reverseWindow_apply (window : Window object 13)
+    (index : Fin 13) :
+    reverseWindow window index = window (reverseIndex index) := rfl
+
+/-- Reversing an occurrence does not change its embedded support. -/
+theorem support_reverseWindow (window : Window object 13) :
+    support object 13 (reverseWindow window) = support object 13 window := by
+  classical
+  ext vertex
+  simp only [support, Finset.mem_image, Finset.mem_univ, true_and]
+  constructor
+  · rintro ⟨index, rfl⟩
+    exact ⟨reverseIndex index, by simp⟩
+  · rintro ⟨index, rfl⟩
+    exact ⟨reverseIndex index, by simp⟩
+
+/-- Valid ordered P13 placements with one fixed embedded support, in the
+canonical finite embedding schedule. -/
+noncomputable def placementCandidates (object : FiniteObject.{u})
+    (windowSupport : Finset object.Vertex) : List (Window object 13) := by
+  classical
+  exact (windowSchedule object 13).values.filter fun window =>
+    support object 13 window = windowSupport
+
+/-- Membership in the support-filtered P13 schedule, without exposing the
+filter implementation to the canonical selector proofs. -/
+theorem mem_placementCandidates_iff (window : Window object 13)
+    (windowSupport : Finset object.Vertex) :
+    window ∈ placementCandidates object windowSupport ↔
+      window ∈ (windowSchedule object 13).values ∧
+        support object 13 window = windowSupport := by
+  classical
+  simp [placementCandidates]
+
+/-- Every valid P13 occurrence appears in the candidate list for its support. -/
+theorem mem_placementCandidates (window : Window object 13) :
+    window ∈ placementCandidates object (support object 13 window) := by
+  exact (mem_placementCandidates_iff window _).2
+    ⟨by classical simp [windowSchedule], rfl⟩
+
+/-- The lexicographically first valid ordered placement of an induced P13
+support. -/
+noncomputable def canonicalPlacement (window : Window object 13) :
+    Window object 13 :=
+  (placementCandidates object (support object 13 window)).headD window
+
+/-- The selected placement is the first entry of the support-filtered schedule. -/
+theorem canonicalPlacement_mem_candidates (window : Window object 13) :
+    canonicalPlacement window ∈
+      placementCandidates object (support object 13 window) := by
+  classical
+  have original := mem_placementCandidates (object := object) window
+  cases candidatesEq : placementCandidates object (support object 13 window) with
+  | nil => simp [candidatesEq] at original
+  | cons first rest => simp [canonicalPlacement, candidatesEq]
+
+/-- The selected placement is a member of the complete embedding schedule. -/
+theorem canonicalPlacement_mem_schedule (window : Window object 13) :
+    canonicalPlacement window ∈ (windowSchedule object 13).values := by
+  exact (mem_placementCandidates_iff (canonicalPlacement window)
+    (support object 13 window)).1
+      (canonicalPlacement_mem_candidates (object := object) window) |>.1
+
+/-- The selected placement has exactly the requested embedded support. -/
+theorem canonicalPlacement_support (window : Window object 13) :
+    support object 13 (canonicalPlacement window) = support object 13 window := by
+  exact (mem_placementCandidates_iff (canonicalPlacement window)
+    (support object 13 window)).1
+      (canonicalPlacement_mem_candidates (object := object) window) |>.2
+
+/-- Canonical placement depends only on the embedded support. -/
+theorem canonicalPlacement_eq_of_support_eq (left right : Window object 13)
+    (sameSupport : support object 13 left = support object 13 right) :
+    canonicalPlacement left = canonicalPlacement right := by
+  classical
+  have original := mem_placementCandidates (object := object) left
+  unfold canonicalPlacement
+  rw [sameSupport]
+  cases candidatesEq : placementCandidates object (support object 13 right) with
+  | nil => simp [sameSupport, candidatesEq] at original
+  | cons first rest => simp [candidatesEq]
+
+/-- Reversal normalization: the two orientations select the same canonical
+ordered placement. -/
+theorem canonicalPlacement_reverse (window : Window object 13) :
+    canonicalPlacement (reverseWindow window) = canonicalPlacement window :=
+  canonicalPlacement_eq_of_support_eq _ _ (support_reverseWindow window)
+
+end P13
+
 def admissibleWindows (object : FiniteObject.{u}) (order : Nat)
     (windows : Finset (Window object order)) : Prop :=
   ∀ ⦃left right : Window object order⦄,

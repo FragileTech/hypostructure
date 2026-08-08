@@ -564,81 +564,50 @@ noncomputable def runSaturatedExits
           (by simp [censusFresh]) (by simp [descentFresh])
           (by simp [closedFresh]) (by simp [closureFresh]))
 
-/-! ## Figure 8's branch, attached to `Spine.run`
+/-! ## Figure 8's reusable continuation result
 
-`Spine.run` reaches node `[93]`'s yes arm and node `[94]`; Figure 8 continues
-both into the saturated exit list.  The visible arm enters at exit `(1)` and
-walks `[95]`--`[124]`; the silent arm is routed by
-`lem:typeA-unpeeled-silent-routing` straight into the shared segment, so it
-already carries `typeASaturatedExitEntry` and enters the ladder at node `[101]`.
-
-Nothing here is a second copy of the spine: `Spine.run` is called once and its
-other arms are passed through unchanged. -/
+The generic exit walkers above remain the canonical implementations of the
+visible and silent continuations.  This result shell also accepts the exact
+`Spine.runCore` result unchanged: an existential Residual-C ancestry is not
+silently treated as the historical low-entropy alias merely to manufacture
+freshness evidence for later rows. -/
 
 /-- **The spine, with Figure 8's saturated exit list attached.**
 
-`visibleExits` is node `[93]`'s yes arm continued through
-`Spine.runSaturatedExits`, `silentExits` is node `[94]` continued through
-`Spine.runRouteEight`, and `spine` is every arm of `Spine.run` that does not
-reach the saturated Type A branch. -/
+`visibleExits` and `silentExits` are the outputs of explicit calls to the two
+generic walkers.  `spine` retains an unconsumed exact spine result. -/
 inductive SpineWithExitsResult
     (selected : Input BranchState Presentation presentation data) where
   | spine (result : Result selected)
   | visibleExits
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (result : SaturatedExitResult selected
-        (typeAVisibleEntryKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data)))
+        (residualCTypeAVisibleEntryKeys known))
   | silentExits
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (result : Route8Result selected
-        (typeAVisibleFirstExcessKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data)))
+        (residualCTypeAVisibleFirstExcessKeys known))
 
 set_option maxHeartbeats 3200000 in
-/-- **Block A, run, with Figure 8's exit list attached.**
-
-The two saturated Type A arms of `Spine.run` are continued into the exit list
-in Figure 8's own order; every other arm is returned as it stands.  Each
-continuation's requirements are discharged by instance resolution against the
-index `Spine.run` actually leaves, and every freshness side condition is decided
-on the vocabulary's own finite `Key`. -/
+/-- Run the entry spine without coercing an existential Residual-C ancestry to
+a fixed predecessor index.  Explicit callers of `runSaturatedExits` and
+`runRouteEight` must provide their actual ledger index and freshness proofs. -/
 noncomputable def runWithSaturatedExits
     (T : Core.Target (problem BranchState Presentation presentation data))
     (targetPredicate : T.Predicate = Graph.HasCycleWithLength data.LengthOK)
     (opened : OpenedScope
-      (P := problem BranchState Presentation presentation data) (K .selection)) :
+      (P := problem BranchState Presentation presentation data) (K .selection))
+    (sufficientlyLarge :
+      Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
+        data.dischargeScale data.windowOrder data.windowRate data.spineScale
+        opened.selected.object.vertexCount) :
     SpineWithExitsResult opened.selected := by
   classical
-  match Spine.runCore T targetPredicate opened with
+  match Spine.runCore T targetPredicate opened sufficientlyLarge with
   | .typeAVisibleEntry visible =>
-      exact .visibleExits
-        (runSaturatedExits visible (returnFresh := by simp)
-          (oneFreeFresh := by simp) (thetaFresh := by simp)
-          (twoFreeFresh := by simp) (collisionFresh := by simp)
-          (threeFreeFresh := by simp) (entryFresh := by simp)
-          (peelFresh := by simp) (noPeelFresh := by simp)
-          (peeledChargeFresh := by simp) (compressionFresh := by simp)
-          (traceLevelFresh := by simp) (exitFourFresh := by simp)
-          (exitFourFreeFresh := by simp) (exitFiveFresh := by simp)
-          (exitFiveFreeFresh := by simp) (exitSixFresh := by simp)
-          (exitSixFreeFresh := by simp) (exitSixProperFresh := by simp)
-          (exitSixGlobalFresh := by simp) (exitSevenHandoffFresh := by simp)
-          (exitSevenFreeFresh := by simp) (residualFresh := by simp)
-          (freeFresh := by simp) (burdenFresh := by simp) (coreFresh := by simp)
-          (censusFresh := by simp) (descentFresh := by simp)
-          (closedFresh := by simp) (closureFresh := by simp))
+      exact .spine (.typeAVisibleEntry visible)
   | .typeAVisibleFirstExcess silent =>
-      exact .silentExits
-        (runRouteEight silent (peelFresh := by simp) (noPeelFresh := by simp)
-          (peeledChargeFresh := by simp) (compressionFresh := by simp)
-          (traceLevelFresh := by simp) (exitFourFresh := by simp)
-          (exitFourFreeFresh := by simp) (exitFiveFresh := by simp)
-          (exitFiveFreeFresh := by simp) (exitSixFresh := by simp)
-          (exitSixFreeFresh := by simp) (exitSixProperFresh := by simp)
-          (exitSixGlobalFresh := by simp) (exitSevenHandoffFresh := by simp)
-          (exitSevenFreeFresh := by simp) (residualFresh := by simp)
-          (freeFresh := by simp) (burdenFresh := by simp) (coreFresh := by simp)
-          (censusFresh := by simp) (descentFresh := by simp)
-          (closedFresh := by simp) (closureFresh := by simp))
+      exact .spine (.typeAVisibleFirstExcess silent)
   | other => exact .spine other
 
 end Hypostructure.Graph.Strategy.Spine

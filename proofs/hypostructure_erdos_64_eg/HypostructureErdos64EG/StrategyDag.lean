@@ -54,10 +54,15 @@ noncomputable example
         spineData.{u})
       (Hypostructure.Graph.Strategy.Spine.K (BranchState := BranchState)
         (presentation := erdosReceiverLoadProfile) (data := spineData.{u})
-        .selection)) :
+        .selection))
+    (sufficientlyLarge :
+      Graph.FiniteObject.SufficientlyLargeForNetCap (spineData.{u}).threshold
+        (spineData.{u}).dischargeScale (spineData.{u}).windowOrder
+        (spineData.{u}).windowRate (spineData.{u}).spineScale
+        opened.selected.object.vertexCount) :
     ChapterOneContinuation opened.selected :=
   runChapterOne (BranchState := BranchState)
     (presentation := erdosReceiverLoadProfile) (data := spineData.{u})
-    target.{u} rfl opened
+    target.{u} rfl opened sufficientlyLarge
 
 end HypostructureErdos64EG

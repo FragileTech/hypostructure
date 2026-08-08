@@ -1,4 +1,5 @@
-import Hypostructure.Core.Strategy.Data
+import Hypostructure.Core.Strategy.ProblemInput
+import Hypostructure.Graph.RootedReturn
 import Hypostructure.Graph.ReceiverLoad
 
 /-!

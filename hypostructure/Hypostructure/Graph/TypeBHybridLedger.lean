@@ -1,4 +1,5 @@
 import Hypostructure.Graph.TypeBFanClosedPorts
+import Hypostructure.Graph.HighCentrePorts
 
 /-!
 # The hybrid window / non-window incidence ledger of one Type B fan
@@ -64,9 +65,7 @@ All rational quantities are over `ℚ`, consistently with
 namespace Hypostructure.Graph.TypeBFanClosedPorts
 
 open Hypostructure.Graph
-open Hypostructure.Graph.TypeBOpenPorts
 open Hypostructure.Graph.TypeBMarkedFan
-open Hypostructure.Graph.Strategy.Official.Features.DeletionFanIncidence
 open Hypostructure.Graph.ReceiverLoad (LoadCapacityProfile)
 
 universe u v
@@ -119,27 +118,21 @@ order.  This is literally the shoulder schedule `s(p)` of the port `p = (h, u)`
 neighbour model is introduced. -/
 def outsideNeighbours (profile : Profile object) (u : object.Vertex) :
     List object.Vertex :=
-  outsideIncidences object profile.marked.fan.hub u
-
-theorem outsideNeighbours_eq_shoulders {profile : Profile object}
-    {p : Port object} (center : p.center = profile.marked.fan.hub) :
-    profile.outsideNeighbours p.endpoint = p.shoulders := by
-  rw [outsideNeighbours, Port.shoulders, center]
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  (object.orderedNeighbors u).filter fun z => z ≠ profile.marked.fan.hub
 
 theorem mem_outsideNeighbours_iff (profile : Profile object)
     (u z : object.Vertex) :
     z ∈ profile.outsideNeighbours u ↔
       z ≠ profile.marked.fan.hub ∧ object.graph.Adj u z := by
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  rw [outsideNeighbours, outsideIncidences,
-    (object.orderedNeighbors_nodup u).mem_erase_iff,
-    object.mem_orderedNeighbors_iff]
+  simp [outsideNeighbours, object.mem_orderedNeighbors_iff, and_comm]
 
 theorem outsideNeighbours_nodup (profile : Profile object) (u : object.Vertex) :
     (profile.outsideNeighbours u).Nodup := by
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  rw [outsideNeighbours, outsideIncidences]
-  exact (object.orderedNeighbors_nodup u).erase _
+  rw [outsideNeighbours]
+  exact (object.orderedNeighbors_nodup u).filter _
 
 /-- A cubic-closed fan neighbour has exactly two non-`h` incidences: this is
 `N_G(u) = {h, a_u, b_u}` of `def:marked-typeB-fan`. -/
@@ -149,10 +142,25 @@ theorem outsideNeighbours_length {profile : Profile object} {u : object.Vertex}
   obtain ⟨rimMember, closed⟩ := (mem_closedNeighbours_iff u).1 member
   have adjacency : object.graph.Adj profile.marked.fan.hub u :=
     (profile.marked.rim_eq_neighbourhood u).1 rimMember
-  have counted := outsideIncidences_length object adjacency
-  rw [closed.1.2.1] at counted
-  simp only [outsideNeighbours]
-  omega
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  have hubMember : profile.marked.fan.hub ∈ object.orderedNeighbors u :=
+    (object.mem_orderedNeighbors_iff u profile.marked.fan.hub).2 adjacency.symm
+  have filteredNodup := (object.orderedNeighbors_nodup u).filter
+    (fun z => z ≠ profile.marked.fan.hub)
+  calc
+    (profile.outsideNeighbours u).length =
+        ((profile.outsideNeighbours u).toFinset).card :=
+      (List.toFinset_card_of_nodup filteredNodup).symm
+    _ = ((object.orderedNeighbors u).toFinset.erase
+          profile.marked.fan.hub).card := by
+      congr 1
+      ext z
+      simp [outsideNeighbours, and_comm]
+    _ = (object.orderedNeighbors u).toFinset.card - 1 :=
+      Finset.card_erase_of_mem (by simpa using hubMember)
+    _ = 2 := by
+      rw [List.toFinset_card_of_nodup (object.orderedNeighbors_nodup u),
+        object.orderedNeighbors_length, closed.1.2.1]
 
 theorem hub_adj_of_mem_closedNeighbours {profile : Profile object}
     {u : object.Vertex} (member : u ∈ profile.closedNeighbours) :
@@ -406,7 +414,9 @@ were incident with two distinct cubic-closed neighbours `u` and `v`, then
 `NormalForm.noCommonNeighbourOutside`, i.e. by the target avoidance already
 carried on the residual, and *not* by any hypothesis of this theorem. -/
 theorem incidences_endpoint_injective (profile : Profile object)
-    (normal : NormalForm object profile.marked.fan.hub)
+    (normal : NormalForm object 3 profile.marked.fan.hub)
+    (openClosed : ∀ u ∈ profile.closedNeighbours,
+      IsOpenPort object profile.marked.fan.hub u)
     {e f : object.Vertex × object.Vertex}
     (eMember : e ∈ profile.incidences) (fMember : f ∈ profile.incidences)
     (sameEndpoint : e.2 = f.2) : e = f := by
@@ -418,21 +428,29 @@ theorem incidences_endpoint_injective (profile : Profile object)
   · exact Prod.ext sameOwner sameEndpoint
   · exfalso
     have fAdj' : object.graph.Adj f.1 e.2 := by rw [sameEndpoint]; exact fAdj
+    have ownersNonadjacent : ¬ object.graph.Adj e.1 f.1 := by
+      intro ownersAdjacent
+      apply openClosed e.1 eClosed
+      refine ⟨f.1, e.2, ⟨ownersAdjacent, ?_⟩, ⟨eAdj, eNeHub⟩, fAdj'⟩
+      exact (hub_adj_of_mem_closedNeighbours fClosed).ne'
     exact normal.noCommonNeighbourOutside
       (hub_adj_of_mem_closedNeighbours eClosed)
-      (hub_adj_of_mem_closedNeighbours fClosed) sameOwner eNeHub eAdj fAdj'
+      (hub_adj_of_mem_closedNeighbours fClosed) sameOwner ownersNonadjacent
+      eNeHub eAdj fAdj'
 
 /-- Distinct cubic-closed neighbours share no non-`h` endpoint: the manuscript's
 own phrasing of the previous theorem. -/
 theorem outsideNeighbours_disjoint (profile : Profile object)
-    (normal : NormalForm object profile.marked.fan.hub)
+    (normal : NormalForm object 3 profile.marked.fan.hub)
+    (openClosed : ∀ u ∈ profile.closedNeighbours,
+      IsOpenPort object profile.marked.fan.hub u)
     {u v : object.Vertex} (uMember : u ∈ profile.closedNeighbours)
     (vMember : v ∈ profile.closedNeighbours) (distinct : u ≠ v)
     {z : object.Vertex} (uIncidence : z ∈ profile.outsideNeighbours u)
     (vIncidence : z ∈ profile.outsideNeighbours v) : False := by
   have equal :
       ((u, z) : object.Vertex × object.Vertex) = (v, z) :=
-    incidences_endpoint_injective profile normal
+    incidences_endpoint_injective profile normal openClosed
       ((mem_incidences_iff profile (u, z)).2 ⟨uMember, uIncidence⟩)
       ((mem_incidences_iff profile (v, z)).2 ⟨vMember, vIncidence⟩) rfl
   exact distinct ((Prod.mk.injEq ..).mp equal).1
@@ -544,12 +562,12 @@ theorem hybridNonWindowDemand_eq {profile : Profile object}
     profile.hybridNonWindowDemand ledger
       = max 0 (profile.nonWindowCredit
           - (3 - ((object.degree profile.marked.fan.hub : ℚ) + 1)
-              * ledger.dischargeRate)) := by
+              * (1 / (ledger.loadMultiplier : ℚ)))) := by
   have total := windowCredit_add_nonWindowCredit (profile := profile)
   have deficit : profile.closedNeighbourDeficit ledger
       = (profile.closedCount : ℚ)
         - (3 - ((object.degree profile.marked.fan.hub : ℚ) + 1)
-            * ledger.dischargeRate) := rfl
+            * (1 / (ledger.loadMultiplier : ℚ))) := rfl
   rw [hybridNonWindowDemand, deficit]
   congr 1
   linarith
@@ -582,7 +600,10 @@ nonnegative, and `k = 8` is exactly where that is sharpest.  At `α = 1/4` the
 slack is the manuscript's `(11-k)/4 ≥ 3/4`. -/
 theorem typeBHybridIncidenceBudget (profile : Profile object)
     (ledger : LoadCapacityProfile)
-    (normal : NormalForm object profile.marked.fan.hub)
+    (normal : NormalForm object 3 profile.marked.fan.hub)
+    (scale : ledger.loadMultiplier = 4)
+    (openClosed : ∀ u ∈ profile.closedNeighbours,
+      IsOpenPort object profile.marked.fan.hub u)
     :
     profile.incidences.card = 2 * profile.closedCount ∧
       (∀ e ∈ profile.incidences, ∀ f ∈ profile.incidences, e.2 = f.2 → e = f) ∧
@@ -590,22 +611,27 @@ theorem typeBHybridIncidenceBudget (profile : Profile object)
       profile.nonWindowIncidences.card = profile.nonWindowIncidenceTotal ∧
       profile.windowCredit + profile.nonWindowCredit
           = (profile.closedCount : ℚ) ∧
-      profile.closedNeighbourDeficit ledger + (3 - 9 * ledger.dischargeRate)
+      profile.closedNeighbourDeficit ledger +
+          (3 - 9 * (1 / (ledger.loadMultiplier : ℚ)))
           ≤ profile.windowCredit + profile.nonWindowCredit ∧
       profile.hybridNonWindowDemand ledger ≤ profile.nonWindowCredit := by
   have total := windowCredit_add_nonWindowCredit (profile := profile)
   have cap : (object.degree profile.marked.fan.hub : ℚ) ≤ 8 := by
     exact_mod_cast profile.marked.degree_le_eight
-  have rateNonneg := ledger.dischargeRate_nonneg
-  have credit := ledger.nine_mul_dischargeRate_le_three
+  have rateNonneg : (0 : ℚ) ≤ 1 / (ledger.loadMultiplier : ℚ) := by
+    positivity
+  have credit : 9 * (1 / (ledger.loadMultiplier : ℚ)) ≤ (3 : ℚ) := by
+    rw [scale]
+    norm_num
   have degreeRate :
-      ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate
-        ≤ 9 * ledger.dischargeRate :=
+      ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+          (1 / (ledger.loadMultiplier : ℚ))
+        ≤ 9 * (1 / (ledger.loadMultiplier : ℚ)) :=
     mul_le_mul_of_nonneg_right (by linarith) rateNonneg
   have deficit : profile.closedNeighbourDeficit ledger
       = (profile.closedCount : ℚ)
         - (3 - ((object.degree profile.marked.fan.hub : ℚ) + 1)
-            * ledger.dischargeRate) := rfl
+            * (1 / (ledger.loadMultiplier : ℚ))) := rfl
   have windowNonneg : (0 : ℚ) ≤ profile.windowCredit := by
     have : (0 : ℚ) ≤ (profile.windowIncidenceTotal : ℚ) := by positivity
     simp only [windowCredit]
@@ -617,7 +643,7 @@ theorem typeBHybridIncidenceBudget (profile : Profile object)
   refine ⟨card_incidences profile, ?_, card_windowIncidences,
     card_nonWindowIncidences, total, by rw [deficit]; linarith, ?_⟩
   · intro e eMember f fMember same
-    exact incidences_endpoint_injective profile normal eMember fMember same
+    exact incidences_endpoint_injective profile normal openClosed eMember fMember same
   · rw [hybridNonWindowDemand, max_le_iff]
     exact ⟨nonWindowNonneg, by rw [deficit]; linarith⟩
 
@@ -634,7 +660,10 @@ that are pairwise distinct.
 genuine case split on the `max` in `D_N`, not an unfolding. -/
 theorem typeBHybridB1 (profile : Profile object)
     (ledger : LoadCapacityProfile)
-    (normal : NormalForm object profile.marked.fan.hub)
+    (normal : NormalForm object 3 profile.marked.fan.hub)
+    (scale : ledger.loadMultiplier = 4)
+    (openClosed : ∀ u ∈ profile.closedNeighbours,
+      IsOpenPort object profile.marked.fan.hub u)
     :
     profile.closedNeighbourDeficit ledger ≤ profile.hybridCapacity ledger ∧
       profile.hybridNonWindowDemand ledger ≤ profile.nonWindowCredit ∧
@@ -643,7 +672,7 @@ theorem typeBHybridB1 (profile : Profile object)
       (∀ e ∈ profile.incidences, ∀ f ∈ profile.incidences,
         e.2 = f.2 → e = f) := by
   obtain ⟨-, injective, windowCard, nonWindowCard, -, -, feasible⟩ :=
-    typeBHybridIncidenceBudget profile ledger normal
+    typeBHybridIncidenceBudget profile ledger normal scale openClosed
   refine ⟨?_, feasible, ?_, injective⟩
   · rw [hybridCapacity, hybridNonWindowDemand]
     rcases le_or_gt (profile.closedNeighbourDeficit ledger - profile.windowCredit) 0
@@ -671,295 +700,39 @@ Parts (a) and (b) are `fanClosedPortTypeBRouting`; this completes the
 proposition's local content. -/
 theorem fanClosedPortHybridEntry (profile : Profile object)
     (ledger : LoadCapacityProfile)
-    (normal : NormalForm object profile.marked.fan.hub)
+    (normal : NormalForm object 3 profile.marked.fan.hub)
+    (scale : ledger.loadMultiplier = 4)
+    (openClosed : ∀ u ∈ profile.closedNeighbours,
+      IsOpenPort object profile.marked.fan.hub u)
     {ports : Finset object.Vertex}
-    (fanClosed : ∀ vertex ∈ ports, ∃ p : Port object,
-      p.endpoint = vertex ∧ profile.IsFanClosed p)
+    (fanClosed : ∀ vertex ∈ ports, profile.IsFanClosed vertex)
     (two : 2 ≤ ports.card) :
     profile.closedNeighbourDeficit ledger ≤ profile.hybridCapacity ledger ∧
-      ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate - 1
+      ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+          (1 / (ledger.loadMultiplier : ℚ)) - 1
           ≤ profile.closedNeighbourDeficit ledger ∧
       0 < profile.closedNeighbourDeficit ledger ∧
-      (∀ p : Port object, profile.IsFanClosed p → ∀ shoulder ∈ p.shoulders,
-        (p.endpoint, shoulder) ∈ profile.incidences ∧
-          ((p.endpoint, shoulder) ∈ profile.windowIncidences ∨
-            (p.endpoint, shoulder) ∈ profile.nonWindowIncidences)) := by
+      (∀ endpoint, profile.IsFanClosed endpoint → ∀ shoulder,
+        IsShoulder object profile.marked.fan.hub endpoint shoulder →
+          (endpoint, shoulder) ∈ profile.incidences ∧
+            ((endpoint, shoulder) ∈ profile.windowIncidences ∨
+              (endpoint, shoulder) ∈ profile.nonWindowIncidences)) := by
   obtain ⟨-, -, deficitBound, positive⟩ :=
-    fanClosedPortTypeBRouting profile ledger normal fanClosed two
-  obtain ⟨capacity, -, -, -⟩ := Profile.typeBHybridB1 profile ledger normal
+    fanClosedPortTypeBRouting profile ledger normal scale fanClosed two
+  obtain ⟨capacity, -, -, -⟩ :=
+    Profile.typeBHybridB1 profile ledger normal scale openClosed
   refine ⟨capacity, deficitBound, positive, ?_⟩
-  intro p closed shoulder member
-  have owner : p.endpoint ∈ profile.closedNeighbours :=
+  intro endpoint closed shoulder member
+  have owner : endpoint ∈ profile.closedNeighbours :=
     Profile.mem_closedNeighbours_of_isFanClosed normal closed
-  have incidence : shoulder ∈ profile.outsideNeighbours p.endpoint := by
-    rw [Profile.outsideNeighbours_eq_shoulders closed.center]
-    exact member
-  have carrier : (p.endpoint, shoulder) ∈ profile.incidences :=
-    (Profile.mem_incidences_iff profile (p.endpoint, shoulder)).2 ⟨owner, incidence⟩
+  have incidence : shoulder ∈ profile.outsideNeighbours endpoint :=
+    (Profile.mem_outsideNeighbours_iff profile endpoint shoulder).2
+      ⟨member.2, member.1⟩
+  have carrier : (endpoint, shoulder) ∈ profile.incidences :=
+    (Profile.mem_incidences_iff profile (endpoint, shoulder)).2 ⟨owner, incidence⟩
   refine ⟨carrier, ?_⟩
   rcases closed.incidence_classified member with window | nonWindow
   · exact Or.inl (Finset.mem_filter.2 ⟨carrier, window⟩)
   · exact Or.inr (Finset.mem_filter.2 ⟨carrier, nonWindow⟩)
-
-/-! ## Non-vacuity
-
-The witness graph of `TypeBFanClosedPorts.Witness` is reused, now with a
-packed-window union that actually meets the fan: it carries both non-`h`
-incidences of the neighbour `1`, exactly one of the two non-`h` incidences of
-`2`, and neither incidence of `3` and `4`.  All three support classes of
-`def:typeB-hybrid-incidence` are therefore nonempty, `I_W` and `I_N` are both
-nonzero, and the hybrid demand `D_N` is a strictly positive proper part of
-`D_B`, so the ledger inequality proved above is not attained by a degenerate
-`I_W = 0` or `D_N = 0` configuration. -/
-
-
-namespace Witness
-
-local instance vertexDecEq : DecidableEq fanObject.Vertex :=
-  inferInstanceAs (DecidableEq (Fin 13))
-
-local instance vertexFintype : Fintype fanObject.Vertex :=
-  inferInstanceAs (Fintype (Fin 13))
-
-local instance adjDecidable : DecidableRel fanObject.graph.Adj := fanObject.decideAdj
-
-/-- The four fan neighbours of the witness centre. -/
-def rimOne : fanObject.Vertex := (1 : Fin 13)
-/-- The second fan neighbour. -/
-def rimTwo : fanObject.Vertex := (2 : Fin 13)
-/-- The third fan neighbour. -/
-def rimThree : fanObject.Vertex := (3 : Fin 13)
-/-- The fourth fan neighbour. -/
-def rimFour : fanObject.Vertex := (4 : Fin 13)
-/-- Both shoulders of `rimOne` lie in the packed-window union. -/
-def winFive : fanObject.Vertex := (5 : Fin 13)
-/-- The second shoulder of `rimOne`. -/
-def winSix : fanObject.Vertex := (6 : Fin 13)
-/-- One of the two shoulders of `rimTwo`. -/
-def winSeven : fanObject.Vertex := (7 : Fin 13)
-
-/-- A packed-window union meeting the fan: `winFive` and `winSix` are the two
-shoulders of the fan neighbour `rimOne`, and `winSeven` is one of the two
-shoulders of `rimTwo`. -/
-def hybridWindow : Finset fanObject.Vertex := {winFive, winSix, winSeven}
-
-/-- The assigned profile whose window union is `hybridWindow`. -/
-def hybridProfile : Profile fanObject where
-  marked := markedFan
-  window := hybridWindow
-  envelope := fanObject.vertexFinset
-
-theorem hybridProfile_window : hybridProfile.window = hybridWindow := rfl
-
-/-- `N(h) = {1, 2, 3, 4}` in the witness. -/
-theorem adj_hub_iff (vertex : fanObject.Vertex) :
-    fanObject.graph.Adj hub vertex ↔
-      (vertex = rimOne ∨ vertex = rimTwo ∨ vertex = rimThree ∨
-        vertex = rimFour) := by
-  revert vertex
-  decide
-
-theorem hub_adj_of_mem_rim {vertex : fanObject.Vertex}
-    (member : vertex ∈ hybridProfile.marked.fan.rim) :
-    fanObject.graph.Adj hub vertex :=
-  (hybridProfile.marked.rim_eq_neighbourhood vertex).1 member
-
-theorem mem_rim_of_hub_adj {vertex : fanObject.Vertex}
-    (adjacency : fanObject.graph.Adj hub vertex) :
-    vertex ∈ hybridProfile.marked.fan.rim :=
-  (hybridProfile.marked.rim_eq_neighbourhood vertex).2 adjacency
-
-/-- The fan rim of the witness. -/
-theorem hybrid_rim :
-    hybridProfile.marked.fan.rim
-      = ({rimOne, rimTwo, rimThree, rimFour} : Finset fanObject.Vertex) := by
-  ext vertex
-  simp only [Finset.mem_insert, Finset.mem_singleton]
-  exact ⟨fun member => (adj_hub_iff vertex).1 (hub_adj_of_mem_rim member),
-    fun member => mem_rim_of_hub_adj ((adj_hub_iff vertex).2 member)⟩
-
-/-- Every fan neighbour of the witness is cubic-closed: the assigned envelope
-carries the whole vertex schedule. -/
-theorem hybrid_closedNeighbours :
-    hybridProfile.closedNeighbours = hybridProfile.marked.fan.rim := by
-  classical
-  refine Finset.filter_true_of_mem ?_
-  intro vertex member
-  have separated : ∀ v : fanObject.Vertex, fanObject.graph.Adj hub v →
-      ¬ (v = winFive ∨ v = winSix ∨ v = winSeven) := by decide
-  have outside : vertex ∉ hybridProfile.window := by
-    simp only [hybridProfile_window, hybridWindow, Finset.mem_insert,
-      Finset.mem_singleton]
-    exact separated vertex (hub_adj_of_mem_rim member)
-  exact ⟨⟨member, fanNormalForm.neighbourCubic (hub_adj_of_mem_rim member),
-      fun other _ _ => fanObject.mem_vertexFinset other⟩,
-    (Profile.mem_remainder_iff vertex).2 ⟨member, outside⟩⟩
-
-theorem hybrid_closedCount : hybridProfile.closedCount = 4 := by
-  rw [Profile.closedCount, hybrid_closedNeighbours,
-    hybridProfile.marked.rim_card_eq_degree]
-  exact degree_hub
-
-
-/-! The window-incidence counts of the four fan neighbours: `rimOne` is
-window-supported, `rimTwo` is mixed-supported, and `rimThree`, `rimFour` are
-internal-supported. -/
-
-theorem count_rimOne : hybridProfile.windowIncidenceCount rimOne = 2 := by decide
-
-theorem count_rimTwo : hybridProfile.windowIncidenceCount rimTwo = 1 := by decide
-
-theorem count_rimThree : hybridProfile.windowIncidenceCount rimThree = 0 := by
-  decide
-
-theorem count_rimFour : hybridProfile.windowIncidenceCount rimFour = 0 := by
-  decide
-
-theorem nonWindowCount_rimOne :
-    hybridProfile.nonWindowIncidenceCount rimOne = 0 := by decide
-
-theorem nonWindowCount_rimTwo :
-    hybridProfile.nonWindowIncidenceCount rimTwo = 1 := by decide
-
-theorem nonWindowCount_rimThree :
-    hybridProfile.nonWindowIncidenceCount rimThree = 2 := by decide
-
-theorem nonWindowCount_rimFour :
-    hybridProfile.nonWindowIncidenceCount rimFour = 2 := by decide
-
-theorem hybrid_windowSupported :
-    hybridProfile.windowSupported = ({rimOne} : Finset fanObject.Vertex) := by
-  ext vertex
-  rw [Profile.windowSupported, Finset.mem_filter, hybrid_closedNeighbours,
-    hybrid_rim]
-  simp only [Finset.mem_insert, Finset.mem_singleton]
-  constructor
-  · rintro ⟨rimMember, count⟩
-    rcases rimMember with rfl | rfl | rfl | rfl
-    · rfl
-    · rw [count_rimTwo] at count; exact absurd count (by decide)
-    · rw [count_rimThree] at count; exact absurd count (by decide)
-    · rw [count_rimFour] at count; exact absurd count (by decide)
-  · rintro rfl
-    exact ⟨Or.inl rfl, count_rimOne⟩
-
-theorem hybrid_mixedSupported :
-    hybridProfile.mixedSupported = ({rimTwo} : Finset fanObject.Vertex) := by
-  ext vertex
-  rw [Profile.mixedSupported, Finset.mem_filter, hybrid_closedNeighbours,
-    hybrid_rim]
-  simp only [Finset.mem_insert, Finset.mem_singleton]
-  constructor
-  · rintro ⟨rimMember, count⟩
-    rcases rimMember with rfl | rfl | rfl | rfl
-    · rw [count_rimOne] at count; exact absurd count (by decide)
-    · rfl
-    · rw [count_rimThree] at count; exact absurd count (by decide)
-    · rw [count_rimFour] at count; exact absurd count (by decide)
-  · rintro rfl
-    exact ⟨Or.inr (Or.inl rfl), count_rimTwo⟩
-
-theorem hybrid_internalSupported :
-    hybridProfile.internalSupported
-      = ({rimThree, rimFour} : Finset fanObject.Vertex) := by
-  ext vertex
-  rw [Profile.internalSupported, Finset.mem_filter, hybrid_closedNeighbours,
-    hybrid_rim]
-  simp only [Finset.mem_insert, Finset.mem_singleton]
-  constructor
-  · rintro ⟨rimMember, count⟩
-    rcases rimMember with rfl | rfl | rfl | rfl
-    · rw [nonWindowCount_rimOne] at count; exact absurd count (by decide)
-    · rw [nonWindowCount_rimTwo] at count; exact absurd count (by decide)
-    · exact Or.inl rfl
-    · exact Or.inr rfl
-  · rintro (rfl | rfl)
-    · exact ⟨Or.inr (Or.inr (Or.inl rfl)), nonWindowCount_rimThree⟩
-    · exact ⟨Or.inr (Or.inr (Or.inr rfl)), nonWindowCount_rimFour⟩
-
-theorem hybrid_windowSupportedCount : hybridProfile.windowSupportedCount = 1 := by
-  rw [Profile.windowSupportedCount, hybrid_windowSupported, Finset.card_singleton]
-
-theorem hybrid_mixedSupportedCount : hybridProfile.mixedSupportedCount = 1 := by
-  rw [Profile.mixedSupportedCount, hybrid_mixedSupported, Finset.card_singleton]
-
-theorem hybrid_internalSupportedCount :
-    hybridProfile.internalSupportedCount = 2 := by
-  rw [Profile.internalSupportedCount, hybrid_internalSupported,
-    Finset.card_pair (by decide : rimThree ≠ rimFour)]
-
-theorem hybrid_windowIncidenceTotal :
-    hybridProfile.windowIncidenceTotal = 3 := by
-  rw [Profile.windowIncidenceTotal, hybrid_windowSupportedCount,
-    hybrid_mixedSupportedCount]
-
-theorem hybrid_nonWindowIncidenceTotal :
-    hybridProfile.nonWindowIncidenceTotal = 5 := by
-  rw [Profile.nonWindowIncidenceTotal, hybrid_mixedSupportedCount,
-    hybrid_internalSupportedCount]
-
-theorem hybrid_degree : fanObject.degree hybridProfile.marked.fan.hub = 4 :=
-  degree_hub
-
-/-- The ledger of `def:typeB-hybrid-incidence` evaluated on the witness:
-`c = 4`, `k = 4`, `D_B = 1 + 5α`, `c_W = 1`, `c_M = 1`, `c_I = 2`, `I_W = 3`,
-`I_N = 5`, `D_N = 5α - 1/2`, and the hybrid capacity is exactly
-`1 + 5α = D_B`.  At the registered `α = 1/4` these are the manuscript's
-`9/4`, `3/2`, `5/2`, `3/4` and `9/4`.
-
-The demand is a genuine positive proper part of the deficit at every profile,
-not only at the registered one: `D_N = 5α - 1/2 > 1/2` is exactly the recorded
-`5α > 1` of `dischargeRate_gt`. -/
-theorem hybrid_ledger (ledger : LoadCapacityProfile) :
-    hybridProfile.closedNeighbourDeficit ledger
-        = 1 + 5 * ledger.dischargeRate ∧
-      hybridProfile.windowCredit = 3 / 2 ∧
-      hybridProfile.nonWindowCredit = 5 / 2 ∧
-      hybridProfile.hybridNonWindowDemand ledger
-        = 5 * ledger.dischargeRate - 1 / 2 ∧
-      hybridProfile.hybridCapacity ledger = 1 + 5 * ledger.dischargeRate := by
-  have sharp := ledger.one_lt_five_mul_dischargeRate
-  have deficit : hybridProfile.closedNeighbourDeficit ledger
-      = 1 + 5 * ledger.dischargeRate := by
-    rw [Profile.closedNeighbourDeficit, hybrid_closedCount, hybrid_degree]
-    push_cast
-    ring
-  have window : hybridProfile.windowCredit = 3 / 2 := by
-    rw [Profile.windowCredit, hybrid_windowIncidenceTotal]
-    norm_num
-  have nonWindow : hybridProfile.nonWindowCredit = 5 / 2 := by
-    rw [Profile.nonWindowCredit, hybrid_nonWindowIncidenceTotal]
-    norm_num
-  have demand : hybridProfile.hybridNonWindowDemand ledger
-      = 5 * ledger.dischargeRate - 1 / 2 := by
-    rw [Profile.hybridNonWindowDemand, deficit, window,
-      max_eq_right (by linarith)]
-    ring
-  exact ⟨deficit, window, nonWindow, demand, by
-    rw [Profile.hybridCapacity, window, demand]; ring⟩
-
-/-- `lem:typeB-hybrid-incidence-budget` and `lem:typeB-hybrid-B1` fire on the
-witness, on a profile in which all three support classes of
-`def:typeB-hybrid-incidence` occur, so neither `I_W = 0` nor `D_N = 0`
-trivialises the ledger inequality. -/
-theorem hybridB1_fires (ledger : LoadCapacityProfile) :
-    hybridProfile.closedNeighbourDeficit ledger
-        ≤ hybridProfile.hybridCapacity ledger ∧
-      hybridProfile.hybridNonWindowDemand ledger
-        ≤ hybridProfile.nonWindowCredit ∧
-      hybridProfile.windowIncidences.card
-          + hybridProfile.nonWindowIncidences.card
-        = 2 * hybridProfile.closedCount ∧
-      0 < hybridProfile.windowSupportedCount ∧
-      0 < hybridProfile.mixedSupportedCount ∧
-      0 < hybridProfile.internalSupportedCount := by
-  obtain ⟨capacity, feasible, split, -⟩ :=
-    Profile.typeBHybridB1 hybridProfile ledger fanNormalForm
-  refine ⟨capacity, feasible, split, ?_, ?_, ?_⟩
-  · rw [hybrid_windowSupportedCount]; omega
-  · rw [hybrid_mixedSupportedCount]; omega
-  · rw [hybrid_internalSupportedCount]; omega
-
-end Witness
 
 end Hypostructure.Graph.TypeBFanClosedPorts

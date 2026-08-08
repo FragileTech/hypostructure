@@ -8,34 +8,24 @@ open Hypostructure.Core.Strategy
 
 universe u v
 
-inductive BudgetContinuation
-    {BranchState : FiniteObject → Type v}
-    {Presentation : Type} {presentation : Presentation} {data : Data}
-    (selected : Input BranchState Presentation presentation data) where
-  | windowJoinPressure
-      {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger
-        (Input BranchState Presentation presentation data) selected
-          (residualCWindowJoinPressureKeys known))
-  | negativeSupport
-      {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger
-        (Input BranchState Presentation presentation data) selected
-          (residualCNegativeSupportKeys known))
-
 inductive TypeAContinuation
     {BranchState : FiniteObject → Type v}
     {Presentation : Type} {presentation : Presentation} {data : Data}
     (selected : Input BranchState Presentation presentation data) where
-  | unsaturated
+  | exitOneFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        typeAUnsaturatedReceiverKeys)
+        (typeAExitOneFreeKeys (residualCTypeAVisibleEntryKeys known)))
   | peeled {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
         (peeledKeys known))
   | exitFour {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
         (exitFourKeys known))
+  | exitFourFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data) selected
+        (K .typeAExitFourFree :: K .typeAExitFourNoPeel :: known))
   | exitFiveTraceLevel
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
@@ -49,23 +39,29 @@ inductive TypeBContinuation
     {Presentation : Type} {presentation : Presentation} {data : Data}
     (selected : Input BranchState Presentation presentation data) where
   | exclusionResidual
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        typeBExclusionResidualKeys)
+        (residualCTypeBExclusionResidualKeys known))
   | overlapObstructionMass
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        typeBOverlapObstructionMassKeys)
+        (residualCTypeBOverlapObstructionMassKeys known))
   | certificateResidualMass
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        typeBCertificateResidualMassKeys)
+        (residualCTypeBCertificateResidualMassKeys known))
   | degreeFourResidualMass
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        degreeFourResidualMassKeys)
+        (residualCDegreeFourResidualMassKeys known))
   | degreeFourExclusionResidual
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        degreeFourExclusionResidualKeys)
+        (residualCDegreeFourExclusionResidualKeys known))
   | degreeFourOverlapObstructionMass
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        degreeFourOverlapObstructionMassKeys)
+        (residualCDegreeFourOverlapObstructionMassKeys known))
   | fanCertificateResidualMass
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
@@ -101,7 +97,6 @@ inductive ChapterOneContinuation
     {BranchState : FiniteObject → Type v}
     {Presentation : Type} {presentation : Presentation} {data : Data}
     (selected : Input BranchState Presentation presentation data) where
-  | budget (next : BudgetContinuation selected)
   | typeA (next : TypeAContinuation selected)
   | typeB (next : TypeBContinuation selected)
   | cold (next : ColdContinuation selected)
@@ -173,17 +168,21 @@ private noncomputable def normalizeSurplus
 set_option maxHeartbeats 4000000 in
 /-- Run the Chapter 1 graph from its one opened scope.
 
-`runCore` is invoked exactly once.  Its four continuation-bearing arms are
-consumed immediately by their canonical generic runners; every already-closed
-arm is eliminated from the closure evidence stored in the same ledger. -/
+`runCore` is invoked exactly once.  Its continuation-bearing arms are consumed
+immediately by their canonical generic runners; every already-closed arm is
+eliminated from the closure evidence stored in the same ledger. -/
 noncomputable def runChapterOne
     (T : Core.Target (problem BranchState Presentation presentation data))
     (targetPredicate : T.Predicate = Graph.HasCycleWithLength data.LengthOK)
     (opened : OpenedScope
-      (P := problem BranchState Presentation presentation data) (K .selection)) :
+      (P := problem BranchState Presentation presentation data) (K .selection))
+    (sufficientlyLarge :
+      Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
+        data.dischargeScale data.windowOrder data.windowRate
+        data.spineScale opened.selected.object.vertexCount) :
     ChapterOneContinuation opened.selected := by
   classical
-  match runCore T targetPredicate opened with
+  match runCore T targetPredicate opened sufficientlyLarge with
   | .surplusAbove aboveHistory =>
       match windowPackageDichotomy aboveHistory (K .windowPackageSeparated)
           (K .windowPackageCollided) (fun separated => ⟨separated⟩)
@@ -201,45 +200,36 @@ noncomputable def runChapterOne
           (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
           (by simp) (by simp) (by simp)))
   | .typeAVisibleEntry visible =>
-      exact normalizeSaturatedExits
-        (runSaturatedExits visible (returnFresh := by simp)
-          (oneFreeFresh := by simp) (thetaFresh := by simp)
-          (twoFreeFresh := by simp) (collisionFresh := by simp)
-          (threeFreeFresh := by simp) (entryFresh := by simp)
-          (peelFresh := by simp) (noPeelFresh := by simp)
-          (peeledChargeFresh := by simp) (compressionFresh := by simp)
-          (traceLevelFresh := by simp) (exitFourFresh := by simp)
-          (exitFourFreeFresh := by simp) (exitFiveFresh := by simp)
-          (exitFiveFreeFresh := by simp) (exitSixFresh := by simp)
-          (exitSixFreeFresh := by simp) (exitSixProperFresh := by simp)
-          (exitSixGlobalFresh := by simp) (exitSevenHandoffFresh := by simp)
-          (exitSevenFreeFresh := by simp) (residualFresh := by simp)
-          (freeFresh := by simp) (burdenFresh := by simp) (coreFresh := by simp)
-          (censusFresh := by simp) (descentFresh := by simp)
-          (closedFresh := by simp) (closureFresh := by simp))
+      match runExitOne visible (by simp) (by simp) (by simp) with
+      | .closed history => exact (eliminateClosed history).elim
+      | .free history => exact .typeA (.exitOneFree history)
   | .typeAVisibleFirstExcess silent =>
-      exact normalizeRoute8
-        (runRouteEight silent (peelFresh := by simp) (noPeelFresh := by simp)
-          (peeledChargeFresh := by simp) (compressionFresh := by simp)
-          (traceLevelFresh := by simp) (exitFourFresh := by simp)
-          (exitFourFreeFresh := by simp) (exitFiveFresh := by simp)
-          (exitFiveFreeFresh := by simp) (exitSixFresh := by simp)
-          (exitSixFreeFresh := by simp) (exitSixProperFresh := by simp)
-          (exitSixGlobalFresh := by simp) (exitSevenHandoffFresh := by simp)
-          (exitSevenFreeFresh := by simp) (residualFresh := by simp)
-          (freeFresh := by simp) (burdenFresh := by simp) (coreFresh := by simp)
-          (censusFresh := by simp) (descentFresh := by simp)
-          (closedFresh := by simp) (closureFresh := by simp))
+      match typeAExitFourPeelDichotomy silent (K .typeASaturatedExitEntry)
+          (K .typeAExitFourPeel) (K .typeAExitFourNoPeel)
+          (fun fact => fact.down) (fun value => ⟨value⟩)
+          (fun value => ⟨value⟩) (by simp) (by simp) with
+      | .left available =>
+          exact .typeA (.peeled
+            ((typeAPeeledCharge (data := data)).run available (by
+              intro key isNew isOld
+              simp only [List.mem_singleton] at isNew
+              subst isNew
+              revert isOld
+              simp)))
+      | .right noPeel =>
+          match typeAExitFourDichotomy noPeel (K .typeASaturatedExitEntry)
+              (K .typeAExitFour) (K .typeAExitFourFree)
+              (fun fact => fact.down) (fun value => ⟨value⟩)
+              (fun value => ⟨value⟩) (by simp) (by simp) with
+          | .left exitFour => exact .typeA (.exitFour exitFour)
+          | .right free => exact .typeA (.exitFourFree free)
   | .barrierOverflow history => exact (eliminateClosed history).elim
   | .contextDefect history => exact (eliminateClosed history).elim
   | .atomCompression history => exact (eliminateClosed history).elim
   | .properDelocalization history => exact (eliminateClosed history).elim
   | .rankDropClosed history => exact (eliminateClosed history).elim
-  | .windowJoinPressure history =>
-      exact .budget (.windowJoinPressure history)
-  | .negativeSupport history => exact .budget (.negativeSupport history)
   | .entropyCapActive history => exact (eliminateClosed history).elim
-  | .typeAUnsaturatedReceivers history => exact .typeA (.unsaturated history)
+  | .typeAUnsaturatedClosed history => exact (eliminateClosed history).elim
   | .typeBDirectCycleClosed history => exact (eliminateClosed history).elim
   | .typeBBranchKill history => exact (eliminateClosed history).elim
   | .typeBExclusionResidual history => exact .typeB (.exclusionResidual history)

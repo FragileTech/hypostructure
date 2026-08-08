@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.SpineContinuationRun
 
 /-!
 # Fixture: node `[93]`, the visible receiver-entry split
@@ -354,5 +354,91 @@ example (object : Graph.FiniteObject.{u}) (Target : Graph.FiniteObject.{u} → P
       coordinate outside entry.coordinates).Nonempty :=
   Graph.VisibleEntry.visibleCoordinates_nonempty support threshold receiver
     entry coordinate outside declared seen
+
+/-! ## Immediate continuations on the same exact ledger -/
+
+/-- Node `[91]` publishes the paper's unsaturated discharging inequality. -/
+noncomputable def unsaturatedDischarge
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (residualCTypeAUnsaturatedReceiverKeys known)) :
+    ExactLedger (Input BranchState Presentation presentation data) selected
+      (residualCTypeAUnsaturatedDischargeKeys known) :=
+  (typeAUnsaturatedDischarge (data := data)).run history (by simp)
+
+/-- The new node `[91]` fact closes against the negative Type A support already
+present in the same ancestry. -/
+noncomputable def unsaturatedClosed
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (residualCTypeAUnsaturatedReceiverKeys known)) :
+    ExactLedger (Input BranchState Presentation presentation data) selected
+      (residualCTypeAUnsaturatedClosedKeys known) :=
+  closeIncompatible (unsaturatedDischarge history) (K .typeALowSurplus)
+    (K .typeAUnsaturatedDischarge) (by simp)
+
+/-- Node `[93]`'s visible arm advances through exactly exit `(1)` at `[95]`. -/
+noncomputable def visibleExitOne
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .returnAvoidance) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (residualCTypeAVisibleEntryKeys known)) :
+    ExitOneResult selected (residualCTypeAVisibleEntryKeys known) :=
+  runExitOne history (by simp) (by simp) (by simp)
+
+/-- Node `[94]` enters exactly node `[101]`'s peel decision. -/
+noncomputable def silentExitFourPeel
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (residualCTypeAVisibleFirstExcessKeys known)) :
+    Decision (K .typeAExitFourPeel) (K .typeAExitFourNoPeel) history :=
+  typeAExitFourPeelDichotomy history (K .typeASaturatedExitEntry)
+    (K .typeAExitFourPeel) (K .typeAExitFourNoPeel)
+    (fun fact => fact.down) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+    (by simp) (by simp)
+
+/-- Node `[102]` appends the peeled charge to node `[101]`'s yes arm. -/
+noncomputable def silentPeeledCharge
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected
+        (K .typeAExitFourPeel ::
+          residualCTypeAVisibleFirstExcessKeys known)) :
+    ExactLedger (Input BranchState Presentation presentation data) selected
+      (peeledKeys (residualCTypeAVisibleFirstExcessKeys known)) :=
+  (typeAPeeledCharge (data := data)).run history (by
+    intro key isNew isOld
+    simp only [List.mem_singleton] at isNew
+    subst isNew
+    revert isOld
+    simp)
+
+/-- On node `[101]`'s no-peel arm, the Q5 reading is the only next decision. -/
+noncomputable def silentExitFourQ5
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected
+        (K .typeAExitFourNoPeel ::
+          residualCTypeAVisibleFirstExcessKeys known)) :
+    Decision (K .typeAExitFour) (K .typeAExitFourFree) history :=
+  typeAExitFourDichotomy history (K .typeASaturatedExitEntry)
+    (K .typeAExitFour) (K .typeAExitFourFree) (fun fact => fact.down)
+    (fun value => ⟨value⟩) (fun value => ⟨value⟩) (by simp) (by simp)
+
+theorem unsaturatedClosed_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (residualCTypeAUnsaturatedClosedKeys known)) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
 
 end Hypostructure.Fixtures.TypeAVisibleEntry

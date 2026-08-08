@@ -1,5 +1,7 @@
 import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 import Hypostructure.Core.DyadicLength
+import Hypostructure.Core.Finite.Enumeration
+import Hypostructure.Graph.FinitePathSelection
 import Hypostructure.Graph.Progress
 import Hypostructure.Graph.Target
 
@@ -100,8 +102,127 @@ end CommonEndpointsCycle
 
 namespace EdgeRootedReturn
 
+open Hypostructure.Core.Finite
+
 variable {object : FiniteObject.{u}}
 variable {ReturnLengthOK OtherLengthOK : Nat → Prop}
+
+/-- The unrestricted return predicate used to enumerate return data before a
+later coordinate evaluates any length test. -/
+def AnyLength (_length : Nat) : Prop := True
+
+/-- An edge-rooted return with no length filter. -/
+abbrev Unrestricted (object : FiniteObject.{u}) :=
+  EdgeRootedReturn object AnyLength
+
+/-- The finite candidate list obtained by scanning every oriented ambient edge
+and then the complete finite simple-path schedule in the graph with that root
+edge deleted. -/
+private noncomputable def unrestrictedCandidates (object : FiniteObject.{u}) :
+    List (Unrestricted object) := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := FinEnum.instFintype
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  classical
+  exact object.orderedDarts.flatMap fun dart => by
+    letI : DecidableRel (object.graph.deleteEdges {dart.edge}).Adj :=
+      Classical.decRel _
+    exact
+      (FinitePathSelection.pathSchedule (object.graph.deleteEdges {dart.edge})
+        dart.snd dart.fst).map fun path =>
+          { dart := dart
+            path := path.1
+            isPath := path.2
+            length_ok := True.intro }
+
+/-- The exact finite schedule of all edge-rooted returns of a finite object.
+No accepted-length predicate is imposed at enumeration time. -/
+noncomputable def schedule (object : FiniteObject.{u}) :
+    Enumeration (Unrestricted object) := by
+  classical
+  let candidates := unrestrictedCandidates object
+  exact Enumeration.ofNodupList candidates.toFinset.toList
+    (Finset.nodup_toList candidates.toFinset)
+
+/-- Every unrestricted edge-rooted return occurs in the exact schedule. -/
+theorem mem_schedule (return' : Unrestricted object) :
+    return' ∈ (schedule object).values := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := FinEnum.instFintype
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  letI : DecidableRel
+      (object.graph.deleteEdges {return'.dart.edge}).Adj := Classical.decRel _
+  classical
+  rw [schedule, Enumeration.ofNodupList_values, Finset.mem_toList,
+    List.mem_toFinset]
+  unfold unrestrictedCandidates
+  rw [List.mem_flatMap]
+  refine ⟨return'.dart, object.mem_orderedDarts return'.dart, ?_⟩
+  rw [List.mem_map]
+  let path : (object.graph.deleteEdges {return'.dart.edge}).Path
+      return'.dart.snd return'.dart.fst :=
+    ⟨return'.path, return'.isPath⟩
+  refine ⟨path, FinitePathSelection.mem_pathSchedule _ path, ?_⟩
+  cases return'
+  rfl
+
+/-- Forget a supplied length restriction while retaining the exact rooted
+return. -/
+def unrestricted (return' : EdgeRootedReturn object ReturnLengthOK) :
+    Unrestricted object where
+  dart := return'.dart
+  path := return'.path
+  isPath := return'.isPath
+  length_ok := True.intro
+
+/-- Every length-restricted witness has its underlying return in the complete
+unrestricted schedule. -/
+theorem unrestricted_mem_schedule
+    (return' : EdgeRootedReturn object ReturnLengthOK) :
+    return'.unrestricted ∈ (schedule object).values :=
+  mem_schedule return'.unrestricted
+
+/-- The exact finite set of return lengths at one oriented root edge. -/
+noncomputable def returnLengthFinset (object : FiniteObject.{u})
+    (dart : object.graph.Dart) : Finset Nat := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := FinEnum.instFintype
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  letI : DecidableRel (object.graph.deleteEdges {dart.edge}).Adj :=
+    Classical.decRel _
+  classical
+  exact ((FinitePathSelection.pathSchedule
+    (object.graph.deleteEdges {dart.edge}) dart.snd dart.fst).map
+      (fun path => path.1.length)).toFinset
+
+/-- The finite representation contains exactly the semantic return-length set. -/
+theorem mem_returnLengthFinset_iff (dart : object.graph.Dart) (length : Nat) :
+    length ∈ returnLengthFinset object dart ↔
+      length ∈ returnLengthSet object dart := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := FinEnum.instFintype
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  letI : DecidableRel (object.graph.deleteEdges {dart.edge}).Adj :=
+    Classical.decRel _
+  classical
+  constructor
+  · intro member
+    rw [returnLengthFinset, List.mem_toFinset, List.mem_map] at member
+    obtain ⟨path, _pathMember, lengthEq⟩ := member
+    exact ⟨path.1, path.2, lengthEq⟩
+  · rintro ⟨walk, isPath, lengthEq⟩
+    rw [returnLengthFinset, List.mem_toFinset, List.mem_map]
+    let path : (object.graph.deleteEdges {dart.edge}).Path dart.snd dart.fst :=
+      ⟨walk, isPath⟩
+    exact ⟨path, FinitePathSelection.mem_pathSchedule _ path, lengthEq⟩
+
+/-- Set-level form of the exact finite representation. -/
+theorem coe_returnLengthFinset (dart : object.graph.Dart) :
+    (returnLengthFinset object dart : Set Nat) = returnLengthSet object dart := by
+  ext length
+  exact mem_returnLengthFinset_iff dart length
 
 /-- Change only the accepted-length predicate, retaining the exact dart and
 deleted-edge path. -/

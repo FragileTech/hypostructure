@@ -112,6 +112,138 @@ theorem windowIncidences_add_nonWindowIncidences (object : FiniteObject.{u})
   rw [Finset.card_inter_add_card_sdiff, card_nonHubIncidences closed,
     Nat.mul_one]
 
+/-! ## The canonical finite incidence carrier -/
+
+/-- The paper's actual non-hub incidence carriers, with the same packed-window
+support that classifies them into `I_W` and `I_N`.  The support parameter is
+part of the carrier's type-level provenance even though the union of the two
+classes is independent of which side an endpoint lies on. -/
+noncomputable def incidences (object : FiniteObject.{u}) (threshold : Nat)
+    (envelope windowSupport : Finset object.Vertex) (centre : object.Vertex) :
+    Finset (object.Vertex × object.Vertex) := by
+  classical
+  exact (closedNeighbours object threshold envelope centre).biUnion fun owner =>
+    (nonHubIncidences object centre owner).image fun other => (owner, other)
+
+/-- Membership in the canonical carrier is exactly ownership by a cubic-closed
+fan neighbour and membership in that owner's non-hub incidence set. -/
+theorem mem_incidences_iff (object : FiniteObject.{u}) (threshold : Nat)
+    (envelope windowSupport : Finset object.Vertex) (centre : object.Vertex)
+    (incidence : object.Vertex × object.Vertex) :
+    incidence ∈ incidences object threshold envelope windowSupport centre ↔
+      incidence.1 ∈ closedNeighbours object threshold envelope centre ∧
+        incidence.2 ∈ nonHubIncidences object centre incidence.1 := by
+  classical
+  constructor
+  · intro member
+    rw [incidences, Finset.mem_biUnion] at member
+    obtain ⟨owner, ownerMember, imageMember⟩ := member
+    obtain ⟨other, otherMember, equal⟩ := Finset.mem_image.mp imageMember
+    rw [← equal]
+    exact ⟨ownerMember, otherMember⟩
+  · rintro ⟨ownerMember, otherMember⟩
+    rw [incidences, Finset.mem_biUnion]
+    exact ⟨incidence.1, ownerMember,
+      Finset.mem_image.mpr ⟨incidence.2, otherMember, rfl⟩⟩
+
+/-- The canonical carriers whose far endpoint lies in the packed-window union. -/
+noncomputable def windowIncidenceSet (object : FiniteObject.{u}) (threshold : Nat)
+    (envelope windowSupport : Finset object.Vertex) (centre : object.Vertex) :
+    Finset (object.Vertex × object.Vertex) :=
+  (incidences object threshold envelope windowSupport centre).filter
+    (fun incidence => incidence.2 ∈ windowSupport)
+
+/-- The canonical carriers whose far endpoint lies on the remainder side. -/
+noncomputable def nonWindowIncidenceSet (object : FiniteObject.{u})
+    (threshold : Nat) (envelope windowSupport : Finset object.Vertex)
+    (centre : object.Vertex) : Finset (object.Vertex × object.Vertex) :=
+  (incidences object threshold envelope windowSupport centre).filter
+    (fun incidence => incidence.2 ∉ windowSupport)
+
+/-- The two paper classes partition the canonical incidence carrier exactly. -/
+theorem incidences_eq_window_union_nonWindow (object : FiniteObject.{u})
+    (threshold : Nat) (envelope windowSupport : Finset object.Vertex)
+    (centre : object.Vertex) :
+    incidences object threshold envelope windowSupport centre =
+      windowIncidenceSet object threshold envelope windowSupport centre ∪
+        nonWindowIncidenceSet object threshold envelope windowSupport centre := by
+  classical
+  ext incidence
+  by_cases window : incidence.2 ∈ windowSupport <;>
+    simp [windowIncidenceSet, nonWindowIncidenceSet, window]
+
+/-- The two sides of the packed-window partition are disjoint. -/
+theorem windowIncidenceSet_disjoint_nonWindow (object : FiniteObject.{u})
+    (threshold : Nat) (envelope windowSupport : Finset object.Vertex)
+    (centre : object.Vertex) :
+    Disjoint (windowIncidenceSet object threshold envelope windowSupport centre)
+      (nonWindowIncidenceSet object threshold envelope windowSupport centre) := by
+  classical
+  rw [Finset.disjoint_left]
+  intro incidence windowMember nonWindowMember
+  exact (Finset.mem_filter.mp nonWindowMember).2
+    (Finset.mem_filter.mp windowMember).2
+
+private theorem incidenceBlocks_disjoint (object : FiniteObject.{u})
+    {centre left right : object.Vertex} (different : left ≠ right) :
+    Disjoint
+      ((nonHubIncidences object centre left).image fun other => (left, other))
+      ((nonHubIncidences object centre right).image fun other => (right, other)) := by
+  classical
+  rw [Finset.disjoint_left]
+  intro incidence leftMember rightMember
+  obtain ⟨leftOther, _, leftEqual⟩ := Finset.mem_image.mp leftMember
+  obtain ⟨rightOther, _, rightEqual⟩ := Finset.mem_image.mp rightMember
+  apply different
+  exact congrArg Prod.fst (leftEqual.trans rightEqual.symm)
+
+/-- The canonical carrier has exactly the two incidence counts recorded by the
+paper: no incidence is omitted and none is counted twice. -/
+theorem card_incidences_eq_window_add_nonWindow (object : FiniteObject.{u})
+    (threshold : Nat) (envelope windowSupport : Finset object.Vertex)
+    (centre : object.Vertex) :
+    (incidences object threshold envelope windowSupport centre).card =
+      windowIncidences object threshold envelope windowSupport centre +
+        nonWindowIncidences object threshold envelope windowSupport centre := by
+  classical
+  have blockCard : ∀ owner ∈ closedNeighbours object threshold envelope centre,
+      ((nonHubIncidences object centre owner).image
+        fun other => (owner, other)).card = threshold - 1 := by
+    intro owner ownerMember
+    rw [Finset.card_image_of_injective _
+      (fun left right equal => congrArg Prod.snd equal)]
+    exact card_nonHubIncidences (mem_closedNeighbours_iff.mp ownerMember)
+  calc
+    (incidences object threshold envelope windowSupport centre).card =
+        ∑ owner ∈ closedNeighbours object threshold envelope centre,
+          ((nonHubIncidences object centre owner).image
+            fun other => (owner, other)).card := by
+      rw [incidences, Finset.card_biUnion]
+      intro left _ right _ different
+      exact incidenceBlocks_disjoint object different
+    _ = (threshold - 1) *
+        (closedNeighbours object threshold envelope centre).card := by
+      rw [Finset.sum_congr rfl blockCard, Finset.sum_const, smul_eq_mul,
+        Nat.mul_comm]
+    _ = windowIncidences object threshold envelope windowSupport centre +
+        nonWindowIncidences object threshold envelope windowSupport centre := by
+      simpa [closedCount] using
+        (windowIncidences_add_nonWindowIncidences object threshold envelope
+          windowSupport centre).symm
+
+/-- The cardinal partition follows from the literal disjoint union. -/
+theorem card_incidences_eq_card_window_add_card_nonWindow
+    (object : FiniteObject.{u}) (threshold : Nat)
+    (envelope windowSupport : Finset object.Vertex) (centre : object.Vertex) :
+    (incidences object threshold envelope windowSupport centre).card =
+      (windowIncidenceSet object threshold envelope windowSupport centre).card +
+        (nonWindowIncidenceSet object threshold envelope windowSupport centre).card := by
+  rw [incidences_eq_window_union_nonWindow object threshold envelope windowSupport
+      centre,
+    Finset.card_union_of_disjoint
+      (windowIncidenceSet_disjoint_nonWindow object threshold envelope
+        windowSupport centre)]
+
 /-! ## `lem:typeB-hybrid-incidence-budget`, first paragraph
 
 The carriers are distinct.  This is the only graph-theoretic step of the module,

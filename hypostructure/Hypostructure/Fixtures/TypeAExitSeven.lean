@@ -133,9 +133,13 @@ noncomputable def runAttached
       T.Predicate = Graph.HasCycleWithLength data.LengthOK)
     (opened : Core.Strategy.OpenedScope
       (P := Hypostructure.Graph.Strategy.Spine.problem BranchState Presentation
-        presentation data) (K .selection)) :
+        presentation data) (K .selection))
+    (sufficientlyLarge :
+      Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
+        data.dischargeScale data.windowOrder data.windowRate data.spineScale
+        opened.selected.object.vertexCount) :
     SpineWithExitsResult opened.selected :=
-  runWithSaturatedExits T targetPredicate opened
+  runWithSaturatedExits T targetPredicate opened sufficientlyLarge
 
 /-! ## What the two exits carry -/
 

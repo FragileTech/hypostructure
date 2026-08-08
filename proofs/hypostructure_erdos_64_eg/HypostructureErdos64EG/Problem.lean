@@ -188,6 +188,11 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   windowRate := FiniteChecks.P13Barrier.windowRate
   separatedScaleCount := Nat.log2
   separatedScaleCount_le := fun _size => le_refl _
+  separatedScaleCount_eq_log2 := fun _size => rfl
+  netCapRateSlack := by
+    rw [FiniteChecks.P13Barrier.windowRate_eq]
+    norm_num [Graph.FiniteObject.netCapWindowCost, erdosReceiverLoadProfile,
+      inducedPathOrder]
   curvatureCost :=
     Hypostructure.Core.Finite.CertifiedTableAggregation.binaryRowRateFloor
       FiniteChecks.P13Barrier.certifiedTable

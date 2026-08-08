@@ -3,10 +3,10 @@ import Hypostructure.Graph.Route8Closure
 /-!
 # The route-8 carrier residual of one object
 
-`def:typeA-route8-carriers` presents an indexed entry by four things: the
-support it lives on, the declared coordinates of its reading, the target event
-each declared coordinate is recorded by, and the boundary incidences that event
-crosses.  A `Presentation` is exactly that data, at one ambient object, and the
+`def:typeA-route8-carriers` presents an indexed entry by the support it lives
+on, the declared coordinates and values of its reading, and the optional target
+events carried by event coordinates.  A `Presentation` is exactly that data,
+at one ambient object, and the
 carrier vocabulary of `Route8.Entry` is *derived* from it: the entry's carrier
 supply is the support's own cut, and a coordinate's carrier support is the set
 of cut edges its event uses.
@@ -130,12 +130,22 @@ noncomputable def cutSchedule (object : FiniteObject.{u})
 
 /-! ## Presented entries -/
 
+/-- A simple closed target event attached to one declared coordinate.  This is
+separate from the coordinate's value and declared support: D1 boundary-degree
+coordinates, for example, have both of those but do not themselves assert a
+cycle event. -/
+structure CoordinateEvent (object : FiniteObject.{u}) where
+  base : object.Vertex
+  walk : object.graph.Walk base base
+  isCycle : walk.IsCycle
+
 /-- **`def:typeA-route8-carriers`, presented at one object.**
 
-One indexed entry: the support it lives on, its declared coordinate family, the
-target event each declared coordinate is recorded by, and the boundaried reading
-that retains a given set of coordinates.  The carrier data is not stored -- it
-is read off the events below. -/
+One indexed entry: the support it lives on, its declared coordinate family,
+each coordinate's value and finite declared support, the optional target event
+of event coordinates, and the boundaried reading that retains a given set of
+coordinates.  Carrier data is not stored -- it is read off the optional events
+below. -/
 structure PresentedEntry (object : FiniteObject.{u}) where
   /-- `V(X)`: the support the entry's boundary incidences leave. -/
   support : Finset object.Vertex
@@ -147,12 +157,16 @@ structure PresentedEntry (object : FiniteObject.{u}) where
   coordinateDecEq : DecidableEq Coordinate
   /-- The declared coordinate family. -/
   coordinates : Finset Coordinate
-  /-- The base vertex of the target event recording a declared coordinate. -/
-  base : Coordinate → object.Vertex
-  /-- The target event a declared coordinate is recorded by. -/
-  event : (r : Coordinate) → object.graph.Walk (base r) (base r)
-  /-- The event is a simple cycle, as `lem:typeA-carrier-cut-parity` requires. -/
-  eventCycle : ∀ r, (event r).IsCycle
+  /-- The value type of each declared coordinate.  It is dependent because the
+  D1--D8 families do not share an artificial common codomain. -/
+  Value : Coordinate → Type u
+  /-- The actual value of every declared coordinate. -/
+  value : (r : Coordinate) → Value r
+  /-- The finite support declared by every coordinate, independently of
+  whether that coordinate carries a target event. -/
+  declaredSupport : Coordinate → Finset object.Vertex
+  /-- The target event, only when the coordinate is an event coordinate. -/
+  event? : Coordinate → Option (CoordinateEvent object)
   /-- The reading retaining exactly a set of declared coordinates. -/
   state : Finset Coordinate → BoundaryPiece interface
 
@@ -165,14 +179,18 @@ attribute [instance] PresentedEntry.coordinateDecEq
 /-- The carrier support a declared coordinate records: the cut edges of the
 entry's support that its event uses. -/
 noncomputable def car (r : presented.Coordinate) : Finset (Sym2 object.Vertex) :=
-  crossingCarriers presented.support (presented.event r)
+  match presented.event? r with
+  | none => ∅
+  | some event => crossingCarriers presented.support event.walk
 
 /-- A declared coordinate is *crossing* when its event both meets the entry's
 support and leaves it.  This is the manuscript's *mixed internal* event: it uses
 an edge inside the basin and an edge outside the support. -/
 def Crossing (r : presented.Coordinate) : Prop :=
-  (∃ inside ∈ (presented.event r).support, inside ∈ presented.support) ∧
-    ∃ outside ∈ (presented.event r).support, outside ∉ presented.support
+  exists event : CoordinateEvent object,
+    presented.event? r = some event /\
+      (exists inside, inside ∈ event.walk.support /\ inside ∈ presented.support) /\
+        exists outside, outside ∈ event.walk.support /\ outside ∉ presented.support
 
 /-- The declared coordinates whose events cross the entry's own cut. -/
 noncomputable def crossingCoordinates : Finset presented.Coordinate :=
@@ -190,9 +208,10 @@ coordinate records at least two distinct carriers. -/
 theorem two_le_card_car {r : presented.Coordinate}
     (crossing : presented.Crossing r) :
     2 ≤ (presented.car r).card := by
-  obtain ⟨⟨inside, insideMember, insideSupport⟩,
+  obtain ⟨event, eventEq, ⟨inside, insideMember, insideSupport⟩,
     outside, outsideMember, outsideSupport⟩ := crossing
-  exact two_le_card_crossingCarriers presented.support (presented.eventCycle r)
+  rw [car, eventEq]
+  exact two_le_card_crossingCarriers presented.support event.isCycle
     insideMember insideSupport outsideMember outsideSupport
 
 /-- Every crossing coordinate records at least two carriers. -/
@@ -214,7 +233,11 @@ noncomputable def toEntry (Target : FiniteObject.{u} → Prop) :
   car_subset := by
     intro r _member
     rw [cutSchedule_toFinset]
-    exact crossingCarriers_subset_cutEdges (presented.event r)
+    rw [car]
+    split
+    · exact Finset.empty_subset _
+    · rename_i event _eventEq
+      exact crossingCarriers_subset_cutEdges event.walk
   state := presented.state
 
 end PresentedEntry

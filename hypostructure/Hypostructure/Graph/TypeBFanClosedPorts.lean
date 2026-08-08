@@ -1,5 +1,5 @@
 import Hypostructure.Graph.ReceiverLoad
-import Hypostructure.Graph.TypeBOpenPorts
+import Hypostructure.Graph.HighCentrePorts
 import Hypostructure.Graph.TypeBMarkedFan
 
 /-!
@@ -36,15 +36,15 @@ The closed-neighbour deficit `D_B(𝔉) = c(𝔉) - (3 - (k+1)α)` of
 `def:typeB-multiclosed-residual` is rational, and is formalised over `ℚ`.  Its
 subtrahend is not a literal: it is the Step 1 closed-neighbourhood charge
 `(3 - k - α) + c(-α) + (k - c)(1 - α) = 3 - (k+1)α - c` of
-`TypeBExclusion`, so the discharge rate `α` in it is read from the registered
-presentation as `ReceiverLoad.LoadCapacityProfile.dischargeRate`.  At the
-registered `loadMultiplier = 4` this is the manuscript's `c(𝔉) - (11 - k)/4`.
+the manuscript's Step 1 closed-neighbourhood charge, so the discharge rate
+`α` is read as the reciprocal of the registered `loadMultiplier`.  At the
+registered scale `loadMultiplier = 4` this is the manuscript's
+`c(𝔉) - (11 - k)/4`.
 -/
 
 namespace Hypostructure.Graph.TypeBFanClosedPorts
 
 open Hypostructure.Graph
-open Hypostructure.Graph.TypeBOpenPorts
 open Hypostructure.Graph.TypeBMarkedFan
 open Hypostructure.Graph.ReceiverLoad (LoadCapacityProfile)
 
@@ -143,62 +143,55 @@ window incidence or a non-window fan incidence -- is deliberately *not* a
 field: it is proved for every fan-closed port in
 `IsFanClosed.incidence_classified` below, so nothing is assumed that the
 profile does not already determine. -/
-def IsFanClosed (p : Port object) : Prop :=
-  p.center = profile.marked.fan.hub ∧
-    p.endpoint ∈ profile.remainder ∧
-    ∀ shoulder ∈ p.shoulders, shoulder ∈ profile.envelope
+def IsFanClosed (endpoint : object.Vertex) : Prop :=
+  endpoint ∈ profile.remainder ∧
+    ∀ shoulder, IsShoulder object profile.marked.fan.hub endpoint shoulder →
+      shoulder ∈ profile.envelope
 
 variable {profile}
 
 namespace IsFanClosed
 
-variable {p : Port object}
+variable {endpoint : object.Vertex}
 
-theorem center (closed : profile.IsFanClosed p) :
-    p.center = profile.marked.fan.hub := closed.1
+theorem remainder_mem (closed : profile.IsFanClosed endpoint) :
+    endpoint ∈ profile.remainder := closed.1
 
-theorem remainder_mem (closed : profile.IsFanClosed p) :
-    p.endpoint ∈ profile.remainder := closed.2.1
-
-theorem envelope_mem (closed : profile.IsFanClosed p) {shoulder : object.Vertex}
-    (member : shoulder ∈ p.shoulders) : shoulder ∈ profile.envelope :=
-  closed.2.2 shoulder member
+theorem envelope_mem (closed : profile.IsFanClosed endpoint)
+    {shoulder : object.Vertex}
+    (member : IsShoulder object profile.marked.fan.hub endpoint shoulder) :
+    shoulder ∈ profile.envelope :=
+  closed.2 shoulder member
 
 /-- Clause (c) of `def:fan-closed-port`, discharged rather than assumed: each
 incidence assigned by a fan-closed port is a window incidence or a non-window
 fan incidence in the sense of `def:typeB-window-incidence-profile`. -/
-theorem incidence_classified (closed : profile.IsFanClosed p)
-    {shoulder : object.Vertex} (member : shoulder ∈ p.shoulders) :
-    profile.IsWindowIncidence p.endpoint shoulder ∨
-      profile.IsNonWindowIncidence p.endpoint shoulder := by
-  have outside : p.endpoint ∉ profile.window :=
+theorem incidence_classified (closed : profile.IsFanClosed endpoint)
+    {shoulder : object.Vertex}
+    (member : IsShoulder object profile.marked.fan.hub endpoint shoulder) :
+    profile.IsWindowIncidence endpoint shoulder ∨
+      profile.IsNonWindowIncidence endpoint shoulder := by
+  have outside : endpoint ∉ profile.window :=
     not_mem_window_of_mem_remainder closed.remainder_mem
-  have adjacency : object.graph.Adj p.endpoint shoulder :=
-    Port.shoulder_adj member
+  have adjacency : object.graph.Adj endpoint shoulder := member.1
   by_cases inWindow : shoulder ∈ profile.window
   · exact Or.inl ⟨outside, adjacency, inWindow⟩
-  · refine Or.inr ⟨outside, adjacency, inWindow, ?_⟩
-    rw [← closed.center]
-    exact Port.shoulder_ne_center member
+  · exact Or.inr ⟨outside, adjacency, inWindow, member.2⟩
 
 /-- The manuscript's step "`x` has internal fan degree `3` in the assigned
 envelope, so it is cubic-closed in the sense of `def:marked-typeB-fan`".  The
 cubicity of `x` is `lem:heavy-neighbourhood-normal-form`, supplied as the
 structural input `normal`. -/
-theorem isCubicClosed (normal : NormalForm object profile.marked.fan.hub)
-    (closed : profile.IsFanClosed p) :
-    profile.marked.IsCubicClosed profile.envelope p.endpoint := by
-  have hubAdj : object.graph.Adj profile.marked.fan.hub p.endpoint := by
-    rw [← closed.center]
-    exact p.adjacent
+theorem isCubicClosed (normal : NormalForm object 3 profile.marked.fan.hub)
+    (closed : profile.IsFanClosed endpoint) :
+    profile.marked.IsCubicClosed profile.envelope endpoint := by
+  have hubAdj : object.graph.Adj profile.marked.fan.hub endpoint :=
+    (profile.marked.rim_eq_neighbourhood endpoint).1
+      (mem_rim_of_mem_remainder closed.remainder_mem)
   refine ⟨mem_rim_of_mem_remainder closed.remainder_mem,
-    normal.neighbourCubic hubAdj, ?_⟩
+    normal.neighbourTight hubAdj, ?_⟩
   intro other adjacency notHub
-  refine closed.envelope_mem ?_
-  rw [Port.mem_shoulders_iff]
-  refine ⟨?_, adjacency⟩
-  rw [closed.center]
-  exact notHub
+  exact closed.envelope_mem ⟨adjacency, notHub⟩
 
 end IsFanClosed
 
@@ -225,7 +218,8 @@ def closedCount : Nat := profile.closedNeighbours.card
 `3 - (k+1)/4 = (11 - k)/4`, the manuscript's own spelling. -/
 def closedNeighbourDeficit (ledger : LoadCapacityProfile) : ℚ :=
   (profile.closedCount : ℚ) -
-    (3 - ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate)
+    (3 - ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+      (1 / (ledger.loadMultiplier : ℚ)))
 
 variable {profile}
 
@@ -251,10 +245,10 @@ theorem closedNeighbours_subset_remainder {vertex : object.Vertex}
   ((mem_closedNeighbours_iff vertex).1 member).2.2
 
 theorem mem_closedNeighbours_of_isFanClosed
-    (normal : NormalForm object profile.marked.fan.hub) {p : Port object}
-    (closed : profile.IsFanClosed p) :
-    p.endpoint ∈ profile.closedNeighbours :=
-  (mem_closedNeighbours_iff p.endpoint).2
+    (normal : NormalForm object 3 profile.marked.fan.hub)
+    {endpoint : object.Vertex} (closed : profile.IsFanClosed endpoint) :
+    endpoint ∈ profile.closedNeighbours :=
+  (mem_closedNeighbours_iff endpoint).2
     ⟨mem_rim_of_mem_remainder closed.remainder_mem,
       closed.isCubicClosed normal, closed.remainder_mem⟩
 
@@ -273,32 +267,20 @@ incidences are pairwise distinct as local incidence carriers.
 The distinctness of the carriers is `FanCompatible.carriers_nodup`, which uses
 all three clauses of `def:fan-compatible-open-ports`.  The global B2 clause of
 the manuscript statement is outside this file (see the module note). -/
-theorem compatiblePairFanClosure (profile : Profile object) {p q : Port object}
-    (compatible : FanCompatible p q)
-    (leftCenter : p.center = profile.marked.fan.hub)
-    (leftRemainder : p.endpoint ∈ profile.remainder)
-    (rightRemainder : q.endpoint ∈ profile.remainder)
-    (leftAssigned : ∀ shoulder ∈ p.shoulders, shoulder ∈ profile.envelope)
-    (rightAssigned : ∀ shoulder ∈ q.shoulders, shoulder ∈ profile.envelope) :
-    profile.IsFanClosed p ∧ profile.IsFanClosed q ∧
-      p.endpoint ≠ q.endpoint ∧
-      (p.shoulderCarriers ++ q.shoulderCarriers).Nodup := by
-  refine ⟨⟨leftCenter, leftRemainder, leftAssigned⟩, ⟨?_, rightRemainder,
-    rightAssigned⟩, compatible.endpointsNe, compatible.carriers_nodup⟩
-  rw [← compatible.sameCenter]
-  exact leftCenter
-
-/-- The counting clause of `lem:compatible-pair-fan-closure` in its quantitative
-form: the four assigned incidences of a compatible pair are four pairwise
-distinct local carriers. -/
-theorem compatiblePairFanClosure_carriers_card (profile : Profile object)
-    (normal : NormalForm object profile.marked.fan.hub) {p q : Port object}
-    (compatible : FanCompatible p q)
-    (leftCenter : p.center = profile.marked.fan.hub) :
-    (p.shoulderCarriers ++ q.shoulderCarriers).Nodup ∧
-      (p.shoulderCarriers ++ q.shoulderCarriers).length = 4 :=
-  ⟨compatible.carriers_nodup,
-    compatible.carriers_length (center := profile.marked.fan.hub) normal leftCenter⟩
+theorem compatiblePairFanClosure (profile : Profile object)
+    {left right : object.Vertex}
+    (compatible : FanCompatible object profile.marked.fan.hub left right)
+    (leftRemainder : left ∈ profile.remainder)
+    (rightRemainder : right ∈ profile.remainder)
+    (leftAssigned : ∀ shoulder,
+      IsShoulder object profile.marked.fan.hub left shoulder →
+        shoulder ∈ profile.envelope)
+    (rightAssigned : ∀ shoulder,
+      IsShoulder object profile.marked.fan.hub right shoulder →
+        shoulder ∈ profile.envelope) :
+    profile.IsFanClosed left ∧ profile.IsFanClosed right ∧ left ≠ right := by
+  exact ⟨⟨leftRemainder, leftAssigned⟩, ⟨rightRemainder, rightAssigned⟩,
+    compatible.endpointsNe⟩
 
 /-! ## `prop:fan-closed-port-typeB-routing` -/
 
@@ -306,15 +288,13 @@ theorem compatiblePairFanClosure_carriers_card (profile : Profile object)
 fan-closed surplus ports at `h`, indexed by its pairwise distinct port
 vertices, contributes at least `|𝒬|` cubic-closed neighbours of `h`. -/
 theorem card_le_closedCount (profile : Profile object)
-    (normal : NormalForm object profile.marked.fan.hub)
+    (normal : NormalForm object 3 profile.marked.fan.hub)
     {ports : Finset object.Vertex}
-    (fanClosed : ∀ vertex ∈ ports, ∃ p : Port object,
-      p.endpoint = vertex ∧ profile.IsFanClosed p) :
+    (fanClosed : ∀ vertex ∈ ports, profile.IsFanClosed vertex) :
     ports.card ≤ profile.closedCount := by
   refine Finset.card_le_card ?_
   intro vertex member
-  obtain ⟨p, rfl, closed⟩ := fanClosed vertex member
-  exact Profile.mem_closedNeighbours_of_isFanClosed normal closed
+  exact Profile.mem_closedNeighbours_of_isFanClosed normal (fanClosed vertex member)
 
 /-- `prop:fan-closed-port-typeB-routing`, parts (a) and (b), manuscript node
 `[72]`.
@@ -335,17 +315,18 @@ displayed quantities are the manuscript's `r - (11-k)/4`, `(k-3)/4` and
 `1/4 > 0`. -/
 theorem fanClosedPortTypeBRouting (profile : Profile object)
     (ledger : LoadCapacityProfile)
-    (normal : NormalForm object profile.marked.fan.hub)
+    (normal : NormalForm object 3 profile.marked.fan.hub)
+    (scale : ledger.loadMultiplier = 4)
     {ports : Finset object.Vertex}
-    (fanClosed : ∀ vertex ∈ ports, ∃ p : Port object,
-      p.endpoint = vertex ∧ profile.IsFanClosed p)
+    (fanClosed : ∀ vertex ∈ ports, profile.IsFanClosed vertex)
     (two : 2 ≤ ports.card) :
     ports.card ≤ profile.closedCount ∧
       (ports.card : ℚ) -
           (3 - ((object.degree profile.marked.fan.hub : ℚ) + 1)
-            * ledger.dischargeRate)
+            * (1 / (ledger.loadMultiplier : ℚ)))
         ≤ profile.closedNeighbourDeficit ledger ∧
-      ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate - 1
+      ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+          (1 / (ledger.loadMultiplier : ℚ)) - 1
         ≤ profile.closedNeighbourDeficit ledger ∧
       0 < profile.closedNeighbourDeficit ledger := by
   have counted : ports.card ≤ profile.closedCount :=
@@ -356,11 +337,14 @@ theorem fanClosedPortTypeBRouting (profile : Profile object)
     exact_mod_cast le_trans two counted
   have highCast : (4 : ℚ) ≤ (object.degree profile.marked.fan.hub : ℚ) := by
     exact_mod_cast profile.marked.highDegree
-  have rateNonneg := ledger.dischargeRate_nonneg
-  have sharp := ledger.one_lt_five_mul_dischargeRate
+  have rateNonneg : (0 : ℚ) ≤ 1 / (ledger.loadMultiplier : ℚ) := by positivity
+  have sharp : (1 : ℚ) < 5 * (1 / (ledger.loadMultiplier : ℚ)) := by
+    rw [scale]
+    norm_num
   have degreeRate :
-      5 * ledger.dischargeRate
-        ≤ ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate :=
+      5 * (1 / (ledger.loadMultiplier : ℚ))
+        ≤ ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+          (1 / (ledger.loadMultiplier : ℚ)) :=
     mul_le_mul_of_nonneg_right (by linarith) rateNonneg
   refine ⟨counted, ?_, ?_, ?_⟩ <;>
     · unfold Profile.closedNeighbourDeficit
@@ -382,33 +366,39 @@ alternatives is *not* a hypothesis here: those alternatives gate the B1 ledger
 entry, not the deficit bound, and this statement asserts only the bound. -/
 theorem compatiblePairTypeBRouting (profile : Profile object)
     (ledger : LoadCapacityProfile)
-    (normal : NormalForm object profile.marked.fan.hub) {p q : Port object}
-    (compatible : FanCompatible p q)
-    (leftCenter : p.center = profile.marked.fan.hub)
-    (leftRemainder : p.endpoint ∈ profile.remainder)
-    (rightRemainder : q.endpoint ∈ profile.remainder)
-    (leftAssigned : ∀ shoulder ∈ p.shoulders, shoulder ∈ profile.envelope)
-    (rightAssigned : ∀ shoulder ∈ q.shoulders, shoulder ∈ profile.envelope) :
+    (normal : NormalForm object 3 profile.marked.fan.hub)
+    (scale : ledger.loadMultiplier = 4) {left right : object.Vertex}
+    (compatible : FanCompatible object profile.marked.fan.hub left right)
+    (leftRemainder : left ∈ profile.remainder)
+    (rightRemainder : right ∈ profile.remainder)
+    (leftAssigned : ∀ shoulder,
+      IsShoulder object profile.marked.fan.hub left shoulder →
+        shoulder ∈ profile.envelope)
+    (rightAssigned : ∀ shoulder,
+      IsShoulder object profile.marked.fan.hub right shoulder →
+        shoulder ∈ profile.envelope) :
     2 ≤ profile.closedCount ∧
-      ((object.degree profile.marked.fan.hub : ℚ) + 1) * ledger.dischargeRate - 1
+      ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+          (1 / (ledger.loadMultiplier : ℚ)) - 1
         ≤ profile.closedNeighbourDeficit ledger ∧
       0 < profile.closedNeighbourDeficit ledger := by
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  obtain ⟨leftClosed, rightClosed, distinct, _⟩ :=
-    compatiblePairFanClosure profile compatible leftCenter leftRemainder
+  obtain ⟨leftClosed, rightClosed, distinct⟩ :=
+    compatiblePairFanClosure profile compatible leftRemainder
       rightRemainder leftAssigned rightAssigned
-  have pairCard : ({p.endpoint, q.endpoint} : Finset object.Vertex).card = 2 :=
+  have pairCard : ({left, right} : Finset object.Vertex).card = 2 :=
     Finset.card_pair distinct
-  have fanClosed : ∀ vertex ∈ ({p.endpoint, q.endpoint} : Finset object.Vertex),
-      ∃ port : Port object, port.endpoint = vertex ∧ profile.IsFanClosed port := by
+  have fanClosed : ∀ vertex ∈ ({left, right} : Finset object.Vertex),
+      profile.IsFanClosed vertex := by
     intro vertex member
     rcases Finset.mem_insert.1 member with rfl | member
-    · exact ⟨p, rfl, leftClosed⟩
+    · exact leftClosed
     · rw [Finset.mem_singleton] at member
       subst member
-      exact ⟨q, rfl, rightClosed⟩
+      exact rightClosed
   obtain ⟨counted, _, deficitBound, positive⟩ :=
-    fanClosedPortTypeBRouting profile ledger normal fanClosed (by rw [pairCard])
+    fanClosedPortTypeBRouting profile ledger normal scale fanClosed
+      (by rw [pairCard])
   rw [pairCard] at counted
   exact ⟨counted, deficitBound, positive⟩
 
@@ -466,7 +456,7 @@ theorem adj_right : fanObject.graph.Adj hub rightEndpoint := by
 
 /-- The high-neighbourhood normal form of `lem:heavy-neighbourhood-normal-form`
 holds at the witness centre. -/
-def fanNormalForm : NormalForm fanObject hub := by
+def fanNormalForm : NormalForm fanObject 3 hub := by
   letI : DecidableRel fanObject.graph.Adj := fanObject.decideAdj
   letI : Fintype fanObject.Vertex := inferInstanceAs (Fintype (Fin 13))
   letI : DecidableEq fanObject.Vertex := inferInstanceAs (DecidableEq (Fin 13))
@@ -474,23 +464,27 @@ def fanNormalForm : NormalForm fanObject hub := by
       fanObject.graph.Adj hub left → fanObject.graph.Adj hub right →
       left ≠ right → other ≠ hub → fanObject.graph.Adj left other →
       ¬ fanObject.graph.Adj right other := by decide
-  refine ⟨by decide, by decide, by decide, ?_⟩
-  intro left right other centerLeft centerRight distinct otherNeHub leftOther
-    rightOther
+  refine ⟨by decide, by decide, ?_⟩
+  intro left right other centerLeft centerRight distinct _nonadjacent otherNeHub
+    leftOther rightOther
   exact key left right other centerLeft centerRight distinct otherNeHub
     leftOther rightOther
 
-/-- The first surplus port `p = (h, x)`. -/
-def leftPort : Port fanObject := ⟨hub, leftEndpoint, adj_left⟩
-
-/-- The second surplus port `q = (h, y)`. -/
-def rightPort : Port fanObject := ⟨hub, rightEndpoint, adj_right⟩
-
 /-- The two ports are a fan-compatible pair of open ports. -/
-theorem compatible : FanCompatible leftPort rightPort := by
+theorem compatible : FanCompatible fanObject hub leftEndpoint rightEndpoint := by
   letI : DecidableRel fanObject.graph.Adj := fanObject.decideAdj
   letI : DecidableEq fanObject.Vertex := inferInstanceAs (DecidableEq (Fin 13))
-  decide
+  letI : Fintype fanObject.Vertex := inferInstanceAs (Fintype (Fin 13))
+  have leftOpen : IsOpenPort fanObject hub leftEndpoint := by
+    rintro ⟨left, right, leftShoulder, rightShoulder, chord⟩
+    simp [IsShoulder, fanObject, rel, hub, leftEndpoint] at leftShoulder rightShoulder chord
+    omega
+  have rightOpen : IsOpenPort fanObject hub rightEndpoint := by
+    rintro ⟨left, right, leftShoulder, rightShoulder, chord⟩
+    simp [IsShoulder, fanObject, rel, hub, rightEndpoint] at leftShoulder rightShoulder chord
+    omega
+  exact fanCompatible_of_endpoints_nonadjacent fanNormalForm adj_left adj_right
+    (by decide) (by decide) leftOpen rightOpen
 
 /-- Four pairwise `C₂`-compatible window coordinates for the four neighbours,
 drawn from the independent set of `dIndep_card_eight_witness`. -/
@@ -528,13 +522,14 @@ def fanProfile : Profile fanObject where
 /-- `cor:compatible-pair-typeB-routing` fires on a concrete graph: the
 compatible open pair produces two fan-closed ports and a strictly positive
 closed-neighbour deficit. -/
-theorem routing_fires (ledger : LoadCapacityProfile) :
+theorem routing_fires (ledger : LoadCapacityProfile)
+    (scale : ledger.loadMultiplier = 4) :
     2 ≤ fanProfile.closedCount ∧
       ((fanObject.degree fanProfile.marked.fan.hub : ℚ) + 1)
-            * ledger.dischargeRate - 1
+            * (1 / (ledger.loadMultiplier : ℚ)) - 1
         ≤ fanProfile.closedNeighbourDeficit ledger ∧
       0 < fanProfile.closedNeighbourDeficit ledger := by
-  refine compatiblePairTypeBRouting fanProfile ledger fanNormalForm compatible rfl
+  refine compatiblePairTypeBRouting fanProfile ledger fanNormalForm scale compatible
     ?_ ?_ ?_ ?_
   · rw [Profile.mem_remainder_iff]
     exact ⟨(mem_neighbourRim fanObject hub leftEndpoint).2 adj_left,

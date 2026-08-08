@@ -1,6 +1,5 @@
 import Mathlib.Data.Finset.Max
 import Hypostructure.Graph.DecoratedFan
-import Hypostructure.Graph.Strategy.Official.Kernel
 
 /-!
 # Certificate-marked Type B fans and the fan-degree label-packing cap
@@ -44,8 +43,8 @@ one: `Marked.highDegree`'s `4` (and its companions in
 `IsFanCertificateResidual`) is `baselineDegree + 1` at the registered baseline
 `k = 3`, i.e. `def:marked-typeB-fan`'s "high-degree centre".  Parameterising
 `Marked` by `k` would change the signature of every Type B lemma that consumes
-it, across `TypeBProfileSchedule`, `TypeBExclusion`, `TypeBHybridLedger` and
-`TypeBOverlapObstruction`; it is recorded here rather than silently rewritten.
+it in the live `TypeBProfileSchedule` and `TypeBHybridLedger` chain; it is
+recorded here rather than silently rewritten.
 
 Manuscript invariants used: 16 (certificate-marked fan degree) and 25 (legal
 `P₁₃` labels).
@@ -587,21 +586,6 @@ schedule of the reused `DecoratedFan.Certificate` never exceeds eight entries. -
 theorem schedule_length_le_eight : marked.fan.schedule.length ≤ 8 := by
   rw [marked.fan.schedule_length, marked.rim_card_eq_degree]
   exact marked.degree_le_eight
-
-/-- The framework-owned canonical fan rim at a certificate-marked centre also
-obeys the cap. -/
-theorem fanSchedule_length_le_eight
-    (data : Strategy.Official.Presentation.{u})
-    (markedFan : Marked data.object) :
-    (data.fanSchedule markedFan.fan.hub).length ≤ 8 := by
-  letI : DecidableEq data.object.Vertex := data.object.vertices.decEq
-  rw [← List.toFinset_card_of_nodup (data.fanSchedule_nodup markedFan.fan.hub)]
-  have setEq :
-      (data.fanSchedule markedFan.fan.hub).toFinset = markedFan.fan.rim := by
-    ext vertex
-    simp [data.mem_fanSchedule_iff, markedFan.rim_eq_neighbourhood]
-  rw [setEq, markedFan.rim_card_eq_degree]
-  exact markedFan.degree_le_eight
 
 /-! ### Cubic-closed fan neighbours -/
 

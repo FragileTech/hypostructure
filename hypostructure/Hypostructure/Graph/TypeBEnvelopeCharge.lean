@@ -61,6 +61,7 @@ namespace Hypostructure.Graph.TypeBEnvelopeCharge
 
 open Hypostructure
 open Hypostructure.Graph.TypeBFanIncidence
+open Hypostructure.Graph.TypeBRefinedSupport
 open scoped BigOperators
 
 universe u
@@ -84,17 +85,6 @@ the fan estimates read it against the assigned envelope `E_h`, which is the
 manuscript's own "internal degree at most `2` **in the assigned fan
 envelope**". -/
 
-/-- **`s·ch_X(y)` for a core vertex**, against the counted core. -/
-noncomputable def scaledCoreCharge (object : FiniteObject.{u})
-    (threshold dischargeScale : Nat) (core : Finset object.Vertex)
-    (vertex : object.Vertex) : Int :=
-  ((dischargeScale * (threshold - object.internalDegree core vertex) : Nat) : Int) - 1
-
-/-- **`s·ch_X(h)` for an assigned centre**, against its ambient surplus. -/
-noncomputable def scaledCentreCharge (object : FiniteObject.{u})
-    (threshold dischargeScale : Nat) (centre : object.Vertex) : Int :=
-  - ((dischargeScale * (object.degree centre - threshold) : Nat) : Int) - 1
-
 /-! ## `def:typeB-assigned-ledger`: the augmented ledger and `(B-ledger)`
 
 The two readings of `def:typeB-assigned-ledger` are distinct and the manuscript
@@ -112,14 +102,6 @@ The core reading is the manuscript's verbatim
 
 carried at the scale `s`, so `α = 1/s` never appears as a reciprocal and the
 truncation is `Nat` subtraction. -/
-
-/-- **`Ĉh_B(X)`**, the Type B augmented ledger of a connected assigned support,
-at the discharge scale. -/
-noncomputable def augmentedLedger (object : FiniteObject.{u})
-    (threshold dischargeScale : Nat) (piece : Finset object.Vertex) : Int :=
-  ∑ vertex ∈ piece, scaledCoreCharge object threshold dischargeScale piece vertex +
-    ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
-      scaledCentreCharge object threshold dischargeScale centre
 
 /-- **`σ(X) = Σ_{h ∈ H_X}(d_G(h) − δ)`.**  A vertex of the support that is not
 an assigned centre carries no surplus at all, so the assigned centres already
@@ -203,283 +185,53 @@ theorem nonNegativeNetCharge_of_augmentedLedger_nonneg (object : FiniteObject.{u
 
 
 
-/-! ## `lem:typeB-exclusion` Step 2: summing the B2 ledger
+/-! ## `lem:typeB-exclusion` Step 2: the canonical B2 refinement -/
 
-Nothing here builds a fan envelope or a block structure of its own.  The
-entries, their carriers, their disjointness and their payment are
-`def:typeB-candidate-ledger`'s own, committed at node `[72]`/`[81]` as
-`Spine.Key.typeBDisjointAssignment` and carried by
-`TypeBRefinedSupport.RefinedSupportAssignment`:
+/-- The unpaid negative fan-envelope part used by the later bridge-mass
+estimate.  It is independent of any ledger representation. -/
+noncomputable def envelopeNegativePart (object : FiniteObject.{u})
+    (threshold dischargeScale : Nat) (envelope : Finset object.Vertex)
+    (centre : object.Vertex) : Nat :=
+  dischargeScale * (object.degree centre - threshold) + 1 +
+    closedCount object threshold envelope centre
 
-* `CandidateEntry.assigned` is `A_h`, with `assigned_adjacent`, `assigned_subset`
-  and `assigned_notCentre` its clauses;
-* `CandidateEntry.pays` is `ch_X(h) + Σ_{v ∈ A_h} ch_X(v) + ½|chosen| ≥ 0`,
-  cleared of denominators at the scale `2s`;
-* `HasDisjointChoice` is B2(a) and B2(c), the pairwise disjointness of the
-  carriers;
-* `IsMaximal` is B2(d), which with `demands_subset` makes the demand family
-  exactly `H_X`.
+/-- Membership in the finite candidate family exposes the exact local
+augmented-ledger refinement; it is not a constructor field. -/
+theorem candidate_refines_of_mem
+    {threshold dischargeScale : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {hub : object.Vertex}
+    {data : TypeBRefinedSupport.CandidateData object}
+    (member : data ∈ TypeBRefinedSupport.candidateFamily object threshold
+      dischargeScale piece hub) :
+    data.EntryRefines threshold dischargeScale piece hub :=
+  (TypeBRefinedSupport.mem_candidateFamily_iff.mp member).2.entryRefines
 
-What Step 2 adds is the summation: the entry blocks are disjoint, so their
-charges add, and the core outside them is discharged in place.  `(B-ledger)`
-then converts the total into `defp(X) − σ(X) ≥ α|V(X)|`.
+/-- B2(c) is read directly from the single canonical ledger: every chosen
+entry refines the same augmented support ledger, and both its literal carrier
+supports and indexed reserve units are pairwise disjoint. -/
+theorem disjointLedger_exactAugmentedLedgerRefinement
+    {threshold dischargeScale : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      piece) :
+    ledger.ExactAugmentedLedgerRefinement :=
+  ledger.exactAugmentedLedgerRefinement
 
-The `−α` per block is the centre's own charge as a vertex of the counted core,
-which `def:typeB-candidate-ledger`'s display does not include; it is exactly the
-`+α|H_X|` on the other side of `(B-ledger)`. -/
-
-/-- **The vertex block of a candidate entry**: the centre together with `A_h`. -/
-noncomputable def entryBlock {threshold dischargeScale : Nat}
-    {piece : Finset object.Vertex} {hub : object.Vertex}
-    (entry : TypeBRefinedSupport.CandidateEntry object threshold dischargeScale
-      piece hub) : Finset object.Vertex :=
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  insert hub entry.assigned
-
-theorem mem_entryBlock {threshold dischargeScale : Nat}
-    {piece : Finset object.Vertex} {hub vertex : object.Vertex}
-    {entry : TypeBRefinedSupport.CandidateEntry object threshold dischargeScale
-      piece hub} :
-    vertex ∈ entryBlock entry ↔ vertex = hub ∨ vertex ∈ entry.assigned := by
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  rw [entryBlock]
-  exact Finset.mem_insert
-
-/-- **A vertex-only entry's block charge is at least `−α`.**
-
-`def:typeB-candidate-ledger` (a) read straight off `CandidateEntry.pays` at an
-empty `chosen`, plus the centre's own core charge, which is at worst `−α`.
-Nothing is re-derived: the payment is the entry's own field. -/
-theorem neg_one_le_entryBlockCharge {threshold dischargeScale : Nat}
-    {piece : Finset object.Vertex} {hub : object.Vertex}
-    (entry : TypeBRefinedSupport.CandidateEntry object threshold dischargeScale
-      piece hub)
-    (vertexOnly : entry.chosen = ∅) :
-    (-1 : Int) ≤
-      ∑ vertex ∈ entryBlock entry,
-          scaledCoreCharge object threshold dischargeScale piece vertex +
-        scaledCentreCharge object threshold dischargeScale hub := by
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  have hubFresh : hub ∉ entry.assigned := fun present =>
-    object.graph.irrefl (entry.assigned_adjacent hub present)
-  have pays := entry.pays
-  rw [vertexOnly] at pays
-  simp only [Finset.card_empty, Nat.mul_zero] at pays
-  have assignedSum : ∑ vertex ∈ entry.assigned,
-      scaledCoreCharge object threshold dischargeScale piece vertex =
-        ((dischargeScale : Int)) * (∑ vertex ∈ entry.assigned,
-            ((threshold - object.internalDegree piece vertex : Nat) : Int)) -
-          (entry.assigned.card : Int) := by
-    unfold scaledCoreCharge
-    rw [Finset.sum_sub_distrib, Finset.sum_const, nsmul_eq_mul, mul_one,
-      Finset.mul_sum]
-    push_cast
-    rfl
-  have hubCore : (-1 : Int) ≤
-      scaledCoreCharge object threshold dischargeScale piece hub := by
-    rw [scaledCoreCharge]
-    have : (0 : Int) ≤ ((dischargeScale *
-        (threshold - object.internalDegree piece hub) : Nat) : Int) :=
-      Int.natCast_nonneg _
-    linarith
-  have cast : ((2 * dischargeScale * (object.degree hub - threshold) + 2 +
-        2 * entry.assigned.card : Nat) : Int) ≤
-      ((2 * dischargeScale * ∑ vertex ∈ entry.assigned,
-        (threshold - object.internalDegree piece vertex) : Nat) : Int) := by
-    exact_mod_cast pays
-  push_cast at cast
-  rw [entryBlock, Finset.sum_insert hubFresh, assignedSum, scaledCentreCharge]
-  push_cast
-  linarith [hubCore]
-
-/-- **The blocks of a disjoint choice are pairwise disjoint.**
-
-The vertex part of `Disjoint carriers`: `CandidateEntry.carriers` is
-`(insert hub A_h).disjSum chosen`, so two entries with disjoint carriers have
-disjoint blocks.  This is B2(a) and B2(c) read, not restated. -/
-theorem entryBlock_disjoint {threshold dischargeScale : Nat}
-    {piece : Finset object.Vertex} {left right : object.Vertex}
-    (leftEntry : TypeBRefinedSupport.CandidateEntry object threshold
-      dischargeScale piece left)
-    (rightEntry : TypeBRefinedSupport.CandidateEntry object threshold
-      dischargeScale piece right)
-    (disjoint : Disjoint leftEntry.carriers rightEntry.carriers) :
-    Disjoint (entryBlock leftEntry) (entryBlock rightEntry) := by
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  refine Finset.disjoint_left.mpr fun vertex leftMember rightMember => ?_
-  refine Finset.disjoint_left.mp disjoint
-    (show Sum.inl vertex ∈ leftEntry.carriers from ?_)
-    (show Sum.inl vertex ∈ rightEntry.carriers from ?_)
-  · rw [TypeBRefinedSupport.CandidateEntry.carriers]
-    exact Finset.inl_mem_disjSum.mpr leftMember
-  · rw [TypeBRefinedSupport.CandidateEntry.carriers]
-    exact Finset.inl_mem_disjSum.mpr rightMember
-
-/-- **The post-ledger core of a disjoint refined ledger**, and the two Type A
-conditions `lem:typeB-postledger-core-hygiene` hands its components to.
-
-The region is the support less the entry blocks -- the manuscript's "remove
-these ledger entries and call the remaining support `X₀`".  The conditions are
-nodes `[88]` and `[90]`: the canonical routing is total on it and stays in it,
-and every one of its receivers is unsaturated. -/
-def PostLedgerCore {threshold dischargeScale : Nat}
-    (object : FiniteObject.{u}) (piece : Finset object.Vertex)
-    (assignment : TypeBRefinedSupport.RefinedSupportAssignment object threshold
-      dischargeScale piece)
-    (entry : ∀ hub ∈ assignment.demands,
-      TypeBRefinedSupport.CandidateEntry object threshold dischargeScale piece
-        hub) : Prop := by
-  classical
-  exact (∀ vertex ∈ piece \ assignment.demands.attach.biUnion
-      (fun hub => entryBlock (entry hub.1 hub.2)),
-      object.internalDegree piece vertex ≤ threshold) ∧
-    (∀ vertex ∈ piece \ assignment.demands.attach.biUnion
-        (fun hub => entryBlock (entry hub.1 hub.2)),
-      object.internalDegree piece vertex = threshold →
-      ∃ receiver : object.Vertex,
-        object.traceReceiver? piece threshold vertex = some receiver ∧
-          object.IsReceiver piece threshold receiver ∧
-            receiver ∉ assignment.demands.attach.biUnion
-              (fun hub => entryBlock (entry hub.1 hub.2))) ∧
-      ∀ receiver ∈ object.receivers piece threshold \
-          assignment.demands.attach.biUnion
-            (fun hub => entryBlock (entry hub.1 hub.2)),
-        1 + object.restrictedLoad piece
-            (assignment.demands.attach.biUnion
-              (fun hub => entryBlock (entry hub.1 hub.2))) threshold receiver ≤
-          dischargeScale * object.missingPorts piece threshold receiver
-
-/-- **`lem:typeB-exclusion` Step 2, and with it `prop:typeB-bridge-reduction`.**
-
-`defp(X) − σ(X) ≥ α|V(X)|` at a connected assigned Type B support carrying the
-refined ledger B2, every entry of which is certificate-closed, and whose
-post-ledger core is a Type A region the canonical routing reaches with every
-receiver unsaturated.
-
-Every ingredient is read: the entries and their disjointness from the
-assignment, the payment from `CandidateEntry.pays`, the identity from
-`(B-ledger)`, and the core from `FiniteObject.card_le_scaled_deficiency_off`.
-The core hypotheses are nodes `[88]` and `[90]`, which
-`lem:typeB-postledger-core-hygiene` hands the components to. -/
-theorem typeBExclusion {threshold dischargeScale : Nat}
-    (object : FiniteObject.{u}) (piece : Finset object.Vertex)
-    (assignment : TypeBRefinedSupport.RefinedSupportAssignment object threshold
-      dischargeScale piece)
-    (entry : ∀ hub ∈ assignment.demands,
-      TypeBRefinedSupport.CandidateEntry object threshold dischargeScale piece
-        hub)
-    (disjointCarriers : ∀ (left : object.Vertex)
-      (leftMember : left ∈ assignment.demands) (right : object.Vertex)
-      (rightMember : right ∈ assignment.demands), left ≠ right →
-      Disjoint (entry left leftMember).carriers (entry right rightMember).carriers)
-    (vertexOnly : ∀ (hub : object.Vertex) (member : hub ∈ assignment.demands),
-      (entry hub member).chosen = ∅)
-    (core : PostLedgerCore object piece assignment entry) :
-    object.NonNegativeNetCharge piece threshold dischargeScale := by
-  classical
-  obtain ⟨coreCapped, coreRoutes, coreUnsaturated⟩ := core
-  set blocks := assignment.demands.attach.biUnion
-    (fun hub => entryBlock (entry hub.1 hub.2)) with blocksDef
-  -- B2(d) with `demands_subset`: the demand family is exactly `H_X`.
-  have demandsEq : assignment.demands =
-      TypeBRefinedSupport.centres object threshold piece :=
-    Finset.Subset.antisymm assignment.demands_subset assignment.maximal
-  -- The blocks lie inside the support.
-  have blocksSubset : blocks ⊆ piece := by
-    intro vertex member
-    obtain ⟨hub, _present, inside⟩ := Finset.mem_biUnion.mp member
-    rcases mem_entryBlock.mp inside with equal | assigned
-    · exact equal ▸ TypeBRefinedSupport.centres_subset
-        (demandsEq ▸ hub.2 : hub.1 ∈ TypeBRefinedSupport.centres object threshold piece)
-    · exact (entry hub.1 hub.2).assigned_subset assigned
-  -- The blocks are pairwise disjoint, by B2(a) and B2(c).
-  have blocksDisjoint : Set.PairwiseDisjoint
-      (↑assignment.demands.attach : Set {x // x ∈ assignment.demands})
-      (fun hub => entryBlock (entry hub.1 hub.2)) := by
-    intro left _ right _ different
-    refine entryBlock_disjoint _ _ (disjointCarriers left.1 left.2 right.1 right.2 ?_)
-    intro same
-    exact different (Subtype.ext same)
-  have blockSum : ∑ vertex ∈ blocks,
-      scaledCoreCharge object threshold dischargeScale piece vertex =
-        ∑ hub ∈ assignment.demands.attach, ∑ vertex ∈ entryBlock (entry hub.1 hub.2),
-          scaledCoreCharge object threshold dischargeScale piece vertex :=
-    Finset.sum_biUnion blocksDisjoint
-  -- Each block, with its centre charge, is at least `−α`.
-  have blockBound : - ((assignment.demands.attach).card : Int) ≤
-      ∑ hub ∈ assignment.demands.attach,
-        (∑ vertex ∈ entryBlock (entry hub.1 hub.2),
-            scaledCoreCharge object threshold dischargeScale piece vertex +
-          scaledCentreCharge object threshold dischargeScale hub.1) := by
-    have pointwise : ∀ hub ∈ assignment.demands.attach, (-1 : Int) ≤
-        ∑ vertex ∈ entryBlock (entry hub.1 hub.2),
-            scaledCoreCharge object threshold dischargeScale piece vertex +
-          scaledCentreCharge object threshold dischargeScale hub.1 :=
-      fun hub _ => neg_one_le_entryBlockCharge (entry hub.1 hub.2)
-        (vertexOnly hub.1 hub.2)
-    have := Finset.sum_le_sum pointwise
-    rw [Finset.sum_const, nsmul_eq_mul] at this
-    linarith
-  -- Outside the blocks the Type A discharging applies in place.
-  have offBlocks : (0 : Int) ≤ ∑ vertex ∈ piece \ blocks,
-      scaledCoreCharge object threshold dischargeScale piece vertex := by
-    have discharged := object.card_le_scaled_deficiency_off piece blocks threshold
-      dischargeScale coreCapped coreRoutes coreUnsaturated
-    have expand : ∑ vertex ∈ piece \ blocks,
-        scaledCoreCharge object threshold dischargeScale piece vertex =
-          ((∑ vertex ∈ piece \ blocks,
-            dischargeScale *
-              (threshold - object.internalDegree piece vertex) : Nat) : Int) -
-            ((piece \ blocks).card : Int) := by
-      unfold scaledCoreCharge
-      rw [Finset.sum_sub_distrib, Finset.sum_const, nsmul_eq_mul, mul_one,
-        Nat.cast_sum]
-    rw [expand]
-    have cast : ((piece \ blocks).card : Int) ≤
-        ((∑ vertex ∈ piece \ blocks,
-          dischargeScale *
-            (threshold - object.internalDegree piece vertex) : Nat) : Int) := by
-      exact_mod_cast discharged
-    linarith
-  -- Assemble.
-  have centreSum : ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece,
-      scaledCentreCharge object threshold dischargeScale centre =
-        ∑ hub ∈ assignment.demands.attach,
-          scaledCentreCharge object threshold dischargeScale hub.1 := by
-    rw [← demandsEq, Finset.sum_attach assignment.demands
-      (fun centre => scaledCentreCharge object threshold dischargeScale centre)]
-  have cardEq : ((assignment.demands.attach).card : Int) =
-      ((TypeBRefinedSupport.centres object threshold piece).card : Int) := by
-    rw [Finset.card_attach, demandsEq]
-  have splitCore : ∑ vertex ∈ piece,
-      scaledCoreCharge object threshold dischargeScale piece vertex =
-        ∑ vertex ∈ piece \ blocks,
-            scaledCoreCharge object threshold dischargeScale piece vertex +
-          ∑ vertex ∈ blocks,
-            scaledCoreCharge object threshold dischargeScale piece vertex :=
-    (Finset.sum_sdiff blocksSubset).symm
-  have ledger : - ((TypeBRefinedSupport.centres object threshold piece).card : Int) ≤
-      augmentedLedger object threshold dischargeScale piece := by
-    rw [augmentedLedger, splitCore, blockSum, centreSum, add_assoc,
-      ← Finset.sum_add_distrib, ← cardEq]
-    linarith [offBlocks, blockBound]
-  have identity :=
-    augmentedLedger_add_card_centres object threshold dischargeScale piece
-  have counted : ((TypeBRefinedSupport.centres object threshold piece).card : Int) ≤
-      (piece.card : Int) := by
-    exact_mod_cast Finset.card_le_card
-      (TypeBRefinedSupport.centres_subset (threshold := threshold) (piece := piece))
-  rw [FiniteObject.NonNegativeNetCharge]
-  have cast :
-      ((piece.card + dischargeScale * object.ambientSurplus piece threshold : Nat) :
-        Int) ≤
-        ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) := by
-    push_cast
-    push_cast at identity ledger
-    linarith
-  exact_mod_cast cast
-
+/-- The selected entry at a centre has nonnegative exact scaled contribution to
+its support's augmented ledger. -/
+theorem disjointLedger_entry_refines
+    {threshold dischargeScale : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      piece) (hub : object.Vertex)
+    (member : hub ∈ TypeBRefinedSupport.centres object threshold piece.vertices) :
+    (ledger.choice.entry hub member).EntryRefines threshold dischargeScale
+      piece hub :=
+  ledger.entry_refines hub member
 
 /-! ## `lem:typeB-bridge-deficit-bound`: the residual mass itself
 
@@ -899,18 +651,12 @@ theorem bridgeResidualMass_le {threshold dischargeScale massFactor : Nat}
 
 /-! ## `lem:typeB-bridge-deficit-bound`: the envelope negative part -/
 
-/-- **The unpaid part of the fan envelope at a centre, at the discharge scale.**
+/-! **The unpaid part of the fan envelope at a centre, at the discharge scale.**
 
 Only the centre and the `c` cubic-closed neighbours carry negative charge, by
 `scaledCharge_openNeighbour_nonneg`; the centre contributes `s(k − δ) + 1` and
 each cubic-closed neighbour `1`.  This is the manuscript's
 `(k − 3 + 1/4) + c/4`, multiplied through by `s`. -/
-noncomputable def envelopeNegativePart (object : FiniteObject.{u})
-    (threshold dischargeScale : Nat) (envelope : Finset object.Vertex)
-    (centre : object.Vertex) : Nat :=
-  dischargeScale * (object.degree centre - threshold) + 1 +
-    closedCount object threshold envelope centre
-
 /-- **`lem:typeB-bridge-deficit-bound`, display (1).**
 
 `(k − 3 + 1/4) + c/4 ≤ 5k/4 − 11/4 ≤ 8(k − 3)`, at the discharge scale and for
