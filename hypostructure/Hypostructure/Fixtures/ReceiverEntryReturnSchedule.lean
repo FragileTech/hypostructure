@@ -1,11 +1,10 @@
-import Hypostructure.Graph.ResponseDelocalization
 import Hypostructure.Graph.VisibleReceiverEntry
 
 /-!
 # Receiver-entry-return and optional-event fixtures
 
-These checks keep the D1 schedule and the route-8 presentation on their generic
-Graph APIs.  They introduce no strategy state or proof-specific carrier.
+These checks keep the D1 schedule on its generic Graph API.  They introduce no
+strategy state or proof-specific carrier.
 -/
 
 namespace Hypostructure.Fixtures.ReceiverEntryReturnSchedule
@@ -38,12 +37,5 @@ example (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex)
     (owns : return'.OwnsBoundaryEntry (threshold := threshold) boundary load) :
     Graph.VisibleEntry.ownsBoundaryEntry object support threshold receiver load boundary :=
   Graph.VisibleEntry.ownsBoundaryEntry_of_return boundary port return' owns
-
-example (object : Graph.FiniteObject.{u})
-    (presented : Graph.Route8.PresentedEntry object)
-    (coordinate : presented.Coordinate)
-    (noEvent : presented.event? coordinate = none) :
-    presented.car coordinate = ∅ := by
-  simp [Graph.Route8.PresentedEntry.car, noEvent]
 
 end Hypostructure.Fixtures.ReceiverEntryReturnSchedule

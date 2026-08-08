@@ -21,6 +21,7 @@ import Hypostructure.Graph.TypeADischarge
 import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.ExitFourFamily
 import Hypostructure.Graph.Route8Residual
+import Hypostructure.Graph.Route8CarrierCore
 import Hypostructure.Graph.ResponseDelocalization
 import Hypostructure.Graph.BoundaryDemand
 import Hypostructure.Graph.ReceiverRouting
@@ -525,40 +526,6 @@ inductive Key where
   `def:admissible-rank-quotient` yields either a proper-support replacement or
   a strictly smaller admissible closed representative. -/
   | globalBarrier
-  /-- Nodes `[145]`--`[157]`, the corridor cut-state `T(J)`
-  (`def:cold-corridor-first-failure`).  The cold corridor state retains exactly
-  the four items that definition names, and retaining them is enough: two
-  segments with equal states agree at *every* declared coordinate supported in
-  the active interface, derived (D8) ones included.  Reading `Q_cold + 1`
-  states therefore forces a repeat, which is the pigeonhole the repeat subcase
-  of (F5) is entered by. -/
-  | coldCorridorState
-  /-- Nodes `[145]`--`[157]`, the same-interface table.  Every row of
-  `def:cold-same-interface-table` is routed to an already closed outcome
-  (`lem:cold-same-interface-table`), so no equal-length cold bounded germ is a
-  terminal cold residual; and a short self-return whose smear interval meets an
-  accepted length realizes it (`lem:cold-short-self-return-filter`). -/
-  | coldSameInterfaceTable
-  /-- Node `[155]`, G1 of `lem:cold-bounded-germ-trichotomy`.  A cold bounded
-  germ whose own compatible completion realizes the target would hand the
-  selected object the target it avoids, so no germ is *hit-realized*; and the
-  three cases G1, G2, G3 of the trichotomy are exhaustive, which is what makes
-  the routing of the remaining two an exhaustive routing. -/
-  | coldGermRealized
-  /-- Node `[156]`, G2 of `lem:cold-bounded-germ-trichotomy`.  A germ some
-  compatible outside context *distinguishes* identifies its two representatives
-  target-defectively: `lem:context-universality` denies target-completeness of
-  that identification in every immutable profile fibre, which is the routing to
-  the sparse exit or the exit-(4) ledger. -/
-  | coldGermDistinguished
-  /-- Node `[157]`, G3 of `lem:cold-bounded-germ-trichotomy` with
-  `lem:cold-increment-arithmetic`.  A *silent* length-changing germ would be a
-  target-complete compression of its own proper support, which node `[14]`
-  excludes; and the finite arithmetic of the increment `δ` -- the overlapping
-  blocks of case (a), the doubling-orbit hit of case (b), the order criterion
-  forcing it, the transient of an even modulus, and case (d)'s equal-length
-  switch -- decides which of the three arms a germ falls into. -/
-  | coldGermSilent
   /-- Nodes `[21]`--`[22]`: `lem:p13-window-package`.  The selected coordinates of
   the multi-scale window package are separated, and each carries the audited
   per-window rate.  This is the arm on which `lem:independent-target-entropy`
@@ -764,49 +731,7 @@ inductive Key where
   the saturated exit list continues at exit `(8)`, the route-8 residual of
   `def:typeA-silent-core-residual`. -/
   | typeAExitSevenFree
-  /-- Nodes `[154]`, `[155]`, the (F1) producer.  A compatible completion
-  through a cold-window offset that realizes a power-of-two cycle would be an
-  accepted cycle of the selected object, which node `[1]` excludes: (F1) never
-  occurs on this branch (`lem:cold-corridor-first-failure` (i)). -/
-  | coldFailureCycle
-  /-- Nodes `[154]`, `[156]`, the (F2) producer.  Two prefixes with the same
-  cold corridor state but different target response against some compatible
-  outside context identify target-defectively -- `lem:context-universality` --
-  and with the discrepancy excluded they are context-equivalent
-  (`lem:cold-corridor-first-failure` (ii)). -/
-  | coldFailureDefect
-  /-- Nodes `[154]`, `[157]`, the (F3) producer.  A named earlier prefix whose
-  own piece is a strictly smaller proper representative of a later one is a
-  target-complete compression of a proper support, which node `[14]` excludes:
-  (F3) never occurs (`lem:cold-corridor-first-failure` (iii)). -/
-  | coldFailureCompression
-  /-- Nodes `[154]`, `[156]`, the (F4) producer and its handoff exit.  A
-  corridor that first enters a support already marked by the incoming ledger
-  transfers to that existing ledger (`lem:cold-corridor-first-failure` (iv)). -/
-  | coldFailureHandoff
-  /-- Node `[154]`, the classified state.  Every cold return corridor has a
-  first failure: either it reaches its successor stub inside `Q_cold` states, or
-  `Q_cold + 1` states are read and two are equal.  With it, the hot/cold ledger
-  split of `def:cold-window-ledger` and the branch-excess count of
-  `def:cold-skeleton-excess`/`lem:cold-window-stub-excess`
-  (`lem:cold-corridor-first-failure`, existence half). -/
-  | coldFailureRouting
-  /-- Node `[156]`, the (F4) dispatch arm.  A corridor that enters the declared
-  handoff interfaces transfers its charge to a support already carried by the
-  incoming branch ledger. -/
-  | coldHandoffTransfer
-  /-- Nodes `[153]`, `[154]`, the (F5) arm.  `lem:hot-failure-cold-mass` bounds
-  the hot windows by the skeleton budget, so the cold count carries the rest;
-  `lem:cold-germ-extraction` turns the branch excess into a pairwise
-  vertex-disjoint candidate germ family by greedy independence in the
-  intersection graph of maximum degree `M_cold·B_cold`; and a positive candidate
-  count forces a positive disjoint count, so the (F5) partition is never
-  empty. -/
-  | coldGermExtraction
-  /-- Nodes `[145]`--`[157]`, `thm:cold-branch-quantitative-closure`.  No
-  length-changing cold germ survives the two ledger-closed arms except through
-  the target-defect route. -/
-  | coldBranchClosed
+  | coldGermRouted
   /-- Node `[68]`, the standing law: every high centre of the object has its
   neighbourhood in the normal form of `lem:heavy-neighbourhood-normal-form` --
   cubic neighbours, a matching inside `N_G(h)`, and no common neighbour outside
@@ -886,6 +811,18 @@ inductive Key where
   for certificate residuals, overlap obstructions, and grouped decorated
   envelope residuals. -/
   | typeBBridgeMass
+  /-- Node `[76]`/`[85]`: the Type B B-ledger charge implication read from the
+  selected disjoint ledger. -/
+  | typeBExclusionCharge
+  /-- Node `[76]`/`[85]`, clean arm: the post-B2 remaining core has
+  nonnegative scaled charge. -/
+  | typeBRemainingCoreNonnegative
+  /-- Node `[76]`/`[85]`, closed arm: the selected Type B ledger gives
+  nonnegative net charge. -/
+  | typeBExcluded
+  /-- Node `[76]`/`[85]`, surviving arm: the Type B exclusion hypotheses are not
+  all discharged on the selected B2 branch. -/
+  | typeBExclusionResidual
   /-- Node `[101]`, yes arm: on the exact selected visible package after exits
   `(1)`, `(2)`, and `(3)` are absent, some canonical Q1--Q4 exit-`(4)` witness
   is target-defective and its declared support contains one of that package's
@@ -948,6 +885,26 @@ inductive Key where
   The fact is a ledger refinement of the same residual state, not a secondary
   route-8 object. -/
   | route8Residual
+  /-- Node `[110]`, exit `(8)`: the selected route-8 residual satisfies the
+  silent-core residual profile.  This is a semantic fact about the selected
+  residual state, not an indexed carrier or basin transport object. -/
+  | route8ResidualProfile
+  /-- Node `[111]`: the selected route-`8` residual profile lies on the
+  large-budget branch extracted by the global squeeze. -/
+  | route8GlobalSqueeze
+  /-- Node `[112]`: the selected route-`8` residual carries the basin-burden
+  lower side of `lem:typeA-route8-burden`. -/
+  | route8BasinBurden
+  /-- Node `[113]`: the same selected route-`8` residual carries the
+  large-budget Type A deficit lower side. -/
+  | route8LargeBudgetDeficit
+  /-- Node `[114]`: canonical minimal carrier-core facts for every declared
+  reading of the selected route-`8` residual. -/
+  | route8CarrierCore
+  /-- Nodes `[115]`--`[116]`: zero/one essential carrier cores activate the
+  selected trace-basin minimality alternatives, hence the branch returns to
+  exits `(4)`--`(7)` rather than continuing as route `8`. -/
+  | route8SmallCoreCollapse
   /-- Node `[126]`, `lem:sparse-slack-surplus`: the sparse slack identity
   `m = (3/2)n + (1/2)σ(G)`, cleared of division at the registered baseline. -/
   | sparseSlackSurplus
@@ -1502,6 +1459,136 @@ abbrev SelectedNoExitSixReceiverWith (data : Data.{u})
                       (Graph.HasCycleWithLength data.LengthOK) object support) ∧
                   ¬ ExitSixDelocalizes data object piece ∧
                   extra packing piece receiver peeled
+
+/-- The selected silent-core residual profile at exit `(8)`.  It exposes the
+same selected saturated residual state as `[109]`, with the selected receiver
+and current peeling set in scope for later semantic facts, and asserts that no
+decorated handoff fan is produced. -/
+abbrev SilentCoreResidualProfile (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  SelectedNoExitSixReceiverWith data object
+    (fun packing piece _receiver _peeled =>
+      ¬ HandoffProduced data object packing piece)
+
+/-- Node `[110]` from node `[109]`: once exit `(7)` is denied on the selected
+no-exit-`(6)` residual, the receiver-exposed silent-core residual profile is
+the same residual statement with the selected local data brought into scope. -/
+theorem silentCoreResidualProfile_of_route8Residual
+    {data : Data.{u}} {object : Graph.FiniteObject.{u}}
+    (residual :
+      SelectedNoExitSixWith data object
+        (fun packing piece => ¬ HandoffProduced data object packing piece)) :
+    SilentCoreResidualProfile data object := by
+  obtain ⟨packing, valid, maximal, component, present, negative, zero,
+    receiver, isReceiver, peeled, peeledSubset, saturated, routing,
+    noCompression, noDelocalization, noHandoff⟩ := residual
+  exact ⟨packing, valid, maximal, component, present, negative, zero,
+    receiver, isReceiver, peeled, peeledSubset, saturated, routing,
+    noCompression, noDelocalization, noHandoff⟩
+
+/-- Residual C, in the exact schema committed earlier by the spine. -/
+abbrev LargeBudgetResidual (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ((∃ packing : Finset (Finset object.Vertex),
+      object.IsWindowPacking data.windowOrder packing ∧
+        jointPackageDemand data object packing ≤ Graph.skeletonBudget object) ∨
+    ∃ packing : Finset (Finset object.Vertex),
+      object.IsWindowPacking data.windowOrder packing ∧
+        Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
+          data.windowOrder data.threshold
+          (object.positiveDeficiency (object.remainderSupport packing)
+            data.threshold)
+          (object.remainderSupport packing).card)
+
+/-- Node `[111]`: the selected route-`8` profile lies on the large-budget
+branch. -/
+abbrev Route8GlobalSqueeze (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  SilentCoreResidualProfile data object ∧ LargeBudgetResidual data object
+
+/-- Node `[112]`, in the cleared form already proved by the selected
+silent-excess count: `|X| ≤ S_sil^exc(X) + s·def⁺(X)`, i.e.
+`S_sil^exc(X) ≥ s·D_A(X)`.
+
+The first conjunct ties the statement to the incoming true route-`8` residual;
+the second conjunct is exactly the support-local burden fact committed earlier
+on the same ledger prefix. -/
+abbrev Route8BasinBurden (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8GlobalSqueeze data object ∧
+    ∃ packing : Finset (Finset object.Vertex),
+      object.IsWindowPacking data.windowOrder packing ∧
+        (∀ window : Finset object.Vertex,
+          object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) ∧
+        ∃ component ∈ object.canonicalPieces
+            (object.remainderSupport packing),
+          let piece := object.pieceSupport
+            (object.remainderSupport packing) component
+          object.NegativeNetCharge piece data.threshold
+              data.dischargeScale ∧
+            object.ambientSurplus piece data.threshold = 0 ∧
+            ∃ receiver : object.Vertex,
+              object.IsReceiver piece data.threshold receiver ∧
+                object.Saturated piece data.threshold data.dischargeScale
+                  receiver ∧
+                Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+                    data.dischargeScale receiver ∅ ∧
+                piece.card ≤
+                  (∑ other ∈ object.receivers piece data.threshold,
+                    (Graph.VisibleEntry.silentExcess object piece
+                      data.threshold data.dischargeScale other).card) +
+                    data.dischargeScale *
+                      object.positiveDeficiency piece data.threshold
+
+/-- Node `[113]`: the selected route-`8` residual has both the basin burden and
+the large-budget deficit branch. -/
+abbrev Route8LargeBudgetDeficit (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8BasinBurden data object ∧ LargeBudgetResidual data object
+
+/-- Node `[114]`: the carrier-core theorem package, committed as a ledger fact
+on top of the selected `[113]` route-`8` residual.
+
+The quantified arguments are the declared reading of one route-`8` trace-basin
+entry.  They are not transported as a side object; downstream nodes instantiate
+this theorem from the same ledger when they have a concrete declared reading. -/
+abbrev Route8CarrierCore (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8LargeBudgetDeficit data object ∧
+    ∀ {Target : Graph.FiniteObject.{u} → Prop}
+      {Carrier Coordinate : Type u}
+      [DecidableEq Carrier] [DecidableEq Coordinate]
+      {boundary : Graph.Boundary.{u}}
+      (carrierSupply : Hypostructure.Core.Finite.Enumeration Carrier)
+      (coordinates : Finset Coordinate)
+      (car : Coordinate → Finset Carrier)
+      (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
+      (state : Finset Coordinate → Graph.BoundaryPiece boundary),
+        Graph.Route8.CarrierCoreFacts (Target := Target) carrierSupply
+          coordinates car car_subset state
+
+/-- Nodes `[115]`--`[116]`: the zero/one-core collapse theorem, committed as a
+ledger fact on top of `[114]`.
+
+The fact is stated at the same declared-reading API as `[114]`.  It does not
+transport an entry or search for one: downstream rows instantiate it with the
+concrete trace-basin reading already owned by the incoming residual and then
+close the alternatives using the no-exit facts present in the same ledger. -/
+abbrev Route8SmallCoreCollapse (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8CarrierCore data object ∧
+    ∀ {Target : Graph.FiniteObject.{u} → Prop}
+      {Carrier Coordinate : Type u}
+      [DecidableEq Carrier] [DecidableEq Coordinate]
+      {boundary : Graph.Boundary.{u}}
+      (carrierSupply : Hypostructure.Core.Finite.Enumeration Carrier)
+      (coordinates : Finset Coordinate)
+      (car : Coordinate → Finset Carrier)
+      (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
+      (state : Finset Coordinate → Graph.BoundaryPiece boundary),
+        Graph.Route8.SmallCoreCollapseFacts (Target := Target) carrierSupply
+          coordinates car car_subset state
 
 /-- The value schema of each spine fact, stated of the *object* alone.
 
@@ -2220,9 +2307,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- pairwise vertex-disjoint subfamily covering it `D_cold`-fold.  This is
       -- the extraction, multiplicatively, so nothing rounds.
       --
-      -- Third: a positive candidate count forces a positive disjoint count, so
-      -- the (F5) partition is never empty -- "at least one bounded candidate
-      -- germ is present on every remaining branch".
+      -- Third: a positive candidate count forces a positive disjoint count.
+      --
+      -- Fourth: the actual quantitative chain used at the oval: stub excess,
+      -- candidate loss, the extracted cover, and the surviving linear margin
+      -- imply that the extracted cold-germ family is nonempty.
       ((∀ hotRate skeletonRate order slack hotCount coldCount packing : Nat,
         packing = hotCount + coldCount →
         hotRate * hotCount ≤ skeletonRate * order + slack →
@@ -2252,8 +2341,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         ∀ (Germ : Type) (_ : DecidableEq Germ)
           (candidates disjointFamily : Finset Germ) (denominator : Nat),
           candidates.card ≤ disjointFamily.card * denominator →
-            0 < candidates.card → 0 < disjointFamily.card)
-  | .coldBranchClosed, object =>
+            0 < candidates.card → 0 < disjointFamily.card) ∧
+        ∀ (Germ : Type) (_ : DecidableEq Germ)
+          (candidates disjointFamily : Finset Germ)
+          (perWindow coldCount branchExcess denominator slack : Nat),
+          perWindow * coldCount ≤ branchExcess + slack →
+            branchExcess ≤ candidates.card + slack →
+              candidates.card ≤ disjointFamily.card * denominator →
+                2 * slack < perWindow * coldCount →
+                  0 < disjointFamily.card)
+  | .coldGermRouted, object =>
       -- The length-changing germ conclusion obtained by eliminating G1 and G3
       -- against the facts already committed at nodes `[155]` and `[157]`.
       ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
@@ -2322,16 +2419,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .largeBudgetResidual, object =>
       -- Residual C.  The high-entropy arm reaches it through the exact
       -- skeleton comparison; the low-entropy arm is routed here unchanged, as `prop:two-budget` prescribes.
-      ((∃ packing : Finset (Finset object.Vertex),
-          object.IsWindowPacking data.windowOrder packing ∧
-            jointPackageDemand data object packing ≤ Graph.skeletonBudget object) ∨
-        ∃ packing : Finset (Finset object.Vertex),
-          object.IsWindowPacking data.windowOrder packing ∧
-            Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
-              data.windowOrder data.threshold
-              (object.positiveDeficiency (object.remainderSupport packing)
-                data.threshold)
-              (object.remainderSupport packing).card)
+      LargeBudgetResidual data object
   | .netChargeLocalization, object =>
       -- Nodes `[57]`--`[58]`.  `lem:netcharge-superadd`'s only consumed
       -- consequence, at the registered discharge scale: the canonical
@@ -3193,12 +3281,56 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                         (object.pieceSupport grouped piece) data.threshold -
                     data.dischargeScale * object.positiveDeficiency
                       (object.pieceSupport grouped piece) data.threshold) ≤
-                Graph.TypeBEnvelopeCharge.route8Deficit object ordinary
+                  Graph.TypeBEnvelopeCharge.route8Deficit object ordinary
                     data.threshold data.dischargeScale ordinaryRoute8 +
                   Graph.TypeBEnvelopeCharge.route8Deficit object grouped
                       data.threshold data.dischargeScale groupedRoute8 +
                     2 * (data.bridgeMassFactor * data.dischargeScale *
                       object.degreeSurplus data.threshold))
+  | .typeBExclusionCharge, object =>
+      ∀ packing : Finset (Finset object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex →
+              object.NonNegativeNetCharge canonicalPiece.vertices
+                data.threshold data.dischargeScale
+  | .typeBRemainingCoreNonnegative, object =>
+      ∀ packing : Finset (Finset object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex
+  | .typeBExcluded, object =>
+      ∀ packing : Finset (Finset object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              object.NonNegativeNetCharge canonicalPiece.vertices
+                data.threshold data.dischargeScale
+  | .typeBExclusionResidual, object =>
+      ¬ ∀ packing : Finset (Finset object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex
   | .typeAExitFour, object =>
       -- Node `[101]`, yes: on the selected visible package after exits `(1)`,
       -- `(2)`, and `(3)` are absent, a canonical exit-`(4)` witness peels one
@@ -3696,6 +3828,30 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- exact ledger state, but no route-8 carrier package is registered here.
       SelectedNoExitSixWith data object (fun packing piece =>
         ¬ HandoffProduced data object packing piece)
+  | .route8ResidualProfile, object =>
+      -- Node `[110]`: the selected route-8 residual satisfies the
+      -- silent-core residual profile, without creating a secondary carrier.
+      SilentCoreResidualProfile data object
+  | .route8GlobalSqueeze, object =>
+      -- Node `[111]`: the selected route-8 profile lies on the large-budget
+      -- branch.
+      Route8GlobalSqueeze data object
+  | .route8BasinBurden, object =>
+      -- Node `[112]`: the selected route-8 residual carries the basin-burden
+      -- lower side of `lem:typeA-route8-burden`.
+      Route8BasinBurden data object
+  | .route8LargeBudgetDeficit, object =>
+      -- Node `[113]`: the selected route-8 residual carries both the basin
+      -- burden and the large-budget Type A deficit lower side.
+      Route8LargeBudgetDeficit data object
+  | .route8CarrierCore, object =>
+      -- Node `[114]`: the canonical minimal carrier-core theorem package,
+      -- available on the selected route-8 residual.
+      Route8CarrierCore data object
+  | .route8SmallCoreCollapse, object =>
+      -- Nodes `[115]`--`[116]`: the zero/one-core collapse package, available
+      -- on the selected route-8 residual after `[114]`.
+      Route8SmallCoreCollapse data object
   | .sparseSlackSurplus, object =>
       -- `lem:sparse-slack-surplus`: `2m = δn + σ(G)`, the manuscript's
       -- `m = (3/2)n + (1/2)σ(G)` cleared of division.
@@ -4105,7 +4261,7 @@ def label : Key → String
   | .coldFailureRouting => "coldFailureRouting"
   | .coldHandoffTransfer => "coldHandoffTransfer"
   | .coldGermExtraction => "coldGermExtraction"
-  | .coldBranchClosed => "coldBranchClosed"
+  | .coldGermRouted => "coldGermRouted"
   | .highCentreNormalForm => "highCentreNormalForm"
   | .typeBHeavyCentre => "typeBHeavyCentre"
   | .typeBDegreeFourCentres => "typeBDegreeFourCentres"
@@ -4121,6 +4277,10 @@ def label : Key → String
   | .typeBDisjointLedger => "typeBDisjointLedger"
   | .typeBOverlapObstruction => "typeBOverlapObstruction"
   | .typeBBridgeMass => "typeBBridgeMass"
+  | .typeBExclusionCharge => "typeBExclusionCharge"
+  | .typeBRemainingCoreNonnegative => "typeBRemainingCoreNonnegative"
+  | .typeBExcluded => "typeBExcluded"
+  | .typeBExclusionResidual => "typeBExclusionResidual"
   | .typeAExitFour => "typeAExitFour"
   | .typeAExitFourPeeled => "typeAExitFourPeeled"
   | .typeAExitFourFiniteDescent => "typeAExitFourFiniteDescent"
@@ -4139,6 +4299,12 @@ def label : Key → String
   | .typeAExitSixGlobal => "typeAExitSixGlobal"
   | .typeAExitSevenProduced => "typeAExitSevenProduced"
   | .route8Residual => "route8Residual"
+  | .route8ResidualProfile => "route8ResidualProfile"
+  | .route8GlobalSqueeze => "route8GlobalSqueeze"
+  | .route8BasinBurden => "route8BasinBurden"
+  | .route8LargeBudgetDeficit => "route8LargeBudgetDeficit"
+  | .route8CarrierCore => "route8CarrierCore"
+  | .route8SmallCoreCollapse => "route8SmallCoreCollapse"
   | .sparseSlackSurplus => "sparseSlackSurplus"
   | .activeSurplusFamily => "activeSurplusFamily"
   | .sparsePortActivation => "sparsePortActivation"
@@ -4255,7 +4421,7 @@ example : label .coldFailureHandoff = "coldFailureHandoff" := rfl
 example : label .coldFailureRouting = "coldFailureRouting" := rfl
 example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
 example : label .coldGermExtraction = "coldGermExtraction" := rfl
-example : label .coldBranchClosed = "coldBranchClosed" := rfl
+example : label .coldGermRouted = "coldGermRouted" := rfl
 example : label .highCentreNormalForm = "highCentreNormalForm" := rfl
 example : label .typeBHeavyCentre = "typeBHeavyCentre" := rfl
 example : label .typeBDegreeFourCentres = "typeBDegreeFourCentres" := rfl
@@ -4271,6 +4437,11 @@ example : label .typeBB2Choice = "typeBB2Choice" := rfl
 example : label .typeBDisjointLedger = "typeBDisjointLedger" := rfl
 example : label .typeBOverlapObstruction = "typeBOverlapObstruction" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
+example : label .typeBExclusionCharge = "typeBExclusionCharge" := rfl
+example : label .typeBRemainingCoreNonnegative =
+    "typeBRemainingCoreNonnegative" := rfl
+example : label .typeBExcluded = "typeBExcluded" := rfl
+example : label .typeBExclusionResidual = "typeBExclusionResidual" := rfl
 example : label .typeAExitFour = "typeAExitFour" := rfl
 example : label .typeAExitFourPeeled = "typeAExitFourPeeled" := rfl
 example : label .typeAExitFourFiniteDescent =
@@ -4294,6 +4465,13 @@ example : label .typeAExitSixProper = "typeAExitSixProper" := rfl
 example : label .typeAExitSixGlobal = "typeAExitSixGlobal" := rfl
 example : label .typeAExitSevenProduced = "typeAExitSevenProduced" := rfl
 example : label .route8Residual = "route8Residual" := rfl
+example : label .route8ResidualProfile = "route8ResidualProfile" := rfl
+example : label .route8GlobalSqueeze = "route8GlobalSqueeze" := rfl
+example : label .route8BasinBurden = "route8BasinBurden" := rfl
+example : label .route8LargeBudgetDeficit = "route8LargeBudgetDeficit" := rfl
+example : label .route8CarrierCore = "route8CarrierCore" := rfl
+example : label .route8SmallCoreCollapse =
+    "route8SmallCoreCollapse" := rfl
 example : label .sparseSlackSurplus = "sparseSlackSurplus" := rfl
 example : label .activeSurplusFamily = "activeSurplusFamily" := rfl
 example : label .sparsePortActivation = "sparsePortActivation" := rfl
@@ -4415,7 +4593,7 @@ def idx : Key → Nat
   | .coldFailureRouting => 68
   | .coldHandoffTransfer => 69
   | .coldGermExtraction => 70
-  | .coldBranchClosed => 71
+  | .coldGermRouted => 71
   | .highCentreNormalForm => 72
   | .typeBHeavyCentre => 73
   | .typeBDegreeFourCentres => 74
@@ -4431,6 +4609,10 @@ def idx : Key → Nat
   | .typeBDisjointLedger => 150
   | .typeBOverlapObstruction => 84
   | .typeBBridgeMass => 85
+  | .typeBExclusionCharge => 164
+  | .typeBRemainingCoreNonnegative => 165
+  | .typeBExcluded => 166
+  | .typeBExclusionResidual => 167
   | .typeAExitFour => 94
   | .typeAExitFourPeeled => 151
   | .typeAExitFourFiniteDescent => 153
@@ -4448,6 +4630,12 @@ def idx : Key → Nat
   | .typeAExitSixGlobal => 101
   | .typeAExitSevenProduced => 158
   | .route8Residual => 102
+  | .route8ResidualProfile => 159
+  | .route8GlobalSqueeze => 160
+  | .route8BasinBurden => 161
+  | .route8LargeBudgetDeficit => 162
+  | .route8CarrierCore => 163
+  | .route8SmallCoreCollapse => 168
   | .sparseSlackSurplus => 109
   | .activeSurplusFamily => 110
   | .sparsePortActivation => 111
@@ -4553,7 +4741,7 @@ def ofIdx : Nat → Key
   | 68 => .coldFailureRouting
   | 69 => .coldHandoffTransfer
   | 70 => .coldGermExtraction
-  | 71 => .coldBranchClosed
+  | 71 => .coldGermRouted
   | 72 => .highCentreNormalForm
   | 73 => .typeBHeavyCentre
   | 74 => .typeBDegreeFourCentres
@@ -4569,6 +4757,10 @@ def ofIdx : Nat → Key
   | 150 => .typeBDisjointLedger
   | 84 => .typeBOverlapObstruction
   | 85 => .typeBBridgeMass
+  | 164 => .typeBExclusionCharge
+  | 165 => .typeBRemainingCoreNonnegative
+  | 166 => .typeBExcluded
+  | 167 => .typeBExclusionResidual
   | 94 => .typeAExitFour
   | 151 => .typeAExitFourPeeled
   | 153 => .typeAExitFourFiniteDescent
@@ -4586,6 +4778,12 @@ def ofIdx : Nat → Key
   | 101 => .typeAExitSixGlobal
   | 158 => .typeAExitSevenProduced
   | 102 => .route8Residual
+  | 159 => .route8ResidualProfile
+  | 160 => .route8GlobalSqueeze
+  | 161 => .route8BasinBurden
+  | 162 => .route8LargeBudgetDeficit
+  | 163 => .route8CarrierCore
+  | 168 => .route8SmallCoreCollapse
   | 109 => .sparseSlackSurplus
   | 110 => .activeSurplusFamily
   | 111 => .sparsePortActivation
@@ -4797,8 +4995,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldHandoffTransfer") 69
   | .coldGermExtraction =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermExtraction") 70
-  | .coldBranchClosed =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldBranchClosed") 71
+  | .coldGermRouted =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermRouted") 71
   | .highCentreNormalForm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "highCentreNormalForm") 72
   | .typeBHeavyCentre =>
@@ -4835,6 +5033,17 @@ def name : Key → Lean.Name
         "typeBOverlapObstruction") 84
   | .typeBBridgeMass =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBBridgeMass") 85
+  | .typeBExclusionCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBExclusionCharge") 164
+  | .typeBRemainingCoreNonnegative =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBRemainingCoreNonnegative") 165
+  | .typeBExcluded =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBExcluded") 166
+  | .typeBExclusionResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBExclusionResidual") 167
   | .typeAExitFour =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFour") 94
   | .typeAExitFourPeeled =>
@@ -4877,6 +5086,20 @@ def name : Key → Lean.Name
         "typeAExitSevenProduced") 158
   | .route8Residual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8Residual") 102
+  | .route8ResidualProfile =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8ResidualProfile") 159
+  | .route8GlobalSqueeze =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8GlobalSqueeze") 160
+  | .route8BasinBurden =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8BasinBurden") 161
+  | .route8LargeBudgetDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8LargeBudgetDeficit") 162
+  | .route8CarrierCore =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8CarrierCore") 163
+  | .route8SmallCoreCollapse =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8SmallCoreCollapse") 168
   | .sparseSlackSurplus =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sparseSlackSurplus") 109
   | .activeSurplusFamily =>

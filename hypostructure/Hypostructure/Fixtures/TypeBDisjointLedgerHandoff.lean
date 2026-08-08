@@ -1,12 +1,12 @@
 import Hypostructure.Graph.Strategy.SpineRows
 
 /-!
-# Fixture: the immediate B2(a)--(c) disjoint-ledger handoff
+# Fixture: the immediate B2 disjoint-ledger handoff
 
 This fixture instantiates the generic fact-only row directly on the spine's
-closed vocabulary.  Its incoming index contains exactly the three facts the
-executor reads; its output index retains all three and prepends the one
-disjoint-ledger fact.  No assembly topology or B2(d) datum is involved.
+closed vocabulary.  Its incoming index contains exactly the facts the
+executor reads; its output index retains those facts and prepends the one
+disjoint-ledger fact.  No assembly topology or side payload is involved.
 -/
 
 namespace Hypostructure.Fixtures.TypeBDisjointLedgerHandoff
@@ -34,7 +34,7 @@ noncomputable abbrev K (keyName : Key) :
 
 abbrev incomingKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  [K .typeBB2Choice, K .selection, K .remainderNormalized]
+  [K .typeBB2Choice, K .selection, K .uncompressible, K .remainderNormalized]
 
 theorem incomingKeys_nodup :
     (incomingKeys (BranchState := BranchState) (presentation := presentation)
@@ -43,6 +43,8 @@ theorem incomingKeys_nodup :
     (FactVocabulary.WithClosure.fact Key.typeBB2Choice :
       (vocabulary BranchState Presentation presentation data).WithClosure),
     (FactVocabulary.WithClosure.fact Key.selection :
+      (vocabulary BranchState Presentation presentation data).WithClosure),
+    (FactVocabulary.WithClosure.fact Key.uncompressible :
       (vocabulary BranchState Presentation presentation data).WithClosure),
     (FactVocabulary.WithClosure.fact Key.remainderNormalized :
       (vocabulary BranchState Presentation presentation data).WithClosure)].Nodup
@@ -61,6 +63,8 @@ theorem output_fresh :
       (vocabulary BranchState Presentation presentation data).WithClosure),
       (FactVocabulary.WithClosure.fact Key.selection :
         (vocabulary BranchState Presentation presentation data).WithClosure),
+      (FactVocabulary.WithClosure.fact Key.uncompressible :
+        (vocabulary BranchState Presentation presentation data).WithClosure),
       (FactVocabulary.WithClosure.fact Key.remainderNormalized :
         (vocabulary BranchState Presentation presentation data).WithClosure)]
   simp
@@ -69,9 +73,11 @@ example :
     (disjointPostLedgerComponentsRow (BranchState := BranchState)
       (Presentation := Presentation) (presentation := presentation) (data := data)
       (K .typeBB2Choice) (K .selection)
-      (K .remainderNormalized) (K .typeBDisjointLedger) incomingKeys_nodup
+      (K .uncompressible) (K .remainderNormalized) (K .typeBDisjointLedger)
+      incomingKeys_nodup
       (fun _input fact => fact.down) (fun _input fact => fact.down.1)
-      (fun _input fact => fact.down) (fun _input handoff => ⟨handoff⟩)).manifest.Requires =
+      (fun _input fact => fact.down) (fun _input fact => fact.down)
+      (fun _input handoff => ⟨handoff⟩)).manifest.Requires =
         incomingKeys :=
   rfl
 
@@ -79,9 +85,11 @@ example :
     (disjointPostLedgerComponentsRow (BranchState := BranchState)
       (Presentation := Presentation) (presentation := presentation) (data := data)
       (K .typeBB2Choice) (K .selection)
-      (K .remainderNormalized) (K .typeBDisjointLedger) incomingKeys_nodup
+      (K .uncompressible) (K .remainderNormalized) (K .typeBDisjointLedger)
+      incomingKeys_nodup
       (fun _input fact => fact.down) (fun _input fact => fact.down.1)
-      (fun _input fact => fact.down) (fun _input handoff => ⟨handoff⟩)).manifest.Produces =
+      (fun _input fact => fact.down) (fun _input fact => fact.down)
+      (fun _input handoff => ⟨handoff⟩)).manifest.Produces =
         [K .typeBDisjointLedger] :=
   rfl
 
@@ -94,10 +102,11 @@ noncomputable def run
   (disjointPostLedgerComponentsRow (BranchState := BranchState)
     (Presentation := Presentation) (presentation := presentation) (data := data)
     (K .typeBB2Choice) (K .selection)
-    (K .remainderNormalized) (K .typeBDisjointLedger) incomingKeys_nodup
+    (K .uncompressible) (K .remainderNormalized) (K .typeBDisjointLedger)
+    incomingKeys_nodup
     (fun _input fact => fact.down) (fun _input fact => fact.down.1)
-    (fun _input fact => fact.down) (fun _input handoff => ⟨handoff⟩)).run history
-      output_fresh
+    (fun _input fact => fact.down) (fun _input fact => fact.down)
+    (fun _input handoff => ⟨handoff⟩)).run history output_fresh
 
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
@@ -119,40 +128,21 @@ example :
 
 example :
     (K (BranchState := BranchState) (presentation := presentation) (data := data)
-        .remainderNormalized) ∈
+        .uncompressible) ∈
       (K (BranchState := BranchState) (presentation := presentation) (data := data)
           .typeBDisjointLedger ::
         incomingKeys (BranchState := BranchState) (presentation := presentation)
           (data := data)) := by
   simp [incomingKeys]
 
-/-- The committed fact exposes the one retained ledger and the universal
-post-ledger component proposition, rather than one commit per component. -/
-theorem committed_components
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (K .typeBDisjointLedger :: incomingKeys)) :
-    ∃ packing : Finset (Finset selected.object.Vertex),
-      selected.object.IsWindowPacking data.windowOrder packing ∧
-        (∀ window : Finset selected.object.Vertex,
-          selected.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) ∧
-        ∃ canonicalPiece :
-            Graph.TypeBRefinedSupport.CanonicalPiece selected.object packing,
-          selected.object.NegativeNetCharge canonicalPiece.vertices data.threshold
-              data.dischargeScale ∧
-            0 < selected.object.ambientSurplus canonicalPiece.vertices
-              data.threshold ∧
-            ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger selected.object
-                data.threshold data.dischargeScale canonicalPiece,
-              ledger.ExactAugmentedLedgerRefinement ∧
-                ∀ component : Graph.SupportComponents.Connected.Component
-                    selected.object ledger.remainingCore,
-                  component ∈ Graph.SupportComponents.Connected.order
-                      selected.object ledger.remainingCore →
-                    Graph.TypeBPostLedgerCore.PostLedgerComponent
-                      data.typeABPresentation ledger component :=
-  (ExactLedger.get history (K .typeBDisjointLedger)).down
+example :
+    (K (BranchState := BranchState) (presentation := presentation) (data := data)
+        .remainderNormalized) ∈
+      (K (BranchState := BranchState) (presentation := presentation) (data := data)
+          .typeBDisjointLedger ::
+        incomingKeys (BranchState := BranchState) (presentation := presentation)
+          (data := data)) := by
+  simp [incomingKeys]
 
 theorem audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}

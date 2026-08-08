@@ -438,22 +438,24 @@ bookkeeping; the first is not:
 > module of `Hypostructure.Graph` is quarantined, so each row is being rebuilt
 > against the live framework rather than re-imported.
 >
-> **Every row of this section is now ported.**  Rows 20--29 run on the Type B
-> residual of node `[64]` that `Spine.run` already reaches, and every `Where`
-> column names a live spine declaration.
+> **Most rows of this section are ported.**  Rows 20--27 and 29 have live spine
+> declarations.  Row 28 now has ordinary Type B exclusion fact declarations and
+> row adapters, but its full branch routing and strategy-module validation are
+> still open.
 >
-> **Every row of this section is complete.**  Rows 20--29 all carry `✅` in all
-> four columns, and `thm:branch-kill` (b) closes `[76]`/`[85]` on its excluded
-> arm.
+> **Row 28 remains the Type B gap.**  `thm:branch-kill` (b) has the local
+> `typeBExcluded` incompatibility, but the `[76]`/`[85]` excluded arm is not yet
+> fully routed through a buildable strategy module.
 
 >
 > Three things about how rows 27 and 28 are built are worth recording, because
 > each replaced an earlier attempt that was doing more than the manuscript asks.
 >
-> **Nothing is rebuilt that the branch already carries.**  Row 28 reads B2 --
-> `Spine.Key.typeBB2Choice`, committed at node `[72]`/`[81]` -- and
-> takes the entries `A_h`, their carriers, their disjointness and their payment
-> from `def:typeB-candidate-ledger`'s own `CandidateEntry` fields.  An earlier
+> **Nothing is rebuilt that the branch already carries.**  Row 28 reads the
+> strengthened B2 ledger fact -- `Spine.Key.typeBDisjointLedger`, committed
+> after node `[74]`/`[82]` -- and takes the entries `A_h`, their carriers, their
+> disjointness and their payment from `def:typeB-candidate-ledger`'s own
+> `CandidateEntry` fields.  An earlier
 > pass had invented a parallel envelope-and-block apparatus
 > (`IsFanEnvelope`, `closedNeighbourhood`, `IsExcludedTypeBSupport`,
 > `AssignedFans`, `BridgeResidualSupport`) and a second saturation node; all of
@@ -518,7 +520,7 @@ bookkeeping; the first is not:
 | 25 | B2 ledger [72]/[81] | `Spine.b2AssignmentDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 26 | Hybrid B1 entry [74]/[82] | `Spine.hybridEntry` | ✅ | ✅ | ✅ | ✅ |
 | 27 | Bridge fan-mass [73],[75],[83],[84] | `Spine.bridgeFanMass` reads the active residual fact and appends `typeBBridgeMass` | ✅ | ✅ | ✅ | ✅ |
-| 28 | Bridge deficit [76]/[85] | deleted exclusion pipeline; canonical route-8/bridge consumer not yet implemented | ❌ | ❌ | ❌ | ❌ |
+| 28 | Bridge deficit [76]/[85] | `Spine.typeBExclusionCharge`, `Spine.typeBExclusionDichotomy`, `Spine.typeBExcluded` now use ordinary ledger facts; full strategy build/routing still blocked upstream | ❌ | ❌ | ❌ | ❌ |
 | 29 | Degree-four fan profile [78],[79] | `Spine.degreeFourProfile` | ✅ | ✅ | ✅ | ✅ |
 ## D. Non-near-cubic surplus branch
 
@@ -664,196 +666,36 @@ bookkeeping; the first is not:
 
 ## F. Cold-window corridor
 
-> **Canonical port.** Rows 43--61 have been ported to the canonical ledger and
-> are out of the legacy cold-aggregation stack entirely: their mathematics is
+> **Canonical port.** Rows 43--61 are in the canonical ledger surface:
 > `Hypostructure/Graph/ColdCorridor.lean`,
-> `Hypostructure/Graph/ColdFirstFailure.lean` and
-> `Hypostructure/Graph/ColdBranchClosure.lean`, their rows are
-> `Graph/Strategy/ColdCorridorRows.lean`, and all facts are committed by
-> `Graph/Strategy/ColdCorridorRun.lean` against the one
-> `Core.Residual.ExactLedger`.  Five fixtures check the active corridor block:
-> `ColdCorridorSignature` (the thirty-two generating kinds and their per-clause
-> counts), `ColdCorridorLedger` (the `73` and `78` thresholds and the `15`/`13`
-> stub counts), `ColdCorridorShortSelfReturn` (the two exceptional length sets),
-> `ColdCorridorConstruction` (the corridor apparatus is inhabited) and
-> `ColdCorridorRun` (the block runs end to end and its audit is `rfl`).  Every
-> module is in the build closure of `Hypostructure.lean`.
+> `Hypostructure/Graph/ColdFirstFailure.lean`,
+> `Graph/Strategy/ColdCorridorRows.lean`, and
+> `Graph/Strategy/ColdCorridorRun.lean`.  The cold Strategy code is a sequence
+> of `factOnly` rows; each executor receives sealed `FactInputs`, reads
+> prerequisites by exact key, and appends declared facts to the same
+> `ExactLedger`.  `runCold` is a ledger-prefix runner: it appends the thirteen
+> ordinary cold facts and does not append Core's distinguished `closed` key.
 >
-> **Legacy cleanup.** The old non-PDE cold aggregation fixtures were deleted
-> after the port: they imported missing retired modules and tested obsolete side
-> channels rather than ledger facts.  PDE registry files that still mention the
-> retired names are intentionally outside this cleanup pass and are not part of
-> the EG cold proof surface.
+> **Carrier cleanup.** The cold Strategy slice no longer exports a side object
+> for handoff routing, no longer exports a cold routing state object, and no
+> longer orients germs through a proof-specific object.  Handoff is expressed as
+> a predicate `Finset object.Vertex -> Prop` supplied by the incoming ledger.
+> The F2, F4, extraction, and germ-routing facts quantify over the paper objects
+> directly and never return an object as transport data.
 >
-> **Registered-fact review.**  Rows 43--50 were re-read against the manuscript
-> for two specific defects, and both were found and fixed.
+> **Oval boundary.** Carrier-core information in the cold corridor is represented
+> only by ordinary `Spine.Key` facts.  In particular `K .coldGermExtraction`
+> now includes the local positivity chain used by the paper's oval, and
+> `K .coldGermRouted` records the G2 routing conclusion after G1 and G3 are read
+> from the ledger.  The terminal oval itself must be a Core closure over
+> ledger-visible facts; it is not represented by a wrapper, side theorem bundle,
+> or payload.
 >
-> *An unregistered fact.*  `SurvivingColdBranch`'s clause (ii) was written as
-> `ContextEquivalent ∨ TargetDefect`, which excluded middle proves outright: the
-> field posed as `def:surviving-cold-branch` (ii) and constrained nothing.  It
-> now carries the branch's own `Identified` relation and says every
-> identification the branch makes is context-universal, which is the
-> manuscript's clause; `not_identified_of_firstFailureDefect` spends it, and
-> Row 46 commits that.
->
-> *Four facts proved but never registered.*  `def:cold-same-interface-table`'s
-> finiteness (`tableBound`), `def:cold-bounded-germ`'s `δ = 0`
-> (`increment_eq_zero`), `def:cold-skeleton-excess`'s `|𝓔_br(P)| = b(P)`
-> (`selectedBranchExcess_length`), and the converse half of the (F2) sentence
-> (`firstFailureResponse_of_not_contextEquivalent`) were theorems that no fact
-> mentioned.  All four are now clauses of the committed facts at Rows 43, 44 and
-> 50.
->
-> *Reimplementation removed.*  Four declarations were pure forwarders or
-> definitional restatements and are gone: `interfaceWidth_pos`,
-> `mem_declaredSignature_clause`, `branchExcessOf_ambientCubic` (a `rfl` whose
-> docstring claimed a count), and `handoffExit_unique` (the same content as the
-> committed `exists_unique_handoff`).  Three corridor-level forwarders of
-> presentation theorems were also removed, and the two dead `tauBelow_*`
-> coefficient lemmas were replaced by `tauBelow_quarter` and
-> `tauBelow_routeEight`, which state the manuscript's comparisons and are
-> evaluated at `s = 15` by `Fixtures.ColdCorridorLedger`.
->
-> *What remains scoped deliberately.*  `firstFailureHandoffExit` returns an
-> envelope, which is data, so Row 49's transfer is an elimination of Row 48's
-> committed fact rather than a fact of its own.  `D_cold` is now consumed by the
-> extraction and closure rows, and no corridor, envelope, germ, or branch object
-> is transported by a row result: the committed facts quantify over the
-> manuscript objects and later rows read those facts by exact key.
->
-> *Two inputs that are hypotheses by design, and are cited where the manuscript
-> cites them.*  `Corridor.twoStubs` is `lem:bridgeless` — "no such component has
-> only one boundary stub, since that unique boundary edge would be a bridge of
-> `G`" — a theorem about the selected object with its own place in the
-> manuscript, so `def:cold-corridor-first-failure` receives it rather than
-> proving it.  `TableRow.admissible` is `def:admissible-rank-quotient`, spent
-> exactly where `lem:cold-same-interface-table` spends it on a neutral row.
-> Both are fields of the construction, so a caller can only build a corridor or
-> a table row where they hold.
->
-> *The block is shared.*  `Graph/Strategy/ColdCorridorRun.lean` now also carries
-> rows 52--54's germ rows, and `runCold` composes ten rows rather than seven.
-> The seven of rows 43--50 are unchanged; `Fixtures.ColdCorridorRun` checks
-> their presence on the ledger by membership rather than by position, so it does
-> not break as later rows land.
->
-> **Rows 57--61 are ported too.**  Their mathematics is
-> `Hypostructure/Graph/ColdBranchClosure.lean`: `lem:hot-failure-cold-mass` as
-> one subtraction-free inequality across `𝒫 = 𝒫_hot ⊔ 𝒫_cold` with every
-> `log₂ n` cancelled; `lem:cold-germ-extraction`'s greedy independence, proved
-> for an arbitrary finite family and symmetric overlap relation, with the
-> manuscript's division by `Δ+1` cleared into
-> `|𝒢_cand| ≤ N_germ·(Δ+1)`; the positivity that makes the (F5) arm
-> unreachable; and `thm:cold-branch-quantitative-closure`, total and with no
-> `Option`.  That module uses no framework plumbing at all — only Mathlib
-> `Finset`/`Nat` and the cold-corridor mathematics — and the three rows that
-> commit it use only `factOnly`, `rowManifest`, `FactKey`, `FactInputs.get` and
-> `AtomicCT.run`, all catalogued.
->
-> Row 60 is satisfied structurally rather than by a new declaration: in the
-> canonical port there is no registration field that routes.  `Spine.runCold`
-> composes the rows, each row's `Requires` is discharged by instance resolution
-> against the incoming index, and the branch analysis is the composition — which
-> is exactly what that row's **What it should do** asked for.
->
-> **Registered-fact review, rows 57--61.**  The same two-defect pass was run on
-> them, and one defect was found.
->
-> *An unregistered fact, with a dead forwarder attached.*  The committed
-> extraction clause stated the *generic* greedy bound at an arbitrary degree,
-> while `lem:cold-germ-extraction`'s own statement — at maximum degree
-> `M_cold·B_cold`, covering `D_cold`-fold — was proved as
-> `ColdCorridor.coldGermExtraction` and committed nowhere; that theorem was
-> consequently a forwarder nothing called.  The clause now *is* the manuscript's
-> statement, phrased with `exchangeBound`, `overlapBound` and
-> `extractionDenominator`, so the paper's `D_cold` is what the ledger carries and
-> both declarations are load-bearing.  This also spends
-> `extractionDenominator`, which the rows 43--50 review had recorded as defined
-> but unconsumed.
->
-> *No reimplementation.*  The greedy bound is not a re-proof of live framework
-> code: the only prior one is
-> `Core.Finite.ColdCorridor.supportPacking_card_bound`, in a quarantined module,
-> so this is its port rather than a second copy.  Every other declaration in
-> `ColdBranchClosure.lean` is referenced.
->
-> *A second defect: G2 was assumed rather than routed.*  The committed closure
-> first carried a hypothesis `branch.Identified germ.piece germ.canonical` that
-> nothing could produce, so the fact never fired.  The first repair replaced
-> `def:surviving-cold-branch` (ii) with a germ-level field `noGermDefect : ∀
-> germ, ¬ germ.Distinguishing` — which fired, but **assumed the conclusion of
-> the manuscript's own chain** instead of deriving it.  `lem:cold-bounded-germ-
-> trichotomy` G2 reads "the induced quotient is target-defective, so it is
-> routed to the sparse exit or exit-(4) ledger", and clause (ii) forbids those;
-> collapsing that into an assumption is exactly the kind of shortcut this review
-> exists to catch.
->
-> The chain is now complete and every step is the manuscript's.  Clause (ii)
-> stays abstract — no identification the branch makes is target-defective — and
-> `SurvivingColdBranch.germIdentified` supplies the missing link:
-> `def:cold-bounded-germ` defines a germ as "two same-interface `x`--`y`
-> representatives", and the local replacement of
-> `lem:cold-same-interface-table` is the quotient identifying them, so a germ
-> *is* an identification.  `SurvivingColdBranch.noGermDefect` is now a
-> **theorem**: a distinguishing germ separates its identified pair against a
-> compatible outside context, and clause (ii) says no identification the branch
-> makes is so separated.
->
-> The same abstract clause is what Row 46 spends, so one reading of
-> `def:surviving-cold-branch` (ii) now serves both rows.
->
-> *The orientation, made structural.*  `lem:cold-bounded-germ-trichotomy` says
-> "no length-changing cold bounded germ survives", and
-> `lem:cold-increment-arithmetic` orients the germ so that `δ ≥ 0`.  The closure
-> first proved only the `δ < 0` reading, because `BoundedGerm` records one
-> occurrence — its `support` — and the other representative abstractly, and G3's
-> replacement only shrinks the object where the *longer* representative occurs.
-> `def:cold-bounded-germ` is explicit that both representatives are strands
-> between the same two interfaces of `G`, so each occurs at a support;
-> `ColdCorridor.OrientedGerm` records both, and `OrientedGerm.not_survives`
-> closes the germ whichever one is longer.  The manuscript's orientation is now
-> what it is in the manuscript — a choice of which representative to call `E` —
-> rather than a hypothesis the formalization needed, and the committed clause
-> asks only `δ ≠ 0`.
->
-> The review of *that* fix caught one more thing.  `OrientedGerm` first carried
-> `swapped : backward.increment = − forward.increment` as a field, which is both
-> an assumed fact and weaker than it looked: it constrains the two increments
-> only jointly.  The structure now carries the exchange — each reading's
-> occurrence against the other's second representative — and
-> `OrientedGerm.swapped` is a **theorem** derived from it.
->
-> The review of *that* correction, in turn, found the accompanying docstring
-> overclaiming: the exchange fields equate *sizes*, which is what the increment
-> argument consumes, and not the boundary pieces, which sit at different
-> interfaces and would need an interface correspondence to compare.  The
-> docstring now says exactly that, and records why the closure does not need
-> more — `backward` is a genuine germ of the object in its own right, so
-> `not_survives` is sound whatever else relates the two readings.  The claim that
-> the fields make the two readings "the same germ" was removed rather than left
-> standing.
->
-> *What the closure does and does not claim.*  `coldBranch_closed` is the
-> routing half of `thm:cold-branch-quantitative-closure`: given a germ, every
-> family is impossible.  It does not prove that a germ *exists*, and does not
-> need to — a branch with no germ has no terminal residual either, so the
-> absence of a germ closes the branch rather than leaving it open.  The
-> quantitative chain (`hotFailure_coldMass`, `coldGermExtraction`,
-> `coldGerm_nonempty`) is committed for what the manuscript uses it for — the
-> germ family is *linearly* many — not as an existence obligation.
-> The theorem's other two arms, "the route-8 carrier inequality closes
-> `θ < 1/78`" and "the live-hot entropy comparison closes", belong to the
-> route-8 rows 62--67 and the entropy rows and are not part of rows 57--61.
->
-> *What is registered rather than derived, and why that is not a fabrication.*
-> `c_hot` and `θ_win` have no registered value, and deliberately so: the
-> committed mass bound is quantified over *every* rate, so it holds whatever
-> `c_hot` is, and nothing in the ledger depends on a number nobody has pinned.
-> The same applies to the `o(n)` slack terms and to the subcubic ball count
-> `1 + 3(2^{M_cold+2} − 1)` behind `B_cold`, which enters as the extraction's
-> degree hypothesis.  Registering a made-up `c_hot` would be the defect this
-> review exists to catch, not the fix for it.
-
+> **Build surface.** The active cold fixtures are the signature, ledger,
+> construction, short self-return, and cold-prefix audit fixtures.  No fixture
+> constructs the cold prefix from `completedKeys`; the prefix is audited at
+> whichever full residual ledger actually carries it.  PDE registry material is
+> left untouched.
 
 | # | Node / component | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
@@ -863,27 +705,26 @@ bookkeeping; the first is not:
 | 46 | (F2) producer | `ColdCorridor.Corridor.FirstFailureDefect` (`Spine.coldFailureDefect`) | ✅ | ✅ | ✅ | ✅ |
 | 47 | (F3) producer | `ColdCorridor.Corridor.FirstFailureCompression` (`Spine.coldFailureCompression`) | ✅ | ✅ | ✅ | ✅ |
 | 48 | (F4) producer | `ColdCorridor.Corridor.FirstFailureHandoff` (`Spine.coldFailureHandoff`) | ✅ | ✅ | ✅ | ✅ |
-| 49 | (F4) handoff exit | `ColdCorridor.Corridor.handoffExit` (`Spine.coldFailureHandoff`) | ✅ | ✅ | ✅ | ✅ |
-| 50 | Core classified state | `ColdCorridor.Corridor.exists_firstFailure` (`Spine.coldFailureRouting`) | ✅ | ✅ | ✅ | ✅ |
-| 51 | Terminal-F5 residual | `ColdCorridor.BoundedGerm`, `Corridor.exchange_card_le` (`Spine.coldFailureRoutingRow` + the three germ rows) | ✅ | ✅ | ✅ | ✅ |
-| 52 | [155] G1 realizing | `Spine.coldGermRealizedRow` | ✅ | ✅ | ✅ | ✅ |
-| 53 | [156] G2 distinguishing | `Spine.coldGermDistinguishedRow` | ✅ | ✅ | ✅ | ✅ |
-| 54 | [157] G3 neutral | `Spine.coldGermSilentRow` | ✅ | ✅ | ✅ | ✅ |
-| 55 | Core dispatch (F1) | `Spine.runCold` — (F1) is committed at row 45, the dispatch is row composition | ✅ | ✅ | ✅ | ✅ |
-| 56 | Core dispatch (F3) | `Spine.runCold` — (F3) is committed at row 47, the dispatch is row composition | ✅ | ✅ | ✅ | ✅ |
-| 57 | (F4) dispatch arm | `ColdCorridor.Corridor.handoffExit_mem` (`Spine.coldHandoffTransfer`) | ✅ | ✅ | ✅ | ✅ |
-| 58 | (F5) `.isFalse` arm | `ColdCorridor.exists_independent_card_le_mul`, `hotFailure_coldMass` (`Spine.coldGermExtraction`) | ✅ | ✅ | ✅ | ✅ |
-| 59 | (F5) `.neutral` arm | `ColdCorridor.boundedGerm_not_survives` (`Spine.coldBranchClosed`) | ✅ | ✅ | ✅ | ✅ |
-| 60 | Registrations `atStage` | `Spine.runCold` — the routing is row composition, not a registration field | ✅ | ✅ | ✅ | ✅ |
-| 61 | `classifiedStateForcesTarget` | `ColdCorridor.coldBranch_no_terminal_survivor` (`Spine.coldBranchClosed`) | ✅ | ✅ | ✅ | ✅ |
+| 49 | (F4) membership | `ColdCorridor.Corridor.handoff_mem` (`Spine.coldFailureHandoff`) | ✅ | ✅ | ✅ | ✅ |
+| 50 | First-failure routing facts | `ColdCorridor.Corridor.exists_firstFailure` (`Spine.coldFailureRouting`) | ✅ | ✅ | ✅ | ✅ |
+| 51 | F5 bounded-germ residual facts | `ColdCorridor.BoundedGerm`, `Corridor.exchange_card_le` | ✅ | ✅ | ✅ | ✅ |
+| 52 | `[155]` G1 realizing | `Spine.coldGermRealizedRow` | ✅ | ✅ | ✅ | ✅ |
+| 53 | `[156]` G2 distinguishing | `Spine.coldGermDistinguishedRow` | ✅ | ✅ | ✅ | ✅ |
+| 54 | `[157]` G3 neutral | `Spine.coldGermSilentRow` | ✅ | ✅ | ✅ | ✅ |
+| 55 | Core dispatch (F1) | `Spine.runCold` row composition | ✅ | ✅ | ✅ | ✅ |
+| 56 | Core dispatch (F3) | `Spine.runCold` row composition | ✅ | ✅ | ✅ | ✅ |
+| 57 | (F4) dispatch arm | `ColdCorridor.Corridor.handoff_mem` (`Spine.coldHandoffTransfer`) | ✅ | ✅ | ✅ | ✅ |
+| 58 | (F5) extraction | `ColdCorridor.exists_independent_card_le_mul`, `hotFailure_coldMass`, `coldGerm_positive` (`Spine.coldGermExtraction`) | ✅ | ✅ | ✅ | ✅ |
+| 59 | (F5) G2 routing after G1/G3 | `ColdCorridor.boundedGerm_not_survives` (`Spine.coldGermRouted`) | ✅ | ✅ | ✅ | ✅ |
+| 60 | Registrations `atStage` | `Spine.runCold` row composition, no registration payload | ✅ | ✅ | ✅ | ✅ |
+| 61 | Cold oval closure | Core closure over ledger-visible cold facts; no custom carrier | ✅ | ❌ | ✅ | ❌ |
 
-The cold rows compile as a canonical ledger run, but they are not yet attached
-to the paper's live predecessor.  The `[138]` near-cubic arm must first rejoin
-the normalized spine at `[21]`, pass through `[22]`--`[24]`, and then execute
-the exhaustive `[145]` interface, `[146]` route-8 threshold, and `[148]`
-live-hot split.  Only the threshold-false and live-hot-false descendant may run
-the cold corridor.  Calling `runCold` directly on `[138]` would skip required
-paper objects and is forbidden.
+The cold rows are expressed as a canonical ledger prefix, but they are not a
+custom terminal carrier and do not append Core's `closed` key.  The `[138]`
+near-cubic arm must still rejoin the normalized spine at `[21]`, pass through
+`[22]`--`[24]`, then execute the exhaustive `[145]` interface, `[146]` route-8
+threshold, and `[148]` live-hot split before the cold corridor is the active
+residual.
 
 ## G. Route-8 carrier closure
 
@@ -2974,26 +2815,31 @@ and the row consumes directly.
   core.  `prop:typeB-bridge-reduction` is the same conclusion stated directly.
   `thm:branch-kill` is the branch-closure theorem these nodes feed, jointly with
   `[123]`.
-- **What the Lean does.**  The live Type B code does not yet define the
-  `typeBExclusionCharge`, `typeBExcluded`, or `typeBExclusionResidual` semantic
-  keys, and it does not yet define `SpineRows.typeBExclusionChargeRow` or
-  `Spine.typeBExclusionDichotomy`.  The predecessor row now publishes the
-  strengthened `typeBDisjointLedger` fact containing B2(a)--(d), including
-  grouped exit-`(7)` handoff coverage, but row 28 itself is not implemented.
-- **What it should do.**  Add the Type B exclusion facts as ordinary semantic
-  keys and implement them as framework rows.  The charge row must require and
-  read `typeBDisjointLedger` from the incoming exact ledger, then append the
-  single `typeBExclusionCharge` fact containing `(B-ledger)` and
-  `prop:typeB-bridge-reduction` in the paper's conditional form.  The dichotomy
-  must read that charge fact and split exactly on the two hypotheses of
-  `lem:typeB-exclusion`: no admissible route-8 residual profile and no
-  admissible positive-deficit Type B fan-window residual.  The excluded arm
-  closes by incompatibility with the negative-support fact on the same branch;
-  the complementary arm appends `typeBExclusionResidual`.
-- **Gap.**  Row 28 remains open.  The next implementation must consume the
-  strengthened `typeBDisjointLedger` fact rather than `typeBB2Choice`, because
-  the paper's Step 2 spends the full B2 ledger, including B2(d)'s post-ledger
-  core and grouped handoff coverage.
+- **What the Lean does.**  The live Type B vocabulary now has ordinary semantic
+  keys `typeBExclusionCharge`, `typeBRemainingCoreNonnegative`,
+  `typeBExcluded`, and `typeBExclusionResidual`.  `SpineRows.typeBExclusionChargeRow`
+  is a `factOnly` row requiring `typeBDisjointLedger`; its executor reads that
+  prerequisite with `FactInputs.get` and appends the B-ledger implication proved
+  by `TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg`.
+  `Spine.typeBExclusionDichotomy` is a `Decision.run` split whose left arm
+  appends the ordinary `typeBRemainingCoreNonnegative` fact and whose right arm
+  appends `typeBExclusionResidual`.  `SpineRows.typeBExcludedRow` is a separate
+  `factOnly` consumer of `typeBExclusionCharge` and
+  `typeBRemainingCoreNonnegative`; it reads both with `FactInputs.get` and
+  appends `typeBExcluded`.  The closed arm has a framework incompatibility
+  between `typeBDisjointLedger` and `typeBExcluded`.
+- **What it should do.**  Complete the live routing at both Type B cursors so
+  the branch runs the charge row, the remaining-core `Decision.run`, the
+  `typeBExcluded` fact-only row on the clean arm, and the standard incompatible
+  closure.  The surviving arm must carry exactly `typeBExclusionResidual` over
+  the same exact prefix.  No wrapper, custom carrier, or side ledger should be
+  introduced.
+- **Gap.**  Row 28 remains open because the full strategy modules currently do
+  not elaborate past `Hypostructure.Graph.VisibleEntryQuotient`, and the new
+  Type B rows have not yet been routed through an executable full-branch run.
+  The implemented facts consume the strengthened `typeBDisjointLedger` rather
+  than `typeBB2Choice`, as Step 2 spends the full B2 ledger, including B2(d)'s
+  post-ledger core and grouped handoff coverage.
 
   **Facts passes.**  Two notes.
 
@@ -3007,13 +2853,15 @@ and the row consumes directly.
   Step 2's remaining hypotheses — `chosen = ∅` and `PostLedgerCore` — are not
   assumptions left dangling: they are exactly what the dichotomy branches on, so
   the alternative in which they fail is a committed fact with its own arm.
-- **Ledger and residual.**  Open.  The intended implementation is a fact-only
-  charge row followed by a `Decision.run` split; both must leave the residual
-  unchanged and append facts to the same exact branch prefix.
-- **Transport and terminals.**  Open.  `[76]` and `[85]` should become closed
-  terminals only on the excluded arm, where the framework appends the reserved
-  closure key.  The surviving arm should be the exact ledger carrying
-  `typeBExclusionResidual`.
+- **Ledger and residual.**  Partly implemented.  The charge and excluded rows
+  are fact-only, and the remaining-core condition is a normal branch fact
+  produced by `Decision.run`.  All three leave the residual unchanged and append
+  facts to the incoming exact prefix.  Full branch routing is still open.
+- **Transport and terminals.**  Partly implemented.  The Type B closed arm has
+  the incompatibility instance needed to append the reserved closure key after
+  `typeBExcluded`; the surviving arm is represented by the exact ledger key
+  `typeBExclusionResidual`.  The full `[76]`/`[85]` routing remains to be
+  elaborated once the upstream build blocker is cleared.
 
 **Paper objects at this row.**
 
@@ -3021,24 +2869,25 @@ and the row consumes directly.
 |---|---|---|---|
 | `def:typeB-assigned-ledger`, `(B-ledger)` | def | `TypeBEnvelopeCharge.augmentedLedger`<br>`TypeBEnvelopeCharge.augmentedLedger_add_card_centres`<br>`TypeBEnvelopeCharge.nonNegativeNetCharge_of_augmentedLedger_nonneg` | available; row consumer missing |
 | `def:typeB-candidate-ledger` | def | `TypeBRefinedSupport.CandidateEntry.assigned`<br>`TypeBRefinedSupport.CandidateEntry.chosen`<br>`TypeBRefinedSupport.CandidateEntry.pays`<br>`TypeBRefinedSupport.HasDisjointChoice` | row 25's object, read here |
-| `lem:typeB-exclusion` (Step 2) | lem | missing `TypeBEnvelopeCharge.typeBExclusion` consumer theorem | row consumer missing |
-| `prop:typeB-bridge-reduction` | pro | missing `TypeBEnvelopeCharge.typeBExclusion` consumer theorem | row consumer missing |
+| `lem:typeB-exclusion` (Step 2) | lem | `TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg`<br>`SpineRows.typeBExclusionChargeRow`<br>`SpineRows.typeBExcludedRow` | ordinary ledger facts; routing still open |
+| `prop:typeB-bridge-reduction` | pro | `Spine.Key.typeBExclusionCharge`<br>`Spine.Key.typeBRemainingCoreNonnegative`<br>`Spine.Key.typeBExcluded` | ordinary ledger facts; routing still open |
 | `lem:typeB-postledger-core-hygiene` | lem | `TypeBPostLedgerCore.PostLedgerComponent` inside `typeBDisjointLedger` | available through the ledger |
-| `def:typeB-multiclosed-residual` | def | missing key `Spine.Key.typeBExclusionResidual` | intended no arm of the dichotomy |
-| `thm:branch-kill` (b), Type B | thm | missing `Spine.typeBExclusionDichotomy`<br>missing `Spine.Key.typeBExcluded` | intended closed arm |
+| `def:typeB-multiclosed-residual` | def | `Spine.Key.typeBExclusionResidual` | no arm of the dichotomy |
+| `thm:branch-kill` (b), Type B | thm | `Spine.typeBExclusionDichotomy`<br>`Spine.Key.typeBExcluded`<br>`Spine.instIncompatibleTypeBExcluded` | closed-arm facts present; routing still open |
 | `lem:typeB-exclusion` (Step 1) | lem | | |
 | `thm:branch-kill` (a), Type A | thm | | |
 
-`lem:typeB-exclusion` Step 1 is not yet committed as a row fact.  When row 28 is
-implemented, it should not rebuild the candidate entries already carried by B2;
-it should consume the selected entries and their payments from
-`typeBDisjointLedger`.
+`lem:typeB-exclusion` Step 1 is not yet committed as a separate row fact.  The
+current Step 2 implementation does not rebuild the candidate entries already
+carried by B2; it consumes the selected ledger through the `typeBDisjointLedger`
+prerequisite and appends only ordinary `Spine.Key` facts.
 
-**CT composition at this row.**  Open.  The intended shape is no CT: one
-`factOnly` `AtomicStrategy` for the charge implication and one `Decision`, each
-run at the two Type B cursors.  Step 2's aggregation should be over the assigned
-centres whose disjointness is B2's own; a demand/capacity stage would add a
-residual restriction this row does not make.
+**CT composition at this row.**  Partly implemented.  The current shape is no
+custom CT: one `factOnly` `AtomicStrategy` for the charge implication, one
+`Decision.run` for the remaining-core alternative, and one `factOnly`
+`AtomicStrategy` deriving `typeBExcluded` from the two committed facts.  Step 2's
+aggregation is over the assigned centres whose disjointness is B2's own; a
+demand/capacity stage would add a residual restriction this row does not make.
 
 
 ### Row 29 — Degree-four fan profile `[78]`,`[79]` (ported: `Spine.degreeFourProfile`)
@@ -4208,10 +4057,10 @@ this change; its whole module was already orphaned, importing eight
   cannot occur.**  `sparseSurplusExit_of_absorbed` discharges all three of its
   readings where `def:named-surplus-exits` puts them, and none of the three is a
   route invented here.  *Target-defect* is **refuted, not converted**:
-  `lem:context-universality` enters as the branch invariant
-  `Graph/ColdFirstFailure.lean`'s surviving cold branch already carries — *"every
-  identification the branch makes survives every compatible outside context"* —
-  which is the manuscript's *"Thus the parallel case is impossible in a
+  `lem:context-universality` enters as the ledger invariant recorded in
+  `Graph/ColdFirstFailure.lean` — *"every identification survives every
+  compatible outside context"* — which is the manuscript's
+  *"Thus the parallel case is impossible in a
   survivor."*  *Target-complete* is clause (c) by
   `sparseSurplusExit_of_targetComplete`.  *Delocalization* is clause (d) by its
   own constructor.
@@ -5331,8 +5180,9 @@ no residual to restrict.
   the germ's own boundary piece `Q[x,y]` through
   `Strategy.InterfaceReplacement.SupportAtom.properAtom`, `canonical` is the
   second same-interface representative `E`, `sameProfile` is the inherited
-  boundary-degree profile, and `record`/`record_truth` are (T1)–(T4) with (T4)'s
-  own specification.  A row adds exactly two clauses to the germ.  `equalLength`
+  boundary-degree profile, and `record` is the finite same-interface table
+  record containing (T1)–(T4), including the target-response truth profile.  A
+  row adds exactly two clauses to the germ.  `equalLength`
   is `def:cold-bounded-germ`'s `δ = 0` — `BoundedGerm.increment` is the increment
   `δ := |E| − |Q[x,y]|` in `Int`, `increment_eq_zero` proves it vanishes on
   every row, and the row's committed fact says so, which is what makes a row a
@@ -5485,51 +5335,20 @@ would interpose machinery between a constructed cycle and its certificate.
 
 ### Row 46 — (F2) producer `[154]`, `[156]`
 
-- **Paper fact.** `def:cold-corridor-first-failure` (F2): "two prefixes with the
-  same displayed boundary data have different target response **against some
-  compatible outside context**".  `lem:cold-corridor-first-failure` (ii): "case
-  (F2) is a target-defective quotient, hence belongs to the sparse exit or to
-  the exit-(4) ledger", proved by "the actual quotient is valid only for the
-  current outside context and fails for another compatible context.  By
-  `lem:context-universality`, this is not target-complete".
-- **What the Lean does.** `Corridor.FirstFailureDefect` is *not* a second
-  object: it is `def:cold-corridor-first-failure`'s own recorded discrepancy,
-  `Presentation.FirstFailureResponse`, read at the two segments — same cold
-  corridor state, and `Graph.Response.TargetDefect` between their readings.
-  `TargetDefect` is `∃ outside : OutsideContext boundary, ¬ (Target (glue left
-  outside) ↔ Target (glue right outside))`, so the distinguishing context is
-  quantified over *all* compatible outside contexts of the shared interface and
-  is not collapsed to one ambient evaluation.
-  `Corridor.not_targetComplete_of_firstFailureDefect` is
-  `lem:context-universality`: the identification is not target-complete in any
-  immutable profile fibre, which is exactly "target-defective quotient".
-  `Corridor.contextEquivalent_of_not_firstFailureDefect` is its other half, the
-  one `lem:cold-same-interface-table`'s neutral row consumes: with the
-  discrepancy excluded, two prefixes carrying the same state are
-  context-equivalent.
-  `ColdCorridor.not_identified_of_firstFailureDefect` is clause (ii)'s routing
-  against the branch: `def:surviving-cold-branch` (ii) says every
-  identification the branch makes is context-universal, so an (F2) discrepancy
-  is not one of them.  That clause of the branch was previously written as
-  `ContextEquivalent ∨ TargetDefect`, which excluded middle proves outright and
-  which therefore constrained nothing; it now carries the branch's own
-  `Identified` relation and is real.
-  `Spine.coldFailureDefectRow` commits all three.
-- **What it should do.** Exactly this: quantify the compatible outside context,
-  deny target-completeness, and record the (F2)-free consequence.
-- **Gap.** none.  The gap the previous implementation had — evaluating the
-  ambient truth value of an induced subobject once, so that a differing pair
-  meant an (F1) cycle — is gone: no ambient evaluation occurs, the context is a
-  `Graph.OutsideContext` of the shared boundary, and the conclusion is a denial
-  of target-completeness rather than a cycle.  **Facts passes.**
+- **Paper fact.** The first-failure F2 alternative says two corridor prefixes
+  with the same displayed data have different target response against some
+  compatible outside context.  The routing statement is target-defect, not an
+  ambient cycle.
+- **What the Lean does.** `FirstFailureDefect` is the corridor discrepancy
+  itself.  The row commits the target-complete denial and the F2-free
+  context-equivalence consequence.  Both are stated directly over the corridor,
+  presentation, index, and boundary-piece map.
+- **Gap.** none for carrier cleanup.  The row has no side object and no branch
+  hypothesis.
 - **Ledger and residual.** `coldFailureDefectRow` is `factOnly` with
-  `Requires := [coldCorridorState]`, `Produces := [coldFailureDefect]`.  It reads
-  the cut-state fact by exact key; all three clauses are theorems about the
-  presentation that fact is about.  The third — that an (F2) discrepancy is not
-  one of the branch's identifications — is quantified over every
-  `SurvivingColdBranch`, so no row supplies one.  Residual unchanged.
-- **Transport and terminals.** `Graph.ColdFirstFailure` owns the mathematics.
-  `Spine.runCold` runs it fourth.  No terminal.
+  `Requires := [coldCorridorState]` and `Produces := [coldFailureDefect]`.
+  The state fact is read by `FactInputs.get`; residual unchanged.
+- **Transport and terminals.** No transport payload and no terminal.
 
 **Paper objects at this row.**
 
@@ -5537,56 +5356,22 @@ would interpose machinery between a constructed cycle and its certificate.
 |---|---|---|---|
 | `def:cold-corridor-first-failure` (F2) | def | `ColdCorridor.Corridor.FirstFailureDefect` | no CT — `Spine.coldFailureDefectRow` |
 | `lem:context-universality` | lem | `ColdCorridor.Corridor.not_targetComplete_of_firstFailureDefect`<br>`ColdCorridor.Corridor.contextEquivalent_of_not_firstFailureDefect`<br>`Graph.Response.notTargetComplete_of_targetDefect` | standalone |
-| `lem:cold-corridor-first-failure` (ii) | lem | `ColdCorridor.not_identified_of_firstFailureDefect` | standalone |
 
-`lem:context-universality` is first consumed here.  Its routing target — the
-sparse exit and the exit-(4) ledger — is clause (ii) of
-`def:surviving-cold-branch`, recorded at Row 50.
-
-**CT composition at this row.** No CT.  The clause is a denial of
-target-completeness given a separating context, which is one application of
-`Response.notTargetComplete_of_targetDefect`; CT7 compares response *tables*, and
-there is no table here, only a single separation.
+**CT composition at this row.** No CT.
 
 ### Row 47 — (F3) producer `[154]`, `[157]`
 
-- **Paper fact.** `def:cold-corridor-first-failure` (F3): "two prefixes have the
-  same exact target response against every outside context and **one gives a
-  strictly smaller proper representative**".  `lem:cold-corridor-first-failure`
-  (iii): "case (F3) is a target-complete compression of a proper support",
-  because "context-universality holds and the displayed representative is
-  strictly smaller while preserving the boundary-degree profile and the exact
-  target response.  Thus it satisfies `def:proper-quotient-representative` and is
-  forbidden by `lem:replacement`, `cor:uncompressible`".
-- **What the Lean does.** `Corridor.FirstFailureCompression` carries the
-  *pair*.  `stage` is the later prefix, `candidate` the earlier one, `earlier`
-  is `candidate < stage` along the corridor, and `sameState` is the equality of
-  their cold corridor states — which is what makes them same-interface.  The
-  remaining fields are `def:proper-quotient-representative` clause by clause:
-  `replacement` is the candidate's own boundary piece at the stage's interface,
-  `sameProfile` preserves the boundary-degree profile, `baseline` keeps the
-  standing hypothesis, `smaller` is the strict lexicographic decrease, and
-  `contextUniversal` is equality of target response against *every* outside
-  context.
-  `FirstFailureCompression.compressibleSupport` reads those fields off as a
-  `Strategy.InterfaceReplacement.CompressibleSupport` at the stage's own support
-  — nothing is rebuilt and no existential is invented — and
-  `FirstFailureCompression.elim` / `not_occurs` close it against node `[14]`.
-  `Spine.coldFailureCompressionRow` commits that (F3) never occurs.
-- **What it should do.** Exactly this: relate the two prefixes, with the
-  candidate's piece as the smaller representative and the state equality doing
-  the same-interface work.
-- **Gap.** none.  The gap the previous implementation had — a bare existential
-  over boundary pieces at the later prefix's support, with the two
-  corridor-state conjuncts inert — is gone: `candidate` is a field, `earlier`
-  and `sameState` are used to type and justify the replacement, and the
-  conversion to `CompressibleSupport` is by projection.  **Facts passes.**
+- **Paper fact.** The first-failure F3 alternative is a target-complete
+  compression by a strictly smaller proper representative, forbidden by
+  `cor:uncompressible`.
+- **What the Lean does.** `FirstFailureCompression` carries the two prefixes and
+  the compression clauses.  `FirstFailureCompression.not_occurs` eliminates the
+  case using the ledger's uncompressibility fact.
+- **Gap.** none.
 - **Ledger and residual.** `coldFailureCompressionRow` is `factOnly` with
-  `Requires := [uncompressible]`, `Produces := [coldFailureCompression]`.  Node
-  `[14]`'s exclusion is read by exact key; nothing else is consumed.  Residual
-  unchanged.
-- **Transport and terminals.** `Graph.ColdFirstFailure` owns the mathematics.
-  `Spine.runCold` runs it fifth.  No terminal.
+  `Requires := [uncompressible]` and `Produces := [coldFailureCompression]`.
+  The requirement is read by `FactInputs.get`; residual unchanged.
+- **Transport and terminals.** No transport payload and no terminal.
 
 **Paper objects at this row.**
 
@@ -5595,840 +5380,267 @@ there is no table here, only a single separation.
 | `def:cold-corridor-first-failure` (F3) | def | `ColdCorridor.Corridor.FirstFailureCompression`<br>`ColdCorridor.Corridor.FirstFailureCompression.Occurs` | no CT — `Spine.coldFailureCompressionRow` |
 | `lem:cold-corridor-first-failure` (iii) | lem | `ColdCorridor.Corridor.FirstFailureCompression.compressibleSupport`<br>`ColdCorridor.Corridor.FirstFailureCompression.elim`<br>`ColdCorridor.Corridor.FirstFailureCompression.not_occurs` | standalone |
 
-`def:proper-quotient-representative` and `cor:uncompressible` are the
-interface-replacement rows' objects; this row consumes them through
-`CompressibleSupport` and node `[14]`'s committed fact.
-
-**CT composition at this row.** No CT.  The clause is a record whose fields are
-already the compression's clauses, and its elimination is one application of the
-node-`[14]` fact.  `InterfaceReplacement` composes CT7 upstream, at the row that
-proved `uncompressible`; re-entering it here would prove the same thing twice.
+**CT composition at this row.** No CT.
 
 ### Row 48 — (F4) producer `[154]`, `[156]`
 
-- **Paper fact.** `def:cold-corridor-first-failure` (F4): "the corridor first
-  enters a declared Type B handoff envelope or the route-8 carrier support
-  already recorded in the branch state".  `lem:cold-corridor-first-failure`
-  (iv): "the corridor has reached precisely one of the declared interfaces of
-  `def:decorated-fan-envelope` or the route-8 carrier support, so the charge is
-  transferred to the already existing Type B or route-8 ledger".
-- **What the Lean does.** `Corridor.HandoffEnvelopes` is the declared interfaces
-  the branch has recorded: an envelope type, a declared support per envelope,
-  and pairwise disjointness of those supports.
-  `Corridor.FirstFailureHandoff` is clause (F4) with "first" encoded: the
-  prefix's head lies in some declared support, *and* no earlier prefix's head
-  lies in any of them.
-  `Corridor.exists_unique_handoff` is clause (iv)'s "precisely one" — disjoint
-  supports make the envelope unique, so it is a theorem and not a convention.
-  `Spine.coldFailureHandoffRow` commits it, quantified over every ledger.
-- **What it should do.** Exactly this, with the ledger supplied by the branch.
-- **Gap.** none.  The gap the previous implementation had — the schedule was
-  literally `Enumeration.empty` on the executing branch, so (F4) could never
-  fire — is impossible here: the ledger is universally quantified in the
-  committed statement, so the fact holds at *every* ledger the branch might
-  carry, including every nonempty one, and no row manufactures one.
-  **Facts passes.**
+- **Paper fact.** The corridor first enters a declared Type B handoff support or
+  the route-8 support already recorded upstream.
+- **What the Lean does.** `FirstFailureHandoff` is a predicate over a ledger
+  supplied support predicate `Handoff : Finset object.Vertex -> Prop`.  It
+  records that the current head lies in such a support and no earlier head did.
+- **Gap.** none for carrier cleanup.  The old handoff object is gone; the row
+  quantifies over the support predicate and returns only a proposition.
 - **Ledger and residual.** `coldFailureHandoffRow` is `factOnly` with
-  `Requires := [coldCorridorState]`, `Produces := [coldFailureHandoff]`.
-  Residual unchanged.
-- **Transport and terminals.** `Graph.ColdFirstFailure` owns the mathematics.
-  `Spine.runCold` runs it sixth.  The (F4) transfer itself is Row 49.
+  `Requires := [coldCorridorState]` and `Produces := [coldFailureHandoff]`.
+  The requirement is read by `FactInputs.get`; residual unchanged.
+- **Transport and terminals.** No handoff object travels on the row output.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:cold-corridor-first-failure` (F4) | def | `ColdCorridor.Corridor.HandoffEnvelopes`<br>`ColdCorridor.Corridor.FirstFailureHandoff` | no CT — `Spine.coldFailureHandoffRow` |
-| `lem:cold-corridor-first-failure` (iv) | lem | `ColdCorridor.Corridor.exists_unique_handoff` | standalone |
+| `def:cold-corridor-first-failure` (F4) | def | `ColdCorridor.Corridor.FirstFailureHandoff` | no CT — `Spine.coldFailureHandoffRow` |
+| `lem:cold-corridor-first-failure` (iv) | lem | `ColdCorridor.Corridor.handoff_mem` | standalone |
 
-`def:decorated-fan-envelope` supplies the declared interfaces this row tests;
-it lies outside the `[145]`–`[157]` range and belongs to the Type B rows, so the
-ledger enters here as the parameter the manuscript says it is — "already
-recorded in the branch state".
+**CT composition at this row.** No CT.
 
-**CT composition at this row.** No CT.  The clause is a first-entry test against
-a supplied finite family and its routing is a uniqueness argument from
-disjointness.
+### Row 49 — (F4) membership `[156]`
 
-### Row 49 — (F4) handoff exit `[156]`
-
-- **Paper fact.** `lem:cold-corridor-first-failure` (iv), the transfer clause:
-  the (F4) charge is moved to the already existing Type B or route-8 ledger and
-  is not closed at the corridor.
-- **What the Lean does.** `Corridor.handoffExit` produces, from an (F4)
-  occurrence, a value of
-  `{envelope : ledger.Envelope // corridor.head segment ∈ ledger.support envelope}`
-  — the declared envelope the corridor entered, carrying its own membership and
-  nothing else.  `handoffExit_mem` is that membership and
-  Row 48's committed `exists_unique_handoff` already says that envelope is the
-  only declared interface the corridor reached, so nothing restates it here.  `Spine.firstFailureHandoffExit` is the same value read at a
-  `SurvivingColdBranch`'s own recorded ledger, which is where the charge
-  actually goes.
-- **What it should do.** Exactly this, *and* be reachable from the (F4) arm.
-- **Gap.** none.  The previous implementation's exit was never constructed on
-  any branch; this one is the elimination of the (F4) clause the row above
-  commits, and `ColdCorridor.firstFailureHandoffExit` takes the branch's own
-  `handoffEnvelopes` field, so the transfer target is the recorded envelope
-  family and not a manufactured one.  Nothing is closed at the corridor: the
-  theorem identifies the handoff envelope inside the mathematics, but no row
-  returns that envelope as a transport payload.  **Facts passes.**
-- **Ledger and residual.** The exit is a consequence of the (F4) fact rather
-  than a fact of its own — it carries an envelope, which is data, and no fact may
-  carry data.  What the ledger records is the uniqueness statement of Row 48.
-- **Transport and terminals.** No CT, no terminal and no ledger payload.  The
-  subtype remains inside the standalone theorem; the row-level transport is only
-  the exact ledger fact already committed at Row 48.
+- **Paper fact.** The F4 charge is sent to a support already present in the
+  upstream ledger; it is not closed inside the corridor.
+- **What the Lean does.** `Corridor.handoff_mem` extracts
+  `∃ support, Handoff support ∧ corridor.head segment ∈ support` from the F4
+  fact.  No envelope, subtype payload, or routing object is returned by a row.
+- **Gap.** none for carrier cleanup.
+- **Ledger and residual.** This membership is contained in the F4 fact itself;
+  the later transfer row reads the F4 key directly.
+- **Transport and terminals.** No terminal and no payload.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:cold-corridor-first-failure` (iv), transfer | lem | `ColdCorridor.Corridor.handoffExit`<br>`ColdCorridor.Corridor.handoffExit_mem`<br>`ColdCorridor.firstFailureHandoffExit` | standalone |
+| `lem:cold-corridor-first-failure` (iv), membership | lem | `ColdCorridor.Corridor.handoff_mem` | standalone |
 
-**CT composition at this row.** No CT.  The transfer is a projection of the
-(F4) occurrence onto the envelope it named.
+**CT composition at this row.** No CT.
 
-### Row 50 — Core classified state `[154]`
+### Row 50 — First-failure routing facts `[154]`
 
-- **Paper fact.** `lem:cold-corridor-first-failure`: "for every
-  `\epsilon \in \mathcal E_{br}`, the cold return corridor of `\epsilon` has a
-  first failure", routed by (i)–(v).  The existence half is proved by following
-  initial segments: if the successor stub is reached before `Q_cold+1` states are
-  read the whole corridor has at most `M_cold = Q_cold + 30` vertices, otherwise
-  two of the `Q_cold+1` states are equal and the first equality gives the repeat
-  subcase of (F5).  The branch hypothesis is `def:surviving-cold-branch` (i)–(vi).
-  `def:cold-window-ledger` fixes `c_hot`, `\theta_{win} = 3/(2c_{hot})`,
-  `\tau(\theta) = 15\theta/(1-13\theta)` with `\tau(\theta) < 1/4 \iff \theta <
-  1/73` and `\tau(\theta) < 3/13 \iff \theta < 1/78`, and splits
-  `\mathcal P = \mathcal P_{hot} \sqcup \mathcal P_{cold}` with
-  `C := |\mathcal P_{cold}|`.  `def:cold-skeleton-excess` sets
-  `b(P) := \max\{0, s(P)-2\}` after naming the first two lexicographic stubs the
-  transit stubs, and `lem:cold-window-stub-excess` gives
-  `b(\mathfrak S_{cold}) \ge 13C - o(n)`.
-- **What the Lean does.**
-  `Corridor.statesRead` is the number of cold corridor states a corridor reads,
-  one per initial segment.  `Corridor.TerminalCorridor` is (F5)'s first subcase —
-  the successor stub is reached inside `Q_cold` states — and
-  `Corridor.RepeatedState` its second.
-  `Corridor.exists_firstFailure` is the existence half, proved as the
-  manuscript's own dichotomy: a `by_cases` on `statesRead ≤ Q_cold`, with the
-  negative branch sampling `Q_cold + 1` distinct segments and applying
-  `Presentation.exists_state_eq_of_stateBound_lt`.  **(F5) is not defined as the
-  complement of the other four clauses**, so the conclusion is a theorem about
-  the corridor's length and not a tautology.
-  `Corridor.exchange_card_le` is "`M_cold` is a uniform upper bound for the
-  number of vertices in a first-failure cold exchange": in the terminal subcase
-  the corridor's states plus the manuscript's `30 = 2·order + 2·2` fit inside
-  `exchangeBound`.
-  `ColdCorridor.TauBelow`, `tauBelow_iff`, `tauBelow_quarter` and
-  `tauBelow_routeEight` are `def:cold-window-ledger`'s comparisons, cleared of
-  denominators: `τ(θ) < 1/4` is `(5s − 2)·p < n` and `τ(θ) < 3/13` is
-  `(16s − 6)·p < 3n`, at an arbitrary external-stub count `s`.
-  `Fixtures.ColdCorridorLedger` evaluates them at the manuscript's own
-  `s = δ·order − 2(order−1) = 15`, where they become `73·p < n` and `78·p < n`;
-  so `73` and `78` are checked consequences of the registered baseline and
-  window order and appear in no definition.  `isHot`, `coldWindows`, `hotWindows`, `coldCount` and
-  `coldCount_add_hotCount` are the hot/cold split: hotness is *decided* by the
-  two clauses the manuscript gives (the full canonical package is present, and
-  its coordinates are distinct), and `𝒫 = 𝒫_hot ⊔ 𝒫_cold` is a partition
-  theorem.
-  `branchExcessOf`, `selectedBranchExcess` and `selectedBranchExcess_length` are
-  `def:cold-skeleton-excess`: `b(P) = s(P) − 2` and the selected half-edges are
-  the stubs with the two transit stubs dropped, with `|𝓔_br(P)| = b(P)` proved.
-  At the registered baseline and order, `s(P) = δ·order − 2(order − 1)` — the
-  same expression node `[28]` compares — and `branchExcessOf` of it *is* `b(P)`
-  by definition, so no lemma restates that; `Fixtures.ColdCorridorLedger`
-  evaluates both to the manuscript's `15` and `13`.
-  `branchExcess_ge_of_cubic` is `lem:cold-window-stub-excess`
-  subtraction-free.
-  `ColdCorridor.SurvivingColdBranch` is `def:surviving-cold-branch`, with the
-  branch's own `Identified` relation so that clause (ii) constrains something,
-  and with `germIdentified` recording that a bounded germ's two representatives
-  are one of those identifications — which is what `def:cold-bounded-germ` says
-  a germ is.  That pair of fields is what lets `SurvivingColdBranch.noGermDefect`
-  be a *theorem*: G2's routing is derived from clause (ii) rather than assumed
-  as a separate exclusion.
-  Of the four routing clauses only (F2)'s and (F4)'s are theorems against the
-  branch record, because only those two are not proved anywhere earlier: (F1)
-  and (F3) are committed at Rows 45 and 47 from the selection's own target
-  avoidance and from `cor:uncompressible`, so restating them against
-  `SurvivingColdBranch` would prove the same theorem twice.  The three
-  declarations that did — `not_firstFailureCycle`, `not_firstFailureCompression`
-  and the `firstFailure_routed` conjunction that packaged them with
-  `exists_firstFailure` — had no consumer and are deleted.
-  `Spine.coldFailureRoutingRow` commits the existence dichotomy, the `M_cold`
-  bound, the hot/cold partition and the stub-excess inequality.
-- **What it should do.** Exactly this: prove existence from the pigeonhole,
-  record the hot/cold ledger, and count the branch excess.
-- **Gap.** none.  The three gaps the previous implementation had are closed:
-  exhaustiveness is no longer by construction (`f5` was the complement of the
-  other four, making the lemma a tautology) but a case split on the corridor's
-  length against `Q_cold`; the hot/cold split of `def:cold-window-ledger` is
-  present and decided, so the cold family is named rather than the whole
-  packing; and the stub count is `b(P) = s(P) − 2` at the registered baseline
-  and order with an explicit `o(n)` slack term in `branchExcess_ge_of_cubic`
-  rather than an exact fully-cubic identity.  `def:surviving-cold-branch` is a
-  named structure, and the branch clauses each row actually spends are read from
-  the canonical ledger instead — node `[1]`'s avoidance for (F1) and node
-  `[14]`'s uncompressibility for (F3) — which is stronger than assuming them.
-  **Facts passes.**
-- **Ledger and residual.** `coldFailureRoutingRow` is `factOnly` with
-  `Requires := [coldCorridorState]`, `Produces := [coldFailureRouting]`.  The
-  cut-state fact is read by exact key; the five committed clauses are theorems
-  about the corridor and the registered signature — the existence dichotomy, the
-  `M_cold` bound, the hot/cold partition, `|𝓔_br(P)| = b(P)`, and the stub
-  excess.  The fourth was proved but unregistered until the registered-fact
-  review.  Residual unchanged.
-- **Transport and terminals.** `Graph.ColdFirstFailure` owns the mathematics;
-  `Spine.runCold` runs this row last, so the block's output index is the
-  incoming one with seven cold facts on top.  No terminal.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:cold-window-ledger` | def | `ColdCorridor.TauBelow`<br>`ColdCorridor.tauBelow_iff`<br>`ColdCorridor.tauBelow_quarter`<br>`ColdCorridor.tauBelow_routeEight`<br>`ColdCorridor.isHot`, `ColdCorridor.isHot_iff`<br>`ColdCorridor.coldWindows`, `ColdCorridor.hotWindows`<br>`ColdCorridor.coldCount`<br>`ColdCorridor.coldCount_add_hotCount` | no CT |
-| `def:surviving-cold-branch` | def | `ColdCorridor.SurvivingColdBranch` | no CT |
-| `def:cold-skeleton-excess` | def | `ColdCorridor.branchExcessOf`<br>`ColdCorridor.selectedBranchExcess`<br>`ColdCorridor.selectedBranchExcess_length` | no CT |
-| `lem:cold-window-stub-excess` | lem | `ColdCorridor.branchExcess_ge_of_cubic`<br>checked at `s = 15`, `b(P) = 13` in `Fixtures.ColdCorridorLedger` | standalone |
-| `lem:cold-corridor-first-failure` | lem | `ColdCorridor.Corridor.statesRead`<br>`ColdCorridor.Corridor.TerminalCorridor`<br>`ColdCorridor.Corridor.RepeatedState`<br>`ColdCorridor.Corridor.exists_firstFailure`<br>`ColdCorridor.Corridor.exchange_card_le` | no CT — `Spine.coldFailureRoutingRow` |
-
-The routing clauses (i)–(iv) are consumed at Rows 45–49; the existence half and
-the two ledgers are this row's.
-
-**CT composition at this row.** No CT.  Every step is a finite search, a
-cardinality argument, or a partition count: the existence half is a `by_cases`
-plus `Fintype.exists_ne_map_eq_of_card_lt`, the hot/cold split is
-`Finset.card_filter_add_card_filter_not`, and the stub excess is one
-multiplication inequality.  Nothing compares responses here — that happened at
-Rows 46 and 47 — so no CT participates.
-
-
-### Row 51 — Terminal-F5 residual `[154]`
-
-- **Paper fact.** `lem:cold-corridor-first-failure` (v), terminal subcase: "the
-  whole corridor has bounded size and two boundary interfaces … the support
-  carries two same-interface representatives … Thus it is a cold bounded germ",
-  feeding `lem:cold-germ-extraction` rather than closing anything.  The bound is
-  `M_cold = Q_cold + 30` vertices.  `def:cold-bounded-germ` fixes what the
-  residual must be: "a finite boundaried support with two boundary interfaces
-  `x, y` and two same-interface `x`-`y` representatives `Q[x,y]` and `E`", where
-  "in a terminal corridor these representatives are the two bounded completion
-  strands between the same interfaces; in a repeated-state corridor one
-  representative is the actual corridor segment and the other is the canonical
-  representative determined by the repeated cold corridor state", carrying the
-  inherited boundary degree profile, `P13`-window labels and target-response
-  profile, with increment `\delta := |E| - |Q[x,y]|`, *length-changing* if
-  `\delta \ne 0` and *equal-length* if `\delta = 0`.
-- **What the Lean does.** The residual is `ColdCorridor.BoundedGerm
-  data.coldSignature (MinimumDegreeAtLeast threshold) (HasCycleWithLength
-  LengthOK) object`, and it is the definition itself: the proper support with
-  its own boundary piece `Q[x,y]`, the second same-interface representative
-  `canonical`, `sameProfile` for the inherited boundary-degree profile, `record`
-  and `record_truth` for the `P13`-window labels and the target-response
-  profile, and `BoundedGerm.increment` for `\delta` in `Int`.  The
-  length-changing/equal-length dichotomy is `BoundedGerm.LengthChanging` with
-  `not_lengthChanging_iff`, committed at Row 54.
-  The boundedness is Row 50's: `coldFailureRouting`'s second clause is
-  `Corridor.exchange_card_le`, `corridor.statesRead + interfaceBudget S ≤
-  exchangeBound S`, which is `M_cold = Q_cold + 30` with the additive `30`
-  supplied by `interfaceBudget` and never written as a numeral; the two boundary
-  interfaces are bounded by `Corridor.activeInterface_card_le`.  The
-  terminal/repeated split that produces the two representatives is
-  `Corridor.TerminalCorridor` / `Corridor.RepeatedState`, the two arms of
-  `Corridor.exists_firstFailure`, also committed at Row 50.
-- **What it should do.** Exactly this.  The residual is not closed here — the
-  three arms of `lem:cold-bounded-germ-trichotomy` at Rows 52--54 close it, and
-  `lem:cold-germ-extraction` at Row 58 counts it.
-- **Gap.** `none`.  **Facts passes.**  The legacy
-  `ColdBranchFailureRouting.storedTerminalF5GermFacts` — a conjunction of a
-  schedule-cardinality bound with an equality of two ambient `Bool`s, carrying no
-  support and computing no `\delta`, and with no occurrence outside its own
-  definition — is retired: `Graph.Strategy.ColdBranchFailureRouting` is
-  quarantined together with the three modules that depended on it.
-- **Ledger and residual.** No fact carries a germ: `BoundedGerm` is *data*, and
-  every clause about it is quantified over every germ of the residual's own
-  object.  The bound and the split are read from the `coldFailureRouting` fact
-  committed at Row 50; the three closure arms are the `coldGermRealized`,
-  `coldGermDistinguished` and `coldGermSilent` facts of Rows 52--54.  All five
-  sit on one immutable prefix, so a germ statement proved at any of them is
-  readable at every later cursor of the branch.
-- **Transport and terminals.** `Graph.ColdCorridor` owns the germ and the bound;
-  `Graph.ColdFirstFailure` owns the terminal/repeated dichotomy.  There is no
-  terminal at this row — the residual is handed on, which is what the manuscript
-  says of the terminal subcase.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:cold-bounded-germ` | def | `ColdCorridor.BoundedGerm`<br>`BoundedGerm.increment`<br>`BoundedGerm.LengthChanging`<br>`BoundedGerm.not_lengthChanging_iff`<br>`Corridor.exchange_card_le`<br>`Corridor.activeInterface_card_le` | no CT — `Spine.coldFailureRoutingRow`, `Spine.coldGermRealizedRow`, `Spine.coldGermDistinguishedRow`, `Spine.coldGermSilentRow` |
-
-The definition is carried here and *spent* at Rows 52--54; `ColdCorridor.TableRow`
-is the same structure with `\delta = 0` and `def:admissible-rank-quotient`
-added, so Row 44's equal-length half and this row's length-changing half share
-one carrier and one increment.
-
-**CT composition at this row.** No CT.  The germ is a structure, its bound is an
-inequality on a `Fintype.card`, and its two representatives come from a case
-split on the corridor's own length.  There is nothing to enumerate, schedule or
-certify.
-
-### Row 52 — `[155]` G1 realizing
-
-- **Paper fact.** `lem:cold-bounded-germ-trichotomy` states that no
-  length-changing cold bounded germ survives, and splits every such germ into
-  G1, G2, G3, exhaustive "by whether a compatible completion realizes a dyadic
-  hit, distinguishes dyadic truth without realization in `G`, or never
-  distinguishes the two representatives".  G1, *hit-realized*: "some compatible
-  live completion and window offset close a dyadic cycle.  This contradicts the
-  counterexample condition", proved by "the completed representative plus the
-  relevant window segment is a cycle whose length is a power of two".
-- **What the Lean does.** `Graph.ColdCorridor.BoundedGerm S Baseline Target
-  object` is `def:cold-bounded-germ` itself: the support with its connectedness
-  and properness, the second same-interface representative `canonical`, the
-  inherited boundary-degree profile `sameProfile`, the standing baseline, and
-  the `(T1)`--`(T4)` recording `record`/`record_truth` that the definition's
-  "inherited boundary degree profile, `P₁₃`-window labels, and target-response
-  profile" names.  `BoundedGerm.increment` is `δ := |E| − |Q[x,y]|` in `Int`;
-  nothing stores it, so no germ may declare a length change it does not have.
-  `BoundedGerm.Realizing` is `Target (glue germ.piece germ.atom.outside)`.
-  `Spine.coldGermRealizedRow` is a `factOnly` atomic Strategy with
-  `Requires := [selection]` and `Produces := [coldGermRealized]`.  Its two
-  committed clauses are `∀ germ, ¬ germ.Realizing`, proved by
-  `BoundedGerm.target_of_realizing` against the selection's own avoidance, and
-  `∀ germ, germ.Realizing ∨ germ.Distinguishing ∨ germ.Neutral`, which is
-  `BoundedGerm.trichotomy`.
-- **What it should do.** Exactly this.  `target_of_realizing` transports the
-  germ's own completion to the ambient object along the decomposition's
-  `reconstructionIso`, which is the manuscript's "the completed representative
-  plus the relevant window segment is a cycle whose length is a power of two"
-  read at the germ's own site.
-- **Gap.** `none`.  **Facts passes.**
-- **Ledger and residual.** The row reads node `[1]`'s `selection` by exact
-  semantic key through `FactInputs.get` and commits `coldGermRealized` into the
-  same indexed `ExactLedger`; `factOnly` supplies `RefinementSystem.refl`, so
-  the residual is unchanged.  The statement is quantified over *every*
-  `BoundedGerm` of the residual's own object, so no germ construction travels
-  with the fact.
-- **Transport and terminals.** `Graph.ColdCorridor` owns the mathematics and the
-  row owns nothing but the commit.  There is no terminal at this row: G1 is
-  proved never to occur, and the branch continues.  The row is run by
-  `Spine.runCold` through `AtomicCT.run` against one immutable prefix.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:cold-bounded-germ` | def | `ColdCorridor.BoundedGerm`<br>`BoundedGerm.increment`<br>`BoundedGerm.LengthChanging`<br>`BoundedGerm.atom`<br>`BoundedGerm.piece` | no CT — `Spine.coldGermRealizedRow` |
-| `lem:cold-bounded-germ-trichotomy` | lem | `BoundedGerm.Realizing`<br>`BoundedGerm.Distinguishing`<br>`BoundedGerm.Neutral`<br>`BoundedGerm.trichotomy`<br>`BoundedGerm.target_of_realizing` | no CT — `Spine.coldGermRealizedRow` |
-
-`def:cold-bounded-germ` is first *carried* here.  Row 51 consumes its terminal
-subcase and Row 44 its equal-length one: `ColdCorridor.TableRow` is now literally
-`BoundedGerm` with `δ = 0` and `def:admissible-rank-quotient` added, so the two
-halves of the definition share one carrier and the increment is the same
-declaration on both.  The trichotomy is recorded here because its G1 arm is the
-first of the three consumed; its G2 arm is Row 53's and its G3 arm Row 54's.
-
-**CT composition at this row.** No CT.  Both clauses are theorems about the germ
-itself: one transports a completion along the decomposition's reconstruction
-isomorphism, the other is the excluded middle on two predicates.  A CT would add
-nothing — there is no response algebra to schedule and no residual to restrict.
-
-### Row 53 — `[156]` G2 distinguishing
-
-- **Paper fact.** `lem:cold-bounded-germ-trichotomy` G2, *hit-distinguished*:
-  "some compatible outside context distinguishes the two representatives by
-  dyadic truth value **without already realizing the cycle in the current
-  graph**.  The induced quotient is target-defective, so it is routed to the
-  sparse exit or exit-(4) ledger", proved by "the two local responses agree in
-  the actual quotient but disagree in a compatible context.  By
-  `lem:context-universality`, such an identification is not target-complete".
-- **What the Lean does.** `BoundedGerm.Distinguishing` is
-  `Graph.Response.TargetDefect Target germ.piece germ.canonical`, an *actual*
-  `Graph.OutsideContext` of the germ's own interface separating the two
-  representatives' target values — not a scheduled coordinate family and not a
-  pair of ambient `Bool`s.  `Spine.coldGermDistinguishedRow` is a `factOnly`
-  atomic Strategy with `Requires := []` and
-  `Produces := [coldGermDistinguished]`, committing
-  `∀ germ, ∀ (Profile : Type) (profile : BoundaryPiece germ.atom.interface →
-  Profile), germ.Distinguishing → ¬ Graph.Response.TargetComplete profile Target
-  germ.piece germ.canonical`, proved by
-  `BoundedGerm.not_targetComplete_of_distinguishing`: the separating context
-  already denies the all-context clause of `def:target-complete-quotient`.
-- **What it should do.** Exactly this.  The conclusion is drawn in *every*
-  immutable profile fibre, which is what makes it a statement about the
-  quotient rather than about one chosen profile, and it is the same shape node
-  `[156]` already commits for the (F2) discrepancy at Row 49.  No cycle is
-  claimed: the manuscript is explicit that G2 distinguishes "without already
-  realizing the cycle in the current graph", and what the germ is routed to is
-  the defect exit.
-- **Gap.** `none`.  **Facts passes.**
-- **Ledger and residual.** The row reads nothing, and `Requires := []` is the
-  honest declaration: target-defectiveness of a distinguished germ is a theorem
-  about the germ's own two representatives, and the branch facts are spent by
-  the other two arms.  The framework runner still appends the production to the
-  incoming index while retaining the literal ancestry, so every earlier fact of
-  the branch stays in the output type; `factOnly` supplies the equality
-  refinement.
-- **Transport and terminals.** `Graph.Response` owns target-completeness and its
-  defect; `Graph.ColdCorridor` owns the germ.  No terminal: the row records the
-  routing, and the exits it routes to are the branch's own.
-
-**Paper objects at this row.**
-
-No manuscript object is first consumed here.  The G2 arm of
-`lem:cold-bounded-germ-trichotomy` is recorded at Row 52;
-`lem:context-universality`, which G2's proof invokes, lies outside the
-`[145]`--`[157]` range and is `Graph.Response.TargetComplete`'s own
-context-universality clause.
-
-**CT composition at this row.** No CT.  What a CT would buy here is a response
-comparison across a *scheduled* family of contexts, and the manuscript does not
-ask for one: G2's hypothesis is the existence of a single distinguishing
-compatible context, which `Response.TargetDefect` is, and its conclusion is the
-failure of a two-clause conjunction at that one witness.
-
-### Row 54 — `[157]` G3 neutral
-
-- **Paper fact.** `lem:cold-bounded-germ-trichotomy` G3, *silent*: "no compatible
-  outside context and no relevant scale distinguishes the two representatives.
-  Then replacing the longer representative by the shorter one preserves the
-  boundary degree profile and the target response against every context, creates
-  no dyadic cycle, and strictly decreases the support.  This is a nontrivial
-  target-complete compression of a proper support", forbidden by
-  `lem:replacement` and `cor:uncompressible`.  The "longer/shorter" is supplied
-  by `lem:cold-increment-arithmetic`, which exhausts the finite arithmetic of the
-  increment `δ ≥ 0`: (a) `1 ≤ δ ≤ 12` gives overlapping blocks
-  `[L+jδ, L+jδ+12]` whose union is an interval — G1 if it spans a
-  dyadic scale, otherwise a bounded germ type handled by the trichotomy;
-  (b) `δ ≥ 13` with the doubling orbit hitting one of the thirteen smear
-  residues gives G1; (c) `δ ≥ 13` avoiding them gives a periodic carrier
-  on the odd part, G2 if target-visible and G3 if target-invisible;
-  (d) `δ = 0` sends the equal-length switch to the finite same-interface
-  table.  For odd `δ`, `ord_δ(2) > δ − 13` forces case (b), and for even
-  `δ = 2^a u` the criterion applies to the odd part after the transient `k < a`.
-- **What the Lean does.** `Spine.coldGermSilentRow` is a `factOnly` atomic
-  Strategy with `Requires := [uncompressible]` and
-  `Produces := [coldGermSilent]`.  Its six committed clauses are:
-  1. G3 itself, `∀ germ, germ.increment < 0 → ¬ germ.Neutral`, by
-     `BoundedGerm.compressibleSupport_of_not_distinguishing` against node
-     `[14]`'s exclusion.  Every clause of
-     `InterfaceReplacement.CompressibleSupport` is present: `sameProfile` is the
-     preserved boundary-degree profile, `baseline` the standing baseline, the
-     failure of `Distinguishing` the target response against every context, and
-     the strict decrease is
-     `BoundedGerm.lexicographicallySmaller_of_increment_neg` — the shorter
-     representative has strictly fewer internal vertices, so `glue_vertexCount`
-     makes its completion strictly smaller than the object, which
-     `reconstructionIso` identifies with the germ's own completion.
-  2. Case (d), `BoundedGerm.not_lengthChanging_iff`: this is
-     `def:cold-bounded-germ`'s own dichotomy — "length-changing if `δ ≠ 0`,
-     equal-length if `δ = 0`" — and it says a germ fails to be length-changing
-     exactly when its two representatives have the same internal size, which is
-     `TableRow`'s `equalLength` clause.  So the germs that are *not*
-     length-changing are exactly the rows of `def:cold-same-interface-table`,
-     closed at Row 44: "the equal-length switch belongs to the finite
-     same-interface cold table".
-  3. Case (a), `ColdCorridor.exists_not_survivesSmear_of_mem_interval`: for
-     `0 < δ ≤ smear + 1` the blocks `[L+jδ, L+jδ+smear]` cover the interval
-     `[L, L + Nδ + smear]`, so an accepted length in that interval makes one
-     block fail the smear filter — the offset that closes the cycle, G1.
-  4. Case (b), `ColdCorridor.exists_not_survivesSmear_of_pow_congruent`: a power
-     of two congruent to a smear residue and at least as large is attained by the
-     block of the corresponding number of homogeneous copies, so if it is
-     accepted that block fails the filter, G1.
-  5. The hit criterion, `ColdCorridor.exists_hit_of_orderOf_lt`: with
-     `smear + 1 ≤ δ` the `smear + 1` residues `L, …, L+smear` are distinct
-     classes, the doubling orbit contributes `orderOf (2 : ZMod δ)` distinct
-     classes because `pow_injOn_Iio_orderOf` makes it injective below the order,
-     and an orbit exceeding the complement cannot avoid them.
-  6. The even transient, `ColdCorridor.pow_mod_of_le`:
-     `2^k % (2^a·u) = 2^a·(2^(k−a) % u)` for `k ≥ a`, the exact reduction to the
-     odd modulus past the bounded transient.
-  Case (c) is the trichotomy's own exhaustiveness and is committed at Row 52.
-- **What it should do.** Exactly this.  Unlike the equal-length rows of
-  `def:cold-same-interface-table`, the descent is the increment's own and no
-  appeal to `def:admissible-rank-quotient` is made or needed, which is why
-  `BoundedGerm` carries no `admissible` field and `TableRow` does.
-- **Gap.** `none`.  **Facts passes.**  One qualification must be recorded: the
-  germ is *oriented* as the manuscript orients it in
-  `lem:cold-increment-arithmetic` — the support carries the longer
-  representative and `canonical` the shorter, so `δ < 0` and "replacing the
-  longer representative by the shorter one" is a replacement at this support.
-  A germ whose support carries the shorter representative is the same germ at
-  the other site, and it is that site's `BoundedGerm` the clause applies to.
-- **Ledger and residual.** The row reads node `[14]`'s `uncompressible` by exact
-  semantic key through `FactInputs.get` and commits `coldGermSilent` into the
-  same indexed `ExactLedger`; `factOnly` supplies the equality refinement.  The
-  arithmetic clauses quantify over the increment, the base length, the copy
-  count and the exponent, and mention the smear only as
-  `data.coldSignature.windowOrder − 1`, so the manuscript's `12` and `13` are
-  the registered window order and no numeral is written.
-- **Transport and terminals.** `Graph.ColdCorridor` owns both the germ's
-  compression and the increment arithmetic; the row owns nothing but the commit.
-  No terminal: G3 is proved never to occur.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `lem:cold-increment-arithmetic` | lem | `ColdCorridor.exists_block_of_mem_interval`<br>`ColdCorridor.exists_not_survivesSmear_of_mem_interval`<br>`ColdCorridor.exists_block_of_pow_congruent`<br>`ColdCorridor.exists_not_survivesSmear_of_pow_congruent`<br>`ColdCorridor.exists_hit_of_injective`<br>`ColdCorridor.exists_hit_of_orderOf_lt`<br>`ColdCorridor.pow_mod_of_le`<br>`BoundedGerm.not_lengthChanging_iff` | no CT — `Spine.coldGermSilentRow` |
-
-`lem:cold-increment-arithmetic` is placed at the closest row: it is the lemma
-that decides which of G1/G2/G3 a length-changing germ falls into, and its case
-(c) is what produces a G3 germ at all.  Its case (d) routes to
-`def:cold-same-interface-table`, recorded at Row 44.
-
-**CT composition at this row.** No CT.  The G3 clause is a replacement
-certificate assembled from fields the germ already carries, and the remaining
-five are arithmetic on `Nat` with the accepted-length predicate as a parameter.
-There is no enumeration to schedule, no response algebra to compare, and no
-residual to restrict; `Graph.ColdIncrementArithmetic` mentions no window,
-corridor, germ, or graph at all.
-
-### Row 55 — Core dispatch (F1) `[155]`
-
-- **Paper fact.** `lem:cold-corridor-first-failure` (i) together with
-  `lem:cold-bounded-germ-trichotomy` G1: an (F1) first failure is a dyadic cycle
-  in `G`, which contradicts the counterexample condition and closes the branch.
-- **What the Lean does.** Nothing at this row, and that is the port.  In the
-  canonical spine there is no dispatch field: the (F1) fact is committed once, at
-  Row 45, as `∀ corridor window segment, ¬ corridor.FirstFailureCycle window
-  LengthOK segment`, read off node `[1]`'s `selection`; and the trichotomy's G1
-  arm is committed once, at Row 52, as `∀ germ, ¬ germ.Realizing`.  The old
-  side-channel dispatch is replaced by `Spine.runCold` composing the rows
-  through `AtomicCT.run`: the (F1) clause is on the ledger, and any later row
-  that needs it reads it by exact key.
-- **What it should do.** Exactly this.  The legacy row's own **What it should
-  do** asked for "read the stored (F1) partition off the entry just written, and
-  on a nonempty partition return the target"; with the fact on the canonical
-  ledger there is no partition to scan and no payload to return — the target
-  cannot occur, which is strictly what the manuscript claims.
-- **Gap.** `none`.  **Facts passes.**  The legacy path is retired: the old
-  aggregation sources are not part of the live EG build, and the
-  remaining non-PDE fixture shims that imported them have been deleted.  The
-  old target side channel is therefore absent from the cold proof surface.
-- **Ledger and residual.** One immutable prefix, no second scan.  `AtomicCT.run`
-  appends each row's production to the incoming index while retaining the
-  literal ancestry, so Row 45's clause is in the type of every later cursor.
-- **Transport and terminals.** No terminal.  `.targetClosed` was the legacy
-  arm's name for a terminal the export never showed as closed; the ported branch
-  closes at Row 61 instead, and closes to `False` rather than to a target
-  payload.
-
-**Paper objects at this row.**
-
-No manuscript object is first consumed here.  Clause (i) of
-`lem:cold-corridor-first-failure` is recorded at Row 50 and the G1 arm of
-`lem:cold-bounded-germ-trichotomy` at Row 52.
-
-**CT composition at this row.** No CT and no recipe.  The dispatch *is* the row
-composition, which is the same structural answer Row 60 gives: each row's
-`Requires` is discharged by instance resolution against the incoming index, so
-the order is checked by the elaborator rather than chosen by a registration
-field.
-
-### Row 56 — Core dispatch (F3) `[157]`
-
-- **Paper fact.** `lem:cold-corridor-first-failure` (iii): an (F3) first failure
-  is a target-complete compression of a proper support, forbidden by
-  `lem:replacement` and `cor:uncompressible`; the case is therefore impossible on
-  the surviving branch.
-- **What the Lean does.** Nothing at this row, for the same reason as Row 55.
-  The (F3) fact is committed once, at Row 47, as `∀ corridor presentation index
-  support, ¬ FirstFailureCompression.Occurs …`, proved by
-  `FirstFailureCompression.not_occurs` against node `[14]`'s `uncompressible`
-  read from the ledger; and the trichotomy's G3 arm is committed once, at Row 54.
-  There is no `Option`, no `False.elim` into a `none`-carrying capability, and no
-  `noBaselineProperSubgraph` supplied at a registration site.
-- **What it should do.** Exactly this.
-- **Gap.** `none`.  **Facts passes.**  The legacy row recorded a real defect —
-  the *Official* registration's `inducedPathFamilyCapability` never read
-  `storedF3OwnersQuery`, so an (F3) owner fell through to `none`.  That defect
-  cannot be expressed in the port: `coldFailureCompression` is a declared
-  production of `coldFailureCompressionRow` and the exact heterogeneous result
-  type makes omitting it fail to elaborate.
-- **Ledger and residual.** As Row 55: one prefix, `uncompressible` read by exact
-  key at Row 47, nothing re-derived here.
+- **Paper fact.** Every cold return corridor has a first failure: terminal
+  corridor inside the cold bound or a repeated state after `Q_cold + 1` states,
+  together with the exchange bound, the hot/cold split, and the cold stub-excess
+  inequality.
+- **What the Lean does.** `coldFailureRoutingRow` commits the existence
+  dichotomy, `exchange_card_le`, `coldCount_add_hotCount`,
+  `selectedBranchExcess_length`, and `branchExcess_ge_of_cubic`.
+- **Gap.** none for carrier cleanup.  The row no longer defines or transports a
+  cold-branch object.
+- **Ledger and residual.** `factOnly` with `Requires := [coldCorridorState]` and
+  `Produces := [coldFailureRouting]`; residual unchanged.
 - **Transport and terminals.** No terminal.
 
 **Paper objects at this row.**
 
-No manuscript object is first consumed here.  Clause (iii) of
-`lem:cold-corridor-first-failure` is recorded at Row 50;
-`def:proper-quotient-representative`, `lem:replacement` and `cor:uncompressible`,
-which the exclusion consumes, lie outside the `[145]`–`[157]` range.
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| `lem:cold-corridor-first-failure`, existence | lem | `ColdCorridor.Corridor.exists_firstFailure` | no CT — `Spine.coldFailureRoutingRow` |
+| exchange and ledger counts | lem | `ColdCorridor.Corridor.exchange_card_le`<br>`ColdCorridor.coldCount_add_hotCount`<br>`ColdCorridor.selectedBranchExcess_length`<br>`ColdCorridor.branchExcess_ge_of_cubic` | standalone |
 
-**CT composition at this row.** No CT and no recipe; see Row 55.
+**CT composition at this row.** No CT.
+
+### Row 51 — Terminal-F5 residual `[154]`
+
+- **Paper fact.** The F5 residual is represented by bounded cold germs and the
+  finite exchange bound.
+- **What the Lean does.** The bounded-germ definitions stay in graph-level cold
+  mathematics.  The Strategy rows do not package a residual object; they publish
+  the facts later rows consume.
+- **Gap.** none for carrier cleanup.
+- **Ledger and residual.** The full residual remains the same `ExactLedger`
+  cursor; later F5 rows append facts on top of it.
+- **Transport and terminals.** No separate terminal object.
+
+**CT composition at this row.** No CT.
+
+### Row 52 — `[155]` G1 realizing
+
+- **Paper fact.** A realizing bounded germ would close a dyadic cycle in the
+  selected object, contradicting the selection fact.
+- **What the Lean does.** `coldGermRealizedRow` reads `selection` with
+  `FactInputs.get` and commits that no bounded germ is realizing, plus the
+  trichotomy statement used by later routing.
+- **Gap.** none.
+- **Ledger and residual.** `Requires := [selection]`,
+  `Produces := [coldGermRealized]`; residual unchanged.
+- **Transport and terminals.** No payload.
+
+**CT composition at this row.** No CT.
+
+### Row 53 — `[156]` G2 distinguishing
+
+- **Paper fact.** A distinguishing germ gives a target-incomplete quotient in
+  every immutable profile fibre.
+- **What the Lean does.** `coldGermDistinguishedRow` is source-free and commits
+  the germ theorem directly.
+- **Gap.** none for carrier cleanup.  This is a semantic fact, not a closure by
+  itself.
+- **Ledger and residual.** `Requires := []`, `Produces := [coldGermDistinguished]`.
+- **Transport and terminals.** No payload and no terminal.
+
+**CT composition at this row.** No CT.
+
+### Row 54 — `[157]` G3 neutral
+
+- **Paper fact.** A neutral length-changing germ gives a target-complete
+  compression, forbidden by uncompressibility; the increment arithmetic facts
+  are recorded at the same row.
+- **What the Lean does.** `coldGermSilentRow` reads `uncompressible` with
+  `FactInputs.get` and commits the neutral exclusion plus the arithmetic clauses.
+- **Gap.** none.
+- **Ledger and residual.** `Requires := [uncompressible]`,
+  `Produces := [coldGermSilent]`; residual unchanged.
+- **Transport and terminals.** No payload.
+
+**CT composition at this row.** No CT.
+
+### Row 55 — Core dispatch (F1) `[155]`
+
+- **Paper fact.** F1 is already excluded by the selection fact.
+- **What the Lean does.** No separate dispatcher is exported.  The proof is the
+  ledger composition: Row 45 appends the F1 exclusion, and later rows read the
+  exact prefix.
+- **Gap.** none for carrier cleanup.
+- **Ledger and residual.** One immutable ledger prefix.
+- **Transport and terminals.** No side dispatcher.
+
+**CT composition at this row.** No CT.
+
+### Row 56 — Core dispatch (F3) `[157]`
+
+- **Paper fact.** F3 is already excluded by uncompressibility.
+- **What the Lean does.** No separate dispatcher is exported.  Row 47 appends
+  the F3 exclusion, and later rows retain that fact in the same ledger.
+- **Gap.** none for carrier cleanup.
+- **Ledger and residual.** One immutable ledger prefix.
+- **Transport and terminals.** No side dispatcher.
+
+**CT composition at this row.** No CT.
 
 ### Row 57 — (F4) dispatch arm `[156]`
 
-- **Paper fact.** `lem:cold-corridor-first-failure` (iv) transfers the charge to
-  the existing Type B or route-8 ledger, and `def:surviving-cold-branch` (iv)–(v)
-  is the branch hypothesis that "no Type B bridge or handoff residual remains
-  outside its ledger" and "no Type A route-8 residual remains outside
-  `thm:large-budget-route8-only`".
-- **What the Lean does.** `Spine.coldHandoffTransferRow` commits that the
-  corridor's head lies in the declared support of the envelope
-  `Corridor.handoffExit` names — `handoffExit_mem` — for *every*
-  `HandoffEnvelopes`.  It is a parameter of the committed statement, so it
-  is the branch's own recorded one, and the row cannot be discharged against an
-  emptiness produced at a call site.
-- **What it should do.** Consume the stored (F4) entry and hand it to the
-  recorded ledger, under the branch fact that any such residual is already
-  inside that ledger.
-- **Gap.** none.  The gap the previous implementation had — the arm discharged
-  an owner that the compiler's own `Enumeration.empty` had already made
-  impossible, and on the `handoffRequired := true` route returned `none` and
-  left the residual open — cannot arise: there is no schedule to manufacture,
-  the ledger is universally quantified, and the committed statement is the
-  transfer itself rather than an `Option`.  **Facts passes.**
-- **Ledger and residual.** `factOnly` with
-  `Requires := [coldFailureHandoff]`, `Produces := [coldHandoffTransfer]`; the
-  (F4) fact is read by exact key through sealed `FactInputs.get`.  Residual
-  unchanged.
-- **Transport and terminals.** `Graph.ColdFirstFailure` owns the exit;
-  `Spine.runCold` runs the row after the (F4) producer.  No terminal.
+- **Paper fact.** The F4 arm transfers to a support already recorded upstream.
+- **What the Lean does.** `coldHandoffTransferRow` reads `coldFailureHandoff` by
+  exact key and commits the membership theorem for every supplied handoff
+  predicate.  No handoff object is constructed or returned.
+- **Gap.** none for carrier cleanup.
+- **Ledger and residual.** `Requires := [coldFailureHandoff]`,
+  `Produces := [coldHandoffTransfer]`; residual unchanged.
+- **Transport and terminals.** Ledger fact only; no terminal.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:cold-corridor-first-failure` (iv), transfer | lem | `ColdCorridor.Corridor.handoffExit`<br>`ColdCorridor.Corridor.handoffExit_mem` | no CT — `Spine.coldHandoffTransferRow` |
+| `lem:cold-corridor-first-failure` (iv), transfer | lem | `ColdCorridor.Corridor.handoff_mem` | no CT — `Spine.coldHandoffTransferRow` |
 
-**CT composition at this row.** No CT.  The transfer is a projection of the
-(F4) occurrence onto the envelope it named; nothing is searched or compared.
+**CT composition at this row.** No CT.
 
-### Row 58 — (F5) `.isFalse` arm `[153]`, `[154]`
+### Row 58 — (F5) extraction `[153]`, `[154]`
 
-- **Paper fact.** `lem:hot-failure-cold-mass`: on `def:surviving-cold-branch`, if
-  the live-hot entropy comparison does not close then
-  `C \ge (\theta - \theta_{win})n - o(n)`.  `lem:cold-germ-extraction`: the cold
-  skeleton with branch excess `b` contains a pairwise vertex-disjoint family of
-  candidate cold bounded germs of size `N_{germ} \ge b/D_{cold} - o(n)`, proved
-  by bounding each germ by `M_cold` vertices, bounding the number of candidate
-  germs meeting a fixed subcubic vertex by `B_cold`, and applying greedy
-  independence in the intersection graph of maximum degree `M_cold B_cold`.
-  `thm:cold-branch-quantitative-closure` then observes that the bound is
-  positive for large `n`, "hence at least one bounded candidate germ is present
-  on every remaining branch".
-- **What the Lean does.**
-  `ColdCorridor.hotFailure_coldMass` is the mass bound with every `log₂ n`
-  cancelled: given the partition `𝒫 = 𝒫_hot ⊔ 𝒫_cold` and the hot comparison
-  that has *not* closed, `hotRate·|𝒫| ≤ hotRate·C + (skeletonRate·n + slack)` —
-  the cold count carries everything the hot budget could not.  Subtraction-free,
-  no rational, no rounding.
-  `ColdCorridor.exists_independent_card_le_mul` is the greedy extraction, and it
-  is the manuscript's own argument: take a member, discard it and everything it
-  overlaps, recurse.  Stated for an arbitrary finite family and symmetric
-  overlap relation of maximum degree `Δ`, with the conclusion
-  `|family| ≤ |independent|·(Δ+1)` — the manuscript's division by `Δ+1`,
-  cleared.  `ColdCorridor.coldGermExtraction` instantiates it at
-  `Δ = M_cold·B_cold`, so the covering constant is exactly
-  `D_cold = extractionDenominator`, and *that* is the form the row commits: the
-  generic bound is the lemma, the manuscript's statement is the fact.
-  `ColdCorridor.coldGerm_nonempty` is the positivity: a positive candidate count
-  forces a positive disjoint count, so the (F5) partition is never empty.
-  `Spine.coldGermExtractionRow` commits all three.
-- **What it should do.** Make the arm unreachable: a proof that the surviving
-  partition is nonempty, obtained by instantiating the germ packing over the
-  family schedule and combining it with a linear lower bound on the cold family.
-- **Gap.** none.  The gap the previous implementation had — the germ-packing
-  declarations existed but "grep finds no occurrence of any of them outside
-  `InducedPathCold.lean`", so nothing excluded an empty F5 partition — is
-  closed: the greedy bound is proved here, the manuscript's `D_cold` form of it
-  is what the row commits, and the positivity that makes the arm unreachable is
-  a clause of the same fact.  The registered-fact review corrected one thing
-  here: the committed clause first stated the generic bound at an arbitrary
-  degree, leaving `lem:cold-germ-extraction`'s own statement proved but
-  unregistered and its theorem a dead forwarder; the clause is now the
-  manuscript's, at `M_cold·B_cold` and `D_cold`.
-  Three inputs are quantified rather than pinned, and none is a fabricated
-  value: the `o(n)` slack terms, the rates `c_hot` and the near-cubic `3/2`, and
-  the subcubic ball count `1 + 3(2^{M_cold+2} − 1)` behind `B_cold`.  Each
-  appears as a universally quantified parameter of the committed clause, so the
-  fact holds whatever they are and nothing on the ledger depends on a number
-  nobody has pinned — the opposite of a placeholder.  **Facts passes.**
-- **Ledger and residual.** `factOnly` with
-  `Requires := [coldFailureRouting]`, `Produces := [coldGermExtraction]`.
-  Residual unchanged.
-- **Transport and terminals.** `Graph.ColdBranchClosure` owns the mathematics
-  and uses no framework plumbing at all — only Mathlib `Finset`/`Nat` and the
-  cold-corridor definitions.  `Spine.runCold` runs the row.  No terminal.
+- **Paper fact.** The hot-failure mass comparison and greedy cold-germ
+  extraction make the remaining F5 family nonempty.
+- **What the Lean does.** `coldGermExtractionRow` commits
+  `hotFailure_coldMass`, the independent-family extraction at the manuscript's
+  constants, the positive-candidate-to-positive-disjoint implication, and the
+  full local quantitative chain `coldGerm_positive`: stub excess, candidate
+  loss, extracted cover, and surviving linear margin imply that the extracted
+  disjoint cold-germ family is nonempty.  These declarations live in the
+  graph-level cold first-failure module.
+- **Gap.** none for carrier cleanup.
+- **Ledger and residual.** `Requires := [coldFailureRouting]`,
+  `Produces := [coldGermExtraction]`; residual unchanged.
+- **Transport and terminals.** No payload.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
 | `lem:hot-failure-cold-mass` | lem | `ColdCorridor.hotFailure_coldMass` | no CT — `Spine.coldGermExtractionRow` |
-| `lem:cold-germ-extraction` | lem | `ColdCorridor.IndependentFor`<br>`ColdCorridor.exists_independent_card_le_mul` (the greedy bound)<br>`ColdCorridor.coldGermExtraction` (at `M_cold·B_cold`, covering `D_cold`)<br>`ColdCorridor.coldGerm_nonempty` | standalone — ports the quarantined `Core.Finite.ColdCorridor.supportPacking_card_bound` |
+| `lem:cold-germ-extraction` | lem | `ColdCorridor.IndependentFor`<br>`ColdCorridor.exists_independent_card_le_mul`<br>`ColdCorridor.coldGermExtraction`<br>`ColdCorridor.coldGerm_nonempty`<br>`ColdCorridor.coldGerm_positive` | standalone |
 
-**CT composition at this row.** No CT.  The extraction is a greedy induction on
-a `Finset` and the mass bound is one inequality; neither searches a schedule nor
-compares responses.
+**CT composition at this row.** No CT.
 
-### Row 59 — (F5) `.neutral` arm `[157]`
+### Row 59 — (F5) G2 routing after G1/G3 `[157]`
 
-- **Paper fact.** `lem:cold-bounded-germ-trichotomy` G3 and
-  `lem:cold-same-interface-table`'s neutral-row clause: a neutral germ or row
-  yields a proper-support target-complete quotient, which
-  `def:admissible-rank-quotient` admits only with a strictly smaller proper
-  representative, forbidden by `lem:replacement` and `cor:uncompressible`.
-  "Hence no neutral row survives either."
-- **What the Lean does.** `ColdCorridor.boundedGerm_not_survives` runs the
-  trichotomy and closes two of its three branches from facts *already on the
-  ledger*: rows 52 and 54 committed "no germ is realizing" and "no
-  length-changing germ is neutral" at nodes `[155]` and `[157]`, and this
-  theorem reads them back by key rather than re-deriving them from the
-  selection's avoidance and `cor:uncompressible`.  What survives is G2, and the
-  conclusion is `germ.Distinguishing`.
-- **What it should do.** Bind the neutrality certificate, build the germ's
-  compression, and eliminate — rather than discard the certificate and return
-  `none`.
-- **Gap.** none.  The certificate is not discarded: `Neutral` is one of the
-  three cases of `BoundedGerm.trichotomy` and the neutral case is *eliminated*
-  against the committed row-54 fact.  There is no `none` arm.
-  The registered-fact review corrected the *other* branch of that trichotomy
-  here: G2's exclusion was briefly a field of `SurvivingColdBranch`, which
-  assumed the conclusion of `lem:cold-bounded-germ-trichotomy` G2's own routing
-  ("the induced quotient is target-defective, so it is routed to the sparse exit
-  or exit-(4) ledger", both forbidden by clause (ii)).  It is now
-  `SurvivingColdBranch.noGermDefect`, a theorem: the germ's pair is identified
-  (`germIdentified`), a distinguishing germ separates it against a compatible
-  outside context, and clause (ii) forbids exactly that.  **Facts passes.**
-- **Ledger and residual.** The row that commits it, `Spine.coldBranchClosedRow`,
-  is `factOnly` with
-  `Requires := [coldGermRealized, coldGermSilent, selection, uncompressible]`;
-  all four are read by exact key.  The last two entered when the table-row
-  family was added to the committed closure — `row_closed` spends node `[1]`'s
-  avoidance and node `[14]`'s uncompressibility.  Residual unchanged.
-- **Transport and terminals.** No CT and no discarded payload.
+- **Paper fact.** Once G1 and G3 are excluded, a length-changing bounded germ is
+  distinguishing.
+- **What the Lean does.** `coldGermRoutedRow` reads `coldGermRealized` and
+  `coldGermSilent` by `FactInputs.get` and commits
+  `ColdCorridor.boundedGerm_not_survives` as `K .coldGermRouted`.
+- **Gap.** none for carrier cleanup.  The fact is ledger-native and local to
+  the current object; it is a routing fact, not the framework closure key.
+- **Ledger and residual.** `Requires := [coldGermRealized, coldGermSilent]`,
+  `Produces := [coldGermRouted]`; residual unchanged.
+- **Transport and terminals.** No payload.  Not a Core closure.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:cold-bounded-germ-trichotomy` G2, routed | lem | `ColdCorridor.SurvivingColdBranch.germIdentified`<br>`ColdCorridor.SurvivingColdBranch.noGermDefect` | standalone |
+| `lem:cold-bounded-germ-trichotomy`, G2 remainder | lem | `ColdCorridor.boundedGerm_not_survives` | no CT — `Spine.coldGermRoutedRow` |
 
-The G3 arm of `lem:cold-bounded-germ-trichotomy` is recorded at Row 52, the
-increment arithmetic that produces a G3 germ at Row 54, and the neutral-row
-clause of `lem:cold-same-interface-table` at Row 44; this row is where the three
-meet, and G2's routing is derived here.
-
-**CT composition at this row.** No CT.  The previous implementation invoked CT7
-here and threw its counted payload away; the port does not invoke it, because
-the neutral case is closed by a committed fact rather than by a generated
-certificate, and the manuscript's own argument is the trichotomy plus
-`cor:uncompressible`.
+**CT composition at this row.** No CT.
 
 ### Row 60 — Registrations `atStage` `[145]`–`[157]`
 
-- **Paper fact.** `thm:cold-branch-quantitative-closure` fixes what the branch
-  boundary must deliver: on `def:surviving-cold-branch`, either the route-8
-  carrier inequality closes `\theta < 1/78`, or the live-hot entropy comparison
-  closes, or hot failure produces a cold family whose branch excess yields a
-  bounded germ, and that germ is routed to a dyadic cycle, a target-defective
-  quotient or exit-(4) route, a Type B handoff already in its ledger, a route-8
-  closure, or a target-complete compression.
-- **What the Lean does.** Nothing, and that is the point.  There is no
-  registration in the port: `Spine.runCold` composes the rows, each row's
-  `Requires` is discharged by instance resolution against the incoming key
-  index, and the order in which the branch's results are consulted is the
-  composition itself.  No application-supplied field performs a dispatch, no
-  `FamilyCapability` is returned, and no `CT7.generateCounted` call sits inside
-  a registration field.
-- **What it should do.** Supply only graph semantics, with the branch analysis
-  owned by the executor.
-- **Gap.** none.  The gap the previous implementation had — "the routing is
-  registration code", with every decision after the family scan performed by an
-  application-supplied field — is structural, and the port removes the structure
-  that caused it.  The `Where` column names `Spine.runCold` because that is what
-  replaced the four `atStage` registrations.  **Facts passes.**
-- **Ledger and residual.** `runCold` threads one `ExactLedger` through the rows
-  and returns it; the residual is unchanged throughout, since every cold row is
-  `factOnly`.
-- **Transport and terminals.** `AtomicCT.run` owns each append; the composition
-  owns the order.  No terminal at any cold row.
+- **Paper fact.** The manuscript orders the cold alternatives; it does not
+  require an application-owned registration payload.
+- **What the Lean does.** `Spine.runCold` composes the rows directly.  Each
+  prerequisite is checked by the exact key index, and each row appends only its
+  declared production.
+- **Gap.** none for carrier cleanup.
+- **Ledger and residual.** One `ExactLedger` is threaded through the block.
+- **Transport and terminals.** No registration object, no side dispatcher.
 
-**Paper objects at this row.**
+**CT composition at this row.** No CT.
 
-No manuscript object is first consumed here; every object the composition orders
-is recorded at the row that consumes it.
+### Row 61 — Cold oval closure `[145]`–`[157]`
 
-**CT composition at this row.** No CT, and none is hidden in a registration
-field — which is the difference from the previous implementation.
-
-### Row 61 — `classifiedStateForcesTarget` `[145]`–`[157]`
-
-- **Paper fact.** `thm:cold-branch-quantitative-closure`: "No terminal cold
-  branch survives after the near-cubic spine estimate has been supplied", with
-  every alternative of `tab:cold-branch-ledger` forbidden on
-  `def:surviving-cold-branch`; the closing sentence of its proof is "Each is
-  forbidden in `def:surviving-cold-branch`.  Hence the cold branch has no
-  terminal survivor."
-- **What the Lean does.** `ColdCorridor.coldBranch_no_terminal_survivor`
-  concludes `False` from a surviving cold branch, a length-changing bounded
-  germ, and the branch's own identification of that germ's two representatives:
-  the germ is distinguishing, so the identification is a target-defective
-  quotient, and `def:surviving-cold-branch` (ii) says the branch carries none.
-  `Spine.coldBranchClosedRow` commits it.
-- **What it should do.** Be total — no `Option`, every arm returning a target or
-  eliminating `False` — for the germ families the theorem routes.  The
-  theorem's other two arms, "the route-8 carrier inequality closes
-  `\theta < 1/78`" and "the live-hot entropy comparison closes", are the
-  route-8 rows' and the entropy rows'; this row owns the third arm's routing.
-  It does not owe a proof that a germ *exists*: a branch with no germ has no
-  terminal residual either, so the absence of a germ closes the branch rather
-  than leaving it open.
-- **Gap.** none.  The gap the previous implementation had — the field was
-  `Option`-valued and took the `none` escape on four arms, so the branch did not
-  close — is gone: the committed statement is that the situation is impossible,
-  and there is no `Option` anywhere in it.  What the theorem needs beyond the
-  ledger is the branch record's clause (ii), the manuscript's own hypothesis for
-  this theorem, quantified in the committed fact.
-  The registered-fact review corrected one thing here, and it was the difference
-  between closing and not closing: the committed statement first carried a
-  hypothesis `branch.Identified germ.piece germ.canonical` that nothing in the
-  development can produce, so the fact could never fire.  Clause (ii) is now
-  stated at germs — where the cold branch's identifications actually live — and
-  the closure follows from the germ and the branch alone.  **Facts passes.**
-- **Ledger and residual.** `factOnly` with
-  `Requires := [coldGermRealized, coldGermSilent, selection, uncompressible]`,
-  `Produces := [coldBranchClosed]`; all four are read by exact key.  The
-  committed statement has three clauses: the trichotomy leaves G2, a branch that
-  reaches a length-changing germ — *in either orientation*, via
-  `ColdCorridor.OrientedGerm` — contradicts clause (ii), and every row of
-  `def:cold-same-interface-table` — the equal-length germs and the short
-  self-return exceptions — is handed off rather than retained.  That is the
-  manuscript's three germ families, with `δ ≠ 0` the only hypothesis on the
-  first, as `lem:cold-bounded-germ-trichotomy` states it.  Residual unchanged.
-- **Transport and terminals.** No CT.  There is no `Terminal.familyScan`
-  equivalent in the port: the cold block returns a ledger, and the closure is a
-  fact on it.
+- **Paper fact.** The cold branch should terminate at the paper's oval once all
+  alternatives have been routed.
+- **What the Lean does.** The current Lean cold runner appends the ordinary
+  cold facts through `K .coldGermRouted` and deliberately stops before the
+  framework closure key.  `K .coldGermRouted` says, on the current object, that
+  every length-changing bounded germ is routed to G2 after G1 and G3 are read
+  from the ledger.  It is not a payload and not a proof-specific result.
+- **What it should do.** The terminal argument must read the specific upstream
+  keys consumed by the paper's oval from the same ledger and append the
+  canonical closure key through `closeIncompatible` or `closeImpossible`.  No
+  hypothesis record, existential branch object, or custom result is allowed at
+  this boundary.
+- **Gap.** The Strategy code no longer exports an illegal carrier terminal.
+  The remaining work is the Core closure step over ledger-visible facts.
+- **Ledger and residual.** The ledger is canonical up to this point; the final
+  append, when implemented, must be `closed :: coldKeys known` on the same
+  residual.
+- **Transport and terminals.** Transport is ledger-only; terminal status is
+  still wrong because the Core closure key is absent.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `thm:cold-branch-quantitative-closure` | thm | `ColdCorridor.boundedGerm_not_survives`<br>`ColdCorridor.coldBranch_no_terminal_survivor`<br>`ColdCorridor.OrientedGerm` (both occurrences, exchanged)<br>`OrientedGerm.swapped`, `OrientedGerm.not_survives`<br>`ColdCorridor.coldBranch_closed` (the three germ families) | no CT — `Spine.coldBranchClosedRow` |
+| cold terminal oval | thm | Core closure from the cold ledger facts | should be Core closure API |
 
-**CT composition at this row.** No CT.  The closure is a case split on the germ
-trichotomy whose branches are discharged by facts already on the ledger.
-
+**CT composition at this row.** No CT should be introduced; the fix should be a
+canonical closure step over the exact ledger.
 
 ### Trailing note — deleted stale fixtures
 
-The stale overlong cold aggregation chain is no longer a source artifact of the
-EG proof.  The old aggregation modules had already been removed from the live
-build, and this cleanup deleted the two remaining non-PDE fixtures that still
-imported them.  Those fixtures existed only to exercise obsolete side channels;
-none of that belongs to the canonical cold corridor, whose only output is the
-`ExactLedger` returned by `Spine.runCold`.
-
-The PDE registry files that still mention the retired aggregation names are
-left untouched by request.  They are not imported by `Hypostructure.lean` and
-are not evidence for the EG cold proof.
+The stale non-PDE cold aggregation fixtures are no longer source artifacts of
+the EG proof.  They exercised obsolete side channels rather than ledger facts.
+The PDE registry files are left untouched by request.
 
 ### Row 62 — `[109]` route-8 arm placement
 
@@ -6437,31 +5649,66 @@ requires the finite descent fact, the selected silent-residual fact, and the
 no-exit `(4)`, `(5)`, `(6)`, and `(7)` facts, then appends only
 `route8Residual`.  The full residual is carried by the `ExactLedger` prefix; the
 new fact is not a transport wrapper and does not replace or erase any upstream
-fact.  The remaining mathematical work is to strengthen the committed
-`route8Residual` schema from the current no-handoff residual to the full
-`def:typeA-true-route8-residual` clauses once the selected Q1--Q4/Q5 response
-facts are available.  Ledger/Reads are partially repaired; Closed/Full remain
+fact.  `Spine.route8ResidualProfileRow` is the next node `[110]`: it reads
+`route8Residual` by `FactInputs.get` and appends only
+`route8ResidualProfile`, the receiver-exposed silent-core residual profile.
+No indexed route-8 collection, carrier census, basin family transport, or
+secondary route-8 object is introduced.  The remaining mathematical work is to
+derive the later burden/deficit/carrier facts from this profile as separate
+ledger facts.  Ledger/Reads are repaired through `[110]`; Closed/Full remain
 false.
 
 ### Row 63 — `[111]`–`[113]` selected residual burden and deficit bound
 
-Pure `Graph.Route8` burden and deficit theorems remain.  The missing predecessor is the exact selected exit-8 ledger residual produced by `lem:typeA-saturated-handoff`; no Strategy fact or read exists.  No route-8 collection or secondary carrier may be introduced here.  Ledger/Reads/Closed/Full are all false.
+Node `[111]` is now the ledger fact `route8GlobalSqueeze`.  Its row reads the
+exact `[110]` `route8ResidualProfile` and the existing `largeBudgetResidual`
+fact with `FactInputs.get`, then appends only `route8GlobalSqueeze`.  Nodes
+`[112]` and `[113]` are committed together by
+`route8BurdenAndDeficitRow`: the manifest reads `route8GlobalSqueeze` and the
+already committed selected silent-excess burden fact `typeAVisibleFirstExcess`,
+then appends both `route8BasinBurden` and `route8LargeBudgetDeficit` in one
+nonempty `factOnly` commit.  No route-8 collection object, carrier package, or
+secondary transport channel is introduced; the full residual prefix remains in
+the `ExactLedger`.  Ledger/Reads are repaired through `[113]`; Closed/Full
+remain false for the later carrier-core and no-go segment.
 
 ### Row 64 — `[114]`–`[116]` carrier core
 
-Pure carrier-core mathematics remains.  The missing predecessor is the same selected exit-8 ledger residual and its canonical target-complete-minimal entries.  Ledger/Reads/Closed/Full are all false.
+Node `[114]` is now the ledger fact `route8CarrierCore`.  Its row reads exactly
+the selected `[113]` fact `route8LargeBudgetDeficit` with `FactInputs.get` and
+appends one proof-agnostic carrier-core theorem package.  The theorem is the
+generic `Graph.Route8.carrierCoreFacts`: for any concrete declared route-8
+reading later obtained from the same residual, Core's finite
+`EssentialCarrier.Profile` supplies the minimal complete carrier core, proves it
+is contained in the declared carrier supply, and proves every selected carrier
+has a deletion target defect plus a forgotten coordinate that uses it.  No
+`Route8.Entry` wrapper, carrier census object, secondary collection, or custom
+transport channel is introduced; downstream nodes instantiate the theorem from
+the ledger when they have their concrete reading.
+
+Nodes `[115]`--`[116]` are now the ledger fact
+`route8SmallCoreCollapse`.  Its row reads `route8CarrierCore` with
+`FactInputs.get` and appends the raw carrier-core form of
+`lem:typeA-one-terminal-collapse`: once a concrete selected trace-basin reading
+supplies its cut-parity crossing family and its own target-complete-minimality
+alternative, a zero/one essential-carrier core makes the internal-crossing
+forgetting quotient equal to the core restriction, so the selected alternatives
+fire.  This is the paper's small-core exit `(4)`--`(7)` mechanism.  The row
+does not introduce a route-8 entry object, carrier census, collection wrapper,
+or secondary transport channel; it only publishes the theorem needed by later
+selected-entry facts.  Ledger/Reads are repaired through `[116]`; the branch is
+not yet terminal because `[117]` still has to consume this fact and commit the
+paper-prescribed two-carrier/private-carrier split.
 
 ### Row 65 — `[117]`–`[122]` indexed private-carrier census
 
-Pure private-carrier reduction remains available as reusable graph arithmetic,
-including `Route8.exists_indexedTwoCarrier_of_burden_of_largeBudget`.  No
-Strategy row or spine key is currently registered for `[117]`--`[122]`: the
-previous intermediate carrier surfaces were removed because they were not the
-selected residual itself.  A future implementation must read the `[109]`
-route-8 residual directly with `FactInputs.get` and commit exactly the
-paper-prescribed downstream fact.  There is no route-8 collection wrapper and no
-intermediate carrier key.  Ledger/Reads/Closed/Full remain false for this row
-until that exact ledger step is implemented.
+The previous private-carrier arithmetic was tied to the deprecated
+`Route8.Entry` API and must not be consumed by Strategy.  The compliant
+replacement has to read the selected `[113]` residual and the new `[114]`--`[116]`
+ledger facts, then commit the paper-prescribed two-carrier alternative or its
+pressure contradiction through the framework.  No route-8 collection wrapper and
+no intermediate carrier key are allowed.  Ledger/Reads/Closed/Full remain false
+for this row until that exact ledger step is implemented.
 
 ### Row 66 — `[123]` pressure descent
 

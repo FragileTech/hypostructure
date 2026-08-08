@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **491**.
+Compiled declarations: **495**.
 
-Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 73, **Minimum-degree cycle spine vocabulary** 228.
+Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 73, **Minimum-degree cycle spine vocabulary** 232.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -4132,6 +4132,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.route8ResidualProfile`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.selection`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4880,6 +4891,19 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.SelectedNoExitSixReceiverWith`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data →
+  (object : Graph.FiniteObject) →
+    (Finset (Finset object.Vertex) → Finset object.Vertex → object.Vertex → Finset object.Vertex → Prop) → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.SelectedNoExitSixWith`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4890,6 +4914,17 @@ Graph.Strategy.Spine.Key
 ```lean
 Graph.Strategy.Spine.Data →
   (object : Graph.FiniteObject) → (Finset (Finset object.Vertex) → Finset object.Vertex → Prop) → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.SilentCoreResidualProfile`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.TargetCompleteAt`
@@ -7390,9 +7425,11 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
         [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (typeAExitSevenFree route8Residual :
+          (typeAExitFourFiniteDescent typeASaturatedHandoffSilent typeASaturatedHandoffExitFourFree typeAExitFiveFree
+              typeAExitSixFree typeAExitSevenFree route8Residual :
               Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            typeAExitSevenFree ≠ route8Residual →
+            [typeAExitFourFiniteDescent, typeASaturatedHandoffSilent, typeASaturatedHandoffExitFourFree,
+                  typeAExitFiveFree, typeAExitSixFree, typeAExitSevenFree].Nodup →
               (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   (a : typeAExitSevenFree.At input),
                   Graph.Strategy.Spine.SelectedNoExitSixWith data input.object fun packing piece =>
@@ -7422,6 +7459,24 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
             required ≠ produced →
               Core.Strategy.FactManifest (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.silentCoreResidualProfile_of_route8Residual`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {data : Graph.Strategy.Spine.Data} {object : Graph.FiniteObject},
+  (Graph.Strategy.Spine.SelectedNoExitSixWith data object fun packing piece =>
+      ¬Graph.Strategy.Spine.HandoffProduced data object packing piece) →
+    Graph.Strategy.Spine.SilentCoreResidualProfile data object
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.sourceFreeManifest`
 

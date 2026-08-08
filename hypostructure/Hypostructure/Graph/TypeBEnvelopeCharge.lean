@@ -183,6 +183,71 @@ theorem nonNegativeNetCharge_of_augmentedLedger_nonneg (object : FiniteObject.{u
     linarith [identity, nonneg, counted]
   exact_mod_cast cast
 
+/-- The B2 ledger consequence used by the Type B exclusion row. -/
+theorem nonNegativeNetCharge_of_augmentedLedger_add_centres_nonneg
+    (object : FiniteObject.{u}) (threshold dischargeScale : Nat)
+    (piece : Finset object.Vertex)
+    (nonneg :
+      0 ≤ augmentedLedger object threshold dischargeScale piece +
+        ((TypeBRefinedSupport.centres object threshold piece).card : Int)) :
+    object.NonNegativeNetCharge piece threshold dischargeScale := by
+  have identity :=
+    augmentedLedger_add_card_centres object threshold dischargeScale piece
+  rw [FiniteObject.NonNegativeNetCharge]
+  have cast :
+      ((piece.card + dischargeScale * object.ambientSurplus piece threshold :
+          Nat) : Int) ≤
+        ((dischargeScale * object.positiveDeficiency piece threshold : Nat) :
+          Int) := by
+    push_cast
+    push_cast at identity nonneg
+    linarith
+  exact_mod_cast cast
+
+/-- The exact B2 partition gives the exclusion charge once the remaining core
+has nonnegative scaled charge. -/
+theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
+    {threshold dischargeScale : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      piece)
+    (exact : ledger.ExactAugmentedLedgerRefinement)
+    (remainingNonnegative :
+      0 ≤ ∑ vertex ∈ ledger.remainingCore,
+        scaledCoreCharge object threshold dischargeScale piece.vertices vertex) :
+    object.NonNegativeNetCharge piece.vertices threshold dischargeScale := by
+  classical
+  have centreCoreNonnegative :
+      0 ≤ ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece.vertices,
+        (scaledCoreCharge object threshold dischargeScale piece.vertices centre +
+          1) := by
+    refine Finset.sum_nonneg ?_
+    intro centre _member
+    rw [scaledCoreCharge]
+    have nonneg :
+        (0 : Int) ≤
+          ((dischargeScale *
+            (threshold - object.internalDegree piece.vertices centre) : Nat) :
+            Int) := Int.natCast_nonneg _
+    linarith
+  have selectedNonnegative : 0 ≤ ledger.selectedEntryPayment₂ :=
+    exact.selectedNonnegative
+  have doubled :
+      0 ≤ 2 *
+        (augmentedLedger object threshold dischargeScale piece.vertices +
+          ((TypeBRefinedSupport.centres object threshold piece.vertices).card :
+            Int)) := by
+    rw [exact.partition]
+    nlinarith
+  have ledgerNonnegative :
+      0 ≤ augmentedLedger object threshold dischargeScale piece.vertices +
+        ((TypeBRefinedSupport.centres object threshold piece.vertices).card :
+          Int) := by
+    nlinarith
+  exact nonNegativeNetCharge_of_augmentedLedger_add_centres_nonneg object
+    threshold dischargeScale piece.vertices ledgerNonnegative
+
 
 
 /-! ## `lem:typeB-exclusion` Step 2: the canonical B2 refinement -/

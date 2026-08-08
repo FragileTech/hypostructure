@@ -116,6 +116,41 @@ example {known : FactKeys (Input BranchState Presentation presentation data)} :
         typeAExitSevenFreeKeys (BranchState := BranchState)
           (presentation := presentation) (data := data) known := rfl
 
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    route8ResidualProfileKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known =
+      K .route8ResidualProfile ::
+        route8ResidualKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data) known := rfl
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    route8GlobalSqueezeKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known =
+      K .route8GlobalSqueeze ::
+        route8ResidualProfileKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data) known := rfl
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    route8BurdenAndDeficitKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known =
+      K .route8BasinBurden :: K .route8LargeBudgetDeficit ::
+        route8GlobalSqueezeKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data) known := rfl
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    route8CarrierCoreKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known =
+      K .route8CarrierCore ::
+        route8BurdenAndDeficitKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data) known := rfl
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    route8SmallCoreCollapseKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known =
+      K .route8SmallCoreCollapse ::
+        route8CarrierCoreKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data) known := rfl
+
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
@@ -124,11 +159,141 @@ example {known : FactKeys (Input BranchState Presentation presentation data)}
   simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
     member]
 
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    {fact : FactKey (Input BranchState Presentation presentation data)}
+    (member : fact ∈ known) :
+    fact ∈ route8ResidualProfileKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known := by
+  simp [route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    typeAExitSixFreeKeys, member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    {fact : FactKey (Input BranchState Presentation presentation data)}
+    (member : fact ∈ known) :
+    fact ∈ route8GlobalSqueezeKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known := by
+  simp [route8GlobalSqueezeKeys, route8ResidualProfileKeys,
+    route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    {fact : FactKey (Input BranchState Presentation presentation data)}
+    (member : fact ∈ known) :
+    fact ∈ route8BurdenAndDeficitKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known := by
+  simp [route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
+    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    typeAExitSixFreeKeys, member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    {fact : FactKey (Input BranchState Presentation presentation data)}
+    (member : fact ∈ known) :
+    fact ∈ route8CarrierCoreKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known := by
+  simp [route8CarrierCoreKeys, route8BurdenAndDeficitKeys,
+    route8GlobalSqueezeKeys, route8ResidualProfileKeys, route8ResidualKeys,
+    typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    {fact : FactKey (Input BranchState Presentation presentation data)}
+    (member : fact ∈ known) :
+    fact ∈ route8SmallCoreCollapseKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known := by
+  simp [route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
+    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
+    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    typeAExitSixFreeKeys, member]
+
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .typeAExitSevenFree ∈
       route8ResidualKeys (BranchState := BranchState)
         (presentation := presentation) (data := data) known := by
   simp [route8ResidualKeys, typeAExitSevenFreeKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .route8Residual ∈
+      route8ResidualProfileKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8ResidualProfileKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .route8ResidualProfile ∈
+      route8GlobalSqueezeKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8GlobalSqueezeKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    (member : K .largeBudgetResidual ∈ known) :
+    K .largeBudgetResidual ∈
+      route8GlobalSqueezeKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8GlobalSqueezeKeys, route8ResidualProfileKeys,
+    route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .route8GlobalSqueeze ∈
+      route8BurdenAndDeficitKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8BurdenAndDeficitKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .route8LargeBudgetDeficit ∈
+      route8CarrierCoreKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8CarrierCoreKeys, route8BurdenAndDeficitKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .route8CarrierCore ∈
+      route8SmallCoreCollapseKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8SmallCoreCollapseKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .route8LargeBudgetDeficit ∈
+      route8SmallCoreCollapseKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
+    route8BurdenAndDeficitKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .route8BasinBurden ∈
+      route8CarrierCoreKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8CarrierCoreKeys, route8BurdenAndDeficitKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .route8BasinBurden ∈
+      route8SmallCoreCollapseKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
+    route8BurdenAndDeficitKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    (member : K .typeAVisibleFirstExcess ∈ known) :
+    K .typeAVisibleFirstExcess ∈
+      route8BurdenAndDeficitKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
+    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    typeAExitSixFreeKeys, member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    (member : K .typeAVisibleFirstExcess ∈ known) :
+    K .typeAVisibleFirstExcess ∈
+      route8CarrierCoreKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8CarrierCoreKeys, route8BurdenAndDeficitKeys,
+    route8GlobalSqueezeKeys, route8ResidualProfileKeys, route8ResidualKeys,
+    typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    (member : K .typeAVisibleFirstExcess ∈ known) :
+    K .typeAVisibleFirstExcess ∈
+      route8SmallCoreCollapseKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
+    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
+    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .typeAExitSixFree ∈

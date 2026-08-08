@@ -1,7 +1,6 @@
 import Hypostructure.Graph.ExitFourPeeling
 import Hypostructure.Graph.BoundariedAtom
 import Hypostructure.Graph.Response
-import Hypostructure.Graph.Route8Carrier
 
 /-!
 # The canonical exit-`(4)` quotient family at a receiver
@@ -33,9 +32,10 @@ termination statements belong to the separate peeling ledger in
 `ExitFourPeeling`; this file only defines the canonical family datum consumed by
 the node `[101]` decision.
 
-Nothing here knows a graph family, a manuscript node, a threshold, or a proof:
-the family is quantified over its target predicate, its reading, its carrier
-universe, and the canonical generation predicate its clauses supply.
+Nothing here knows a graph family, a manuscript node, a threshold, a carrier
+ledger, or a proof: the family is quantified over its target predicate, its
+declared coordinate type, and the canonical generation predicate its clauses
+supply.
 -/
 
 namespace Hypostructure.Graph.ExitFour
@@ -69,32 +69,35 @@ inductive ReceiverClause where
 
 /-- **`𝒬₄(w)`**, at a receiver of a support.
 
-`entry` is the receiver's declared reading: a finite family of declared
-coordinates, each with the carrier support its declared support uses, presented
-on one labelled boundary.  `coordinate` is the canonical coordinate a routed
-load is given by `def:declared-coordinate-signature`, and `Generated` is the
-family's own generation predicate: `Generated clause base identified` says the
-listed construction `clause` generates, from the reading `base`, the quotient
-that identifies or forgets exactly `identified`.
+`Coordinate` and `coordinates` are the receiver's declared reading. `coordinate`
+is the canonical coordinate a routed load is given by
+`def:declared-coordinate-signature`, and `Generated` is the family's own
+generation predicate: `Generated clause base identified` says the listed
+construction `clause` generates, from the reading `base`, the quotient that
+identifies or forgets exactly `identified`.
 
 No construction is generated here.  A node that owns one of the five clauses
 supplies it through `Generated`; every statement below is quantified over the
 family, so no row invents a member and none is dropped. -/
-structure ReceiverFamily (Target : FiniteObject.{u} → Prop) {object : FiniteObject.{u}}
-    (support : Finset object.Vertex) (threshold : Nat)
-    (receiver : object.Vertex) (Carrier : Type u) where
-  /-- The receiver's declared reading, on one labelled boundary. -/
-  entry : Route8.Entry Target Carrier
+structure ReceiverFamily (Target : FiniteObject.{u} → Prop)
+    {object : FiniteObject.{u}} (support : Finset object.Vertex)
+    (threshold : Nat) (receiver : object.Vertex) where
+  /-- The declared coordinate index of the receiver reading. -/
+  Coordinate : Type u
+  /-- Decidable equality on declared coordinates. -/
+  coordinateDecEq : DecidableEq Coordinate
+  /-- The declared coordinates of the receiver reading. -/
+  coordinates : Finset Coordinate
   /-- The canonical declared coordinate of a routed load. -/
-  coordinate : object.Vertex → entry.Coordinate
+  coordinate : object.Vertex → Coordinate
   /-- Every routed load's canonical coordinate is declared by the reading. -/
   coordinate_declared : ∀ load ∈ object.routedLoads support threshold receiver,
-    coordinate load ∈ entry.coordinates
+    coordinate load ∈ coordinates
   /-- The generation predicate of the five canonical constructions. -/
-  Generated : ReceiverClause → Finset entry.Coordinate → Finset entry.Coordinate → Prop
+  Generated : ReceiverClause → Finset Coordinate → Finset Coordinate → Prop
   /-- A generated quotient is taken on a declared reading. -/
   generated_base : ∀ {clause base identified}, Generated clause base identified →
-    base ⊆ entry.coordinates
+    base ⊆ coordinates
   /-- A generated quotient identifies or forgets declared coordinates of the
   reading it is taken on. -/
   generated_identified : ∀ {clause base identified},
@@ -104,10 +107,11 @@ namespace ReceiverFamily
 
 variable {Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
 variable {support : Finset object.Vertex} {threshold scale : Nat}
-variable {receiver : object.Vertex} {Carrier : Type u}
-variable (family : ReceiverFamily Target support threshold receiver Carrier)
+variable {receiver : object.Vertex}
+variable (family : ReceiverFamily Target support threshold receiver)
 
 attribute [local instance] vertexDecEq
+attribute [local instance] ReceiverFamily.coordinateDecEq
 
 /-- **The declared routed-load support of a member**: the routed loads whose
 canonical declared coordinate the quotient identifies or forgets.  This is
@@ -115,14 +119,14 @@ canonical declared coordinate the quotient identifies or forgets.  This is
 identified visible coordinates, (Q2)'s basin loads, (Q3)'s trace load, (Q4)'s
 connector family, (Q5)'s indexed load. -/
 noncomputable def declaredLoads
-    (identified : Finset family.entry.Coordinate) : Finset object.Vertex :=
+    (identified : Finset family.Coordinate) : Finset object.Vertex :=
   letI : DecidablePred fun load : object.Vertex =>
       family.coordinate load ∈ identified :=
     fun _ => Classical.propDecidable _
   (object.routedLoads support threshold receiver).filter fun load =>
     family.coordinate load ∈ identified
 
-theorem mem_declaredLoads {identified : Finset family.entry.Coordinate}
+theorem mem_declaredLoads {identified : Finset family.Coordinate}
     {load : object.Vertex} :
     load ∈ family.declaredLoads identified ↔
       load ∈ object.routedLoads support threshold receiver ∧
@@ -132,7 +136,7 @@ theorem mem_declaredLoads {identified : Finset family.entry.Coordinate}
     fun _ => Classical.propDecidable _
   simp [declaredLoads]
 
-theorem declaredLoads_subset (identified : Finset family.entry.Coordinate) :
+theorem declaredLoads_subset (identified : Finset family.Coordinate) :
     family.declaredLoads identified ⊆
       object.routedLoads support threshold receiver := by
   intro load member
@@ -150,11 +154,10 @@ structure Witness (Target : FiniteObject.{u} → Prop)
     {object : FiniteObject.{u}} (support : Finset object.Vertex)
     (threshold : Nat) (receiver : object.Vertex)
     (peeled : Finset object.Vertex) where
-  Carrier : Type u
-  family : ReceiverFamily Target support threshold receiver Carrier
+  family : ReceiverFamily Target support threshold receiver
   clause : ReceiverClause
-  base : Finset family.entry.Coordinate
-  identified : Finset family.entry.Coordinate
+  base : Finset family.Coordinate
+  identified : Finset family.Coordinate
   generated : family.Generated clause base identified
   load : object.Vertex
   unpeeled : load ∈ unpeeledLoads support threshold receiver peeled
@@ -170,15 +173,14 @@ namespace Witness
 variable {Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
 variable {support : Finset object.Vertex} {threshold : Nat}
 variable {receiver : object.Vertex} {peeled : Finset object.Vertex}
-variable {Carrier : Type u}
 
 /-- A generated route-`8` carrier-deletion quotient with a target-defect is an
 ordinary exit-`(4)` witness at the same selected receiver.  This is the generic
 constructor used by Part IX after the ledger has already committed the selected
 two-carrier entry and its declared deletion witness. -/
 def of_carrierDeletion
-    (family : ReceiverFamily Target support threshold receiver Carrier)
-    {base identified : Finset family.entry.Coordinate}
+    (family : ReceiverFamily Target support threshold receiver)
+    {base identified : Finset family.Coordinate}
     (generated :
       family.Generated ReceiverClause.carrierDeletion base identified)
     {load : object.Vertex}
@@ -189,7 +191,6 @@ def of_carrierDeletion
       left.boundaryDegreeProfile = right.boundaryDegreeProfile)
     (targetDefect : Response.TargetDefect Target left right) :
     Witness Target support threshold receiver peeled where
-  Carrier := Carrier
   family := family
   clause := ReceiverClause.carrierDeletion
   base := base
@@ -213,8 +214,8 @@ theorem carrierDeletion_contradicts_noExitFour
     (noExitFour :
       ¬ ∃ witness : Witness Target support threshold receiver peeled,
         eligible witness.load)
-    (family : ReceiverFamily Target support threshold receiver Carrier)
-    {base identified : Finset family.entry.Coordinate}
+    (family : ReceiverFamily Target support threshold receiver)
+    {base identified : Finset family.Coordinate}
     (generated :
       family.Generated ReceiverClause.carrierDeletion base identified)
     {load : object.Vertex}

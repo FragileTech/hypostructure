@@ -312,56 +312,56 @@ example (object : Graph.FiniteObject.{u}) (CycleLengthOK : Nat → Prop)
 family at an arbitrary declared reading has the visible-entry identification
 among its members. -/
 example (object : Graph.FiniteObject.{u}) (Target : Graph.FiniteObject.{u} → Prop)
-    (Carrier : Type u) (support : Finset object.Vertex) (threshold : Nat)
-    (receiver outside : object.Vertex)
-    (entry : Graph.Route8.Entry Target Carrier)
-    (coordinate : object.Vertex → entry.Coordinate)
+    (Coordinate : Type u) [DecidableEq Coordinate]
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver outside : object.Vertex) (coordinates : Finset Coordinate)
+    (coordinate : object.Vertex → Coordinate)
     (declared : ∀ load ∈ object.routedLoads support threshold receiver,
-      coordinate load ∈ entry.coordinates) :
-    (Graph.VisibleEntry.visibleEntryFamily support threshold receiver entry
+      coordinate load ∈ coordinates) :
+    (Graph.VisibleEntry.visibleEntryFamily support threshold receiver coordinates
         coordinate outside declared).Generated
-      Graph.ExitFour.ReceiverClause.visibleEntry entry.coordinates
-      (Graph.VisibleEntry.visibleCoordinates support threshold receiver entry
-        coordinate outside entry.coordinates) :=
-  Graph.VisibleEntry.generated_visibleEntry support threshold receiver entry
-    coordinate outside declared entry.coordinates (subset_refl _)
+      Graph.ExitFour.ReceiverClause.visibleEntry coordinates
+      (Graph.VisibleEntry.visibleCoordinates support threshold receiver
+        coordinate outside coordinates) :=
+  Graph.VisibleEntry.generated_visibleEntry support threshold receiver
+    coordinates coordinate outside declared coordinates (subset_refl _)
 
 /-- **(Q1)'s declared routed-load support carries the port's visible loads.**
 *"In (Q1) it is the set of visible routed loads whose response coordinates are
 identified."*  This is what lets exit `(4)` peel a visible load. -/
 example (object : Graph.FiniteObject.{u}) (Target : Graph.FiniteObject.{u} → Prop)
-    (Carrier : Type u) (support : Finset object.Vertex) (threshold : Nat)
-    (receiver outside : object.Vertex)
-    (entry : Graph.Route8.Entry Target Carrier)
-    (coordinate : object.Vertex → entry.Coordinate)
+    (Coordinate : Type u) [DecidableEq Coordinate]
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver outside : object.Vertex) (coordinates : Finset Coordinate)
+    (coordinate : object.Vertex → Coordinate)
     (declared : ∀ load ∈ object.routedLoads support threshold receiver,
-      coordinate load ∈ entry.coordinates) :
+      coordinate load ∈ coordinates) :
     Graph.VisibleEntry.visibleLoadsAt object support threshold receiver
         outside ⊆
-      (Graph.VisibleEntry.visibleEntryFamily support threshold receiver entry
-          coordinate outside declared).declaredLoads
-        (Graph.VisibleEntry.visibleCoordinates support threshold receiver entry
-          coordinate outside entry.coordinates) :=
+      (Graph.VisibleEntry.visibleEntryFamily support threshold receiver
+          coordinates coordinate outside declared).declaredLoads
+        (Graph.VisibleEntry.visibleCoordinates support threshold receiver
+          coordinate outside coordinates) :=
   Graph.VisibleEntry.visibleLoadsAt_subset_declaredLoads support threshold
-    receiver entry coordinate outside declared
+    receiver coordinates coordinate outside declared
 
 /-- **The (Q1) member is nontrivial exactly when the port is visible.**  At a
 port carrying a visible load the identification collapses a declared
 coordinate; at a silent port the same construction collapses nothing.  This is
 the branch content the yes arm commits. -/
 example (object : Graph.FiniteObject.{u}) (Target : Graph.FiniteObject.{u} → Prop)
-    (Carrier : Type u) (support : Finset object.Vertex) (threshold : Nat)
-    (receiver outside : object.Vertex)
-    (entry : Graph.Route8.Entry Target Carrier)
-    (coordinate : object.Vertex → entry.Coordinate)
+    (Coordinate : Type u) [DecidableEq Coordinate]
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver outside : object.Vertex) (coordinates : Finset Coordinate)
+    (coordinate : object.Vertex → Coordinate)
     (declared : ∀ load ∈ object.routedLoads support threshold receiver,
-      coordinate load ∈ entry.coordinates)
+      coordinate load ∈ coordinates)
     (seen : (Graph.VisibleEntry.visibleLoadsAt object support threshold receiver
       outside).Nonempty) :
-    (Graph.VisibleEntry.visibleCoordinates support threshold receiver entry
-      coordinate outside entry.coordinates).Nonempty :=
+    (Graph.VisibleEntry.visibleCoordinates support threshold receiver coordinate
+      outside coordinates).Nonempty :=
   Graph.VisibleEntry.visibleCoordinates_nonempty support threshold receiver
-    entry coordinate outside declared seen
+    coordinates coordinate outside declared seen
 
 /-! ## Immediate continuations on the same exact ledger -/
 

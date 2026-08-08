@@ -250,7 +250,7 @@ all for G2, which is `lem:context-universality` at the germ.
 
 `Graph.ColdCorridor.BoundedGerm` is `def:cold-bounded-germ` itself, and the
 equal-length rows of `def:cold-same-interface-table` are the same structure with
-`δ = 0` added; the two halves of the definition therefore share one carrier and
+`δ = 0` added; the two halves of the definition therefore share one shape and
 no germ can be a row of one family and not of the other. -/
 
 /-- **Node `[155]`: the G1 arm, and the exhaustiveness of the trichotomy.**
@@ -579,11 +579,12 @@ arm cannot be discharged by an emptiness manufactured at a call site. -/
 
 /-- **Nodes `[153]`, `[154]`: the (F5) arm.**
 
-`lem:hot-failure-cold-mass`, `lem:cold-germ-extraction`, and the positivity that
-makes the arm unreachable.  The extraction's mathematical content is greedy
-independence in the intersection graph of the candidate supports, proved for an
-arbitrary finite family and symmetric overlap relation; the manuscript's
-division by `Δ+1` is cleared, so nothing rounds. -/
+`lem:hot-failure-cold-mass`, `lem:cold-germ-extraction`, and the positivity
+that makes the extracted family nonempty on the surviving cold branch.  The
+extraction's mathematical content is greedy independence in the intersection
+graph of the candidate supports, proved for an arbitrary finite family and
+symmetric overlap relation; the manuscript's division by `Δ+1` is cleared, so
+nothing rounds. -/
 @[reducible] noncomputable def coldGermExtractionRow
     (coldFailureRouting coldGermExtraction :
       FactKey (Input BranchState Presentation presentation data))
@@ -608,7 +609,12 @@ division by `Δ+1` is cleared, so nothing rounds. -/
                 candidates bounded,
             fun _Germ _decGerm _candidates _disjointFamily _denominator cover
                 positive =>
-              Graph.ColdCorridor.coldGerm_nonempty cover positive⟩)
+              Graph.ColdCorridor.coldGerm_nonempty cover positive,
+            fun _Germ _decGerm _candidates _disjointFamily _perWindow
+                _coldCount _branchExcess _denominator _slack stubExcess
+                candidateLoss cover linear =>
+              Graph.ColdCorridor.coldGerm_positive _ _ _ _ _
+                stubExcess candidateLoss cover linear⟩)
         .nil)
 
 /-- **Nodes `[145]`--`[157]`: `thm:cold-branch-quantitative-closure`.**
@@ -616,9 +622,9 @@ division by `Δ+1` is cleared, so nothing rounds. -/
 The row reads G1 and G3 from the incoming ledger and commits the remaining cold
 germ routing fact: every length-changing bounded germ is distinguishing.  This
 fact is published directly on the canonical ledger; no branch record, terminal
-payload, or legacy `classifiedStateForcesTarget` object is used. -/
-@[reducible] noncomputable def coldBranchClosedRow
-    (coldGermRealized coldGermSilent coldBranchClosed :
+payload, or retired routing object is used. -/
+@[reducible] noncomputable def coldGermRoutedRow
+    (coldGermRealized coldGermSilent coldGermRouted :
       FactKey (Input BranchState Presentation presentation data))
     (distinctRequired : coldGermRealized ≠ coldGermSilent)
     (notRealizingOf : (input : Input BranchState Presentation presentation data) →
@@ -634,13 +640,13 @@ payload, or legacy `classifiedStateForcesTarget` object is used. -/
         (Graph.HasCycleWithLength data.LengthOK) input.object,
         germ.increment < 0 → ¬ germ.Neutral)
     (encode : (input : Input BranchState Presentation presentation data) →
-      Holds BranchState Presentation presentation data .coldBranchClosed
+      Holds BranchState Presentation presentation data .coldGermRouted
         input.object →
-      coldBranchClosed.At input) :
+      coldGermRouted.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldBranchClosed
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldGermRouted
     { Requires := [coldGermRealized, coldGermSilent]
-      Produces := [coldBranchClosed]
+      Produces := [coldGermRouted]
       requiresUnique := by
         simp [distinctRequired]
       producesUnique := by simp
@@ -648,7 +654,7 @@ payload, or legacy `classifiedStateForcesTarget` object is used. -/
     (fun inputs =>
       let notRealizing := notRealizingOf inputs.current (inputs.get coldGermRealized)
       let notSilent := notSilentOf inputs.current (inputs.get coldGermSilent)
-      .cons (key := coldBranchClosed)
+      .cons (key := coldGermRouted)
         (encode inputs.current fun germ shorter =>
           Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
             germ shorter)

@@ -1175,11 +1175,10 @@ interfaces `x, y` and two same-interface `x`-`y` representatives `Q[x,y]` and
 
 The first three fields are the support, whose own boundary piece is `Q[x,y]`;
 `canonical` is the second representative `E`; `sameProfile` is the inherited
-boundary-degree profile; `record` and `record_truth` are the window labels and
-the target-response profile, recorded exactly as `def:cold-same-interface-table`
-records them, because that definition's (T1)--(T4) *is* the germ's carried
-data.  The increment `δ := |E| − |Q[x,y]|` is derived below rather than stored,
-so no germ may declare a length change it does not have.
+boundary-degree profile; and `record` is the finite same-interface table record
+containing the window labels and target-response profile.  The increment
+`δ := |E| − |Q[x,y]|` is derived below rather than stored, so no germ may
+declare a length change it does not have.
 
 The germ says nothing about `δ`: `def:cold-bounded-germ` is the common
 definition of the equal-length rows of the table and the length-changing germs

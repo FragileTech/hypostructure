@@ -327,6 +327,22 @@ cursor that the local fan walk produces. -/
   bridgeFanMassRow bridgeResidual (K .typeBBridgeMass) distinct
     (fun _input _bridgeResidual value => ⟨value⟩)
 
+/-- Node `[76]`/`[85]`, the B-ledger charge implication on the B2-success
+cursor. -/
+@[reducible] noncomputable def typeBExclusionCharge :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  typeBExclusionChargeRow (K .typeBDisjointLedger)
+    (K .typeBExclusionCharge) (by simp) (fun _input value => ⟨value⟩)
+
+@[reducible] noncomputable def typeBExcluded :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  typeBExcludedRow (K .typeBExclusionCharge)
+    (K .typeBRemainingCoreNonnegative) (K .typeBExcluded)
+    (by simp)
+    (fun _input fact => fact.down)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
+
 end Rows
 
 /-- Nodes `[44]` and `[45]`: the repair identity and the global barrier. -/
@@ -414,6 +430,41 @@ noncomputable instance instIncompatibleDirectCycle :
     exact selected.down.1
       (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
         valid present)
+
+noncomputable instance instIncompatibleTypeBExcluded :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .typeBDisjointLedger) (K .typeBExcluded) where
+  contradiction := fun residual ledgerFact excluded => by
+    obtain ⟨packing, _valid, _maximal, canonicalPiece, negative, _positive,
+      ledger, exact, _componentFacts, _groupedCoverage⟩ := ledgerFact.down
+    have nonnegative :=
+      excluded.down packing canonicalPiece ledger exact
+    exact ((residual.object.not_negativeNetCharge_iff canonicalPiece.vertices
+      data.threshold data.dischargeScale).mpr nonnegative) negative
+
+/-- Run the clean Type B `[76]`/`[85]` arm and close it through Core's
+incompatible-fact closure.
+
+The incoming cursor is the single source of truth: `typeBExcluded` is appended
+by its `factOnly` row, which reads `typeBExclusionCharge` and
+`typeBRemainingCoreNonnegative` from `FactInputs.get`, and the closure reads the
+already visible `typeBDisjointLedger` fact from the same exact ledger. -/
+noncomputable def runTypeBExcludedAndClose
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Available (typeBExcluded (data := data)).manifest.Requires known]
+    [FactKeys.Has (K (data := data) .typeBDisjointLedger) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (commitFresh :
+      List.Disjoint (typeBExcluded (data := data)).manifest.Produces known :=
+        by decide)
+    (closureFresh :
+      (closed : FactKey (Input BranchState Presentation presentation data)) ∉
+        (typeBExcluded (data := data)).manifest.Produces ++ known := by decide) :=
+  (typeBExcluded (data := data)).runAndCloseIncompatible history
+    (K .typeBDisjointLedger) (K .typeBExcluded)
+    commitFresh (by simpa using closureFresh)
 
 /-- **The terminal `[37]` is uninhabited**, at the spine's own key.
 
@@ -862,6 +913,30 @@ abbrev fanDisjointLedgerKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBDisjointLedger :: fanHybridEntryKeys known
 
+/-- `[76]`/`[85]`: the B-ledger exclusion charge implication. -/
+abbrev fanExclusionChargeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBExclusionCharge :: fanDisjointLedgerKeys known
+
+/-- `[76]`/`[85]`, yes arm: the remaining-core charge is nonnegative. -/
+abbrev fanRemainingCoreNonnegativeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBRemainingCoreNonnegative :: fanExclusionChargeKeys known
+
+/-- `[76]`/`[85]`, closed arm. -/
+abbrev fanExcludedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  closed :: K .typeBExcluded :: fanRemainingCoreNonnegativeKeys known
+
+/-- `[76]`/`[85]`, surviving residual arm. -/
+abbrev fanExclusionResidualKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBExclusionResidual :: fanExclusionChargeKeys known
+
 /-- `[72]`/`[81]`, second half, no — the entry of `[73]`/`[83]`. -/
 abbrev fanOverlapObstructionKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
@@ -885,6 +960,22 @@ abbrev residualCTypeBDirectCycleClosedKeys
 abbrev residualCTypeBDisjointLedgerKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanDisjointLedgerKeys (residualCTypeBCertificateMarkedKeys known)
+
+abbrev residualCTypeBExclusionChargeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanExclusionChargeKeys (residualCTypeBCertificateMarkedKeys known)
+
+abbrev residualCTypeBRemainingCoreNonnegativeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanRemainingCoreNonnegativeKeys (residualCTypeBCertificateMarkedKeys known)
+
+abbrev residualCTypeBExcludedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanExcludedKeys (residualCTypeBCertificateMarkedKeys known)
+
+abbrev residualCTypeBExclusionResidualKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanExclusionResidualKeys (residualCTypeBCertificateMarkedKeys known)
 
 abbrev residualCTypeBCertificateResidualKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
@@ -913,6 +1004,22 @@ abbrev residualCDegreeFourDirectCycleClosedKeys
 abbrev residualCDegreeFourDisjointLedgerKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanDisjointLedgerKeys (residualCDegreeFourMarkedKeys known)
+
+abbrev residualCDegreeFourExclusionChargeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanExclusionChargeKeys (residualCDegreeFourMarkedKeys known)
+
+abbrev residualCDegreeFourRemainingCoreNonnegativeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanRemainingCoreNonnegativeKeys (residualCDegreeFourMarkedKeys known)
+
+abbrev residualCDegreeFourExcludedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanExcludedKeys (residualCDegreeFourMarkedKeys known)
+
+abbrev residualCDegreeFourExclusionResidualKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanExclusionResidualKeys (residualCDegreeFourMarkedKeys known)
 
 abbrev residualCDegreeFourCertificateResidualKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
@@ -993,10 +1100,50 @@ abbrev typeBDisjointLedgerKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeBDisjointLedgerKeys remainderEntropyLowKeys
 
+/-- Node `[76]`: the B-ledger charge implication after the heavy B2 cursor. -/
+abbrev typeBExclusionChargeKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCTypeBExclusionChargeKeys remainderEntropyLowKeys
+
+/-- Node `[76]`, yes arm: the B-ledger remaining core is nonnegative. -/
+abbrev typeBRemainingCoreNonnegativeKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCTypeBRemainingCoreNonnegativeKeys remainderEntropyLowKeys
+
+/-- Node `[76]`, closed arm. -/
+abbrev typeBExcludedKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCTypeBExcludedKeys remainderEntropyLowKeys
+
+/-- Node `[76]`, surviving residual arm. -/
+abbrev typeBExclusionResidualKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCTypeBExclusionResidualKeys remainderEntropyLowKeys
+
 /-- Node `[85]`: exact disjoint post-ledger components, after `[82]`. -/
 abbrev degreeFourDisjointLedgerKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCDegreeFourDisjointLedgerKeys remainderEntropyLowKeys
+
+/-- Node `[85]`: the B-ledger charge implication after the degree-four B2 cursor. -/
+abbrev degreeFourExclusionChargeKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCDegreeFourExclusionChargeKeys remainderEntropyLowKeys
+
+/-- Node `[85]`, yes arm: the B-ledger remaining core is nonnegative. -/
+abbrev degreeFourRemainingCoreNonnegativeKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCDegreeFourRemainingCoreNonnegativeKeys remainderEntropyLowKeys
+
+/-- Node `[85]`, closed arm. -/
+abbrev degreeFourExcludedKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCDegreeFourExcludedKeys remainderEntropyLowKeys
+
+/-- Node `[85]`, surviving residual arm. -/
+abbrev degreeFourExclusionResidualKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCDegreeFourExclusionResidualKeys remainderEntropyLowKeys
 
 /-- Node `[71]`, no arm: a fan-certificate residual centre exists. -/
 abbrev typeBCertificateResidualKeys :

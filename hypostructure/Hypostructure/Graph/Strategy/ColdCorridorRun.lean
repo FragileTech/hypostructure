@@ -2,13 +2,15 @@ import Hypostructure.Graph.Strategy.ColdCorridorRows
 import Hypostructure.Graph.Strategy.SpineAssembly
 
 /-!
-# The cold return corridor, run
+# The cold return corridor, ledger prefix
 
 The rows of `ColdCorridorRows` are each quantified over the keys they consume
 and produce.  This module installs them all at the spine's own vocabulary and
 runs them in the manuscript's order against the one canonical `ExactLedger`,
 from the cut-state of `def:cold-corridor-first-failure` through the three arms
 of `lem:cold-bounded-germ-trichotomy` and the remaining cold-germ routing fact.
+It does not append the framework closure key: oval closure is a later Core
+closure from ordinary facts already visible on the same ledger.
 
 The block is entered from any branch cursor whose key index already carries the
 selection of node `[1]` and the uncompressibility of node `[14]`.  Those are the
@@ -18,9 +20,9 @@ node `[14]`, while the cut-state, (F2), (F4), the trichotomy's G2 and the
 existence dichotomy are theorems about the corridor, the germ and the registered
 declared signature and read nothing.
 
-Every prerequisite is discharged by instance resolution against the incoming
-index, so a run whose branch has not proved node `[14]` does not elaborate.
-Nothing is carried between the rows but the residual and the ledger.
+Every prerequisite is discharged from the incoming index and every row body
+reads its requirements with `FactInputs.get`.  Nothing is carried between the
+rows but the residual and the ledger.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -116,32 +118,32 @@ cold key *is* the manuscript statement, so nothing is re-encoded. -/
     (by simp) (fun _input value => ⟨value⟩)
 
 /-- Nodes `[145]`--`[157]`: `thm:cold-branch-quantitative-closure`. -/
-@[reducible] noncomputable def coldBranchClosed :
+@[reducible] noncomputable def coldGermRouted :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  coldBranchClosedRow (K .coldGermRealized) (K .coldGermSilent)
-    (K .coldBranchClosed) (by simp)
+  coldGermRoutedRow (K .coldGermRealized) (K .coldGermSilent)
+    (K .coldGermRouted) (by simp)
     (fun _input fact => fact.down.1) (fun _input fact => fact.down.1)
     (fun _input value => ⟨value⟩)
 
-/-! ## The block, run -/
+/-! ## The ledger prefix, run -/
 
 /-- The key index the ledger carries after the cold corridor block. -/
 abbrev coldKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .coldBranchClosed :: K .coldGermExtraction :: K .coldHandoffTransfer ::
+  K .coldGermRouted :: K .coldGermExtraction :: K .coldHandoffTransfer ::
     K .coldFailureRouting :: K .coldFailureHandoff :: K .coldFailureCompression ::
     K .coldFailureDefect :: K .coldFailureCycle :: K .coldGermSilent ::
     K .coldGermDistinguished :: K .coldGermRealized ::
     K .coldSameInterfaceTable :: K .coldCorridorState :: known
 
-/-- **The cold corridor block, run.**
+/-- **The cold corridor ledger prefix, run.**
 
 The thirteen rows are composed by `AtomicCT.run`, which appends each row's declared
 productions to the incoming index while retaining the literal ancestry.  The
 output index is the incoming one with the cold facts on top, so every earlier
 ledger fact remains readable and no cold fact can be read by a branch that did
-not run this block. -/
+not run this prefix. -/
 noncomputable def runCold
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -161,7 +163,7 @@ noncomputable def runCold
     (routingFresh : K (data := data) .coldFailureRouting ∉ known)
     (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
     (extractionFresh : K (data := data) .coldGermExtraction ∉ known)
-    (closedFresh : K (data := data) .coldBranchClosed ∉ known) :
+    (routedFresh : K (data := data) .coldGermRouted ∉ known) :
     ExactLedger (Input BranchState Presentation presentation data) current
       (coldKeys known) := by
   classical
@@ -234,7 +236,8 @@ noncomputable def runCold
       subst isNew
       revert isOld
       simp [routingFresh])
-  -- Rows 57--61: the (F4) transfer, the (F5) extraction, and the closure.
+  -- Rows 57--61: the (F4) transfer, the (F5) extraction, and the remaining
+  -- cold-germ routing fact.
   have afterTransfer :=
     (coldHandoffTransfer (data := data)).run afterRouting (by
       intro key isNew isOld
@@ -249,11 +252,11 @@ noncomputable def runCold
       subst isNew
       revert isOld
       simp [extractionFresh])
-  exact (coldBranchClosed (data := data)).run afterExtraction (by
+  exact (coldGermRouted (data := data)).run afterExtraction (by
     intro key isNew isOld
     simp only [List.mem_singleton] at isNew
     subst isNew
     revert isOld
-    simp [closedFresh])
+    simp [routedFresh])
 
 end Hypostructure.Graph.Strategy.Spine

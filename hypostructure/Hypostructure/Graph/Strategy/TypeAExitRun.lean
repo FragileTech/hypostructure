@@ -374,6 +374,32 @@ abbrev route8ResidualKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .route8Residual :: typeAExitSevenFreeKeys known
 
+abbrev route8ResidualProfileKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .route8ResidualProfile :: route8ResidualKeys known
+
+abbrev route8GlobalSqueezeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .route8GlobalSqueeze :: route8ResidualProfileKeys known
+
+abbrev route8BurdenAndDeficitKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .route8BasinBurden :: K .route8LargeBudgetDeficit ::
+    route8GlobalSqueezeKeys known
+
+abbrev route8CarrierCoreKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .route8CarrierCore :: route8BurdenAndDeficitKeys known
+
+abbrev route8SmallCoreCollapseKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .route8SmallCoreCollapse :: route8CarrierCoreKeys known
+
 abbrev typeAExitFourReceiverDischargedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -622,6 +648,56 @@ theorem route8Residual_audit_accounts_for_every_fact
         (fun record => record.produced) :=
   ExactLedger.audit_complete history
 
+theorem route8ResidualProfile_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8ResidualProfileKeys known)) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem route8GlobalSqueeze_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8GlobalSqueezeKeys known)) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem route8BurdenAndDeficit_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8BurdenAndDeficitKeys known)) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem route8CarrierCore_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8CarrierCoreKeys known)) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem route8SmallCoreCollapse_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8SmallCoreCollapseKeys known)) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
 theorem exitFour_audit_facts_unique
     {selected : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -779,6 +855,46 @@ theorem route8Residual_audit_facts_unique
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected (route8ResidualKeys known)) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem route8ResidualProfile_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8ResidualProfileKeys known)) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem route8GlobalSqueeze_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8GlobalSqueezeKeys known)) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem route8BurdenAndDeficit_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8BurdenAndDeficitKeys known)) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem route8CarrierCore_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8CarrierCoreKeys known)) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem route8SmallCoreCollapse_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (route8SmallCoreCollapseKeys known)) :
     (ExactLedger.audit history).facts.Nodup :=
   ExactLedger.audit_facts_unique history
 

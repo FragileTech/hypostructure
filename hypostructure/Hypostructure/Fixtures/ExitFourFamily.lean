@@ -18,19 +18,19 @@ universe u
 
 variable {Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
 variable {support : Finset object.Vertex} {threshold : Nat}
-variable {receiver : object.Vertex} {Carrier : Type u}
-variable (family : ReceiverFamily Target support threshold receiver Carrier)
+variable {receiver : object.Vertex}
+variable (family : ReceiverFamily Target support threshold receiver)
 
 attribute [local instance] vertexDecEq
 
 example {clause : ReceiverClause}
-    {base identified : Finset family.entry.Coordinate}
+    {base identified : Finset family.Coordinate}
     (generated : family.Generated clause base identified) :
-    base ⊆ family.entry.coordinates ∧ identified ⊆ base :=
+    base ⊆ family.coordinates ∧ identified ⊆ base :=
   ⟨family.generated_base generated, family.generated_identified generated⟩
 
 example {load : object.Vertex}
-    {identified : Finset family.entry.Coordinate} :
+    {identified : Finset family.Coordinate} :
     load ∈ family.declaredLoads identified ↔
       load ∈ object.routedLoads support threshold receiver ∧
         family.coordinate load ∈ identified :=
@@ -38,7 +38,7 @@ example {load : object.Vertex}
 
 example {load : object.Vertex}
     (routed : load ∈ object.routedLoads support threshold receiver) :
-    family.coordinate load ∈ family.entry.coordinates :=
+    family.coordinate load ∈ family.coordinates :=
   family.coordinate_declared load routed
 
 end Hypostructure.Fixtures.ExitFourFamily

@@ -3572,6 +3572,160 @@ sealed inputs before the single bridge-mass fact is appended.
               ordinaryComponents groupedComponents))
         .nil)
 
+/-! ## Node `[76]`/`[85]`: Type B exclusion charge
+
+The charge row runs only after the exact B2 ledger fact is present.  The row
+reads that fact through `FactInputs.get` and appends the B-ledger implication
+used by the exclusion dichotomy.
+-/
+@[reducible] noncomputable def typeBExclusionChargeRow
+    (typeBDisjointLedger typeBExclusionCharge :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : typeBDisjointLedger ≠ typeBExclusionCharge)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ packing : Finset (Finset input.object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge input.object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex →
+              input.object.NonNegativeNetCharge canonicalPiece.vertices
+                data.threshold data.dischargeScale) →
+      typeBExclusionCharge.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeBExclusionCharge
+    (rowManifest typeBDisjointLedger typeBExclusionCharge distinct)
+    (fun inputs =>
+      let _ledgerFact := inputs.get typeBDisjointLedger
+      .cons (key := typeBExclusionCharge)
+        (encode inputs.current (by
+          intro packing canonicalPiece ledger exact remainingNonnegative
+          exact
+            Graph.TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
+              (object := inputs.current.object) ledger exact remainingNonnegative))
+        .nil)
+
+@[reducible] noncomputable def typeBExcludedRow
+    (typeBExclusionCharge typeBRemainingCoreNonnegative typeBExcluded :
+      FactKey (Input BranchState Presentation presentation data))
+    (requiredUnique :
+      [typeBExclusionCharge, typeBRemainingCoreNonnegative].Nodup)
+    (chargeOf : (input : Input BranchState Presentation presentation data) →
+      typeBExclusionCharge.At input →
+      ∀ packing : Finset (Finset input.object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge input.object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex →
+              input.object.NonNegativeNetCharge canonicalPiece.vertices
+                data.threshold data.dischargeScale)
+    (coreOf : (input : Input BranchState Presentation presentation data) →
+      typeBRemainingCoreNonnegative.At input →
+      ∀ packing : Finset (Finset input.object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge input.object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ packing : Finset (Finset input.object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              input.object.NonNegativeNetCharge canonicalPiece.vertices
+                data.threshold data.dischargeScale) →
+      typeBExcluded.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeBExcluded
+    { Requires := [typeBExclusionCharge, typeBRemainingCoreNonnegative]
+      Produces := [typeBExcluded]
+      requiresUnique := requiredUnique
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let charge := chargeOf inputs.current (inputs.get typeBExclusionCharge)
+      let core := coreOf inputs.current
+        (inputs.get typeBRemainingCoreNonnegative)
+      .cons (key := typeBExcluded)
+        (encode inputs.current (by
+          intro packing canonicalPiece ledger exact
+          exact charge packing canonicalPiece ledger exact
+            (core packing canonicalPiece ledger exact)))
+        .nil)
+
+/-! ## Node `[76]`/`[85]`: Type B exclusion split -/
+noncomputable def typeBExclusionDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeBDisjointLedger typeBRemainingCoreNonnegative
+      typeBExclusionResidual :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeBDisjointLedger known]
+    (encodeCore :
+      (∀ packing : Finset (Finset current.object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger current.object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge current.object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex) →
+      typeBRemainingCoreNonnegative.At current)
+    (encodeResidual :
+      (¬ ∀ packing : Finset (Finset current.object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger current.object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge current.object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex) →
+      typeBExclusionResidual.At current)
+    (coreFresh : typeBRemainingCoreNonnegative ∉ known)
+    (residualFresh : typeBExclusionResidual ∉ known) :
+    Decision typeBRemainingCoreNonnegative typeBExclusionResidual previous :=
+  Decision.run previous typeBRemainingCoreNonnegative typeBExclusionResidual
+    `Hypostructure.Graph.Strategy.Spine.typeBExclusionDichotomy
+    (by
+      classical
+      let _ledgerFact := ExactLedger.get previous typeBDisjointLedger
+      by_cases clean :
+          ∀ packing : Finset (Finset current.object.Vertex),
+            ∀ canonicalPiece :
+                Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
+              ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger current.object
+                  data.threshold data.dischargeScale canonicalPiece,
+                ledger.ExactAugmentedLedgerRefinement →
+                  (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                    Graph.TypeBRefinedSupport.scaledCoreCharge current.object
+                      data.threshold data.dischargeScale canonicalPiece.vertices
+                      vertex
+      · exact .inl (encodeCore clean)
+      · exact .inr (encodeResidual clean))
+    coreFresh residualFresh
+
 /-! ## Node `[88]`: the routing and threshold algebra of a Type A support
 
 `def:typeA-support` is `def:admissible` with `σ(X) = 0`.  Since the object meets
@@ -5510,6 +5664,88 @@ noncomputable def typeAExitSevenDichotomy
       let _exitSixFree := inputs.get typeAExitSixFree
       let free := freeOf inputs.current (inputs.get typeAExitSevenFree)
       .cons (key := route8Residual) (encode inputs.current free) .nil)
+
+@[reducible] noncomputable def route8ResidualProfileRow
+    : AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8ResidualProfile
+    { Requires := [K .route8Residual]
+      Produces := [K .route8ResidualProfile]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let residual := inputs.get (K .route8Residual)
+      .cons (key := K .route8ResidualProfile)
+        ⟨silentCoreResidualProfile_of_route8Residual residual.down⟩ .nil)
+
+@[reducible] noncomputable def route8GlobalSqueezeRow
+    : AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8GlobalSqueeze
+    { Requires := [K .route8ResidualProfile, K .largeBudgetResidual]
+      Produces := [K .route8GlobalSqueeze]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let profile := inputs.get (K .route8ResidualProfile)
+      let largeBudget := inputs.get (K .largeBudgetResidual)
+      .cons (key := K .route8GlobalSqueeze)
+        ⟨⟨profile.down, largeBudget.down⟩⟩ .nil)
+
+@[reducible] noncomputable def route8BurdenAndDeficitRow
+    : AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8BurdenAndDeficit
+    { Requires := [K .route8GlobalSqueeze, K .typeAVisibleFirstExcess]
+      Produces := [K .route8BasinBurden, K .route8LargeBudgetDeficit]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp [K_eq_iff]
+      producesNonempty := by simp }
+    (fun inputs =>
+      let global := inputs.get (K .route8GlobalSqueeze)
+      let excess := inputs.get (K .typeAVisibleFirstExcess)
+      let burden : Route8BasinBurden data inputs.current.object :=
+        ⟨global.down, excess.down⟩
+      .cons (key := K .route8BasinBurden) ⟨burden⟩
+        (.cons (key := K .route8LargeBudgetDeficit)
+          ⟨⟨burden, global.down.2⟩⟩ .nil))
+
+@[reducible] noncomputable def route8CarrierCoreRow
+    : AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8CarrierCore
+    { Requires := [K .route8LargeBudgetDeficit]
+      Produces := [K .route8CarrierCore]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let deficit := inputs.get (K .route8LargeBudgetDeficit)
+      .cons (key := K .route8CarrierCore)
+        ⟨⟨deficit.down, by
+          intro Target Carrier Coordinate carrierDec coordinateDec boundary
+            carrierSupply coordinates car car_subset state
+          letI : DecidableEq Carrier := carrierDec
+          letI : DecidableEq Coordinate := coordinateDec
+          exact Graph.Route8.carrierCoreFacts (Target := Target)
+            carrierSupply coordinates car car_subset state⟩⟩ .nil)
+
+@[reducible] noncomputable def route8SmallCoreCollapseRow
+    : AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8SmallCoreCollapse
+    { Requires := [K .route8CarrierCore]
+      Produces := [K .route8SmallCoreCollapse]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let core := inputs.get (K .route8CarrierCore)
+      .cons (key := K .route8SmallCoreCollapse)
+        ⟨⟨core.down, by
+          intro Target Carrier Coordinate carrierDec coordinateDec boundary
+            carrierSupply coordinates car car_subset state
+          letI : DecidableEq Carrier := carrierDec
+          letI : DecidableEq Coordinate := coordinateDec
+          exact Graph.Route8.smallCoreCollapseFacts (Target := Target)
+            carrierSupply coordinates car car_subset state⟩⟩ .nil)
 
 /-! ## Node `[95]`: exit `(1)`, the Mersenne anchored return
 
