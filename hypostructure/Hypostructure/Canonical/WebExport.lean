@@ -221,10 +221,6 @@ private def strategyCatalog : List Json :=
       "Counterexample localization" "counterexampleLocalization"
       "Core.CounterexampleLocalizationData"
       "Hypostructure.Core.Strategy.Dag.Blueprint.counterexampleLocalization",
-    strategyJson "cold-branch-aggregation" "vertex"
-      "Cold-branch aggregation" "coldBranchAggregation"
-      "Core.Strategy.ColdBranchAggregation.LedgerRegistration"
-      "Hypostructure.Core.Strategy.Dag.Blueprint.coldBranchAggregation",
     strategyJson "finite-state-net-charge-continuation" "vertex"
       "Finite-state net-charge continuation" "finiteStateNetChargeContinuation"
       "Core.Strategy.FiniteStateNetChargeContinuation.Registration"

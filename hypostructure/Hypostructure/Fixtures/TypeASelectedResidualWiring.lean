@@ -100,6 +100,40 @@ abbrev visibleExitKeys :
   [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
     K .returnAvoidance, K .selection]
 
+/-! ## Node `[109]` preserves the full incoming ledger prefix
+
+The route-8 arm is an ordinary one-fact append.  These checks pin the exact
+index shape: `[109]` adds `route8Residual` on top of the no-exit-`(7)` ledger
+and leaves every incoming fact in `known` available downstream.
+-/
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    route8ResidualKeys (BranchState := BranchState) (presentation := presentation)
+      (data := data) known =
+      K .route8Residual ::
+        typeAExitSevenFreeKeys (BranchState := BranchState)
+          (presentation := presentation) (data := data) known := rfl
+
+example {known : FactKeys (Input BranchState Presentation presentation data)}
+    {fact : FactKey (Input BranchState Presentation presentation data)}
+    (member : fact ∈ known) :
+    fact ∈ route8ResidualKeys (BranchState := BranchState)
+      (presentation := presentation) (data := data) known := by
+  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+    member]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .typeAExitSevenFree ∈
+      route8ResidualKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8ResidualKeys, typeAExitSevenFreeKeys]
+
+example {known : FactKeys (Input BranchState Presentation presentation data)} :
+    K .typeAExitSixFree ∈
+      route8ResidualKeys (BranchState := BranchState)
+        (presentation := presentation) (data := data) known := by
+  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys]
+
 end
 
 end Hypostructure.Fixtures.TypeASelectedResidualWiring

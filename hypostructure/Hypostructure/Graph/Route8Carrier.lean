@@ -20,14 +20,14 @@ This module owns four things, and nothing else:
 * the *deletion witness* that inclusion-minimality forces at every carrier of
   that core, and the fact that a witness's forgotten coordinate uses the
   deleted carrier;
-* *private* carriers inside a finite collection of indexed readings, their
-  count, and the disjointness the counting argument of a census needs.
+* the local deletion witness forced at one indexed reading.
 
 Nothing here mentions a graph target, a manuscript, a strategy, a ledger, or a
-proof.  This is the exact content of the manuscript's
+proof.  This is the exact local content of the manuscript's
 `def:typeA-route8-carriers`, `lem:typeA-essential-deletion-witness` and
-`lem:typeA-deletion-witness-declared`, stated for any target predicate on
-finite objects.
+`lem:typeA-deletion-witness-declared`, stated for any target predicate on finite
+objects.  Census-level route-8 facts belong on the canonical ledger; this module
+does not define a secondary carrier.
 -/
 
 namespace Hypostructure.Graph.Route8
@@ -231,124 +231,5 @@ theorem exists_forgotten_coordinate {carrier : Carrier}
     exact missing r inCore.1 inCore.2 (same ▸ used)
 
 end Entry
-
-/-- **A finite collection of indexed readings**, `Ξ(𝒳)`, over one ambient
-carrier universe.  The collection's own carrier supply `ambient` is the union
-the census of private carriers is counted inside. -/
-structure Collection (Target : FiniteObject.{u} → Prop) (Carrier : Type u) where
-  /-- The index type of the collection's entries. -/
-  Index : Type u
-  /-- Decidable equality on indices. -/
-  indexDecEq : DecidableEq Index
-  /-- `Ξ(𝒳)`: the indexed entries. -/
-  entries : Finset Index
-  /-- The carrier data of each indexed entry. -/
-  entry : Index → Entry Target Carrier
-  /-- The ambient carrier supply the collection's entries draw on. -/
-  ambient : Finset Carrier
-  /-- Every entry's supply lies in the ambient one. -/
-  carriers_subset : ∀ index ∈ entries,
-    (entry index).carriers.toFinset ⊆ ambient
-
-namespace Collection
-
-variable {Target : FiniteObject.{u} → Prop} {Carrier : Type u}
-variable [DecidableEq Carrier] (collection : Collection Target Carrier)
-
-attribute [instance] Collection.indexDecEq
-
-/-- **Private carriers** (`def:typeA-route8-carriers`): the essential carriers of
-an entry that are essential for no other indexed entry of the collection. -/
-noncomputable def privateCarriers (index : collection.Index) : Finset Carrier :=
-  letI : DecidablePred fun carrier : Carrier =>
-      ∀ other ∈ collection.entries,
-        carrier ∈ (collection.entry other).essentialCore → other = index :=
-    fun _ => Classical.propDecidable _
-  (collection.entry index).essentialCore.filter fun carrier =>
-    ∀ other ∈ collection.entries,
-      carrier ∈ (collection.entry other).essentialCore → other = index
-
-theorem mem_privateCarriers {index : collection.Index} {carrier : Carrier} :
-    carrier ∈ collection.privateCarriers index ↔
-      carrier ∈ (collection.entry index).essentialCore ∧
-        ∀ other ∈ collection.entries,
-          carrier ∈ (collection.entry other).essentialCore → other = index := by
-  rw [privateCarriers]
-  simp only [Finset.mem_filter]
-
-/-- `π(ξ)`: the number of private carriers of an indexed entry. -/
-noncomputable def privateCount (index : collection.Index) : Nat :=
-  (collection.privateCarriers index).card
-
-/-- The entry is a *two-carrier* entry when its private count is at or below the
-registered threshold.  The manuscript's threshold is `2`; no numeral is written
-here. -/
-def TwoCarrier (threshold : Nat) (index : collection.Index) : Prop :=
-  collection.privateCount index ≤ threshold
-
-/-- Private carriers of an indexed entry lie in the ambient supply. -/
-theorem privateCarriers_subset_ambient {index : collection.Index}
-    (member : index ∈ collection.entries) :
-    collection.privateCarriers index ⊆ collection.ambient := by
-  intro carrier inPrivate
-  rw [mem_privateCarriers] at inPrivate
-  exact collection.carriers_subset index member
-    ((collection.entry index).essentialCore_subset_carriers inPrivate.1)
-
-/-- **Private carriers of distinct entries are disjoint.**  This is the whole
-content of "private essential carriers belonging to different indexed entries
-are disjoint by definition": a carrier private for two entries proves the two
-indices equal. -/
-theorem privateCarriers_disjoint {left right : collection.Index}
-    (leftMember : left ∈ collection.entries)
-    (rightMember : right ∈ collection.entries) (different : left ≠ right) :
-    Disjoint (collection.privateCarriers left)
-      (collection.privateCarriers right) := by
-  classical
-  refine Finset.disjoint_left.mpr ?_
-  intro carrier inLeft inRight
-  rw [mem_privateCarriers] at inLeft inRight
-  exact different (inLeft.2 right rightMember inRight.1).symm
-
-/-- **The census bound.**  If every indexed entry has at least `floor` private
-carriers, then `floor · |Ξ(𝒳)|` is at most the ambient carrier supply.
-
-This is the counting step of `prop:typeA-route8-carrier-reduction` -- *"private
-essential carriers belonging to different indexed entries are disjoint, and they
-are boundary incidences of the corresponding supports"* -- with no arithmetic
-about any particular collection in it. -/
-theorem card_mul_le_ambient {floor : Nat}
-    (lower : ∀ index ∈ collection.entries,
-      floor ≤ collection.privateCount index) :
-    floor * collection.entries.card ≤ collection.ambient.card := by
-  classical
-  have disjointUnion :
-      (collection.entries.biUnion collection.privateCarriers).card =
-        ∑ index ∈ collection.entries,
-          (collection.privateCarriers index).card :=
-    Finset.card_biUnion fun left leftMember right rightMember different =>
-      collection.privateCarriers_disjoint leftMember rightMember different
-  have inside : collection.entries.biUnion collection.privateCarriers ⊆
-      collection.ambient := by
-    intro carrier member
-    obtain ⟨index, indexMember, inPrivate⟩ := Finset.mem_biUnion.mp member
-    exact collection.privateCarriers_subset_ambient indexMember inPrivate
-  have sumLower : ∑ _index ∈ collection.entries, floor ≤
-      ∑ index ∈ collection.entries,
-        (collection.privateCarriers index).card :=
-    Finset.sum_le_sum fun index member => lower index member
-  have constant : ∑ _index ∈ collection.entries, floor =
-      collection.entries.card * floor := by
-    rw [Finset.sum_const, smul_eq_mul]
-  calc floor * collection.entries.card
-      = ∑ _index ∈ collection.entries, floor := by
-        rw [constant, Nat.mul_comm]
-    _ ≤ ∑ index ∈ collection.entries,
-          (collection.privateCarriers index).card := sumLower
-    _ = (collection.entries.biUnion collection.privateCarriers).card :=
-        disjointUnion.symm
-    _ ≤ collection.ambient.card := Finset.card_le_card inside
-
-end Collection
 
 end Hypostructure.Graph.Route8

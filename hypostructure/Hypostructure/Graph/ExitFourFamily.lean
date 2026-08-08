@@ -50,7 +50,8 @@ A member of `𝒬₄(w)` records which construction generated it; the mathematic
 content the exit consumes -- target-defectiveness and the declared routed-load
 support -- is the same for all five, exactly as `lem:typeA-exit4-discharge`
 uses them. The route-8-only carrier-deletion construction is deliberately not
-present: it is an extension indexed by the later selected route-8 collection. -/
+present: it is an extension indexed by the later selected exit-8 ledger
+residual. -/
 inductive ReceiverClause where
   /-- (Q1): the visible receiver-entry coordinate identifications. -/
   | visibleEntry

@@ -178,10 +178,10 @@ topology.  A ticked column is a claim about the current tree, so rows 12–19 an
 30–36 were reset to `❌ ❌ ❌ ❌`; rows 30–33 have since been partly ported and
 their Ledger, Transport and Residual cells are claims about
 the exact surplus row chain rooted at `surplusAboveKeys`.  Row 15, which had been ticked in all four,
-is included and carries its own correction note.  Rows 26–28 were reset by the
+is included and carries its own correction note.  Rows 26–27 were reset by the
 same correction and have since been ported; their cells below are claims about
-`Spine.hybridEntry`, `Spine.bridgeFanMass` and `Spine.typeBExclusionCharge`, and
-rows 27 and 28 keep an open **Facts** column.  Rows 16 and 17 keep their
+`Spine.hybridEntry` and `Spine.bridgeFanMass`.  Row 28 remains open and has no
+live `Spine.typeBExclusionCharge` declaration yet.  Rows 16 and 17 keep their
 `Where` entries and are named exactly: `Spine.typeAExitFourDichotomy` is the
 selected exit-`(4)` decision, while `Spine.typeAExitFiveDichotomy` now reads the
 selected no-exit-`(4)` ledger fact and commits the selected exit-`(5)` yes/no
@@ -425,7 +425,7 @@ bookkeeping; the first is not:
 >
 > Rows 16--19 are not implemented on the canonical Strategy DAG.  The former
 > `Spine.runRouteEight` / `Spine.runSaturatedExits` path was removed because it
-> selected arbitrary `Route8.Data` instead of refining the exact incoming Type A
+> selected an arbitrary auxiliary route-8 object instead of refining the exact incoming Type A
 > tuple.  The next admissible implementation must first derive the manuscript's
 > coordinate-specific Q1--Q4 response semantics for that retained tuple.
 
@@ -664,29 +664,26 @@ bookkeeping; the first is not:
 
 ## F. Cold-window corridor
 
-> **Unbuilt.**  The rows in this section were implemented against the legacy
-> `Blueprint` topology and its `Core.ProblemDefinition` registry.  Both are
-> gone: the registry was deleted with `Official/Definition.lean` and the
-> topology is now a commented reference in `StrategyDag.lean`.  Every `Where`
-> entry below therefore names a declaration that does not currently elaborate,
-> and no ticked column in this section is backed by a compiling target or an
-> exported run.  The section is the porting reference for the rewrite, not a
-> description of current code.
->
-> **Rows 43--50 are the exception.**  They have been ported to the canonical
-> ledger and are out of the legacy stack entirely: their mathematics is
-> `Hypostructure/Graph/ColdCorridor.lean` and
-> `Hypostructure/Graph/ColdFirstFailure.lean`, their rows are
-> `Graph/Strategy/ColdCorridorRows.lean`, and all seven facts are committed by
+> **Canonical port.** Rows 43--61 have been ported to the canonical ledger and
+> are out of the legacy cold-aggregation stack entirely: their mathematics is
+> `Hypostructure/Graph/ColdCorridor.lean`,
+> `Hypostructure/Graph/ColdFirstFailure.lean` and
+> `Hypostructure/Graph/ColdBranchClosure.lean`, their rows are
+> `Graph/Strategy/ColdCorridorRows.lean`, and all facts are committed by
 > `Graph/Strategy/ColdCorridorRun.lean` against the one
-> `Core.Residual.ExactLedger`.  Five fixtures check them:
+> `Core.Residual.ExactLedger`.  Five fixtures check the active corridor block:
 > `ColdCorridorSignature` (the thirty-two generating kinds and their per-clause
 > counts), `ColdCorridorLedger` (the `73` and `78` thresholds and the `15`/`13`
 > stub counts), `ColdCorridorShortSelfReturn` (the two exceptional length sets),
 > `ColdCorridorConstruction` (the corridor apparatus is inhabited) and
 > `ColdCorridorRun` (the block runs end to end and its audit is `rfl`).  Every
-> module is in the build closure of `Hypostructure.lean`.  Rows 51 onwards are
-> still the legacy reference.
+> module is in the build closure of `Hypostructure.lean`.
+>
+> **Legacy cleanup.** The old non-PDE cold aggregation fixtures were deleted
+> after the port: they imported missing retired modules and tested obsolete side
+> channels rather than ledger facts.  PDE registry files that still mention the
+> retired names are intentionally outside this cleanup pass and are not part of
+> the EG cold proof surface.
 >
 > **Registered-fact review.**  Rows 43--50 were re-read against the manuscript
 > for two specific defects, and both were found and fixed.
@@ -717,13 +714,12 @@ bookkeeping; the first is not:
 > `tauBelow_routeEight`, which state the manuscript's comparisons and are
 > evaluated at `s = 15` by `Fixtures.ColdCorridorLedger`.
 >
-> *What remains unspent, deliberately.*  `extractionDenominator` (`D_cold`) is
-> defined and proved but has no consumer until Row 51; `firstFailureHandoffExit`
-> returns an envelope, which is data, so Row 49's transfer is an elimination of
-> Row 48's committed fact rather than a fact of its own; and no `Corridor` value
-> is constructed from the EG packing yet, so the committed facts are true and
-> non-vacuous as statements but the corridor they quantify over is supplied at
-> Row 50's own producer, which is not part of these rows.
+> *What remains scoped deliberately.*  `firstFailureHandoffExit` returns an
+> envelope, which is data, so Row 49's transfer is an elimination of Row 48's
+> committed fact rather than a fact of its own.  `D_cold` is now consumed by the
+> extraction and closure rows, and no corridor, envelope, germ, or branch object
+> is transported by a row result: the committed facts quantify over the
+> manuscript objects and later rows read those facts by exact key.
 >
 > *Two inputs that are hypotheses by design, and are cited where the manuscript
 > cites them.*  `Corridor.twoStubs` is `lem:bridgeless` — "no such component has
@@ -861,7 +857,7 @@ bookkeeping; the first is not:
 
 | # | Node / component | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
-| 43 | Corridor cut-state `T(J)` | `ColdCorridor.CutState`, `Presentation.state` (`Spine.coldCorridorState`) | ✅ | ❌ | ✅ | ✅ |
+| 43 | Corridor cut-state `T(J)` | `ColdCorridor.CutState`, `Presentation.state` (`Spine.coldCorridorState`) | ✅ | ✅ | ✅ | ✅ |
 | 44 | Same-interface table | `ColdCorridor.TableRow`, `ColdCorridor.row_closed` (`Spine.coldSameInterfaceTable`) | ✅ | ✅ | ✅ | ✅ |
 | 45 | (F1) producer | `ColdCorridor.Corridor.FirstFailureCycle` (`Spine.coldFailureCycle`) | ✅ | ✅ | ✅ | ✅ |
 | 46 | (F2) producer | `ColdCorridor.Corridor.FirstFailureDefect` (`Spine.coldFailureDefect`) | ✅ | ✅ | ✅ | ✅ |
@@ -2122,7 +2118,7 @@ response realization exists.
 
 ### Row 16 — Exit 4: target-defective quotient `[101]`
 
-- **Paper fact.** Exits (1)--(8) are the saturated Type A receiver exits.  Exit (4) is the target-defective quotient exit; its canonical quotient family has Q1--Q4 before the route-8 branch and Q5 only after the selected route-8 collection exists.  A member of the pre-route Q1--Q4 family is a genuine boundary-degree-preserving coordinate identification, and exit (4) requires two same-fibre realizations plus a compatible outside context distinguishing their target responses.  In the visible branch of `lem:typeA-unpeeled-visible-routing`, the target-defective quotient's declared routed-load support contains at least one of the four selected visible unpeeled loads.
+- **Paper fact.** Exits (1)--(8) are the saturated Type A receiver exits.  Exit (4) is the target-defective quotient exit; its canonical quotient family has Q1--Q4 before the route-8 branch and Q5 only after the selected exit-8 ledger residual supplies the additional Q5 facts.  A member of the pre-route Q1--Q4 family is a genuine boundary-degree-preserving coordinate identification, and exit (4) requires two same-fibre realizations plus a compatible outside context distinguishing their target responses.  In the visible branch of `lem:typeA-unpeeled-visible-routing`, the target-defective quotient's declared routed-load support contains at least one of the four selected visible unpeeled loads.
 - **What the Lean does.** `ExitFour.ReceiverClause` and `ExitFour.ReceiverFamily` retain the four pre-route clause tags, the declared coordinate family, the routed-load coordinate map, the structural generation predicate, and its base/identified subset laws.  Q5 is not included in this pre-route family.  `ExitFour.Witness` records a generated family member, a supported unpeeled load, same-boundary realizations, and a literal `Response.TargetDefect`.  `Spine.typeAExitFourDichotomy` reads the exact `[99]` no-arm fact from the incoming `ExactLedger`, asks only about that selected packing/component/piece/receiver/package, and commits either `typeAExitFour` with a witness supporting one of the package's selected visible loads or `typeAExitFourFree` with the corresponding negation.  `Spine.typeAExitFourPeelingStepRow` reads that committed `typeAExitFour` fact with `FactInputs.get` and appends `typeAExitFourPeeled`, the node `[102]` peeling update.  `Spine.typeAExitFourRetestDichotomy` then reads `typeAExitFourPeeled` and commits either the existing `typeASaturatedExitEntry` fact for the enlarged peeling set or `typeAExitFourReceiverDischarged` with the cleared nonnegative receiver-charge inequality.  `Spine.typeAExitFourFiniteDescentRow` reads the current `typeASaturatedExitEntry` fact and commits `typeAExitFourFiniteDescent`, a finite descent theorem for arbitrary current `P₄(w)`.  `Spine.typeASaturatedHandoffSplitDichotomy` then reads that same exact current `typeASaturatedExitEntry` fact and commits either `typeASaturatedHandoffVisible` with a current `VisibleFourUnpeeledPackage` or `typeASaturatedHandoffSilent` with `SilentUnpeeledExcessAt` for the same current `P₄(w)`.  The corresponding selected exit-`(4)` decisions then commit either `typeASaturatedHandoffExitFour` or `typeASaturatedHandoffExitFourFree`; the free fact is the exact same-residual predecessor for node `[103]`.
 - **What it should do.** Complete the remaining paper saturated-handoff classification by instantiating the committed finite descent with the real terminal alternatives: closed exits (1)--(3), (5), (6), exit-(7) decorated Type B handoff, exit-(8) route-8 residual, or final unsaturated receiver charge.  Repeated exit-(4) facts must stay inside the mathematical peeling certificate; exposed terminal outcomes must be committed once as ledger facts.
 - **Gap.** The `[101]` selected visible decision, `[102]` charge publication, immediate retest, finite arbitrary-peeling descent fact, current-state visible/silent saturated-handoff split, and selected current-state exit-`(4)`/no-exit-`(4)` decisions are present and validated.  The remaining open part is the selected terminal classification after no-exit-`(4)`: exit-(5), exit-(6), exit-(7), exit-(8), or final unsaturated receiver charge.  The deleted `ReceiverFamily.Defective` used `entry.state (base \ identified)` and modeled coordinate identification as deletion from an authored state function; that surrogate remains absent, as required.
@@ -2152,7 +2148,7 @@ response realization exists.
 - **What the Lean does.** `Spine.typeAExitFiveDichotomy` reads `typeASaturatedHandoffExitFourFree` from the incoming `ExactLedger`, preserving the selected packing, maximal packing proof, canonical component, support, receiver, current peeling set, saturation proof, and the selected no-exit-(4) visible or silent clause.  It then decides only the paper compression predicate `∃ support, Graph.Strategy.InterfaceReplacement.CompressibleSupport (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object support` for that same current object.  The yes arm commits `typeAExitFive` with the complete selected predecessor tuple plus the compression support; the no arm commits `typeAExitFiveFree` with the same tuple plus the negation.  The stale duplicate keys `typeAExitFiveCompression` and `typeAExitFiveTraceLevel` were removed.
 - **What it should do.** The selected `typeAExitFive` arm must close by reading the already-ledgered `uncompressible` fact and the selected compression support.  The `typeAExitFiveFree` arm must be the sole predecessor for exit `(6)`.
 - **Gap.** Node `[103]` is implemented and validated as a selected ledger decision, and node `[104]` closes the yes arm by Core's `closeIncompatible`.  The next open step is exit `(6)` from the selected `typeAExitFiveFree` ledger.
-- **Ledger and residual.** The row appends exactly one fact to the incoming branch by Core `Decision.run`.  Both arms retain the full prefix, including `[61]`, `[62]`, receiver routing, saturation, visible/silent handoff state, finite descent, and `typeASaturatedHandoffExitFourFree`.  The yes arm then appends `closed` by reading the existing `uncompressible` fact from that same ledger prefix.  No global `Route8.Data` witness is quantified and no residual fact is dropped.
+- **Ledger and residual.** The row appends exactly one fact to the incoming branch by Core `Decision.run`.  Both arms retain the full prefix, including `[61]`, `[62]`, receiver routing, saturation, visible/silent handoff state, finite descent, and `typeASaturatedHandoffExitFourFree`.  The yes arm then appends `closed` by reading the existing `uncompressible` fact from that same ledger prefix.  No auxiliary route-8 witness is quantified and no residual fact is dropped.
 - **Transport and terminals.** Transport is Core-owned: the `typeAExitFive`
   decision runs only after the selected no-exit-(4) ledger fact, commits either
   `typeAExitFive` or `typeAExitFiveFree`, and the yes arm closes with
@@ -2190,7 +2186,7 @@ compression fact.
   packing, canonical component, piece, receiver, peeling set, saturated state,
   no-exit-`(4)` witness and no-exit-`(5)` predicate.  The yes arm stores a
   `PresentedEntry` with a `Route8.Delocalization`; it is not an arbitrary
-  `Route8.Data` collection.  `Spine.typeAExitSixScopeDichotomy` then reads
+  auxiliary route-8 object.  `Spine.typeAExitSixScopeDichotomy` then reads
   `typeAExitSix` and applies the graph-owned `Delocalization.localize`, committing
   either `typeAExitSixProper` or `typeAExitSixGlobal`.
 - **Gap.** None for nodes `[105]` and `[106]`.  The surviving no arm is the
@@ -2702,39 +2698,50 @@ path carries it with the contradiction recorded in the closure entry's own
 **CT composition at this row.** No CT. One `Decision.run` reads the selected
 support fact from the canonical ledger and commits exactly one of the two facts.
 
-### Row 25a — Immediate B2(a)--(c) disjoint-ledger handoff
+### Row 25a — Immediate B2 disjoint-ledger handoff
 
 - **Paper fact.** On the successful arm of the finite B2 choice, clauses
   B2(a)--(c) are the literal simultaneous candidate selection, pairwise carrier
   and reserve disjointness, and the exact common-scale partition of the same
-  augmented ledger.  Every actual connected component of the remaining core
-  inherits the normalized Type A admissibility facts and the Type B maximal-core
-  no-high-centre clause from the same ledger.
+  augmented ledger.  Clause B2(d) adds the maximal post-ledger condition: every
+  actual connected component of the remaining core has no high centre, and
+  actual exit-`(7)` decorated handoff productions on those components are
+  covered by the grouped decorated envelope processed in the same canonical
+  step.
 - **What the Lean does.** `Spine.disjointPostLedgerComponentsRow` is one `factOnly`
-  `AtomicStrategy`.  It reads exactly `typeBB2Choice`, `selection`, and
+  `AtomicStrategy`.  It reads exactly `typeBB2Choice`, `selection`,
+  `uncompressible`, and
   `remainderNormalized` through `FactInputs.get`, constructs one
   `TypeBRefinedSupport.DisjointLedger` from the already selected
   `HasDisjointChoice`, commits `exactAugmentedLedgerRefinement`, and applies
   `TypeBPostLedgerCore.postLedgerCoreHygiene` to every member of
   `Connected.order object ledger.remainingCore`.  Each `PostLedgerComponent`
   includes `noHighCentre`, proved from `ledger.noHighCentre_remaining` on that
-  same component.  The deterministic
+  same component.  The same `typeBDisjointLedger` value also proves grouped
+  handoff coverage: for any finite family of actual
+  `TypeBMaximalCompletion.ComponentExitSeven` productions on the remaining
+  components, `TypeBMaximalCompletion.groupedOfComponentExitSeven` supplies the
+  canonical `DecoratedHandoff.GroupedEnvelopes`, with the envelope cores exactly
+  the selected post-ledger components and the grouped centre set exactly the
+  surviving separators of those productions.  The deterministic
   `Data.typeABPresentation` reads only the registered threshold, window order,
   discharge scale, and target.  Empty internal core and hereditary Type A
-  uncompressibility are derived from the same remainder-normalization fact.
+  uncompressibility for component hygiene are derived from the same
+  remainder-normalization fact; decorated-handoff admissibility reads the
+  already committed `uncompressible` ledger fact.
 - **What it should do.** This: the Type B row publishes the exact selected
   disjoint ledger and the component facts obtained from that ledger.
-- **Gap.** None for the Type B facts committed by this row.  The decorated
-  handoff/grouped-envelope part of the manuscript's maximal completion belongs
-  to the separate handoff/envelope machinery and is not re-created here.
+- **Gap.** None for the Type B facts committed by this row.  The downstream
+  Type B exclusion/branch-kill consumer is still row 28; it must read this
+  strengthened `typeBDisjointLedger` fact rather than re-prove or wrap B2.
 - **Ledger and residual.** The row appends only `typeBDisjointLedger` to the
   literal B2-success `ExactLedger`.  Its value retains the same packing and
   `CanonicalPiece`, the constructed mathematical disjoint ledger, the exact
-  refinement, and all component hygiene, including no high centre in each
-  remaining component.  The residual is unchanged.
+  refinement, all component hygiene, and the grouped exit-`(7)` coverage theorem
+  derived from actual component productions.  The residual is unchanged.
 - **Transport and terminals.** `factOnly` supplies equality refinement and the
   ordinary atomic commit.  There is no component iterator commit, payload,
-  result type, standalone residual, terminal, or B2(d) routing claim.
+  result type, standalone residual, terminal, or separate B2(d) routing claim.
 
 **Paper objects at this row.**
 
@@ -2743,10 +2750,13 @@ support fact from the canonical ledger and commits exactly one of the two facts.
 | B2(a)--(c) selected ledger | structure/theorem | `TypeBRefinedSupport.DisjointLedger`<br>`DisjointLedger.exactAugmentedLedgerRefinement` | generic graph API |
 | inherited component hygiene | theorem | `TypeBPostLedgerCore.postLedgerCoreHygiene` | generic graph API |
 | Type B no-high-centre maximal-core clause | theorem | `TypeBRefinedSupport.DisjointLedger.noHighCentre_remaining`<br>`TypeBPostLedgerCore.PostLedgerComponent.noHighCentre` | generic graph API |
+| grouped decorated handoff coverage | theorem | `TypeBMaximalCompletion.ComponentExitSeven`<br>`TypeBMaximalCompletion.groupedOfComponentExitSeven`<br>`DecoratedHandoff.GroupedEnvelopes` | consumed inside `Spine.disjointPostLedgerComponentsRow` |
 | single ledger handoff | semantic fact / row | `Spine.Key.typeBDisjointLedger`<br>`Spine.disjointPostLedgerComponentsRow` | `factOnly` atomic Strategy |
 
 **CT composition at this row.** No CT.  One fact-only atomic Strategy appends
-the complete B2(a)--(c) handoff as one semantic fact.
+the complete B2 ledger handoff as one semantic fact.  It does not create a
+grouped handoff side carrier; the grouped envelope theorem is part of the
+`typeBDisjointLedger` value read from the exact ledger downstream.
 
 ### Row 26 — Hybrid B1 entry `[74]`/`[82]` (ported: `Spine.hybridEntry`)
 
@@ -2885,7 +2895,7 @@ adding a comparison.
   2. **`lem:typeB-bridge-deficit-bound`**: `No_-(X) ≤ F·σ(X)` at such a support
      (`bridgeDeficitBound`), subtraction-free as
      `|V(X)| + s·σ(X) ≤ s·defp(X) + F·s·σ(X)`.
-  3. **`lem:typeB-bridge-with-route8-core`**, and at an empty route-8 collection
+  3. **`lem:typeB-bridge-with-route8-core`**, and at an empty route-8 ledger residual
      **`prop:typeB-bridge-sublinear`**, over the canonical decomposition of this
      residual's packed-window remainder (`bridgeResidualMass_le_route8`,
      `bridgeResidualMass_le`); and **`def:typeB-residual-mass`'s at-most-twice
@@ -2953,7 +2963,7 @@ canonical decomposition, whose sum laws
 (`FiniteObject.sum_ambientSurplus_canonicalPieces`) the framework already owns
 and the row consumes directly.
 
-### Row 28 — Bridge deficit `[76]`/`[85]` (ported: `Spine.typeBExclusionCharge`, `Spine.typeBExclusionDichotomy`)
+### Row 28 — Bridge deficit `[76]`/`[85]` (`Spine.typeBExclusionCharge`, `Spine.typeBExclusionDichotomy`)
 
 - **Paper fact.**  `lem:typeB-exclusion`: for a connected admissible support
   carrying high-degree surplus, with no fan-certificate residual centre,
@@ -2964,55 +2974,28 @@ and the row consumes directly.
   core.  `prop:typeB-bridge-reduction` is the same conclusion stated directly.
   `thm:branch-kill` is the branch-closure theorem these nodes feed, jointly with
   `[123]`.
-- **What the Lean does.**  Two values.
+- **What the Lean does.**  The live Type B code does not yet define the
+  `typeBExclusionCharge`, `typeBExcluded`, or `typeBExclusionResidual` semantic
+  keys, and it does not yet define `SpineRows.typeBExclusionChargeRow` or
+  `Spine.typeBExclusionDichotomy`.  The predecessor row now publishes the
+  strengthened `typeBDisjointLedger` fact containing B2(a)--(d), including
+  grouped exit-`(7)` handoff coverage, but row 28 itself is not implemented.
+- **What it should do.**  Add the Type B exclusion facts as ordinary semantic
+  keys and implement them as framework rows.  The charge row must require and
+  read `typeBDisjointLedger` from the incoming exact ledger, then append the
+  single `typeBExclusionCharge` fact containing `(B-ledger)` and
+  `prop:typeB-bridge-reduction` in the paper's conditional form.  The dichotomy
+  must read that charge fact and split exactly on the two hypotheses of
+  `lem:typeB-exclusion`: no admissible route-8 residual profile and no
+  admissible positive-deficit Type B fan-window residual.  The excluded arm
+  closes by incompatibility with the negative-support fact on the same branch;
+  the complementary arm appends `typeBExclusionResidual`.
+- **Gap.**  Row 28 remains open.  The next implementation must consume the
+  strengthened `typeBDisjointLedger` fact rather than `typeBB2Choice`, because
+  the paper's Step 2 spends the full B2 ledger, including B2(d)'s post-ledger
+  core and grouped handoff coverage.
 
-  `Spine.typeBExclusionCharge` is
-  `SpineRows.typeBExclusionChargeRow (K .typeBB2Choice)
-  (K .typeBExclusionCharge)`, with `Requires := [typeBB2Choice]` — B2,
-  committed at node `[72]`/`[81]` — read through `FactInputs.get`.  At every
-  connected assigned Type B support of this residual it commits:
-
-  * **`(B-ledger)`** of `def:typeB-assigned-ledger`,
-    `Ĉh_B(X) + α|H_X| = defp(X) − σ(X) − α|V(X)|`
-    (`augmentedLedger_add_card_centres`), and the line the manuscript spends it
-    on (`nonNegativeNetCharge_of_augmentedLedger_nonneg`);
-  * **Step 2 / `prop:typeB-bridge-reduction`**
-    (`TypeBEnvelopeCharge.typeBExclusion`): for the B2 assignment the fact
-    supplies, any choice of entries with disjoint carriers that are
-    certificate-closed and whose post-ledger core discharges gives
-    `defp(X) − σ(X) ≥ ¼|V(X)|`.
-
-  **Nothing of `def:typeB-candidate-ledger` is restated.**  `A_h` is
-  `CandidateEntry.assigned` with `assigned_adjacent`, `assigned_subset` and
-  `assigned_notCentre` its clauses; the payment
-  `ch_X(h) + Σ_{v∈A_h} ch_X(v) + ½|chosen| ≥ 0` is `CandidateEntry.pays` cleared
-  at scale `2s`; the disjointness is `HasDisjointChoice`; and `demands = H_X`
-  comes from `demands_subset` with `IsMaximal`.  What Step 2 adds is the
-  summation over the disjoint blocks (`entryBlock`, `entryBlock_disjoint`,
-  `neg_one_le_entryBlockCharge`) and the in-place discharge of the core outside
-  them (`PostLedgerCore`, `card_le_scaled_deficiency_off`).
-
-  The `−α` per block is the centre's own charge as a vertex of the counted core,
-  which `def:typeB-candidate-ledger`'s display does not include; it is exactly
-  the `+α|H_X|` on the other side of `(B-ledger)`.  Committing the identity as a
-  fact is what makes that come out — `Ĉh_B(X) ≥ 0` would be false at `k = 7`,
-  `c = 1`, where `D_B = 0` exactly.
-
-  `Spine.typeBExclusionDichotomy` is **`thm:branch-kill` (b)**.  It splits on
-  `lem:typeB-exclusion`'s own two hypotheses, not on its conclusion, and the arm
-  that meets them *derives* `No(X) ≥ 0` by applying the implication above, read
-  with `ExactLedger.get` from the cursor.  That arm then collides with the
-  node-`[64]` residual's negative net charge
-  (`instIncompatibleTypeBExcluded`, spending
-  `FiniteObject.not_negativeNetCharge_iff`) and the branch **closes**.  The
-  complementary arm, `typeBExclusionResidual`, is the excluded alternative
-  itself: an entry that spends half-incidence credits — the positive-deficit fan
-  of `def:typeB-multiclosed-residual`, which node `[74]`/`[82]` pays — or a
-  post-ledger core that does not discharge, which is the route-8 residual
-  profile.
-- **What it should do.**  This.
-- **Gap.**  None for `lem:typeB-exclusion`, `prop:typeB-bridge-reduction` or
-  `thm:branch-kill` (b).  **Facts passes.**  Two notes.
+  **Facts passes.**  Two notes.
 
   `thm:branch-kill` (a) — the Type A half, `lem:typeA-exclusion` — is **not**
   committed and is not this row's: it is node `[86]` in section E, and the Type A
@@ -3024,46 +3007,38 @@ and the row consumes directly.
   Step 2's remaining hypotheses — `chosen = ∅` and `PostLedgerCore` — are not
   assumptions left dangling: they are exactly what the dichotomy branches on, so
   the alternative in which they fail is a committed fact with its own arm.
-- **Ledger and residual.**  `factOnly` lowered by `AtomicCT.run` for the charge
-  row; `Decision.run` for the dichotomy.  Residual unchanged, `Refines` equality,
-  output index `Produces ++ known`.  The row reads B2 and nothing else, and the
-  dichotomy reads the charge fact and nothing else.
-- **Transport and terminals.**  `[76]` and `[85]` are **closed terminals** on
-  their excluded arm, where Core appends the reserved closure key.  Their
-  surviving arms are exact ledgers for the Type B and degree-four exclusion
-  residuals.  B2 *holds* on those cursors, so by `lem:typeB-exclusion`'s
-  "consequently" the survivor is not a bridge residual and no fan-mass bound
-  applies to it; it is a retained leaf.
-
-  There is no join and no autoroute.  Branches commit against one immutable
-  prefix, so the two B1 cursors carry the exclusion, the four bridge-residual
-  cursors carry row 27's mass bound, and neither can read the other —
-  `Fixtures.TypeBBridgeNode` checks that in both directions.
+- **Ledger and residual.**  Open.  The intended implementation is a fact-only
+  charge row followed by a `Decision.run` split; both must leave the residual
+  unchanged and append facts to the same exact branch prefix.
+- **Transport and terminals.**  Open.  `[76]` and `[85]` should become closed
+  terminals only on the excluded arm, where the framework appends the reserved
+  closure key.  The surviving arm should be the exact ledger carrying
+  `typeBExclusionResidual`.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:typeB-assigned-ledger`, `(B-ledger)` | def | `TypeBEnvelopeCharge.augmentedLedger`<br>`TypeBEnvelopeCharge.augmentedLedger_add_card_centres`<br>`TypeBEnvelopeCharge.nonNegativeNetCharge_of_augmentedLedger_nonneg` | consumed by `Spine.typeBExclusionCharge` |
+| `def:typeB-assigned-ledger`, `(B-ledger)` | def | `TypeBEnvelopeCharge.augmentedLedger`<br>`TypeBEnvelopeCharge.augmentedLedger_add_card_centres`<br>`TypeBEnvelopeCharge.nonNegativeNetCharge_of_augmentedLedger_nonneg` | available; row consumer missing |
 | `def:typeB-candidate-ledger` | def | `TypeBRefinedSupport.CandidateEntry.assigned`<br>`TypeBRefinedSupport.CandidateEntry.chosen`<br>`TypeBRefinedSupport.CandidateEntry.pays`<br>`TypeBRefinedSupport.HasDisjointChoice` | row 25's object, read here |
-| `lem:typeB-exclusion` (Step 2) | lem | `TypeBEnvelopeCharge.entryBlock`<br>`TypeBEnvelopeCharge.entryBlock_disjoint`<br>`TypeBEnvelopeCharge.neg_one_le_entryBlockCharge`<br>`TypeBEnvelopeCharge.typeBExclusion` | consumed by `Spine.typeBExclusionCharge` |
-| `prop:typeB-bridge-reduction` | pro | `TypeBEnvelopeCharge.typeBExclusion` | consumed by `Spine.typeBExclusionCharge` |
-| `lem:typeB-postledger-core-hygiene` | lem | `TypeBEnvelopeCharge.PostLedgerCore` | consumed by `TypeBEnvelopeCharge.typeBExclusion` |
-| `def:typeB-multiclosed-residual` | def | key `Spine.Key.typeBExclusionResidual`<br>`TypeBFanIncidence.IsCertificateClosed` | the `chosen ≠ ∅` arm of the dichotomy |
-| `thm:branch-kill` (b), Type B | thm | `Spine.typeBExclusionDichotomy`<br>`Spine.instIncompatibleTypeBExcluded`<br>key `Spine.Key.typeBExcluded` | consumed by `Spine.run`; the arm closes |
+| `lem:typeB-exclusion` (Step 2) | lem | missing `TypeBEnvelopeCharge.typeBExclusion` consumer theorem | row consumer missing |
+| `prop:typeB-bridge-reduction` | pro | missing `TypeBEnvelopeCharge.typeBExclusion` consumer theorem | row consumer missing |
+| `lem:typeB-postledger-core-hygiene` | lem | `TypeBPostLedgerCore.PostLedgerComponent` inside `typeBDisjointLedger` | available through the ledger |
+| `def:typeB-multiclosed-residual` | def | missing key `Spine.Key.typeBExclusionResidual` | intended no arm of the dichotomy |
+| `thm:branch-kill` (b), Type B | thm | missing `Spine.typeBExclusionDichotomy`<br>missing `Spine.Key.typeBExcluded` | intended closed arm |
 | `lem:typeB-exclusion` (Step 1) | lem | | |
 | `thm:branch-kill` (a), Type A | thm | | |
 
-`lem:typeB-exclusion` Step 1 is empty and that is deliberate: with B2 supplying
-the entries and `CandidateEntry.pays` supplying their payment, the construction
-of a certificate-closed entry at `A_h = N(h)` is not needed for the conclusion,
-and building it would be a second proof of what row 25's object already carries.
+`lem:typeB-exclusion` Step 1 is not yet committed as a row fact.  When row 28 is
+implemented, it should not rebuild the candidate entries already carried by B2;
+it should consume the selected entries and their payments from
+`typeBDisjointLedger`.
 
-**CT composition at this row.**  No CT.  One `factOnly` `AtomicStrategy` and one
-`Decision`, each at two cursors.  Step 2's aggregation is a `biUnion` over the
-assigned centres whose disjointness is B2's own, summed by Mathlib's
-`Finset.sum_biUnion`; a demand/capacity stage would add a residual restriction
-this row does not make.
+**CT composition at this row.**  Open.  The intended shape is no CT: one
+`factOnly` `AtomicStrategy` for the charge implication and one `Decision`, each
+run at the two Type B cursors.  Step 2's aggregation should be over the assigned
+centres whose disjointness is B2's own; a demand/capacity stage would add a
+residual restriction this row does not make.
 
 
 ### Row 29 — Degree-four fan profile `[78]`,`[79]` (ported: `Spine.degreeFourProfile`)
@@ -5277,9 +5252,10 @@ rows go through the framework's one `AtomicCT.run` and its one `Decision.run`.
   assumed, so no theorem here is vacuous.  `lem:bridgeless` enters as the named
   field `twoStubs`: it is a theorem about the selected object with its own place
   in the manuscript, not part of this definition, and it is cited where the
-  definition cites it.  The constants are defined and proved here but not yet
-  *spent*: their consumers are Row 50's exchange bound and Row 51's schedule
-  bound, neither ported.  **Facts passes.**
+  definition cites it.  The constants are defined and proved here and consumed
+  by the later cold facts: Row 50 reads the exchange bound, and the germ,
+  extraction and closure rows consume the cold bounds through the ledgered
+  facts.  **Facts passes.**
 - **Ledger and residual.** `Spine.coldCorridorStateRow` is a `factOnly` atomic
   Strategy with `Requires := []` and `Produces := [coldCorridorState]`.  The
   committed statement has three clauses: the retention's completeness, the
@@ -5693,13 +5669,15 @@ disjointness.
   any branch; this one is the elimination of the (F4) clause the row above
   commits, and `ColdCorridor.firstFailureHandoffExit` takes the branch's own
   `handoffEnvelopes` field, so the transfer target is the recorded envelope
-  family and not a manufactured one.  Nothing is closed at the corridor: the exit carries an
-  envelope, not a target proof.  **Facts passes.**
+  family and not a manufactured one.  Nothing is closed at the corridor: the
+  theorem identifies the handoff envelope inside the mathematics, but no row
+  returns that envelope as a transport payload.  **Facts passes.**
 - **Ledger and residual.** The exit is a consequence of the (F4) fact rather
   than a fact of its own — it carries an envelope, which is data, and no fact may
   carry data.  What the ledger records is the uniqueness statement of Row 48.
-- **Transport and terminals.** No CT.  The carrier is the subtype above; the
-  branch's `HandoffEnvelopes` is the framework-side destination.
+- **Transport and terminals.** No CT, no terminal and no ledger payload.  The
+  subtype remains inside the standalone theorem; the row-level transport is only
+  the exact ledger fact already committed at Row 48.
 
 **Paper objects at this row.**
 
@@ -6118,22 +6096,19 @@ corridor, germ, or graph at all.
   canonical spine there is no dispatch field: the (F1) fact is committed once, at
   Row 45, as `∀ corridor window segment, ¬ corridor.FirstFailureCycle window
   LengthOK segment`, read off node `[1]`'s `selection`; and the trichotomy's G1
-  arm is committed once, at Row 52, as `∀ germ, ¬ germ.Realizing`.  What the
-  legacy `LedgerProfile.outcome` did — match a stored `f1Owners` partition and
-  return `Sum.inr (PLift.up target)` — is replaced by `Spine.runCold` composing
-  the rows through `AtomicCT.run`: the (F1) clause is on the ledger, and any
-  later row that needs it reads it by exact key.
+  arm is committed once, at Row 52, as `∀ germ, ¬ germ.Realizing`.  The old
+  side-channel dispatch is replaced by `Spine.runCold` composing the rows
+  through `AtomicCT.run`: the (F1) clause is on the ledger, and any later row
+  that needs it reads it by exact key.
 - **What it should do.** Exactly this.  The legacy row's own **What it should
   do** asked for "read the stored (F1) partition off the entry just written, and
   on a nonempty partition return the target"; with the fact on the canonical
   ledger there is no partition to scan and no payload to return — the target
   cannot occur, which is strictly what the manuscript claims.
-- **Gap.** `none`.  **Facts passes.**  The legacy path is retired:
-  `Graph.Strategy.ColdBranchAggregation` and
-  `Core.Strategy.ColdBranchAggregation` are quarantined, so
-  `storedF1ForcesTarget`, `LedgerProfile.outcome` and the `Sum`-typed `Outcome`
-  payload are out of the build.  This removes the audit's own former complaint
-  that "the target lives in the payload type": there is no payload type.
+- **Gap.** `none`.  **Facts passes.**  The legacy path is retired: the old
+  aggregation sources are not part of the live EG build, and the
+  remaining non-PDE fixture shims that imported them have been deleted.  The
+  old target side channel is therefore absent from the cold proof surface.
 - **Ledger and residual.** One immutable prefix, no second scan.  `AtomicCT.run`
   appends each row's production to the incoming index while retaining the
   literal ancestry, so Row 45's clause is in the type of every later cursor.
@@ -6442,36 +6417,18 @@ field — which is the difference from the previous implementation.
 trichotomy whose branches are discharged by facts already on the ledger.
 
 
-### Trailing note — the `v17` node range
+### Trailing note — deleted stale fixtures
 
-The vertex note is wrong, and it belongs to no single row.
-`generated/hypostructure/web/proof-runs/erdos.json` gives `dag.nodes[17]`
-(`id: "v17"`, `cold_branch_aggregation:0`) the authored and resolved label
-`"Nodes [145]–[164] cold-branch closure"` and the note `"Execute the complete
-cold-window ledger and return the literal node-[164] ledger residual for the
-enclosing continuation."`  The manuscript has 157 nodes: the Part XI panel of
-`fig:proof-diagram-part-xi` runs `[145]` to `[157]`, the theorem-index row reads
-`[145]--[157]`, and no node above `[157]` exists anywhere in
-`original_erdos_64_proof.tex`.  Nothing is being closed at a node `[158]`–`[164]`.
+The stale overlong cold aggregation chain is no longer a source artifact of the
+EG proof.  The old aggregation modules had already been removed from the live
+build, and this cleanup deleted the two remaining non-PDE fixtures that still
+imported them.  Those fixtures existed only to exercise obsolete side channels;
+none of that belongs to the canonical cold corridor, whose only output is the
+`ExactLedger` returned by `Spine.runCold`.
 
-The `164` originates in a parallel, unwired Lean chain:
-`Core/Strategy/ColdBranchAggregation.lean` declares twenty stages `Stage145`
-through `Stage164`, each a `Core.Residual.Ledger.Extension` or a
-`Core.Residual.Decision.Stage` with no cold-specific content, bundled by
-`Prefix160`/`Inputs` and executed by `Profile.execution` with
-`checks = work = Fintype.card Phase = 20`.  That chain is consumed only by
-`Graph/Strategy/ColdBranchPreludeAggregation.lean`,
-`Fixtures/ColdBranchPreludeAggregation.lean` and
-`PDE/Strategy/Registry/RankAndCold.lean`; grep finds no occurrence of
-`ColdBranchPreludeAggregation`, `ColdBranchAggregation.Inputs` or
-`ColdBranchAggregation.Profile` in `examples/hypostructure_erdos_64_eg`.  The EG
-cold vertex runs `LedgerProfile.execution` instead, whose `Terminal` is
-`familyScan | targetClosed`.  The current sealed run
-`build/hypostructure/eg-ab-run.json` carries the corrected label
-`"Cold-window corridor closure"` with `note: null`, and
-`Graph/Strategy/FiniteDensityBudget.lean:500` names the overflow arm
-`[145]`--`[157]`; the `[145]`–`[164]` claim survives only in the generated web
-run.
+The PDE registry files that still mention the retired aggregation names are
+left untouched by request.  They are not imported by `Hypostructure.lean` and
+are not evidence for the EG cold proof.
 
 ### Row 62 — `[109]` route-8 arm placement
 
@@ -6479,11 +6436,11 @@ The Strategy placement and runner were deleted.  The exact missing theorem is th
 
 ### Row 63 — `[111]`–`[113]` collection, burden, deficit bound
 
-Pure `Graph.Route8` burden and deficit theorems remain.  The missing predecessor is the exact selected true-route8 residual collection produced by `lem:typeA-saturated-handoff`; no Strategy fact or read exists.  Ledger/Reads/Closed/Full are all false.
+Pure `Graph.Route8` burden and deficit theorems remain.  The missing predecessor is the exact selected exit-8 ledger residual produced by `lem:typeA-saturated-handoff`; no Strategy fact or read exists.  Ledger/Reads/Closed/Full are all false.
 
 ### Row 64 — `[114]`–`[116]` carrier core
 
-Pure carrier-core mathematics remains.  The missing predecessor is the same selected true-route8 residual collection and its canonical target-complete-minimal entries.  Ledger/Reads/Closed/Full are all false.
+Pure carrier-core mathematics remains.  The missing predecessor is the same selected exit-8 ledger residual and its canonical target-complete-minimal entries.  Ledger/Reads/Closed/Full are all false.
 
 ### Row 65 — `[117]`–`[122]` private-carrier census
 

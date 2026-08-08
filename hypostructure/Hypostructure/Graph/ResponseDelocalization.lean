@@ -139,43 +139,4 @@ theorem closedRepresentative
 
 end Delocalization
 
-/-- **Exit `(6)` at one indexed entry of a route-8 collection.**
-
-The entry's reading has an equality among its declared coordinates that
-delocalizes to a larger connected support.  The datum is existential because the
-manuscript's clause is: *some* equality, at *some* enlarging support. -/
-def Data.Delocalizes {Target : FiniteObject.{u} → Prop}
-    (data : Data Target object) (Baseline : FiniteObject.{u} → Prop)
-    (index : data.Index) : Prop :=
-  Nonempty (Delocalization Baseline Target (data.presented index))
-
-/-- **`lem:typeA-exits-discharged`'s exit-`(6)` sentence at an indexed entry.**
-
-*"Exit (6) is excluded by `lem:proper-smearing` in the proper-support case and by
-`lem:no-silent-global-smearing` in the whole-graph case."*  An entry that
-delocalizes therefore hands the branch exactly one of the two conclusions the
-manuscript names, decided by the scope of the enlarging support and by nothing
-else. -/
-theorem Data.localize_of_delocalizes {Target : FiniteObject.{u} → Prop}
-    {data : Data Target object} {Baseline : FiniteObject.{u} → Prop}
-    {index : data.Index} (delocalizes : data.Delocalizes Baseline index) :
-    (∃ support : Finset object.Vertex,
-        Strategy.InterfaceReplacement.ReplacementSupport Baseline Target object
-          support) ∨
-      ∃ representative : FiniteObject.{u},
-        representative.LexicographicallySmaller object ∧
-          Baseline representative ∧ (Target representative → Target object) := by
-  obtain ⟨delocalization⟩ := delocalizes
-  rcases delocalization.localize with replacement | representative
-  · exact Or.inl ⟨_, replacement⟩
-  · exact Or.inr representative
-
-/-- **(R2) for exit `(6)`**: no indexed entry of any route-8 collection of the
-object delocalizes.  This is the absence clause the route-8 arm is entered on,
-in the same shape as `ExitFourFree` and `TraceSurviving`. -/
-def DelocalizationFree (Baseline Target : FiniteObject.{u} → Prop)
-    (object : FiniteObject.{u}) : Prop :=
-  ∀ data : Data Target object, ∀ index ∈ data.entries,
-    ¬ data.Delocalizes Baseline index
-
 end Hypostructure.Graph.Route8

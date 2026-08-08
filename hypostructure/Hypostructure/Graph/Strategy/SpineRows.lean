@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.TypeADischarge
+import Hypostructure.Graph.TypeBMaximalCompletion
 
 /-!
 # The minimum-degree cycle spine: entry rows
@@ -3200,9 +3201,11 @@ remaining connected component is therefore passed to the existing Type A
 hygiene theorem on the same ledger, and the component fact reads the ledger's
 own `noHighCentre_remaining` theorem for the Type B maximal-core clause. -/
 @[reducible] noncomputable def disjointPostLedgerComponentsRow
-    (typeBB2Choice selection remainderNormalized typeBDisjointLedger :
+    (typeBB2Choice selection uncompressible remainderNormalized
+      typeBDisjointLedger :
       FactKey (Input BranchState Presentation presentation data))
-    (requiredUnique : [typeBB2Choice, selection, remainderNormalized].Nodup)
+    (requiredUnique :
+      [typeBB2Choice, selection, uncompressible, remainderNormalized].Nodup)
     (choiceOf : (input : Input BranchState Presentation presentation data) →
       typeBB2Choice.At input →
       ∃ packing : Finset (Finset input.object.Vertex),
@@ -3223,6 +3226,13 @@ own `noHighCentre_remaining` theorem for the Type B maximal-core clause. -/
     (avoidsOf : (input : Input BranchState Presentation presentation data) →
       selection.At input →
         ¬ Graph.HasCycleWithLength data.LengthOK input.object)
+    (uncompressibleOf :
+      (input : Input BranchState Presentation presentation data) →
+      uncompressible.At input →
+      ∀ support : Finset input.object.Vertex,
+        ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) input.object support)
     (normalizedOf : (input : Input BranchState Presentation presentation data) →
       remainderNormalized.At input →
       ∀ packing : Finset (Finset input.object.Vertex),
@@ -3250,16 +3260,51 @@ own `noHighCentre_remaining` theorem for the Type B maximal-core clause. -/
               ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
                   data.threshold data.dischargeScale canonicalPiece,
                 ledger.ExactAugmentedLedgerRefinement ∧
-                  ∀ component : Graph.SupportComponents.Connected.Component
-                      input.object ledger.remainingCore,
-                    component ∈ Graph.SupportComponents.Connected.order
-                        input.object ledger.remainingCore →
-                      Graph.TypeBPostLedgerCore.PostLedgerComponent
-                        data.typeABPresentation ledger component) →
+                  (∀ component : Graph.SupportComponents.Connected.Component
+                        input.object ledger.remainingCore,
+                      component ∈ Graph.SupportComponents.Connected.order
+                          input.object ledger.remainingCore →
+                        Graph.TypeBPostLedgerCore.PostLedgerComponent
+                          data.typeABPresentation ledger component) ∧
+                  ∀ components :
+                      Finset (Graph.TypeBMaximalCompletion.RemainingComponent
+                        ledger),
+                    (∀ component ∈ components,
+                      component ∈ Graph.SupportComponents.Connected.order
+                        input.object ledger.remainingCore) →
+                      ∀ production : ∀ component :
+                          Graph.TypeBMaximalCompletion.SelectedComponent ledger
+                            components,
+                        Graph.TypeBMaximalCompletion.ComponentExitSeven ledger
+                          component.1 data.LengthOK
+                          (handoffHighDegree input.object)
+                          (handoffAbsorbing data input.object packing),
+                        ∃ grouped :
+                          Graph.DecoratedHandoff.GroupedEnvelopes input.object
+                            data.LengthOK
+                            (handoffUncompressible data input.object)
+                            (handoffWindowFree data input.object)
+                            (handoffHighDegree input.object)
+                            (handoffAbsorbing data input.object packing)
+                            (Graph.TypeBMaximalCompletion.SelectedComponent
+                              ledger components),
+                          (∀ component :
+                              Graph.TypeBMaximalCompletion.SelectedComponent
+                                ledger components,
+                            (grouped.envelope component).core =
+                              Graph.SupportComponents.Connected.vertices
+                                input.object ledger.remainingCore component.1) ∧
+                            ∀ centre : input.object.Vertex,
+                              centre ∈ grouped.centres ↔
+                                ∃ component :
+                                  Graph.TypeBMaximalCompletion.SelectedComponent
+                                    ledger components,
+                                  centre =
+                                    (production component).separation.separator) →
         typeBDisjointLedger.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.disjointPostLedgerComponents
-    { Requires := [typeBB2Choice, selection, remainderNormalized]
+    { Requires := [typeBB2Choice, selection, uncompressible, remainderNormalized]
       Produces := [typeBDisjointLedger]
       requiresUnique := requiredUnique
       producesUnique := by simp
@@ -3267,6 +3312,8 @@ own `noHighCentre_remaining` theorem for the Type B maximal-core clause. -/
     (fun inputs =>
       let choiceFact := choiceOf inputs.current (inputs.get typeBB2Choice)
       let avoids := avoidsOf inputs.current (inputs.get selection)
+      let uncompressibleFact := uncompressibleOf inputs.current
+        (inputs.get uncompressible)
       let normalized := normalizedOf inputs.current
         (inputs.get remainderNormalized)
       .cons (key := typeBDisjointLedger)
@@ -3313,12 +3360,81 @@ own `noHighCentre_remaining` theorem for the Type B maximal-core clause. -/
               data.threshold ≤ inputs.current.object.degree vertex := fun vertex =>
             le_trans inputs.current.baseline
               (inputs.current.object.minDegree_le_degree vertex)
-          exact ⟨packing, valid, maximal, canonicalPiece, negative, positive,
-            ledger, ledger.exactAugmentedLedgerRefinement,
+          let componentFacts :
+              ∀ component : Graph.SupportComponents.Connected.Component
+                  inputs.current.object ledger.remainingCore,
+                component ∈ Graph.SupportComponents.Connected.order
+                    inputs.current.object ledger.remainingCore →
+                  Graph.TypeBPostLedgerCore.PostLedgerComponent
+                    data.typeABPresentation ledger component :=
             fun component componentMember =>
               Graph.TypeBPostLedgerCore.postLedgerCoreHygiene
                 data.typeABPresentation ledger component componentMember rfl
-                noBaselineSubsupport pieceFree targetSafe hereditary baseline⟩))
+                noBaselineSubsupport pieceFree targetSafe hereditary baseline
+          have groupedCoverage :
+              ∀ components :
+                  Finset (Graph.TypeBMaximalCompletion.RemainingComponent
+                    ledger),
+                (∀ component ∈ components,
+                  component ∈ Graph.SupportComponents.Connected.order
+                    inputs.current.object ledger.remainingCore) →
+                  ∀ production : ∀ component :
+                      Graph.TypeBMaximalCompletion.SelectedComponent ledger
+                        components,
+                    Graph.TypeBMaximalCompletion.ComponentExitSeven ledger
+                      component.1 data.LengthOK
+                      (handoffHighDegree inputs.current.object)
+                      (handoffAbsorbing data inputs.current.object packing),
+                    ∃ grouped :
+                      Graph.DecoratedHandoff.GroupedEnvelopes
+                        inputs.current.object data.LengthOK
+                        (handoffUncompressible data inputs.current.object)
+                        (handoffWindowFree data inputs.current.object)
+                        (handoffHighDegree inputs.current.object)
+                        (handoffAbsorbing data inputs.current.object packing)
+                        (Graph.TypeBMaximalCompletion.SelectedComponent ledger
+                          components),
+                      (∀ component :
+                          Graph.TypeBMaximalCompletion.SelectedComponent ledger
+                            components,
+                        (grouped.envelope component).core =
+                          Graph.SupportComponents.Connected.vertices
+                            inputs.current.object ledger.remainingCore
+                            component.1) ∧
+                        ∀ centre : inputs.current.object.Vertex,
+                          centre ∈ grouped.centres ↔
+                            ∃ component :
+                              Graph.TypeBMaximalCompletion.SelectedComponent
+                                ledger components,
+                              centre =
+                                (production component).separation.separator := by
+            intro components componentsSubset production
+            have windowFree : ∀ component, component ∈ components →
+                handoffWindowFree data inputs.current.object
+                  (Graph.SupportComponents.Connected.vertices
+                    inputs.current.object ledger.remainingCore component) := by
+              intro component componentMember window windowSubset induces
+              have orderMember := componentsSubset component componentMember
+              have componentData := componentFacts component orderMember
+              exact (normalized packing valid maximal window
+                (windowSubset.trans componentData.containedInRemainder)).1
+                induces
+            let grouped :=
+              Graph.TypeBMaximalCompletion.groupedOfComponentExitSeven
+                ledger components production avoids windowFree
+                uncompressibleFact
+            refine ⟨grouped, ?_, ?_⟩
+            · intro component
+              exact Graph.TypeBMaximalCompletion.Grouped.envelope_core
+                ledger components production avoids windowFree
+                uncompressibleFact component
+            · intro centre
+              exact Graph.TypeBMaximalCompletion.Grouped.mem_centres_iff
+                ledger components production avoids windowFree
+                uncompressibleFact centre
+          exact ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+            ledger, ledger.exactAugmentedLedgerRefinement,
+            componentFacts, groupedCoverage⟩))
         .nil)
 
 /-! ## Nodes `[73]`/`[75]` and `[83]`/`[84]`: Type B bridge fan mass

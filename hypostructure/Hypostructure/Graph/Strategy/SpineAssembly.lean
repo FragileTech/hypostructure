@@ -308,9 +308,11 @@ run after either of the two B2 cursors. -/
 @[reducible] noncomputable def disjointPostLedgerComponents :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   disjointPostLedgerComponentsRow (K .typeBB2Choice) (K .selection)
-    (K .remainderNormalized) (K .typeBDisjointLedger) (by simp)
+    (K .uncompressible) (K .remainderNormalized) (K .typeBDisjointLedger)
+    (by simp)
     (fun _input fact => fact.down)
     (fun _input fact => fact.down.1)
+    (fun _input fact => fact.down)
     (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
 

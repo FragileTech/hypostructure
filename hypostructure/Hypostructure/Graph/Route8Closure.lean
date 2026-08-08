@@ -21,8 +21,8 @@ quotient of a target-complete-minimal reading is precisely what that
 minimality forbids.  This is the mechanism of `lem:typeA-one-terminal-collapse`;
 which alternative the minimality clause fires is the reading's own datum.
 
-*The census squeeze.*  Disjoint private carriers give an upper bound on a
-collection's indexed count; a burden gives a lower bound; and the two collide
+*The census squeeze.*  Disjoint private carriers give an upper bound on an
+indexed count; a burden gives a lower bound; and the two collide
 exactly when the registered rate condition holds.  All of it is integer
 arithmetic on the readings the ledger already carries -- no constant is
 written here.
@@ -191,46 +191,11 @@ theorem census_contradiction
 `lem:typeA-route8-burden`'s `N_basin ≥ discharge·D_A` substituted into
 `def:typeA-large-budget-deficit`'s `|R| ≤ discharge·D_A + discharge·supply`.
 This is the single reading the census spends, and it is *derived* from the two
-the collection carries. -/
+ledger facts the branch carries. -/
 theorem deficit_le_basins {discharge deficiency basins supply ambient : Nat}
     (burden : discharge * deficiency ≤ basins)
     (largeBudget : ambient ≤ discharge * deficiency + discharge * supply) :
     ambient ≤ basins + discharge * supply := by
   omega
-
-namespace Collection
-
-variable {Target : FiniteObject.{u} → Prop} {Carrier : Type u}
-variable [DecidableEq Carrier] (collection : Collection Target Carrier)
-
-/-- **`prop:typeA-route8-carrier-reduction`.**
-
-*"Suppose that no indexed route-8 entry in `𝒳` is two-carrier.  Then every
-`ξ` has at least three private essential carriers ... `floor·N_basin ≤ def⁺(R)`
-... combining the two inequalities is impossible.  Thus a surviving large-budget
-route-8 collection must contain a two-carrier route-8 entry."*
-
-The census bound is `card_mul_le_ambient`, the collision is
-`census_contradiction`, and the conclusion is stated exactly as the manuscript's
-"contains a two-carrier route-8 entry".  The private-carrier floor
-`threshold + 1` is *derived* from the negation of the two-carrier condition, so
-no caller supplies it. -/
-theorem exists_twoCarrier {threshold discharge ambient : Nat}
-    (deficit :
-      ambient ≤ collection.entries.card + discharge * collection.ambient.card)
-    (rate : ((threshold + 1) * discharge + 1) * collection.ambient.card <
-      (threshold + 1) * ambient) :
-    ∃ index ∈ collection.entries, collection.TwoCarrier threshold index := by
-  classical
-  by_contra missing
-  simp only [not_exists, not_and] at missing
-  refine census_contradiction deficit
-    (collection.card_mul_le_ambient (floor := threshold + 1) ?_) rate
-  intro index member
-  have notTwoCarrier : ¬ collection.privateCount index ≤ threshold :=
-    missing index member
-  omega
-
-end Collection
 
 end Hypostructure.Graph.Route8

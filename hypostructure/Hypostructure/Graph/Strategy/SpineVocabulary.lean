@@ -16,6 +16,7 @@ import Hypostructure.Graph.TypeBHybridIncidence
 import Hypostructure.Graph.TypeBRefinedSupport
 import Hypostructure.Graph.TypeBEnvelopeCharge
 import Hypostructure.Graph.TypeBPostLedgerCore
+import Hypostructure.Graph.TypeBMaximalCompletion
 import Hypostructure.Graph.TypeADischarge
 import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.ExitFourFamily
@@ -876,10 +877,10 @@ inductive Key where
   a pairwise-disjoint choice from the finite candidate family at every assigned
   high centre. -/
   | typeBB2Choice
-  /-- The B2-success arm after clauses (a)--(c): the selected canonical piece
-  carries the one disjoint candidate ledger, its exact augmented-ledger
-  refinement, and the inherited Type A hygiene of every remaining component.
-  No maximal grouped-envelope claim, and hence no B2(d), is included. -/
+  /-- The B2-success arm: the selected canonical piece carries the one disjoint
+  candidate ledger, its exact augmented-ledger refinement, the inherited Type A
+  hygiene of every remaining component, and the grouped exit-`(7)` handoff
+  coverage used by B2(d). -/
   | typeBDisjointLedger
   /-- Node `[72]`/`[81]`, no arm — the entry of `[73]`/`[83]`: B2's
   disjoint-carrier clause fails on some assigned support, which by
@@ -948,12 +949,10 @@ inductive Key where
   exits `(4)`--`(6)` have failed, produces the exit-`(7)` decorated handoff
   envelope.  The admissibility interface is committed separately at `[108]`. -/
   | typeAExitSevenProduced
-  /-- Node `[109]`, the route-8 arm: the object carries an admissible true
-  large-budget route-8 carrier residual -- `def:typeA-silent-core-residual`'s
-  reduced silent profile, `def:typeA-true-route8-residual`'s absence clause
-  (R2), the target-complete-minimal trace basins of (R4), and the large-budget
-  deficit of `def:typeA-large-budget-deficit` with its burden and rate
-  readings. -/
+  /-- Node `[109]`, the route-8 arm: the incoming selected Type A residual has
+  denied exit `(7)` and therefore continues to the route-8 accounting segment.
+  The fact is a ledger refinement of the same residual state, not a secondary
+  route-8 object. -/
   | route8Residual
   /-- Node `[126]`, `lem:sparse-slack-surplus`: the sparse slack identity
   `m = (3/2)n + (1/2)σ(G)`, cleared of division at the registered baseline. -/
@@ -3071,12 +3070,45 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
                   data.threshold data.dischargeScale canonicalPiece,
                 ledger.ExactAugmentedLedgerRefinement ∧
-                  ∀ component : Graph.SupportComponents.Connected.Component
-                      object ledger.remainingCore,
-                    component ∈ Graph.SupportComponents.Connected.order object
-                        ledger.remainingCore →
-                      Graph.TypeBPostLedgerCore.PostLedgerComponent
-                        data.typeABPresentation ledger component)
+                  (∀ component : Graph.SupportComponents.Connected.Component
+                        object ledger.remainingCore,
+                      component ∈ Graph.SupportComponents.Connected.order object
+                          ledger.remainingCore →
+                        Graph.TypeBPostLedgerCore.PostLedgerComponent
+                          data.typeABPresentation ledger component) ∧
+                  ∀ components :
+                      Finset (Graph.TypeBMaximalCompletion.RemainingComponent
+                        ledger),
+                    (∀ component ∈ components,
+                      component ∈ Graph.SupportComponents.Connected.order object
+                        ledger.remainingCore) →
+                      ∀ production : ∀ component :
+                          Graph.TypeBMaximalCompletion.SelectedComponent ledger
+                            components,
+                        Graph.TypeBMaximalCompletion.ComponentExitSeven ledger
+                          component.1 data.LengthOK (handoffHighDegree object)
+                          (handoffAbsorbing data object packing),
+                        ∃ grouped :
+                          Graph.DecoratedHandoff.GroupedEnvelopes object
+                            data.LengthOK (handoffUncompressible data object)
+                            (handoffWindowFree data object)
+                            (handoffHighDegree object)
+                            (handoffAbsorbing data object packing)
+                            (Graph.TypeBMaximalCompletion.SelectedComponent
+                              ledger components),
+                          (∀ component :
+                              Graph.TypeBMaximalCompletion.SelectedComponent
+                                ledger components,
+                            (grouped.envelope component).core =
+                              Graph.SupportComponents.Connected.vertices object
+                                ledger.remainingCore component.1) ∧
+                            ∀ centre : object.Vertex,
+                              centre ∈ grouped.centres ↔
+                                ∃ component :
+                                  Graph.TypeBMaximalCompletion.SelectedComponent
+                                    ledger components,
+                                  centre =
+                                    (production component).separation.separator)
   | .typeBOverlapObstruction, object =>
       -- Node `[72]`/`[81]`, no.  `lem:typeB-bridge-to-overlap`: the
       -- disjoint-carrier clause fails on some assigned support, and what that
@@ -3572,7 +3604,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `(4)` and `(5)` have failed, carries an equality of declared response
       -- coordinates that becomes target-complete only after adjoining a larger
       -- connected support.  The witness is tied to the incoming residual; it is
-      -- not an arbitrary route-8 collection.
+      -- not an arbitrary route-8 object.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
@@ -3672,9 +3704,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (Graph.HasCycleWithLength data.LengthOK representative →
               Graph.HasCycleWithLength data.LengthOK object))
   | .route8Residual, object =>
-      -- Node `[109]`: the selected no-exit-`(7)` residual carries a
-      -- route-8 residual.  The selected support and all denied exits stay in
-      -- this ledger fact; later route-8 accounting reads this exact key.
+      -- Node `[109]`: the selected no-exit-`(7)` residual enters the route-8
+      -- arm.  No secondary object is constructed; later route-8 accounting
+      -- must read this exact ledger fact and the prefix facts it preserves.
       SelectedNoExitSixWith data object (fun packing piece =>
         ¬ HandoffProduced data object packing piece)
   | .sparseSlackSurplus, object =>
