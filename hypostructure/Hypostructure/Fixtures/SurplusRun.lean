@@ -1,11 +1,11 @@
-import Hypostructure.Graph.Strategy.SurplusRun
+import Hypostructure.Graph.Strategy.SpineContinuationRun
 
 /-!
 # Fixture: the sparse surplus activation block, run end to end
 
 `Spine.runSparseActivation` is quantified over the keys it consumes and
 produces.  This fixture installs it at the spine's *own* vocabulary, on the
-literal exit ledger of node `[19]`'s above arm that `Spine.run` already
+literal exit ledger of node `[19]`'s above arm that `Spine.runChapterOne`
 reaches, and checks the three things the audit's Ledger, Transport and Residual
 columns claim:
 
@@ -45,16 +45,16 @@ abbrev activatedKeys :
 /-- **The block is entered by the entry spine, not merely runnable on its
 cursor.**
 
-`Spine.runWithSurplusBranch` calls `Spine.runWithSaturatedExits` once and
-continues node `[19]`'s above arm through `[125]`--`[144]`; every other arm is
-returned as it stands.  This is the check that the branch is attached. -/
+`Spine.runChapterOne` calls `Spine.runCore` once and continues node `[19]`'s
+above arm through `[125]`--`[144]` before exposing a continuation.  This is the
+check that the branch is attached to the one graph. -/
 noncomputable def attached
     (T : Core.Target (problem BranchState Presentation presentation data))
     (targetPredicate : T.Predicate = Graph.HasCycleWithLength data.LengthOK)
     (opened : OpenedScope
       (P := problem BranchState Presentation presentation data) (K .selection)) :
-    SpineWithSurplusResult opened.selected :=
-  runWithSurplusBranch T targetPredicate opened
+    ChapterOneContinuation opened.selected :=
+  runChapterOne T targetPredicate opened
 
 /-- **The block runs on the accumulated surplus/package residual reaching
 node `[125]`.** -/

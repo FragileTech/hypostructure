@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.SpineContinuationRun
 
 /-!
 # Fixture: nodes `[88]` and `[89]`, the Type A receiver split

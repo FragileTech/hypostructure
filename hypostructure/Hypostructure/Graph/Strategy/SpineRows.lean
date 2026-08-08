@@ -877,19 +877,13 @@ quotient value. -/
           Core.TargetRank.exists_independent_attaining _)
         .nil)
 
-/-! ## Node `[32]`: the rank-drop decision
+/-! ## Node `[32]`: exact rank loss or exact full rank
 
-`r_Ω(R) < W₂(R) − o(W₂)`?  The yes arm is node `[33]`, Branch D; the no arm is
-node `[34]`, Residual B, the full-rank residual `lem:full-rank` is stated on.
-
-Both sides are the two halves of one excluded middle on the manuscript's own
-comparison, so the alternatives are exhaustive and mutually exclusive by
-construction.  The yes arm carries the dependence, not merely the inequality:
-the allowance is subtracted from `W₂(R)`, which is the number of raw tests
-(`internalWedgeFamily_card`), so a rank below it is a rank below the family's
-own size, and `lem:target-rank-circuit` turns that into a proper
-target-dependence.  That dependence is what node `[33]` routes, through
-`Graph.DeclaredQuotient.localize`. -/
+The proof of `lem:full-rank` eliminates every proper target-dependence and then
+concludes `r_Ω(R) = W₂(R)`, which implies its displayed all-but-`o(W₂)` bound.
+This decision exposes that exact proof step.  Its left arm is any strict rank
+loss, together with the dependence extracted by `lem:target-rank-circuit`; its
+right arm is exact full rank. -/
 noncomputable def curvatureRankDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -917,8 +911,7 @@ noncomputable def curvatureRankDichotomy
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
           remainderCurvatureTargetRank data current.object packing <
-              remainderWedgeSupply current.object packing -
-                data.rankDefect (remainderWedgeSupply current.object packing) ∧
+              remainderWedgeSupply current.object packing ∧
             ∃ test determiners,
               Core.TargetRank.Dependence
                 (remainderQuotientSystem data current.object packing) test
@@ -927,9 +920,8 @@ noncomputable def curvatureRankDichotomy
     (encodeFull :
       (∀ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing →
-        remainderWedgeSupply current.object packing -
-            data.rankDefect (remainderWedgeSupply current.object packing) ≤
-          remainderCurvatureTargetRank data current.object packing) →
+        remainderCurvatureTargetRank data current.object packing =
+          remainderWedgeSupply current.object packing) →
       curvatureFullRank.At current)
     (dropFresh : curvatureRankDrop ∉ known)
     (fullFresh : curvatureFullRank ∉ known) :
@@ -942,8 +934,7 @@ noncomputable def curvatureRankDichotomy
           ∃ packing : Finset (Finset current.object.Vertex),
             current.object.IsWindowPacking data.windowOrder packing ∧
               remainderCurvatureTargetRank data current.object packing <
-                remainderWedgeSupply current.object packing -
-                  data.rankDefect (remainderWedgeSupply current.object packing)
+                remainderWedgeSupply current.object packing
       · -- Yes: the dependence Branch D is entered with, extracted from the
         -- maximal surviving subfamily node `[31]` committed.  The subfamily is
         -- read from the ledger by exact key; it is not recomputed here.
@@ -955,11 +946,15 @@ noncomputable def curvatureRankDichotomy
         refine Core.TargetRank.exists_dependence_of_attaining subset attains
           dependent ?_
         rw [Graph.FiniteObject.internalWedgeFamily_card]
-        exact lt_of_lt_of_le below (Nat.sub_le _ _)
-      · -- No: the full-rank residual, the negation at every packing.
+        exact below
+      · -- No strict loss: target-rank is bounded above by the raw family and
+        -- therefore is exactly the raw wedge count.
         refine .inr (encodeFull fun packing valid => ?_)
-        by_contra short
-        exact drop ⟨packing, valid, Nat.lt_of_not_le short⟩)
+        apply Nat.le_antisymm
+        · exact Graph.FiniteObject.curvatureTargetRank_le_internalWedgeCount
+            _ _ _ _
+        · by_contra short
+          exact drop ⟨packing, valid, Nat.lt_of_not_le short⟩)
     dropFresh fullFresh
 
 /-! ## Nodes `[33]` and `[35]`: Branch D, entered with its determination certificate
@@ -1000,8 +995,7 @@ is inclusion-minimality. -/
       ∃ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing ∧
           remainderCurvatureTargetRank data input.object packing <
-              remainderWedgeSupply input.object packing -
-                data.rankDefect (remainderWedgeSupply input.object packing) ∧
+              remainderWedgeSupply input.object packing ∧
             ∃ test determiners,
               Core.TargetRank.Dependence
                 (remainderQuotientSystem data input.object packing) test
@@ -1561,13 +1555,10 @@ theorem not_branchDCertificate
 
 /-! ## Nodes `[47]`--`[48]`: the forced curvature cost
 
-`cor:forced-curvature-cost`, whose entire proof is "this follows from
-`lem:full-rank`, `lem:wedge-lower` and the definitions of `K_win` and `K`".
-Both are already ledger facts on this branch: node `[30]`'s demand floor is the
-`lem:wedge-lower` half with node `[29]`'s exact ceiling already substituted, and
-node `[34]`'s full-rank residual is the `lem:full-rank` half.  The row does the
-manuscript's substitution -- the rank replaces the wedge supply it is at most an
-allowance below -- and applies the registered cost to both sides.
+`cor:forced-curvature-cost`, whose proof invokes `lem:full-rank` and
+`lem:wedge-lower`.  Both are already ledger facts on this branch.  The row
+substitutes the exact equality proved by `lem:full-rank` into node `[30]`'s
+demand floor and applies the registered cost to both sides.
 
 The registered cost is the *only* thing this row reads that is not on the
 branch, and `rem:closure-robust` records that the closure outside the explicit
@@ -1591,9 +1582,8 @@ residuals holds for every nonnegative value of it. -/
       curvatureFullRank.At input →
       ∀ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing →
-        remainderWedgeSupply input.object packing -
-            data.rankDefect (remainderWedgeSupply input.object packing) ≤
-          remainderCurvatureTargetRank data input.object packing)
+        remainderCurvatureTargetRank data input.object packing =
+          remainderWedgeSupply input.object packing)
     (encode : (input : Input BranchState Presentation presentation data) →
       (∀ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing →
@@ -1601,8 +1591,7 @@ residuals holds for every nonnegative value of it. -/
               (data.threshold * (input.object.remainderSupport packing).card +
                 2 * (2 * (data.windowOrder - 1) * packing.card)) ≤
             data.curvatureCost *
-                (remainderCurvatureTargetRank data input.object packing +
-                  data.rankDefect (remainderWedgeSupply input.object packing)) +
+                remainderCurvatureTargetRank data input.object packing +
               data.curvatureCost *
                 (2 * (data.threshold * (data.windowOrder * packing.card) +
                   input.object.ambientSurplus
@@ -1621,23 +1610,18 @@ residuals holds for every nonnegative value of it. -/
         (encode inputs.current fun packing valid => by
           have floor :=
             floorOf inputs.current (inputs.get curvatureDemandFloor) packing valid
-          -- `W₂(R) ≤ r_Ω(R) + o(W₂)`: the full-rank residual, moved across.
+          -- `W₂(R) ≤ r_Ω(R)`, from the exact full-rank ledger fact.
           have supply :
               remainderWedgeSupply inputs.current.object packing ≤
-                remainderCurvatureTargetRank data inputs.current.object packing +
-                  data.rankDefect
-                    (remainderWedgeSupply inputs.current.object packing) :=
-            Nat.sub_le_iff_le_add.mp
-              (rankOf inputs.current (inputs.get curvatureFullRank) packing valid)
+                remainderCurvatureTargetRank data inputs.current.object packing :=
+            (rankOf inputs.current (inputs.get curvatureFullRank) packing valid).ge
           calc data.curvatureCost *
                 (data.threshold *
                     (inputs.current.object.remainderSupport packing).card +
                   2 * (2 * (data.windowOrder - 1) * packing.card))
               ≤ data.curvatureCost *
-                  ((remainderCurvatureTargetRank data inputs.current.object
+                  (remainderCurvatureTargetRank data inputs.current.object
                         packing +
-                      data.rankDefect
-                        (remainderWedgeSupply inputs.current.object packing)) +
                     2 * (data.threshold * (data.windowOrder * packing.card) +
                       inputs.current.object.ambientSurplus
                         (Graph.FiniteObject.windowSupport packing)
@@ -1671,6 +1655,8 @@ noncomputable def remainderEntropyDichotomy
         current.object.IsWindowPacking data.windowOrder packing →
         Graph.AtLeastEntropyRate current.object.vertexCount
           data.entropyDenominator data.windowOrder data.threshold
+          (current.object.positiveDeficiency
+            (current.object.remainderSupport packing) data.threshold)
           (current.object.remainderSupport packing).card) →
       remainderEntropyHigh.At current)
     (encodeLow :
@@ -1678,6 +1664,8 @@ noncomputable def remainderEntropyDichotomy
         current.object.IsWindowPacking data.windowOrder packing ∧
           Graph.BelowEntropyRate current.object.vertexCount
             data.entropyDenominator data.windowOrder data.threshold
+            (current.object.positiveDeficiency
+              (current.object.remainderSupport packing) data.threshold)
             (current.object.remainderSupport packing).card) →
       remainderEntropyLow.At current)
     (highFresh : remainderEntropyHigh ∉ known)
@@ -1692,14 +1680,53 @@ noncomputable def remainderEntropyDichotomy
             current.object.IsWindowPacking data.windowOrder packing →
             Graph.AtLeastEntropyRate current.object.vertexCount
               data.entropyDenominator data.windowOrder data.threshold
+              (current.object.positiveDeficiency
+                (current.object.remainderSupport packing) data.threshold)
               (current.object.remainderSupport packing).card
       · exact .inl (encodeHigh high)
       · refine .inr (encodeLow ?_)
         push Not at high
         obtain ⟨packing, valid, below⟩ := high
         exact ⟨packing, valid,
-          (Graph.not_atLeastEntropyRate_iff _ _ _ _ _).mp below⟩)
+          (Graph.not_atLeastEntropyRate_iff _ _ _ _ _ _).mp below⟩)
     highFresh lowFresh
+
+
+/-- The common forward edge of `prop:two-budget` (b) and (c).  The source
+fact is branch-specific, but the produced Residual C fact has one semantic key
+and the literal source history remains in the ledger tail. -/
+@[reducible] noncomputable def lowEntropyLargeBudgetRow
+    (source largeBudgetResidual :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : source ≠ largeBudgetResidual)
+    (sourceOf :
+      (input : Input BranchState Presentation presentation data) →
+      source.At input →
+      ∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          Graph.BelowEntropyRate input.object.vertexCount
+            data.entropyDenominator data.windowOrder data.threshold
+            (input.object.positiveDeficiency
+              (input.object.remainderSupport packing) data.threshold)
+            (input.object.remainderSupport packing).card)
+    (encode :
+      (input : Input BranchState Presentation presentation data) →
+      (∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          Graph.BelowEntropyRate input.object.vertexCount
+            data.entropyDenominator data.windowOrder data.threshold
+            (input.object.positiveDeficiency
+              (input.object.remainderSupport packing) data.threshold)
+            (input.object.remainderSupport packing).card) →
+      largeBudgetResidual.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.lowEntropyLargeBudget
+    (rowManifest source largeBudgetResidual distinct)
+    (fun inputs =>
+      .cons (key := largeBudgetResidual)
+        (encode inputs.current
+          (sourceOf inputs.current (inputs.get source)))
+        .nil)
 
 /-! ## Node `[52]`: window plus remainder accounting
 
@@ -1725,6 +1752,8 @@ distinguish; the budget side is node `[53]`'s comparison. -/
         input.object.IsWindowPacking data.windowOrder packing →
         Graph.AtLeastEntropyRate input.object.vertexCount
           data.entropyDenominator data.windowOrder data.threshold
+          (input.object.positiveDeficiency
+            (input.object.remainderSupport packing) data.threshold)
           (input.object.remainderSupport packing).card)
     (encode : (input : Input BranchState Presentation presentation data) →
       (∀ packing : Finset (Finset input.object.Vertex),
@@ -1800,313 +1829,6 @@ noncomputable def entropyCapDichotomy
         exact ⟨packing, valid, fits⟩)
     activeFresh largeFresh
 
-/-! ## Node `[55]`: the registered order threshold
-
-`prop:negative-net-charge` is stated "for all sufficiently large `n`", and
-nodes `[55]`--`[56]` carry `+o(1)` on every display.  This diamond is that
-quantifier, made explicit: the object's order is at or above the registered one,
-or it is below it.
-
-The comparison is a `Nat` trichotomy, so the arms are exhaustive, and both are
-retained — the small-order arm is the finite residue the manuscript's asymptotic
-statements do not address, and it leaves the block rather than being assumed
-away.  Node `[19]` already registers its own `o(n)` threshold and retains both
-arms of it in exactly this way. -/
-noncomputable def orderThresholdDichotomy
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous :
-      ExactLedger (Input BranchState Presentation presentation data)
-        current known)
-    (largeOrderResidual smallOrderResidual :
-      FactKey (Input BranchState Presentation presentation data))
-    (encodeLarge :
-      (2 ^ data.largeOrderExponent ≤ current.object.vertexCount) →
-      largeOrderResidual.At current)
-    (encodeSmall :
-      (current.object.vertexCount < 2 ^ data.largeOrderExponent) →
-      smallOrderResidual.At current)
-    (largeFresh : largeOrderResidual ∉ known)
-    (smallFresh : smallOrderResidual ∉ known) :
-    Decision largeOrderResidual smallOrderResidual previous :=
-  Decision.run previous largeOrderResidual smallOrderResidual
-    `Hypostructure.Graph.Strategy.Spine.orderThresholdDichotomy
-    (if large : 2 ^ data.largeOrderExponent ≤ current.object.vertexCount then
-      .inl (encodeLarge large)
-    else
-      .inr (encodeSmall (Nat.lt_of_not_le large)))
-    largeFresh smallFresh
-
-/-! ## Node `[56]`: the large-budget net-deficiency cap
-
-`Δ_net(R) = (def⁺(R) − σ_R)/|R| ≤ τ_win + o(1) < ¼`, which is the manuscript's
-own chain: node `[29]`'s ceiling divided by `|R|` gives `Δ_net ≤ 15θ/(1 − 13θ)`,
-node `[24]`'s cap gives `θ ≤ θ_win + o(1)`, and `rem:closure-robust` records
-`15θ_win/(1 − 13θ_win) = τ_win = 0.22817486846… < ¼`.
-
-Nothing is divided here.  Multiplying through by the registered discharge scale
-`s` and by the packing's own density cap turns the chain into one integer
-comparison, and eliminating the packing with `|R| + order·p = n` leaves the
-manuscript's `A·p₁₃ + s·o(n) < n` with
-
-  `A = s·(δ·order − 2(order−1)) + order`,
-
-the `73` of `cor:global-window-join-pressure` at the manuscript's own values.
-Below the quarter, `N₀(R) < 0` — so the *whole* remainder already carries
-negative net charge, which is exactly why node `[60]` is a vacuous terminal.
-
-The two numbers this needs beyond the branch are the presentation's own:
-`netChargeRate` is `τ_win < ¼` cleared of denominators, and
-`surplusThreshold_sublinear` is `σ(G) = o(n)` at the registered order.  Neither
-mentions a graph. -/
-
-/-- The collision, as arithmetic.  `R` is the registered rate cleared at the
-order exponent, `M` its companion `A·(k+1)`, and `demand` the scaled packing.
-Every variable is a bare `Nat`: this is the manuscript's division of
-`lem:stub-positive`'s ceiling by `|R|`, performed as one multiplication. -/
-private theorem collision_of_margin
-    (M R threshold discharge allowance size demand : Nat)
-    (ratePos : 0 < R)
-    (bound : R * demand ≤ M * (threshold * size + allowance))
-    (margin : M * threshold < R)
-    (sublinear : (M + R * discharge) * allowance <
-      (R - M * threshold) * size) :
-    demand + discharge * allowance < size := by
-  refine Nat.lt_of_mul_lt_mul_left (a := R) ?_
-  have expand : M * (threshold * size + allowance) =
-      M * threshold * size + M * allowance := by ring
-  have subMul : (R - M * threshold) * size + M * threshold * size =
-      R * size := by
-    rw [← Nat.add_mul]
-    congr 1
-    omega
-  have regroup : (M + R * discharge) * allowance =
-      M * allowance + R * discharge * allowance := by ring
-  have lhs : R * (demand + discharge * allowance) =
-      R * demand + R * discharge * allowance := by ring
-  rw [expand] at bound
-  rw [regroup] at sublinear
-  rw [lhs]
-  omega
-
-@[reducible] noncomputable def netDeficiencyCapRow
-    (maximalPacking stubSupply densityCap largeOrderResidual netDeficiencyCap :
-      FactKey (Input BranchState Presentation presentation data))
-    (packingSupply : maximalPacking ≠ stubSupply)
-    (packingDensity : maximalPacking ≠ densityCap)
-    (packingOrder : maximalPacking ≠ largeOrderResidual)
-    (supplyDensity : stubSupply ≠ densityCap)
-    (supplyOrder : stubSupply ≠ largeOrderResidual)
-    (densityOrder : densityCap ≠ largeOrderResidual)
-    (packingOf : (input : Input BranchState Presentation presentation data) →
-      maximalPacking.At input →
-      ∃ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing ∧
-          packing.card = input.object.windowPackingNumber data.windowOrder ∧
-          ∀ window : Finset input.object.Vertex,
-            input.object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member)
-    (supplyOf : (input : Input BranchState Presentation presentation data) →
-      stubSupply.At input →
-      ∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
-        input.object.positiveDeficiency
-              (input.object.remainderSupport packing) data.threshold +
-            2 * (data.windowOrder - 1) * packing.card ≤
-          data.threshold * (data.windowOrder * packing.card) +
-            data.surplusThreshold input.object.vertexCount)
-    (densityOf : (input : Input BranchState Presentation presentation data) →
-      densityCap.At input →
-      2 * (data.windowRate * data.separatedScaleCount input.object.vertexCount *
-          input.object.windowPackingNumber data.windowOrder) ≤
-        (Graph.dyadicScaleCount input.object + 1) *
-          (data.threshold * input.object.vertexCount +
-            data.surplusThreshold input.object.vertexCount))
-    (orderOf : (input : Input BranchState Presentation presentation data) →
-      largeOrderResidual.At input →
-      2 ^ data.largeOrderExponent ≤ input.object.vertexCount)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (∃ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset input.object.Vertex,
-            input.object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          input.object.NegativeNetCharge
-            (input.object.remainderSupport packing) data.threshold
-            data.dischargeScale) →
-      netDeficiencyCap.At input) :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap
-    { Requires := [maximalPacking, stubSupply, densityCap, largeOrderResidual]
-      Produces := [netDeficiencyCap]
-      requiresUnique := by
-        simp [packingSupply, packingDensity, packingOrder, supplyDensity,
-          supplyOrder, densityOrder]
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := netDeficiencyCap)
-        (encode inputs.current (by
-          classical
-          obtain ⟨packing, valid, attains, maximal⟩ :=
-            packingOf inputs.current (inputs.get maximalPacking)
-          refine ⟨packing, valid, maximal, ?_⟩
-          have large := orderOf inputs.current (inputs.get largeOrderResidual)
-          have density := densityOf inputs.current (inputs.get densityCap)
-          have stub :=
-            supplyOf inputs.current (inputs.get stubSupply) packing valid
-          have spread := inputs.current.object.remainderSupport_card_add_eq valid
-          -- The selection keeps pace with the object's own scale count, so
-          -- node `[24]`'s cap may be divided at the registered order exponent.
-          -- `separatedScaleReach` is that comparison, in registered terms.
-          have reach := data.separatedScaleReach inputs.current.object.vertexCount large
-          have scalesPos :
-              0 < data.separatedScaleCount inputs.current.object.vertexCount := by
-            rcases Nat.eq_zero_or_pos
-                (data.separatedScaleCount inputs.current.object.vertexCount) with
-              zero | positive
-            · rw [zero] at reach
-              have := data.largeOrderExponent_pos
-              simp only [Nat.mul_zero] at reach
-              have grows : 0 < data.largeOrderExponent *
-                  (Nat.log2 inputs.current.object.vertexCount + 1) :=
-                Nat.mul_pos this (Nat.succ_pos _)
-              omega
-            · exact positive
-          have ratePos : 0 < 2 * data.windowRate * data.largeOrderExponent := by
-            have := data.netChargeRate
-            omega
-          -- Node `[24]`, with the slack cleared at the registered exponent.
-          have cleared :
-              (2 * data.windowRate * data.largeOrderExponent) *
-                  inputs.current.object.windowPackingNumber data.windowOrder ≤
-                (data.largeOrderExponent + 1) *
-                  (data.threshold * inputs.current.object.vertexCount +
-                    data.surplusThreshold inputs.current.object.vertexCount) := by
-            refine Nat.le_of_mul_le_mul_left ?_ scalesPos
-            calc data.separatedScaleCount inputs.current.object.vertexCount *
-                  ((2 * data.windowRate * data.largeOrderExponent) *
-                    inputs.current.object.windowPackingNumber data.windowOrder)
-                = data.largeOrderExponent *
-                    (2 * (data.windowRate *
-                      data.separatedScaleCount inputs.current.object.vertexCount *
-                      inputs.current.object.windowPackingNumber
-                        data.windowOrder)) := by ring
-              _ ≤ data.largeOrderExponent *
-                    ((Graph.dyadicScaleCount inputs.current.object + 1) *
-                      (data.threshold * inputs.current.object.vertexCount +
-                        data.surplusThreshold
-                          inputs.current.object.vertexCount)) :=
-                  Nat.mul_le_mul_left _ density
-              _ = (data.largeOrderExponent *
-                    (Nat.log2 inputs.current.object.vertexCount + 1)) *
-                    (data.threshold * inputs.current.object.vertexCount +
-                      data.surplusThreshold inputs.current.object.vertexCount) := by
-                  rw [Graph.dyadicScaleCount]; ring
-              _ ≤ ((data.largeOrderExponent + 1) *
-                    data.separatedScaleCount inputs.current.object.vertexCount) *
-                    (data.threshold * inputs.current.object.vertexCount +
-                      data.surplusThreshold inputs.current.object.vertexCount) :=
-                  Nat.mul_le_mul_right _ reach
-              _ = data.separatedScaleCount inputs.current.object.vertexCount *
-                    ((data.largeOrderExponent + 1) *
-                      (data.threshold * inputs.current.object.vertexCount +
-                        data.surplusThreshold
-                          inputs.current.object.vertexCount)) := by ring
-          -- The manuscript's `A·p₁₃ + s·o(n) < n`.
-          have collision :
-              (data.dischargeScale *
-                    (data.threshold * data.windowOrder -
-                      2 * (data.windowOrder - 1)) + data.windowOrder) *
-                  inputs.current.object.windowPackingNumber data.windowOrder +
-                data.dischargeScale *
-                  data.surplusThreshold inputs.current.object.vertexCount <
-              inputs.current.object.vertexCount := by
-            refine collision_of_margin
-              ((data.dischargeScale *
-                  (data.threshold * data.windowOrder -
-                    2 * (data.windowOrder - 1)) + data.windowOrder) *
-                (data.largeOrderExponent + 1))
-              (2 * data.windowRate * data.largeOrderExponent)
-              data.threshold data.dischargeScale
-              (data.surplusThreshold inputs.current.object.vertexCount)
-              inputs.current.object.vertexCount _ ratePos ?_
-              data.netChargeRate
-              (data.surplusThreshold_sublinear _ large)
-            calc (2 * data.windowRate * data.largeOrderExponent) *
-                  ((data.dischargeScale *
-                      (data.threshold * data.windowOrder -
-                        2 * (data.windowOrder - 1)) + data.windowOrder) *
-                    inputs.current.object.windowPackingNumber data.windowOrder)
-                = (data.dischargeScale *
-                      (data.threshold * data.windowOrder -
-                        2 * (data.windowOrder - 1)) + data.windowOrder) *
-                    ((2 * data.windowRate * data.largeOrderExponent) *
-                      inputs.current.object.windowPackingNumber
-                        data.windowOrder) := by ring
-              _ ≤ (data.dischargeScale *
-                      (data.threshold * data.windowOrder -
-                        2 * (data.windowOrder - 1)) + data.windowOrder) *
-                    ((data.largeOrderExponent + 1) *
-                      (data.threshold * inputs.current.object.vertexCount +
-                        data.surplusThreshold
-                          inputs.current.object.vertexCount)) :=
-                  Nat.mul_le_mul_left _ cleared
-              _ = ((data.dischargeScale *
-                      (data.threshold * data.windowOrder -
-                        2 * (data.windowOrder - 1)) + data.windowOrder) *
-                    (data.largeOrderExponent + 1)) *
-                    (data.threshold * inputs.current.object.vertexCount +
-                      data.surplusThreshold inputs.current.object.vertexCount) :=
-                  by ring
-          -- Node `[29]`'s ceiling at the attaining packing, scaled, with the
-          -- coefficient's truncated subtraction cleared.
-          have scaledStub := Nat.mul_le_mul_left (k := data.dischargeScale) stub
-          rw [Nat.mul_add, Nat.mul_add] at scaledStub
-          have twoLe :
-              2 * (data.windowOrder - 1) ≤ data.threshold * data.windowOrder := by
-            have dominates : 3 * data.windowOrder ≤
-                data.threshold * data.windowOrder :=
-              Nat.mul_le_mul_right _ data.three_le_threshold
-            have positive := data.windowOrder_pos
-            omega
-          have split :
-              (data.dischargeScale *
-                    (data.threshold * data.windowOrder -
-                      2 * (data.windowOrder - 1)) + data.windowOrder) *
-                  packing.card +
-                data.dischargeScale *
-                  (2 * (data.windowOrder - 1) * packing.card) =
-              data.dischargeScale *
-                  (data.threshold * (data.windowOrder * packing.card)) +
-                data.windowOrder * packing.card := by
-            have restore :
-                data.threshold * data.windowOrder -
-                    2 * (data.windowOrder - 1) + 2 * (data.windowOrder - 1) =
-                  data.threshold * data.windowOrder := by omega
-            calc (data.dischargeScale *
-                    (data.threshold * data.windowOrder -
-                      2 * (data.windowOrder - 1)) + data.windowOrder) *
-                  packing.card +
-                data.dischargeScale *
-                  (2 * (data.windowOrder - 1) * packing.card)
-                = data.dischargeScale *
-                    (data.threshold * data.windowOrder -
-                      2 * (data.windowOrder - 1) +
-                      2 * (data.windowOrder - 1)) * packing.card +
-                  data.windowOrder * packing.card := by ring
-              _ = data.dischargeScale * (data.threshold * data.windowOrder) *
-                    packing.card + data.windowOrder * packing.card := by
-                  rw [restore]
-              _ = data.dischargeScale *
-                    (data.threshold * (data.windowOrder * packing.card)) +
-                  data.windowOrder * packing.card := by ring
-          -- The collision is stated at the packing number; the attaining
-          -- packing is the one the ceiling was read at.
-          rw [← attains] at collision
-          rw [Graph.FiniteObject.NegativeNetCharge]
-          omega))
-        .nil)
 
 /-! ## Nodes `[57]`--`[58]`: net charge and its localization
 

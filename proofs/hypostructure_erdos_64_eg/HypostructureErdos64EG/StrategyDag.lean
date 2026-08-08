@@ -1,25 +1,13 @@
 import HypostructureErdos64EG.Problem
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.SpineContinuationRun
 
 /-!
 # Erdős--Gyárfás strategy DAG, rooted on the entry spine
 
-Block A has exactly one implementation, `Graph.Strategy.Spine`, and this module
-roots the DAG on it: `strategyDag` below runs it against the data `Problem.lean`
-registers, with Figure 8's Type A exit list and node `[19]`'s sparse surplus
-branch attached.
-
-What that gives, and what it does not, is stated exactly.  `strategyDag` is a total
-function from an opened minimal-counterexample scope to one of the block's
-exits, every one of which carries the canonical `ExactLedger` at the residual
-its branch argued about.  It is **not** a proof of `OfficialStatement`: the
-rows that turn those exits into a contradiction -- rows `[11]` onwards of the
-audit -- are not attached here, and until they are, no arm closes.
-
-The legacy `Blueprint` topology this module used to hold is retired.  It was a
-registry of parallel capability lists resolved by list position; the canonical
-API replaces it outright.  It is not preserved here: the porting reference is
-the audit and the manuscript, not a commented chain that no longer elaborates.
+This application-owned file contains only the root topology.  The generic
+`runChapterOne` endpoint invokes `runCore` once, attaches every implemented
+continuation immediately, and returns only the genuine next continuation
+families with their literal `ExactLedger` ancestry.
 -/
 
 namespace HypostructureErdos64EG
@@ -52,17 +40,14 @@ example :
     (target.{u}).Predicate =
       Graph.HasCycleWithLength (spineData.{u}).LengthOK := rfl
 
-/-! ## Block A, run at this problem -/
+/-! ## One root execution, with no exported intermediate
 
-/-- **The strategy DAG's endpoint: the entry spine, rooted here.**
+This unnamed check is the complete application topology currently available.
+Because it is an `example`, the surviving internal phase boundary is not an
+application endpoint.
+-/
 
-`Graph.Strategy.Spine.runWithSurplusBranch` calls `Spine.run` once, continues
-its two saturated Type A arms into Figure 8's exit list, continues node
-`[19]`'s above arm through the sparse surplus block `[125]`--`[144]`, and
-returns every other arm as it stands.  Each exit carries the one canonical
-`ExactLedger` at the residual its branch argued about, indexed by exactly the
-facts that branch established. -/
-noncomputable def strategyDag
+noncomputable example
     (opened : Core.Strategy.OpenedScope
       (P := Hypostructure.Graph.Strategy.Spine.problem BranchState
         Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile
@@ -70,9 +55,9 @@ noncomputable def strategyDag
       (Hypostructure.Graph.Strategy.Spine.K (BranchState := BranchState)
         (presentation := erdosReceiverLoadProfile) (data := spineData.{u})
         .selection)) :
-    SpineWithSurplusResult opened.selected :=
-  run
-    (BranchState := BranchState) (presentation := erdosReceiverLoadProfile)
-    (data := spineData.{u}) target.{u} rfl opened
+    ChapterOneContinuation opened.selected :=
+  runChapterOne (BranchState := BranchState)
+    (presentation := erdosReceiverLoadProfile) (data := spineData.{u})
+    target.{u} rfl opened
 
 end HypostructureErdos64EG

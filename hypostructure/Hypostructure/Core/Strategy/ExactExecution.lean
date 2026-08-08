@@ -181,6 +181,22 @@ noncomputable def closeIncompatible
       (ExactLedger.get previous left) (ExactLedger.get previous right)
     }) fresh `Hypostructure.Core.Strategy.autoclose.incompatible
 
+/-- Eliminate a history carrying the domain's distinguished closure fact.
+
+The contradiction is the evidence stored by the unique `FactSystem`; this
+does not recompute a closing argument and does not introduce a second proof
+carrier. -/
+theorem _root_.Hypostructure.Core.Residual.ExactLedger.elimClosed
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [system : FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    {current : Residual} {known : FactKeys Residual}
+    (history : ExactLedger Residual current known)
+    (present : FactKeys.Has system.closureKey known) : False := by
+  letI := present
+  exact (system.closureEvidence current
+    (ExactLedger.get history system.closureKey)).contradiction
+
 /-- Close a CT output when one declared output is incompatible with a visible
 upstream fact. -/
 noncomputable def AtomicCT.runAndCloseIncompatible

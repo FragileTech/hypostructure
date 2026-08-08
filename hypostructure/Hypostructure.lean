@@ -42,7 +42,7 @@ import Hypostructure.Graph.Strategy.Route8Rows
 import Hypostructure.Graph.Strategy.Route8Run
 import Hypostructure.Graph.Strategy.TypeAExitRun
 import Hypostructure.Graph.Strategy.SurplusRun
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.SpineContinuationRun
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
 import Hypostructure.Graph.ColdBranchClosure

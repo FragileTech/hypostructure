@@ -241,26 +241,11 @@ structure Data where
   surplusScale : Nat
   /-- The registered per-window barrier rate of the finite enumeration. -/
   windowRate : Nat
-  /-- **The selected dyadic scales of `lem:p13-window-package`.**
-
-  The manuscript's package "uses `⌊log₂ n⌋ − O(1)` separated dyadic scales for
-  these finite barriers", the `O(1)` loss absorbing "endpoint collisions with the
-  finitely many reserved boundary and tie-breaking choices inside the canonical
-  packing".  So the count is the object's own dyadic scale count less a bounded
-  discard, and this is where that count is registered — the same way node `[19]`
-  registers its scale threshold and node `[32]` its rank allowance.  A row reads
-  it; no row writes it. -/
+  /-- The selected dyadic scales of `lem:p13-window-package`. -/
   separatedScaleCount : Nat → Nat
   /-- The selected scales are among the object's own: the discard only loses
   scales, it never invents them. -/
   separatedScaleCount_le : ∀ size : Nat, separatedScaleCount size ≤ Nat.log2 size
-  /-- The registered curvature rank allowance `o(W₂)` of node `[32]`, as a
-  function of the wedge supply it is subtracted from.  Node `[32]` is the only
-  comparison of the spine whose manuscript form still carries an asymptotic
-  term after the exact substitutions of nodes `[29]`--`[30]`, so the allowance
-  is registered here in the same way as the scale threshold of node `[19]`
-  rather than written at the node. -/
-  rankDefect : Nat → Nat
   /-- **`c_Ω`, node `[48]`'s registered curvature cost.**  The entropy price of
   one independent curvature coordinate, in the units the skeleton budget is
   measured in.  `rem:curvature-provenance` is explicit that the routing supplies
@@ -276,58 +261,6 @@ structure Data where
   written. -/
   entropyDenominator : Nat
   entropyDenominator_pos : 0 < entropyDenominator
-  /-- **The manuscript's "for all sufficiently large `n`", as a binary
-  exponent.**  `prop:negative-net-charge` is stated "for all sufficiently large
-  `n`", and nodes `[55]`--`[56]` carry `+o(1)` on every display.  This is where
-  that quantifier is registered, and node `[55]` decides the object's order
-  against `2 ^ largeOrderExponent` with *both* arms retained — exactly the
-  device node `[19]` already uses for its own registered `o(n)` threshold.  The
-  small-order arm is the finite residue the manuscript does not address. -/
-  largeOrderExponent : Nat
-  largeOrderExponent_pos : 0 < largeOrderExponent
-  /-- **The discard is bounded**, which is the other half of the manuscript's
-  `⌊log₂ n⌋ − O(1)`: `separatedScaleCount_le` says the selection only loses
-  scales, and this says it loses boundedly many, so the selected count keeps pace
-  with the object's own.  It is stated in the exact form node `[56]` consumes —
-  the comparison that lets node `[24]`'s cap be divided at the registered order
-  exponent instead of at the raw scale count — and every quantity in it is
-  registered. -/
-  separatedScaleReach : ∀ size : Nat, 2 ^ largeOrderExponent ≤ size →
-    largeOrderExponent * (Nat.log2 size + 1) ≤
-      (largeOrderExponent + 1) * separatedScaleCount size
-  /-- **`τ_win < ¼` at the registered rate.**
-
-  `prop:p13-density` turns node `[24]`'s cap into `θ ≤ (δ/2)/rate + o(1)`, and
-  `rem:closure-robust` records that `15θ_win/(1 − 13θ_win) = τ_win < ¼`.  The
-  net-charge coefficient the collision needs is
-  `A = s·(δ·order − 2(order−1)) + order` — the manuscript's `73` at its own
-  values — and clearing denominators at the registered order exponent turns
-  `τ_win < ¼` into exactly this comparison between registered numbers.
-
-  Nothing about a graph occurs here: it is the presentation's own arithmetic,
-  the analogue of `three_le_threshold`. -/
-  netChargeRate :
-    (dischargeScale * (threshold * windowOrder - 2 * (windowOrder - 1)) +
-        windowOrder) * (largeOrderExponent + 1) * threshold <
-      2 * windowRate * largeOrderExponent
-  /-- **The registered order is past the surplus term's own square.**
-
-  `σ(G) = O(√n)` is sublinear, so above some order it is below any positive
-  share of the order.  This is where that order is registered, and it is stated
-  in the registered numbers alone: four times the square of the coefficient the
-  net-charge collision carries against the surplus.  `Data.surplusThreshold_sublinear`
-  *derives* `σ(G) = o(n)` from it; nothing about the manuscript's decimal values
-  is written anywhere. -/
-  largeOrder_dominates_surplus :
-    4 * (((dischargeScale * (threshold * windowOrder -
-              2 * (windowOrder - 1)) + windowOrder) * (largeOrderExponent + 1) +
-          2 * windowRate * largeOrderExponent * dischargeScale) *
-        (registeredSpineScale routingLabelBound threshold surplusScale)) *
-      (((dischargeScale * (threshold * windowOrder -
-              2 * (windowOrder - 1)) + windowOrder) * (largeOrderExponent + 1) +
-          2 * windowRate * largeOrderExponent * dischargeScale) *
-        (registeredSpineScale routingLabelBound threshold surplusScale)) ≤
-      2 ^ largeOrderExponent
   /-- **`def:declared-coordinate-signature`, registered.**  The fixed
   response-coordinate signature the whole proof argues against: the finite
   alphabets of its generating clauses (D1)--(D7), the label alphabet of its
@@ -438,71 +371,6 @@ def Data.netChargeCoefficient (data : Data.{u}) : Nat :=
   data.dischargeScale *
       (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) +
     data.windowOrder
-
-/-- **`σ(G) = O(√n) = o(n)` at the registered order — derived.**
-
-The registered scale threshold is `C_sp·⌈√n⌉`, and the registered order is past
-the square of the coefficient the net-charge collision carries against it, so
-above that order the surplus term is strictly below the margin the collision
-leaves.  This is the exact-finite content of the manuscript's `σ(G) = o(n)`, and
-it is a theorem of the registered numbers rather than one of them. -/
-theorem Data.surplusThreshold_sublinear (data : Data.{u}) (size : Nat)
-    (large : 2 ^ data.largeOrderExponent ≤ size) :
-    (data.netChargeCoefficient * (data.largeOrderExponent + 1) +
-          2 * data.windowRate * data.largeOrderExponent * data.dischargeScale) *
-        data.surplusThreshold size <
-      (2 * data.windowRate * data.largeOrderExponent -
-          data.netChargeCoefficient * (data.largeOrderExponent + 1) *
-            data.threshold) * size := by
-  have rate := data.netChargeRate
-  have dominatesSquare := data.largeOrder_dominates_surplus
-  rw [show data.netChargeCoefficient =
-      data.dischargeScale *
-          (data.threshold * data.windowOrder -
-            2 * (data.windowOrder - 1)) + data.windowOrder from rfl]
-  set coefficient :=
-    data.dischargeScale *
-        (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) +
-      data.windowOrder with coefficientDef
-  set weight :=
-    (coefficient * (data.largeOrderExponent + 1) +
-      2 * data.windowRate * data.largeOrderExponent * data.dischargeScale) *
-      data.spineScale with weightDef
-  set margin :=
-    2 * data.windowRate * data.largeOrderExponent -
-      coefficient * (data.largeOrderExponent + 1) *
-        data.threshold with marginDef
-  have marginPos : 0 < margin := by omega
-  have square : 4 * weight * weight ≤ size := le_trans dominatesSquare large
-  have sizePos : 0 < size :=
-    Nat.lt_of_lt_of_le (Nat.two_pow_pos data.largeOrderExponent) large
-  -- The framework's own `⌈√n⌉` bound, at twice the weight.
-  have dominates : (2 * weight) * (2 * weight) ≤ margin * margin * size := by
-    calc (2 * weight) * (2 * weight) = 4 * weight * weight := by ring
-      _ ≤ size := square
-      _ ≤ margin * margin * size :=
-          Nat.le_mul_of_pos_left _ (Nat.mul_pos marginPos marginPos)
-  have ceiling := Core.mul_ceilSqrt_le (2 * weight) margin size dominates
-  have small : 2 * weight < margin * size := by
-    rcases Nat.eq_zero_or_pos weight with zero | positive
-    · rw [zero]
-      simpa using Nat.mul_pos marginPos sizePos
-    · have doubled : 2 * weight < 4 * weight * weight := by nlinarith
-      have widened : size ≤ margin * size := Nat.le_mul_of_pos_left _ marginPos
-      omega
-  have regroup :
-      (coefficient * (data.largeOrderExponent + 1) +
-          2 * data.windowRate * data.largeOrderExponent * data.dischargeScale) *
-          data.surplusThreshold size =
-        weight * Core.ceilSqrt size := by
-    rw [weightDef, Data.surplusThreshold]; ring
-  have doubledCeiling : 2 * (weight * Core.ceilSqrt size) ≤
-      margin * size + 2 * weight := by
-    calc 2 * (weight * Core.ceilSqrt size)
-        = (2 * weight) * Core.ceilSqrt size := by ring
-      _ ≤ margin * size + 2 * weight := ceiling
-  rw [regroup]
-  omega
 
 /-- The problem this spine argues about: a minimum-degree baseline at the
 registered threshold, with the problem's own presentation attached. -/
@@ -709,19 +577,6 @@ inductive Key where
   /-- Node `[53]`, no arm — node `[55]`, Residual C: the joint package still
   fits the skeleton budget, and the branch is the large-budget residual. -/
   | largeBudgetResidual
-  /-- Node `[55]`, large arm: the object's order is at or above the registered
-  one.  This is the manuscript's "for all sufficiently large `n`", made
-  explicit. -/
-  | largeOrderResidual
-  /-- Node `[55]`, small arm: the finite residue below the registered order,
-  which the manuscript's asymptotic statements do not address. -/
-  | smallOrderResidual
-  /-- Node `[56]`: `Δ_net(R) = (def⁺(R) − σ_R)/|R| ≤ τ_win + o(1) < ¼`, in the
-  exact integer form node `[59]` collides with — node `[29]`'s stub ceiling and
-  node `[24]`'s density cap at the registered discharge scale, with the packing
-  eliminated through `|R| + order·p = n`.  Below the quarter, `N₀(R) < 0`, so
-  the whole remainder already has negative net charge. -/
-  | netDeficiencyCap
   /-- Nodes `[57]`--`[58]`: `def:net-charge` and `lem:netcharge-superadd`.  The
   canonical support decomposition is exact on all three of the charge's terms,
   so a remainder of negative net charge has a *connected* admissible support of
@@ -1460,6 +1315,7 @@ noncomputable abbrev remainderStates (data : Data.{u})
     (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex)) : Nat :=
   Graph.remainderStateCount data.windowOrder data.threshold
+    (object.positiveDeficiency (object.remainderSupport packing) data.threshold)
     (object.remainderSupport packing).card
 
 /-- **The joint package demand of nodes `[52]`--`[53]`.**  The window
@@ -1780,24 +1636,21 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 Core.TargetRank.Dependence
                   (remainderQuotientSystem data object packing) test determiners)
   | .curvatureRankDrop, object =>
-      -- Node `[32]`, yes: `r_Ω(R) < W₂(R) − o(W₂)`, with the proper
-      -- target-dependence the drop yields.  This is node `[33]`, Branch D.
+      -- Any strict loss of raw curvature rank supplies the proper
+      -- target-dependence routed by Branch D.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           remainderCurvatureTargetRank data object packing <
-              remainderWedgeSupply object packing -
-                data.rankDefect (remainderWedgeSupply object packing) ∧
+              remainderWedgeSupply object packing ∧
             ∃ test determiners,
               Core.TargetRank.Dependence
                 (remainderQuotientSystem data object packing) test determiners)
   | .curvatureFullRank, object =>
-      -- Node `[32]`, no: `r_Ω(R) ≥ W₂(R) − o(W₂)`.  This is node `[34]`,
-      -- Residual B, the residual `lem:full-rank` is stated on at node `[47]`.
+      -- This is the equality proved in the last paragraph of `lem:full-rank`.
       (∀ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing →
-        remainderWedgeSupply object packing -
-            data.rankDefect (remainderWedgeSupply object packing) ≤
-          remainderCurvatureTargetRank data object packing)
+        remainderCurvatureTargetRank data object packing =
+          remainderWedgeSupply object packing)
   | .branchDependence, object =>
       -- Nodes `[33]`/`[35]`.  `lem:curvature-dependence-routing`'s proof opens
       -- by choosing a determination certificate for the dependence the rank
@@ -2415,21 +2268,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (Graph.HasCycleWithLength data.LengthOK) object Handoff),
           Handoff row.support)
   | .forcedCurvatureCost, object =>
-      -- `cor:forced-curvature-cost`, whose whole proof is "this follows from
-      -- `lem:full-rank`, `lem:wedge-lower` and the definitions of `K_win` and
-      -- `K`".  Node `[30]`'s demand floor is
-      --   `δ|R| + 2·(2(order−1)p) ≤ W₂(R) + 2(δ·order·p + σ_W)`,
-      -- node `[34]` gives `W₂(R) ≤ r_Ω(R) + o(W₂)`, and the registered cost
-      -- multiplies both sides.  At the manuscript's values the left-hand side
-      -- is `K_win|R| − o(|R|)` and the right-hand side is `c_Ω·r_Ω(R)`.
+      -- `cor:forced-curvature-cost` after substituting the exact equality
+      -- proved by `lem:full-rank` into node `[30]`'s demand floor.
       (∀ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing →
         data.curvatureCost *
               (data.threshold * (object.remainderSupport packing).card +
                 2 * (2 * (data.windowOrder - 1) * packing.card)) ≤
             data.curvatureCost *
-                (remainderCurvatureTargetRank data object packing +
-                  data.rankDefect (remainderWedgeSupply object packing)) +
+                remainderCurvatureTargetRank data object packing +
               data.curvatureCost *
                 (2 * (data.threshold * (data.windowOrder * packing.card) +
                   object.ambientSurplus
@@ -2443,6 +2290,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         object.IsWindowPacking data.windowOrder packing →
         Graph.AtLeastEntropyRate object.vertexCount data.entropyDenominator
           data.windowOrder data.threshold
+          (object.positiveDeficiency (object.remainderSupport packing)
+            data.threshold)
           (object.remainderSupport packing).card)
   | .remainderEntropyLow, object =>
       -- Node `[50]`, no.  The exact negation, with the witness exhibited.
@@ -2450,6 +2299,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         object.IsWindowPacking data.windowOrder packing ∧
           Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
             data.windowOrder data.threshold
+            (object.positiveDeficiency (object.remainderSupport packing)
+              data.threshold)
             (object.remainderSupport packing).card)
   | .entropyPackageDemand, object =>
       -- Node `[52]`: `eq:feasibility`'s left-hand side.  Raising the joint
@@ -2476,37 +2327,18 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         object.IsWindowPacking data.windowOrder packing →
         Graph.skeletonBudget object < jointPackageDemand data object packing)
   | .largeBudgetResidual, object =>
-      -- Node `[53]`, no -- node `[55]`, Residual C.  The exact negation.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          jointPackageDemand data object packing ≤ Graph.skeletonBudget object)
-  | .largeOrderResidual, object =>
-      -- Node `[55]`, large arm.
-      (2 ^ data.largeOrderExponent ≤ object.vertexCount)
-  | .smallOrderResidual, object =>
-      -- Node `[55]`, small arm.
-      (object.vertexCount < 2 ^ data.largeOrderExponent)
-  | .netDeficiencyCap, object =>
-      -- Node `[56]`, `Δ_net(R) ≤ τ_win + o(1) < ¼`.  Node `[29]`'s ceiling
-      -- divided by `|R|` is the manuscript's `Δ_net`; multiplying back through
-      -- by the discharge scale, substituting node `[24]`'s density cap for the
-      -- packing, and eliminating it with `|R| + order·p = n` leaves the
-      -- manuscript's own `73p₁₃ + 4·o(n) < n` — that is, `N₀(R) < 0`.
-      --
-      -- Stated at a maximal packing rather than at every one: the cap needs the
-      -- packing *number*, which is what node `[24]` bounds, so the statement is
-      -- about the packings that attain it.  The maximality is *carried*, not
-      -- merely used: `def:admissible`'s inherited clauses are node `[27]`'s
-      -- conclusions about `R = G − W`, and node `[27]` is stated at a maximal
-      -- packing, so every later node that argues inside `R` needs the same
-      -- packing to still be known maximal.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          object.NegativeNetCharge (object.remainderSupport packing)
-            data.threshold data.dischargeScale)
+      -- Residual C.  The high-entropy arm reaches it through the exact
+      -- skeleton comparison; the low-entropy arm is routed here unchanged, as `prop:two-budget` prescribes.
+      ((∃ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing ∧
+            jointPackageDemand data object packing ≤ Graph.skeletonBudget object) ∨
+        ∃ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing ∧
+            Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
+              data.windowOrder data.threshold
+              (object.positiveDeficiency (object.remainderSupport packing)
+                data.threshold)
+              (object.remainderSupport packing).card)
   | .netChargeLocalization, object =>
       -- Nodes `[57]`--`[58]`.  `lem:netcharge-superadd`'s only consumed
       -- consequence, at the registered discharge scale: the canonical
@@ -3986,9 +3818,6 @@ def label : Key → String
   | .entropyPackageDemand => "entropyPackageDemand"
   | .entropyCapActive => "entropyCapActive"
   | .largeBudgetResidual => "largeBudgetResidual"
-  | .largeOrderResidual => "largeOrderResidual"
-  | .smallOrderResidual => "smallOrderResidual"
-  | .netDeficiencyCap => "netDeficiencyCap"
   | .netChargeLocalization => "netChargeLocalization"
   | .netChargeNonNegative => "netChargeNonNegative"
   | .netChargeNegative => "netChargeNegative"
@@ -4139,9 +3968,6 @@ example : label .remainderEntropyLow = "remainderEntropyLow" := rfl
 example : label .entropyPackageDemand = "entropyPackageDemand" := rfl
 example : label .entropyCapActive = "entropyCapActive" := rfl
 example : label .largeBudgetResidual = "largeBudgetResidual" := rfl
-example : label .largeOrderResidual = "largeOrderResidual" := rfl
-example : label .smallOrderResidual = "smallOrderResidual" := rfl
-example : label .netDeficiencyCap = "netDeficiencyCap" := rfl
 example : label .netChargeLocalization = "netChargeLocalization" := rfl
 example : label .netChargeNonNegative = "netChargeNonNegative" := rfl
 example : label .netChargeNegative = "netChargeNegative" := rfl
@@ -4297,9 +4123,6 @@ def idx : Key → Nat
   | .entropyPackageDemand => 40
   | .entropyCapActive => 41
   | .largeBudgetResidual => 42
-  | .largeOrderResidual => 43
-  | .smallOrderResidual => 44
-  | .netDeficiencyCap => 45
   | .netChargeLocalization => 46
   | .netChargeNonNegative => 47
   | .netChargeNegative => 48
@@ -4444,9 +4267,6 @@ def ofIdx : Nat → Key
   | 40 => .entropyPackageDemand
   | 41 => .entropyCapActive
   | 42 => .largeBudgetResidual
-  | 43 => .largeOrderResidual
-  | 44 => .smallOrderResidual
-  | 45 => .netDeficiencyCap
   | 46 => .netChargeLocalization
   | 47 => .netChargeNonNegative
   | 48 => .netChargeNegative
@@ -4644,12 +4464,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "entropyCapActive") 41
   | .largeBudgetResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "largeBudgetResidual") 42
-  | .largeOrderResidual =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "largeOrderResidual") 43
-  | .smallOrderResidual =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "smallOrderResidual") 44
-  | .netDeficiencyCap =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "netDeficiencyCap") 45
   | .netChargeLocalization =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "netChargeLocalization") 46
   | .netChargeNonNegative =>

@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.SpineContinuationRun
 
 /-!
 # Fixture: nodes `[74]`/`[82]`, `[73]`/`[75]`, `[83]`/`[84]`, `[76]`/`[85]`

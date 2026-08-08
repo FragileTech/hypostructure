@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Strategy.ColdCorridorRun
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.SpineContinuationRun
 
 /-!
 # Fixture: the cold corridor block, run end to end

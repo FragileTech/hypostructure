@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRun
+import Hypostructure.Graph.Strategy.SpineContinuationRun
 
 /-!
 # Fixture: node `[72]`, both halves, at both of its positions

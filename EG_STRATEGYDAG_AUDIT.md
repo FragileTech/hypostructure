@@ -153,12 +153,11 @@ splits into `Result.typeASaturatedReceiver` (row 12's entry) and
 `Spine.typeAReceiverRoutingRow`, `Spine.typeASaturationDichotomy` and
 `Spine.run` reports `propext`, `Classical.choice` and `Quot.sound` only.
 
-That port also changed four facts of row 42 and one of row 41: the packing
-`netDeficiencyCap`, `netChargeNonNegative`, `netChargeNegative`,
-`windowJoinPressure`, `negativeSupport` and `typeALowSurplus` speak about now
-carries its own maximality, so node `[27]` stays instantiable at the Type A
-support.  Row 42's evidence records why the previous shape was unsound for row
-11.  `Graph/ReceiverLoad.lean`'s dead receiver/load geometry — `Support`,
+That port also changed the row-42 support facts: the packing carried by
+`netChargeNegative`, `windowJoinPressure`, `negativeSupport` and
+`typeALowSurplus` includes its own maximality, so node `[27]` stays instantiable
+at the Type A support.  Row 42's evidence records why a bare packing was
+unsound for row 11.  `Graph/ReceiverLoad.lean`'s dead receiver/load geometry — `Support`,
 `RoutedLoad` with its arbitrary route function, `CanonicalRouting` with its
 opaque `canonical : Prop`, the completion-port and anchored-return records, and
 the load algebra on them — is deleted; the module is now only the registered
@@ -893,8 +892,8 @@ bookkeeping; the first is not:
 | 38 | Boundary-demand accounting [28]–[29] | `Spine.boundaryDemand` (`SpineRows.boundaryDemandRow`) | ✅ | ✅ | ✅ | ✅ |
 | 39 | Wedge lower bound [30] | `Spine.wedgeSupply` (`SpineRows.wedgeSupplyRow`) | ✅ | ✅ | ✅ | ✅ |
 | 40 | Target-relative rank dichotomy [31]–[32] | `Spine.curvatureTargetRank`, `Spine.curvatureRankDichotomy` (`SpineRows`) | ✅ | ✅ | ✅ | ✅ |
-| 41 | Full-rank finite-state capacity [47]–[56] | `Spine.windowPackageDichotomy`, `Spine.forcedCurvatureCost`, `Spine.remainderEntropyDichotomy`, `Spine.entropyPackage`, `Spine.entropyCapDichotomy`, `Spine.orderThresholdDichotomy`, `Spine.netDeficiencyCap` (`SpineRows`) | ✅ | ✅ | ✅ | ✅ |
-| 42 | Net-charge continuation [57]–[64] | `Spine.netChargeLocalization`, `Spine.netChargeDichotomy`, `Spine.windowJoinPressure`, `Spine.negativeSupport`, `Spine.typeSplitDichotomy` (`SpineRows`) | ✅ | ✅ | ✅ | ✅ |
+| 41 | Full-rank finite-state capacity [47]–[56] | `Spine.forcedCurvatureCost`, `Spine.remainderEntropyDichotomy`, `Spine.entropyPackage`, `Spine.entropyCapDichotomy`, `Spine.lowEntropyLargeBudget`, `Spine.runResidualC` | ✅ | ✅ | ✅ | ✅ |
+| 42 | Net-charge continuation [57]–[64] | `Spine.runResidualC`, `Spine.netChargeLocalization`, `Spine.netChargeDichotomy`, `Spine.windowJoinPressure`, `Spine.negativeSupport` | ✅ | ✅ | ✅ | ✅ |
 
 ## F. Cold-window corridor
 
@@ -1256,7 +1255,7 @@ live code, not the row prose:
   order, rate and scale is a field of the registered `Spine.Data`
   (`threshold`, `windowOrder`, `windowRate`, `surplusScale`, …), and the
   relations between those fields are registered as *proof obligations*
-  (`three_le_threshold`, `netChargeRate`, `largeOrder_dominates_surplus`) rather
+  (`three_le_threshold`, `fanCapSlack`, `joinSlack`, `bridgeMassSlack`) rather
   than as asserted values.  The manuscript's `399`, `543958`, `432672`,
   `111286`, `118.108581006…` and `θ_win` appear nowhere in Block A.
 - **Fact traffic is exclusively the framework API.**  Every read is
@@ -1579,11 +1578,10 @@ prerequisite.
   `2m − δn`, which on the standing baseline `δ(G) ≥ δ` equals
   `Σ_{h ∈ V_{>δ}}(d(h) − δ)` — `def:surplus-ports` — and the `Nat` truncation is
   inert for the same reason.  Only the *coefficient* `surplusScale` is
-  registered, deliberately: node `[56]` needs to know the threshold is a
-  square-root scale in order to spend `σ(G) = O(√n) = o(n)`, and
-  `Data.surplusThreshold_sublinear` derives that from
-  `largeOrder_dominates_surplus`, itself a registered obligation in the
-  presentation's own arithmetic.  No decimal and no `C_sp` value occurs.
+  registered.  No later row turns the square-root threshold into a finite
+  linear contradiction by inserting an order cutoff; the generic Residual C
+  consumer retains the exact window-join-pressure complement instead.  No
+  decimal and no `C_sp` value occurs.
 - **Ledger and residual.**  No read: both sides of the comparison are
   observables of the active object.  One arm committed, residual unchanged, the
   other arm's key absent from this branch.
@@ -1598,7 +1596,7 @@ prerequisite.
 |---|---|---|---|
 | `def:surplus-ports` | def | `Graph.FiniteObject.degreeSurplus` | `2m − δn`, equal to the paper's `σ(G)` on the standing baseline |
 | node `[19]` split | dia | `Graph.Strategy.Spine.surplusDichotomy`<br>`Graph.Strategy.Spine.Holds .surplusAbove`<br>`Graph.Strategy.Spine.Holds .surplusAtOrBelow` | exhaustive `Decision`; both arms carry a proved inequality |
-| `def:near-cubic-spine` | def | `Graph.Strategy.Spine.Data.surplusThreshold`<br>`Graph.Strategy.Spine.Data.surplusThreshold_sublinear` | carried on the at-or-below arm; the sublinearity is derived from `largeOrder_dominates_surplus` |
+| `def:near-cubic-spine` | def | `Graph.Strategy.Spine.Data.surplusThreshold` | the exact square-root threshold is carried on the at-or-below arm |
 | `prop:nonnear-cubic-sharp-overload-routing` | pro | | node `[20]`, on the `surplusAbove` exit — outside Block A |
 
 **CT composition at this row.**  None.  A `Decision` over the canonical ledger;
@@ -1953,15 +1951,11 @@ needs no CT machinery.
   (a) The empty internal `δ`-core hypothesis of `lem:typeA-receiver-loads` is
   *inherited*, not assumed: node `[27]` (`remainderNormalized`) proves that no
   subregion of the remainder of a **maximal** packing meets the baseline.
-  Before this change the Type A fact chain did not carry that maximality —
-  `netDeficiencyCap` onwards existentially quantified a bare
-  `IsWindowPacking` — so the inheritance the row-42 evidence claimed was not
-  available, and the hypothesis is genuinely necessary: a `δ`-regular object
-  with the empty packing satisfies every clause `typeALowSurplus` used to
-  carry, and its own vertex set is then a nonempty internal `δ`-core.  The
-  maximality clause is now carried by `netDeficiencyCap`, `netChargeNegative`,
-  `netChargeNonNegative`, `windowJoinPressure`, `negativeSupport` and
-  `typeALowSurplus`; see rows 41 and 42.
+  The Type A fact chain therefore carries maximality through
+  `netChargeNegative`, `netChargeNonNegative`, `windowJoinPressure`,
+  `negativeSupport` and `typeALowSurplus`; a bare `IsWindowPacking` would not
+  suffice, because a regular object with the empty packing can have a nonempty
+  internal core.
 
   (b) `traceReceiver?` realizes the manuscript's "fixed lexicographic
   tie-breaking rule among these receiver-reaching paths" as *the first receiver
@@ -5873,8 +5867,8 @@ no capability, member schedule, label, or terminal.  The row is a single
   verbatim.
 
   Node `[32]` is `Spine.curvatureRankDichotomy`, run through the framework's
-  `Decision.run`.  The test is `r_Ω(R) < W₂(R) − rankDefect(W₂(R))`, with
-  `rankDefect` the registered `o(W₂)` of `Spine.Data`.  The yes arm commits
+  `Decision.run`.  The implementation follows the last paragraph of
+  `lem:full-rank`: it tests the exact rank loss `r_Ω(R) < W₂(R)`.  The yes arm commits
   `curvatureRankDrop`: the packing, the strict inequality, and a proper
   target-dependence of the system.  That dependence is *read*, not recomputed:
   the decision reads node `[31]`'s committed fact off the incoming ledger by
@@ -5883,7 +5877,8 @@ no capability, member schedule, label, or terminal.  The row is a single
   an allowance subtracted from `W₂(R)`, which *is* the number of raw tests,
   leaves a bound below the family's own size, and that is
   `lem:target-rank-circuit`'s hypothesis.  The no arm commits `curvatureFullRank`,
-  `W₂(R) − rankDefect(W₂(R)) ≤ r_Ω(R)` at every packing.  The two arms are the
+  `r_Ω(R) = W₂(R)` at every packing; the reverse inequality is the generic
+  `curvatureTargetRank_le_internalWedgeCount` theorem.  The two arms are the
   two halves of one excluded middle, so they are exhaustive and mutually
   exclusive by construction, and neither is readable on the other's branch.
 
@@ -5895,7 +5890,7 @@ no capability, member schedule, label, or terminal.  The row is a single
   support or a smaller closed representative.  It is proved here and consumed
   at `[33]`/`[35]`–`[46]`, where those two are refuted by
   `not_replacementSupport` and by the selection's own minimality.
-- **What it should do.** This is the implementation.  Every object node `[31]`
+- **What it should do.** This is now the implementation.  Every object node `[31]`
   and `[32]` name is constructed: the coordinate family, its declared supports,
   the determination support and its interface, the realizations, both
   target-completeness clauses, both representative clauses, the system, the
@@ -5911,9 +5906,11 @@ no capability, member schedule, label, or terminal.  The row is a single
   packing is one of them, so its drop takes the yes arm and its full rank is
   bounded by the no arm.  Second, `[32]` is the one comparison of the spine
   whose manuscript form still carries an asymptotic term after the exact
-  substitutions of `[29]`–`[30]`, and `o(W₂)` is registered as `Data.rankDefect`
-  exactly as `[19]`'s `o(n)` is registered as `Data.surplusThreshold`; no
-  numeral appears at either node.
+  substitutions of `[29]`–`[30]`.  Lean does not register an arbitrary
+  pointwise surrogate for that asymptotic notation: the manuscript's own proof
+  eliminates every strict rank loss, obtains `r_Ω(R) = W₂(R)`, and only then
+  weakens that equality to the displayed all-but-`o(W₂)` statement.  Thus no
+  rank allowance and no numeral appears in the problem presentation or node.
   Three statements of `def:curvature-target-rank`'s neighbourhood belong to
   later rows and are not committed here: the exact-code equality with the full
   target code and the `2^{|𝒜|}` state realization of `def:target-rank`, which
@@ -5997,363 +5994,80 @@ rows go through the framework's one `AtomicCT.run` and its one `Decision.run`.
 
 ### Row 41 — Full-rank finite-state capacity `[47]`–`[56]`
 
-- **Paper fact.** `[47]` is Residual B, `lem:full-rank`: `r_Ω(R) ≥ W₂(R) − o(W₂)`.
-  `[48]` is `cor:forced-curvature-cost`: `c_Ω r_Ω(R) ≥ K_win|R| − o(|R|)` with
-  `K_win = c_Ω ω_win`, sharpening to `K = c_Ω ω = 5.89262883286…` on the
-  high-entropy branch; its whole proof is "this follows from `lem:full-rank`,
-  `lem:wedge-lower` and the definitions of `K_win` and `K`", and
-  `rem:curvature-provenance` separates the two ingredients — the routing supplies
-  the *independence* of the cost, the finite enumeration `lem:curv-enum` supplies
-  its *value* `c_Ω = log₂(543958/111286) = 2.28922315244…`.  `[49]` is
-  `def:remainder-entropy`: `η(R) = log₂|𝒢(R)|/|R|` for the class `𝒢(R)` of
-  labelled simple graphs on `V(R)` satisfying the remainder constraints already
-  imposed on the branch, used symbolically — "no enumeration of labelled graphs
-  is prescribed, and only `|𝒢(R)|` is ever consumed".  `[50]` is the decision
-  `η(R) ≥ (1/10)log₂ n`, whose no arm carries `lem:dominant-type` and
-  `rem:cheap-regime-link`.  `[51]` is the high-entropy branch of
-  `prop:two-budget` (a), where the remainder's realized states number at least
-  `2^{η(R)|R|} ≥ n^{|R|/10}`; `lem:translates-independent` and
-  `rem:positive-fraction` belong to its low-entropy sibling (b).  `[52]` is the
-  window-plus-remainder accounting, `eq:feasibility`.  `[53]` is the decision
-  "remaining non-curvature budget `< K|R|`?", which by `def:Theta` is exactly
-  `eq:entropy-cap`; `[54]` is its closed terminal `prop:entropy-high-theta`,
-  reached from `[52]` and from `[53]`-yes, with `rem:entropy-argument-order`
-  fixing that entropy is applied only after rank forcing and `rem:closure-robust`
-  recording that the closure outside the explicit residuals needs neither the
-  exact `c_Ω` nor the precise rank fraction.  `[55]` is Residual C, the
-  large-budget branch `θ ≤ θ_win + o(1)`, with `def:canonical-decomp` and
-  `def:admissible`.  `[56]` is
-  `Δ_net(R) = (def⁺(R) − σ_R)/|R| ≤ τ_win + o(1)`, `τ_win = 15θ_win/(1 − 13θ_win)
-  = 0.22817486846… < 1/4`.
-- **What the Lean does.** The row is five canonical-ledger steps on the spine's
-  own `ExactLedger`, run by `Spine.run` after the node-`[34]` full-rank residual.
-  `[47]`–`[48]` is `SpineRows.forcedCurvatureCostRow`, a `factOnly` step
-  requiring `curvatureDemandFloor` and `curvatureFullRank` and producing
-  `forcedCurvatureCost`; its body performs the manuscript's own substitution —
-  `Nat.sub_le_iff_le_add` turns `W₂(R) − o(W₂) ≤ r_Ω(R)` into
-  `W₂(R) ≤ r_Ω(R) + o(W₂)`, that replaces the wedge supply in node `[30]`'s
-  demand floor, and `Nat.mul_le_mul_left` applies the registered cost to both
-  sides.  `[49]`–`[50]` is `SpineRows.remainderEntropyDichotomy`, a `Decision`
-  on `Graph.AtLeastEntropyRate n d order threshold |R|`, which is
-  `n^{|R|} ≤ |𝒢(R)|^d` — `def:remainder-entropy` exponentiated by `d·|R|`, so no
-  logarithm, division, or rounding is written.  `𝒢(R)` is
-  `Graph.RemainderClass order threshold |R|`, the labelled graphs on `|R|`
-  vertices carrying exactly node `[27]`'s two clauses (no induced window of the
-  registered order, no subregion meeting the registered baseline), and
-  `|𝒢(R)|` is `Nat.card` of it; no enumeration exists.  `[51]`–`[52]` is
-  `SpineRows.entropyPackageRow` on the high arm, producing
-  `entropyPackageDemand`: the joint window/remainder/curvature demand raised to
-  the `d`-th power, with the high arm's `n^{|R|} ≤ |𝒢(R)|^d` substituted for its
-  remainder factor.  `[53]` is `SpineRows.entropyCapDichotomy`, a `Decision`
-  comparing that joint demand against `Graph.skeletonBudget` — the same budget
-  node `[21]` compared the window package against.  `[56]` is
-  `SpineRows.netDeficiencyCapRow`, requiring `stubSupply` and producing
-  `netDeficiencyCap`: node `[29]`'s ceiling multiplied through by the registered
-  discharge scale, with the packing eliminated by the object's own
-  `Graph.FiniteObject.remainderSupport_card_add_eq` (`|R| + order·p = n`).  The
-  packing it commits is the one node `[17]` selected, and since row 11 the fact
-  carries its **maximality** as well — `maximalPacking`'s own last clause, read
-  through `packingOf` — so `[27]` stays instantiable at every subregion of the
-  remainder for the rest of the run.  See row 42's correction bullet.
-  Three registered constants are new, all in `Problem.lean`'s `spineData` and
-  none written at a node: `curvatureCost` is
-  `Core.Finite.CertifiedTableAggregation.binaryRowRateFloor` of the audited
-  `P13Barrier.certifiedTable` at its length-`1` connector row — the row whose
-  certified safe and flat counts are `lem:curv-enum`'s own `543958` and
-  `111286` — `entropyDenominator` is the presentation's
-  `remainderEntropyThresholdDenominator`, and `dischargeScale` is its
-  `loadMultiplier`.
-- **What it should do.** `[54]` should be a *closed* terminal.  Its closure is
-  `prop:entropy-high-theta`: the window package, the remainder bits, and the
-  forced-curvature bits form one independently target-testable coordinate
-  family, so the states they realize cannot outnumber the labelled near-cubic
-  skeletons (`lem:independent-target-entropy` with `lem:skeleton-dominates`).
-  Node `[53]`'s yes arm is exactly the statement that they do outnumber them, so
-  the two are incompatible and the arm closes.
-- **What it should do.** Nothing further: every node of the row is implemented,
-  and `[54]` is the closed terminal the manuscript draws.
-- **Gap.** None on the mathematics.  `[54]` closes, and so does the identical
-  terminal `[23]` of rows 9--10, through one realization:
-
-  * `Graph.PackedWindowRealization.SeparatedFamily` is `lem:p13-window-package`'s
-    coordinate family, carrying the manuscript's own *selection* as its
-    hypotheses — `separated` (distinct coordinates read disjoint vertex sets) and
-    `sourcesOutside` (the testers are rooted outside the package).  Separation is
-    not proved of every scale: the package "uses `⌊log₂ n⌋ − O(1)` separated
-    dyadic scales", and the colliding ones are the `O(1)` the selection discards.
-  * `adj_realize_iff` reads the package back coordinate by coordinate, which is
-    the manuscript's "the tester for one window does not change the label state
-    assigned to another packed window"; `realize_injective` and
-    `card_state_pi` give the product, so `log₂` turns it into the paper's *sum*
-    of the 91 barrier rates.
-  * `card_state_pi_le_skeletonBudget` is `lem:skeleton-dominates` at `𝒢_{n,m}`
-    rather than `𝒢_n`: the coordinates occupy their own `slots`, the completion
-    to the ambient edge count is drawn from a `pool` disjoint from them and
-    depends only on how many edges are still needed, so it carries no
-    information and never has to be injective — `filled_eq_inter` recovers the
-    package by intersecting with the slots.
-  * Node `[21]`'s selection is `SpineRows.windowPackageDichotomy`, a `Decision`
-    on `WindowPackageStatement`.  The positive arm now commits both the
-    separated realization and `FiniteObject.WindowTargetPackage`: the concrete
-    packing, D3 declared coordinate family and support map, full target rank in
-    `declaredQuotientSystem`, and the exact `m`-edge skeleton entropy bound.
-    The other arm is the literal negation of that complete package (so a rank or
-    realization failure is a cold fact, not an obligation) and leaves the block
-    as `Result.windowPackageCollided`.
-  * `Spine.instIncompatibleEntropyCap` is then `prop:entropy-high-theta` —
-    node `[53]`'s yes arm demands strictly more states than there are skeletons,
-    the realization says it does not — and `closeIncompatible` appends the
-    residual domain's distinguished closure key.  `Spine.instIncompatibleWindowPackage`
-    does the same for `[23]`.  **Facts therefore holds.**
-
-  Two smaller items, neither affecting what is committed.  `curvatureCost` reads
-  the audited table's rate *floor*, so the registered `c_Ω` is
-  `⌊log₂(543957/111286)⌋` against the manuscript's `2.28922315244…`; the rounding
-  is downward, so the forced cost node `[48]` states is no larger than the real
-  one, and `rem:closure-robust` records that the closure outside the explicit
-  residuals holds for every nonnegative value.  And `[50]`'s no arm carries only
-  the entropy inequality: `lem:dominant-type` and `lem:translates-independent`,
-  which `prop:two-budget` (b) uses to extract a positive linear rank in the
-  structurally repetitive sub-case, are not implemented — `prop:two-budget`'s own
-  routing sends every low-entropy branch forward unchanged, and that is what the
-  Lean does.
-
-  **`[56]` and the numeral `τ_win < 1/4` — now proved.**  Node `[24]`'s demand
-  carries its per-dyadic-scale factor again (see rows 9–10), so the cap it
-  converts to is the manuscript's `θ ≤ θ_win + o(1)` rather than a `log₂ n`
-  weaker one.  Spending it is `SpineRows.netDeficiencyCapRow`: the packing
-  number is eliminated against node `[29]`'s ceiling, the slack is cleared at
-  the registered order exponent, and what comes out is the manuscript's own
-  `A·p₁₃ + s·o(n) < n` with `A = s·(δ·order − 2(order−1)) + order`, the `73` of
-  `cor:global-window-join-pressure`.  So `[56]` commits `N₀(R) < 0` outright —
-  the whole remainder already carries negative net charge — which is exactly why
-  the manuscript's node `[60]` is a vacuous terminal.
-
-  Two numbers enter, both the presentation's own and neither a numeral written
-  at a node.  `Data.netChargeRate` is `τ_win < ¼` cleared of denominators, a
-  comparison between the registered baseline, window order, discharge scale,
-  order exponent and audited rate; `Data.largeOrder_dominates_surplus` is the
-  registered order against the square of the coefficient the collision carries
-  against the surplus.  `Data.surplusThreshold_sublinear` *derives*
-  `σ(G) = O(√n) = o(n)` from the second through `Core.mul_ceilSqrt_le`, so no
-  decimal, no intermediate product, and no evaluated table value appears in any
-  proof.  Node `[55]`'s diamond is the manuscript's own "for all sufficiently
-  large `n`", made explicit with both arms retained — the same device node
-  `[19]` already uses for its registered `o(n)` threshold — and its small-order
-  arm leaves the block as `Result.smallOrderResidual`, the finite residue the
-  manuscript's asymptotic statements do not address.
-
-- **Ledger and residual.** Every step is on the one canonical
-  `Core.Residual.ExactLedger` at the residual `Spine.run` was opened on.  The
-  fact-only rows are appended by `AtomicCT.run`, so the output index is
-  definitionally `Produces ++ known` and every earlier fact stays in the type;
-  the two diamonds are `Decision.run`, so the arm not taken is absent from the
-  taken branch's index.  The residual is unchanged throughout — every step is a
-  fact-only step whose `refines` is equality — and no packing, class, or support
-  travels: every clause is quantified over the maximal packings of the object
-  the residual carries.  The new indices are `forcedCurvatureCostKeys`,
-  `remainderEntropyHighKeys`, `entropyPackageKeys`, `remainderEntropyLowKeys`,
-  `entropyCapActiveKeys` and `largeBudgetKeys`, each one key on top of its
-  predecessor.  Prerequisites are discharged by instance resolution against the
-  incoming index, so a row asking for a fact the branch has not proved does not
-  elaborate.  **Ledger ✅, Residual ✅.**
-- **Transport and terminals.** No CT adapter and no registration: the row is
-  five `AtomicStrategy`/`Decision` steps composed by the framework's own
-  `AtomicCT.run` and `Decision.run` inside `Spine.run`.  Facts are read only by
-  `FactInputs.get` inside an executor and by `ExactLedger.get` at the
-  framework-owned decision boundary.  Nothing is transported outside the
-  ledger, and no payload, terminal, or audit channel carries mathematics.  The
-  two node-`[54]` exits are `Result.entropyPackage` and
-  `Result.entropyCapActive`; neither appends the distinguished closure key,
-  because neither is proved uninhabited (see **Gap**).  Node `[55]`, Residual C,
-  is `largeBudgetResidual`, and the run continues from it into row 42.
-  **Transport ✅.**
+- **Paper fact.** On Residual B, the full-rank and wedge facts give the forced
+  curvature cost. `prop:two-budget` distinguishes the high-entropy calculation
+  from low entropy, but every surviving case is passed to the same
+  large-budget Residual C. The dominant-local-type and independent-translate
+  conclusions are optional strengthening on one low-entropy subcase; the
+  later closure is explicitly robust to omitting that strengthening.
+- **Live implementation.** `forcedCurvatureCost` is appended first.
+  `remainderEntropyDichotomy` is the exact high/low comparison. The high arm
+  builds `entropyPackageDemand` and either closes the strict skeleton overflow
+  or appends `largeBudgetResidual`. The low arm appends
+  `largeBudgetResidual` directly with `lowEntropyLargeBudgetRow`, preserving
+  the low-entropy witness and the entire incoming ledger.
+- **Deleted illegal refinement.** The finite radius-two dominance predicates,
+  their six semantic keys, their decisions, and their rows have been removed.
+  They were an exhaustive finite classification, but no theorem identified it
+  with the manuscript's asymptotic local-type-vector bit-content condition.
+  The implementation now proves only the common conclusion actually consumed
+  downstream, so it neither evaluates a type table nor asserts an unproved
+  equivalence.
+- **Residual C consumption.** `runResidualC` is polymorphic in the literal tail
+  `known` of `residualCKeys known`. It appends the generic localization theorem
+  and performs the exact finite net-charge sign decision. The negative arm
+  appends a connected negative support. The nonnegative arm appends the exact
+  inequality of `cor:global-window-join-pressure`. Every production is through
+  `AtomicCT.run` or `Decision.run`; no residual is reconstructed or rebased.
+- **Removed cutoff.** `largeOrderExponent`, `largeOrderResidual`,
+  `smallOrderResidual`, `netDeficiencyCap`, the application proof of the
+  512-bit threshold, and the specialized cap row are deleted. Indices
+  43–45 and 145–150 remain unused; existing key indices are not renumbered.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:full-rank` | lem | `Spine.Key.curvatureFullRank` (row 40) | consumed at `[47]` by `SpineRows.forcedCurvatureCostRow` as a ledger fact, read by exact key |
-| `cor:forced-curvature-cost` | cor | `Spine.Key.forcedCurvatureCost`<br>`SpineRows.forcedCurvatureCostRow` | no CT — one fact-only spine row |
-| `rem:curvature-provenance` | rem | `Spine.Data.curvatureCost` | the registered value; the independence is `lem:full-rank`'s |
-| `lem:curv-enum` | lem | `FiniteChecks.P13Barrier.certifiedTable` at the length-`1` connector row, through `Core.Finite.CertifiedTableAggregation.binaryRowRateFloor` | the audited finite table |
-| `def:remainder-entropy` | def | `Graph.RemainderClass`<br>`Graph.remainderStateCount`<br>`Graph.AtLeastEntropyRate` | no CT |
-| `lem:skeleton-dominates` | lem | `Graph.LabelledOn.card_range_le_card`<br>`Graph.remainderStateCount_le_card_labelledOn` | available; unconsumed at this row — see **Gap** |
-| `lem:dominant-type` | lem | | not implemented; `prop:two-budget` (b) |
-| `rem:cheap-regime-link` | rem | | |
-| `lem:translates-independent` | lem | | not implemented; `prop:two-budget` (b) |
-| `rem:positive-fraction` | rem | | |
-| `prop:two-budget` | pro | `Spine.Key.remainderEntropyHigh`, `Spine.Key.remainderEntropyLow`<br>`SpineRows.remainderEntropyDichotomy` | branch (a) and the (b)/(c) routing; (b)'s rank extraction is not implemented |
-| `rem:forced-cost-role` | rem | | |
-| `eq:feasibility` | equation | `Spine.Key.entropyPackageDemand`<br>`SpineRows.entropyPackageRow` | the demand side, exactly |
-| `eq:entropy-cap` | equation | `Spine.Key.entropyCapActive`<br>`SpineRows.entropyCapDichotomy` | the comparison; its closure is the gap |
-| `def:Theta` | def | | the threshold is not written: `[53]` compares the two integers `Θ(n)` is defined to separate |
-| `prop:entropy-high-theta` | pro | | not proved — see **Gap** |
-| `rem:entropy-argument-order` | rem | | respected by construction: `[48]` precedes `[50]` in the ledger index |
-| `rem:closure-robust` | rem | | recorded against `Spine.Data.curvatureCost`'s rounding |
-| `def:canonical-decomp` | def | `Graph.FiniteObject.canonicalPieces`<br>`Graph.FiniteObject.sum_canonicalPieces` | consumed at `[57]`–`[58]`, row 42 |
-| `def:admissible` | def | `Graph.SupportComponents.Connected.ConnectedOn` with `Spine.Key.remainderNormalized` | consumed at `[61]`, row 42 |
-| `lem:netcharge-superadd` | lem | `Graph.FiniteObject.nonNegativeNetCharge_of_forall_pieces` | consumed at `[58]`, row 42 |
-
-**CT composition at this row.** **None.**  The row composes no CT adapter: it
-is five atomic canonical-ledger steps.  `[47]`–`[48]`, `[52]` and `[56]` are
-`factOnly` strategies run by `AtomicCT.run`; `[50]` and `[53]` are
-`Decision.run`.  Every one of them declares a nonempty-output `FactManifest`,
-receives only sealed `FactInputs`, and returns exactly `manifest.Produces`.
-The mathematics is Core's and Graph's — `Graph.RemainderEntropy`,
-`Graph.SkeletonBudget`, `Graph.WindowRemainder`, `Core.Finite.CertifiedTableAggregation` —
-and none of it names this problem.
+| `cor:forced-curvature-cost` | corollary | `Spine.forcedCurvatureCost` | `AtomicStrategy` |
+| `def:remainder-entropy` | definition | `Graph.RemainderClass`, `Graph.AtLeastEntropyRate` | symbolic finite class |
+| `prop:two-budget` high/low split | proposition | `Spine.remainderEntropyDichotomy` | `Decision` |
+| common low-entropy continuation | routing | `Spine.lowEntropyLargeBudget` | `AtomicStrategy` |
+| `eq:entropy-cap` | equation | `Spine.entropyCapDichotomy` | high arm only; `Decision` |
+| Residual C | residual | key `largeBudgetResidual`, `residualCKeys known` | dependent exact-ledger index |
 
 ### Row 42 — Net-charge continuation `[57]`–`[64]`
 
-- **Paper fact.** `[57]` carries the large-budget net cap of `[56]`.  `[58]` is
-  `def:net-charge`: for an admissible support `X`,
-  `N₀(X) = def⁺(X) − σ(X) − ¼|V(X)|`.  `[59]` is the decision `N₀(R) ≥ 0?`,
-  answered by `lem:netcharge-superadd`:
-  `Σ_i N₀(X_i) = def⁺(R) − σ(R) − ¼|R|` over the connected admissible supports
-  of `def:canonical-decomp`, "consequently, if `def⁺(R) − σ(R) − ¼|R| < −ε|R|` …
-  then some connected support `X_i` has `N₀(X_i) < 0`".  Its proof is the three
-  exact sums the decomposition supplies — `Σ|V(X_i)| = |R|`,
-  `Σσ(X_i) = σ(R)`, and `Σdef⁺(X_i) = def⁺(R)`, the last because
-  `d_{X_i}(u) = d_R(u)` inside a connected component.  `[60]` is the net-cap
-  contradiction: `¼|R| ≤ def⁺(R) − σ(R) ≤ τ_win|R| + o(|R|)` with `τ_win < ¼`;
-  `cor:global-window-join-pressure` is the exact accounting form of the same
-  arm — if every connected admissible support has nonnegative net charge then
-  `σ_W − σ_R ≥ (n − 73p₁₃)/4` — and `rem:window-join-pressure-meaning` reads it
-  back as a linear excess of window surplus over remainder surplus.  `[61]` is
-  `prop:negative-net-charge`: choose a connected admissible support `X` with
-  `N₀(X) < 0`.  `[62]` splits on whether `X` carries high-degree surplus, to
-  `[63]` Type A and `[64]` Type B.
-- **What the Lean does.** The row is four canonical-ledger steps continuing
-  `Spine.run` from node `[55]`.  `[57]`–`[58]` is
-  `SpineRows.netChargeLocalizationRow`, producing `netChargeLocalization`:
-  at every maximal packing, a remainder of negative net charge has a subset that
-  is connected in the object and has negative net charge.  Its body is one
-  application of `Graph.FiniteObject.exists_connected_negativeNetCharge`, whose
-  proof is the manuscript's own — the contrapositive of
-  `nonNegativeNetCharge_of_forall_pieces`, which is the three exact sums
-  `sum_pieceSupport_card`, `sum_ambientSurplus_canonicalPieces` and
-  `sum_positiveDeficiency_canonicalPieces` over
-  `Graph.FiniteObject.canonicalPieces`, `def:canonical-decomp`'s connected
-  components.  The deficiency sum is the only clause with content, and
-  `internalDegree_pieceSupport` is exactly `d_{X_i}(u) = d_R(u)`: a neighbour
-  that stays in the region is joined by an edge of the induced graph, so it
-  lies in the same component.  `def:net-charge` is
-  `Graph.FiniteObject.NegativeNetCharge` and `NonNegativeNetCharge`, the two
-  halves of the subtraction-free integer comparison
-  `s·def⁺(X) < |V(X)| + s·σ(X)` the signed definition reduces to after
-  multiplying by the registered scale — no rounding, and the `¼` never appears
-  as a rational.  `[59]` is `SpineRows.netChargeDichotomy`, a `Decision`
-  producing `netChargeNonNegative` or `netChargeNegative`; its excluded middle
-  is taken over the packings that are maximal, which is where the manuscript's
-  `R = G − W` lives, so the negative arm carries the maximality forward.  `[60]` is
-  `SpineRows.windowJoinPressureRow` on the nonnegative arm, requiring
-  `netChargeNonNegative` and `boundaryDemand` and producing
-  `windowJoinPressure`; its body composes
-  `lem:surplus-aware-window-stub`'s two links, scales by the discharge scale,
-  and eliminates the packing with `remainderSupport_card_add_eq`, leaving
-  `n + s·σ_R + s·2(order−1)p ≤ s·δ·order·p + s·σ_W + order·p`, which at the
-  registered values is `σ_W − σ_R ≥ (n − 73p₁₃)/4`.  `[61]` is
-  `SpineRows.negativeSupportRow`, requiring `netChargeNegative` and
-  `netChargeLocalization` and producing `negativeSupport`.  `[62]` is
-  `SpineRows.typeSplitDichotomy`, a `Decision` on the *selected* support's own
-  assigned surplus, producing `typeALowSurplus` or `typeBHighSurplus`; the
-  decision is taken on a `Prop`, so no witness is extracted to build the branch
-  and the arm not taken supplies the other arm's clause.
-- **What it should do.** Nothing further: every node of the row is implemented,
-  and `[60]` is the closed terminal the manuscript draws.
-- **Gap.** None on the mathematics.  `[60]` closes: node `[56]` proves that the
-  whole remainder already carries negative net charge, node `[59]`'s yes arm
-  says it does not, and `Spine.instIncompatibleNetCharge` registers that
-  collision — the manuscript's `¼|R| ≤ def⁺(R) − σ(R) ≤ τ_win|R| + o(|R|)` with
-  `τ_win < ¼` — so `Core.Strategy.closeIncompatible` appends the residual
-  domain's distinguished closure key the moment the branch test takes the arm.
-  `cor:global-window-join-pressure` is committed on that arm first, because the
-  manuscript states it there; the arm then closes.  **Facts therefore holds.**
-
-  **Correction, made by row 11's port.**  An earlier revision of this bullet
-  recorded as a design note that what `[61]` keeps of `def:admissible` is the
-  two clauses the decomposition supplies — connected piece, negative charge —
-  and that the inherited clauses "are readable on the same branch at every
-  subregion rather than carried", naming `remainderNormalized` for
-  componentwise window-freeness and the empty internal core.  That was wrong
-  as stated.  `remainderNormalized` is quantified over packings that are
-  *maximal*, and the packing `[56]`–`[62]` carried was a bare
-  `IsWindowPacking`: the maximality was used inside
-  `netDeficiencyCapRow` and then dropped, so nothing downstream could
-  instantiate `[27]` at the piece.  The clause is not decorative — a
-  `δ`-regular object with the empty packing satisfies every clause `[63]`'s
-  fact carried, and its own vertex set is then a nonempty internal `δ`-core, so
-  row 11's `lem:typeA-receiver-loads` is false without it.
-
-  The four facts of this row now carry the maximality of their packing:
-  `netChargeNonNegative` takes it as a hypothesis, and `netChargeNegative`,
-  `negativeSupport` and `typeALowSurplus` carry it as a conjunct.  `[59]`'s
-  decision is correspondingly taken over the maximal packings, which is also
-  where the manuscript's `R = G − W` lives.  Row 11 then reads `[27]` at its
-  support and the inheritance is literal.  The remaining inherited clauses are
-  unchanged: hereditary target-uncompressibility from `uncompressible`, the
-  window-supplied deficient boundary from `boundaryDemand`.  Contextual
-  dyadic-safety (`def:dyadic-safe`) is the one clause no spine fact carries;
-  neither arm of `[62]` consumes it.
-
-  `typeBHighSurplus` deliberately does **not** carry the maximality: no ported
-  Type B row consumes it, and adding it would have re-shaped rows 20–25's row
-  signatures for no current use.  A Type B row that needs `def:admissible`'s
-  inherited clauses has to reinstate the conjunct on that arm of
-  `typeSplitDichotomy` first; the clause is available there, since
-  `negativeSupport` carries it.
-- **Ledger and residual.** Four steps on the same canonical `ExactLedger`, on the
-  unchanged residual.  `netChargeLocalization`'s manifest requires nothing —
-  `lem:netcharge-superadd` holds at every region of every object, so no
-  prerequisite is manufactured to place it, and its position is fixed by the
-  ledger index alone.  The other three read their prerequisites by exact
-  semantic key through `FactInputs.get`; `[62]` reads `negativeSupport` through
-  `ExactLedger.get` at the decision boundary.  No support, packing, or component
-  schedule travels: `[61]`'s and `[62]`'s facts are existential statements about
-  the object, which is what makes them refinement-stable and what keeps the
-  selected support out of the ledger.  The new indices are
-  `netDeficiencyCapKeys`, `netChargeLocalizationKeys`, `windowJoinPressureKeys`,
-  `negativeSupportKeys`, `typeALowSurplusKeys` and `typeBHighSurplusKeys`.
-  **Ledger ✅, Residual ✅.**
-- **Transport and terminals.** No CT adapter and no registration — two
-  `factOnly` strategies and two `Decision`s, composed by `AtomicCT.run` and
-  `Decision.run` inside `Spine.run`.  The three exits are
-  `Result.windowJoinPressure` (node `[60]`, *closed* — its index is
-  `closed :: windowJoinPressureKeys`), `Result.typeALowSurplus` (node
-  `[63]`) and `Result.typeBHighSurplus` (node `[64]`); the Type A and Type B
-  residuals are where the local analysis of `sec:local-analysis` continues, and
-  neither can read the other's arm or either arm of `[59]` it did not take.
-  `Spine.typeALowSurplus_audit_facts` states the full twenty-six-name audit of
-  the Type A exit, and `typeALowSurplus_audit_accounts_for_every_fact`,
-  `typeBHighSurplus_audit_accounts_for_every_fact` and
-  `windowJoinPressure_audit_accounts_for_every_fact` certify through
-  `ExactLedger.audit_complete` that each exit's fact index is exactly what its
-  chronological commits produced.  **Transport ✅.**
+- **Paper fact.** The canonical support decomposition is exact on vertex
+  count, assigned surplus, and positive deficiency. Thus negative total charge
+  localizes to a connected negative support. If no such support exists, the
+  exact complement is `cor:global-window-join-pressure`:
+  `σ_W - σ_R ≥ (n - 73 p₁₃)/4` in the registered integer form.
+- **Live implementation.** `runResidualC` first runs
+  `netChargeLocalizationRow`. `netChargeDichotomy` then decides, over maximal
+  window packings, whether the remainder charge is nonnegative or whether one
+  packing has negative charge. The negative arm runs `negativeSupportRow`; the
+  nonnegative arm runs `windowJoinPressureRow`, which composes the two
+  boundary-demand inequalities and the exact support-card identity.
+- **Exhaustiveness and routing.** This is ordinary excluded middle on the exact
+  finite inequality, not an asymptotic decision. `ResidualCResult` and
+  `BudgetContinuation` have dependent `negativeSupport` and
+  `windowJoinPressure` constructors indexed by the original `known`. The
+  pressure arm has no closure key and is not coerced to `surplusAbove`; it is
+  the paper's explicit pressure continuation. There is no small-order leaf.
+- **Ledger.** Both arms retain `largeBudgetResidual`, their high- or
+  low-entropy prefix, and every fact before it. The pressure audit uses
+  `ExactLedger.audit_complete` on its dependent index.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:canonical-decomp` | def | `Graph.FiniteObject.canonicalPieces`<br>`Graph.FiniteObject.pieceSupport`<br>`Graph.FiniteObject.sum_canonicalPieces` | no CT — the connected components of `Graph.SupportComponents.Connected`, with the surplus assignment being the partition itself |
-| `def:net-charge` | def | `Graph.FiniteObject.NegativeNetCharge`<br>`Graph.FiniteObject.NonNegativeNetCharge` | no CT |
-| `lem:netcharge-superadd` | lem | `Graph.FiniteObject.sum_pieceSupport_card`<br>`Graph.FiniteObject.sum_ambientSurplus_canonicalPieces`<br>`Graph.FiniteObject.sum_positiveDeficiency_canonicalPieces`<br>`Graph.FiniteObject.internalDegree_pieceSupport`<br>`Graph.FiniteObject.nonNegativeNetCharge_of_forall_pieces` | no CT — consumed at `[58]` by `SpineRows.netChargeLocalizationRow` |
-| `prop:negative-net-charge` | pro | `Graph.FiniteObject.exists_connected_negativeNetCharge`<br>`Spine.Key.negativeSupport`<br>`SpineRows.negativeSupportRow` | no CT |
-| `cor:global-window-join-pressure` | cor | `Spine.Key.windowJoinPressure`<br>`SpineRows.windowJoinPressureRow` | no CT — consumed at `[60]`, with both links of `lem:surplus-aware-window-stub` discharged from the ledger |
-| `rem:window-join-pressure-meaning` | rem | | |
-| `def:admissible` | def | `Graph.SupportComponents.Connected.ConnectedOn` | the two clauses the decomposition supplies; the inherited ones are read on the same branch — see **Gap** |
-
-Nodes `[63]` and `[64]` anchor no `\label` of their own: the diagram routes them
-into Parts VIII and VI, whose labels belong to rows 11–29.
-
-**CT composition at this row.** **None**, in agreement with the reference
-table's "no CT (Core ledger strategy)".  Execution is four atomic
-canonical-ledger steps: `AtomicCT.run` for `[57]`–`[58]` and `[61]`,
-`Decision.run` for `[59]` and `[62]`.  Because `[59]` and `[62]` are
-`Decision`s, their alternatives are exhaustive by excluded middle on one
-integer comparison and one equality, and each arm's key is absent from its
-sibling's index.
-
+| `def:canonical-decomp` | definition | `FiniteObject.canonicalPieces`, `pieceSupport` | generic graph API |
+| `lem:netcharge-superadd` | lemma | `FiniteObject.exists_connected_negativeNetCharge`, `Spine.netChargeLocalization` | `AtomicStrategy` |
+| net-charge sign split | routing | `Spine.netChargeDichotomy` | `Decision` |
+| `prop:negative-net-charge` support arm | proposition | `Spine.negativeSupport` | `AtomicStrategy` |
+| `cor:global-window-join-pressure` complement | corollary | `Spine.windowJoinPressure` | `AtomicStrategy` |
+| generic continuation | routing | `Spine.runResidualC` | dependent `ExactLedger` result |
 
 ### Row 43 — Corridor cut-state `T(J)` `[145]`–`[157]`
 

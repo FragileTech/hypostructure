@@ -271,19 +271,16 @@ of nodes instead of two copies. -/
   entropyPackageRow (K .remainderEntropyHigh) (K .entropyPackageDemand)
     (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
 
-/-- Node `[56]`. -/
-@[reducible] noncomputable def netDeficiencyCap :
+/-- Every low-entropy survivor has the same paper continuation.  The optional
+local-type-vector analysis may add curvature information, but
+`rem:closure-robust` records that the later large-budget route does not consume
+that optional fact.  This row therefore commits only the common Residual C
+conclusion and leaves the complete incoming ledger intact. -/
+@[reducible] noncomputable def lowEntropyLargeBudget :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  netDeficiencyCapRow (K .maximalPacking) (K .stubSupply) (K .densityCap)
-    (K .largeOrderResidual) (K .netDeficiencyCap)
-    (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
-    (fun _input fact => by
-      obtain ⟨_positive, packing, valid, attains, maximal⟩ := fact.down
-      exact ⟨packing, valid, attains, maximal⟩)
-    (fun _input fact => fact.down)
-    (fun _input fact => fact.down)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+  lowEntropyLargeBudgetRow (K .remainderEntropyLow) (K .largeBudgetResidual)
+    (by simp) (fun _input fact => fact.down)
+    (fun _input low => ⟨Or.inr low⟩)
 
 /-- Nodes `[57]`--`[58]`. -/
 @[reducible] noncomputable def netChargeLocalization :
@@ -474,21 +471,6 @@ noncomputable instance instImpossibleContextDefect :
   contradiction := fun residual value =>
     not_contextDefect (data := data) residual.object value.down
 
-/-- **The node-`[60]` terminal is uninhabited**, at the spine's own keys.
-
-Node `[56]` proves that the whole remainder already carries negative net charge,
-and node `[59]`'s yes arm says it does not.  That is the manuscript's net-cap
-contradiction, `¼|R| ≤ def⁺(R) − σ(R) ≤ τ_win|R| + o(|R|)` with `τ_win < ¼`, and
-registering it as `Incompatible` is what lets the framework close the arm the
-moment the branch test takes it. -/
-noncomputable instance instIncompatibleNetCharge :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .netChargeNonNegative) (K .netDeficiencyCap) where
-  contradiction := fun _residual nonNegative cap => by
-    obtain ⟨packing, valid, maximal, negative⟩ := cap.down
-    exact Nat.lt_irrefl _
-      (Nat.lt_of_lt_of_le negative (nonNegative.down packing valid maximal))
-
 /-- **The node-`[54]` terminal is uninhabited**, at the spine's own keys.
 
 `lem:p13-window-package`'s separated arm realizes the joint window, remainder and
@@ -597,8 +579,7 @@ abbrev remainderEntropyHighKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .remainderEntropyHigh :: forcedCurvatureCostKeys
 
-/-- Node `[52]`, reaching the terminal `[54]`: window plus remainder
-accounting. -/
+/-- Node `[52]`: window plus remainder accounting on the high-entropy arm. -/
 abbrev entropyPackageKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .entropyPackageDemand :: remainderEntropyHighKeys
@@ -608,8 +589,27 @@ abbrev remainderEntropyLowKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .remainderEntropyLow :: forcedCurvatureCostKeys
 
-/-- Node `[53]`'s yes arm, reaching the terminal `[54]`. -/
+/-- The one dependent Residual C index.  `known` is the literal branch
+prefix; no sibling prefix is coerced to another. -/
+abbrev residualCKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .largeBudgetResidual :: known
+
+/-- Node `[53]`'s yes arm on the high-entropy package, closed at `[54]`. -/
 abbrev entropyCapActiveKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  closed :: K .entropyCapActive :: entropyPackageKeys
+
+/-- Node `[53]`'s no arm on the high-entropy package.  It retains the package
+fact and enters the large-budget continuation. -/
+abbrev entropyPackageLargeBudgetKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .largeBudgetResidual :: entropyPackageKeys
+
+/-- The same exact budget comparison on the low-entropy arm, when its active
+side is already incompatible with the separated realization. -/
+abbrev lowEntropyCapActiveKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   closed :: K .entropyCapActive :: remainderEntropyLowKeys
 
@@ -618,39 +618,89 @@ abbrev largeBudgetKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .largeBudgetResidual :: remainderEntropyLowKeys
 
-/-- Node `[55]`, large arm: the manuscript's "for all sufficiently large `n`". -/
-abbrev largeOrderKeys :
+/-- The exact net-charge continuation over an arbitrary Residual C tail. -/
+abbrev residualCNetChargeLocalizationKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .largeOrderResidual :: largeBudgetKeys
+  K .netChargeLocalization :: residualCKeys known
 
-/-- Node `[55]`, small arm: the finite residue the manuscript's asymptotic
-statements do not address. -/
-abbrev smallOrderKeys :
+/-- The no-negative-support complement, carrying the paper's exact
+window-join-pressure inequality and every incoming fact. -/
+abbrev residualCWindowJoinPressureKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .smallOrderResidual :: largeBudgetKeys
+  K .windowJoinPressure :: K .netChargeNonNegative ::
+    residualCNetChargeLocalizationKeys known
 
-/-- Node `[56]`: the large-budget net-deficiency cap. -/
-abbrev netDeficiencyCapKeys :
+/-- The negative-support arm, carrying the selected connected support and every
+incoming fact. -/
+abbrev residualCNegativeSupportKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .netDeficiencyCap :: largeOrderKeys
+  K .negativeSupport :: K .netChargeNegative ::
+    residualCNetChargeLocalizationKeys known
 
-/-- Nodes `[57]`--`[58]`: net charge and its localization. -/
+/-- The exhaustive result of consuming one arbitrary Residual C ledger. -/
+inductive ResidualCResult
+    (selected : Input BranchState Presentation presentation data)
+    (known : FactKeys (Input BranchState Presentation presentation data)) where
+  | windowJoinPressure
+      (history : ExactLedger
+        (Input BranchState Presentation presentation data) selected
+        (residualCWindowJoinPressureKeys known))
+  | negativeSupport
+      (history : ExactLedger
+        (Input BranchState Presentation presentation data) selected
+        (residualCNegativeSupportKeys known))
+
+/-- Nodes `[56]`--`[61]`, over the literal incoming Residual C ledger.
+
+The sign decision is exhaustive at every finite order.  Its negative arm is
+localized to a connected support.  Its nonnegative arm is not declared
+impossible: `cor:global-window-join-pressure` is appended as the exact
+complement.  Thus no asymptotic threshold and no bounded-order leaf occur. -/
+noncomputable def runResidualC
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger
+      (Input BranchState Presentation presentation data) current
+      (residualCKeys known))
+    (boundaryDemandPresent :
+      FactKeys.Has (K (data := data) .boundaryDemand) (residualCKeys known))
+    (localizationFresh : K (data := data) .netChargeLocalization ∉ known)
+    (nonNegativeFresh : K (data := data) .netChargeNonNegative ∉ known)
+    (negativeFresh : K (data := data) .netChargeNegative ∉ known)
+    (pressureFresh : K (data := data) .windowJoinPressure ∉ known)
+    (supportFresh : K (data := data) .negativeSupport ∉ known) :
+    ResidualCResult current known := by
+  classical
+  letI := boundaryDemandPresent
+  have localized :=
+    (netChargeLocalization (data := data)).run history
+      (by simp [residualCKeys, localizationFresh])
+  match netChargeDichotomy localized (K .netChargeNonNegative)
+      (K .netChargeNegative) (fun value => ⟨value⟩)
+      (fun value => ⟨value⟩)
+      (by simp [residualCKeys, nonNegativeFresh])
+      (by simp [residualCKeys, negativeFresh]) with
+  | .left nonNegativeHistory =>
+      exact .windowJoinPressure
+        ((windowJoinPressure (data := data)).run nonNegativeHistory
+          (by simp [residualCKeys, pressureFresh]))
+  | .right negativeHistory =>
+      exact .negativeSupport
+        ((negativeSupport (data := data)).run negativeHistory
+          (by simp [residualCKeys, supportFresh]))
+
+/-- The already-ported Type A/Type B continuation currently instantiates the
+generic index at the low-entropy cursor; no fact is reconstructed or dropped. -/
 abbrev netChargeLocalizationKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .netChargeLocalization :: netDeficiencyCapKeys
+  residualCNetChargeLocalizationKeys remainderEntropyLowKeys
 
-/-- Node `[60]`: the nonnegative arm of node `[59]`, with the window-join
-pressure it forces. -/
-abbrev windowJoinPressureKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .windowJoinPressure :: K .netChargeNonNegative ::
-    netChargeLocalizationKeys
-
-/-- Node `[61]`: the negative arm of node `[59]`, with the connected support it
-selects. -/
 abbrev negativeSupportKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .negativeSupport :: K .netChargeNegative :: netChargeLocalizationKeys
+  residualCNegativeSupportKeys remainderEntropyLowKeys
 
 /-- Node `[63]`, Type A. -/
 abbrev typeALowSurplusKeys :
@@ -1139,18 +1189,17 @@ inductive Result (selected : Input BranchState Presentation presentation data)
   | rankDropClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected rankDropClosedKeys)
-  | entropyPackage
+  | windowJoinPressure
+      {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected entropyPackageKeys)
+        selected (residualCWindowJoinPressureKeys known))
+  | negativeSupport
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (residualCNegativeSupportKeys known))
   | entropyCapActive
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected entropyCapActiveKeys)
-  | smallOrderResidual
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected smallOrderKeys)
-  | windowJoinPressure
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected windowJoinPressureKeys)
   | typeAVisibleEntry
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected typeAVisibleEntryKeys)
@@ -1327,203 +1376,50 @@ noncomputable def runCore
                   (fun high => ⟨high⟩) (fun low => ⟨low⟩)
                   (by simp) (by simp) with
               | .left highHistory =>
-                  -- Nodes `[51]`--`[52]`, reaching the terminal `[54]`.
-                  exact .entropyPackage
-                    ((entropyPackage (data := data)).run highHistory (by simp))
-              | .right lowHistory =>
-                  -- Node `[53]`: the admissible entropy cap.
-                  match entropyCapDichotomy lowHistory (K .entropyCapActive)
+                  -- Nodes `[51]`--`[52]`: append the high-entropy package, then
+                  -- consume it at the node-`[53]` comparison.  The yes arm is
+                  -- the paper's closed node `[54]`; only the complementary
+                  -- large-budget arm survives this phase boundary.
+                  have packageHistory :=
+                    (entropyPackage (data := data)).run highHistory (by simp)
+                  match entropyCapDichotomy packageHistory (K .entropyCapActive)
                       (K .largeBudgetResidual) (fun active => ⟨active⟩)
-                      (fun large => ⟨large⟩) (by simp) (by simp) with
+                      (fun large => ⟨Or.inl large⟩) (by simp) (by simp) with
                   | .left activeHistory =>
-                      -- Node `[54]`: the entropy cap.  The separated package
-                      -- cannot realize more states than there are skeletons, so
-                      -- this arm is uninhabited and closes here.
                       exact .entropyCapActive
                         (closeIncompatible activeHistory
                           (K .windowPackageSeparated) (K .entropyCapActive)
                           (by simp))
                   | .right largeHistory =>
-                      -- Node `[55]`: the registered order threshold, the
-                      -- manuscript's own "for all sufficiently large `n`".
-                      match orderThresholdDichotomy largeHistory
-                          (K .largeOrderResidual) (K .smallOrderResidual)
-                          (fun large => ⟨large⟩) (fun small => ⟨small⟩)
-                          (by simp) (by simp) with
-                      | .right smallHistory => exact .smallOrderResidual smallHistory
-                      | .left orderHistory =>
-                      -- Node `[56]`: the net-deficiency cap on Residual C.
-                      -- Nodes `[57]`--`[58]`: net charge and its localization.
-                      have afterLocalization :=
-                        (netChargeLocalization (data := data)).run
-                          ((netDeficiencyCap (data := data)).run orderHistory
-                            (by simp))
-                          (by simp)
-                      -- Node `[59]`: the net-charge sign test.
-                      match netChargeDichotomy afterLocalization
-                          (K .netChargeNonNegative) (K .netChargeNegative)
-                          (fun nonNegative => ⟨nonNegative⟩)
-                          (fun negative => ⟨negative⟩) (by simp) (by simp) with
-                      | .left nonNegativeHistory =>
-                          -- Node `[60]`: global window-join pressure, and the
-                          -- net-cap contradiction that closes the arm.
-                          exact .windowJoinPressure
-                            (closeIncompatible
-                              ((windowJoinPressure (data := data)).run
-                                nonNegativeHistory (by simp))
-                              (K .netChargeNonNegative) (K .netDeficiencyCap)
-                              (by simp))
-                      | .right negativeHistory =>
-                          -- Node `[61]`: the connected negative support.
-                          have afterSupport :=
-                            (negativeSupport (data := data)).run negativeHistory
-                              (by simp)
-                          -- Node `[62]`: the Type A / Type B split.
-                          match typeSplitDichotomy afterSupport
-                              (K .negativeSupport) (K .typeALowSurplus)
-                              (K .typeBHighSurplus) (fun fact => fact.down)
-                              (fun typeA => ⟨typeA⟩) (fun typeB => ⟨typeB⟩)
-                              (by simp) (by simp) with
-                          | .left typeAHistory =>
-                              -- Node `[88]`: the canonical receiver routing of
-                              -- the Type A support and its threshold algebra.
-                              have afterRouting :=
-                                (typeAReceiverRouting (data := data)).run
-                                  typeAHistory (by simp)
-                              -- Node `[89]`: is some receiver saturated?
-                              match typeASaturationDichotomy afterRouting
-                                  (K .typeALowSurplus)
-                                  (K .typeASaturatedReceiver)
-                                  (K .typeAUnsaturatedReceivers)
-                                  (fun fact => fact.down)
-                                  (fun saturated => ⟨saturated⟩)
-                                  (fun unsaturated => ⟨unsaturated⟩)
-                                  (by simp) (by simp) with
-                              | .left saturatedHistory =>
-                                  -- `lem:typeA-port-return` first, on the
-                                  -- shared prefix: every completion port
-                                  -- carries an anchored return, so neither
-                                  -- arm of `[93]` and none of the exit tests
-                                  -- below it is vacuous.
-                                  have afterPortReturn :=
-                                    (typeAPortReturn (data := data)).run
-                                      saturatedHistory (by simp)
-                                  -- Node `[93]`: does a completion port of the
-                                  -- saturated receiver see `s` visible
-                                  -- receiver-entry returns?
-                                  match typeAVisibleEntryDichotomy
-                                      afterPortReturn
-                                      (K .typeAReceiverRouting)
-                                      (K .typeASaturatedReceiver)
-                                      (K .typeAVisibleEntry)
-                                      (K .typeAVisibleFirstExcess)
-                                      (fun fact packing valid maximal piece
-                                        inside surplus =>
-                                        (fact.down packing valid maximal piece
-                                          inside surplus).1)
-                                      (fun fact => fact.down)
-                                      (fun visible => ⟨visible⟩)
-                                      (fun excess => ⟨excess⟩)
-                                      (by simp) (by simp) with
-                                  | .left visibleHistory =>
-                                      -- Clause (Q1) of
-                                      -- `def:typeA-exit4-family`, committed on
-                                      -- the yes cursor: the canonical family
-                                      -- row 16 quantifies over is exhibited at
-                                      -- its visible-entry generator.
-                                      exact .typeAVisibleEntry
-                                        ((typeAVisibleEntryClause
-                                          (data := data)).run visibleHistory
-                                          (by simp))
-                                  | .right excessHistory =>
-                                      -- `lem:typeA-unpeeled-silent-routing`
-                                      -- routes node `[94]` into the shared
-                                      -- exit segment, so the segment's entry
-                                      -- is committed here, refined out of node
-                                      -- `[89]`'s saturation.
-                                      exact .typeAVisibleFirstExcess
-                                        ((typeASaturatedExitEntry
-                                          (data := data)).run excessHistory
-                                          (by simp))
-                              | .right unsaturatedHistory =>
-                                  exact .typeAUnsaturatedReceivers
-                                    unsaturatedHistory
-                          | .right typeBHistory =>
-                              -- Node `[68]`: the high-neighbourhood normal
-                              -- form, then the heavy-centre degree split.
-                              have afterNormalForm :=
-                                (highCentreNormalForm (data := data)).run
-                                  typeBHistory (by simp)
-                              match heavyCentreDichotomy afterNormalForm
-                                  (K .typeBHighSurplus) (K .typeBHeavyCentre)
-                                  (K .typeBDegreeFourCentres)
-                                  (fun fact => fact.down)
-                                  (fun heavy => ⟨heavy⟩)
-                                  (fun degreeFour => ⟨degreeFour⟩)
-                                  (by simp) (by simp) with
-                              | .left heavyHistory =>
-                                  -- Node `[69]`: the local dichotomy at a
-                                  -- heavy centre.  Node `[70]`: the fan cap.
-                                  -- Node `[70]`: the fan cap on this arm.
-                                  have afterFanCap :=
-                                    (fanCertificateCap (data := data)).run
-                                      ((heavyCentreLocalDichotomy
-                                        (data := data)).run heavyHistory
-                                        (by simp))
-                                      (by simp)
-                                  -- Nodes `[71]`--`[76]`: the local Type B fan
-                                  -- ledger, run once and entered here.
-                                  match runTypeBFanLedger afterFanCap
-                                      (by simp) (by simp) (by simp) (by simp)
-                                      (by simp) (by simp) (by simp) (by simp)
-                                      (by simp) (by simp) (by simp)
-                                      (by simp) with
-                                  | .certificateResidualMass h =>
-                                      exact .typeBCertificateResidualMass h
-                                  | .directCycleClosed h =>
-                                      exact .typeBDirectCycleClosed h
-                                  | .excluded h =>
-                                      -- The node-`[64]` residual is what this
-                                      -- entry carries, so this entry closes it.
-                                      exact .typeBBranchKill
-                                        (closeIncompatible h
-                                          (K .typeBHighSurplus)
-                                          (K .typeBExcluded) (by simp))
-                                  | .exclusionResidual h =>
-                                      exact .typeBExclusionResidual h
-                                  | .overlapObstructionMass h =>
-                                      exact .typeBOverlapObstructionMass h
-                              | .right degreeFourHistory =>
-                                  -- Node `[70]` on the degree-four arm: the
-                                  -- same executor after the other cursor.
-                                  -- Then Part VII: `[79]`, `[80]`, `[81]`.
-                                  have afterProfile :=
-                                    (degreeFourProfile (data := data)).run
-                                      ((fanCertificateCap (data := data)).run
-                                        degreeFourHistory (by simp))
-                                      (by simp)
-                                  -- Nodes `[80]`--`[85]`: the same ledger,
-                                  -- entered after the degree-four cursor.
-                                  match runTypeBFanLedger afterProfile
-                                      (by simp) (by simp) (by simp) (by simp)
-                                      (by simp) (by simp) (by simp) (by simp)
-                                      (by simp) (by simp) (by simp)
-                                      (by simp) with
-                                  | .certificateResidualMass h =>
-                                      exact .degreeFourResidualMass h
-                                  | .directCycleClosed h =>
-                                      exact .degreeFourDirectCycleClosed h
-                                  | .excluded h =>
-                                      -- The node-`[64]` residual is what this
-                                      -- entry carries, so this entry closes it.
-                                      exact .degreeFourBranchKill
-                                        (closeIncompatible h
-                                          (K .typeBHighSurplus)
-                                          (K .typeBExcluded) (by simp))
-                                  | .exclusionResidual h =>
-                                      exact .degreeFourExclusionResidual h
-                                  | .overlapObstructionMass h =>
-                                      exact .degreeFourOverlapObstructionMass h
+                      match runResidualC (known := entropyPackageKeys) largeHistory
+                          (boundaryDemandPresent := by infer_instance)
+                          (localizationFresh := by simp)
+                          (nonNegativeFresh := by simp)
+                          (negativeFresh := by simp)
+                          (pressureFresh := by simp)
+                          (supportFresh := by simp) with
+                      | .windowJoinPressure pressureHistory =>
+                          exact .windowJoinPressure pressureHistory
+                      | .negativeSupport supportHistory =>
+                          exact .negativeSupport supportHistory
+              | .right lowHistory =>
+                  -- Every surviving low-entropy case has the same continuation
+                  -- in `prop:two-budget`; no finite surrogate for the paper's
+                  -- asymptotic local-type-vector condition is introduced.
+                  have largeHistory :=
+                    (lowEntropyLargeBudget (data := data)).run lowHistory
+                      (by simp)
+                  match runResidualC (known := remainderEntropyLowKeys) largeHistory
+                      (boundaryDemandPresent := by infer_instance)
+                      (localizationFresh := by simp)
+                      (nonNegativeFresh := by simp)
+                      (negativeFresh := by simp)
+                      (pressureFresh := by simp)
+                      (supportFresh := by simp) with
+                  | .windowJoinPressure pressureHistory =>
+                      exact .windowJoinPressure pressureHistory
+                  | .negativeSupport supportHistory =>
+                      exact .negativeSupport supportHistory
 
 /-! ## What the run leaves behind -/
 
@@ -1586,8 +1482,6 @@ theorem typeALowSurplus_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -1681,8 +1575,6 @@ theorem typeAUnsaturatedReceivers_audit_facts
             (name .negativeSupport) ::
               (name .netChargeNegative) ::
                 (name .netChargeLocalization) ::
-                  (name .netDeficiencyCap) ::
-                    (name .largeOrderResidual) ::
                       (name .largeBudgetResidual) ::
                         (name .remainderEntropyLow) ::
                           (name .forcedCurvatureCost) ::
@@ -1736,8 +1628,6 @@ theorem typeBDirectCycleClosed_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -1782,8 +1672,6 @@ theorem typeBHybridEntry_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -1823,8 +1711,6 @@ theorem typeBOverlapObstruction_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -1870,8 +1756,6 @@ theorem typeBExclusionCharge_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -1916,8 +1800,6 @@ theorem degreeFourExclusionCharge_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -1959,8 +1841,6 @@ theorem typeBCertificateResidualMass_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -2003,8 +1883,6 @@ theorem typeBOverlapObstructionMass_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -2044,8 +1922,6 @@ theorem degreeFourResidualMass_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -2087,8 +1963,6 @@ theorem degreeFourOverlapObstructionMass_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -2124,8 +1998,6 @@ theorem typeBDegreeFourFanCap_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -2171,8 +2043,6 @@ theorem degreeFourCertificateResidual_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -2212,8 +2082,6 @@ theorem degreeFourDirectCycleClosed_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -2254,8 +2122,6 @@ theorem degreeFourHybridEntry_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -2295,8 +2161,6 @@ theorem degreeFourOverlapObstruction_audit_facts
         (name .negativeSupport) ::
         (name .netChargeNegative) ::
         (name .netChargeLocalization) ::
-        (name .netDeficiencyCap) ::
-        (name .largeOrderResidual) ::
         (name .largeBudgetResidual) ::
         (name .remainderEntropyLow) ::
         (name .forcedCurvatureCost) ::
@@ -2525,21 +2389,20 @@ admissible support appears carries; `negativeSupport` is absent from its
 index. -/
 theorem windowJoinPressure_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected windowJoinPressureKeys) :
+      selected (residualCWindowJoinPressureKeys known)) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=
   ExactLedger.audit_complete history
 
-/-- **The two node-`[54]` exits.**  The high-entropy arm reaches the entropy-cap
-terminal through node `[52]`'s package accounting; the low-entropy arm reaches
-it through node `[53]`'s own comparison.  Neither carries the other's entropy
-arm. -/
+/-- The high-entropy large-budget continuation retains node `[52]`'s package
+fact and node `[53]`'s complementary verdict. -/
 theorem entropyPackage_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected entropyPackageKeys) :
+      selected entropyPackageLargeBudgetKeys) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=
@@ -2549,6 +2412,15 @@ theorem entropyCapActive_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected entropyCapActiveKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem lowEntropyCapActive_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected lowEntropyCapActiveKeys) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=
