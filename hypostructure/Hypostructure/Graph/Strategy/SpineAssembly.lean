@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRows
+import Hypostructure.Graph.Strategy.TypeAExitRun
 
 /-!
 # The entry spine, composed
@@ -56,27 +56,6 @@ universe u v
 variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
-
-/-- The spine's own fact system, installed for the whole run.  It is the only
-`FactSystem` on this residual domain, so every key below is one of its own. -/
-noncomputable instance instFactSystem :
-    FactSystem (Input BranchState Presentation presentation data) :=
-  factSystem BranchState Presentation presentation data
-
-/-- The spine's exact semantic keys. -/
-abbrev K (k : Key) : FactKey (Input BranchState Presentation presentation data) :=
-  FactVocabulary.WithClosure.fact k
-
-/-- The residual domain's distinguished closure key, as callers name it.  It is
-Core's own reserved key: the vocabulary cannot spell it, which is what makes a
-closure entry unforgeable by a row. -/
-abbrev closed : FactKey (Input BranchState Presentation presentation data) :=
-  FactVocabulary.WithClosure.closed
-
-@[simp] theorem closureKey_eq_closed :
-    (FactSystem.closureKey :
-        FactKey (Input BranchState Presentation presentation data)) = closed :=
-  rfl
 
 /-- The closure key is not a semantic fact.  Every freshness condition on a
 closure entry is discharged through this. -/
@@ -165,29 +144,23 @@ noncomputable instance typeAUnsaturatedDischargeClosed :
     Incompatible (Input BranchState Presentation presentation data)
       (K (data := data) .typeALowSurplus)
       (K (data := data) .typeAUnsaturatedDischarge) where
-  contradiction := fun _input low discharged => by
-    obtain ⟨packing, valid, maximal, piece, inside, connected, negative,
-      surplus⟩ := low.down
-    have nonnegative :=
-      discharged.down packing valid maximal piece inside connected negative
-        surplus
+  contradiction := fun _input _low discharged => by
+    obtain ⟨_packing, _valid, _maximal, _component, _present, negative,
+      surplus, nonnegative⟩ := discharged.down
     unfold Graph.FiniteObject.NegativeNetCharge at negative
     rw [surplus, Nat.mul_zero, Nat.add_zero] at negative
     omega
 
-/-- **The shared entry of nodes `[101]`--`[107]`**, at the spine's own keys.
-
-`lem:typeA-exit4-residual-routing`'s hypothesis, refined out of node `[89]`'s
-saturation at the empty peeling set.  Figure 8's two entries into the exit
-segment — node `[99]`'s no arm and node `[94]` — both commit it, and nodes
-`[101]`--`[107]` are asked under it, which is what keeps the segment one chain
-of nodes instead of two copies. -/
-@[reducible] noncomputable def typeASaturatedExitEntry :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeASaturatedExitEntryRow (K .typeASaturatedReceiver)
-    (K .typeASaturatedExitEntry) (by simp)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+/-- Node `[104]`: exit `(5)` closes against `cor:uncompressible`. -/
+noncomputable instance typeAExitFiveClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .uncompressible)
+      (K (data := data) .typeAExitFive) where
+  contradiction := fun _input uncompressible exitFive => by
+    obtain ⟨_packing, _valid, _maximal, _component, _present, _negative,
+      _zero, _receiver, _isReceiver, _peeled, _peeledSubset, _saturated,
+      _noExitFour, support, compressible⟩ := exitFive.down
+    exact (uncompressible.down support) compressible
 
 /-- Node `[93]`, yes arm: clause (Q1) of `def:typeA-exit4-family`. -/
 @[reducible] noncomputable def typeAVisibleEntryClause :
@@ -356,8 +329,9 @@ conclusion and leaves the complete incoming ledger intact. -/
 @[reducible] noncomputable def heavyCentreLocalDichotomy :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   heavyCentreLocalDichotomyRow (K .highCentreNormalForm)
-    (K .typeBLocalDichotomy) (by simp)
-    (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
+    (K .typeBHeavyCentre) (K .typeBLocalDichotomy) (by simp)
+    (fun _input fact => fact.down) (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
 
 /-- Node `[70]`, on both arms of node `[68]`.  One executor value, run after
 either branch cursor: an `AtomicCT` has no predecessor parameter. -/
@@ -377,23 +351,26 @@ run after either of the two B2 cursors. -/
 /-- Nodes `[78]`--`[79]`, on the degree-four arm of node `[68]`. -/
 @[reducible] noncomputable def degreeFourProfile :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  degreeFourProfileRow (K .highCentreNormalForm) (K .typeBDegreeFourProfile)
-    (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
+  degreeFourProfileRow (K .highCentreNormalForm) (K .typeBDegreeFourCentres)
+    (K .typeBDegreeFourProfile) (by simp)
+    (fun _input fact => fact.down) (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
 
-/-- Nodes `[73]`/`[75]` and `[83]`/`[84]`.  One executor value, run after each of
-the four bridge-residual cursors: the two fan-certificate residual arms of node
-`[71]`/`[80]` and the two overlap-obstruction arms of node `[72]`/`[81]`. -/
+/-- Node `[76]`/`[85]`, the exact disjoint post-ledger component fact. -/
+@[reducible] noncomputable def disjointPostLedgerComponents :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  disjointPostLedgerComponentsRow (K .typeBB2Choice) (K .selection)
+    (K .remainderNormalized) (K .typeBDisjointLedger) (by simp)
+    (fun _input fact => fact.down)
+    (fun _input fact => fact.down.1)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
+
+/-- Nodes `[73]`/`[75]` and `[83]`/`[84]`, run on each Type B bridge residual
+cursor that the local fan walk produces. -/
 @[reducible] noncomputable def bridgeFanMass :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   bridgeFanMassRow (K .typeBBridgeMass) (fun _input value => ⟨value⟩)
-
-/-- Nodes `[76]`/`[85]`, Step 1 of `lem:typeB-exclusion`.  One executor value,
-run after either of the two B1 cursors. -/
-@[reducible] noncomputable def typeBExclusionCharge :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeBExclusionChargeRow (K .typeBB2Choice)
-    (K .typeBExclusionCharge) (by simp) (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
 
 end Rows
 
@@ -466,41 +443,6 @@ noncomputable instance instIncompatibleDirectCycle :
     exact selected.down.1
       (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
         valid present)
-
-/-- **`thm:branch-kill` (b): the node-`[76]`/`[85]` closing arm is
-uninhabited**, at the spine's own keys.
-
-The node-`[64]` residual carries a connected assigned Type B support of
-*negative* net charge.  `prop:typeB-bridge-reduction` says an excluded-shaped
-support has *nonnegative* net charge, and `def:net-charge`'s two sides are exact
-negations.  Registering the collision as `Incompatible` is what lets the
-framework close the arm the moment the branch test takes it, with the closure
-entry naming these two facts and nothing else.
-
-This is the whole Type B half of `thm:branch-kill`: "every large-budget residual
-outside the target-defect exit, outside the Type A route-8 residual branch, and
-outside the Type B bridge residual branch is closed". -/
-noncomputable instance instIncompatibleTypeBExcluded :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .typeBHighSurplus) (K .typeBExcluded) where
-  contradiction := fun residual surplus excluded => by
-    obtain ⟨packing, valid, _maximal, component, present, charge, positive⟩ :=
-      surplus.down
-    let piece := residual.object.pieceSupport
-      (residual.object.remainderSupport packing) component
-    have inside : piece ⊆ residual.object.remainderSupport packing :=
-      residual.object.pieceSupport_subset
-        (residual.object.remainderSupport packing) component
-    have connected :
-        Graph.SupportComponents.Connected.ConnectedOn residual.object piece :=
-      Graph.SupportComponents.Connected.connectedOn_of_mem_order residual.object
-        (residual.object.remainderSupport packing)
-        ((residual.object.mem_canonicalPieces
-          (residual.object.remainderSupport packing)).mp present)
-    exact (residual.object.not_negativeNetCharge_iff piece data.threshold
-      data.dischargeScale).mpr
-      (excluded.down packing valid piece inside connected charge positive)
-      charge
 
 /-- **The terminal `[37]` is uninhabited**, at the spine's own key.
 
@@ -828,8 +770,7 @@ abbrev residualCTypeAVisibleEntryKeys
 abbrev residualCTypeAVisibleFirstExcessKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeASaturatedExitEntry :: K .typeAVisibleFirstExcess ::
-    residualCTypeAPortReturnKeys known
+  K .typeAVisibleFirstExcess :: residualCTypeAPortReturnKeys known
 
 abbrev residualCTypeAUnsaturatedReceiverKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
@@ -882,42 +823,6 @@ abbrev residualCTypeBDegreeFourProfileKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBDegreeFourProfile :: residualCTypeBDegreeFourFanCapKeys known
 
-/-- The exhaustive exits of node `[62]`, indexed by the exact incoming
-Residual C tail.  The selected connected support remains a fact in the same
-ledger; no support or predecessor is transported as a payload. -/
-inductive NegativeSupportResult
-    (selected : Input BranchState Presentation presentation data)
-    (known : FactKeys (Input BranchState Presentation presentation data)) where
-  | typeA
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeALowSurplusKeys known))
-  | typeB
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBHighSurplusKeys known))
-
-/-- **Node `[62]`, run on the canonical negative support.**
-
-This is the paper's literal Type A/Type B decision: the support selected at
-node `[61]` either has zero assigned ambient surplus or positive assigned
-ambient surplus.  `typeSplitDichotomy` derives the positive arm from the
-negation of the zero arm using `Nat.eq_zero_or_pos`; this runner only installs
-that decision at the dependent Residual C index. -/
-noncomputable def runNegativeSupport
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current (residualCNegativeSupportKeys known))
-    (typeAFresh : K (data := data) .typeALowSurplus ∉ known)
-    (typeBFresh : K (data := data) .typeBHighSurplus ∉ known) :
-    NegativeSupportResult current known := by
-  classical
-  match typeSplitDichotomy history (K .negativeSupport)
-      (K .typeALowSurplus) (K .typeBHighSurplus)
-      (fun fact => fact.down) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
-      (by simp [typeAFresh]) (by simp [typeBFresh]) with
-  | .left typeAHistory => exact .typeA typeAHistory
-  | .right typeBHistory => exact .typeB typeBHistory
-
 /-- The already-ported Type A/Type B continuation currently instantiates the
 generic index at the low-entropy cursor; no fact is reconstructed or dropped. -/
 abbrev netChargeLocalizationKeys :
@@ -949,15 +854,15 @@ abbrev typeAPortReturnKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeAPortReturnKeys remainderEntropyLowKeys
 
-/-- Node `[93]`, yes arm — the entry of the saturated exit chain, after clause
-(Q1) of `def:typeA-exit4-family` is committed on it. -/
+/-- Node `[93]`, yes arm — the selected visible package and its compiled
+response/germ prefix, at the entry of exits `(1)`--`(3)`. -/
 abbrev typeAVisibleEntryKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeAVisibleEntryKeys remainderEntropyLowKeys
 
-/-- Node `[93]`, no arm — node `[94]`, the visible-first excess, carrying the
-shared entry of the exit segment `lem:typeA-unpeeled-silent-routing` routes it
-into. -/
+/-- Node `[93]`, no arm — node `[94]`, the selected visible-first silent
+excess residual.  No `[101]+` key is appended before its missing routing
+theorem is implemented. -/
 abbrev typeAVisibleFirstExcessKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeAVisibleFirstExcessKeys remainderEntropyLowKeys
@@ -1027,7 +932,7 @@ abbrev fanCertResidualKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .fanCertificateResidual :: known
 
-/-- `[75]`/`[84]` on the certificate-residual cursor. -/
+/-- `[75]`/`[84]` on a fan-certificate residual cursor. -/
 abbrev fanCertResidualMassKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -1057,29 +962,11 @@ abbrev fanHybridEntryKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBHybridEntry :: fanB2ChoiceKeys known
 
-/-- `[76]`/`[85]`: Step 1 of `lem:typeB-exclusion`. -/
-abbrev fanExclusionChargeKeys
+/-- `[76]`/`[85]`: the exact post-ledger disjoint component fact. -/
+abbrev fanDisjointLedgerKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExclusionCharge :: fanHybridEntryKeys known
-
-/-- `[76]`/`[85]`, excluded, *before* the closure.  What contradicts it is whichever residual the entering branch carries, so the closure is the caller's. -/
-abbrev fanExcludedKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExcluded :: fanExclusionChargeKeys known
-
-/-- `[76]`/`[85]`, closed against the node-`[64]` residual. -/
-abbrev fanBranchKillKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: fanExcludedKeys known
-
-/-- `[76]`/`[85]`, surviving: a retained leaf, no fan-mass bound. -/
-abbrev fanExclusionResidualKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExclusionResidual :: fanExclusionChargeKeys known
+  K .typeBDisjointLedger :: fanHybridEntryKeys known
 
 /-- `[72]`/`[81]`, second half, no — the entry of `[73]`/`[83]`. -/
 abbrev fanOverlapObstructionKeys
@@ -1087,7 +974,7 @@ abbrev fanOverlapObstructionKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBOverlapObstruction :: fanDirectCycleFreeKeys known
 
-/-- `[75]`/`[84]` on the overlap-obstruction cursor. -/
+/-- `[75]`/`[84]` on an overlap-obstruction cursor. -/
 abbrev fanOverlapObstructionMassKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -1101,17 +988,21 @@ abbrev residualCTypeBDirectCycleClosedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanDirectCycleClosedKeys (residualCTypeBCertificateMarkedKeys known)
 
-abbrev residualCTypeBBranchKillKeys
+abbrev residualCTypeBDisjointLedgerKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
-  fanBranchKillKeys (residualCTypeBCertificateMarkedKeys known)
+  fanDisjointLedgerKeys (residualCTypeBCertificateMarkedKeys known)
 
-abbrev residualCTypeBExclusionResidualKeys
+abbrev residualCTypeBCertificateResidualKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
-  fanExclusionResidualKeys (residualCTypeBCertificateMarkedKeys known)
+  fanCertResidualKeys (residualCTypeBHeavyFanCapKeys known)
 
 abbrev residualCTypeBCertificateResidualMassKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanCertResidualMassKeys (residualCTypeBHeavyFanCapKeys known)
+
+abbrev residualCTypeBOverlapObstructionKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanOverlapObstructionKeys (residualCTypeBCertificateMarkedKeys known)
 
 abbrev residualCTypeBOverlapObstructionMassKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
@@ -1125,17 +1016,21 @@ abbrev residualCDegreeFourDirectCycleClosedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanDirectCycleClosedKeys (residualCDegreeFourMarkedKeys known)
 
-abbrev residualCDegreeFourBranchKillKeys
+abbrev residualCDegreeFourDisjointLedgerKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
-  fanBranchKillKeys (residualCDegreeFourMarkedKeys known)
+  fanDisjointLedgerKeys (residualCDegreeFourMarkedKeys known)
 
-abbrev residualCDegreeFourExclusionResidualKeys
+abbrev residualCDegreeFourCertificateResidualKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
-  fanExclusionResidualKeys (residualCDegreeFourMarkedKeys known)
+  fanCertResidualKeys (residualCTypeBDegreeFourProfileKeys known)
 
 abbrev residualCDegreeFourResidualMassKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanCertResidualMassKeys (residualCTypeBDegreeFourProfileKeys known)
+
+abbrev residualCDegreeFourOverlapObstructionKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :=
+  fanOverlapObstructionKeys (residualCDegreeFourMarkedKeys known)
 
 abbrev residualCDegreeFourOverlapObstructionMassKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
@@ -1145,11 +1040,6 @@ abbrev residualCDegreeFourOverlapObstructionMassKeys
 abbrev degreeFourMarkedKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCDegreeFourMarkedKeys remainderEntropyLowKeys
-
-/-- Node `[80]`, no arm: the fan-mass route `[84]`. -/
-abbrev degreeFourResidualKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  fanCertResidualKeys typeBDegreeFourProfileKeys
 
 /-- Node `[81]`'s first half, closing arm. -/
 abbrev degreeFourDirectCycleClosedKeys :
@@ -1171,8 +1061,8 @@ abbrev degreeFourHybridEntryKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   fanHybridEntryKeys degreeFourMarkedKeys
 
-/-- Node `[81]`, no arm — the entry of `[83]`, routed to `[84]`. -/
-abbrev degreeFourOverlapObstructionKeys :
+/-- Node `[81]`, no arm — the local entry of `[83]`, routed to `[84]`. -/
+abbrev degreeFourLocalOverlapObstructionKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   fanOverlapObstructionKeys degreeFourMarkedKeys
 
@@ -1204,71 +1094,52 @@ abbrev typeBHybridEntryKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   fanHybridEntryKeys typeBCertificateMarkedKeys
 
-/-- Node `[76]`: Step 1 of `lem:typeB-exclusion`, after `[74]`. -/
-abbrev typeBExclusionChargeKeys :
+/-- Node `[76]`: exact disjoint post-ledger components, after `[74]`. -/
+abbrev typeBDisjointLedgerKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  fanExclusionChargeKeys typeBCertificateMarkedKeys
+  residualCTypeBDisjointLedgerKeys remainderEntropyLowKeys
 
-/-- Node `[85]`: the same row, after `[82]`. -/
-abbrev degreeFourExclusionChargeKeys :
+/-- Node `[85]`: exact disjoint post-ledger components, after `[82]`. -/
+abbrev degreeFourDisjointLedgerKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  fanExclusionChargeKeys degreeFourMarkedKeys
+  residualCDegreeFourDisjointLedgerKeys remainderEntropyLowKeys
 
-/-- Node `[76]`, the closing arm of `thm:branch-kill` (b): the support is
-excluded-shaped, which collides with the node-`[64]` residual's own negative net
-charge. -/
-abbrev typeBBranchKillKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  residualCTypeBBranchKillKeys remainderEntropyLowKeys
-
-/-- Node `[76]`, the surviving arm.  B2 *holds* on this cursor, so by
-`lem:typeB-exclusion`'s "consequently" the support is **not** a bridge residual:
-it carries a positive-deficit fan -- node `[74]`'s B1 case -- or a route-8
-residual.  It is therefore a retained leaf and no fan-mass bound applies. -/
-abbrev typeBExclusionResidualKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  residualCTypeBExclusionResidualKeys remainderEntropyLowKeys
-
-/-- Node `[85]`, the closing arm. -/
-abbrev degreeFourBranchKillKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  residualCDegreeFourBranchKillKeys remainderEntropyLowKeys
-
-/-- Node `[85]`, the surviving arm, for the same reason. -/
-abbrev degreeFourExclusionResidualKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  residualCDegreeFourExclusionResidualKeys remainderEntropyLowKeys
-
-/-- Node `[72]`/`[81]`, no arm — the entry of `[73]`/`[83]`, which the
-manuscript routes to the fan-mass node `[75]`/`[84]`. -/
-abbrev typeBOverlapObstructionKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  fanOverlapObstructionKeys typeBCertificateMarkedKeys
-
-/-- Node `[71]`, no arm: a fan-certificate residual centre exists, and the
-manuscript routes it to the fan-mass node `[75]`. -/
+/-- Node `[71]`, no arm: a fan-certificate residual centre exists. -/
 abbrev typeBCertificateResidualKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
-  fanCertResidualKeys typeBHeavyFanCapKeys
+  residualCTypeBCertificateResidualKeys remainderEntropyLowKeys
 
-/-- Node `[75]`: the fan-mass estimate on the heavy arm's residual cursor. -/
+/-- Node `[75]`: fan-mass estimate on the heavy certificate-residual cursor. -/
 abbrev typeBCertificateResidualMassKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeBCertificateResidualMassKeys remainderEntropyLowKeys
 
-/-- Node `[84]`: the same row, on the degree-four residual cursor. -/
+/-- Node `[80]`, no arm: a fan-certificate residual centre exists. -/
+abbrev degreeFourCertificateResidualKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCDegreeFourCertificateResidualKeys remainderEntropyLowKeys
+
+/-- Node `[84]`: fan-mass estimate on the degree-four certificate-residual cursor. -/
 abbrev degreeFourResidualMassKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCDegreeFourResidualMassKeys remainderEntropyLowKeys
 
-/-- Node `[75]` entered from `[73]`: the fan-mass estimate on the heavy arm's
-overlap-obstruction cursor. -/
+/-- Node `[72]`/`[81]`, no arm: the selected support carries a minimal overlap
+obstruction. -/
+abbrev typeBOverlapObstructionKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCTypeBOverlapObstructionKeys remainderEntropyLowKeys
+
+/-- Node `[75]` entered from `[73]`: fan-mass estimate on the heavy overlap cursor. -/
 abbrev typeBOverlapObstructionMassKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeBOverlapObstructionMassKeys remainderEntropyLowKeys
 
-/-- Node `[84]` entered from `[83]`: the same row on the degree-four
-overlap-obstruction cursor. -/
+abbrev degreeFourOverlapObstructionKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCDegreeFourOverlapObstructionKeys remainderEntropyLowKeys
+
+/-- Node `[84]` entered from `[83]`: fan-mass estimate on the degree-four overlap cursor. -/
 abbrev degreeFourOverlapObstructionMassKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCDegreeFourOverlapObstructionMassKeys remainderEntropyLowKeys
@@ -1330,20 +1201,20 @@ degree-four arm were two inline copies of it inside `run`, differing only in
 which exit constructor each reached.
 
 Only `selection` comes from outside.  `[70]`'s cap is `sourceFreeManifest` and
-`[71]`'s certificate question is a `Decision` on a property of the object, so
-the walk supplies its own prerequisites -- which is what makes a *third* entry
-(node `[144]`'s decorated Type B handoff fan data, node `[107]`'s exit-`(7)`
-handoff) an attachment rather than a third copy.
+`[71]`'s certificate question is a `Decision` on a property of the selected
+residual.
 
-The excluded arm is handed back **open**.  `thm:branch-kill` (b) is contradicted
-by whichever residual the entering branch carries -- the node-`[64]` residual on
-these two cursors -- and only the caller knows which key that is. -/
+The local fan walk records only facts proved on the incoming residual.  The
+certificate-residual and overlap-obstruction arms are immediately extended by
+the fan-mass row on the same ledger; the direct-cycle arm closes; and the B2
+success arm records the disjoint post-ledger component fact.
+-/
 
 /-- **The exits of the local Type B fan ledger.** -/
 inductive TypeBFanLedgerResult
     (selected : Input BranchState Presentation presentation data)
     (known : FactKeys (Input BranchState Presentation presentation data)) where
-  /-- `[71]`/`[80]` no → `[75]`/`[84]`: fan-mass on the residual cursor. -/
+  /-- `[75]`/`[84]`: a fan-certificate residual centre has its mass bound. -/
   | certificateResidualMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (fanCertResidualMassKeys known))
@@ -1352,15 +1223,11 @@ inductive TypeBFanLedgerResult
   | directCycleClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (fanDirectCycleClosedKeys (fanMarkedKeys known)))
-  /-- `[76]`/`[85]`: `thm:branch-kill` (b)'s excluded shape, open. -/
-  | excluded
+  /-- `[76]`/`[85]`: B2(a)--(c) and post-ledger components on the same history. -/
+  | disjointLedger
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (fanExcludedKeys (fanMarkedKeys known)))
-  /-- `[76]`/`[85]`, surviving: a retained leaf. -/
-  | exclusionResidual
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (fanExclusionResidualKeys (fanMarkedKeys known)))
-  /-- `[73]`/`[83]` → `[75]`/`[84]`: fan-mass on the obstruction cursor. -/
+        selected (fanDisjointLedgerKeys (fanMarkedKeys known)))
+  /-- `[75]`/`[84]`: a minimal overlap obstruction has its mass bound. -/
   | overlapObstructionMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (fanOverlapObstructionMassKeys (fanMarkedKeys known)))
@@ -1371,6 +1238,8 @@ noncomputable def runTypeBFanLedger
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
     [FactKeys.Has (K (data := data) .fanCertificateCap) known]
+    [FactKeys.Has (K (data := data) .typeBHighSurplus) known]
+    [FactKeys.Has (K (data := data) .remainderNormalized) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
     (markedFresh : K (data := data) .fanCertificateMarked ∉ known)
@@ -1380,17 +1249,16 @@ noncomputable def runTypeBFanLedger
     (b2ChoiceFresh : K (data := data) .typeBB2Choice ∉ known)
     (obstructionFresh : K (data := data) .typeBOverlapObstruction ∉ known)
     (hybridFresh : K (data := data) .typeBHybridEntry ∉ known)
-    (chargeFresh : K (data := data) .typeBExclusionCharge ∉ known)
-    (excludedFresh : K (data := data) .typeBExcluded ∉ known)
-    (residualFresh : K (data := data) .typeBExclusionResidual ∉ known)
+    (disjointFresh : K (data := data) .typeBDisjointLedger ∉ known)
     (massFresh : K (data := data) .typeBBridgeMass ∉ known)
     (closureFresh : closed (BranchState := BranchState)
       (presentation := presentation) (data := data) ∉ known) :
     TypeBFanLedgerResult current known := by
   classical
   -- Node `[71]`/`[80]`: is a certificate labelling present?
-  match fanCertificateDichotomy history (K .fanCertificateMarked)
-      (K .fanCertificateResidual) (fun marked => ⟨marked⟩)
+  match fanCertificateDichotomy history (K .typeBHighSurplus)
+      (K .fanCertificateMarked) (K .fanCertificateResidual)
+      (fun fact => fact.down) (fun marked => ⟨marked⟩)
       (fun residual => ⟨residual⟩)
       (by simp [markedFresh]) (by simp [certResidualFresh]) with
   | .right certResidual =>
@@ -1414,90 +1282,16 @@ noncomputable def runTypeBFanLedger
           (fun obstruction => ⟨obstruction⟩)
           (by simp [b2ChoiceFresh]) (by simp [obstructionFresh]) with
       | .left ledgerHistory =>
-          -- Node `[74]`/`[82]`, then `[76]`/`[85]`.
-          have afterExclusion :=
-            (typeBExclusionCharge (data := data)).run
+          -- Node `[74]`/`[82]`, then the exact disjoint post-ledger fact.
+          exact .disjointLedger
+            ((disjointPostLedgerComponents (data := data)).run
               ((hybridEntry (data := data)).run ledgerHistory
                 (by simp [hybridFresh]))
-              (by simp [chargeFresh])
-          match typeBExclusionDichotomy afterExclusion
-              (K .typeBExclusionCharge) (K .typeBExcluded)
-              (K .typeBExclusionResidual)
-              (fun fact packing valid piece inside connected charge positive =>
-                (fact.down packing valid piece inside connected charge
-                  positive).2)
-              (fun excluded => ⟨excluded⟩) (fun residual => ⟨residual⟩)
-              (by simp [excludedFresh]) (by simp [residualFresh]) with
-          | .left excludedHistory => exact .excluded excludedHistory
-          | .right residualHistory => exact .exclusionResidual residualHistory
+              (by simp [disjointFresh]))
       | .right obstructionHistory =>
-          -- Node `[73]`/`[83]` → `[75]`/`[84]`.
           exact .overlapObstructionMass
             ((bridgeFanMass (data := data)).run obstructionHistory
               (by simp [massFresh]))
-
-/-- The three exits reached by following node `[63]` to the first genuine
-continuation boundary.  Every index retains the arbitrary Residual-C ancestry
-which selected the connected negative support. -/
-inductive TypeAEntryResult
-    (selected : Input BranchState Presentation presentation data)
-    (known : FactKeys (Input BranchState Presentation presentation data)) where
-  | visibleEntry
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeAVisibleEntryKeys known))
-  | visibleFirstExcess
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeAVisibleFirstExcessKeys known))
-  | unsaturated
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeAUnsaturatedReceiverKeys known))
-
-/-- Nodes `[86]`--`[94]`, entered from node `[63]` on the literal ledger. -/
-noncomputable def runTypeAEntry
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    [FactKeys.Has (K (data := data) .selection) known]
-    [FactKeys.Has (K (data := data) .remainderNormalized) known]
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current (residualCTypeALowSurplusKeys known))
-    (routingFresh : K (data := data) .typeAReceiverRouting ∉ known)
-    (saturatedFresh : K (data := data) .typeASaturatedReceiver ∉ known)
-    (unsaturatedFresh : K (data := data) .typeAUnsaturatedReceivers ∉ known)
-    (returnFresh : K (data := data) .typeAPortReturn ∉ known)
-    (visibleFresh : K (data := data) .typeAVisibleEntry ∉ known)
-    (excessFresh : K (data := data) .typeAVisibleFirstExcess ∉ known)
-    (entryFresh : K (data := data) .typeASaturatedExitEntry ∉ known)
-    (clauseFresh : K (data := data) .typeAVisibleEntryClause ∉ known) :
-    TypeAEntryResult current known := by
-  classical
-  have routed :=
-    (typeAReceiverRouting (data := data)).run history
-      (by simp [routingFresh])
-  match typeASaturationDichotomy routed (K .typeALowSurplus)
-      (K .typeASaturatedReceiver) (K .typeAUnsaturatedReceivers)
-      (fun fact => fact.down) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
-      (by simp [saturatedFresh]) (by simp [unsaturatedFresh]) with
-  | .right unsaturatedHistory => exact .unsaturated unsaturatedHistory
-  | .left saturatedHistory =>
-      have withReturn :=
-        (typeAPortReturn (data := data)).run saturatedHistory
-          (by simp [returnFresh])
-      match typeAVisibleEntryDichotomy withReturn (K .typeAReceiverRouting)
-          (K .typeASaturatedReceiver) (K .typeAVisibleEntry)
-          (K .typeAVisibleFirstExcess)
-          (fun fact packing valid maximal piece inside surplus =>
-            (fact.down packing valid maximal piece inside surplus).1)
-          (fun fact => fact.down) (fun value => ⟨value⟩)
-          (fun value => ⟨value⟩)
-          (by simp [visibleFresh]) (by simp [excessFresh]) with
-      | .left visibleHistory =>
-          exact .visibleEntry
-            ((typeAVisibleEntryClause (data := data)).run visibleHistory
-              (by simp [clauseFresh]))
-      | .right excessHistory =>
-          exact .visibleFirstExcess
-            ((typeASaturatedExitEntry (data := data)).run excessHistory
-              (by simp [entryFresh]))
 
 /-- The exact exits of the node-`[64]` Type B entry walk.  The heavy and
 degree-four arms share `runTypeBFanLedger`; only their immutable prefixes
@@ -1508,12 +1302,9 @@ inductive TypeBEntryResult
   | directCycleClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (residualCTypeBDirectCycleClosedKeys known))
-  | branchKill
+  | disjointLedger
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBBranchKillKeys known))
-  | exclusionResidual
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBExclusionResidualKeys known))
+        selected (residualCTypeBDisjointLedgerKeys known))
   | certificateResidualMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (residualCTypeBCertificateResidualMassKeys known))
@@ -1526,12 +1317,9 @@ inductive TypeBEntryResult
   | degreeFourDirectCycleClosed
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (residualCDegreeFourDirectCycleClosedKeys known))
-  | degreeFourBranchKill
+  | degreeFourDisjointLedger
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCDegreeFourBranchKillKeys known))
-  | degreeFourExclusionResidual
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCDegreeFourExclusionResidualKeys known))
+        selected (residualCDegreeFourDisjointLedgerKeys known))
   | degreeFourOverlapObstructionMass
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (residualCDegreeFourOverlapObstructionMassKeys known))
@@ -1542,6 +1330,7 @@ noncomputable def runTypeBEntry
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
     [FactKeys.Has (K (data := data) .tightEndpoint) known]
+    [FactKeys.Has (K (data := data) .remainderNormalized) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current (residualCTypeBHighSurplusKeys known))
     (normalFresh : K (data := data) .highCentreNormalForm ∉ known)
@@ -1557,9 +1346,7 @@ noncomputable def runTypeBEntry
     (b2ChoiceFresh : K (data := data) .typeBB2Choice ∉ known)
     (obstructionFresh : K (data := data) .typeBOverlapObstruction ∉ known)
     (hybridFresh : K (data := data) .typeBHybridEntry ∉ known)
-    (chargeFresh : K (data := data) .typeBExclusionCharge ∉ known)
-    (excludedFresh : K (data := data) .typeBExcluded ∉ known)
-    (residualFresh : K (data := data) .typeBExclusionResidual ∉ known)
+    (disjointFresh : K (data := data) .typeBDisjointLedger ∉ known)
     (massFresh : K (data := data) .typeBBridgeMass ∉ known)
     (closedFresh : closed (BranchState := BranchState)
       (presentation := presentation) (data := data) ∉ known) :
@@ -1585,18 +1372,12 @@ noncomputable def runTypeBEntry
           (b2ChoiceFresh := by simp [b2ChoiceFresh])
           (obstructionFresh := by simp [obstructionFresh])
           (hybridFresh := by simp [hybridFresh])
-          (chargeFresh := by simp [chargeFresh])
-          (excludedFresh := by simp [excludedFresh])
-          (residualFresh := by simp [residualFresh])
+          (disjointFresh := by simp [disjointFresh])
           (massFresh := by simp [massFresh])
           (closureFresh := by simp [closedFresh]) with
       | .certificateResidualMass h => exact .certificateResidualMass h
       | .directCycleClosed h => exact .directCycleClosed h
-      | .excluded h =>
-          exact .branchKill
-            (closeIncompatible h (K .typeBHighSurplus) (K .typeBExcluded)
-              (by simp [closedFresh]))
-      | .exclusionResidual h => exact .exclusionResidual h
+      | .disjointLedger h => exact .disjointLedger h
       | .overlapObstructionMass h => exact .overlapObstructionMass h
   | .right degreeFourHistory =>
       have profiled :=
@@ -1612,18 +1393,12 @@ noncomputable def runTypeBEntry
           (b2ChoiceFresh := by simp [b2ChoiceFresh])
           (obstructionFresh := by simp [obstructionFresh])
           (hybridFresh := by simp [hybridFresh])
-          (chargeFresh := by simp [chargeFresh])
-          (excludedFresh := by simp [excludedFresh])
-          (residualFresh := by simp [residualFresh])
+          (disjointFresh := by simp [disjointFresh])
           (massFresh := by simp [massFresh])
           (closureFresh := by simp [closedFresh]) with
       | .certificateResidualMass h => exact .degreeFourResidualMass h
       | .directCycleClosed h => exact .degreeFourDirectCycleClosed h
-      | .excluded h =>
-          exact .degreeFourBranchKill
-            (closeIncompatible h (K .typeBHighSurplus) (K .typeBExcluded)
-              (by simp [closedFresh]))
-      | .exclusionResidual h => exact .degreeFourExclusionResidual h
+      | .disjointLedger h => exact .degreeFourDisjointLedger h
       | .overlapObstructionMass h => exact .degreeFourOverlapObstructionMass h
 
 /-- **The exits of the entry spine.**
@@ -1657,11 +1432,170 @@ inductive Result (selected : Input BranchState Presentation presentation data)
   | entropyCapActive
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected entropyCapActiveKeys)
-  | typeAVisibleEntry
+  | typeAExitOneClosed
       {known : FactKeys (Input BranchState Presentation presentation data)}
-      [FactKeys.Has (K (data := data) .returnAvoidance) known]
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeAVisibleEntryKeys known))
+        selected
+          (typeAExitOneClosedKeys (residualCTypeAVisibleEntryKeys known)))
+  | typeAExitTwoClosed
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitTwoClosedKeys
+          (typeAExitOneFreeKeys (residualCTypeAVisibleEntryKeys known))))
+  | typeAExitThreeClosed
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitThreeClosedKeys
+          (typeAExitTwoFreeKeys
+            (typeAExitOneFreeKeys (residualCTypeAVisibleEntryKeys known)))))
+  | typeAExitThreeFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitThreeFreeKeys
+          (typeAExitTwoFreeKeys
+            (typeAExitOneFreeKeys (residualCTypeAVisibleEntryKeys known)))))
+  | typeAExitFour
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitFourKeys
+          (typeAExitThreeFreeKeys
+            (typeAExitTwoFreeKeys
+              (typeAExitOneFreeKeys (residualCTypeAVisibleEntryKeys known))))))
+  | typeAExitFourLoop
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitFourFiniteDescentKeys
+          (typeAExitFourLoopKeys
+            (typeAExitThreeFreeKeys
+              (typeAExitTwoFreeKeys
+                (typeAExitOneFreeKeys
+                  (residualCTypeAVisibleEntryKeys known)))))))
+  | typeASaturatedHandoffVisible
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeASaturatedHandoffVisibleKeys
+          (typeAExitFourFiniteDescentKeys
+            (typeAExitFourLoopKeys
+              (typeAExitThreeFreeKeys
+                (typeAExitTwoFreeKeys
+                  (typeAExitOneFreeKeys
+                  (residualCTypeAVisibleEntryKeys known))))))))
+  | typeASaturatedHandoffSilent
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeASaturatedHandoffSilentKeys
+          (typeAExitFourFiniteDescentKeys
+            (typeAExitFourLoopKeys
+              (typeAExitThreeFreeKeys
+                (typeAExitTwoFreeKeys
+                  (typeAExitOneFreeKeys
+                    (residualCTypeAVisibleEntryKeys known))))))))
+  | typeASaturatedVisibleExitFour
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeASaturatedHandoffExitFourKeys
+          (typeASaturatedHandoffVisibleKeys
+            (typeAExitFourFiniteDescentKeys
+              (typeAExitFourLoopKeys
+                (typeAExitThreeFreeKeys
+                  (typeAExitTwoFreeKeys
+                    (typeAExitOneFreeKeys
+                      (residualCTypeAVisibleEntryKeys known)))))))))
+  | typeASaturatedVisibleExitFourFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeASaturatedHandoffExitFourFreeKeys
+          (typeASaturatedHandoffVisibleKeys
+            (typeAExitFourFiniteDescentKeys
+              (typeAExitFourLoopKeys
+                (typeAExitThreeFreeKeys
+                  (typeAExitTwoFreeKeys
+                    (typeAExitOneFreeKeys
+                      (residualCTypeAVisibleEntryKeys known)))))))))
+  | typeASaturatedVisibleExitFiveClosed
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (closed :: typeAExitFiveKeys
+          (typeASaturatedHandoffExitFourFreeKeys
+            (typeASaturatedHandoffVisibleKeys
+              (typeAExitFourFiniteDescentKeys
+                (typeAExitFourLoopKeys
+                  (typeAExitThreeFreeKeys
+                    (typeAExitTwoFreeKeys
+                      (typeAExitOneFreeKeys
+                        (residualCTypeAVisibleEntryKeys known))))))))))
+  | typeASaturatedVisibleExitFiveFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitFiveFreeKeys
+          (typeASaturatedHandoffExitFourFreeKeys
+            (typeASaturatedHandoffVisibleKeys
+              (typeAExitFourFiniteDescentKeys
+                (typeAExitFourLoopKeys
+                  (typeAExitThreeFreeKeys
+                    (typeAExitTwoFreeKeys
+                      (typeAExitOneFreeKeys
+                        (residualCTypeAVisibleEntryKeys known))))))))))
+  | typeASaturatedSilentExitFour
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeASaturatedHandoffExitFourKeys
+          (typeASaturatedHandoffSilentKeys
+            (typeAExitFourFiniteDescentKeys
+              (typeAExitFourLoopKeys
+                (typeAExitThreeFreeKeys
+                  (typeAExitTwoFreeKeys
+                    (typeAExitOneFreeKeys
+                      (residualCTypeAVisibleEntryKeys known)))))))))
+  | typeASaturatedSilentExitFourFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeASaturatedHandoffExitFourFreeKeys
+          (typeASaturatedHandoffSilentKeys
+            (typeAExitFourFiniteDescentKeys
+              (typeAExitFourLoopKeys
+                (typeAExitThreeFreeKeys
+                  (typeAExitTwoFreeKeys
+                    (typeAExitOneFreeKeys
+                      (residualCTypeAVisibleEntryKeys known)))))))))
+  | typeASaturatedSilentExitFiveClosed
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (closed :: typeAExitFiveKeys
+          (typeASaturatedHandoffExitFourFreeKeys
+            (typeASaturatedHandoffSilentKeys
+              (typeAExitFourFiniteDescentKeys
+                (typeAExitFourLoopKeys
+                  (typeAExitThreeFreeKeys
+                    (typeAExitTwoFreeKeys
+                      (typeAExitOneFreeKeys
+                        (residualCTypeAVisibleEntryKeys known))))))))))
+  | typeASaturatedSilentExitFiveFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitFiveFreeKeys
+          (typeASaturatedHandoffExitFourFreeKeys
+            (typeASaturatedHandoffSilentKeys
+              (typeAExitFourFiniteDescentKeys
+                (typeAExitFourLoopKeys
+                  (typeAExitThreeFreeKeys
+                    (typeAExitTwoFreeKeys
+                      (typeAExitOneFreeKeys
+                        (residualCTypeAVisibleEntryKeys known))))))))))
+  | typeAExitFourReceiverDischarged
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitFourReceiverDischargedKeys
+          (typeAExitThreeFreeKeys
+            (typeAExitTwoFreeKeys
+              (typeAExitOneFreeKeys (residualCTypeAVisibleEntryKeys known))))))
+  | typeAExitFourFree
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (typeAExitFourFreeKeys
+          (typeAExitThreeFreeKeys
+            (typeAExitTwoFreeKeys
+              (typeAExitOneFreeKeys (residualCTypeAVisibleEntryKeys known))))))
   | typeAVisibleFirstExcess
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
@@ -1674,22 +1608,18 @@ inductive Result (selected : Input BranchState Presentation presentation data)
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (residualCTypeBDirectCycleClosedKeys known))
-  | typeBBranchKill
+  | typeBDisjointLedger
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBBranchKillKeys known))
-  | typeBExclusionResidual
-      {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBExclusionResidualKeys known))
-  | typeBOverlapObstructionMass
-      {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCTypeBOverlapObstructionMassKeys known))
+        selected (residualCTypeBDisjointLedgerKeys known))
   | typeBCertificateResidualMass
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (residualCTypeBCertificateResidualMassKeys known))
+  | typeBOverlapObstructionMass
+      {known : FactKeys (Input BranchState Presentation presentation data)}
+      (history : ExactLedger (Input BranchState Presentation presentation data)
+        selected (residualCTypeBOverlapObstructionMassKeys known))
   | degreeFourResidualMass
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
@@ -1698,14 +1628,10 @@ inductive Result (selected : Input BranchState Presentation presentation data)
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
         selected (residualCDegreeFourDirectCycleClosedKeys known))
-  | degreeFourBranchKill
+  | degreeFourDisjointLedger
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCDegreeFourBranchKillKeys known))
-  | degreeFourExclusionResidual
-      {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger (Input BranchState Presentation presentation data)
-        selected (residualCDegreeFourExclusionResidualKeys known))
+        selected (residualCDegreeFourDisjointLedgerKeys known))
   | degreeFourOverlapObstructionMass
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data)
@@ -1717,6 +1643,7 @@ noncomputable def continueNegativeSupport
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
+    [FactKeys.Has (K (data := data) .uncompressible) known]
     [FactKeys.Has (K (data := data) .remainderNormalized) known]
     [FactKeys.Has (K (data := data) .tightEndpoint) known]
     [FactKeys.Has (K (data := data) .returnAvoidance) known]
@@ -1732,8 +1659,35 @@ noncomputable def continueNegativeSupport
     (typeAReturnFresh : K (data := data) .typeAPortReturn ∉ known)
     (typeAVisibleFresh : K (data := data) .typeAVisibleEntry ∉ known)
     (typeAExcessFresh : K (data := data) .typeAVisibleFirstExcess ∉ known)
-    (typeAEntryFresh : K (data := data) .typeASaturatedExitEntry ∉ known)
     (typeAClauseFresh : K (data := data) .typeAVisibleEntryClause ∉ known)
+    (typeAExitOneReturnFresh :
+      K (data := data) .typeAExitOneReturn ∉ known)
+    (typeAExitOneFreeFresh : K (data := data) .typeAExitOneFree ∉ known)
+    (typeAExitTwoThetaFresh : K (data := data) .typeAExitTwoTheta ∉ known)
+    (typeAExitTwoFreeFresh : K (data := data) .typeAExitTwoFree ∉ known)
+    (typeAExitThreeCollisionFresh :
+      K (data := data) .typeAExitThreeCollision ∉ known)
+    (typeAExitThreeFreeFresh : K (data := data) .typeAExitThreeFree ∉ known)
+    (typeAExitFourFresh : K (data := data) .typeAExitFour ∉ known)
+    (typeAExitFourPeeledFresh :
+      K (data := data) .typeAExitFourPeeled ∉ known)
+    (typeASaturatedExitEntryFresh :
+      K (data := data) .typeASaturatedExitEntry ∉ known)
+    (typeAExitFourFiniteDescentFresh :
+      K (data := data) .typeAExitFourFiniteDescent ∉ known)
+    (typeASaturatedHandoffVisibleFresh :
+      K (data := data) .typeASaturatedHandoffVisible ∉ known)
+    (typeASaturatedHandoffSilentFresh :
+      K (data := data) .typeASaturatedHandoffSilent ∉ known)
+    (typeASaturatedHandoffExitFourFresh :
+      K (data := data) .typeASaturatedHandoffExitFour ∉ known)
+    (typeASaturatedHandoffExitFourFreeFresh :
+      K (data := data) .typeASaturatedHandoffExitFourFree ∉ known)
+    (typeAExitFiveFresh : K (data := data) .typeAExitFive ∉ known)
+    (typeAExitFiveFreeFresh : K (data := data) .typeAExitFiveFree ∉ known)
+    (typeAExitFourReceiverDischargedFresh :
+      K (data := data) .typeAExitFourReceiverDischarged ∉ known)
+    (typeAExitFourFreeFresh : K (data := data) .typeAExitFourFree ∉ known)
     (normalFresh : K (data := data) .highCentreNormalForm ∉ known)
     (heavyFresh : K (data := data) .typeBHeavyCentre ∉ known)
     (degreeFourFresh : K (data := data) .typeBDegreeFourCentres ∉ known)
@@ -1747,42 +1701,140 @@ noncomputable def continueNegativeSupport
     (b2ChoiceFresh : K (data := data) .typeBB2Choice ∉ known)
     (obstructionFresh : K (data := data) .typeBOverlapObstruction ∉ known)
     (hybridFresh : K (data := data) .typeBHybridEntry ∉ known)
-    (chargeFresh : K (data := data) .typeBExclusionCharge ∉ known)
-    (excludedFresh : K (data := data) .typeBExcluded ∉ known)
-    (residualFresh : K (data := data) .typeBExclusionResidual ∉ known)
+    (disjointFresh : K (data := data) .typeBDisjointLedger ∉ known)
     (massFresh : K (data := data) .typeBBridgeMass ∉ known)
     (closedFresh : closed (BranchState := BranchState)
       (presentation := presentation) (data := data) ∉ known) :
     Result current := by
   classical
-  match runNegativeSupport history typeAFresh typeBFresh with
-  | .typeA typeAHistory =>
-      match runTypeAEntry typeAHistory typeARoutingFresh typeASaturatedFresh
-          typeAUnsaturatedFresh typeAReturnFresh typeAVisibleFresh
-          typeAExcessFresh typeAEntryFresh typeAClauseFresh with
-      | .visibleEntry h => exact .typeAVisibleEntry h
-      | .visibleFirstExcess h => exact .typeAVisibleFirstExcess h
-      | .unsaturated h =>
+  match typeSplitDichotomy history (K .negativeSupport)
+      (K .typeALowSurplus) (K .typeBHighSurplus)
+      (fun fact => fact.down) (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+      (by simp [typeAFresh]) (by simp [typeBFresh]) with
+  | .left typeAHistory =>
+      have routed :=
+        (typeAReceiverRouting (data := data)).run typeAHistory
+          (by simp [typeARoutingFresh])
+      match typeASaturationDichotomy routed (K .typeALowSurplus)
+          (K .typeASaturatedReceiver) (K .typeAUnsaturatedReceivers)
+          (fun fact => fact.down) (fun value => ⟨value⟩)
+          (fun value => ⟨value⟩)
+          (by simp [typeASaturatedFresh])
+          (by simp [typeAUnsaturatedFresh]) with
+      | .right unsaturatedHistory =>
           have discharged :=
-            (typeAUnsaturatedDischarge (data := data)).run h
+            (typeAUnsaturatedDischarge (data := data)).run unsaturatedHistory
               (by simp [typeAUnsaturatedDischargeFresh])
           exact .typeAUnsaturatedClosed
             (closeIncompatible discharged (K .typeALowSurplus)
               (K .typeAUnsaturatedDischarge) (by simp [closedFresh]))
-  | .typeB typeBHistory =>
+      | .left saturatedHistory =>
+          have withReturn :=
+            (typeAPortReturn (data := data)).run saturatedHistory
+              (by simp [typeAReturnFresh])
+          match typeAVisibleEntryDichotomy withReturn
+              (K .typeAReceiverRouting) (K .typeASaturatedReceiver)
+              (K .typeAVisibleEntry) (K .typeAVisibleFirstExcess)
+              (fun fact => fact.down) (fun fact => fact.down)
+              (fun value => ⟨value⟩) (fun value => ⟨value⟩)
+              (by simp [typeAVisibleFresh])
+              (by simp [typeAExcessFresh]) with
+          | .left visibleHistory =>
+              have packaged :=
+                (typeAVisibleEntryClause (data := data)).run visibleHistory
+                  (by simp [typeAClauseFresh])
+              match runExitChain packaged
+                  (by simp [typeAExitOneReturnFresh])
+                  (by simp [typeAExitOneFreeFresh])
+                  (by simp [typeAExitTwoThetaFresh])
+                  (by simp [typeAExitTwoFreeFresh])
+                  (by simp [typeAExitThreeCollisionFresh])
+                  (by simp [typeAExitThreeFreeFresh])
+                  (by simp [closedFresh]) with
+              | .exitOneClosed h => exact .typeAExitOneClosed h
+              | .exitTwoClosed h => exact .typeAExitTwoClosed h
+              | .exitThreeClosed h => exact .typeAExitThreeClosed h
+              | .free h =>
+                  match typeAExitFour h
+                      (by simp [typeAExitFourFresh])
+                      (by simp [typeAExitFourFreeFresh]) with
+                  | .left exitHistory =>
+                      let peeledHistory :=
+                        (typeAExitFourPeelingStep (data := data)).run
+                          exitHistory (by simp [typeAExitFourPeeledFresh])
+                      match typeAExitFourRetest peeledHistory
+                          (by simp [typeASaturatedExitEntryFresh])
+                          (by simp [typeAExitFourReceiverDischargedFresh]) with
+                      | .left loopHistory =>
+                          let descentHistory :=
+                            (typeAExitFourFiniteDescent (data := data)).run
+                              loopHistory
+                              (by simp [typeAExitFourFiniteDescentFresh])
+                          match typeASaturatedHandoffSplit descentHistory
+                              (by simp [typeASaturatedHandoffVisibleFresh])
+                              (by simp [typeASaturatedHandoffSilentFresh]) with
+                          | .left visibleLoopHistory =>
+                              match typeASaturatedHandoffVisibleExitFour
+                                  visibleLoopHistory
+                                  (by
+                                    simp [typeASaturatedHandoffExitFourFresh])
+                                  (by
+                                    simp [typeASaturatedHandoffExitFourFreeFresh]) with
+                              | .left exitHistory =>
+                                  exact .typeASaturatedVisibleExitFour exitHistory
+                              | .right freeHistory =>
+                                  match typeAExitFive freeHistory
+                                      (by simp [typeAExitFiveFresh])
+                                      (by simp [typeAExitFiveFreeFresh]) with
+                                  | .left exitFiveHistory =>
+                                      exact .typeASaturatedVisibleExitFiveClosed
+                                        (closeIncompatible exitFiveHistory
+                                          (K .uncompressible)
+                                          (K .typeAExitFive)
+                                          (by simp [closedFresh]))
+                                  | .right exitFiveFreeHistory =>
+                                      exact .typeASaturatedVisibleExitFiveFree
+                                        exitFiveFreeHistory
+                          | .right silentLoopHistory =>
+                              match typeASaturatedHandoffSilentExitFour
+                                  silentLoopHistory
+                                  (by
+                                    simp [typeASaturatedHandoffExitFourFresh])
+                                  (by
+                                    simp [typeASaturatedHandoffExitFourFreeFresh]) with
+                              | .left exitHistory =>
+                                  exact .typeASaturatedSilentExitFour exitHistory
+                              | .right freeHistory =>
+                                  match typeAExitFive freeHistory
+                                      (by simp [typeAExitFiveFresh])
+                                      (by simp [typeAExitFiveFreeFresh]) with
+                                  | .left exitFiveHistory =>
+                                      exact .typeASaturatedSilentExitFiveClosed
+                                        (closeIncompatible exitFiveHistory
+                                          (K .uncompressible)
+                                          (K .typeAExitFive)
+                                          (by simp [closedFresh]))
+                                  | .right exitFiveFreeHistory =>
+                                      exact .typeASaturatedSilentExitFiveFree
+                                        exitFiveFreeHistory
+                      | .right dischargedHistory =>
+                          exact .typeAExitFourReceiverDischarged
+                            dischargedHistory
+                  | .right freeHistory => exact .typeAExitFourFree freeHistory
+          | .right excessHistory =>
+              exact .typeAVisibleFirstExcess excessHistory
+  | .right typeBHistory =>
       match runTypeBEntry typeBHistory normalFresh heavyFresh degreeFourFresh
           localFresh capFresh profileFresh markedFresh certResidualFresh
           cycleFresh cycleFreeFresh b2ChoiceFresh obstructionFresh hybridFresh
-          chargeFresh excludedFresh residualFresh massFresh closedFresh with
+          disjointFresh massFresh closedFresh with
       | .directCycleClosed h => exact .typeBDirectCycleClosed h
-      | .branchKill h => exact .typeBBranchKill h
-      | .exclusionResidual h => exact .typeBExclusionResidual h
+      | .disjointLedger h => exact .typeBDisjointLedger h
       | .certificateResidualMass h => exact .typeBCertificateResidualMass h
       | .overlapObstructionMass h => exact .typeBOverlapObstructionMass h
       | .degreeFourResidualMass h => exact .degreeFourResidualMass h
       | .degreeFourDirectCycleClosed h => exact .degreeFourDirectCycleClosed h
-      | .degreeFourBranchKill h => exact .degreeFourBranchKill h
-      | .degreeFourExclusionResidual h => exact .degreeFourExclusionResidual h
+      | .degreeFourDisjointLedger h => exact .degreeFourDisjointLedger h
       | .degreeFourOverlapObstructionMass h =>
           exact .degreeFourOverlapObstructionMass h
 
@@ -1963,8 +2015,25 @@ noncomputable def runCore
                             (typeAReturnFresh := by simp)
                             (typeAVisibleFresh := by simp)
                             (typeAExcessFresh := by simp)
-                            (typeAEntryFresh := by simp)
                             (typeAClauseFresh := by simp)
+                            (typeAExitOneReturnFresh := by simp)
+                            (typeAExitOneFreeFresh := by simp)
+                            (typeAExitTwoThetaFresh := by simp)
+                            (typeAExitTwoFreeFresh := by simp)
+                            (typeAExitThreeCollisionFresh := by simp)
+                            (typeAExitThreeFreeFresh := by simp)
+                            (typeAExitFourFresh := by simp)
+                            (typeAExitFourPeeledFresh := by simp)
+                            (typeASaturatedExitEntryFresh := by simp)
+                            (typeAExitFourFiniteDescentFresh := by simp)
+                            (typeASaturatedHandoffVisibleFresh := by simp)
+                            (typeASaturatedHandoffSilentFresh := by simp)
+                            (typeASaturatedHandoffExitFourFresh := by simp)
+                            (typeASaturatedHandoffExitFourFreeFresh := by simp)
+                            (typeAExitFiveFresh := by simp)
+                            (typeAExitFiveFreeFresh := by simp)
+                            (typeAExitFourReceiverDischargedFresh := by simp)
+                            (typeAExitFourFreeFresh := by simp)
                             (normalFresh := by simp) (heavyFresh := by simp)
                             (degreeFourFresh := by simp) (localFresh := by simp)
                             (capFresh := by simp) (profileFresh := by simp)
@@ -1972,8 +2041,8 @@ noncomputable def runCore
                             (cycleFresh := by simp) (cycleFreeFresh := by simp)
                             (b2ChoiceFresh := by simp)
                             (obstructionFresh := by simp) (hybridFresh := by simp)
-                            (chargeFresh := by simp) (excludedFresh := by simp)
-                            (residualFresh := by simp) (massFresh := by simp)
+                            (disjointFresh := by simp)
+                            (massFresh := by simp)
                             (closedFresh := by simp)
               | .right lowHistory =>
                   -- Every surviving low-entropy case has the same continuation
@@ -2004,8 +2073,25 @@ noncomputable def runCore
                         (typeAReturnFresh := by simp)
                         (typeAVisibleFresh := by simp)
                         (typeAExcessFresh := by simp)
-                        (typeAEntryFresh := by simp)
                         (typeAClauseFresh := by simp)
+                        (typeAExitOneReturnFresh := by simp)
+                        (typeAExitOneFreeFresh := by simp)
+                        (typeAExitTwoThetaFresh := by simp)
+                        (typeAExitTwoFreeFresh := by simp)
+                        (typeAExitThreeCollisionFresh := by simp)
+                        (typeAExitThreeFreeFresh := by simp)
+                        (typeAExitFourFresh := by simp)
+                        (typeAExitFourPeeledFresh := by simp)
+                        (typeASaturatedExitEntryFresh := by simp)
+                        (typeAExitFourFiniteDescentFresh := by simp)
+                        (typeASaturatedHandoffVisibleFresh := by simp)
+                        (typeASaturatedHandoffSilentFresh := by simp)
+                        (typeASaturatedHandoffExitFourFresh := by simp)
+                        (typeASaturatedHandoffExitFourFreeFresh := by simp)
+                        (typeAExitFiveFresh := by simp)
+                        (typeAExitFiveFreeFresh := by simp)
+                        (typeAExitFourReceiverDischargedFresh := by simp)
+                        (typeAExitFourFreeFresh := by simp)
                         (normalFresh := by simp) (heavyFresh := by simp)
                         (degreeFourFresh := by simp) (localFresh := by simp)
                         (capFresh := by simp) (profileFresh := by simp)
@@ -2013,8 +2099,8 @@ noncomputable def runCore
                         (cycleFresh := by simp) (cycleFreeFresh := by simp)
                         (b2ChoiceFresh := by simp)
                         (obstructionFresh := by simp) (hybridFresh := by simp)
-                        (chargeFresh := by simp) (excludedFresh := by simp)
-                        (residualFresh := by simp) (massFresh := by simp)
+                        (disjointFresh := by simp)
+                        (massFresh := by simp)
                         (closedFresh := by simp)
 
 /-! ## What the run leaves behind -/
@@ -2197,819 +2283,6 @@ theorem typeAUnsaturatedReceivers_audit_facts
               (name .noProperBaseline) ::
                 (name .returnAvoidance) ::
                   [(name .selection)] := rfl
-
-/-! ### The two arms of node `[68]`
-
-The Type B residual of `[64]` is no longer an exit: node `[68]` commits the
-high-neighbourhood normal form on it and then splits on whether some Type B
-support carries a centre above the high-centre degree `δ + 1`.  The two indices
-below differ in exactly that one entry, and both carry the normal form, which
-is what makes it available to `[69]` and to `[78]` alike.
-
-Neither arm can read the other's, and neither can read either arm of node
-`[62]`, `[59]`, `[53]`, `[50]`, `[32]`, `[21]` or `[19]` it did not take. -/
-
-/-- **The node-`[72]` closed terminal.**  The closure entry sits on top of the
-direct-cycle fact, which sits on the whole certificate-marked history: nothing was
-archived to close the arm. -/
-theorem typeBDirectCycleClosed_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBDirectCycleClosedKeys) :
-    (ExactLedger.audit history).facts =
-      `Hypostructure.Core.Strategy.contradiction ::
-        (name .typeBDirectCycle) ::
-        (name .fanCertificateMarked) ::
-        (name .fanCertificateCap) ::
-        (name .typeBLocalDichotomy) ::
-        (name .typeBHeavyCentre) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-/-- **The two arms of node `[72]`/`[81]`.**  Both carry the direct-cycle-free
-fact of the first half and the certificate-marked history beneath it, and differ in
-exactly one entry: whether B2's disjoint carrier choice exists or the support
-carries a minimal overlap obstruction.  Neither can read the other. -/
-theorem typeBHybridEntry_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBHybridEntryKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBHybridEntry) ::
-        (name .typeBB2Choice) ::
-        (name .typeBDirectCycleFree) ::
-        (name .fanCertificateMarked) ::
-        (name .fanCertificateCap) ::
-        (name .typeBLocalDichotomy) ::
-        (name .typeBHeavyCentre) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-theorem typeBOverlapObstruction_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBOverlapObstructionKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBOverlapObstruction) ::
-        (name .typeBDirectCycleFree) ::
-        (name .fanCertificateMarked) ::
-        (name .fanCertificateCap) ::
-        (name .typeBLocalDichotomy) ::
-        (name .typeBHeavyCentre) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-/-- **Node `[76]`, the heavy arm's exclusion cursor.**  Step 1 of
-`lem:typeB-exclusion` sits on the whole B1 history: the hybrid entry, B2's
-disjoint assignment, and the certificate-marked fan-window ledger beneath
-them. -/
-theorem typeBExclusionCharge_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBExclusionChargeKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBExclusionCharge) ::
-        (name .typeBHybridEntry) ::
-        (name .typeBB2Choice) ::
-        (name .typeBDirectCycleFree) ::
-        (name .fanCertificateMarked) ::
-        (name .fanCertificateCap) ::
-        (name .typeBLocalDichotomy) ::
-        (name .typeBHeavyCentre) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-/-- **Node `[85]`, the degree-four arm's exclusion cursor.**  The same row value
-after the other B1 cursor, so the index differs from `[76]`'s in exactly the
-degree-four profile and the arm of node `[68]` beneath it. -/
-theorem degreeFourExclusionCharge_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourExclusionChargeKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBExclusionCharge) ::
-        (name .typeBHybridEntry) ::
-        (name .typeBB2Choice) ::
-        (name .typeBDirectCycleFree) ::
-        (name .fanCertificateMarked) ::
-        (name .typeBDegreeFourProfile) ::
-        (name .fanCertificateCap) ::
-        (name .typeBDegreeFourCentres) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-/-- **Node `[75]`, entered from `[71]`'s no arm.**  The fan-mass estimate on a
-fan-certificate residual centre: the branch never reached the direct-cycle or B2
-questions, so neither of their facts is in this index. -/
-theorem typeBCertificateResidualMass_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBCertificateResidualMassKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBBridgeMass) ::
-        (name .fanCertificateResidual) ::
-        (name .fanCertificateCap) ::
-        (name .typeBLocalDichotomy) ::
-        (name .typeBHeavyCentre) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-/-- **Node `[75]`, entered from `[73]`.**  The same row value on the B2-failure
-cursor, which carries the minimal overlap obstruction instead. -/
-theorem typeBOverlapObstructionMass_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBOverlapObstructionMassKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBBridgeMass) ::
-        (name .typeBOverlapObstruction) ::
-        (name .typeBDirectCycleFree) ::
-        (name .fanCertificateMarked) ::
-        (name .fanCertificateCap) ::
-        (name .typeBLocalDichotomy) ::
-        (name .typeBHeavyCentre) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-/-- **Node `[84]`, entered from `[80]`'s no arm.** -/
-theorem degreeFourResidualMass_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourResidualMassKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBBridgeMass) ::
-        (name .fanCertificateResidual) ::
-        (name .typeBDegreeFourProfile) ::
-        (name .fanCertificateCap) ::
-        (name .typeBDegreeFourCentres) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-/-- **Node `[84]`, entered from `[83]`.** -/
-theorem degreeFourOverlapObstructionMass_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourOverlapObstructionMassKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBBridgeMass) ::
-        (name .typeBOverlapObstruction) ::
-        (name .typeBDirectCycleFree) ::
-        (name .fanCertificateMarked) ::
-        (name .typeBDegreeFourProfile) ::
-        (name .fanCertificateCap) ::
-        (name .typeBDegreeFourCentres) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-theorem typeBDegreeFourFanCap_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBDegreeFourFanCapKeys) :
-    (ExactLedger.audit history).facts =
-      (name .fanCertificateCap) ::
-        (name .typeBDegreeFourCentres) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-/-! ### Part VII: the four exits of the degree-four arm
-
-`[79]`'s profile sits on node `[70]`'s cap; `[80]` splits on the certificate
-labelling; `[81]` removes the direct cycles and then asks the B2 question.  All
-four indices carry `typeBDegreeFourCentres` -- node `[78]`'s own fact -- and none
-carries `typeBHeavyCentre`, so no row of this arm can read the heavy arm's
-alternative. -/
-
-theorem degreeFourCertificateResidual_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourResidualKeys) :
-    (ExactLedger.audit history).facts =
-      (name .fanCertificateResidual) ::
-        (name .typeBDegreeFourProfile) ::
-        (name .fanCertificateCap) ::
-        (name .typeBDegreeFourCentres) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-theorem degreeFourDirectCycleClosed_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourDirectCycleClosedKeys) :
-    (ExactLedger.audit history).facts =
-      `Hypostructure.Core.Strategy.contradiction ::
-        (name .typeBDirectCycle) ::
-        (name .fanCertificateMarked) ::
-        (name .typeBDegreeFourProfile) ::
-        (name .fanCertificateCap) ::
-        (name .typeBDegreeFourCentres) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-theorem degreeFourHybridEntry_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourHybridEntryKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBHybridEntry) ::
-        (name .typeBB2Choice) ::
-        (name .typeBDirectCycleFree) ::
-        (name .fanCertificateMarked) ::
-        (name .typeBDegreeFourProfile) ::
-        (name .fanCertificateCap) ::
-        (name .typeBDegreeFourCentres) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-theorem degreeFourOverlapObstruction_audit_facts
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourOverlapObstructionKeys) :
-    (ExactLedger.audit history).facts =
-      (name .typeBOverlapObstruction) ::
-        (name .typeBDirectCycleFree) ::
-        (name .fanCertificateMarked) ::
-        (name .typeBDegreeFourProfile) ::
-        (name .fanCertificateCap) ::
-        (name .typeBDegreeFourCentres) ::
-        (name .highCentreNormalForm) ::
-        (name .typeBHighSurplus) ::
-        (name .negativeSupport) ::
-        (name .netChargeNegative) ::
-        (name .netChargeLocalization) ::
-        (name .netChargeCap) ::
-        (name .netChargeLarge) ::
-        (name .largeBudgetResidual) ::
-        (name .remainderEntropyLow) ::
-        (name .forcedCurvatureCost) ::
-        (name .curvatureFullRank) ::
-        (name .curvatureTargetRank) ::
-        (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
-        (name .boundaryDemand) ::
-        (name .stubSupply) ::
-        (name .remainderNormalized) ::
-        (name .densityCap) ::
-        (name .barrierCap) ::
-        (name .windowPackageSeparated) ::
-        (name .surplusAtOrBelow) ::
-        (name .localAlgebra) ::
-        (name .maximalPacking) ::
-        (name .uncompressible) ::
-        (name .tightEndpoint) ::
-        (name .slackIndependent) ::
-        (name .noProperBaseline) ::
-        (name .returnAvoidance) ::
-        [(name .selection)] := rfl
-
-theorem degreeFourCertificateResidual_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourResidualKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem degreeFourDirectCycleClosed_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourDirectCycleClosedKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem degreeFourHybridEntry_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourHybridEntryKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem degreeFourOverlapObstruction_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourOverlapObstructionKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBDirectCycleClosed_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBDirectCycleClosedKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBHybridEntry_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBHybridEntryKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBOverlapObstruction_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBOverlapObstructionKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBCertificateResidual_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBCertificateResidualKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBExclusionCharge_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBExclusionChargeKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem degreeFourExclusionCharge_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourExclusionChargeKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBCertificateResidualMass_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBCertificateResidualMassKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBOverlapObstructionMass_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBOverlapObstructionMassKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem degreeFourResidualMass_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourResidualMassKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem degreeFourOverlapObstructionMass_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourOverlapObstructionMassKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBBranchKill_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBBranchKillKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBBranchKill_audit_facts_unique
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBBranchKillKeys) :
-    (ExactLedger.audit history).facts.Nodup :=
-  ExactLedger.audit_facts_unique history
-
-theorem typeBExclusionResidual_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBExclusionResidualKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem typeBExclusionResidual_audit_facts_unique
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBExclusionResidualKeys) :
-    (ExactLedger.audit history).facts.Nodup :=
-  ExactLedger.audit_facts_unique history
-
-theorem degreeFourBranchKill_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourBranchKillKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem degreeFourBranchKill_audit_facts_unique
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourBranchKillKeys) :
-    (ExactLedger.audit history).facts.Nodup :=
-  ExactLedger.audit_facts_unique history
-
-theorem degreeFourExclusionResidual_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourExclusionResidualKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem degreeFourExclusionResidual_audit_facts_unique
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected degreeFourExclusionResidualKeys) :
-    (ExactLedger.audit history).facts.Nodup :=
-  ExactLedger.audit_facts_unique history
-
-theorem typeBDegreeFourFanCap_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected typeBDegreeFourFanCapKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
 
 /-- **The node-`[60]` exit records the pressure and not the negative support.**
 `cor:global-window-join-pressure` is what the branch on which no negative

@@ -172,7 +172,7 @@ def pieceDecode :
   | .inl vertex => vertex.1
   | .inr vertex => vertex.1
 
-private def outsideDecode :
+def outsideDecode :
     (boundary object support).Vertex ⊕ OutsideInternal object support →
       object.Vertex
   | .inl vertex => vertex.1

@@ -182,11 +182,11 @@ is included and carries its own correction note.  Rows 26–28 were reset by the
 same correction and have since been ported; their cells below are claims about
 `Spine.hybridEntry`, `Spine.bridgeFanMass` and `Spine.typeBExclusionCharge`, and
 rows 27 and 28 keep an open **Facts** column.  Rows 16 and 17 keep their
-`Where` entries but they are named exactly: `Spine.typeAExitFourDichotomy` and
-`Spine.typeAExitFiveDichotomy` are live, and they are the route-8 `(R2)`
-*absence* generators of `def:typeA-true-route8-residual`, not the `[101]`/`[102]`
-peel ledger or the `[103]`/`[104]` compression contradiction those rows are
-about.  Row 37's `Where` was the only stale entry on a genuinely ported row and
+`Where` entries and are named exactly: `Spine.typeAExitFourDichotomy` is the
+selected exit-`(4)` decision, while `Spine.typeAExitFiveDichotomy` now reads the
+selected no-exit-`(4)` ledger fact and commits the selected exit-`(5)` yes/no
+fact.  They are not route-8 `(R2)` generators.  Row 37's `Where` was the only
+stale entry on a genuinely ported row and
 now names `Spine.remainderNormalization`.
 
 The rule this pass applied, and the one to keep applying: **a `✅` requires a
@@ -423,239 +423,11 @@ bookkeeping; the first is not:
 > `sorryAx`, and no `Lean.ofReduceBool`, so no `native_decide` result is
 > load-bearing in it.
 >
-> Rows 16 and 17 are ported into `Spine.runRouteEight` (see the note below the
-> table).  Rows 12--15 were landed on 2026-08-06 and are ported into the
-> saturated exit chain: each has its own pair of `Key` constructors with value
-> schemas and audit names in `SpineVocabulary`, a `Decision` in `SpineRows`,
-> and — for rows 13, 14 and 15 — a runner and a closure `Incompatible` in
-> `Graph/Strategy/TypeAExitRun.lean`, composed by `Spine.runExitChain`.
-> Row 12 is run inside `SpineRun.run` itself, at node `[89]`'s saturated
-> cursor.
->
-> **All four were measured green on 2026-08-06**, after the port, on the
-> working tree: `lake build` in `hypostructure/` end to end (8740 jobs),
-> `lake build HypostructureErdos64EG` (8712 jobs), the narrow targets
-> `Hypostructure.Graph.VisibleReceiverEntry`,
-> `Hypostructure.Graph.AnchoredReturnCompletion`,
-> `Hypostructure.Graph.CommonPortReturnCycle`,
-> `Hypostructure.Graph.WindowLabelCollision`,
-> `Hypostructure.Graph.Strategy.TypeAExitRun` and the four row fixtures
-> `Fixtures.TypeAVisibleEntry`, `Fixtures.TypeAExitOne`,
-> `Fixtures.TypeAExitTwo`, `Fixtures.TypeAExitThree`, together with the
-> canonical `ExactLedger`, `FactManifest` and `ExactExecution` modules and all
-> fifteen positive and negative enforcement fixtures.  The total-execution gate
-> passes and the API-catalog boundary check reports `catalog is current`.
-> `#print axioms` on `Graph.VisibleEntry.commonEndpointsCycle`,
-> `Graph.VisibleEntry.hasCycleWithLength_of_commonPortReturns`,
-> `Graph.VisibleEntry.hasCycleWithLength_of_exitTwoThrough`,
-> `Graph.VisibleEntry.AnchoredReturn.two_le_length`,
-> `Spine.typeAExitTwoDichotomy`, `Spine.runExitTwo` and `Spine.runExitChain`
-> reports `propext`, `Classical.choice` and `Quot.sound` only.
->
-> Rows 12, 13, 14 and 15 are ticked in all four columns.
->
-> Row 12's **Facts** column was closed after the measurement above by the two
-> constructions it owed downstream, both now committed as ledger facts rather
-> than left ambient.  `Graph/PortReturnExistence.lean` proves
-> `lem:typeA-port-return` from `lem:bridgeless` at the port edge, and
-> `Spine.typeAPortReturn` commits it on the shared prefix of nodes `[93]` and
-> `[94]` — which is what makes the port tests at nodes `[95]`--`[107]`
-> non-vacuous.  `Graph/VisibleEntryQuotient.lean` builds clause (Q1) of
-> `def:typeA-exit4-family` — `visibleCoordinates`, `Q1Generated` and the family
-> `visibleEntryFamily` with its two structural laws proved — and
-> `Spine.typeAVisibleEntryClause` commits its branch content on the yes arm, so
-> the canonical family row 16 quantifies over is now exhibited at the generator
-> node `[93]` owns.  The duplicated `receivers`/`fullVertices` reading recorded
-> here previously is deleted: `Graph/VisibleReceiverEntry.lean` now imports
-> `Graph/TypeADischarge.lean` and uses its `FiniteObject.receivers`,
-> `FiniteObject.fullVertices`, `FiniteObject.card_receivers_add_card_fullVertices`
-> and `FiniteObject.sum_routedLoad`, and node `[94]`'s value schema is restated
-> against them.
->
-> Re-measured green after that change on 2026-08-06: `lake build` in
-> `hypostructure/` (8746 jobs), `lake build HypostructureErdos64EG` (8716
-> jobs), the four row fixtures, the total-execution gate, and the API-catalog
-> boundary check (`catalog is current`).  `#print axioms` on
-> `Graph.VisibleEntry.exists_anchoredReturn`,
-> `Graph.VisibleEntry.anchoredReturnOfSeveredPath`,
-> `Graph.VisibleEntry.visibleEntryFamily`,
-> `Graph.VisibleEntry.generated_visibleEntry`,
-> `Graph.VisibleEntry.visibleLoadsAt_subset_declaredLoads`,
-> `Graph.VisibleEntry.visibleCoordinates_nonempty`,
-> `Spine.typeAPortReturn`, `Spine.typeAVisibleEntryClause` and `Spine.run`
-> reports `propext`, `Classical.choice` and `Quot.sound` only.
->
-> What is *not* closed by this, and is recorded against rows 18 and 19 rather
-> than row 12: `lem:typeA-unpeeled-visible-routing` has its hypothesis at node
-> `[93]` and its conclusion at nodes `[95]`--`[108]`, so it is the
-> exhaustiveness of the exit chain and is complete exactly when rows 13--19
-> are.  Rows 18 and 19 are unbuilt.
->
-> The canonical-ledger gate still fails at two sites, both outside this chain
-> and both pre-existing: the parallel carrier `CapacityTokenLedger`
-> (`Graph/CapacityTokenLedger.lean:59`, row 33's slice) and the second ledger
-> API `augmentedLedger` (`Graph/TypeBEnvelopeCharge.lean:118`, rows 27--28's
-> slice).  Neither is reachable from rows 12--15.
->
-> Rows 18 and 19 remain unbuilt in the strict sense: the spine's `Key`
-> enumeration has no key for either node, no `Decision` names them, and the only
-> code that ever implemented them is quarantined or inside the commented legacy
-> topology in `StrategyDag.lean`.  Their `Where` cells say so, and no column in
-> them is ticked.
->
-> **The visible-count conjunct was a deviation across rows 13--15, and is now
-> removed from all three.**  Row 13 first stated exit `(1)` with an extra
-> conjunct `data.dischargeScale ≤ (visibleLoadsAt …).card` on the port, on the
-> argument that the proof of `lem:typeA-visible-entry` fixes `⃗e` before walking
-> the exit list; rows 14 and 15 copied it.  It is not in
-> `def:typeA-saturated-exits`.  Clause (1) is stated at a saturated receiver over
-> anchored returns through *any* completion port of it; clause (2) names one
-> completion port and the receiver-entry returns through it, but not a count;
-> clause (3) — *"a shared `P₁₃` window violates the corresponding legal-label
-> relation `C_s`"* — names no receiver and no port at all.  Conjoining the count
-> strengthened each yes arm and weakened each no arm past the clause's own
-> negation, and the weakened hypothesis is what the next exit inherits.
->
-> All three rows now state their clause and nothing more: row 13 keeps support,
-> receiver and port; row 14 keeps support, receiver and port; row 15 keeps only
-> the Type A support and the packing, and its `Incompatible` instance no longer
-> destructures a receiver and a port it never used.  Node `[93]`'s visible-entry
-> fact is still required by `FactKeys.Has` and read by `ExactLedger.get` in all
-> three — it is the branch's warrant for being on the exit list — but it is a
-> ledger read, not a conjunct of the alternative.  No build has confirmed any of
-> this.
->
-> **The duplication recorded here in the chain's slice is resolved.**
-> `Graph/VisibleReceiverEntry.lean` used to define `Graph.VisibleEntry.receivers`,
-> `mem_receivers`, `fullVertices`, `card_eq_card_fullVertices_add_card_receivers`
-> and `sum_routedLoad_eq_card_fullVertices` beside
-> `Graph/TypeADischarge.lean`'s `FiniteObject.receivers`,
-> `FiniteObject.mem_receivers`, `FiniteObject.fullVertices`,
-> `FiniteObject.card_receivers_add_card_fullVertices` and
-> `FiniteObject.sum_routedLoad`, with the same bodies — one paper object with
-> two Lean readings, and the load-bearing one because the node-`[94]` value
-> schema `Key.typeAVisibleFirstExcess` was stated against the copy.  The five
-> `VisibleEntry` declarations are **deleted**;
-> `Graph/VisibleReceiverEntry.lean` imports `Graph/TypeADischarge.lean`, and
-> the schema, `Spine.typeAVisibleEntryDichotomy` and
-> `Fixtures/TypeAVisibleEntry.lean` are restated against the `FiniteObject`
-> reading.
->
-> The evidence for rows 16 and 17 is a green build of
-> `Hypostructure.Graph.Strategy.Route8Run`, `Hypostructure.Fixtures.Route8Run`,
-> `Hypostructure.Fixtures.ExitFourFamily` and
-> `Hypostructure.Fixtures.Route8ExitFive`, together with the canonical-API and
-> negative-enforcement fixture set, all green on the current tree.  Row 16's
-> Facts column is now closed: `Graph/ExitFourFamily.lean` supplies
-> `def:typeA-exit4-family` and `def:typeA-exit4-peeling`'s exit-`(4)` witness,
-> and the decision at node `[101]` splits on a target-defective quotient of
-> `𝒬₄(w)` at an unpeeled routed load.  What no row yet *builds* is the
-> generation of clauses (Q1)--(Q4), whose constructions are the receiver's
-> declared coordinates of node `[93]`; that is recorded against row 12, which
-> owes them, and it costs row 16 nothing because the row proves its statement
-> for every candidate reading.
-
-
-| # | Node | Where | Ledger | Transport | Residual | Facts |
-|---|---|---|---|---|---|---|
-| 11 | Saturated receiver [89] | `Spine.typeAReceiverRouting`, `Spine.typeASaturationDichotomy` (`SpineRows`, run in `SpineRun.run`) | ✅ | ✅ | ✅ | ✅ |
-| 12 | Visible receiver-entry returns [93] | selected returns are canonical; the stale arbitrary `Spine.typeAVisibleEntryClause` reading must be replaced by the paper's `(e,x_g,g(Γ),Q)` response reading | ✅ | ✅ | ✅ | ❌ |
-| 13 | Exit 1: Mersenne return [95] | `Spine.typeAExitOneDichotomy` over `Graph/AnchoredReturnCompletion.lean` (`SpineRows`, run in `Spine.runExitOne` of `TypeAExitRun`, checked in `Fixtures/TypeAExitOne.lean`) | ✅ | ✅ | ✅ | ✅ |
-| 14 | Exit 2: power-of-two theta [97] | `Spine.typeAExitTwoDichotomy` over `Graph/CommonPortReturnCycle.lean` (`SpineRows`, run in `Spine.runExitTwo`/`Spine.runExitChain` of `TypeAExitRun`, checked in `Fixtures/TypeAExitTwo.lean`) | ✅ | ✅ | ✅ | ✅ |
-| 15 | Exit 3: P13 label collision [99] | `Spine.typeAExitThreeDichotomy` over `Graph/WindowLabelCollision.lean` (`SpineRows`, run in `Spine.runExitThree`/`Spine.runExitChain` of `TypeAExitRun`, checked in `Fixtures/TypeAExitThree.lean`) | ✅ | ✅ | ✅ | ✅ |
-| 16 | Exit 4: target-defective quotient [101] | generic peeling decision exists, but the canonical Q1 same-fibre response presentation feeding it is not yet constructed | ✅ | ✅ | ✅ | ❌ |
-| 17 | Exit 5: target-complete compression [103] | `Spine.typeAExitFiveDichotomy`, `Spine.typeAExitFiveRealizationDichotomy`, `Spine.typeAExitFiveCompressionClosed` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`, checked in `Fixtures/Route8ExitFive.lean`) | ✅ | ✅ | ✅ | ✅ |
-| 18 | Exit 6: response delocalization [105] | `Spine.typeAExitSixDichotomy`, `Spine.typeAExitSixScopeDichotomy`, `Spine.typeAExitSixProperClosed`, `Spine.typeAExitSixGlobalClosed` over `Graph/ResponseDelocalization.lean` (`Route8Rows`/`Route8Run`, run in `Spine.runRouteEight`, checked in `Fixtures/Route8ExitSix.lean`) | ✅ | ✅ | ✅ | ✅ |
-| 19 | Exit 7: decorated handoff fan [107] | `Spine.typeAExitSevenDichotomy` over `Graph/DecoratedHandoffEnvelope.lean` (`SpineRows`, run in `Spine.runRouteEight`/`Spine.runSaturatedExits` of `Route8Run`, checked in `Fixtures/TypeAExitSeven.lean`) | ✅ | ✅ | ✅ | ✅ |
-
-> **Rows 16 and 17, ported with the route-8 ladder segment.**  Nodes `[101]`
-> and `[103]` run as live `Decision`s in `Spine.runRouteEight`, ahead of the
-> `[109]` placement.
->
-> Row 16 is complete.  `Graph/ExitFourFamily.lean` owns
-> `def:typeA-exit4-family`: `ExitFour.Family` is `𝒬₄(w)` at a receiver — the
-> receiver's declared reading on one labelled boundary, so every member retains
-> the boundary-degree profile, the canonical coordinate of a routed load, and the
-> `Generated` predicate through which each of the five clauses is supplied — and
-> `Family.Witness` is `def:typeA-exit4-peeling`'s exit-(4) witness: a generated
-> member, a compatible outside context distinguishing its two realizations, and a
-> declared support containing the load's canonical coordinate.  Node `[101]` now
-> splits on that, which is exit (4) itself, and the yes arm is the manuscript's
-> peel-and-return: `Family.isPeeling_insert` is `lem:typeA-exit4-discharge`,
-> `Family.exists_unsaturated_isPeeling` is the finite descent
-> `lem:typeA-exit4-residual-routing` opens, and `Spine.typeAPeeledCharge` commits
-> a witnessed peeling set leaving the receiver unsaturated — by
-> `lem:typeA-exit4-peeling-charge` the nonnegative remaining charge
-> `q(w) − ¼ − ¼L₄(w)`, retested at node `[89]`.  Clause (Q5) is exhibited as a
-> member by `ExitFour.occurs_of_carrierDeletion` — its target defect is proved
-> from `Route8.Entry.deletion_targetDefect`, and only its listing in the family
-> is hypothesised; the constructions generating (Q1)–(Q4) are node `[93]`'s
-> declared coordinates and are recorded against row 12, which owes them.
->
-> Row 17 is the manuscript's own dichotomy in `lem:typeA-exits-discharged`:
-> *"if the compression is realized by a smaller proper atom, it contradicts
-> hereditary target-uncompressibility; if it occurs only at the trace-basin
-> response level, it is exactly failure alternative (b) and therefore is not an
-> admissible route-8 residual."*  `Spine.typeAExitFiveRealizationDichotomy`
-> splits on realization; the realized arm carries `lem:replacement`'s
-> `CompressibleSupport` and **closes** against node `[14]`'s `uncompressible`
-> through `closeIncompatible`; the response-level arm records alternative (b)
-> and, lacking `typeAExitFiveFree`, cannot enter the route-8 arm.
-> `Fixtures/Route8ExitFive.lean` checks both halves of that sentence on the
-> Type A residual of node `[63]` that `Spine.run` already reaches: the realized
-> arm's index carries the compression fact *and* Core's closure entry with every
-> incoming fact retained, `RoutedTask.dispatchFor` returns `closed` on it for
-> every task list, and its audit is complete, duplicate-free and has no empty
-> commit; the response-level arm carries neither the closure entry nor
-> `typeAExitFiveFree`.  Every theorem row 17 rests on has been checked with
-> `#print axioms` and depends on `propext`, `Classical.choice` and `Quot.sound`
-> alone.
->
-> Row 17's four columns are about node `[103]` itself, which is entered from
-> node `[101]`'s no arm inside `Spine.runRouteEight`.  That block is not yet
-> attached to `Spine.run`, because the path `[93]`--`[99]` from node `[89]` is
-> rows 12--15, which are unbuilt; that is those rows' gap, recorded there.
-
-> **The exit segment is attached to `Spine.run`.**  `Spine.runWithSaturatedExits`
-> (`Route8Run.lean`) calls `Spine.run` once and continues its two saturated
-> Type A arms in Figure 8's own order: node `[93]`'s yes arm through
-> `Spine.runSaturatedExits`, which walks `[95]`--`[124]`, and node `[94]` — which
-> `lem:typeA-unpeeled-silent-routing` routes straight into the shared segment, so
-> it already carries `typeASaturatedExitEntry` — through `Spine.runRouteEight`
-> from node `[101]`.  Every other arm of `Spine.run` is passed through unchanged;
-> the spine is not copied.  Each continuation's requirements are discharged by
-> instance resolution against the index `Spine.run` actually leaves.
->
-> **Figure 8's `[102] → [89]` return edge is a terminating descent, not a
-> topology cycle.**  An append-only ledger over a fixed finite `Key` vocabulary
-> cannot re-commit a key, so the manuscript's *"recompute `L_4`"* arrow is
-> carried where it belongs: inside node `[102]`'s own fact.
-> `typeAPeeledCharge` states that for every exit-`(4)` family there is a peeling
-> set that `IsPeeling` and is **not** `SaturatedAfter` — the receiver retested at
-> node `[89]` and found unsaturated, which is `[89]`'s no arm into
-> `[90]`--`[92]`.  The row proves it with
-> `ExitFour.Family.exists_unsaturated_isPeeling` over
-> `ExitFour.exists_unsaturated_peeling`, whose induction on `L₄(w)` is the
-> manuscript's own termination argument: each enlargement drops the residual load
-> by exactly one (`residualLoad_insert`).  An earlier revision of this note
-> claimed the peel does not iterate; that was wrong and is withdrawn.
-
-> **Rows 16--19 share one exit segment.**  Figure 8's nodes `[101]`--`[107]` are
-> a single chain entered from node `[99]`'s no arm
-> (`lem:typeA-unpeeled-visible-routing`) and from node `[94]`
-> (`lem:typeA-unpeeled-silent-routing`).  `lem:typeA-exit4-residual-routing`'s
-> hypothesis is now the spine fact `typeASaturatedExitEntry`, refined out of
-> node `[89]`'s saturation at the empty peeling set by
-> `Spine.typeASaturatedExitEntryRow` and committed on both entries.  Nodes
-> `[101]`, `[103]`, `[105]` and `[107]` require it and read it, so none of them
-> elaborates on a cursor that has not entered the segment, and
-> `Fixtures.TypeAExitSeven.run` checks that the one ladder
-> serves both entries.  `Fixtures/Route8Run.lean` is rebased from node `[63]`
-> onto node `[94]` accordingly.  Node `[107]` now sits in that chain, between
-> node `[105]`'s no arm and node `[109]`, so `def:typeA-true-route8-residual`
-> (R2) is four exit absences on the ledger rather than three, and
-> `Spine.runSaturatedExits` walks `[95]`--`[124]` in one piece.  Details are
-> under row 19.
+> Rows 16--19 are not implemented on the canonical Strategy DAG.  The former
+> `Spine.runRouteEight` / `Spine.runSaturatedExits` path was removed because it
+> selected arbitrary `Route8.Data` instead of refining the exact incoming Type A
+> tuple.  The next admissible implementation must first derive the manuscript's
+> coordinate-specific Q1--Q4 response semantics for that retained tuple.
 
 ## C. Type B fan
 
@@ -1126,79 +898,10 @@ paper objects and is forbidden.
 
 > **Ported, on the canonical ledger.**  The legacy `TypeARoute8Closure`,
 > `TypeARoute8Stages` and `TypeARoute8Carriers` are quarantined and were not
-> re-imported: the block is rebuilt on the live framework as
-> `Graph/Route8Carrier.lean`, `Graph/Route8Closure.lean`,
-> `Graph/Route8Residual.lean`, the rows of `Graph/Strategy/Route8Rows.lean`,
-> the run `Spine.runRouteEight` in `Graph/Strategy/Route8Run.lean`, and the
-> fixtures `Fixtures/Route8Run.lean`, which runs the whole block on the Type A
-> residual of node `[63]` that `Spine.run` reaches, and
-> `Fixtures/Route8ExitFive.lean`, which checks node `[103]`'s two arms.  Every
-> `Where` entry below names a declaration that elaborates, and every ticked
-> column is backed by a compiling target.
->
-> `Spine.runRouteEight` is not yet called from `Spine.run`: the path
-> `[93]`--`[99]` between node `[89]` and node `[101]` is rows 12--15 of
-> section B, which are unbuilt.  The block is therefore proved and certified
-> against any incoming index that carries node `[14]`'s `uncompressible`, and
-> run on node `[63]`'s Type A residual by its fixtures, but no live execution
-> reaches it from the entry spine yet.  That is rows 12--15's gap, recorded
-> there.
->
-> **Every clause is a registered fact.**  `Graph.Route8.Data` is *data only* --
-> the collection's supports `𝒳` with their per-support readings, the indexed
-> family `Ξ(𝒳)` and the support each entry lives on, the ambient boundary
-> supply, and the registered scales.  Each clause the manuscript attaches to a
-> route-8 residual is a proposition on the canonical ledger under its own key:
-> (R2) for exit `(4)` is node `[101]`'s no arm (`typeAExitFourFree`), (R2)/(R4)
-> for exit `(5)` is node `[103]`'s no arm (`typeAExitFiveFree`), and the four
-> readings `[111]`--`[113]` cites travel with the existential node `[109]`
-> commits, because they depend on the collection and no fact may carry data.
-> The only propositions inside the data are its own well-formedness: a declared
-> coordinate is recorded by a simple cycle, an entry's support is one of the
-> collection's, and an entry's cut lies inside the collection's supply.
->
-> **The arm hangs off the exit ladder.**  `Spine.runRouteEight` runs node
-> `[101]` and node `[103]` as `Decision`s before the `[109]` placement, so the
-> route-8 arm is entered only on their no arms and the exit absences are *read*
-> by nodes `[116]` and `[124]` rather than assumed.  Their yes arms leave the
-> block: `[101]`'s to the manuscript's target-defect peel and `[103]`'s to the
-> uncompressibility contradiction, both of which are rows 16 and 17's and are
-> built — the peel returns to node `[89]` as `Route8Result.peeled`, and the
-> compression closes as `Route8Result.exitFiveClosed`.  The block uses only these two absences -- exits `(1)`, `(2)`, `(3)`,
-> `(6)` and `(7)` are not needed by any step of Figure 9 -- so the block's
-> theorem is *weaker in hypotheses* than the manuscript's (R2) and implies it.
->
-> **What the arm is entered with, and what it proves.**  Node `[109]`'s fact
-> carries exactly the four readings the manuscript cites at this point, and
-> nothing else:
->
-> * `lem:typeA-silent-excess-count` (node `[94]`) — `Data.SilentExcessCount`;
-> * `lem:typeA-reduced-silent-residual` (node `[94]`) — `Data.BasinAssignment`;
-> * `def:typeA-large-budget-deficit`'s own clause, which is the *definition* of
->   carrying the deficit — `Data.LargeBudgetDeficit`;
-> * the registered rate condition `τ_win < 3/13`, which `cor:stub-boundary-supply`
->   and the near-cubic spine estimate of node `[29]` supply — `Data.Rate`.
->
-> Every step the manuscript *proves* between nodes `[111]` and `[124]` is proved
-> here: `lem:typeA-route8-burden` itself (`burden_of_silentExcess`, the paper's
-> own summation over `𝒳` with the indexed pairs counted fibrewise), the node-
-> `[113]` substitution, `lem:typeA-carrier-cut-parity`,
-> `lem:typeA-one-terminal-collapse`, `lem:typeA-essential-deletion-witness`,
-> `lem:typeA-deletion-witness-declared`,
-> `prop:typeA-route8-carrier-reduction`, `thm:typeA-two-carrier-nogo` and
-> `prop:typeA-route8-closure-from-nogo`.  `D_A(𝒳)` is the manuscript's sum
-> `∑_{X∈𝒳}(¼|V(X)| − def⁺(X))`, not a free number: `Data.deficiency` is that
-> `Finset.sum`.
-
-
-| # | Node / component | Where | Ledger | Transport | Residual | Facts |
-|---|---|---|---|---|---|---|
-| 62 | [109] route-8 arm placement | `Spine.route8Placement` behind `Spine.typeAExitFourDichotomy` and `Spine.typeAExitFiveDichotomy`, run by `Spine.runRouteEight` | ✅ | ✅ | ✅ | ✅ |
-| 63 | [111]–[113] collection, burden, deficit bound | `Spine.route8Burden` (`Route8.Data.burden_of_silentExcess`, `Route8.deficit_le_basins`) | ✅ | ✅ | ✅ | ✅ |
-| 64 | [114]–[116] carrier core | `Spine.route8CarrierCore` (`Route8.Data.two_le_alpha`) | ✅ | ✅ | ✅ | ✅ |
-| 65 | [117]–[122] private-carrier census | `Spine.route8Census` (`Route8.Data.Reduced.twoCarrierEntry`) | ✅ | ✅ | ✅ | ✅ |
-| 66 | [123] pressure descent | `Spine.route8Descent` | ✅ | ✅ | ✅ | ✅ |
-| 67 | [124] terminal two-carrier no-go | `Spine.route8Closed` (`Route8.Data.no_twoCarrierEntry`), closed by `closeIncompatible` | ✅ | ✅ | ✅ | ✅ |
+> **Canonical boundary.**  The pure Graph Route 8 carrier, closure, and residual
+> mathematics remains available, but no Strategy row or runner currently enters
+> it.  Nodes `[101]`--`[124]` remain open until the exact selected Type A tuple
+> yields the paper's coordinate-specific Q1--Q4 response family.
 
 ## H. Rank-drop branch (Part III)
 
@@ -2050,166 +1753,83 @@ carried outside the canonical ledger.
 
 ### Row 12 — Visible receiver-entry returns `[93]`
 
-- **Paper fact.** Node `[93]` asks whether some completion port of the
-  saturated receiver carries `s` visible receiver-entry returns.
-  `def:typeA-visible-load` defines an anchored return through `⃗e = (w,h)` as a
-  simple path `P : h ⤳ w` in `G − wh`; it is a *receiver-entry* return when
-  `P = Γ ∘ Q` with `Γ` running from `h` to a receiver `r` whose internal
-  vertices lie outside `X`, and `Q` a simple `r ⤳ w` channel inside `X`; and it
-  is *visible for* a routed cubic `u` with `r(u) = w` when the canonical trace
-  `T_u` is a subpath of `Q`, or `Q` is the lexicographically first channel
-  assigned to the terminal receiver edge of `T_u`.
-  `lem:typeA-first-entry` proves the first entry of an anchored return is a
-  receiver; `lem:typeA-entry-budget` excludes a degree-two receiver from being
-  its own first entry and bounds the distinct first-entry edges by
-  `Σ_{r ≠ w} q(r)`; `lem:typeA-port-return` gives every completion port at
-  least one anchored return.  The yes arm is `lem:typeA-visible-entry`'s
-  hypothesis — its conclusion is the exit list `def:typeA-saturated-exits`
-  (1)--(7), which nodes `[95]`--`[107]` walk — and it is the node that owns
-  clause (Q1) of `def:typeA-exit4-family`, *"the visible receiver-entry
-  coordinate identifications tested in `lem:typeA-visible-entry`"*.  The no arm
-  is `[94]`, `lem:typeA-silent-excess-count`: with no visible-saturated port the
-  visible-first basins of `def:typeA-excess-basin` are silent and carry the
-  whole excess, `S_sil^exc(X) ≥ s·D_A(X)`.
-- **What the Lean does.**  Three rows, in the order the manuscript needs them.
+- **Paper fact.** Node `[93]` is a dichotomy on the already selected Type A
+  support `X`: either some saturated receiver of `X` has a completion port
+  carrying `s` visible receiver-entry returns, or no saturated receiver of `X`
+  has such a port.  The yes arm enters `lem:typeA-visible-entry` and exits
+  `(1)`--`(7)`.  The no arm is `lem:typeA-silent-excess-count`, whose
+  subtraction-free form is
+  `|X| ≤ Σ_w |silentExcess(X,w)| + s * def⁺(X)`.
+- **What the Lean does.** `Spine.typeAVisibleEntryDichotomy` reads the exact
+  canonical `(packing, component, X)` selected at nodes `[61]`, `[62]`, and
+  `[89]`.  It decides only whether a saturated receiver of that `X` satisfies
+  `ExitFour.VisibleFourUnpeeledAt X threshold scale receiver ∅`.  The yes arm
+  constructs one actual `ExitFour.VisibleFourUnpeeledPackage` and commits it
+  with the same packing, component, receiver, negative-net-charge proof, and
+  zero-surplus proof.  It does not search for another support.
 
-  `Spine.typeAPortReturn` (`SpineRows`, run in `SpineRun.run` on node `[89]`'s
-  saturated cursor) is a `factOnly` Strategy committing `lem:typeA-port-return`:
-  *"every completion port of the object carries at least one anchored return"*.
-  It reads `selection` by exact key, splits it into the avoidance and the
-  minimality, and applies `Graph.VisibleEntry.exists_anchoredReturn`, which is
-  `lem:bridgeless` — the framework's `Graph.EdgeContraction.hasReturn_of_minimal`
-  — at the port's own oriented edge, with the severed return transferred back to
-  the ambient graph by `anchoredReturnOfSeveredPath`.  The degree side condition
-  is the standing baseline read off the input.  The fact lands on the *shared*
-  prefix of both arms, because the manuscript uses it at `[89]`, `[93]`, `[94]`
-  and `[109]` alike.
+  On the no arm, the rejected existential is instantiated at every saturated
+  receiver of the same `X`.  The row reads `typeAReceiverRouting` by exact key
+  and applies
+  `VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency`, proving the
+  support-wide bound.  It also retains node `[89]`'s saturated receiver and
+  derives `ExitFour.SilentUnpeeledExcessAt ... ∅` from
+  `visibleFourUnpeeled_or_silentUnpeeledExcess`.  Thus `[94]` carries both the
+  global count and the concrete same-support silent state needed by the later
+  saturated-load routing.
 
-  `Spine.typeAVisibleEntryDichotomy` is then the `Decision` on
-  `∃ packing, IsWindowPacking ∧ maximal ∧ ∃ piece ⊆ remainderSupport, ConnectedOn ∧
-  NegativeNetCharge ∧ ambientSurplus = 0 ∧ ∃ receiver, IsReceiver ∧ Saturated ∧
-  ∃ outside ∈ VisibleEntry.completionPorts object piece receiver,
-  data.dischargeScale ≤ (VisibleEntry.visibleLoadsAt object piece threshold receiver outside).card`.
-  `Graph/VisibleReceiverEntry.lean` supplies every component: `completionPorts`
-  (with `card_completionPorts` proving there are exactly `q(w)` of them),
-  `AnchoredReturn`, `firstEntry?`, `IsChannel`, `ReceiverEntryReturn` with its
-  `P = Γ ∘ Q` fields and `toAnchoredReturn`, `canonicalChannel?`, `VisibleFor`,
-  `visibleLoadsAt` and `visibleLoads`.  Visibility is `def:typeA-visible-load`'s
-  own disjunction — the trace's support is a suffix of the channel's, or the
-  channel is `canonicalChannel?` at the trace's last edge — both read off the
-  object's single `FinitePathSelection.pathSchedule`, the same order
-  `tracePath?` selects `T_u` from, so "lexicographically first" is one framework
-  order rather than a second one.
-  The no arm is *proved*, not assumed:
-  `VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency` is `[94]`'s
-  count, and the row discharges its three hypotheses from the branch — the
-  support sits exactly at the baseline because it carries no ambient surplus,
-  the routing is total by node `[88]`'s committed fact read through
-  `typeAReceiverRouting`, and no saturated receiver has a visible-saturated port
-  because that is the alternative not taken.
-
-  `Spine.typeAVisibleEntryClause` runs on the yes cursor and commits clause (Q1)
-  of `def:typeA-exit4-family`.  `Graph/VisibleEntryQuotient.lean` is the
-  construction: `visibleCoordinates` is the set of declared coordinates the
-  visible-entry identification collapses at the port, `Q1Generated` is the
-  generation predicate carrying that clause, and `visibleEntryFamily` is the
-  resulting `Graph.ExitFour.Family` — the two structural laws of the family
-  (`generated_base`, `generated_identified`) proved from the definition rather
-  than supplied.  The fact the row commits is the branch content, quantified
-  over the receiver's declared reading: the (Q1) member is *generated* from the
-  reading, it collapses at least one declared coordinate because the port
-  carries a visible load, and its declared routed-load support contains every
-  visible load of the port.  The reading itself stays a parameter — it is the
-  route-8 entry's, owned by nodes `[109]` onwards — so naming one here would be
-  inventing it.
-
-  `SpineRun.run` exits at `Result.typeAVisibleEntry` (`typeAVisibleEntryKeys`,
-  now the entry of the exit chain with `[93]`'s port, `lem:typeA-port-return`
-  and (Q1) on it) and `Result.typeAVisibleFirstExcess`.
-- **What it should do.**  This is what it does.  The three things the old
-  registration was missing are present: the port is a completion port of the
-  receiver node `[89]` selected rather than an arbitrary port of the support,
-  the count is of *distinct routed loads* (a `Finset.card`, so `s` visible
-  returns cannot be one return counted `s` times), and visibility is
-  `def:typeA-visible-load`'s comparison against the canonical trace rather than
-  bare membership of the load vertex in a channel's support.
-  `lem:typeA-first-entry` is proved (`isReceiver_firstEntry`), not a supplied
-  field.
-- **Gap.**  `none`.  Both alternatives are the manuscript's, the no arm's bound
-  is derived, and the two constructions the node owes downstream are built and
-  committed as facts rather than left ambient: `lem:typeA-port-return` on the
-  shared prefix, and clause (Q1) of `def:typeA-exit4-family` on the yes arm.
-  **Facts passes.**
-
-  Two cross-references, neither a defect of this row.
-  `lem:typeA-unpeeled-visible-routing` — *"four visible unpeeled receiver-entry
-  returns realize one of exits (1)--(7)"* — has its hypothesis here and its
-  conclusion at nodes `[95]`--`[108]`; it is the exhaustiveness of the exit
-  chain, so it is complete exactly when rows 13--19 are, and rows 13--19 are now
-  all built: `Spine.runSaturatedExits` walks `[95]`--`[124]` in one piece.  What
-  is now attached to `Spine.run` by `Spine.runWithSaturatedExits` — see the note
-  below the section table.  Likewise
-  `lem:typeA-unpeeled-silent-routing` routes the *no* arm into exits (4)--(8)
-  and is the route-8 placement at node `[109]`.
-
-  The duplicated reading recorded here previously is resolved.
-  `Graph.VisibleEntry.receivers`, `mem_receivers`, `fullVertices`,
-  `card_eq_card_fullVertices_add_card_receivers` and
-  `sum_routedLoad_eq_card_fullVertices` are **deleted**;
-  `Graph/VisibleReceiverEntry.lean` imports `Graph/TypeADischarge.lean` and uses
-  its `FiniteObject.receivers`, `FiniteObject.fullVertices`,
-  `FiniteObject.card_receivers_add_card_fullVertices` and
-  `FiniteObject.sum_routedLoad`.  Node `[94]`'s value schema, the row and the
-  fixture are restated against those, so one paper object has one Lean reading.
-- **Ledger and residual.**  Every read is by exact key off the accumulated
-  ledger: the port-return row reads `selection`, the dichotomy reads
-  `typeAReceiverRouting` and `typeASaturatedReceiver` through
-  `[FactKeys.Has …]` and `ExactLedger.get`, and the (Q1) row reads
-  `typeAVisibleEntry`.  Nothing is recomputed from the root input and no port,
-  receiver or support is reconstructed from the ambient graph — the saturated
-  receiver is read as a fact, which is what makes both arms non-vacuous, and
-  `lem:typeA-port-return` is what makes the port tests below non-vacuous.  Each
-  of the three steps is fact-only, so `RefinementSystem.Refines` is the identity
-  and every earlier key stays in the output index; both arms retain node `[88]`'s
-  routing, which is what makes `L(w)` a complete assignment on either side.
-- **Transport and terminals.**  No CT.  Two `Core.Strategy.factOnly` rows run by
-  `AtomicCT.run` and one `Core.Strategy.Decision`; neither arm closes, so no
-  closure runner is involved — the yes arm enters the saturated exit chain at
-  node `[95]` and the no arm is node `[94]`'s quantitative residual.  No
-  EG-specific carrier, executor or routing helper appears: the mathematics is
-  `Graph.VisibleEntry`'s and the transport is the framework's.  The arm not
-  taken is absent from the taken branch's key index
-  (`Fixtures/TypeAVisibleEntry.lean` checks both directions), so the exit chain
-  cannot read `[94]`'s excess bound and node `[109]` cannot read the
-  visible-entry hypothesis.
+  `Spine.typeAVisibleEntryClauseRow` reads the exact yes-arm package and commits
+  only graph facts already proved by the compiled prefix: canonical response
+  coordinate ownership for each selected load; the piece-channel and context
+  connector length identities; completeness of the selected-germ and germ-pair
+  schedules; and the first-separator `SeparatesAt` and list-head identities.
+  The row does not assert Q1 semantic classification and does not construct a
+  `DecoratedHandoff.Separation`.
+- **What it should do.** This is the maximal paper-valid prefix currently
+  available.  The support-local receiver quantifier matches
+  `lem:typeA-visible-entry`, and its universal negation matches the hypothesis
+  of `lem:typeA-silent-excess-count`.  The exact selected residual is preserved
+  on both arms.
+- **Gap.** The shared realization theorem that evaluates the selected declared
+  response coordinates in the registered boundary context is still missing.
+  Therefore the compiled package/germ facts do not yet prove clause (Q1) of
+  `def:typeA-exit4-family`, and a surviving first separator is not yet an actual
+  exit-(7) `Separation`.  These are downstream implementation bugs; this row no
+  longer claims them.  **Facts does not pass yet.**
+- **Ledger and residual.** One canonical `ExactLedger` is used throughout.
+  The dichotomy reads `typeAReceiverRouting` and `typeASaturatedReceiver` with
+  `ExactLedger.get`; the package prefix reads `typeAVisibleEntry` through
+  `FactInputs.get`.  Every output prepends one semantic key to the literal
+  incoming `known`.  `Fixtures/TypeAVisiblePackageLedger.lean` checks the
+  manifest, freshness, retained incoming key, complete audit, and nonempty
+  commits without importing `SpineAssembly`.
+  `Fixtures/TypeASelectedResidualWiring.lean` additionally instantiates the
+  exact `[62]`, `[89]`, `[93]/[94]`, unsaturated-discharge, and exit-(1)--(3)
+  interfaces without any continuation wrapper.
+- **Transport and terminals.** The split is Core `Decision`; the compiled
+  package prefix is `factOnly`.  No custom result carrier, history wrapper,
+  native decision, table computation, or reconstructed residual appears.  The
+  yes arm continues to node `[95]`; the no arm remains open for the paper's
+  silent routing.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:typeA-visible-load` | def | `Graph.VisibleEntry.completionPorts`<br>`Graph.VisibleEntry.AnchoredReturn`<br>`Graph.VisibleEntry.IsChannel`<br>`Graph.VisibleEntry.ReceiverEntryReturn`<br>`Graph.VisibleEntry.canonicalChannel?`<br>`Graph.VisibleEntry.VisibleFor`<br>`Graph.VisibleEntry.visibleLoadsAt`<br>`Graph.VisibleEntry.visibleLoads` | no CT |
-| `lem:typeA-first-entry` | lem | `Graph.VisibleEntry.isReceiver_firstEntry` | no CT |
-| `lem:typeA-entry-budget` | lem | `Graph.VisibleEntry.firstEntry_ne_of_missingPorts_eq_one`<br>`Graph.VisibleEntry.card_entryPortEdges_le` | no CT |
-| `lem:typeA-port-return` | lem | `Graph.VisibleEntry.exists_anchoredReturn`<br>`Graph.VisibleEntry.exists_anchoredReturn_of_mem_completionPorts`<br>`Spine.typeAPortReturn` | no CT; `lem:bridgeless` is `Graph.EdgeContraction.hasReturn_of_minimal` |
-| `lem:typeA-visible-entry` | lem | `Spine.typeAVisibleEntryDichotomy` (the hypothesis; the exit list is rows 13--19) | no CT |
-| `lem:typeA-unpeeled-visible-routing` | lem | hypothesis here; conclusion is the exit chain, rows 13--19 | incomplete while rows 18--19 are unbuilt — recorded there |
-| `def:typeA-saturated-exits` | def | | first consumed here, as the yes-arm's target list; its clauses are the alternatives at rows 13--19 |
-| `def:typeA-exit4-family` (Q1) | def | `Graph.VisibleEntry.visibleCoordinates`<br>`Graph.VisibleEntry.Q1Generated`<br>`Graph.VisibleEntry.visibleEntryFamily`<br>`Graph.VisibleEntry.generated_visibleEntry`<br>`Graph.VisibleEntry.visibleLoadsAt_subset_declaredLoads`<br>`Graph.VisibleEntry.visibleCoordinates_nonempty`<br>`Spine.typeAVisibleEntryClause` | no CT |
-| `def:typeA-excess-basin` | def | `Graph.VisibleEntry.visibleFirstOrder`<br>`Graph.VisibleEntry.payableSet`<br>`Graph.VisibleEntry.excessBasin`<br>`Graph.VisibleEntry.silentExcess` | no CT |
-| `lem:typeA-silent-excess-count` | lem | `Graph.VisibleEntry.one_add_routedLoad_le_silentExcess`<br>`Graph.VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency` | no CT |
-| `lem:typeA-silent-excess` | lem | `Graph.VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency` (the subtraction-free form committed at `[94]`) | no CT |
-| `lem:typeA-reduced-silent-residual` | lem | | node `[109]`'s, row 41 |
-| `lem:typeA-unpeeled-silent-routing` | lem | no arm here; conclusion is the route-8 placement at node `[109]` | recorded at node `[109]` |
+| `def:typeA-visible-load` | def | `Graph.VisibleEntry.ReceiverEntryReturn`<br>`Graph.VisibleEntry.VisibleFor`<br>`Graph.VisibleEntry.visibleLoadsAt` | standalone Graph |
+| `lem:typeA-port-return` | lem | `Graph.VisibleEntry.exists_anchoredReturn_of_mem_completionPorts`<br>`Spine.typeAPortReturn` | fact-only row |
+| `[93]` support-local split | decision | `Spine.typeAVisibleEntryDichotomy` | Core `Decision` |
+| canonical four-return package | def/lem | `Graph.ExitFour.VisibleFourUnpeeledPackage`<br>`Graph.ExitFour.visibleFourUnpeeledPackage` | standalone Graph |
+| `lem:typeA-silent-excess-count` | lem | `Graph.VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency` | standalone Graph |
+| selected silent state | lem | `Graph.ExitFour.visibleFourUnpeeled_or_silentUnpeeledExcess` | standalone Graph |
+| compiled response/germ prefix | lem | `Spine.typeAVisibleEntryClauseRow`<br>`Graph.ExitFour.VisibleFourUnpeeledPackage.germSchedule`<br>`Graph.ExitFour.VisibleFourUnpeeledPackage.germPairSchedule` | fact-only row |
+| Q1 semantic realization | missing | no registered realization theorem yet | open bug |
+| separator-to-exit-7 production | missing | no actual `Separation` constructor from this prefix yet | open bug |
 
-**CT composition at this row.**  No CT.  Three framework recipes in sequence —
-`factOnly`, `factOnly`, `Decision` — and nothing is enumerated: the split is
-`Classical.em` on a proposition, no port or receiver is extracted to build the
-branch, and the arm not taken supplies the other arm's clause.  The two pieces
-of mathematics that are not the split itself are theorems proved once in
-`Graph/`, not searches a CT would run: `[94]`'s count is a finite sum identity,
-and `lem:typeA-port-return` is `lem:bridgeless` applied at one edge.  Neither
-arm registers a closure, so both are open continuations: the left into row 13,
-the right into node `[109]`'s route-8 placement.
+**CT composition at this row.** The only framework recipes are one
+support-local `Decision` and fact-only semantic publication.  The finite path,
+return, response-coordinate, germ, and germ-pair schedules are graph-derived;
+no row enumerates an independent table or authors a coordinate reading.
 
 ### Row 13 — Exit 1: Mersenne return `[95]`
 
@@ -2228,15 +1848,12 @@ the right into node `[109]`'s route-8 placement.
   `Core.Strategy.Decision` on the canonical `ExactLedger`.  It requires node
   `[93]`'s key by `FactKeys.Has typeAVisibleEntry known` and reads it with
   `ExactLedger.get`, so the question elaborates only on the branch that entered
-  the saturated exit chain.  Its yes arm is the vocabulary value at
-  `Key.typeAExitOneReturn`: some Type A support of the object (a maximal window
-  packing, a connected piece of its remainder with negative net charge and zero
-  ambient surplus) has a saturated receiver with a completion port
-  `outside ∈ Graph.VisibleEntry.completionPorts object piece receiver` through
-  which some `Graph.VisibleEntry.AnchoredReturn object receiver outside`
-  satisfies `Graph.ShiftedCycleLength data.LengthOK return'.path.length`.  Its
-  no arm, `Key.typeAExitOneFree`, is the same configuration universally
-  quantified with the length test denied.  `Spine.runExitOne` (`TypeAExitRun.lean`) runs the
+  the saturated exit chain.  It destructures the exact
+  `(packing, component, piece, receiver, package)` committed at `[93]` and
+  decides whether an `AnchoredReturn` through `package.outside` has accepted
+  shifted length.  Both keys retain that same tuple and package; the no arm is
+  the literal universal denial only for that fixed port.  `Spine.runExitOne`
+  (`TypeAExitRun.lean`) runs the
   decision and closes the yes arm with Core's `closeIncompatible` against
   `Key.returnAvoidance`; the `Incompatible` instance's whole content is
   `Graph.VisibleEntry.not_shiftedCycleLength_of_returnLengthSets_disjoint`.
@@ -2244,28 +1861,9 @@ the right into node `[109]`'s route-8 placement.
   exit list is walked in the manuscript's order on one immutable prefix; rows 14
   and 15 call this row's runner rather than repeating its decision.
 - **What it should do.**  This is what it does.  The alternative is asked of the
-  receiver's own completion ports and of anchored returns through them, and the
+  port fixed by `lem:typeA-visible-entry`, and the
   conversion to the target goes through
   `Graph.VisibleEntry.AnchoredReturn.toEdgeRootedReturn` at the dart `(w,h)`.
-
-  > **Corrected on 2026-08-06.**  As first landed, both arms of this row carried
-  > an extra conjunct `data.dischargeScale ≤ (visibleLoadsAt …).card` on the
-  > port — node `[93]`'s visible count — on the argument that the proof of
-  > `lem:typeA-visible-entry` fixes the port `⃗e` before walking the exit list.
-  > That was a deviation.  `def:typeA-saturated-exits` (1) is stated at a
-  > saturated receiver over anchored returns through *any* completion port of
-  > it, with no visibility condition; clause (2) is the one that names
-  > receiver-entry returns, and clause (1) deliberately does not.  Conjoining
-  > the count strengthened the yes alternative and, worse, weakened the no arm —
-  > *"no anchored return of a **visible** port has accepted length"* instead of
-  > `def:typeA-saturated-exits` (1)'s own negation — and that weaker hypothesis
-  > is what nodes `[97]`, `[99]` and `[101]` inherit.  The conjunct is removed
-  > from both arms; node `[93]`'s fact is still read by exact key, as the
-  > warrant for being on the exit list at all, but it is not part of the
-  > alternative.  Rows 14 and 15 copied the same conjunct into
-  > `Key.typeAExitTwoTheta`/`typeAExitTwoFree` and
-  > `Key.typeAExitThreeCollision`/`typeAExitThreeFree`; those are recorded
-  > against their own rows below and are **not** fixed here.
 - **Gap.**  None.  The alternative no longer implies the registered target
   outright: it is a statement about a named port of a named saturated receiver of
   a Type A support, and the *closure* — not the alternative — is where
@@ -2347,24 +1945,19 @@ executed by this repair.
   one completion port of the saturated receiver — not the object at large, and
   not a port qualified by node `[93]`'s visible count, which clause (2) does not
   mention.
-- **What the Lean does.**  `Spine.typeAExitTwoDichotomy` (`SpineRows`) is a
-  `Decision` on the proposition that some Type A support of the branch's own
-  packing carries a saturated receiver with a completion port realizing exit (2):
-  `∃ packing, IsWindowPacking ∧ maximal ∧ ∃ piece ⊆ remainderSupport, ConnectedOn ∧
-  NegativeNetCharge ∧ ambientSurplus = 0 ∧ ∃ receiver, IsReceiver ∧ Saturated ∧
-  ∃ outside ∈ VisibleEntry.completionPorts …,
-  VisibleEntry.ExitTwoThrough object piece data.LengthOK receiver outside`.
-  Node `[93]`'s visible count is *not* a conjunct: it is required by
-  `FactKeys.Has typeAVisibleEntry known` and read with `ExactLedger.get`, which
-  is what puts the branch on the exit list, and nothing more.
+- **What the Lean does.**  `Spine.typeAExitTwoDichotomy` (`SpineRows`) reads
+  node `[93]`'s exact
+  `(packing, component, piece, receiver, VisibleFourUnpeeledPackage)` and
+  decides `VisibleEntry.ExitTwoThrough object piece data.LengthOK receiver
+  package.outside`.  Both arms retain that same tuple and package; no support,
+  receiver, or port is quantified afresh.
   `Graph.VisibleEntry.ExitTwoThrough` is
   `∃ first second : ReceiverEntryReturn object support receiver outside,
   InternallyDisjoint first.toAnchoredReturn second.toAnchoredReturn ∧
   LengthOK (|P₁| + |P₂|)`, and `InternallyDisjoint` is "the only vertices the
   two anchored paths share are the port's own two ends".  The no arm is the
-  same configuration with the test denied at every completion port of every
-  saturated receiver, which is the hypothesis exit (3) is asked under at node
-  `[99]`.
+  same configuration with the test denied at the inherited port, which is the
+  exact cursor handed to exit (3) at node `[99]`.
 
   The row consumes node `[93]`'s fact by exact key through
   `[FactKeys.Has typeAVisibleEntry known]` and `ExactLedger.get`, so it does not
@@ -2450,13 +2043,13 @@ bridges, which are the identity on `PLift`.
   a Core `Decision` on the vocabulary keys `typeAExitThreeCollision` and
   `typeAExitThreeFree`.  It **reads node `[93]`'s `typeAVisibleEntry` by exact
   key** through `ExactLedger.get`, so neither arm is vacuous and the exit is
-  asked only on a branch that entered the saturated exit list.  Both arms carry
-  the packing, its maximality and the Type A support — the configuration the
-  exit list is scoped to — and *nothing else*: unlike clauses (1) and (2),
-  clause (3) names no receiver and no completion port, and
-  `Graph.WindowLabelCollision.LabelCollision` takes the packing alone.  The exit
-  clause is `LabelCollision current.object data.windowOrder data.LengthOK
-  packing` on the yes arm and `LabelCollisionFree` on the no arm.
+  asked only on a branch that entered the saturated exit list.  Both arms retain
+  the exact packing, canonical component, support, receiver, and visible package
+  inherited from `[93]`; the tested proposition itself is
+  `LabelCollision current.object data.windowOrder data.LengthOK packing`, with
+  `LabelCollisionFree` its literal negation.  Thus clause (3) uses the selected
+  packing while preserving, rather than discarding, the ancestry needed by the
+  following row.
 
   `Graph/WindowLabelCollision.lean` is the new generic module.
   `attachmentLabel` is `S(x)` read at a `Graph.TypeBDirectCycle.Presentation`;
@@ -2474,9 +2067,10 @@ bridges, which are the identity on `PLift`.
 
   The run is `Spine.runExitThree` in `Graph/Strategy/TypeAExitRun.lean`, and
   `Spine.runExitChain` walks `[95] → [97] → [99]` on one immutable prefix,
-  committing row 16's `typeASaturatedExitEntry` on this row's no arm.  The yes
-  arm closes through `Core.Strategy.closeIncompatible` against the `selection`
-  fact, registered as `Spine.typeAExitThreeCollisionClosed`.
+  retaining the literal `typeAExitThreeFree` ledger on this row's no arm.  It
+  does not append any `[101]+` key.  The yes arm closes through
+  `Core.Strategy.closeIncompatible` against the `selection` fact, registered as
+  `Spine.typeAExitThreeCollisionClosed`.
   `Fixtures/TypeAExitThree.lean` checks the row at the spine's own vocabulary.
 - **What it should do.**  Exactly this: state the alternative as failure of
   `C_s` at a window shared by the branch's packing, and close the yes arm by the
@@ -2507,9 +2101,8 @@ bridges, which are the identity on `PLift`.
   closure is `Core.Strategy.closeIncompatible`, not a registered `closeLeft`.
   The closed arm's index is `closed :: typeAExitThreeCollision :: known`; the no
   arm's is `typeAExitThreeFree :: known`, which still carries
-  `typeAVisibleEntry`, `typeAExitOneFree` and `typeAExitTwoFree` and therefore
-  hands node `[101]` the manuscript's "assume exits (1)–(3) do not occur"; the
-  chain then commits `typeASaturatedExitEntry` on it, which is row 16's entry.
+  `typeAVisibleEntry`, `typeAExitOneFree` and `typeAExitTwoFree`.  This is the
+  current canonical boundary; no row manufactures the missing exit-(4) entry.
   Neither arm's index contains the other's key.
 
 **Paper objects at this row.**
@@ -2528,608 +2121,77 @@ where those three are realized *at this node*.
 **CT composition at this row.**  No CT.  The recipe is Core's `Decision` with
 `closeIncompatible`, the same one rows 13 and 14 use.  The row decides the
 collision predicate on the configuration node `[93]` committed; its yes arm
-closes through the Graph-owned cycle construction and its no arm is the cursor
-node `[101]` is asked on.  No adapter, carrier, or routing helper is invoked at
-this vertex.
+closes through the Graph-owned cycle construction and its no arm remains the
+exact exit-`(3)`-free cursor.  No adapter, carrier, or routing helper is invoked
+at this vertex, and no `[101]+` fact is asserted before the missing shared
+response realization exists.
 
 ### Row 16 — Exit 4: target-defective quotient `[101]`
 
-- **Paper fact.** Exit (4): "a quotient in the canonical exit-(4) family
-  `𝒬₄(w)` of `def:typeA-exit4-family` is target-defective".  It is the
-  *target-defect peeling* exit: `def:typeA-exit4-peeling` gives the receiver its
-  routed loads `ℒ(w) = {u : r(u) = w}`, an *exit-(4) witness for a routed load*
-  `u` — a quotient `q ∈ 𝒬₄(w)`, two realizations in the same boundary-degree
-  fibre, a compatible outside context distinguishing their target predicates,
-  and the requirement that the declared support of `q` contains the canonical
-  coordinate of `u` — a peeling set `P₄(w) ⊆ ℒ(w)` of such witnessed loads with
-  no load listed twice, and the residual load `L₄(w) = L(w) − |P₄(w)|`;
-  `lem:typeA-exit4-peeling-charge` gives the remaining charge
-  `q(w) − ¼ − ¼·L₄(w)`, nonnegative once `L₄(w) ≤ 4q(w) − 1`;
-  `lem:typeA-exit4-discharge` says one adjoined witnessed unpeeled load is again
-  a peeling set and reduces the deficit by exactly `¼`; and
-  `lem:typeA-exit4-residual-routing` says that while `L₄(w) ≥ 4q(w)` the
-  unpeeled loads realize an exit, the exit-(4) case enlarging the peeling set by
-  one.  The arm returns to node `[89]`.
-- **What the Lean does.** `Graph/ExitFourFamily.lean` owns
-  `def:typeA-exit4-family`.  `ExitFour.Clause` is the five canonical generating
-  constructions (Q1)–(Q5); `ExitFour.Family` is `𝒬₄(w)` at a receiver: the
-  receiver's declared reading as a `Route8.Entry` — a finite declared coordinate
-  family with the carrier support of each, presented on *one* labelled boundary,
-  so every member retains the boundary-degree profile by construction — the
-  canonical coordinate `def:declared-coordinate-signature` gives a routed load,
-  and the `Generated` predicate through which a clause's owner supplies its
-  construction.  `Family.Defective` is a generated member separated by one
-  compatible outside context (`Response.TargetDefect`), `Family.Occurs` is exit
-  (4) itself, `Family.declaredLoads` is the declared routed-load support — the
-  loads whose canonical coordinate the quotient identifies or forgets, which is
-  the definition's clause-by-clause list read uniformly — and `Family.Witness`
-  is `def:typeA-exit4-peeling`'s exit-(4) witness.  `Family.IsPeeling` is the
-  peeling set with its witnesses; `Family.isPeeling_insert` is
-  `lem:typeA-exit4-discharge`; `Family.exists_unsaturated_isPeeling` is the
-  descent `lem:typeA-exit4-residual-routing` opens, run on the invariant-carrying
-  `ExitFour.exists_unsaturated_peeling`.  `Graph/ExitFourPeeling.lean` owns the
-  ledger: `routedLoads` is `ℒ(w)` — the set whose cardinality
-  `FiniteObject.routedLoad` already is, tied to it by `routedLoad_eq_card` —
-  `unpeeledLoads` is `ℒ(w) ∖ P₄(w)`, `residualLoad` is `L₄(w)`,
-  `SaturatedAfter` is `FiniteObject.Saturated` read at the residual,
-  `not_saturatedAfter_iff` is `lem:typeA-exit4-peeling-charge` cleared of the
-  quarter, and `residualLoad_insert` is the exact one-load drop.
-  `ExitFour.occurs_of_carrierDeletion` reads clause (Q5) — the deletion at an
-  essential carrier, target-defective by `Route8.Entry.deletion_targetDefect` —
-  as a member of the family: the defect half is proved outright, and the
-  remaining half, that the family lists that construction, is the hypothesis
-  `Generated .carrierDeletion`, because the vertex-to-coordinate assignment a
-  concrete reading needs is the collection's data, not this row's.  `Spine.typeAExitFourPeelDichotomy` is node `[101]`:
-  it splits on whether, at every stage at which the peeled residual is still
-  saturated, some unpeeled routed load carries such a witness.  Its yes arm runs
-  `Spine.typeAPeeledCharge`, which commits that every receiver has a witnessed
-  peeling set leaving it unsaturated — the receiver retested at node `[89]` —
-  and leaves the block as `Route8Result.peeled`.  The no arm continues down the
-  ladder to `Spine.typeAExitFourDichotomy`, the route-8 (R2) reading.
-- **What it should do.** This.  The alternative names the quotient of the
-  response state — an identification of declared coordinates preserving the
-  boundary-degree profile, generated by one of (Q1)–(Q5) — the outside context
-  distinguishing it, and the routed load whose declared coordinate it uses.
-- **Gap.** None at this node.  The family, like the support and the receiver, is
-  *data*, so the fact quantifies over it rather than carrying it — the
-  vocabulary's standing convention, which is why the row reads no fact it does
-  not own.  What no row yet *builds* is the canonical generation predicate for
-  clauses (Q1)–(Q4): those constructions are the receiver's declared coordinates
-  of node `[93]`, which is row 12's and unbuilt, so nothing instantiates
-  `Generated` at them.  Clause (Q5) is built and is exhibited as a member by
-  `ExitFour.occurs_of_carrierDeletion`.  That hole is recorded against row 12; it
-  costs this row nothing, because the row proves its statement for every
-  candidate reading and therefore for the canonical one.
-- **Ledger and residual.** `Decision.run` for the split; `rowManifest` for the
-  peel row, which reads node `[101]`'s exit by exact key.  Residual unchanged.
-- **Transport and terminals.** No terminal: the yes arm is
-  `Route8Result.peeled`, carrying `typeAExitFourPeel` and `typeAPeeledCharge`,
-  which is the manuscript's return edge `[102] → [89]`.
-- **No second path.** `Graph.Strategy.TypeAReceiverExhaustion`'s legacy
-  node-`[101]` pair — `TargetDefectiveQuotient`, which read exit (4) as "some
-  declared proper sub-support satisfies the baseline", and the
-  `Core.DichotomyData` stage `exitFourSplit` built on it — died with the retired
-  `Blueprint` topology: the module is outside the live import closure, does not
-  elaborate, and is kept only as Tier 3 porting reference for rows 12–19, so it
-  is left as it stands.  Nothing live reads either declaration, and no other
-  live module states exit `(4)`, a peeling set, or a residual load.
+- **Paper fact.** Exits (1)--(8) are the saturated Type A receiver exits.  Exit (4) is the target-defective quotient exit; its canonical quotient family has Q1--Q4 before the route-8 branch and Q5 only after the selected route-8 collection exists.  A member of the pre-route Q1--Q4 family is a genuine boundary-degree-preserving coordinate identification, and exit (4) requires two same-fibre realizations plus a compatible outside context distinguishing their target responses.  In the visible branch of `lem:typeA-unpeeled-visible-routing`, the target-defective quotient's declared routed-load support contains at least one of the four selected visible unpeeled loads.
+- **What the Lean does.** `ExitFour.ReceiverClause` and `ExitFour.ReceiverFamily` retain the four pre-route clause tags, the declared coordinate family, the routed-load coordinate map, the structural generation predicate, and its base/identified subset laws.  Q5 is not included in this pre-route family.  `ExitFour.Witness` records a generated family member, a supported unpeeled load, same-boundary realizations, and a literal `Response.TargetDefect`.  `Spine.typeAExitFourDichotomy` reads the exact `[99]` no-arm fact from the incoming `ExactLedger`, asks only about that selected packing/component/piece/receiver/package, and commits either `typeAExitFour` with a witness supporting one of the package's selected visible loads or `typeAExitFourFree` with the corresponding negation.  `Spine.typeAExitFourPeelingStepRow` reads that committed `typeAExitFour` fact with `FactInputs.get` and appends `typeAExitFourPeeled`, the node `[102]` peeling update.  `Spine.typeAExitFourRetestDichotomy` then reads `typeAExitFourPeeled` and commits either the existing `typeASaturatedExitEntry` fact for the enlarged peeling set or `typeAExitFourReceiverDischarged` with the cleared nonnegative receiver-charge inequality.  `Spine.typeAExitFourFiniteDescentRow` reads the current `typeASaturatedExitEntry` fact and commits `typeAExitFourFiniteDescent`, a finite descent theorem for arbitrary current `P₄(w)`.  `Spine.typeASaturatedHandoffSplitDichotomy` then reads that same exact current `typeASaturatedExitEntry` fact and commits either `typeASaturatedHandoffVisible` with a current `VisibleFourUnpeeledPackage` or `typeASaturatedHandoffSilent` with `SilentUnpeeledExcessAt` for the same current `P₄(w)`.  The corresponding selected exit-`(4)` decisions then commit either `typeASaturatedHandoffExitFour` or `typeASaturatedHandoffExitFourFree`; the free fact is the exact same-residual predecessor for node `[103]`.
+- **What it should do.** Complete the remaining paper saturated-handoff classification by instantiating the committed finite descent with the real terminal alternatives: closed exits (1)--(3), (5), (6), exit-(7) decorated Type B handoff, exit-(8) route-8 residual, or final unsaturated receiver charge.  Repeated exit-(4) facts must stay inside the mathematical peeling certificate; exposed terminal outcomes must be committed once as ledger facts.
+- **Gap.** The `[101]` selected visible decision, `[102]` charge publication, immediate retest, finite arbitrary-peeling descent fact, current-state visible/silent saturated-handoff split, and selected current-state exit-`(4)`/no-exit-`(4)` decisions are present and validated.  The remaining open part is the selected terminal classification after no-exit-`(4)`: exit-(5), exit-(6), exit-(7), exit-(8), or final unsaturated receiver charge.  The deleted `ReceiverFamily.Defective` used `entry.state (base \ identified)` and modeled coordinate identification as deletion from an authored state function; that surrogate remains absent, as required.
+- **Ledger and residual.** The visible `[101]` row appends one fact to the existing ledger via Core `Decision.run`; the yes and no arms keep the full prior prefix including `[93]`, `[95]`, `[97]`, and `[99]`.  On the yes arm, `[102]` appends `typeAExitFourPeeled` via `factOnly`/`AtomicCT.run`, while retaining the committed `[101]` witness, and then appends exactly one retest fact by `Decision.run`.  When the retest remains saturated, `typeAExitFourFiniteDescent` is appended by `factOnly`/`AtomicCT.run` on that same ledger, the current saturated handoff split appends exactly one of `typeASaturatedHandoffVisible` or `typeASaturatedHandoffSilent`, and the current selected exit-`(4)` decision appends exactly one of `typeASaturatedHandoffExitFour` or `typeASaturatedHandoffExitFourFree`.  All arms retain the complete incoming residual prefix.
+- **Transport and terminals.** Core owns the history/refinement mechanics: `Decision.run` over exact keys for `[101]`, one `factOnly` commit for `[102]`, one `Decision.run` for the peeled-residual retest, one `factOnly` commit for `typeAExitFourFiniteDescent`, one `Decision.run` for the current-state saturated handoff split, and one `Decision.run` for current exit-`(4)` occurrence.  No branch payload, side channel, wrapper, or custom transport is used.  Terminal facts are not fabricated by this row.
 
 **Paper objects at this row.**
 
-| Paper object | Kind | Lean declaration | CT / standalone |
+| Paper object | Kind | Lean declaration | Status |
 |---|---|---|---|
-| `def:typeA-exit4-family` | def | `Graph.ExitFour.Clause`<br>`Graph.ExitFour.Family`<br>`Graph.ExitFour.Family.Occurs` | standalone |
-| `def:typeA-exit4-family` (Q5) | def | `Graph.ExitFour.occurs_of_carrierDeletion` from `Graph.Route8.Entry.deletion_targetDefect`; the route-8 reading is `Graph.Route8.Data.ExitFour`, decided by `Spine.typeAExitFourDichotomy` | standalone |
-| `def:typeA-exit4-family` (Q1)–(Q4) | def | `Graph.ExitFour.Family.Generated` at `.visibleEntry`, `.silentBasin`, `.traceBasin`, `.continuationSwitch` | *(constructions are node `[93]`'s declared coordinates; row 12)* |
-| `def:typeA-exit4-peeling` | def | `Graph.ExitFour.routedLoads`<br>`Graph.ExitFour.unpeeledLoads`<br>`Graph.ExitFour.residualLoad`<br>`Graph.ExitFour.Family.Witness`<br>`Graph.ExitFour.Family.declaredLoads`<br>`Graph.ExitFour.Family.IsPeeling` | standalone |
-| `lem:typeA-exit4-peeling-charge` | lem | `Graph.ExitFour.not_saturatedAfter_iff` | standalone |
-| `lem:typeA-exit4-discharge` | lem | `Graph.ExitFour.Family.isPeeling_insert` over `Graph.ExitFour.residualLoad_insert` and `Graph.ExitFour.insert_subset_routedLoads` | standalone |
-| `lem:typeA-exit4-residual-routing` | lem | `Graph.ExitFour.Family.exists_unsaturated_isPeeling` over `Graph.ExitFour.exists_unsaturated_peeling`; its exit-(4) reading is node `[101]`'s alternative | standalone |
-| `rem:typeA-exit4-peeling-use` | rem | `Spine.typeAPeeledCharge` — peeled loads leave before the pure Type A charge is summed | standalone |
+| Q1--Q4 structural family | def | `Graph.ExitFour.ReceiverClause`, `Graph.ExitFour.ReceiverFamily` | structural metadata only |
+| literal fixed-piece response | obstruction | `Graph.AtomResponse.CoordinateSystem.not_exists_literalGluingTargetDefect` | proves this realization cannot distinguish coordinates |
+| genuine target-defective member | def | `Graph.ExitFour.Witness` | present structurally |
+| selected-load peeling witness | def | `Spine.typeAExitFour` schema requires `witness.load` in the selected package list | present in source |
+| node `[101]` decision | Strategy | `Spine.typeAExitFourDichotomy` | validated |
+| node `[102]` charge publication | Strategy | `Spine.typeAExitFourPeelingStepRow`, key `typeAExitFourPeeled` | validated |
+| node `[102]` retest | Strategy | `Spine.typeAExitFourRetestDichotomy`, keys `typeASaturatedExitEntry` / `typeAExitFourReceiverDischarged` | validated |
+| arbitrary exit-(4) finite descent | Graph + Strategy | `Graph.ExitFour.terminal_or_unsaturated_from`, `Spine.typeAExitFourFiniteDescentRow`, key `typeAExitFourFiniteDescent` | validated |
+| arbitrary `P₄(w)` visible/silent split | Strategy | `Spine.typeASaturatedHandoffSplitDichotomy`, keys `typeASaturatedHandoffVisible` / `typeASaturatedHandoffSilent` | validated |
+| arbitrary `P₄(w)` exit-(4) occurrence | Strategy | `Spine.typeASaturatedHandoffVisibleExitFourDichotomy`, `Spine.typeASaturatedHandoffSilentExitFourDichotomy`, keys `typeASaturatedHandoffExitFour` / `typeASaturatedHandoffExitFourFree` | validated |
 
-**CT composition at this row.** None.  A `Decision` and one fact-only Strategy;
-the manuscript's loop back to `[89]` is the descent inside
-`Family.exists_unsaturated_isPeeling`, which is why no cycle appears in the DAG.
-
-**Evidence.** One `lake build` of the canonical ledger, manifest and execution
-modules together with the fifteen positive and negative enforcement fixtures,
-`Hypostructure.Graph.ExitFourFamily`, `Hypostructure.Fixtures.ExitFourFamily`,
-`Hypostructure.Graph.Strategy.Route8Run` and `Hypostructure.Fixtures.Route8Run`:
-green, 8675 jobs.  `#print axioms` on `Family.isPeeling_insert`,
-`Family.exists_unsaturated_isPeeling`, `occurs_of_carrierDeletion`,
-`exists_unsaturated_peeling`, `Spine.typeAExitFourPeelDichotomy`,
-`Spine.typeAPeeledChargeRow` and the fixture's `peeled_charge_of_exitFour`
-reports `propext`, `Classical.choice`, `Quot.sound` only — no `sorryAx`, no
-`Lean.ofReduceBool`.  `rg` over the live tree finds exit `(4)`, the peeling set,
-the residual load and the routed loads stated in exactly these two modules and
-nowhere else; the only other occurrence is `Graph.Route8.Data.ExitFour`, which
-is clause (Q5) at an indexed entry and is the route-8 `(R2)` carrier nodes
-`[116]` and `[124]` read.  The EG package itself does not elaborate at the time
-of writing, for a reason outside this row: `Problem.lean`'s registration is
-mid-edit and is missing `bridgeMassFactor` / `bridgeMassSlack`.
-
-**Immediate continuation repair.**  The `[94]` ledger now enters only node
-`[101]`.  `typeAExitFourPeelDichotomy` appends the peel/no-peel decision; the
-peel arm runs the existing atomic `typeAPeeledCharge`, while the no-peel arm
-runs only `typeAExitFourDichotomy` and stops at `typeAExitFour` or
-`typeAExitFourFree`.  The arbitrary Residual-C ancestry is the literal tail of
-all three indices.  Nodes `[103]` and later are not executed by this repair.
+**CT composition at this row.** Core `Decision.run` on the exact incoming `typeAExitThreeFree` ledger, followed on the yes arm by `factOnly`/`AtomicCT.run` from `typeAExitFour` to `typeAExitFourPeeled`, then Core `Decision.run` on `typeAExitFourPeeled`; on the still-saturated arm, `factOnly`/`AtomicCT.run` commits `typeAExitFourFiniteDescent` from the exact `typeASaturatedExitEntry` ledger fact, followed by Core `Decision.run` for `typeASaturatedHandoffVisible` versus `typeASaturatedHandoffSilent`, then Core `Decision.run` for `typeASaturatedHandoffExitFour` versus `typeASaturatedHandoffExitFourFree` on the same exact selected state.
 
 ### Row 17 — Exit 5: target-complete compression `[103]`
 
-- **Paper fact.** Exit (5): "the response data give a nontrivial target-complete
-  response compression; when this compression is realized by a smaller proper
-  atom, it is a target-complete compression in the sense of `lem:replacement`".
-  `lem:typeA-exits-discharged` closes it in two cases: *"If the compression is
-  realized by a smaller proper atom, it contradicts hereditary
-  target-uncompressibility (`cor:uncompressible`); if it occurs only at the
-  trace-basin response level, it is exactly failure alternative (b) in
-  `def:typeA-trace-basin` and therefore is not an admissible route-8
-  residual."*
-- **What the Lean does.** `Spine.typeAExitFiveDichotomy` is node `[103]`: it
-  splits on whether some indexed entry's internal-forgetting reading `ρ°_𝒞`
-  agrees with its core reading, which is alternative (b) — a nontrivial
-  target-complete quotient of the trace-basin response.  Its no arm is
-  `Route8.TraceSurviving`, the (R2) reading nodes `[116]` and `[124]` consume.
-  Its yes arm runs `Spine.typeAExitFiveRealizationDichotomy`, the manuscript's
-  own second case split: the realized arm commits
-  `∃ support, InterfaceReplacement.CompressibleSupport …` and is **closed** by
-  `closeIncompatible` against node `[14]`'s `uncompressible` through the
-  `Incompatible` instance `Spine.typeAExitFiveCompressionClosed`; the
-  response-level arm commits that no proper support realizes it, and — lacking
-  `typeAExitFiveFree` — cannot enter the route-8 arm, which is precisely "not an
-  admissible route-8 residual".
-- **What it should do.** This.
-- **Gap.** None.
-
-  What earlier readings of this row called a gap was a misreading of the
-  manuscript's own topology.  `prop:nonnear-cubic-sharp-overload-routing` opens
-  *"If a sparse surplus exit occurs, there is nothing to route.  Otherwise…"* --
-  so on the branch that reaches `[144]`, which is node `[125]`'s survivor,
-  outcome (b) is **already excluded** and the trichotomy is a dichotomy: the
-  fixed caps close to the near-cubic spine, or the bottleneck produces decorated
-  Type B fan data.  `[144]`'s two arms are that dichotomy, not a shortfall.
-
-  Nor is the routed configuration something this node constructs.
-  `Graph/Strategy/SpineVocabulary.lean`'s own `TargetCompleteAt` is the
-  framework's idiom for exactly this kind of declared datum -- it quantifies over
-  the boundaried states `def:target-complete-quotient` governs and constructs
-  none of them -- and `TypeBHandoffStatement` is the same shape at the routed
-  bottleneck.  A `BoundaryPiece` is never built anywhere in this tree; it is
-  inherited.
-
-  `rem:surplus-pair-sharp-frontier` remains a remark the manuscript does not
-  prove, as at row 33.
-
-- **Ledger and residual.** Two `Decision.run`s, so the residual is unchanged and
-  each arm commits its own fact against the one immutable prefix; the closure is
-  Core's `closeIncompatible` reading node `[14]` and node `[103]` by exact key.
-  The block requires `uncompressible` on the incoming index, so a branch that has
-  not proved node `[14]` does not elaborate.  Nothing upstream is dropped:
-  `Fixtures.Route8ExitFive.closed_arm_retains_every_incoming_fact` and
-  `…trace_level_arm_retains_every_incoming_fact` show every incoming key is still
-  in the arm's exact index.
-- **Transport and terminals.** `Route8Result.exitFiveClosed` carries the closure
-  key, and `Fixtures.Route8ExitFive.closed_arm_dispatches_closed` shows
-  `RoutedTask.dispatchFor` returns `closed` on that index for every task list, so
-  the terminal is the framework router's and not the row's.
-  `Route8Result.exitFiveTraceLevel` leaves the block open, as the manuscript's
-  alternative (b) does: `…trace_level_arm_is_not_closed` and
-  `…trace_level_arm_has_no_exit_five_absence` show it carries neither the closure
-  entry nor `typeAExitFiveFree`, so it is neither a closed terminal nor an
-  admissible route-8 residual.  The closed arm's audit is complete,
-  duplicate-free and free of empty commits.
+- **Paper fact.** After the exact selected receiver survives exit (4), a nontrivial target-complete response compression is tested on that same response state.  The yes arm is exit (5); the no arm is the exact same residual with exit (5) absent, which is the predecessor for exit (6).
+- **What the Lean does.** `Spine.typeAExitFiveDichotomy` reads `typeASaturatedHandoffExitFourFree` from the incoming `ExactLedger`, preserving the selected packing, maximal packing proof, canonical component, support, receiver, current peeling set, saturation proof, and the selected no-exit-(4) visible or silent clause.  It then decides only the paper compression predicate `∃ support, Graph.Strategy.InterfaceReplacement.CompressibleSupport (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object support` for that same current object.  The yes arm commits `typeAExitFive` with the complete selected predecessor tuple plus the compression support; the no arm commits `typeAExitFiveFree` with the same tuple plus the negation.  The stale duplicate keys `typeAExitFiveCompression` and `typeAExitFiveTraceLevel` were removed.
+- **What it should do.** The selected `typeAExitFive` arm must close by reading the already-ledgered `uncompressible` fact and the selected compression support.  The `typeAExitFiveFree` arm must be the sole predecessor for exit `(6)`.
+- **Gap.** Node `[103]` is implemented and validated as a selected ledger decision, and node `[104]` closes the yes arm by Core's `closeIncompatible`.  The next open step is exit `(6)` from the selected `typeAExitFiveFree` ledger.
+- **Ledger and residual.** The row appends exactly one fact to the incoming branch by Core `Decision.run`.  Both arms retain the full prefix, including `[61]`, `[62]`, receiver routing, saturation, visible/silent handoff state, finite descent, and `typeASaturatedHandoffExitFourFree`.  The yes arm then appends `closed` by reading the existing `uncompressible` fact from that same ledger prefix.  No global `Route8.Data` witness is quantified and no residual fact is dropped.
+- **Transport and terminals.** Transport is Core-owned: `SpineAssembly.continueNegativeSupport` calls `typeAExitFive` only after the selected no-exit-(4) ledger fact, the decision commits either `typeAExitFive` or `typeAExitFiveFree`, and the yes arm closes with `closeIncompatible` from `uncompressible` and `typeAExitFive`.  The no arm remains open for exit `(6)`.
 
 **Paper objects at this row.**
 
-| Paper object | Kind | Lean declaration | CT / standalone |
+| Paper object | Kind | Lean declaration | Status |
 |---|---|---|---|
-| `def:typeA-saturated-exits` exit (5) | def | `Spine.typeAExitFiveDichotomy` | standalone |
-| `def:typeA-trace-basin` alternative (b) | def | `Graph.Route8.Data.SurvivingTrace`<br>`Graph.Route8.TraceSurviving` | standalone |
-| `lem:replacement` compression | lem | `Graph.Strategy.InterfaceReplacement.CompressibleSupport` | standalone |
-| `cor:uncompressible` | cor | node `[14]`'s `uncompressible` fact, read by `Spine.typeAExitFiveCompressionClosed` | standalone |
-| `lem:typeA-exits-discharged` exit-(5) case | lem | `Spine.typeAExitFiveRealizationDichotomy` with `closeIncompatible`<br>`Spine.typeAExitFiveCompressionClosed`<br>checked in `Fixtures.Route8ExitFive` | standalone |
+| selected no-exit-(4) predecessor | ledger fact | `Spine.typeASaturatedHandoffExitFourFree` | validated |
+| target-complete proper-support compression | Graph predicate | `Graph.Strategy.InterfaceReplacement.CompressibleSupport` | reused |
+| node `[103]` decision | Strategy | `Spine.typeAExitFiveDichotomy`, keys `typeAExitFive` / `typeAExitFiveFree` | validated |
+| node `[104]` compression closure | Core closure | `SpineAssembly.typeAExitFiveClosed`, `closeIncompatible` | validated |
+| stale route-8/global [103] keys | deleted surface | `typeAExitFiveCompression`, `typeAExitFiveTraceLevel` | removed |
 
-**CT composition at this row.** None.  Two `Decision`s and Core's closure.
+**CT composition at this row.** Core `Decision.run` over the exact incoming
+`typeASaturatedHandoffExitFourFree` ledger, producing either `typeAExitFive ::
+known` or `typeAExitFiveFree :: known`.  The adapter is exposed through
+`TypeAExitRun.typeAExitFive` and wired in `SpineAssembly.continueNegativeSupport`
+on both visible and silent no-exit-(4) arms.  The `typeAExitFive` arm is closed
+immediately by Core `closeIncompatible`, using the already-inherited
+`uncompressible` fact and the just-committed selected compression fact.
 
 ### Row 18 — Exit 6: response delocalization `[105]`
 
-- **Paper fact.** Exit (6): "the equality of responses delocalizes to a proper
-  support or to the whole graph".  `def:typeA-trace-basin` clause (c): an
-  equality among coordinates of `ρ_u(B_u)` becomes target-complete only after
-  adjoining a larger connected support `Z ⊋ B_u`, *either with `Z ⊊ G` or with
-  `Z = G`*.  `lem:typeA-exits-discharged` disposes of it in one sentence: "Exit
-  (6) is excluded by `lem:proper-smearing` in the proper-support case and by
-  `lem:no-silent-global-smearing` in the whole-graph case."  Exit (6) is a
-  *closed* exit in `def:typeA-saturated-exits`, and Figure 8 gives it the
-  terminal `[106]`, with the no arm continuing to node `[107]`.
-- **What the Lean does.**  `Spine.typeAExitSixDichotomy` is node `[105]`, asked
-  on node `[103]`'s no arm inside `Spine.runRouteEight`: it splits on whether
-  some indexed entry of some route-8 collection of the object carries
-  `Graph.Route8.Data.Delocalizes`, which is clause (c)'s datum —
-  `Graph.Route8.Delocalization`, whose `quotient` is the admissible rank
-  quotient carried by `Z`, whose `enlarges` is `B_u ⊂ Z`, whose `left`,
-  `right`, `distinct` and `identified` are the equality among two declared
-  coordinates, and whose `minimal` is *"only after adjoining"*.  The no arm is
-  `Graph.Route8.DelocalizationFree`, (R2) for exit `(6)`, and it is the cursor
-  node `[107]` is now asked on.  The yes arm runs
-  `Spine.typeAExitSixScopeDichotomy`, the manuscript's own `Z ⊊ G` / `Z = G`
-  split: the proper arm commits `∃ support, InterfaceReplacement.ReplacementSupport …`
-  and the global arm commits `∃ representative, LexicographicallySmaller ∧
-  baseline ∧ target transfer`.  Both are **closed** by `closeIncompatible`
-  against node `[1]`--`[4]`'s `selection`, through the `Incompatible` instances
-  `Spine.typeAExitSixProperClosed` and `Spine.typeAExitSixGlobalClosed`.
-- **What it should do.**  This.
-- **Gap.**  None.  Both cases of the manuscript's sentence are implemented, and
-  both close against a ledger fact rather than an assumption.  The two
-  exclusions are not restated: `Graph.Route8.Delocalization.localize` is
-  `DeclaredQuotient.localize`, which is `def:admissible-rank-quotient`'s own
-  scope split — the same generic declaration Branch D's nodes `[40]`--`[46]`
-  route through at row 40 — and the refutation of its two disjuncts is
-  `Spine.not_globalBarrierReading` for the replacement half and the selection's
-  own minimality and avoidance for the representative half.  Like the exit-`(5)`
-  realization test of row 17, the scope test is taken on the object — *does the
-  object carry a replacement of some proper support* — rather than on the
-  particular `Z` the yes arm committed, so the closing side has the weaker
-  premise and the other side carries the stronger conclusion.  The split is
-  exhaustive, so no branch of exit (6) is left unaccounted for.
-  Row 19 is now built on top of this row: `Spine.handoffAbsorbing` reads exit
-  `(6)` here, verbatim as this node states it, so `def:typeB-fan-safe`'s clause
-  (v) is a denial read off the index rather than a restatement.  Row 19 now also
-  takes its Figure 8 position between this node's no arm and node `[109]`:
-  exit `(7)`'s two facts name no receiver and no completion port, so the node is
-  asked under the segment's own entry fact and this ladder's cursor carries
-  everything it requires.
-  Node `[105]` sits between node `[103]`'s no arm and node `[107]`, which is
-  Figure 8's own order; `Spine.runRouteEight` is not yet attached to
-  `Spine.run`, which is rows 12--15's gap and recorded there.  Row 18 elaborates
-  against any incoming index carrying `selection`, and
-  `Fixtures/Route8ExitSix.lean` runs it on the Type A residual of node `[63]`
-  that `Spine.run` does reach.
-- **Ledger and residual.**  Two `Decision.run`s, so the residual is unchanged
-  and each arm commits its own fact against the one immutable prefix; both
-  closures are Core's `closeIncompatible` reading `selection` and the arm's own
-  key by exact key.  The block requires `selection` on the incoming index, so a
-  branch that has not selected an object does not elaborate.  Nothing upstream
-  is dropped: `Fixtures.Route8ExitSix.proper_arm_retains_every_incoming_fact`,
-  `…global_arm_retains_every_incoming_fact` and
-  `…free_arm_retains_every_incoming_fact` show every incoming key is still in
-  the arm's exact index.  The scope test reads node `[105]`'s own exit fact by
-  exact key with `ExactLedger.get`; it reconstructs nothing.
-- **Transport and terminals.**  `Route8Result.exitSixProper` and
-  `Route8Result.exitSixGlobal` each carry the closure key, and
-  `Fixtures.Route8ExitSix.proper_arm_dispatches_closed` and
-  `…global_arm_dispatches_closed` show `RoutedTask.dispatchFor` returns
-  `closed` on both indices for every task list, so the terminals are the
-  framework router's and not the row's — which is what makes exit (6) a *closed*
-  exit.  The no arm is left open, as Figure 8 leaves it:
-  `…free_arm_is_not_closed` shows it carries no closure entry and
-  `…free_arm_carries_exit_six_absence` shows it carries (R2) for exit `(6)`,
-  which is the third of the four exit absences node `[109]` is entered behind:
-  `Spine.exitSixFreeKeys` is the cursor node `[107]` is asked on, and
-  `Spine.exitFreeKeys` is that index with exit `(7)`'s absence on top.  Both closed arms' audits are complete, duplicate-free and free of
-  empty commits.
+- **Paper fact.** The exact selected response equality is tested for proper or global delocalization after exits (4)--(5) fail.
+- **Current status.** The arbitrary-`Route8.Data` Strategy decisions and runner were deleted.  Pure Graph delocalization mathematics remains.
+- **Exact missing theorem.** The selected continuation supplied by `lem:typeA-unpeeled-visible-routing` or `lem:typeA-unpeeled-silent-routing` must retain the same response equality and prove its proper/global scope alternative on the incoming ledger.
+- **Ledger/Reads/Closed/Full.** All false.
 
-**Paper objects at this row.**
+### Row 19 — Exit 7: decorated handoff fan `[107]`
 
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:typeA-saturated-exits` exit (6) | def | `Spine.typeAExitSixDichotomy` | standalone |
-| `def:typeA-trace-basin` clause (c) | def | `Graph.Route8.Delocalization`<br>`Graph.Route8.Data.Delocalizes`<br>`Graph.Route8.DelocalizationFree` | standalone |
-| `def:admissible-rank-quotient` at the enlarging support | def | `Graph.DeclaredQuotient` at `Graph.Route8.PresentedEntry.declaredSupport` | standalone |
-| `lem:proper-smearing` | lem | `Graph.Route8.Delocalization.properReplacement` with `Spine.typeAExitSixProperClosed` | standalone |
-| `lem:no-silent-global-smearing` | lem | `Graph.Route8.Delocalization.closedRepresentative` with `Spine.typeAExitSixGlobalClosed` | standalone |
-| `lem:typeA-exits-discharged` exit-(6) case | lem | `Spine.typeAExitSixScopeDichotomy` with `closeIncompatible`<br>`Graph.Route8.Data.localize_of_delocalizes`<br>checked in `Fixtures.Route8ExitSix` | standalone |
-
-**CT composition at this row.**  None, and none is expected: like rows 16 and
-17 this is a `Decision` on a property of the object, a second `Decision` on the
-scope of the support it produces, and Core's closure on both arms.
-
-
-### Row 19 — Exit 7: decorated handoff fan `[107]` (ported: `Spine.typeAExitSevenDichotomy`)
-
-- **Paper fact.** Exit (7) of `def:typeA-saturated-exits`: *"a high-degree
-  decorated handoff fan envelope is produced"*.  It is the Type B handoff exit:
-  `lem:typeA-exits-discharged` says the branch *"is reclassified as a decorated
-  handoff fan envelope and leaves the Type A charge calculation"*, and
-  `lem:typeA-saturated-handoff` records that as the transfer out of Type A.
-  `def:typeA-trace-basin` clause (d) produces the alternative — two declared
-  outside connector germs of `ρ_u(B_u)` with the same boundary-degree image have
-  a surviving first separator — and the chain that turns it into the envelope is
-  `lem:typeA-continuation-routing` (a nonabsorbed four-coordinate family either
-  realizes exits (4)--(6) or has a surviving first separator), then
-  `lem:typeA-cubic-switch-absorption` (`d_G(z) ≥ 4`), then
-  `lem:typeA-high-degree-handoff` (`z` and its separated connector tails produce
-  `def:decorated-fan-envelope`'s envelope).  `lem:decorated-fan-admissibility`
-  records that the envelope carries exactly the Type B fan-calculation data, and
-  `lem:decorated-envelope-no-double-count` with
-  `lem:window-handoff-center-accounting` are the transfer's accounting.
-  `rem:typeA-typeB-stratification` constrains the whole block: it uses only the
-  handoff interface, never a conclusion of `lem:typeB-exclusion`.
-- **What the Lean does.**  `Spine.typeAExitSevenDichotomy` is node `[107]`, asked
-  on node `[105]`'s no arm inside `Spine.runRouteEight` and answered before node
-  `[109]`'s placement, which is Figure 8's own order: a
-  `Decision` on the exit segment's own configuration — the Type A support inside
-  the remainder of a maximal packing, with negative net charge and zero ambient
-  surplus, that `typeASaturatedExitEntry` carries — asking whether a decorated
-  handoff fan envelope is
-  produced on that support.  The yes arm commits
-  `Spine.HandoffAdmissible`: the envelope *together with*
-  `lem:decorated-fan-admissibility`'s interface record, upgraded from the bare
-  envelope by `DecoratedHandoff.admissible_of_envelope`, whose three inputs are
-  read off the incoming index by exact key (node `[1]`'s target avoidance, node
-  `[14]`'s hereditary target-uncompressibility) or derived from the
-  configuration (`P₁₃`-freeness of a support inside the remainder of a maximal
-  packing, by `not_inducesWindow_of_subset_remainderSupport`).  The no arm
-  commits `¬ Spine.HandoffProduced`, which is the last clause of
-  `def:typeA-silent-core-residual`'s *"none of the ... decorated handoff fan
-  alternatives applies"* and is literally the cursor `Spine.route8Placement`
-  receives, so exit `(8)` at node `[109]` is now read under all four of exits
-  `(4)`--`(7)` being absent, which is what
-  `def:typeA-true-route8-residual` (R2) requires.
-  `Spine.runRouteEight` runs it, and `Spine.runSaturatedExits` walks Figure 8's
-  whole visible path `[95]` → `[97]` → `[99]` → `[101]` → `[103]` → `[105]` →
-  `[107]` → `[109]` → `[124]` in one piece by composing `Spine.runExitChain`
-  with `Spine.runRouteEight` across
-  `lem:typeA-unpeeled-visible-routing`'s join.  `Fixtures/TypeAExitSeven.lean`
-  checks the node, the walk, and the graph statements underneath it.
-
-  `Graph/DecoratedHandoffEnvelope.lean` is the generic module the row rests on
-  and owns every paper object of this range.  `RootedGerm` is
-  `def:typeA-continuation-classes`' outside connector germ, recorded rooted at
-  the receiver so that the manuscript's two cases of *"the root incidence at
-  `z`"* — the port edge `wh` when `z = h`, the last edge of the common prefix
-  otherwise — are one case.  `Separation` is *"they separate at `z`"*, with the
-  maximal common prefix exhibited, so a separator in this sense is automatically
-  the pair's first separator.  `Separation.three_le_degree` is derived from the
-  germ geometry alone: the root incidence and the two next incidences are three
-  distinct neighbours of `z`, by simplicity of the two germs and by the
-  divergence.  `absorbed_of_exhausted` is the manuscript's degree-`3` step —
-  with no unused ambient incidence at `z` the identification is target-defective
-  (exit (4)) or context-equivalent, and being in one boundary-degree fibre it is
-  then target-complete (exits (5)--(6)) — proved from
-  `Response.contextEquivalent_or_targetDefect`, which is
-  `lem:context-universality`.  `four_le_degree_of_surviving` is
-  `lem:typeA-cubic-switch-absorption`.  `Envelope` is
-  `def:decorated-fan-envelope` verbatim in structure, `envelopeOfSeparation` is
-  `lem:typeA-high-degree-handoff` with `Y = X` and `H = {z}`,
-  `hasCycleWithLength_of_fanReturn` discharges clause (i) of
-  `def:typeB-fan-safe` through the framework's own two-path gluing, and
-  `GroupedEnvelopes.sum_componentCharge` is
-  `lem:decorated-envelope-no-double-count`'s displayed identity, carried at the
-  discharge scale so no division occurs.
-- **What it should do.**  This.
-- **Gap.**  None.
-
-  The earlier revision recorded one: *"`SwitchReading.fibre` is declared, not
-  derived ... because the framework has no concrete boundary model for `S_z`."*
-  Both halves of that were wrong, and it is withdrawn.  The framework does own
-  the model — `InterfaceReplacement.SupportAtom.properAtom` turns any connected
-  proper support into a `ProperBoundariedAtom`, and
-  `Graph.deriveBoundariedAtomProfile` *computes* its profile certificate behind
-  a private constructor.  And the fibre was never the manuscript's to prove
-  twice: `def:typeA-continuation-classes` puts *"the two coordinates have the
-  same image in the relevant boundary-degree fibre"* into the definition of
-  *same continuation class up to `z`*, hence into *separating at `z`*.  The Lean
-  had rendered `Separation` with only two of that definition's three conjuncts
-  and then reintroduced the third downstream as a bespoke two-point equality —
-  which is the deviation, and it is the thing that has been removed.
-
-  `Separation` now carries `S_z` as `def:typeA-continuation-classes` describes
-  it (the germs run inside it, it is connected, it is proper), builds the atom
-  through the framework's own support-to-atom construction, and registers the
-  two coordinates' declared readings in the certificate the framework computes
-  for that atom.  `Separation.sameFibre` is then the manuscript's conjunct read
-  off that registration, and `SwitchReading.fibre` — *"the two separated
-  responses therefore form a finite declared boundaried response state **with
-  the same boundary-degree profile**"* — is a **theorem**, composing the two
-  realizations' registrations.  Both are node `[11]`'s
-  `lem:degree-profile-fibres`, consumed rather than restated.  What remains a
-  field is the manuscript's own registration step at an exhausted separator,
-  `SwitchReading.registered`: *"Assume `d_G(z)=3` ... Consequently the switch
-  support `S_z` has no unused ambient incidence at `z`.  The two separated
-  responses therefore form a finite declared boundaried response state"* — the
-  sentence that licenses the reading, stated in the framework's registration
-  vocabulary against the framework's computed certificate, and gating
-  `absorbed_of_exhausted` exactly as `d_G(z)=3` gates it in the manuscript.
-  `SwitchReading` no longer carries a `Profile` parameter or a `profile` map at
-  all: the profile is `BoundaryPiece.boundaryDegreeProfile`, the framework's.
-
-  The manuscript's *"Assume `d_G(z)=3`"* is **not** a hypothesis this row
-  carries; it is a branch, and both arms are taken.  The split is on a decidable
-  property of the residual's own geometry — whether `z` is an interface label of
-  `S_z`, i.e. `z ∈ cutBoundary object switchSupport` — and each arm is a
-  theorem:
-  `Separation.separator_notMem_cutBoundary` is *"the root incidence and the two
-  next incidences used by the separated germs are all incidences of `z`;
-  consequently `S_z` has no unused ambient incidence at `z`"*, proved from
-  `usedIncidences_eq_neighbors` and `usedIncidences_subset_switchSupport`; and
-  `Separation.four_le_degree_of_mem_cutBoundary` is the other arm, an interface
-  label of `S_z` has a neighbour outside `S_z`, that neighbour is none of the
-  three incidences the separation uses, so `d_G(z) ≥ 4`.
-  `four_le_degree_of_surviving` now takes that split directly instead of
-  splitting on the numeral: on the internal arm `absorbed_of_internal` fires and
-  contradicts surviving, on the boundary arm the degree bound is immediate.  So
-  the numeral `3` is nowhere a case hypothesis, and nothing on this row is
-  conditional on an assumption a caller supplies.
-
-  The earlier revision of this entry described
-  the quarantined `Strategy.TypeAReceiverExhaustion.exitSevenSplit` and
-  `Graph.TypeABCertificate`'s `DecoratedHandoffEnvelope` as though they were
-  running; both were withdrawn as statements about code that is not in the
-  build, and neither is used here.  It also recorded, as a second gap, that the
-  node could not take its Figure 8 position between node `[105]`'s no arm and
-  node `[109]`; that gap is closed and the claim is withdrawn.
-
-  A third claim, that node `[108]` is an unconsumed edge because no Type B row
-  reads `typeAExitSevenHandoff` by exact key, is withdrawn as a misreading of
-  the manuscript.  **The manuscript has no such reader, and one would be a
-  deviation.**  `rem:typeA-typeB-stratification` fixes the direction: the Type A
-  block *constructs and validates* the envelope data
-  (`lem:typeA-high-degree-handoff`, `lem:decorated-fan-admissibility`) and then
-  *"the logical direction reverses: `lem:typeB-exclusion` may apply the completed
-  Type A saturated and unsaturated conclusions to the post-ledger core."*  The
-  proof of `lem:decorated-fan-admissibility` ends on the same point: *"This lemma
-  verifies those hypotheses; it does not use the conclusion of
-  `lem:typeB-exclusion`."*  And where the decorated handoff appears inside
-  `lem:typeB-exclusion` it appears as something *excluded by the Type B branch's
-  own ledger*, never as something read from a Type A branch: B2(d) of
-  `def:typeB-bridge-statements` says the post-ledger core has *"no decorated
-  Type B handoff whose center belongs to `X`, and no external decorated handoff
-  that is not already covered by a grouped decorated envelope processed in the
-  same canonical step"*, and the proof's Step 2 discharges the handoff with
-  exactly that clause.  So the whole content of node `[108]` is that the branch
-  leaves the Type A charge calculation carrying the validated interface, which
-  is what `typeAExitSevenHandoff` commits; the Type B side's own account of
-  decorated handoffs is B2(d) plus the grouped-envelope step of
-  `def:decorated-typeB-envelope-support`, which is row 28's and
-  `Graph/TypeBPostLedgerCore.lean`'s (`isMaximal_centers` proves B2(d)'s
-  maximality outright rather than assuming it).  A cross-branch reader would
-  also merge sibling histories, which the framework forbids for the same
-  reason.
-- **Ledger and residual.**  One `Decision.run`, so the residual is unchanged and
-  each arm commits its own fact against the one immutable prefix; the refinement
-  the step supplies is equality, which is the ordinary choice for a fact-only
-  step.  The node requires `selection`, `uncompressible` and
-  `typeASaturatedExitEntry` on the incoming
-  index, all three read by exact key with `ExactLedger.get` inside the decision,
-  so a branch that has not entered the shared exit segment, or that
-  cannot supply the two admissibility inputs, does not elaborate.  Nothing is
-  re-proved and nothing is re-quantified from the ambient graph: the
-  configuration the exit is asked of is the segment entry's own, and the two
-  admissibility inputs are nodes `[1]` and `[14]`.  Nothing
-  upstream is dropped: both arms' indices are `key :: known` over
-  `Spine.exitSixFreeKeys`, and the fixture
-  checks that node `[93]`'s port, the earlier exit-free hypotheses, the
-  selection and the uncompressibility are all still present on each arm while
-  neither sibling key is.  Nothing is proved at this node that does not reach
-  the ledger: `DecoratedHandoff.admissible_of_envelope` is applied inside the
-  yes arm's encode and its conclusion is a conjunct of the committed value of
-  `typeAExitSevenHandoff`, which is the declared-fact exception for an anonymous
-  subterm, not a second entry.
-- **Transport and terminals.**  **Neither arm is a terminal.**  Exit (7) is the
-  one exit of `def:typeA-saturated-exits` that neither closes nor stays in Type
-  A, so no closure key is appended on either side, and the fixture checks
-  exactly that: `closed` is absent from `Spine.exitSevenHandoffKeys` and from
-  `Spine.exitFreeKeys`.  The handoff arm is an open residual carrying
-  `HandoffAdmissible` — the interface `lem:decorated-fan-admissibility` verifies
-  and the Type B fan calculation's hypotheses are — and the free arm is the entry
-  of node `[109]`, which `Spine.route8Placement` is now literally asked on.  The
-  transfer is a fact on the shared prefix, never a payload:
-  there is no route, no callback and no envelope-shaped channel between Type A
-  and Type B, and by `rem:typeA-typeB-stratification` there is no reader either
-  — the Type B side accounts for decorated handoffs through B2(d) and the
-  grouped-envelope step on its own branch, which is what makes node `[108]` a
-  box on the diagram rather than an arrow carrying data into a decision.
-  The audits of both arms are complete, duplicate-free and free of
-  empty commits.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:typeA-continuation-classes` connector germ | def | `Graph.DecoratedHandoff.RootedGerm` | standalone |
-| `def:typeA-continuation-classes` *separates at `z`* | def | `Graph.DecoratedHandoff.Separation`<br>`Graph.DecoratedHandoff.SeparatesAt` | standalone |
-| `def:typeA-continuation-classes` switch support, absorbed/surviving | def | `Graph.DecoratedHandoff.SwitchReading`<br>`Graph.DecoratedHandoff.Absorbed`<br>`Graph.DecoratedHandoff.Surviving` | standalone |
-| `lem:typeA-continuation-routing` | lem | `Graph.DecoratedHandoff.absorbed_or_surviving`<br>`Graph.DecoratedHandoff.exists_separatesAt_of_ne` | standalone |
-| `lem:typeA-cubic-switch-absorption` | lem | `Graph.DecoratedHandoff.Separation.three_le_degree`<br>`Graph.DecoratedHandoff.absorbed_of_exhausted`<br>`Graph.DecoratedHandoff.four_le_degree_of_surviving` | standalone |
-| `def:typeA-continuation-classes` same continuation class, fibre conjunct | def | `Graph.DecoratedHandoff.Separation.sameFibre`<br>`Graph.DecoratedHandoff.SwitchReading.fibre`, both derived from `Separation`'s registration in `Graph.deriveBoundariedAtomProfile`'s certificate | standalone; consumes `lem:degree-profile-fibres` at node `[11]` |
-| `def:typeA-continuation-classes` switch support `S_z` | def | `Graph.DecoratedHandoff.Separation.switchSupport`, `.atom`, `.certificate`, `.interface` over `Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom` | standalone |
-| `lem:typeA-cubic-switch-absorption` *"no unused ambient incidence at `z`"* | lem | `Graph.DecoratedHandoff.Separation.usedIncidences_subset_switchSupport`<br>`Separation.separator_notMem_cutBoundary`<br>`Separation.four_le_degree_of_mem_cutBoundary` (the other arm) | standalone |
-| `def:typeB-fan-safe` clause (i) | def | `Graph.DecoratedHandoff.FanReturn`<br>`Graph.DecoratedHandoff.hasCycleWithLength_of_fanReturn`<br>`Graph.DecoratedHandoff.fanSafe_geometric` | standalone |
-| `def:typeB-fan-safe` clauses (ii)--(v) | def | `Graph.DecoratedHandoff.FanSafe`'s `Absorbing` parameter, instantiated at `Spine.handoffAbsorbing` | standalone (clause (ii) only — see **Gap**) |
-| `def:decorated-fan-envelope` | def | `Graph.DecoratedHandoff.Envelope`<br>`Envelope.centreTokens`, `Envelope.NegativeCharge` | standalone |
-| `lem:typeA-high-degree-handoff` | lem | `Graph.DecoratedHandoff.envelopeOfSeparation` | standalone |
-| `lem:decorated-fan-admissibility` | lem | `Graph.DecoratedHandoff.Admissible`<br>`Graph.DecoratedHandoff.admissible_of_envelope` | standalone |
-| `def:decorated-typeB-envelope-support` | def | `Graph.DecoratedHandoff.GroupedEnvelopes`<br>`componentCores`, `componentCentres`, `componentTokens`, `componentCharge` | standalone |
-| `lem:decorated-envelope-no-double-count` | lem | `GroupedEnvelopes.sum_componentCores`<br>`GroupedEnvelopes.sum_componentTokens`<br>`GroupedEnvelopes.sum_componentCharge` | standalone |
-| `lem:window-handoff-center-accounting` | lem | `GroupedEnvelopes.token_le_componentTokens` | standalone |
-| `def:typeA-saturated-exits` exit (7) | def | `Spine.typeAExitSevenDichotomy`, run in `Spine.runRouteEight` and `Spine.runSaturatedExits`, checked in `Fixtures.TypeAExitSeven` | standalone |
-| `rem:typeA-typeB-stratification` | rem | discharged by construction: no declaration of this row's slice mentions `lem:typeB-exclusion`, `Admissible`'s four fields are all hypotheses the Type B calculation consumes, and nothing on the Type B side reads this row's key — the direction is Type A validates, Type B later applies | standalone |
-| `lem:typeA-saturated-handoff`, exit-(7) transfer, and node `[108]` | lem | `Spine.HandoffAdmissible` committed on node `[107]`'s yes arm; the Type B side's own account of decorated handoffs is B2(d) and the grouped-envelope step, at `Graph/TypeBPostLedgerCore.isMaximal_centers` and `Graph.DecoratedHandoff.GroupedEnvelopes` | standalone |
-
-**CT composition at this row.**  None.  One `Decision` on a property of the
-object, with `lem:decorated-fan-admissibility` applied inside the arm's encode
-from two facts read by exact key.  No CT is expected: the row enumerates
-nothing, certifies no accounting, and takes no terminal.
-
-**Validation at this row.**  `Hypostructure.Graph.Strategy.Route8Run`,
-`Hypostructure.Graph.Strategy.TypeAExitRun`,
-`Hypostructure.Fixtures.TypeAExitSeven`, `Hypostructure.Fixtures.Route8Run` and
-`Hypostructure.Fixtures.Route8ExitSix` compile, as do the canonical-API modules
-(`Core.Residual.ExactLedger`, `Core.Strategy.FactManifest`,
-`Core.Strategy.ExactExecution`), all fifteen positive/negative enforcement
-fixtures with their `#guard_msgs` intact, the sibling fixtures `TypeAExitOne`,
-`TypeAExitTwo`, `TypeAExitThree` and `Route8ExitFive`, and the
-`hypostructure_erdos_64_eg` package (8721 jobs).  `#print axioms` on
-`Spine.typeAExitSevenDichotomy`, `Spine.runRouteEight`,
-`Spine.runSaturatedExits`, `Fixtures.TypeAExitSeven.run`,
-`Fixtures.TypeAExitSeven.runVisiblePath` and `Fixtures.Route8Run.run` reports
-`propext`, `Classical.choice` and `Quot.sound` alone.  The catalog checker's
-canonical-source and proof-boundary scans pass; its compiled-drift comparison
-could not be run, because `lake build` of the whole `hypostructure` package
-still stops at `Graph/Strategy/SurplusRun.lean:88` — the sparse-surplus branch
-of rows 30--33, which was already failing at this commit's parent and is
-untouched here, and which `Canonical/WebExport.lean` imports.  No catalogued
-module changed: `SpineVocabulary` and `SpineRows` are byte-identical, and so are
-`StrategyDag.lean` and `Problem.lean`.
-
-The four columns move to `✅`.  Node `[107]` now stands in its Figure 8 position
-inside the one ladder both of the segment's entries run, its three requirements
-are discharged by instance resolution against the index the previous node
-actually leaves, and `Spine.runSaturatedExits` walks `[95]`--`[124]` as a single
-chain so that every freshness condition is decided against the real cursor
-rather than a chosen one.  What is still true of rows 13--18 is still true here:
-`Spine.run` itself stops at nodes `[93]`/`[94]`, so the walk is exercised on the
-cursors `Spine.run` reaches rather than being spliced into `Spine.run`; that is
-rows 12--15's gap and is recorded there, not here.
-
-**The shared exit segment.**  Figure 8 draws one segment `[101]`--`[107]` with
-two entries — node `[99]`'s no arm, routed by
-`lem:typeA-unpeeled-visible-routing`, and node `[94]`, routed by
-`lem:typeA-unpeeled-silent-routing` — and `lem:typeA-exit4-residual-routing` is
-the manuscript's statement that the two combine.  That lemma's hypothesis is now
-a spine fact, `typeASaturatedExitEntry`: a saturated Type A receiver with a
-peeling set `P₄(w)` whose residual load `L₄(w)` is still at or above the
-saturation threshold.  It is *refined out of node `[89]`* rather than assumed —
-at the empty peeling set `L₄(w) = L(w)`, which is `ExitFour.saturatedAfter_empty`
-— and `Spine.typeASaturatedExitEntryRow` reads node `[89]`'s saturation off the
-ledger by exact key to commit it.  Both entries commit it: `Spine.run` on the
-node-`[94]` arm, and `Spine.runExitChain` on exit `(3)`'s free arm.
-
-Nodes `[101]`, `[103]`, `[105]` and `[107]` are now asked under it and under
-nothing else, so the segment is one chain of nodes instead of two copies of the
-manuscript's list.  `Fixtures.TypeAExitSeven.run` is the
-check: the *same* `Spine.runRouteEight` that `Fixtures.Route8Run` runs on node
-`[94]` also elaborates on node `[99]`'s no arm, exit `(7)` included.
-Consequently
-`Fixtures/Route8Run.lean` is rebased from the bare Type A residual of node
-`[63]` — which sits above node `[89]`'s saturation and above both entries — onto
-node `[94]`, which is where Figure 8 puts it.
-
-The segment is also walked end to end.  `Spine.runSaturatedExits` composes
-`Spine.runExitChain` with `Spine.runRouteEight` across the join
-`lem:typeA-unpeeled-visible-routing` makes, so Figure 8's visible path
-`[95]` → `[97]` → `[99]` → `[101]` → `[103]` → `[105]` → `[107]` → `[109]` →
-`[124]` is one Lean walk on one immutable prefix, and
-`Fixtures.TypeAExitSeven.runVisiblePath` runs it from node `[93]`'s own cursor.
-That is what makes each node's freshness side conditions statements about the
-chain: they are decided against the index the previous node leaves, not against
-a cursor chosen to make them hold.  The single node `[107]` runner that used to
-live in `TypeAExitRun.lean` — `Spine.typeAExitSeven`, `Spine.runExitSeven`,
-`Spine.ExitSevenResult`, `typeAExitSevenHandoffKeys`, `typeAExitSevenFreeKeys`
-and their four audit theorems — is deleted rather than kept beside the ladder:
-it asked the exit outside its Figure 8 order, and a second live path is exactly
-what the segment's whole point is to remove.  Node `[105]`'s no arm is
-`Spine.exitSixFreeKeys`; `Spine.exitFreeKeys` is now node `[107]`'s no arm, the
-four-fact (R2) cursor node `[109]` is entered on.
-
-Exit `(7)`'s two facts were restated to match.  Like clause (3), and unlike
-clauses (1) and (2), clause (7) now names no receiver and no completion port:
-node `[107]` is the same node on both of Figure 8's paths, and writing either
-path's port into the fact would fork it in two.  The branch's warrant for being
-on the exit list stays on the ledger, where the segment's entry fact carries
-it.
+- **Paper fact.** A surviving first separator from the exact selected response data produces the decorated Type B handoff after exits (4)--(6) fail.
+- **Current status.** The Strategy decision over arbitrary supports and its route runner were deleted.  `Graph.DecoratedHandoff` mathematics remains.
+- **Exact missing theorem.** `lem:typeA-continuation-routing`, followed by `lem:typeA-cubic-switch-absorption` and `lem:typeA-high-degree-handoff`, must be instantiated on the same selected receiver/package carried from node `[93]` or `[94]`.
+- **Ledger/Reads/Closed/Full.** All false.
 
 ### Row 20 — Heavy-centre split `[68]` (ported: `Spine.highCentreNormalForm`, `Spine.heavyCentreDichotomy`)
 
@@ -3612,7 +2674,7 @@ support fact from the canonical ledger and commits exactly one of the two facts.
   augmented ledger.  Every actual connected component of the remaining core
   inherits the normalized Type A admissibility facts.  This statement does not
   include the maximal grouped-envelope clause B2(d).
-- **What the Lean does.** `Spine.typeBDisjointLedgerRow` is one `factOnly`
+- **What the Lean does.** `Spine.disjointPostLedgerComponentsRow` is one `factOnly`
   `AtomicStrategy`.  It reads exactly `typeBB2Choice`, `selection`, and
   `remainderNormalized` through `FactInputs.get`, constructs one
   `TypeBRefinedSupport.DisjointLedger` from the already selected
@@ -3643,7 +2705,7 @@ support fact from the canonical ledger and commits exactly one of the two facts.
 |---|---|---|---|
 | B2(a)--(c) selected ledger | structure/theorem | `TypeBRefinedSupport.DisjointLedger`<br>`DisjointLedger.exactAugmentedLedgerRefinement` | generic graph API |
 | inherited component hygiene | theorem | `TypeBPostLedgerCore.postLedgerCoreHygiene` | generic graph API |
-| single ledger handoff | semantic fact / row | `Spine.Key.typeBDisjointLedger`<br>`Spine.typeBDisjointLedgerRow` | `factOnly` atomic Strategy |
+| single ledger handoff | semantic fact / row | `Spine.Key.typeBDisjointLedger`<br>`Spine.disjointPostLedgerComponentsRow` | `factOnly` atomic Strategy |
 | maximal grouped completion B2(d) | later theorem | | not claimed |
 
 **CT composition at this row.** No CT.  One fact-only atomic Strategy appends
@@ -7371,790 +6433,24 @@ run.
 
 ### Row 62 — `[109]` route-8 arm placement
 
-- **Paper fact.** `def:typeA-saturated-exits` exit `(8)` is the one saturated
-  alternative that does not close.  `def:typeA-silent-core-residual` names the
-  residual it produces; `def:typeA-true-route8-residual` adds (R1)–(R4), of which
-  (R2) is the absence of exits `(1)`–`(7)` at the saturated receiver and (R4) is
-  the target-complete-minimal basin; and `def:typeA-large-budget-deficit` makes
-  the collection *carry* the large-budget deficit.
-- **What the Lean does.** Three `Decision`s, in the manuscript's order.  Node
-  `[101]`, `Spine.typeAExitFourDichotomy`, splits on whether some indexed entry
-  realizes `Route8.Data.ExitFour` — clause (Q5) of `def:typeA-exit4-family`; its
-  no arm commits `Route8.ExitFourFree`, which is (R2) for exit `(4)`.  Node
-  `[103]`, `Spine.typeAExitFiveDichotomy`, splits on alternative (b) of
-  `def:typeA-trace-basin` — a nontrivial target-complete quotient of the
-  trace-basin reading, which is exit `(5)` — and its no arm commits
-  `Route8.TraceSurviving`.  Node `[109]`, `Spine.route8Placement`, then runs on
-  those two no arms and splits on
-  `∃ residual : Graph.Route8.Data …, residual.LargeBudget`, the burden, the
-  large-budget deficit and the registered rate.  `Route8.Data` itself is data
-  only: the index of `Ξ(𝒳)`, the presented entries (support, declared
-  coordinates, the target event each coordinate is recorded by, and the reading
-  that retains a coordinate set), the ambient boundary supply, the discharge
-  scale, the private-carrier threshold, `D_A(𝒳)` and `|R|`.  The carrier
-  vocabulary is not stored: `car` is the set of cut edges of the entry's support
-  that a coordinate's event crosses, and the entry's supply is the support's own
-  cut `cutEdges`.
-- **What it should do.** This.
-- **Gap.** None at this row.  The block consumes exactly two of the seven
-  absences of (R2), because only those two are spent by Figure 9; the remaining
-  five belong to rows 13–15, 18 and 19 and sit *above* this segment when they are
-  built, so nothing here assumes them and nothing here has to be revisited when
-  they land.  The four readings the arm is entered with are the manuscript's own
-  citations at `[111]`--`[113]`, and they are listed at row 63.
-- **Ledger and residual.** Three `Decision.run`s against the canonical
-  `ExactLedger`.  Each arm carries a different key index, so a branch that took
-  the exit-`(4)` peel or the exit-`(5)` compression cannot read any route-8 fact,
-  and a branch with no large-budget collection carries none either.  The residual
-  is unchanged throughout: the block proves theorems about the object it was
-  handed.
-- **Transport and terminals.** `Spine.runRouteEight` returns `Route8Result` with
-  four constructors: `.exitFour` and `.exitFive` leave the block on the ladder's
-  yes arms, `.free` on node `[109]`'s complementary arm, and `.closed` on the arm
-  that runs rows 63–67 and appends Core's closure key.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:typeA-silent-core-residual` | def | `Graph.Route8.Data` | standalone |
-| `def:typeA-true-route8-residual` (R2), (R4) | def | `Graph.Route8.ExitFourFree`<br>`Graph.Route8.TraceSurviving`<br>`Graph.Route8.Data.SurvivingTrace`<br>`Graph.Route8.Data.ExitFour` | standalone |
-| `def:typeA-large-budget-deficit` | def | `Graph.Route8.Data.LargeBudget` (the four readings the manuscript cites at `[111]`--`[113]`) | standalone |
-| `def:declared-coordinate-signature` | def | `Graph.Route8.PresentedEntry` (the event and the carrier support it crosses) | standalone |
-
-**CT composition at this row.** None.  Three `Decision`s; the block that follows
-is five fact-only Strategies composed by `AtomicCT.run`.
+The Strategy placement and runner were deleted.  The exact missing theorem is the selected-ledger form of `lem:typeA-saturated-handoff`: after genuine Q1--Q4 exit tests and exits (5)--(7), it must construct `def:typeA-true-route8-residual` on the same selected support.  Ledger/Reads/Closed/Full are all false.
 
 ### Row 63 — `[111]`–`[113]` collection, burden, deficit bound
 
-- **Paper fact.** `def:typeA-large-budget-deficit` sums `¼|V(X)| − def⁺(X)` over
-  the collection and calls it *carrying* the large-budget deficit when
-  `D_A ≥ (¼ − τ_win)|R| − o(|R|)`.  `lem:typeA-route8-burden` is
-  `N_basin(𝒳) ≥ 4·D_A(𝒳)`, and its proof is: *"For each `X ∈ 𝒳` ...
-  `lem:typeA-silent-excess-count` applies to `X` and gives
-  `S_sil^exc(X) ≥ 4(¼|V(X)| − def⁺(X))`.  By `lem:typeA-reduced-silent-residual`,
-  every unpaid silent excess vertex counted by `S_sil^exc(X)` has a
-  target-complete-minimal trace basin unless one of exits (4)--(7) occurs.  Those
-  exits are absent by hypothesis.  Counting the resulting indexed pairs `(u,B_u)`
-  and summing the displayed inequality over `X ∈ 𝒳` proves the bound."*  Node
-  `[113]` then spends the burden against the large-budget clause.
-- **What the Lean does.** `Route8.Data` carries the collection's supports `𝒳`
-  with their per-support readings `deficiencyAt` (`¼|V(X)| − def⁺(X)`) and
-  `silentExcessAt` (`S_sil^exc(X)`), and each indexed entry records the support
-  it lives on.  `Data.deficiency` is the manuscript's sum
-  `∑_{X ∈ 𝒳} deficiencyAt X`.  `Data.burden_of_silentExcess` is the manuscript's
-  proof, line for line: `Finset.mul_sum` distributes the discharge scale over the
-  sum, `Finset.sum_le_sum` applies `SilentExcessCount` and then
-  `BasinAssignment` per support, and `Finset.card_eq_sum_card_fiberwise` counts
-  the indexed pairs `(u, B_u)` by the support they live on, which is exactly
-  "counting the resulting indexed pairs and summing over `X ∈ 𝒳`".
-  `Spine.route8Burden` then **reads the node-`[109]` fact by exact key** and
-  publishes `∃ residual, residual.Reduced`: the collection with the burden
-  substituted into the large-budget bound, `|R| ≤ N_basin + discharge·def⁺(R)`,
-  through `Route8.deficit_le_basins`.  That single reading is what node `[122]`'s
-  census collides with the rate condition.
-- **What it should do.** This.
-- **Gap.** None.  The two node-`[94]` lemmas the manuscript cites are the
-  readings the arm is entered with — they are clauses of the node-`[109]` fact,
-  on the ledger, named for the lemmas they are — and the burden itself is no
-  longer among them: it is derived here as the manuscript derives it.  When node
-  `[94]` is built, those two readings become facts it produces and this row does
-  not change.
-- **Ledger and residual.** `rowManifest (K .route8Residual) (K .route8Burden)`:
-  one prerequisite, read with `FactInputs.get`, one production, residual
-  unchanged.
-- **Transport and terminals.** No terminal.  `route8Closed` requires this fact by
-  exact key and would not elaborate before it.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:typeA-large-budget-deficit` | def | `Graph.Route8.Data.deficiency` (the sum)<br>`Graph.Route8.Data.LargeBudgetDeficit` | standalone |
-| `lem:typeA-silent-excess-count` | lem | `Graph.Route8.Data.SilentExcessCount` (node `[94]`'s reading, cited) | standalone |
-| `lem:typeA-reduced-silent-residual` | lem | `Graph.Route8.Data.BasinAssignment` (node `[94]`'s reading, cited) | standalone |
-| `lem:typeA-route8-burden` | lem | `Graph.Route8.Data.burden_of_silentExcess` | standalone |
-| node `[113]`'s bound | — | `Graph.Route8.Data.BasinDeficit`<br>`Graph.Route8.deficit_le_basins`<br>`Graph.Route8.Data.Reduced.of_largeBudget` | standalone |
-
-**CT composition at this row.** None; a fact-only Strategy with one declared
-prerequisite.
+Pure `Graph.Route8` burden and deficit theorems remain.  The missing predecessor is the exact selected true-route8 residual collection produced by `lem:typeA-saturated-handoff`; no Strategy fact or read exists.  Ledger/Reads/Closed/Full are all false.
 
 ### Row 64 — `[114]`–`[116]` carrier core
 
-- **Paper fact.** `def:typeA-route8-carriers` defines `∂_E X`, the ambient
-  carrier of a declared coordinate, the `D`-restriction retaining exactly the
-  `u`-supported coordinates `r` with `car_ξ(r) ⊆ D`, `𝒞_ess(ξ)` as the canonical
-  inclusion-minimal target-complete carrier set, and `α_𝒳(ξ) = |𝒞_ess(ξ)|`.
-  `lem:typeA-carrier-cut-parity`: a surviving mixed internal target event's
-  declared support contains at least two distinct carriers of `𝒞_ess(ξ)`.
-  `lem:typeA-one-terminal-collapse`: `α ≤ 1` makes `ρ°_𝒞` a target-complete
-  quotient, which target-complete-minimality turns into one of exits `(4)`–`(7)`,
-  so `α ≥ 2` on a true route-8 residual.
-- **What the Lean does.** `Route8.Entry` owns the `D`-restriction
-  (`retained D = coordinates.filter (car · ⊆ D)`), and `Complete D` is
-  `Response.ContextEquivalent Target (restriction D) full`; `essentialCore` is
-  `Core.Finite.EssentialCarrier.Profile.core` at that predicate, and
-  `alpha = essentialCore.card`.  `essentialCore_subset_carriers` proves the core
-  draws only on the entry's own supply.  `PresentedEntry.two_le_card_car` is cut
-  parity: `Graph.CutParity.two_le_card_crossingEdges` at the support's cut,
-  applied to the coordinate's own simple cycle.
-  `Entry.retained_sdiff_eq_of_alpha_le_one` then shows that a core of at most one
-  carrier retains no crossing coordinate, so `ρ°_𝒞` *is* the core reading, and
-  `Route8.Data.two_le_alpha` collides that with the entry's `SurvivingTrace`
-  clause — which is exactly (R2)+(R4).  `Spine.route8CarrierCore` commits
-  `∀ residual, ∀ index ∈ entries, SurvivingTrace index → 2 ≤ alpha index`.
-- **What it should do.** This.
-- **Gap.** None.  `lem:typeA-internal-quotient-mixed` is not needed as a separate
-  statement: in the presented model a declared coordinate's event is a simple
-  cycle of the object, and `PresentedEntry.Crossing` — meets the support and
-  leaves it — is the manuscript's mixed internal event.
-- **Ledger and residual.** `sourceFreeManifest`: the collapse is a theorem about
-  every route-8 residual of the object, so the honest `Requires` is empty and the
-  row consumes no clause.
-- **Transport and terminals.** No terminal.  `route8Closed` requires this fact by
-  exact key.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:typeA-route8-carriers` | def | `Graph.Route8.Entry.retained`<br>`Graph.Route8.Entry.restriction`<br>`Graph.Route8.Entry.Complete`<br>`Graph.Route8.Entry.essentialCore`<br>`Graph.Route8.Entry.alpha`<br>`Graph.Route8.cutEdges` | standalone |
-| `lem:typeA-carrier-cut-parity` | lem | `Graph.CutParity.two_le_card_crossingEdges`<br>`Graph.Route8.two_le_card_crossingCarriers`<br>`Graph.Route8.PresentedEntry.two_le_card_car` | standalone |
-| `lem:typeA-internal-quotient-mixed` | lem | *(absorbed: `PresentedEntry.Crossing` is the mixed internal event)* | standalone |
-| `lem:typeA-one-terminal-collapse` | lem | `Graph.Route8.Entry.retained_sdiff_eq_of_alpha_le_one`<br>`Graph.Route8.Entry.collapse_of_alpha_le_one`<br>`Graph.Route8.Data.two_le_alpha` | standalone |
-
-**CT composition at this row.** None.  The legacy revision spent CT5 on a
-first-hit deficit scan whose budget comparison decided nothing (`required` and
-`capacity` were both zero); the carrier core is Core's own
-`EssentialCarrier.Profile`, so no enumeration executor is needed.
+Pure carrier-core mathematics remains.  The missing predecessor is the same selected true-route8 residual collection and its canonical target-complete-minimal entries.  Ledger/Reads/Closed/Full are all false.
 
 ### Row 65 — `[117]`–`[122]` private-carrier census
 
-- **Paper fact.** An essential carrier is *private* for `ξ` when it is essential
-  for no other indexed entry; `π_𝒳(ξ)` counts them and `ξ` is two-carrier when
-  `π_𝒳(ξ) ≤ 2`.  `prop:typeA-route8-carrier-reduction`: if no entry is
-  two-carrier then every entry has `π ≥ 3`, private sets of distinct entries are
-  disjoint, so `3N_basin ≤ Σ_X |∂_E X| ≤ def⁺(R) ≤ τ_win|R| + o(|R|)`, colliding
-  with the burden because `τ_win < 3/13`; hence a two-carrier entry exists.
-- **What the Lean does.** `Route8.Collection.privateCarriers` filters the entry's
-  core by "essential for no other indexed entry"; `privateCarriers_disjoint`
-  proves distinct entries' private sets disjoint; `card_mul_le_ambient` turns a
-  per-entry floor into `floor·|Ξ(𝒳)| ≤ |ambient|` through `Finset.card_biUnion`.
-  `Route8.census_contradiction` is the integer collision of the node-`[113]`
-  bound, that budget, and the rate condition
-  `((threshold + 1)·discharge + 1)·supply < (threshold + 1)·|R|`, which at the
-  manuscript's threshold `2` and discharge `4` is `13·τ_win|R| < 3|R|`.  No
-  numeral is written anywhere.  `Collection.exists_twoCarrier` derives the floor
-  `threshold + 1` from the negation of the two-carrier condition, so no caller
-  supplies it.  `Spine.route8Census` commits
-  `∀ residual, Reduced residual → TwoCarrierEntry residual`, and
-  `TwoCarrierEntry` is node `[122]`'s output: an indexed entry with (T4).  Its
-  companions (T2) and (T3) are the ledger facts of nodes `[101]`/`[103]` and
-  `[116]`, so the package carries only what the census itself establishes.
-- **What it should do.** This.
-- **Gap.** None.  The census runs over `Ξ(𝒳)` — the collection's own indexed
-  entries — and not over a whole vertex schedule, which is what the legacy
-  revision over-counted against.
-- **Ledger and residual.** `sourceFreeManifest`: the census is an implication
-  about every route-8 residual, so the row consumes no clause; the reduced
-  residual it applies to is node `[113]`'s fact, read at node `[124]`.
-- **Transport and terminals.** No terminal.  The `.capacity`/`.aggregate` split
-  of the legacy CT14 stage is gone; what nodes `[119]`–`[121]` assert is the
-  census inequality itself, and it is proved rather than routed.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:typeA-route8-carriers` (privacy clause) | def | `Graph.Route8.Collection.privateCarriers`<br>`Graph.Route8.Collection.privateCount`<br>`Graph.Route8.Collection.TwoCarrier`<br>`Graph.Route8.Data.TwoCarrier` | standalone |
-| `prop:typeA-route8-carrier-reduction` | pro | `Graph.Route8.Collection.privateCarriers_disjoint`<br>`Graph.Route8.Collection.card_mul_le_ambient`<br>`Graph.Route8.census_contradiction`<br>`Graph.Route8.Collection.exists_twoCarrier`<br>`Graph.Route8.Data.Reduced.twoCarrierEntry` | standalone |
-| `rem:route8-carrier-margin` | rem | `Graph.Route8.Data.Rate` (the registered rate condition) | standalone |
-
-**CT composition at this row.** None; a fact-only Strategy.
+Pure private-carrier reduction remains.  The missing predecessor is the selected carrier-core fact derived on the exact true-route8 collection.  Ledger/Reads/Closed/Full are all false.
 
 ### Row 66 — `[123]` pressure descent
 
-- **Paper fact.** The node-`[123]` row: the remaining large-budget Type A
-  target-defect/route-8 ledger either peels a target-defect load by exit `(4)` or
-  forces a two-carrier route-8 entry; target-defect two-carrier entries decrease
-  `Λ₄`, and the terminal non-peeling case enters node `[124]`.
-- **What the Lean does.** `Spine.route8Descent` **reads node `[122]`'s census by
-  exact key** and commits two clauses of every route-8 residual: the routing —
-  a reduced collection forces a two-carrier entry, which is the entry node `[124]`
-  is entered with — and the descent's own measure, that
-  peeling an entry off the active set strictly decreases it
-  (`Finset.card_erase_lt_of_mem`).  That measure is why the manuscript's loop back
-  to `[89]` is a terminating recursion rather than a cycle in the DAG.
-- **What it should do.** This.  On a residual where exit `(4)` is *present* the
-  manuscript's `Λ₄` accounting is what runs; that ledger is node `[101]`'s, and it
-  is row 16's.
-- **Gap.** None at this row: the branch this block is on carries `¬ ExitFour` at
-  every indexed entry, so the peel arm is empty and the descent enters `[124]`
-  with the census's package.  The exit-`(4)` peel ledger of
-  `lem:typeA-exit4-discharge` remains row 16's, where it is built
-  (`Graph.ExitFour.residualLoad_insert`, run as `Spine.typeAPeeledCharge`).
-- **Ledger and residual.** `rowManifest (K .route8Census) (K .route8Descent)`;
-  the residual is unchanged.
-- **Transport and terminals.** No terminal.  The legacy revision spent CT12's
-  well-founded recursion here and branched on `ExitFour` at the *residual* rather
-  than at the chosen entry; both clauses are now stated at the entry.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:typeA-exit4-family` | def | `Graph.Route8.Data.ExitFour` (clause (Q5)) | standalone |
-| `def:typeA-exit4-peeling` | def | *(rows 16's; the non-peeling case is what this row routes)* |  |
-| `lem:typeA-exit4-finite-descent` | lem | `Finset.card_erase_lt_of_mem`, as the descent measure | standalone |
-| `thm:large-budget-route8-only` | thm | this row's routing clause with row 67's terminal | standalone |
-
-**CT composition at this row.** None.  The recursion the legacy stage carried is
-not entered: (R2) makes the peel branch empty, so the descent is immediate.
+Pure pressure-descent mathematics remains.  The missing predecessor is the selected two-carrier entry together with the genuine exit-(4) carrier-deletion refinement at this later paper node.  Ledger/Reads/Closed/Full are all false.
 
 ### Row 67 — `[124]` terminal two-carrier no-go
 
-- **Paper fact.** `def:typeA-terminal-two-carrier` is a pair `(𝒳, ξ)` with (T1)
-  a large-budget route-8 collection, (T2) a true route-8 residual entry, (T3)
-  `α_𝒳(ξ) ≥ 2`, (T4) `π_𝒳(ξ) ≤ 2`, and (T5) the `c`-deletion witness recorded
-  for every `c ∈ 𝒞_ess(ξ)`.  `thm:typeA-two-carrier-nogo`: no such pair exists.
-  Its proof takes `c` from (T3); (T4)+(T5) give `q_{ξ,c} ∈ 𝒬₄(w)` by
-  `lem:typeA-two-carrier-deletion-canonical` and make it target-defective by
-  `lem:typeA-carrier-deletion-exit`, which is exit `(4)`; (T2) denies exit `(4)`.
-  `prop:typeA-route8-closure-from-nogo` closes the arm.
-- **What the Lean does.** `Spine.route8Closed` reads **five** facts by exact key
-  — `.route8Burden`, `.route8CarrierCore`, `.route8Descent`,
-  `.typeAExitFourFree` and `.typeAExitFiveFree` — and commits
-  `¬ ∃ residual, residual.LargeBudget`, the negation of node `[109]`'s fact.
-  (T1) is node `[113]`'s reduced collection, (T2) is nodes `[101]` and `[103]`'s
-  exit absences, (T3) is node `[116]`'s carrier core, (T4) is the two-carrier
-  entry node `[123]` routed, and (T5) is **derived**:
-  `Entry.deletion_targetDefect` proves from inclusion-minimality of the core and
-  completeness of the core that every `c ∈ 𝒞_ess(ξ)` has a separating outside
-  context, and `Entry.exists_forgotten_coordinate` proves that the coordinate
-  such a witness forgets has `c` in its carrier support.
-  `Data.exitFour_of_twoCarrier` assembles the two-carrier reading, the declared
-  carrier support and the separation into `Data.ExitFour` — which *is* clause
-  (Q5) of `def:typeA-exit4-family`, carrying exactly the three data that clause
-  names — and `Data.no_twoCarrierEntry` collides it with node `[101]`'s absence.
-- **What it should do.** This.
-- **Gap.** None.  No clause of the refutation is supplied: the witness is proved,
-  its declared carrier support is proved, the passage from witness to exit `(4)`
-  is the definition of `ExitFour` as (Q5) generates it, and the absence it
-  collides with is a ledger fact of node `[101]` rather than a field.
-- **Ledger and residual.** Five declared prerequisites, all read with
-  `FactInputs.get`; one production; the residual unchanged.
-- **Transport and terminals.** The closure is not a row's assertion: node `[109]`
-  committed `∃ residual, LargeBudget residual` and node `[124]` commits its
-  negation, and Core's `closeIncompatible` derives the closure entry from the two
-  committed statements through the `Incompatible` instance
-  `Spine.route8ResidualClosed`.  `Fixtures.Route8Run` certifies that the block
-  runs on the node-`[63]` Type A residual, that the audit is complete, that its
-  facts are unique, and that all eight of the block's facts are present.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:typeA-carrier-deletion-witness` | def | `Response.TargetDefect` at the deletion quotient | standalone |
-| `lem:typeA-essential-deletion-witness` | lem | `Graph.Route8.Entry.deletion_targetDefect` | standalone |
-| `lem:typeA-deletion-witness-declared` | lem | `Graph.Route8.Entry.exists_forgotten_coordinate` | standalone |
-| `lem:typeA-two-carrier-deletion-canonical` | lem | `Graph.Route8.Data.ExitFour` (clause (Q5))<br>`Graph.Route8.Data.exitFour_of_twoCarrier` | standalone |
-| `lem:typeA-carrier-deletion-exit` | lem | `Graph.Route8.Data.exitFour_of_twoCarrier` | standalone |
-| `def:typeA-terminal-two-carrier` | def | `Graph.Route8.Data.TwoCarrierEntry` (T4) with `route8CarrierCore` (T3), `typeAExitFourFree`/`typeAExitFiveFree` (T2) and `route8Burden` (T1) | standalone |
-| `thm:typeA-two-carrier-nogo` | thm | `Graph.Route8.Data.no_twoCarrierEntry` | standalone |
-| `prop:typeA-route8-closure-from-nogo` | pro | `Spine.route8ClosedRow`<br>`Spine.route8ResidualClosed` + `Core.Strategy.closeIncompatible` | standalone |
-
-**CT composition at this row.** None.  The whole block is five fact-only
-Strategies and three `Decision`s, composed by `AtomicCT.run` and closed by Core.
-
-### Row 68 — Branch D entry `[33]`, `[35]`
-
-- **Paper fact.** `[33]` is the yes arm of `[32]` and `[35]` is the same box
-  redrawn as the entry of Part III, so the two carry one statement: Branch D,
-  the rank-reducing curvature dependence.  `lem:target-rank-circuit`: if
-  `ℐ ⊆ 𝒜` is maximal among subfamilies surviving every functional admissible
-  rank quotient and `a ∈ 𝒜 ∖ ℐ`, then some `ℬ ⊆ ℐ` makes `(a, ℬ)` a
-  target-dependence in the sense of `def:curvature-target-dependence`.
-  `lem:curvature-dependence-routing` opens its proof on that dependence:
-  *"Choose a determination certificate with inclusion-minimal connected support.
-  The certificate has an admissible quotient `q` and a finite support set
-  `𝒫`."*  Clause (a) of `def:curvature-target-dependence` makes the
-  certificate's support a connected `T`-boundaried support carrying `{a} ∪ ℬ`;
-  clause (b) makes `q` a functional admissible rank quotient of its exact
-  response profile; and the definition's closing sentence fixes what
-  inclusion-minimal means — no proper connected subsupport carries a proper
-  target-dependence.  That certificate, not the bare inequality, is what `[36]`,
-  `[38]` and `[40]` route, and `[40]` is where its minimality is spent.
-- **What the Lean does.** `Spine.branchDependenceRow` is one atomic Strategy.
-  Its manifest requires `curvatureRankDrop` and produces `branchDependence`; its
-  executor reads the drop by exact key through `FactInputs.get`, unpacks
-  `Core.TargetRank.Dependence.witness` — which names the member of the
-  manuscript's own system that realizes the dependence together with its rank
-  reduction on `𝒲₂(R)` — and unpacks membership in
-  `FiniteObject.curvatureQuotientSystem`, which *is* the existence of a
-  `Graph.CurvatureQuotient`.  The dependence's determined coordinate `a`, its
-  determiners `ℬ`, its properness `a ∉ ℬ` and the determination itself are
-  carried along, so what the row assembles is a *determination certificate* in
-  the sense of `def:curvature-target-dependence`; `Spine.DeterminationCertificate`
-  is that tuple, clause by clause.  It then performs the manuscript's own
-  choice: the supports carrying such a certificate form a finite family of
-  `Finset`s, `Finset.exists_min_image` picks one of minimum cardinality, and a
-  proper subset is strictly smaller (`Finset.card_lt_card`), so that support is
-  inclusion-minimal.  The committed fact is
-  `∃ packing, IsWindowPacking ∧ ∃ q : CurvatureQuotient (MinimumDegreeAtLeast δ)
-  (HasCycleWithLength LengthOK) object (remainderSupport packing),
-  DeterminationCertificate … q ∧ ∀ smaller ⊂ q.support, no determination
-  certificate lives on that subsupport`.
-  `SpineRun.run` runs the row on the `.left` arm of `curvatureRankDichotomy`, so
-  the literal predecessor is the rank-drop ledger and nothing is restarted.
-- **What it should do.** Exactly that: turn the committed dependence into the
-  inclusion-minimal determination certificate the branch routes -- with the
-  dependence pair `(a, ℬ)` on it, because Branch D is a rank-reducing
-  *dependence* and "some rank-reducing quotient exists" is a different, weaker
-  statement -- without re-deriving the dependence, re-selecting a packing, or
-  re-quantifying over the ambient graph.
-- **Gap.** none.  `Graph.CurvatureQuotient` is `def:admissible-rank-quotient` at
-  the raw curvature tests: its `support`/`connected`/`carries` fields are clause
-  (a), its `fibrewise`/`contextUniversal` fields are
-  `def:target-complete-quotient`, and its `properRepresentative` and
-  `closedRepresentative` fields are the two representative clauses the scope
-  split forces.  `curvatureQuotientSystem.Member` is the manuscript's own
-  system, so the certificate produced here is a member of it and not a weaker
-  surrogate.  The rank reduction the row commits is literally the
-  `RankReducingOn` clause of the dependence's witness, transported along
-  `toRankQuotient_label`, which is `rfl`.  One deliberate strengthening, stated
-  because it is one: the definition's minimality clause reads "no proper
-  connected subsupport carries a proper target-dependence *with the same
-  determined coordinate*", and the support chosen here is of minimum size among
-  all that carry *any* determination certificate, so it rules out every
-  determined coordinate at once and implies the definition's clause.
-  Connectedness needs no separate clause: a subsupport carrying a certificate
-  carries a `CurvatureQuotient`, whose `connected` field is that hypothesis.
-  One clause of `lem:target-rank-circuit` is deliberately *not* restated here
-  and is not missing: its conclusion is `ℬ ⊆ ℐ` against the maximal surviving
-  subfamily, and node `[31]`'s own fact already reads `∃ independent ⊆ 𝒲₂(R),
-  Survives ↑independent ∧ independent.card = r_Ω ∧ ∀ test ∉ independent,
-  ∃ determiners ⊆ ↑independent, Dependence`.  `curvatureTargetRank` is in
-  `curvatureRankDropKeys` and therefore in this row's output index, so `ℐ` and
-  the containment are visible on Branch D by exact key rather than duplicated
-  into `[33]`.  **All four columns pass.**
-- **Ledger and residual.** The row is `factOnly`, so its `refines` obligation is
-  `RefinementSystem.refl`: Branch D argues about the same selected object.  The
-  incoming index is `curvatureRankDropKeys` and the output index is
-  `branchDependenceKeys = branchDependence :: curvatureRankDropKeys`; every
-  earlier fact is still in the type, and no entry is archived or rebased.
-- **Transport and terminals.** No terminal.  The only transport is the exact key
-  `curvatureRankDrop` read through sealed `FactInputs`; the row names no
-  producer, no predecessor depth and no execution position, and it is the same
-  executor for any cursor whose index carries its requirement.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `def:curvature-target-dependence` | def | `Spine.DeterminationCertificate` is the tuple `𝔠 = (X, T, q, 𝒫)`: clause (a) is the quotient's `support`/`connected`/`carries`, (b) is `remainderQuotient`, (c) is `RankQuotient.Determines` with the properness clause, (d) is `carries`.  Its minimality clause is the second conjunct of this row's committed fact | standalone; the pair `(a, ℬ)` comes from `Core.TargetRank.Dependence`, whose `determined`, `supported`, `proper` and `witness` fields are the remaining clauses |
-| `lem:target-rank-circuit` | lem | `Core.TargetRank.exists_dependence_of_attaining`, `Core.TargetRank.exists_independent_attaining` | standalone; consumed at `[31]`/`[32]` and unpacked here |
-| `lem:curvature-dependence-routing` | lem | `Graph.DeclaredQuotient.localize` | standalone; its case analysis is the scope split `SupportAtom.classifyScope`, and this row supplies the inclusion-minimal certificate it is applied to |
-| `def:admissible-rank-quotient` | def | `Graph.CurvatureQuotient` | standalone |
-| `def:functional-rank-quotient` | def | `Core.TargetRank.RankQuotient.FunctionalOn`, `Core.TargetRank.QuotientSystem` | standalone |
-
-**CT composition at this row.** None.  The row is a fact-only atomic Strategy
-run by `AtomicCT.run`; it inherits the composition that produced its
-prerequisite and adds no adapter.
-
-### Row 69 — Context-validity test `[36]`–`[37]`
-
-- **Paper fact.** The diamond `[36]` is captioned "valid against every outside
-  context?", and the no arm is the terminal `[37]`, a target-defective quotient —
-  case (i) of `lem:curvature-dependence-routing`.  What is being decided is the
-  eligibility condition of `def:target-complete-quotient` — *"two coordinates may
-  be identified only inside a fixed boundary-degree fibre and only when no
-  context `Y ∈ Ctx_T` creates a power-of-two cycle from one coordinate and not
-  the other"* — that is, both of its clauses, and failing either is
-  target-defective: the manuscript says so of the context clause in that
-  definition (*"an identification failing this context-universal test is
-  target-defective"*) and of the fibre clause in the sparse-exit routing (*"a
-  non-fibrewise quotient is target-defective"*).  Its invariant table attributes
-  invariant 6 to `[36]` **and** `[37]` with failure mode "otherwise
-  target-defective", which is the same statement in its own bookkeeping.  Three
-  lemmas supply the node.  `lem:context-universality`: a target-complete
-  identification works against every context, and failure against one context is
-  target-defectiveness.  `lem:degree-profile-fibres`: boundaried states with
-  different boundary degree profiles are never eligible to be identified by a
-  target-complete quotient.  `lem:separated-testers`: any quotient identifying
-  two wedge tests is either context-universal or target-defective, which is the
-  exhaustiveness `[36]` splits on.  The figure draws `[37]` as a closed round
-  node: an admissible quotient is target-complete by
-  `def:admissible-rank-quotient`, so the defective alternative is realized by no
-  certificate.
-- **What the Lean does.** `Spine.contextValidityDichotomy` is a `Decision` run by
-  `Decision.run` against the ledger row 68 leaves.  Its alternative is the
-  manuscript's own excluded middle on target-completeness, decided without
-  looking at why the certificate was chosen: `by_cases` on *"every pair of
-  readings of a certificate's support that carries the same quotient value at
-  every declared raw curvature test shares a boundary-degree profile and is
-  context-equivalent"*.  The yes arm commits that as `contextUniversal`.  The no
-  arm pushes the negation through, splits on the fibre clause, and — where the
-  all-context clause is what failed — calls
-  `Graph.Response.contextEquivalent_or_targetDefect` to exhibit the separating
-  context, committing `contextDefect`:
-  `∃ packing, IsWindowPacking ∧ ∃ q, ∃ left right, Identified q left right ∧
-  (profile ≠ ∨ Response.TargetDefect (HasCycleWithLength LengthOK) left right)`.
-  The two disjuncts are the two ways the manuscript calls a quotient
-  target-defective, not a third alternative.
-  `SpineRun.run` matches both arms.  On the defect arm it calls
-  `Core.Strategy.closeImpossible` at the `Impossible` instance
-  `instImpossibleContextDefect`, whose contradiction is
-  `Spine.not_contextDefect`; the branch therefore ends with Core's reserved
-  closure key and the audit reason `impossibleFact contextDefect`.
-- **What it should do.** Exactly that: a real two-way branch on the manuscript's
-  eligibility test, with the separating witness exhibited on the no arm, and the
-  no arm closed rather than left open or made unreachable.
-- **Gap.** none.  `Graph.DeclaredQuotient.targetComplete_of_identified` is the
-  two clauses of `def:target-complete-quotient` read off an admissible quotient
-  — `fibrewise` is `lem:degree-profile-fibres` and `contextUniversal` is
-  `lem:context-universality` — and both halves are consumed by
-  `not_contextDefect`, one per disjunct of the defect.  That is the manuscript's
-  reason `[37]` is closed: a target-defective identification is by definition not
-  target-complete, so it is not made by an admissible quotient.  The branch test
-  itself spends none of this, which is why `[36]` is a genuine decision and
-  `[37]` a genuine closed terminal rather than an unreachable one.  The yes arm
-  is not a dead entry either: `Spine.TargetCompleteAt` is the clause it commits,
-  and node `[38]` reads `contextUniversal` by exact key and carries that clause
-  onto the certificate it routes, which is what makes case (ii) a
-  *target-complete* compression rather than a bare rank reduction.  **All four
-  columns pass.**
-- **Ledger and residual.** `Decision.run` commits against one immutable prefix,
-  so both arms see everything the block and row 68 proved and neither sees the
-  other's key: the yes index is `contextUniversal :: branchDependenceKeys` and
-  the no index is `contextDefect :: branchDependenceKeys`.  The residual is
-  unchanged on both arms — the branch is a fact-only decision about the same
-  selected object.  The closure entry is appended by the framework on top of the
-  no arm, giving `contextDefectKeys = closed :: contextDefect ::
-  branchDependenceKeys`; `contextDefect_audit_facts` pins that audit, and
-  `contextDefect_audit_accounts_for_every_fact` certifies through
-  `ExactLedger.audit_complete` that every entry is accounted for by a
-  chronological commit.
-- **Transport and terminals.** `[37]` is the terminal, and it closes: the branch
-  publishes Core's `closureFactName`, which no row can spell, carrying
-  `AutomaticClosureReason.impossibleFact` naming this fact and nothing else.
-  `[36]`'s yes arm is not a terminal and is not an exit either: it is the
-  residual node `[38]` is stated on, and `SpineRun.run` continues straight into
-  the atom-compression test on it, so `contextUniversalKeys` names an
-  intermediate index rather than a `Spine.Result` constructor.  No payload,
-  query, or route channel carries a mathematical fact on either arm.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `lem:context-universality` | lem | `Graph.DeclaredQuotient.targetComplete_of_identified` (second component); `Graph.Response.ContextEquivalent`, `Graph.Response.TargetDefect` | standalone; consumed by `not_contextDefect` against the context disjunct of `[37]` |
-| `lem:degree-profile-fibres` | lem | `Graph.DeclaredQuotient.targetComplete_of_identified` (first component); `Graph.Response.profile_ne_not_targetComplete` | standalone; consumed by `not_contextDefect` against the fibre disjunct of `[37]` |
-| `lem:separated-testers` | lem | `Graph.Response.contextEquivalent_or_targetDefect` | standalone; consumed by the no arm.  This is the lemma's closing sentence, the clause `[36]` needs.  Its opening sentence — a tester separating the two wedge coordinates is supported in the complement of `B̄_r(u) ∪ B̄_r(v)` — is not a separate declaration: in the framework a tester is an `OutsideContext` sharing only the labelled interface with the support, so being supported in the complement is the gluing model itself and not a theorem about balls |
-| `def:target-complete-quotient` | def | `Graph.DeclaredQuotient.fibrewise`, `Graph.DeclaredQuotient.contextUniversal` | standalone |
-| `def:curvature-target-dependence` | def | `Core.TargetRank.Dependence` | the identified pair `[36]` tests is the certificate's own, supplied by row 68 |
-
-**CT composition at this row.** None.  The node is a branch decision composed by
-`Decision.run` and closed by `Core.Strategy.closeImpossible`; no CT is invoked
-and no adapter is written.
-
-
-### Row 70 — Proper-atom compression `[38]`–`[39]`
-
-- **Paper fact.** `[38]` asks whether the context-universal determination is
-  target-complete with a smaller proper representative already at support `C`.
-  The yes arm is the terminal `[39]`, proper atom compression — case (ii) of
-  `lem:curvature-dependence-routing`: *"if it holds for every outside context
-  already with support `C`, then `q` is a target-complete rank-reducing quotient
-  of the proper atom `C`.  Since `q` is admissible,
-  `def:admissible-rank-quotient` supplies a strictly smaller proper
-  representative.  Thus this case is a nontrivial target-complete compression of
-  `C`"*, and `cor:uncompressible` forbids it.  The no arm is node `[40]`.
-- **What the Lean does.** `Spine.atomCompressionDichotomy` is a `Decision` run by
-  `Decision.run` against the ledger row 69's yes arm leaves.  It reads
-  `branchDependence` by exact key, and its alternative is the excluded middle on
-  the node's own yes arm: *"some determination certificate on the remainder has
-  its support inside `C`"*.  The yes arm commits `atomCompression`.  On the no
-  arm the certificate Branch D was entered with cannot have support inside `C`
-  — otherwise it would witness the yes arm — so the row commits
-  `delocalizedSupport`, which carries `C ⊂ Z` for
-  `Z = Spine.delocalizationSupport`, proved by
-  `remainderSupport_ssubset_delocalizationSupport`.  Both arms carry
-  `Spine.TargetCompleteAt`, read from node `[36]`'s yes arm by exact key: the
-  determination this node asks about is the target-complete one, and neither arm
-  re-derives that.  `SpineRun.run` matches both
-  arms; on the yes arm it calls `Core.Strategy.closeIncompatible` at the
-  `Incompatible` instance `instIncompatibleAtomCompression`, whose contradiction
-  is `Spine.not_branchDCertificate`.
-- **What it should do.** Exactly that: split on whether the determination is
-  certified without leaving `C`, close the compression terminal against the
-  selected minimal counterexample, and hand the complementary arm the enlarged
-  support node `[40]` is stated on.
-- **Gap.** none.  The closure is the manuscript's own two exclusions and no
-  other: `Graph.DeclaredQuotient.localize` is the scope split of
-  `def:admissible-rank-quotient` — a rank-reducing admissible quotient at a
-  proper support supplies a `ReplacementSupport`, and at the closed support a
-  strictly smaller admissible closed representative — and
-  `InterfaceReplacement.not_replacementSupport` (`lem:replacement`, hence
-  `cor:uncompressible`) refutes the first while the selection's own minimality
-  and avoidance refute the second.  Both halves of the `selection` fact are
-  spent, so the terminal closes against the object the block selected rather
-  than against itself.  **All four columns pass.**
-- **Ledger and residual.** `Decision.run` commits against one immutable prefix,
-  so neither arm sees the other's key: the yes index is
-  `atomCompression :: contextUniversalKeys` and the no index is
-  `delocalizedSupport :: contextUniversalKeys`.  The residual is unchanged on
-  both arms.  The closure entry is appended on top of the yes arm, giving
-  `atomCompressionKeys = closed :: atomCompression :: contextUniversalKeys`.
-- **Transport and terminals.** `[39]` is a terminal and it closes: the branch
-  publishes Core's `closureFactName` carrying
-  `AutomaticClosureReason.incompatibleFacts` naming `selection` and
-  `atomCompression`.  `atomCompression_audit_accounts_for_every_fact` certifies
-  through `ExactLedger.audit_complete` that the audit accounts for the whole
-  branch index.  No payload, query or route channel carries a fact.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `lem:curvature-dependence-routing`, case (ii) | lem | `Graph.DeclaredQuotient.localize`, proper branch | standalone; consumed by `Spine.not_determinationCertificate` |
-| `def:admissible-rank-quotient`, proper clause | def | `Graph.DeclaredQuotient.properRepresentative` | standalone |
-| `lem:replacement` | lem | `Graph.Strategy.InterfaceReplacement.not_replacementSupport` | standalone; consumed here |
-| `cor:uncompressible` | cor | `Graph.Strategy.InterfaceReplacement.not_compressibleSupport`, and the `uncompressible` fact of nodes `[11]`--`[14]` | standalone; the compression is excluded through the replacement lemma it weakens to |
-| `def:proper-quotient-representative` | def | `Graph.Strategy.InterfaceReplacement.ReplacementSupport` | standalone |
-
-**CT composition at this row.** None.  The node is a branch decision composed by
-`Decision.run` and closed by `Core.Strategy.closeIncompatible`.
-
-### Row 71 — Enlarged delocalization support `[40]`–`[42]`
-
-- **Paper fact.** `[40]` is case (iii)'s entry: *"otherwise it holds for every
-  outside context but only once additional structure outside `C` is adjoined;
-  taking an inclusion-minimal connected such support yields a connected
-  `Z ⊋ C`"*.  `[41]` asks whether `Z ⊊ G`.  The yes arm is the terminal `[42]`,
-  `lem:proper-smearing`: *"Regard `Z` as a boundaried graph … Since `Z ⊊ G`, it
-  is a proper boundaried support.  If the dependence fails against some outside
-  `∂Z`-context, it is target-defective.  If it succeeds against every outside
-  context, it is a nontrivial target-complete compression of the proper support
-  `Z`, forbidden by `cor:uncompressible`."*  The no arm is node `[43]`.
-- **What the Lean does.** Node `[40]` is committed by row 70's no arm as
-  `delocalizedSupport`, which carries the certificate, the fact that it reaches
-  outside `C`, and `C ⊂ Z`.  `Spine.delocalizationScopeDichotomy` is a
-  `Decision` reading that fact by exact key, splitting on the excluded middle of
-  its own yes arm: *"some vertex lies outside `Z`"*.  The yes arm commits
-  `properDelocalization`; the no arm turns the failed existential into
-  `∀ vertex, vertex ∈ Z` and commits `globalDelocalization`.  `SpineRun.run`
-  matches both; on the yes arm it calls `closeIncompatible` at
-  `instIncompatibleProperDelocalization`, whose contradiction is
-  `Spine.not_branchDCertificate`.
-- **What it should do.** Exactly that: record the enlarged connected support,
-  split on whether it is proper in `G`, and close the proper case.
-- **Gap.** none.  `lem:proper-smearing`'s two alternatives are the two the
-  framework's admissibility already carries: an admissible quotient cannot be
-  target-defective (`DeclaredQuotient.contextUniversal`, which is why row 69's
-  terminal is uninhabited), so the proper case is the compression, refuted by
-  `not_replacementSupport` through `Graph.DeclaredQuotient.localize`.  The
-  inclusion-minimality `[40]` asks of `Z` is row 68's committed clause: the
-  certificate's support admits no proper subsupport carrying a determination
-  certificate.  **All four columns pass.**
-- **Ledger and residual.** The yes index is
-  `properDelocalization :: delocalizedSupportKeys`, the no index is
-  `globalDelocalization :: delocalizedSupportKeys`, both against one immutable
-  prefix, and the residual is unchanged.  The closure gives
-  `properDelocalizationKeys = closed :: properDelocalization ::
-  delocalizedSupportKeys`.
-- **Transport and terminals.** `[42]` is a terminal and it closes, with
-  `AutomaticClosureReason.incompatibleFacts` naming `selection` and
-  `properDelocalization`; `properDelocalization_audit_accounts_for_every_fact`
-  certifies the audit is complete.  `[40]` is not a terminal.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `lem:curvature-dependence-routing`, case (iii) | lem | `Spine.delocalizationSupport` with `remainderSupport_ssubset_delocalizationSupport` | standalone |
-| `lem:proper-smearing` | lem | `Graph.DeclaredQuotient.localize` at a proper support, refuted by `InterfaceReplacement.not_replacementSupport`; the target-defect alternative is excluded by `Graph.DeclaredQuotient.contextUniversal` | standalone; consumed by `Spine.not_determinationCertificate` |
-| `def:curvature-target-dependence`, minimality | def | the second conjunct of row 68's `branchDependence` | standalone |
-
-**CT composition at this row.** None.
-
-### Row 72 — Whole-graph delocalization `[43]`–`[45]`
-
-- **Paper fact.** `[43]` is the case `Z = G`: the dependence delocalizes to the
-  whole graph and the quotient is a closed exact-profile quotient.  `[44]` is
-  `lem:smearing-support-repair`: a delayed compensation component with `p`
-  boundary leaves, `s` internal vertices, cycle rank `β` and surplus `σ`
-  satisfies `s = p − 2 + 2β − σ`.  `[45]` is the barrier
-  `lem:no-silent-global-smearing` raises: *"any attempted rank-reducing quotient
-  is either target-defective, represented by a strictly smaller admissible
-  closed representative, or exact on the raw curvature labels"*.
-- **What the Lean does.** `Spine.globalBarrierRow` is one atomic Strategy whose
-  manifest requires `globalDelocalization` and produces `repairIdentity` and
-  `globalBarrier`.  `repairIdentity` is `Graph.OneThreeRepair.Component.identity`
-  — the manuscript's own derivation from the handshake identity and the
-  cycle-rank formula — stated at every `1`--`3` repair network up to surplus.
-  `globalBarrier` applies `Graph.DeclaredQuotient.localize` to the certificate,
-  committing the manuscript's own disjunction: a proper-support replacement, or
-  a strictly smaller admissible closed representative meeting the baseline and
-  transferring the target back to `G`.
-- **What it should do.** Exactly that: record the whole-graph case, the repair
-  identity, and the two readings the closed clause of
-  `def:admissible-rank-quotient` leaves.
-- **Gap.** none for the three nodes.  One presentational difference, stated
-  because it is one: `[44]`'s fact is quantified over the class of `1`--`3`
-  repair networks rather than over the delayed compensation components of this
-  particular `Z`, in the same way node `[18]`'s window algebra is a property of
-  the registered order rather than of the selected object.  That is what makes
-  it transport along a refinement for free; the manuscript's own statement is
-  the identity, and it is committed in full.  `repairIdentity` is the one Branch
-  D fact no later node reads, and that matches the manuscript: `[44]` is a box
-  on the path to `[46]`, and `lem:no-silent-global-smearing`'s proof closes the
-  whole-graph case from the closed-representative clause and minimality without
-  using the repair identity.  Every other Branch D fact is read by exact key —
-  `branchDependence` and `contextUniversal` at `[38]`, `delocalizedSupport` at
-  `[41]`, `globalDelocalization` at `[44]`/`[45]`, and each terminal fact by the
-  framework's own closure runner.  **All four columns pass.**
-- **Ledger and residual.** The row is `factOnly`, so `refines` is
-  `RefinementSystem.refl`.  The output index is
-  `repairIdentity :: globalBarrier :: globalDelocalization ::
-  delocalizedSupportKeys`; every earlier fact stays in the type.
-- **Transport and terminals.** No terminal at this row — `[45]` feeds `[46]`.
-  The only transport is the exact key `globalDelocalization` read through sealed
-  `FactInputs`.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `lem:smearing-support-repair` | lem | `Graph.OneThreeRepair.Component.identity` | standalone; committed as `[44]`'s fact |
-| `def:repair-network-terms` | def | `Graph.OneThreeRepair.Component` — its `boundaryDegree`, `internalDegreeThree` and `connected` fields are the definition's clauses, and `internal`, `surplus`, `cycleRank` are its `s`, `σ`, `β` | standalone |
-| `lem:no-silent-global-smearing` | lem | `Graph.DeclaredQuotient.localize`, committed as `[45]`'s disjunction | standalone |
-| `def:admissible-rank-quotient`, closed clause | def | `Graph.DeclaredQuotient.closedRepresentative` | standalone |
-| `def:closed-quotient-representative` | def | the second disjunct of `[45]`'s fact: strictly smaller, meets the baseline, and transfers the target | standalone |
-
-**CT composition at this row.** None.  The row is a fact-only atomic Strategy
-run by `AtomicCT.run`.
-
-### Row 73 — Rank-drop branch closed `[46]`
-
-- **Paper fact.** `[46]` is Part III's terminal: the rank-drop branch is closed.
-  `lem:no-silent-global-smearing` finishes it — *"`G_q` is a strictly smaller
-  counterexample, contradicting the lexicographic minimality of `G`"* — and the
-  figure's caption states the invariant the whole diagram maintains: *"Every
-  rank-drop branch terminates in a closed round node."*
-- **What the Lean does.** `SpineRun.run` calls `Core.Strategy.closeIncompatible`
-  on the ledger row 72 leaves, at the `Incompatible` instance
-  `instIncompatibleGlobalBarrier`.  Its contradiction is
-  `Spine.not_globalBarrierReading`, which consumes the disjunction node `[45]`
-  *stored* rather than recomputing it: `Graph.DeclaredQuotient.localize` is
-  applied once, in the row that commits `[45]`, and the terminal reads the
-  result back by exact key.  The replacement reading is refuted by
-  `InterfaceReplacement.not_replacementSupport`, and the closed-representative
-  reading by the selection's own minimality and avoidance — the representative
-  is strictly smaller and meets the baseline, so the selection forces it to have
-  an accepted cycle, which it transfers back to `G`, contradicting the
-  selection's avoidance.  The exit is `Spine.Result.rankDropClosed`.
-- **What it should do.** Exactly that, and leave no open leaf on the arm.
-- **Gap.** none.  The manuscript's third alternative — *"exact on the raw
-  curvature labels"* — is not a separate arm here and is not missing: it is the
-  negation of the rank reduction the certificate carries, so a certificate
-  witnessing it does not exist, which is exactly what
-  `def:admissible-rank-quotient`'s closed clause says when it demands
-  label-injectivity unless a smaller closed representative exists.
-  `DeclaredQuotient.closedRepresentative` takes the rank reduction as its
-  hypothesis for that reason.  **All four columns pass.**
-- **Ledger and residual.** `rankDropClosedKeys = closed :: repairIdentity ::
-  globalBarrier :: globalDelocalization :: delocalizedSupportKeys`, so the
-  terminal's index is Branch D's whole history with Core's reserved closure key
-  on top.  `rankDropClosed_audit_facts` pins the seven most recent entries and
-  `rankDropClosed_audit_accounts_for_every_fact` certifies through
-  `ExactLedger.audit_complete` that the audit accounts for the entire branch.
-- **Transport and terminals.** This is the terminal.  The closure entry carries
-  `AutomaticClosureReason.incompatibleFacts` naming `selection` and
-  `globalBarrier`, and no row can spell `closureFactName`.  With `[37]`, `[39]`
-  and `[42]` also closed, Branch D has no open leaf: every exit of
-  `Spine.Result` on this arm carries the closure key.
-
-**Paper objects at this row.**
-
-| Paper object | Kind | Lean declaration | CT / standalone |
-|---|---|---|---|
-| `lem:no-silent-global-smearing` | lem | `Spine.not_determinationCertificate`, closed branch | standalone |
-| `def:closed-quotient-representative` | def | `Graph.DeclaredQuotient.closedRepresentative`'s conclusion | standalone |
-| minimality of `G` | — | the `selection` fact of nodes `[1]`--`[4]`, both halves | standalone; read by exact key at the closure |
-
-**CT composition at this row.** None.  The terminal is the framework's own
-closure runner.
-
-
-## Non-node EG documentation inventory
-
-This inventory covers EG-specific
-claims in the problem, presentation, official/AB registrations, execution
-modules, and finite-check modules that do not belong to one audit row.
-
-## Summary
-
-All 73 rows have been reviewed against `original_erdos_64_proof.tex` and the
-Lean code, with docstrings and prior audit prose excluded as evidence.  Each
-row carries its own paper-object table and CT-composition note.
-
-The two counts below are recomputed from the section tables above, which are
-the authority.  They replace an earlier pair of counts written before the
-canonical-ledger rewrite; those were stale in both directions — they omitted
-every ported row and included rows 15 and 52, whose declarations are gone.
-
-**All four columns** pass at **55 rows**: 1–11, 20–25, 29, 37–73.  These are
-the ported rows: Block A, the Type B fan through node `[72]`/`[81]` with the
-degree-four profile, the Type A entry split of nodes `[88]`/`[89]`, the
-remainder/rank/net-charge continuation, the cold-window corridor, the route-8
-carrier closure and Part III.  Each is backed by a declaration that elaborates
-and a target that builds.
-
-**Facts** passes at exactly the same 55 rows.  There is no longer a row whose
-mathematics is exact but whose transport is not: the canonical-ledger rewrite
-removed the detached-CT registrations that used to separate the two lists.
-
-**The open rows** are 12–19, 26–28 and 30–36 — the Type A saturated-exit
-ladder below node `[93]`, the Type B bridge rows `[73]`–`[76]`, and the
-non-near-cubic surplus branch `[125]`–`[144]`.  Rows 30–33 are now partly
-ported: they run live as `Graph/Strategy/SurplusRows.lean` composed by
-`Spine.runSurplusBranch`, so their Ledger, Transport and Residual columns are
-backed by a compiling target and only their **Facts** columns are open — each
-carries a **Gap** bullet naming the paper objects still missing.  The remaining
-open rows are `❌ ❌ ❌ ❌`: none has a live declaration, and the descriptions in
-their evidence sections are porting reference for the legacy `Blueprint` code,
-not claims about the current tree.
-
-**Part III (rows 68–73).**  Nodes `[35]`–`[46]` have no vertex at all: the
-rank-drop arm of `[32]` is the identity continuation, so `Blueprint.compression‑
-LinkedTargetRelativeRankDichotomy` receives `Blueprint.root` and the branch is
-exported as the single closed terminal `t3`.  Of the manuscript's three
-alternatives, only case (ii) — the proper-atom compression of `[38]`/`[39]` —
-has a mechanism (row 70), and it is a universal exclusion rather than a branch.
-Two Part III statements are formalized generically and never reached from this
-arm: `Graph.OneThreeRepair.Component.identity` is `[44]`'s repair identity
-`s = p − 2 + 2β_Z − σ_Z` with no call site under `proofs/`, and
-`Core.AdmissibleQuotient.not_rankReducing_of_excluded` is `[45]`'s case-(c)
-conclusion, consumed only by `Graph/TypeBOverlapObstruction.lean`.
-`lem:target-rank-circuit`, `lem:curvature-dependence-routing`,
-`lem:separated-testers`, `lem:proper-smearing` and `def:repair-network-terms`
-have no declaration of any kind.
-
-**Paper objects.**  261 `\label`s fall in the audited node ranges.  103 have a
-Lean declaration whose type states them; **158 cells are empty**.  A recurring
-third case is recorded in column 4 as `unconsumed — no call site`: the
-declaration exists and is faithful, and nothing in the run reaches it —
-`lem:wedge-lower`, `netCharge_eq_sum_components`,
-`exists_exactInducedPathComponent_negativeSupport`, `card_skeleton`,
-`demand_le_skeletonBudget`, the `CutParity` group, and seven whole Type B
-modules are in it.
-
-**Corrections made during this pass.**  Row 7's recorded Facts failure was
-refuted: `LabelDenotation` proves the `Fin 399` bijection onto
-`WindowCurvature.Labels` and `Official/Problem.lean` consumes it, and `Ω₂`
-exists as `curvatureTwo`.  Row 37's recorded reason was too broad: `[26]` and
-`[27]` are stated exactly and the gap is the `|W| = 13p₁₃` clause.  Row 26's
-recorded reason was wrong: the B1 charge theorem exists.  Fourteen vertex ids
-in the tables above were stale — exits 4–7's second copies are `v34`–`v37`,
-and the whole Type B block is shifted by +2.
+The pure no-go theorem remains, but no canonical Strategy closure exists.  The exact missing chain is the selected true-route8 collection from `lem:typeA-saturated-handoff`, the carrier reduction, and the later Q5 carrier-deletion pressure descent on that same collection.  Ledger/Reads/Closed/Full are all false.

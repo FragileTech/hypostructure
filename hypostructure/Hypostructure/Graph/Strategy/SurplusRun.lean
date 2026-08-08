@@ -1,7 +1,6 @@
 import Hypostructure.Graph.Strategy.SurplusRows
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows
 import Hypostructure.Graph.Strategy.SpineAssembly
-import Hypostructure.Graph.Strategy.Route8Run
 import Hypostructure.Graph.Strategy.ColdCorridorRun
 
 /-!
@@ -489,13 +488,10 @@ noncomputable def runSparseActivation
     (certResidualFresh : K (data := data) .fanCertificateResidual ∉ known)
     (cycleFresh : K (data := data) .typeBDirectCycle ∉ known)
     (cycleFreeFresh : K (data := data) .typeBDirectCycleFree ∉ known)
-    (disjointAssignmentFresh : K (data := data) .typeBDisjointAssignment ∉ known)
+    (b2ChoiceFresh : K (data := data) .typeBB2Choice ∉ known)
     (obstructionFresh : K (data := data) .typeBOverlapObstruction ∉ known)
     (hybridFresh : K (data := data) .typeBHybridEntry ∉ known)
-    (chargeFresh : K (data := data) .typeBExclusionCharge ∉ known)
-    (excludedFresh : K (data := data) .typeBExcluded ∉ known)
-    (exclusionResidualFresh : K (data := data) .typeBExclusionResidual ∉ known)
-    (massFresh : K (data := data) .typeBBridgeMass ∉ known) :
+    (disjointFresh : K (data := data) .typeBDisjointLedger ∉ known) :
     SurplusResult current known := by
   classical
   have afterSlack :=
@@ -639,10 +635,9 @@ noncomputable def runSparseActivation
                     simp [capFresh]))
                   (by simp [markedFresh]) (by simp [certResidualFresh])
                   (by simp [cycleFresh]) (by simp [cycleFreeFresh])
-                  (by simp [disjointAssignmentFresh]) (by simp [obstructionFresh])
-                  (by simp [hybridFresh]) (by simp [chargeFresh])
-                  (by simp [excludedFresh]) (by simp [exclusionResidualFresh])
-                  (by simp [massFresh]) (by simp [closureFresh]))
+                  (by simp [b2ChoiceFresh]) (by simp [obstructionFresh])
+                  (by simp [hybridFresh]) (by simp [disjointFresh])
+                  (by simp [closureFresh]))
       | .right freeHistory =>
           -- Node `[141]`: is it a remainder-surplus token?
           match remainderClassDichotomy freeHistory (K .remainderClassOverload)
@@ -700,10 +695,9 @@ noncomputable def runSparseActivation
                     simp [capFresh]))
                   (by simp [markedFresh]) (by simp [certResidualFresh])
                   (by simp [cycleFresh]) (by simp [cycleFreeFresh])
-                  (by simp [disjointAssignmentFresh]) (by simp [obstructionFresh])
-                  (by simp [hybridFresh]) (by simp [chargeFresh])
-                  (by simp [excludedFresh]) (by simp [exclusionResidualFresh])
-                  (by simp [massFresh]) (by simp [closureFresh]))
+                  (by simp [b2ChoiceFresh]) (by simp [obstructionFresh])
+                  (by simp [hybridFresh]) (by simp [disjointFresh])
+                  (by simp [closureFresh]))
           | .right primitiveHistory =>
               have afterAudit :=
                 (primitiveCarrierAudit (data := data)).run primitiveHistory (by
@@ -755,10 +749,9 @@ noncomputable def runSparseActivation
                     simp [capFresh]))
                   (by simp [markedFresh]) (by simp [certResidualFresh])
                   (by simp [cycleFresh]) (by simp [cycleFreeFresh])
-                  (by simp [disjointAssignmentFresh]) (by simp [obstructionFresh])
-                  (by simp [hybridFresh]) (by simp [chargeFresh])
-                  (by simp [excludedFresh]) (by simp [exclusionResidualFresh])
-                  (by simp [massFresh]) (by simp [closureFresh]))
+                  (by simp [b2ChoiceFresh]) (by simp [obstructionFresh])
+                  (by simp [hybridFresh]) (by simp [disjointFresh])
+                  (by simp [closureFresh]))
 
 /-- **The sparse surplus branch, entered from the entry spine's own exit.**
 
@@ -801,13 +794,44 @@ noncomputable def runSurplusBranch
     SurplusResult selected
       (surplusAbovePackageKeys (BranchState := BranchState)
         (presentation := presentation) (data := data)) :=
-  runSparseActivation history (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp) (by simp)
-    (by simp) (by simp) (by simp) (by simp)
+  runSparseActivation history
+    (slackFresh := by simp)
+    (familyFresh := by simp)
+    (activationFresh := by simp)
+    (survivorFresh := by simp)
+    (demandsFresh := by simp)
+    (demandFresh := by simp)
+    (pairFresh := by simp)
+    (exitFresh := by simp)
+    (blockerFresh := by simp)
+    (closureFresh := by simp)
+    (envelopeFresh := by simp)
+    (tokenFresh := by simp)
+    (partitionFresh := by simp)
+    (pressureFresh := by simp)
+    (estimateFresh := by simp)
+    (nearCubicFresh := by simp)
+    (overloadFresh := by simp)
+    (windowOverloadFresh := by simp)
+    (windowAbsentFresh := by simp)
+    (remainderOverloadFresh := by simp)
+    (remainderAbsentFresh := by simp)
+    (windowAuditFresh := by simp)
+    (remainderAuditFresh := by simp)
+    (primitiveAuditFresh := by simp)
+    (primitiveVerdictFresh := by simp)
+    (scaleFresh := by simp)
+    (capsHoldFresh := by simp)
+    (patternFresh := by simp)
+    (routingFresh := by simp)
+    (bottleneckFresh := by simp)
+    (capFresh := by simp)
+    (markedFresh := by simp)
+    (certResidualFresh := by simp)
+    (cycleFresh := by simp)
+    (cycleFreeFresh := by simp)
+    (b2ChoiceFresh := by simp)
+    (obstructionFresh := by simp)
+    (hybridFresh := by simp)
+    (disjointFresh := by simp)
 end Hypostructure.Graph.Strategy.Spine

@@ -29,12 +29,6 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- The residual domain of a minimum-degree cycle spine. -/
-abbrev Input (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation) (data : Data.{u}) :=
-  Core.Strategy.ProblemInput
-    (problem BranchState Presentation presentation data)
-
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-- **The selected context, as the ledger records it.**
@@ -2272,11 +2266,11 @@ noncomputable def typeSplitDichotomy
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0) →
       typeALowSurplus.At current)
@@ -2302,45 +2296,17 @@ noncomputable def typeSplitDichotomy
     (by
       classical
       apply Classical.choice
-      -- The decision is taken on a `Prop`, so no witness is extracted to build
-      -- the branch: the arm not taken supplies the other arm's clause.
-      by_cases typeA :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              (∀ window : Finset current.object.Vertex,
-                current.object.InducesWindow data.windowOrder window →
-                ∃ member ∈ packing, ¬ Disjoint window member) ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  current.object.ambientSurplus piece data.threshold = 0
-      · exact ⟨.inl (encodeTypeA typeA)⟩
-      ·
-        obtain ⟨packing, valid, maximal, component, present, charge⟩ :=
-          supportOf (ExactLedger.get previous negativeSupport)
-        let piece := current.object.pieceSupport
-          (current.object.remainderSupport packing) component
-        have inside : piece ⊆ current.object.remainderSupport packing :=
-          current.object.pieceSupport_subset
-            (current.object.remainderSupport packing) component
-        have connected :
-            Graph.SupportComponents.Connected.ConnectedOn current.object piece :=
-          Graph.SupportComponents.Connected.connectedOn_of_mem_order
-            current.object (current.object.remainderSupport packing)
-            ((current.object.mem_canonicalPieces
-              (current.object.remainderSupport packing)).mp present)
-        refine ⟨.inr (encodeTypeB
-          ⟨packing, valid, maximal, component, present, charge, ?_⟩)⟩
-        rcases Nat.eq_zero_or_pos
-            (current.object.ambientSurplus piece data.threshold) with
-          zero | positive
-        · exact absurd
-            ⟨packing, valid, maximal, piece, inside, connected, charge, zero⟩
-            typeA
-        · exact positive)
+      obtain ⟨packing, valid, maximal, component, present, charge⟩ :=
+        supportOf (ExactLedger.get previous negativeSupport)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      rcases Nat.eq_zero_or_pos
+          (current.object.ambientSurplus piece data.threshold) with
+        zero | positive
+      · exact ⟨.inl (encodeTypeA
+          ⟨packing, valid, maximal, component, present, charge, zero⟩)⟩
+      · exact ⟨.inr (encodeTypeB
+          ⟨packing, valid, maximal, component, present, charge, positive⟩)⟩)
     typeAFresh typeBFresh
 
 /-! ## Node `[68]`, the standing law: the high-neighbourhood normal form
@@ -2438,27 +2404,35 @@ noncomputable def heavyCentreDichotomy
     (encodeHeavy :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               0 < current.object.ambientSurplus piece data.threshold ∧
               ∃ centre ∈ piece,
                 data.threshold + 1 < current.object.degree centre) →
       typeBHeavyCentre.At current)
     (encodeDegreeFour :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          0 < current.object.ambientSurplus piece data.threshold →
-          ∀ centre ∈ piece, data.threshold < current.object.degree centre →
-            current.object.degree centre = data.threshold + 1) →
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold ∧
+              ∀ centre ∈ piece,
+                Graph.IsHighCentre current.object data.threshold centre →
+                current.object.degree centre = data.threshold + 1) →
       typeBDegreeFourCentres.At current)
     (heavyFresh : typeBHeavyCentre ∉ known)
     (degreeFourFresh : typeBDegreeFourCentres ∉ known) :
@@ -2467,27 +2441,25 @@ noncomputable def heavyCentreDichotomy
     `Hypostructure.Graph.Strategy.Spine.heavyCentreDichotomy
     (by
       classical
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, charge, positive⟩ :=
+        supportOf (ExactLedger.get previous typeBHighSurplus)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
       by_cases heavy :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  0 < current.object.ambientSurplus piece data.threshold ∧
-                  ∃ centre ∈ piece,
-                    data.threshold + 1 < current.object.degree centre
-      · exact .inl (encodeHeavy heavy)
-      · refine .inr (encodeDegreeFour ?_)
-        -- No support carries a centre above `δ + 1`, so a high centre of one,
-        -- being above `δ` and not above `δ + 1`, sits exactly at `δ + 1`.
-        intro packing valid piece inside connected charge positive centre
-          member high
-        by_contra different
-        exact heavy ⟨packing, valid, piece, inside, connected, charge, positive,
-          centre, member, by omega⟩)
+          ∃ centre ∈ piece,
+            data.threshold + 1 < current.object.degree centre
+      · exact ⟨.inl (encodeHeavy
+          ⟨packing, valid, maximal, component, present, charge, positive,
+            heavy⟩)⟩
+      · refine ⟨.inr (encodeDegreeFour
+          ⟨packing, valid, maximal, component, present, charge, positive, ?_⟩)⟩
+        intro centre member high
+        have notAbove :
+            ¬ data.threshold + 1 < current.object.degree centre :=
+          fun above => heavy ⟨centre, member, above⟩
+        rw [Graph.IsHighCentre] at high
+        omega)
     heavyFresh degreeFourFresh
 
 /-! ## Node `[69]`: the heavy-centre local dichotomy
@@ -2512,32 +2484,68 @@ heavy-centre existence fact: the statement is universally quantified over heavy
 centres, so it reads no witness, and declaring a requirement the executor does
 not consume would be a false dependency. -/
 @[reducible] noncomputable def heavyCentreLocalDichotomyRow
-    (highCentreNormalForm typeBLocalDichotomy :
+    (highCentreNormalForm typeBHeavyCentre typeBLocalDichotomy :
       FactKey (Input BranchState Presentation presentation data))
-    (distinct : highCentreNormalForm ≠ typeBLocalDichotomy)
+    (normalNeHeavy : highCentreNormalForm ≠ typeBHeavyCentre)
     (normalFormOf : (input : Input BranchState Presentation presentation data) →
       highCentreNormalForm.At input →
       ∀ centre : input.object.Vertex,
         Graph.IsHighCentre input.object data.threshold centre →
         Graph.NormalForm input.object data.threshold centre)
+    (heavyOf : (input : Input BranchState Presentation presentation data) →
+      typeBHeavyCentre.At input →
+      ∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < input.object.ambientSurplus piece data.threshold ∧
+              ∃ centre ∈ piece,
+                data.threshold + 1 < input.object.degree centre)
     (encode : (input : Input BranchState Presentation presentation data) →
-      (∀ centre : input.object.Vertex,
-        data.threshold + 1 < input.object.degree centre →
-        (∃ left right : input.object.Vertex,
-            Graph.FanCompatible input.object centre left right) ∨
-          (input.object.degree centre - 2 ≤
-              (Graph.triangularEndpoints input.object centre).card ∧
-            3 ≤ (Graph.triangularEndpoints input.object centre).card)) →
+      (∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < input.object.ambientSurplus piece data.threshold ∧
+              (∃ centre ∈ piece,
+                data.threshold + 1 < input.object.degree centre) ∧
+              ∀ centre ∈ piece,
+                data.threshold + 1 < input.object.degree centre →
+                (∃ left right : input.object.Vertex,
+                    Graph.FanCompatible input.object centre left right) ∨
+                  (input.object.degree centre - 2 ≤
+                      (Graph.triangularEndpoints input.object centre).card ∧
+                    3 ≤ (Graph.triangularEndpoints input.object centre).card)) →
       typeBLocalDichotomy.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.heavyCentreLocalDichotomy
-    (rowManifest highCentreNormalForm typeBLocalDichotomy distinct)
-    (fun inputs =>
+    { Requires := [highCentreNormalForm, typeBHeavyCentre]
+      Produces := [typeBLocalDichotomy]
+      requiresUnique := by simp [normalNeHeavy]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs => Classical.choice <| by
       let normal :=
         normalFormOf inputs.current (inputs.get highCentreNormalForm)
-      .cons (key := typeBLocalDichotomy)
-        (encode inputs.current
-          (fun centre heavy => by
+      obtain ⟨packing, valid, maximal, component, present, charge, positive,
+          witness⟩ := heavyOf inputs.current (inputs.get typeBHeavyCentre)
+      exact ⟨.cons (key := typeBLocalDichotomy)
+        (encode inputs.current ⟨packing, valid, maximal, component, present,
+          charge, positive, witness, fun centre _member heavy => by
             -- A heavy centre is in particular a high centre.
             rcases Graph.heavyCentreLocalDichotomy
                 (normal centre (Nat.lt_of_succ_lt heavy)) with
@@ -2545,8 +2553,8 @@ not consume would be a false dependency. -/
             · exact Or.inl compatible
             · exact Or.inr ⟨alternative,
                 Graph.three_le_triangularEndpoints_card data.three_le_threshold
-                  heavy alternative⟩))
-        .nil)
+                  heavy alternative⟩⟩)
+        .nil⟩)
 
 /-! ## Node `[70]`: the certificate-marked fan-degree cap
 
@@ -2612,30 +2620,51 @@ noncomputable def fanCertificateDichotomy
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (fanCertificateMarked fanCertificateResidual :
+    (typeBHighSurplus fanCertificateMarked fanCertificateResidual :
       FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeBHighSurplus known]
+    (supportOf : typeBHighSurplus.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold)
     (encodeMarked :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          0 < current.object.ambientSurplus piece data.threshold →
-          ∀ centre ∈ piece,
-            Graph.IsHighCentre current.object data.threshold centre →
-            Nonempty (Graph.FanCertificateLabelling current.object
-              data.windowOrder centre)) →
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < current.object.ambientSurplus piece data.threshold ∧
+              ∀ centre ∈ piece,
+                Graph.IsHighCentre current.object data.threshold centre →
+                Nonempty (Graph.FanCertificateLabelling current.object
+                  data.windowOrder centre)) →
       fanCertificateMarked.At current)
     (encodeResidual :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               0 < current.object.ambientSurplus piece data.threshold ∧
               ∃ centre ∈ piece,
@@ -2650,29 +2679,26 @@ noncomputable def fanCertificateDichotomy
     `Hypostructure.Graph.Strategy.Spine.fanCertificateDichotomy
     (by
       classical
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, charge, positive⟩ :=
+        supportOf (ExactLedger.get previous typeBHighSurplus)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
       by_cases marked :
-          ∀ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing →
-            ∀ piece : Finset current.object.Vertex,
-              piece ⊆ current.object.remainderSupport packing →
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece →
-              current.object.NegativeNetCharge piece data.threshold
-                data.dischargeScale →
-              0 < current.object.ambientSurplus piece data.threshold →
-              ∀ centre ∈ piece,
-                Graph.IsHighCentre current.object data.threshold centre →
-                Nonempty (Graph.FanCertificateLabelling current.object
-                  data.windowOrder centre)
-      · exact .inl (encodeMarked marked)
-      · refine .inr (encodeResidual ?_)
+          ∀ centre ∈ piece,
+            Graph.IsHighCentre current.object data.threshold centre →
+            Nonempty (Graph.FanCertificateLabelling current.object
+              data.windowOrder centre)
+      · exact ⟨.inl (encodeMarked
+          ⟨packing, valid, maximal, component, present, charge, positive,
+            marked⟩)⟩
+      · refine ⟨.inr (encodeResidual ?_)⟩
         -- Not every assigned centre is marked, so one of them is a
-        -- fan-certificate residual centre.  `push_neg` turns the negated
+        -- fan-certificate residual centre.  `push Not` turns the negated
         -- `Nonempty` into `IsEmpty` directly.
-        push_neg at marked
-        obtain ⟨packing, valid, piece, inside, connected, charge, positive,
-          centre, member, high, unmarked⟩ := marked
-        exact ⟨packing, valid, piece, inside, connected, charge, positive,
+        push Not at marked
+        obtain ⟨centre, member, high, unmarked⟩ := marked
+        exact ⟨packing, valid, maximal, component, present, charge, positive,
           centre, member, high, unmarked⟩)
     markedFresh residualFresh
 
@@ -2720,28 +2746,36 @@ false dependency. -/
             Graph.WindowCurvature.fanPackingCap data.windowOrder)
     (markedOf : (input : Input BranchState Presentation presentation data) →
       fanCertificateMarked.At input →
-      ∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset input.object.Vertex,
-          piece ⊆ input.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
-          input.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          0 < input.object.ambientSurplus piece data.threshold →
-          ∀ centre ∈ piece,
-            Graph.IsHighCentre input.object data.threshold centre →
-            Nonempty (Graph.FanCertificateLabelling input.object
-              data.windowOrder centre))
+      ∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < input.object.ambientSurplus piece data.threshold ∧
+              ∀ centre ∈ piece,
+                Graph.IsHighCentre input.object data.threshold centre →
+                Nonempty (Graph.FanCertificateLabelling input.object
+                  data.windowOrder centre))
     (encode : (input : Input BranchState Presentation presentation data) →
-      (∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
-        ∀ piece : Finset input.object.Vertex,
-          piece ⊆ input.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
-          input.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          0 < input.object.ambientSurplus piece data.threshold →
-          ∀ centre ∈ piece,
+      (∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < input.object.ambientSurplus piece data.threshold ∧
+              ∀ centre ∈ piece,
             Graph.IsHighCentre input.object data.threshold centre →
             ∀ envelope windowSupport : Finset input.object.Vertex,
               (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours input.object
@@ -2789,18 +2823,19 @@ false dependency. -/
         simp [selectionNeCap, selectionNeMarked, capNeMarked]
       producesUnique := by simp
       producesNonempty := by simp }
-    (fun inputs =>
+    (fun inputs => Classical.choice <| by
       let avoids := avoidsOf inputs.current (inputs.get selection)
       let cap := capOf inputs.current (inputs.get fanCertificateCap)
-      let marked := markedOf inputs.current (inputs.get fanCertificateMarked)
-      .cons (key := typeBHybridEntry)
-        (encode inputs.current
-          (fun packing valid piece inside connected charge positive centre
-              member high envelope windowSupport => by
+      obtain ⟨packing, valid, maximal, component, present, charge, positive,
+          marked⟩ := markedOf inputs.current
+        (inputs.get fanCertificateMarked)
+      exact ⟨.cons (key := typeBHybridEntry)
+        (encode inputs.current ⟨packing, valid, maximal, component, present,
+          charge, positive,
+          fun centre member high envelope windowSupport => by
             -- The marked fan's cap, and with it the manuscript's `k ≤ 8`.
             obtain ⟨marking⟩ :=
-              marked packing valid piece inside connected charge positive centre
-                member high
+              marked centre member high
             have slack :
                 inputs.current.object.degree centre + 1 ≤
                   data.dischargeScale * data.threshold :=
@@ -2823,8 +2858,8 @@ false dependency. -/
                 _ _ data.three_le_threshold slack
             · intro two_le
               exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
-                _ _ _ _ _ two_le high data.highCentreDeficitSlack))
-        .nil)
+                _ _ _ _ _ two_le high data.highCentreDeficitSlack⟩)
+        .nil⟩)
 
 /-! ## Nodes `[78]`--`[79]`: the degree-four fan profile
 
@@ -2846,42 +2881,83 @@ surplus, the count bound `c ≤ k`, and the deficit identity
 or `11`; the deficit is carried at the scale `s` as an integer, so the rational
 never appears and nothing rounds. -/
 @[reducible] noncomputable def degreeFourProfileRow
-    (highCentreNormalForm typeBDegreeFourProfile :
+    (highCentreNormalForm typeBDegreeFourCentres typeBDegreeFourProfile :
       FactKey (Input BranchState Presentation presentation data))
-    (distinct : highCentreNormalForm ≠ typeBDegreeFourProfile)
+    (normalNeDegreeFour : highCentreNormalForm ≠ typeBDegreeFourCentres)
     (normalFormOf : (input : Input BranchState Presentation presentation data) →
       highCentreNormalForm.At input →
       ∀ centre : input.object.Vertex,
         Graph.IsHighCentre input.object data.threshold centre →
         Graph.NormalForm input.object data.threshold centre)
+    (degreeFourOf : (input : Input BranchState Presentation presentation data) →
+      typeBDegreeFourCentres.At input →
+      ∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < input.object.ambientSurplus piece data.threshold ∧
+              ∀ centre ∈ piece,
+                Graph.IsHighCentre input.object data.threshold centre →
+                input.object.degree centre = data.threshold + 1)
     (encode : (input : Input BranchState Presentation presentation data) →
-      (∀ centre : input.object.Vertex,
-        input.object.degree centre = data.threshold + 1 →
-        ((∃ left right : input.object.Vertex,
-              Graph.FanCompatible input.object centre left right) ∨
-            data.threshold - 1 ≤
-              (Graph.triangularEndpoints input.object centre).card) ∧
-          input.object.degree centre - data.threshold = 1 ∧
-          ∀ envelope : Finset input.object.Vertex,
-            Graph.TypeBFanIncidence.closedCount input.object data.threshold
-                envelope centre ≤ data.threshold + 1 ∧
-              Graph.TypeBFanIncidence.scaledDeficit input.object data.threshold
-                  data.dischargeScale envelope centre =
-                (data.dischargeScale : Int) *
-                    (Graph.TypeBFanIncidence.closedCount input.object
-                      data.threshold envelope centre : Int) -
-                  (data.dischargeScale : Int) * (data.threshold : Int) +
-                    ((data.threshold : Int) + 2)) →
+      (∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              0 < input.object.ambientSurplus piece data.threshold ∧
+              (∀ centre ∈ piece,
+                Graph.IsHighCentre input.object data.threshold centre →
+                input.object.degree centre = data.threshold + 1) ∧
+              ∀ centre ∈ piece,
+                input.object.degree centre = data.threshold + 1 →
+                ((∃ left right : input.object.Vertex,
+                      Graph.FanCompatible input.object centre left right) ∨
+                    data.threshold - 1 ≤
+                      (Graph.triangularEndpoints input.object centre).card) ∧
+                  input.object.degree centre - data.threshold = 1 ∧
+                  ∀ envelope : Finset input.object.Vertex,
+                    Graph.TypeBFanIncidence.closedCount input.object
+                        data.threshold envelope centre ≤ data.threshold + 1 ∧
+                      Graph.TypeBFanIncidence.scaledDeficit input.object
+                          data.threshold data.dischargeScale envelope centre =
+                        (data.dischargeScale : Int) *
+                            (Graph.TypeBFanIncidence.closedCount input.object
+                              data.threshold envelope centre : Int) -
+                          (data.dischargeScale : Int) *
+                            (data.threshold : Int) +
+                          ((data.threshold : Int) + 2)) →
       typeBDegreeFourProfile.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.degreeFourProfile
-    (rowManifest highCentreNormalForm typeBDegreeFourProfile distinct)
-    (fun inputs =>
+    { Requires := [highCentreNormalForm, typeBDegreeFourCentres]
+      Produces := [typeBDegreeFourProfile]
+      requiresUnique := by simp [normalNeDegreeFour]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs => Classical.choice <| by
       let normal :=
         normalFormOf inputs.current (inputs.get highCentreNormalForm)
-      .cons (key := typeBDegreeFourProfile)
-        (encode inputs.current
-          (fun centre degree => by
+      obtain ⟨packing, valid, maximal, component, present, charge, positive,
+          degreeFour⟩ := degreeFourOf inputs.current
+        (inputs.get typeBDegreeFourCentres)
+      exact ⟨.cons (key := typeBDegreeFourProfile)
+        (encode inputs.current ⟨packing, valid, maximal, component, present,
+          charge, positive, degreeFour,
+          fun centre _member degree => by
             -- A centre one above the baseline is a high centre, so the normal
             -- form applies and `cor:degree-four-local-activation` fires.
             have high : Graph.IsHighCentre inputs.current.object data.threshold
@@ -2900,8 +2976,8 @@ never appears and nothing rounds. -/
               obtain ⟨_surplus, counted, identity, _range⟩ :=
                 Graph.TypeBFanIncidence.degreeFourProfile inputs.current.object
                   data.threshold data.dischargeScale envelope degree
-              exact ⟨counted, identity⟩))
-        .nil)
+              exact ⟨counted, identity⟩⟩)
+        .nil⟩)
 
 /-! ## Node `[72]`, first half: is a direct fan-window cycle present?
 
@@ -3123,7 +3199,7 @@ Type A uncompressibility.  Selection supplies contextual target safety.  Every
 remaining connected component is therefore passed to the existing Type A
 hygiene theorem on the same ledger.  This row deliberately states no maximal
 grouped-envelope property and no B2(d). -/
-@[reducible] noncomputable def typeBDisjointLedgerRow
+@[reducible] noncomputable def disjointPostLedgerComponentsRow
     (typeBB2Choice selection remainderNormalized typeBDisjointLedger :
       FactKey (Input BranchState Presentation presentation data))
     (requiredUnique : [typeBB2Choice, selection, remainderNormalized].Nodup)
@@ -3182,7 +3258,7 @@ grouped-envelope property and no B2(d). -/
                         data.typeABPresentation ledger component) →
         typeBDisjointLedger.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.typeBDisjointLedger
+  factOnly `Hypostructure.Graph.Strategy.Spine.disjointPostLedgerComponents
     { Requires := [typeBB2Choice, selection, remainderNormalized]
       Produces := [typeBDisjointLedger]
       requiresUnique := requiredUnique
@@ -3245,47 +3321,32 @@ grouped-envelope property and no B2(d). -/
                 noBaselineSubsupport pieceFree targetSafe hereditary baseline⟩))
         .nil)
 
-/-! ## Nodes `[73]`/`[75]` and `[83]`/`[84]`: the Type B bridge fan-mass
+/-! ## Nodes `[73]`/`[75]` and `[83]`/`[84]`: Type B bridge fan mass
 
-`lem:typeB-bridge-deficit-bound`, `lem:typeB-bridge-with-route8-core` and
-`prop:typeB-bridge-sublinear`.  Both entries of the fan-mass node are bridge
-*residuals*: `[75]`/`[84]` is a fan-certificate residual centre, `[73]`/`[83]` a
-B2 disjoint-carrier failure represented by its minimal overlap obstruction.
-Neither has a local ledger entry to spend, so the manuscript stops resolving
-overlaps and bounds what is left unpaid.
-
-The estimate is the manuscript's own, and it needs no fan envelope of its own:
-the only vertices of an assigned Type B support above the baseline are its
-assigned centres, so every other vertex carries the Type A charge and the
-discharging calculation runs on the support itself with the centres as the
-exceptional set.  A centre contributes `−(s(k−δ)+1)` through `ch_X(h)` and at
-worst `−α` more through its own core term, and `Data.bridgeMassSlack` pays that
-against `F·s·(k−δ)`.
-
-The two Type A conditions are nodes `[88]` and `[90]` at the post-ledger core,
-named once as `TypeBEnvelopeCharge.BridgeResidualComponentAt`; the row does not
-restate them and does not ask them again. -/
+This row publishes the original fan-mass accounting fact on the exact residual
+that reached a Type B bridge residual: a fan-certificate residual, a B2 overlap
+obstruction, or a grouped decorated envelope residual.  The row is source-free
+because its statement is quantified over the residual's assigned Type B supports
+and canonical remainder decompositions; it does not read a sibling-only
+certificate or obstruction fact.
+-/
 @[reducible] noncomputable def bridgeFanMassRow
     (typeBBridgeMass :
       FactKey (Input BranchState Presentation presentation data))
     (encode : (input : Input BranchState Presentation presentation data) →
       ((∀ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing →
-        -- At every connected assigned Type B support of this residual.
         ∀ piece : Finset input.object.Vertex,
           piece ⊆ input.object.remainderSupport packing →
           Graph.SupportComponents.Connected.ConnectedOn input.object piece →
           input.object.NegativeNetCharge piece data.threshold data.dischargeScale →
           0 < input.object.ambientSurplus piece data.threshold →
-          -- `lem:typeB-bridge-deficit-bound`, display (1), at its assigned
-          -- centres.  The envelope is fan data, so it is quantified.
           (∀ centre ∈ piece, Graph.IsHighCentre input.object data.threshold centre →
             ∀ envelope : Finset input.object.Vertex,
               Graph.TypeBEnvelopeCharge.envelopeNegativePart input.object data.threshold
                   data.dischargeScale envelope centre ≤
                 data.bridgeMassFactor * data.dischargeScale *
                   (input.object.degree centre - data.threshold)) ∧
-            -- `lem:typeB-bridge-deficit-bound`: `No_-(X) ≤ F·σ(X)`.
             (Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt input.object piece
                 data.threshold data.dischargeScale →
               piece.card + data.dischargeScale *
@@ -3293,9 +3354,6 @@ restate them and does not ask them again. -/
                 data.dischargeScale * input.object.positiveDeficiency piece data.threshold +
                   data.bridgeMassFactor * data.dischargeScale *
                     input.object.ambientSurplus piece data.threshold)) ∧
-        -- `lem:typeB-bridge-with-route8-core`, and at an empty route-8
-        -- collection `prop:typeB-bridge-sublinear`, over the canonical
-        -- decomposition of this residual's packed-window remainder.
         (∀ packing : Finset (Finset input.object.Vertex),
           input.object.IsWindowPacking data.windowOrder packing →
           ∀ route8 : Finset (Graph.SupportComponents.Connected.Component input.object
@@ -3321,9 +3379,6 @@ restate them and does not ask them again. -/
                   data.dischargeScale route8 +
                 data.bridgeMassFactor * data.dischargeScale *
                   input.object.degreeSurplus data.threshold) ∧
-        -- `def:typeB-residual-mass`, the at-most-twice occurrence convention:
-        -- the ordinary assigned role and the grouped decorated envelope role,
-        -- both drawn from this residual's remainder.
         ∀ packing : Finset (Finset input.object.Vertex),
           input.object.IsWindowPacking data.windowOrder packing →
           ∀ ordinary grouped : Finset input.object.Vertex,
@@ -3378,9 +3433,7 @@ restate them and does not ask them again. -/
             le_trans inputs.current.baseline
               (inputs.current.object.minDegree_le_degree vertex)
           refine ⟨?_, ?_, ?_⟩
-          · -- Display (1) and the deficit bound, at every assigned Type B
-            -- support of this residual.
-            intro packing _valid piece _inside _connected _charge _positive
+          · intro _packing _valid piece _inside _connected _charge _positive
             refine ⟨fun centre _member high envelope => ?_, fun component => ?_⟩
             · exact Graph.TypeBEnvelopeCharge.envelopeNegativePart_le _ high
                 data.bridgeMassSlack
@@ -3399,7 +3452,6 @@ restate them and does not ask them again. -/
               data.bridgeMassSlack baseline ordinarySurplus groupedSurplus
               ordinaryComponents groupedComponents))
         .nil)
-
 
 /-! ## Node `[88]`: the routing and threshold algebra of a Type A support
 
@@ -3555,11 +3607,11 @@ noncomputable def typeASaturationDichotomy
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0)
     (encodeSaturated :
@@ -3568,11 +3620,11 @@ noncomputable def typeASaturationDichotomy
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : current.object.Vertex,
@@ -3581,17 +3633,18 @@ noncomputable def typeASaturationDichotomy
                     data.dischargeScale receiver) →
       typeASaturatedReceiver.At current)
     (encodeUnsaturated :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset current.object.Vertex,
-          current.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          current.object.ambientSurplus piece data.threshold = 0 →
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
           ∀ receiver : current.object.Vertex,
             current.object.IsReceiver piece data.threshold receiver →
             1 + current.object.routedLoad piece data.threshold receiver ≤
@@ -3605,36 +3658,25 @@ noncomputable def typeASaturationDichotomy
     `Hypostructure.Graph.Strategy.Spine.typeASaturationDichotomy
     (by
       classical
-      -- The predecessor's own Type A support is read, so the branch is not
-      -- vacuous: the no arm is a statement about supports that exist.
-      have _support := supportOf (ExactLedger.get previous typeALowSurplus)
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero⟩ :=
+        supportOf (ExactLedger.get previous typeALowSurplus)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
       by_cases saturated :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              (∀ window : Finset current.object.Vertex,
-                current.object.InducesWindow data.windowOrder window →
-                ∃ member ∈ packing, ¬ Disjoint window member) ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  current.object.ambientSurplus piece data.threshold = 0 ∧
-                  ∃ receiver : current.object.Vertex,
-                    current.object.IsReceiver piece data.threshold receiver ∧
-                      current.object.Saturated piece data.threshold
-                        data.dischargeScale receiver
-      · exact .inl (encodeSaturated saturated)
-      · refine .inr (encodeUnsaturated ?_)
-        -- No receiver of any Type A support is saturated, so every one of them
-        -- keeps nonnegative final charge.
-        intro packing valid maximal piece inside connected charge surplus
-          receiver isReceiver
+          ∃ receiver : current.object.Vertex,
+            current.object.IsReceiver piece data.threshold receiver ∧
+              current.object.Saturated piece data.threshold
+                data.dischargeScale receiver
+      · exact ⟨.inl (encodeSaturated
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            saturated⟩)⟩
+      · refine ⟨.inr (encodeUnsaturated ?_)⟩
+        refine ⟨packing, valid, maximal, component, present, negative, zero, ?_⟩
+        intro receiver isReceiver
         refine (current.object.not_saturated_iff piece data.threshold
           data.dischargeScale receiver).mp ?_
-        exact fun full => saturated ⟨packing, valid, maximal, piece, inside,
-          connected, charge, surplus, receiver, isReceiver, full⟩)
+        exact fun full => saturated ⟨receiver, isReceiver, full⟩)
     saturatedFresh unsaturatedFresh
 
 /-! ## Nodes `[90]`--`[91]`: unsaturated Type A discharging -/
@@ -3679,34 +3721,36 @@ semantic key. -/
     (unsaturatedOf :
       (input : Input BranchState Presentation presentation data) →
       typeAUnsaturatedReceivers.At input →
-      ∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
+      ∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
         (∀ window : Finset input.object.Vertex,
           input.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset input.object.Vertex,
-          piece ⊆ input.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
+          ∃ member ∈ packing, ¬ Disjoint window member) ∧
+        ∃ component ∈ input.object.canonicalPieces
+            (input.object.remainderSupport packing),
+          let piece := input.object.pieceSupport
+            (input.object.remainderSupport packing) component
           input.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          input.object.ambientSurplus piece data.threshold = 0 →
+              data.dischargeScale ∧
+            input.object.ambientSurplus piece data.threshold = 0 ∧
           ∀ receiver : input.object.Vertex,
             input.object.IsReceiver piece data.threshold receiver →
             1 + input.object.routedLoad piece data.threshold receiver ≤
               data.dischargeScale *
                 input.object.missingPorts piece data.threshold receiver)
     (encode : (input : Input BranchState Presentation presentation data) →
-      (∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
+      (∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
         (∀ window : Finset input.object.Vertex,
           input.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset input.object.Vertex,
-          piece ⊆ input.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn input.object piece →
+          ∃ member ∈ packing, ¬ Disjoint window member) ∧
+        ∃ component ∈ input.object.canonicalPieces
+            (input.object.remainderSupport packing),
+          let piece := input.object.pieceSupport
+            (input.object.remainderSupport packing) component
           input.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          input.object.ambientSurplus piece data.threshold = 0 →
+              data.dischargeScale ∧
+            input.object.ambientSurplus piece data.threshold = 0 ∧
           piece.card ≤ data.dischargeScale *
             input.object.positiveDeficiency piece data.threshold) →
       typeAUnsaturatedDischarge.At input) :
@@ -3724,7 +3768,13 @@ semantic key. -/
         unsaturatedOf inputs.current (inputs.get typeAUnsaturatedReceivers)
       .cons (key := typeAUnsaturatedDischarge)
         (encode inputs.current (by
-          intro packing valid maximal piece inside connected negative surplus
+          obtain ⟨packing, valid, maximal, component, present, negative,
+            surplus, receiverBound⟩ := unsaturated
+          let piece := inputs.current.object.pieceSupport
+            (inputs.current.object.remainderSupport packing) component
+          have inside : piece ⊆ inputs.current.object.remainderSupport packing :=
+            inputs.current.object.pieceSupport_subset
+              (inputs.current.object.remainderSupport packing) component
           have exactDegree : ∀ vertex ∈ piece,
               inputs.current.object.degree vertex = data.threshold := by
             intro vertex member
@@ -3744,11 +3794,13 @@ semantic key. -/
                 data.threshold :=
             fun vertex member => (exactDegree vertex member) ▸
               inputs.current.object.internalDegree_le_degree piece vertex
-          exact Graph.FiniteObject.unsaturatedDischarge inputs.current.object
-            piece data.threshold data.dischargeScale capped
-            (routing packing valid maximal piece inside surplus).1
-            (unsaturated packing valid maximal piece inside connected negative
-              surplus)))
+          have discharged :=
+            Graph.FiniteObject.unsaturatedDischarge inputs.current.object
+              piece data.threshold data.dischargeScale capped
+              (routing packing valid maximal piece inside surplus).1
+              receiverBound
+          exact ⟨packing, valid, maximal, component, present, negative,
+            surplus, discharged⟩))
         .nil)
 
 /-! ## Node `[93]`: does a port of the saturated receiver see `s` visible
@@ -3792,23 +3844,33 @@ noncomputable def typeAVisibleEntryDichotomy
         ∀ piece : Finset current.object.Vertex,
           piece ⊆ current.object.remainderSupport packing →
           current.object.ambientSurplus piece data.threshold = 0 →
-          ∀ vertex ∈ piece,
+          (∀ vertex ∈ piece,
             current.object.internalDegree piece vertex = data.threshold →
             ∃ receiver : current.object.Vertex,
               current.object.traceReceiver? piece data.threshold vertex =
                   some receiver ∧
-                current.object.IsReceiver piece data.threshold receiver)
+                current.object.IsReceiver piece data.threshold receiver) ∧
+            (∀ receiver : current.object.Vertex,
+              current.object.IsReceiver piece data.threshold receiver →
+              data.dischargeScale *
+                    current.object.missingPorts piece data.threshold receiver =
+                  data.dischargeScale *
+                    (data.threshold - 1 -
+                      current.object.internalDegree piece receiver + 1) ∧
+                data.dischargeScale *
+                    current.object.missingPorts piece data.threshold receiver ≤
+                  data.dischargeScale * data.threshold))
     (saturatedOf : typeASaturatedReceiver.At current →
       ∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : current.object.Vertex,
@@ -3821,41 +3883,46 @@ noncomputable def typeAVisibleEntryDichotomy
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : current.object.Vertex,
                 current.object.IsReceiver piece data.threshold receiver ∧
                   current.object.Saturated piece data.threshold
                     data.dischargeScale receiver ∧
-                  ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                      current.object piece receiver,
-                    data.dischargeScale ≤
-                      (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                        data.threshold receiver outside).card) →
+                  Nonempty
+                    (Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅)) →
       typeAVisibleEntry.At current)
     (encodeExcess :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset current.object.Vertex,
-          current.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          current.object.ambientSurplus piece data.threshold = 0 →
-          piece.card ≤
-            (∑ receiver ∈ current.object.receivers piece data.threshold,
-              (Graph.VisibleEntry.silentExcess current.object piece
-                data.threshold data.dischargeScale receiver).card) +
-              data.dischargeScale *
-                current.object.positiveDeficiency piece data.threshold) →
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                      data.dischargeScale receiver ∧
+                  Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+                      data.dischargeScale receiver ∅ ∧
+                  piece.card ≤
+                    (∑ other ∈ current.object.receivers piece data.threshold,
+                      (Graph.VisibleEntry.silentExcess current.object piece
+                        data.threshold data.dischargeScale other).card) +
+                      data.dischargeScale *
+                        current.object.positiveDeficiency piece data.threshold) →
       typeAVisibleFirstExcess.At current)
     (visibleFresh : typeAVisibleEntry ∉ known)
     (excessFresh : typeAVisibleFirstExcess ∉ known) :
@@ -3864,67 +3931,103 @@ noncomputable def typeAVisibleEntryDichotomy
     `Hypostructure.Graph.Strategy.Spine.typeAVisibleEntryDichotomy
     (by
       classical
-      -- The saturated receiver this node is asked about is the predecessor's
-      -- own fact, so neither arm is vacuous.
-      have _saturated :=
+      letI : DecidableEq current.object.Vertex := current.object.vertices.decEq
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        selectedReceiver, selectedIsReceiver, selectedSaturated⟩ :=
         saturatedOf (ExactLedger.get previous typeASaturatedReceiver)
-      -- Node `[88]`'s routing, read as a fact rather than re-proved.
-      have routing := routingOf (ExactLedger.get previous typeAReceiverRouting)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      have inside : piece ⊆ current.object.remainderSupport packing :=
+        current.object.pieceSupport_subset
+          (current.object.remainderSupport packing) component
+      have routing := routingOf
+        (ExactLedger.get previous typeAReceiverRouting)
+      have routed := routing packing valid maximal piece inside zero
+      have exactDegree : ∀ vertex ∈ piece,
+          current.object.degree vertex = data.threshold := by
+        intro vertex member
+        have lower : data.threshold ≤ current.object.degree vertex :=
+          le_trans current.baseline
+            (current.object.minDegree_le_degree vertex)
+        have summand : current.object.degree vertex - data.threshold = 0 :=
+          Nat.eq_zero_of_le_zero
+            (zero ▸ Finset.single_le_sum
+              (f := fun other =>
+                current.object.degree other - data.threshold)
+              (fun _ _ => Nat.zero_le _) member)
+        omega
+      have capped : ∀ vertex ∈ piece,
+          current.object.internalDegree piece vertex ≤ data.threshold :=
+        fun vertex member => (exactDegree vertex member) ▸
+          current.object.internalDegree_le_degree piece vertex
       by_cases visible :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              (∀ window : Finset current.object.Vertex,
-                current.object.InducesWindow data.windowOrder window →
-                ∃ member ∈ packing, ¬ Disjoint window member) ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  current.object.ambientSurplus piece data.threshold = 0 ∧
-                  ∃ receiver : current.object.Vertex,
-                    current.object.IsReceiver piece data.threshold receiver ∧
-                      current.object.Saturated piece data.threshold
-                        data.dischargeScale receiver ∧
-                      ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                          current.object piece receiver,
-                        data.dischargeScale ≤
-                          (Graph.VisibleEntry.visibleLoadsAt current.object
-                            piece data.threshold receiver outside).card
-      · exact .inl (encodeVisible visible)
-      · refine .inr (encodeExcess ?_)
-        intro packing valid maximal piece inside connected charge surplus
-        -- `σ(X) = 0` against the standing baseline: every vertex of the support
-        -- sits exactly at the baseline, which is what makes the completion
-        -- ports of a receiver number exactly `q(w)`.
-        have exactDegree : ∀ vertex ∈ piece,
-            current.object.degree vertex = data.threshold := by
-          intro vertex member
-          have nonneg : data.threshold ≤ current.object.degree vertex :=
-            le_trans current.baseline
-              (current.object.minDegree_le_degree vertex)
-          have summand :
-              current.object.degree vertex - data.threshold = 0 :=
-            Nat.eq_zero_of_le_zero
-              (surplus ▸ Finset.single_le_sum
-                (f := fun other => current.object.degree other - data.threshold)
-                (fun _ _ => Nat.zero_le _) member)
+          ∃ receiver : current.object.Vertex,
+            current.object.IsReceiver piece data.threshold receiver ∧
+              current.object.Saturated piece data.threshold
+                  data.dischargeScale receiver ∧
+              Graph.ExitFour.VisibleFourUnpeeledAt piece data.threshold
+                data.dischargeScale receiver ∅
+      · obtain ⟨receiver, isReceiver, saturated, overloaded⟩ := visible
+        exact ⟨.inl (encodeVisible
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated,
+            Graph.ExitFour.visibleFourUnpeeledPackage piece data.threshold
+              data.dischargeScale receiver ∅ overloaded⟩)⟩
+      · have noVisiblePorts : ∀ receiver : current.object.Vertex,
+            current.object.IsReceiver piece data.threshold receiver →
+            current.object.Saturated piece data.threshold data.dischargeScale
+              receiver →
+            ∀ outside ∈ Graph.VisibleEntry.completionPorts current.object piece
+              receiver,
+              (Graph.VisibleEntry.visibleLoadsAt current.object piece
+                data.threshold receiver outside).card + 1 ≤
+                  data.dischargeScale := by
+          intro receiver isReceiver saturated outside port
+          have notOverloaded : ¬ data.dischargeScale ≤
+              (Graph.VisibleEntry.visibleLoadsAt current.object piece
+                data.threshold receiver outside).card := by
+            intro overloaded
+            apply visible
+            refine ⟨receiver, isReceiver, saturated, outside, port, ?_⟩
+            have atEmpty :
+                Graph.ExitFour.unpeeledVisibleLoadsAt piece data.threshold
+                    receiver outside ∅ =
+                  Graph.VisibleEntry.visibleLoadsAt current.object piece
+                    data.threshold receiver outside := by
+              ext load
+              constructor
+              · intro member
+                exact (Finset.mem_inter.mp member).1
+              · intro member
+                exact Finset.mem_inter.mpr ⟨member, by
+                  simp [Graph.ExitFour.unpeeledLoads,
+                    Graph.VisibleEntry.visibleLoadsAt_subset current.object
+                      piece data.threshold receiver outside member]⟩
+            exact atEmpty.symm ▸ overloaded
           omega
-        have capped : ∀ vertex ∈ piece,
-            current.object.internalDegree piece vertex ≤ data.threshold :=
-          fun vertex member => (exactDegree vertex member) ▸
-            current.object.internalDegree_le_degree piece vertex
-        refine Graph.VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency
-          current.object piece data.threshold data.dischargeScale
-          data.dischargeScale_pos exactDegree capped
-          (routing packing valid maximal piece inside surplus) ?_
-        -- The alternative not taken: no saturated receiver of this support has
-        -- a completion port carrying `s` visible receiver-entry returns.
-        intro receiver isReceiver saturated outside port
-        by_contra crowded
-        exact visible ⟨packing, valid, maximal, piece, inside, connected, charge,
-          surplus, receiver, isReceiver, saturated, outside, port, by omega⟩)
+        have supportBound :=
+          Graph.VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency
+            current.object piece data.threshold data.dischargeScale
+            data.dischargeScale_pos exactDegree capped routed.1 noVisiblePorts
+        have selectedAfter : Graph.ExitFour.SaturatedAfter piece data.threshold
+            data.dischargeScale selectedReceiver ∅ :=
+          (Graph.ExitFour.saturatedAfter_empty piece data.threshold
+            data.dischargeScale selectedReceiver).mpr selectedSaturated
+        have selectedSilent : Graph.ExitFour.SilentUnpeeledExcessAt piece
+            data.threshold data.dischargeScale selectedReceiver ∅ := by
+          rcases Graph.ExitFour.visibleFourUnpeeled_or_silentUnpeeledExcess
+              piece data.threshold data.dischargeScale selectedReceiver ∅
+              (exactDegree selectedReceiver selectedIsReceiver.1)
+              selectedIsReceiver selectedAfter with overloaded | silent
+          · exact False.elim (visible
+              ⟨selectedReceiver, selectedIsReceiver, selectedSaturated,
+                overloaded⟩)
+          · exact silent
+        exact ⟨.inr (encodeExcess
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            selectedReceiver, selectedIsReceiver, selectedSaturated,
+            selectedSilent, supportBound⟩)⟩)
     visibleFresh excessFresh
 
 /-! ## Nodes `[89]`--`[94]`: `lem:typeA-port-return`, the port non-vacuity
@@ -3991,7 +4094,7 @@ receiver-entry coordinate identifications tested in `lem:typeA-visible-entry`.
 (Q1) it is the set of visible routed loads whose response coordinates are
 identified."*
 
-Row 16 quantifies over `Graph.ExitFour.Family`, so it never invents a member of
+Row 16 quantifies over `Graph.ExitFour.ReceiverFamily`, so it never invents a member of
 `𝒬₄(w)`; the five generating clauses have to be supplied by the nodes that own
 them, and (Q1) is this one's.  `Graph.VisibleEntry.visibleEntryFamily` is the
 construction and `Graph/VisibleEntryQuotient.lean` proves its two structural
@@ -4022,69 +4125,59 @@ exact key. -/
           (∀ window : Finset input.object.Vertex,
             input.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset input.object.Vertex,
-            piece ⊆ input.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
-              input.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               input.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : input.object.Vertex,
                 input.object.IsReceiver piece data.threshold receiver ∧
                   input.object.Saturated piece data.threshold
                     data.dischargeScale receiver ∧
-                  ∃ outside ∈ Graph.VisibleEntry.completionPorts input.object
-                      piece receiver,
-                    data.dischargeScale ≤
-                      (Graph.VisibleEntry.visibleLoadsAt input.object piece
-                        data.threshold receiver outside).card)
+                  Nonempty
+                    (Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅))
     (encode : (input : Input BranchState Presentation presentation data) →
       (∃ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset input.object.Vertex,
             input.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset input.object.Vertex,
-            piece ⊆ input.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
-              input.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               input.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : input.object.Vertex,
                 input.object.IsReceiver piece data.threshold receiver ∧
                   input.object.Saturated piece data.threshold
                     data.dischargeScale receiver ∧
-                  ∃ outside ∈ Graph.VisibleEntry.completionPorts input.object
-                      piece receiver,
-                    data.dischargeScale ≤
-                        (Graph.VisibleEntry.visibleLoadsAt input.object piece
-                          data.threshold receiver outside).card ∧
-                      ∀ Carrier : Type u,
-                        ∀ entry : Graph.Route8.Entry
-                            (Graph.HasCycleWithLength data.LengthOK) Carrier,
-                          ∀ coordinate : input.object.Vertex → entry.Coordinate,
-                            ∀ declared : ∀ load ∈
-                                input.object.routedLoads piece data.threshold
-                                  receiver,
-                                coordinate load ∈ entry.coordinates,
-                              (Graph.VisibleEntry.visibleEntryFamily piece
-                                    data.threshold receiver entry coordinate
-                                    outside declared).Generated
-                                  Graph.ExitFour.Clause.visibleEntry
-                                  entry.coordinates
-                                  (Graph.VisibleEntry.visibleCoordinates piece
-                                    data.threshold receiver entry coordinate
-                                    outside entry.coordinates) ∧
-                                (Graph.VisibleEntry.visibleCoordinates piece
-                                  data.threshold receiver entry coordinate
-                                  outside entry.coordinates).Nonempty ∧
-                                Graph.VisibleEntry.visibleLoadsAt input.object
-                                    piece data.threshold receiver outside ⊆
-                                  (Graph.VisibleEntry.visibleEntryFamily piece
-                                      data.threshold receiver entry coordinate
-                                      outside declared).declaredLoads
-                                    (Graph.VisibleEntry.visibleCoordinates piece
-                                      data.threshold receiver entry coordinate
-                                      outside entry.coordinates)) →
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    (∀ load : package.SelectedLoad,
+                      ((∀ vertex ∈
+                          (package.selectedReturn load.1 load.2).connector.support,
+                        vertex ≠ (package.selectedResponseCoordinate load).entry.1 →
+                          vertex ∉ piece) ∧
+                        Graph.VisibleEntry.IsChannel input.object piece
+                          (package.selectedResponseCoordinate load).channel) ∧
+                        (package.selectedPieceChannel load).length =
+                          (package.selectedResponseCoordinate load).channel.length ∧
+                        (package.selectedContextConnector load).length =
+                          (package.selectedResponseCoordinate load).connectorLabel) ∧
+                    (∀ selected : package.SelectedGerm,
+                      selected ∈ package.germSchedule.values) ∧
+                    (∀ pair : package.GermPair,
+                      pair ∈ package.germPairSchedule.values ∧
+                        Graph.DecoratedHandoff.SeparatesAt
+                          pair.left.germ.path pair.right.germ.path
+                            pair.firstSeparator.separator ∧
+                        pair.separatorOrder = pair.firstSeparator.separator ::
+                          pair.firstSeparator.remaining)) →
       typeAVisibleEntryClause.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeAVisibleEntryClause
@@ -4094,29 +4187,20 @@ exact key. -/
       .cons (key := typeAVisibleEntryClause)
         (encode inputs.current (by
           classical
-          obtain ⟨packing, valid, maximal, piece, inside, connected, charge,
-            surplus, receiver, isReceiver, saturated, outside, portMem,
-            crowded⟩ := port
-          refine ⟨packing, valid, maximal, piece, inside, connected, charge,
-            surplus, receiver, isReceiver, saturated, outside, portMem,
-            crowded, ?_⟩
-          intro Carrier entry coordinate declared
-          -- The port sees at least `s ≥ 1` visible loads, so the identification
-          -- is nontrivial: this is the whole difference between (Q1) here and
-          -- the same construction at a silent port.
-          have seen :
-              (Graph.VisibleEntry.visibleLoadsAt inputs.current.object piece
-                data.threshold receiver outside).Nonempty := by
-            rw [← Finset.card_pos]
-            have := data.dischargeScale_pos
-            omega
-          exact ⟨Graph.VisibleEntry.generated_visibleEntry piece data.threshold
-              receiver entry coordinate outside declared entry.coordinates
-              (subset_refl _),
-            Graph.VisibleEntry.visibleCoordinates_nonempty piece data.threshold
-              receiver entry coordinate outside declared seen,
-            Graph.VisibleEntry.visibleLoadsAt_subset_declaredLoads piece
-              data.threshold receiver entry coordinate outside declared⟩))
+          obtain ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, packageExists⟩ := port
+          obtain ⟨package⟩ := packageExists
+          refine ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, ?_, ?_, ?_⟩
+          · intro load
+            exact ⟨package.selectedResponseCoordinate_ownership load,
+              package.selectedPieceChannel_length load,
+              package.selectedContextConnector_length load⟩
+          · exact fun selected => package.mem_germSchedule selected
+          · intro pair
+            exact ⟨package.mem_germPairSchedule pair,
+              pair.firstSeparator_separatesAt,
+              pair.separatorOrder_eq_cons⟩))
         .nil)
 
 /-! ## The shared entry of nodes `[101]`--`[107]`
@@ -4137,20 +4221,21 @@ by exact key and refines it: at the empty peeling set `L₄(w) = L(w)`, so
 grows only at node `[102]`, and its `def:typeA-exit4-peeling` witnesses ride
 with node `[102]`'s own fact. -/
 @[reducible] noncomputable def typeASaturatedExitEntryRow
-    (typeASaturatedReceiver typeASaturatedExitEntry :
+    (source typeASaturatedExitEntry :
       FactKey (Input BranchState Presentation presentation data))
-    (distinct : typeASaturatedReceiver ≠ typeASaturatedExitEntry)
-    (saturatedOf : (input : Input BranchState Presentation presentation data) →
-      typeASaturatedReceiver.At input →
+    (distinct : source ≠ typeASaturatedExitEntry)
+    (sourceOf : (input : Input BranchState Presentation presentation data) →
+      source.At input →
       ∃ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset input.object.Vertex,
             input.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset input.object.Vertex,
-            piece ⊆ input.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
-              input.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               input.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : input.object.Vertex,
@@ -4163,10 +4248,11 @@ with node `[102]`'s own fact. -/
           (∀ window : Finset input.object.Vertex,
             input.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset input.object.Vertex,
-            piece ⊆ input.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn input.object piece ∧
-              input.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               input.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : input.object.Vertex,
@@ -4179,19 +4265,710 @@ with node `[102]`'s own fact. -/
       typeASaturatedExitEntry.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeASaturatedExitEntry
-    (rowManifest typeASaturatedReceiver typeASaturatedExitEntry distinct)
+    (rowManifest source typeASaturatedExitEntry distinct)
     (fun inputs =>
       .cons (key := typeASaturatedExitEntry)
         (encode inputs.current (by
           classical
-          obtain ⟨packing, valid, maximal, piece, inside, connected, charge,
+          obtain ⟨packing, valid, maximal, component, present, charge,
             surplus, receiver, isReceiver, saturated⟩ :=
-            saturatedOf inputs.current (inputs.get typeASaturatedReceiver)
-          exact ⟨packing, valid, maximal, piece, inside, connected, charge,
+            sourceOf inputs.current (inputs.get source)
+          let piece := inputs.current.object.pieceSupport
+            (inputs.current.object.remainderSupport packing) component
+          exact ⟨packing, valid, maximal, component, present, charge,
             surplus, receiver, isReceiver, ∅, Finset.empty_subset _,
             (Graph.ExitFour.saturatedAfter_empty piece data.threshold
               data.dischargeScale receiver).mpr saturated⟩))
         .nil)
+
+/-- **`lem:typeA-saturated-handoff`, finite descent part.**
+
+The row reads the exact saturated receiver/peeling state already committed in
+`typeASaturatedExitEntry` and publishes the paper's finite exit-`(4)` descent
+principle for that state.  The terminal predicates are not chosen here:
+downstream rows instantiate them with the actual closed exits, exit-`(7)`
+handoff, and route-8 residual facts once those semantic facts are on the
+ledger. -/
+@[reducible] noncomputable def typeAExitFourFiniteDescentRow
+    (typeASaturatedExitEntry typeAExitFourFiniteDescent :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : typeASaturatedExitEntry ≠ typeAExitFourFiniteDescent)
+    (entryOf : (input : Input BranchState Presentation presentation data) →
+      typeASaturatedExitEntry.At input →
+      ∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              input.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : input.object.Vertex,
+                input.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset input.object.Vertex,
+                    peeled ⊆ input.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              input.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : input.object.Vertex,
+                input.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ startPeeled : Finset input.object.Vertex,
+                    startPeeled ⊆ input.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver startPeeled ∧
+                      ∀ Retained Terminal :
+                          Finset input.object.Vertex → Prop,
+                        Retained startPeeled →
+                        (∀ peeled,
+                          peeled ⊆
+                            input.object.routedLoads piece data.threshold
+                              receiver →
+                          Retained peeled →
+                          Graph.ExitFour.SaturatedAfter piece data.threshold
+                            data.dischargeScale receiver peeled →
+                          Terminal peeled ∨
+                            ∃ load ∈ input.object.routedLoads piece
+                                data.threshold receiver,
+                              ∃ fresh : load ∉ peeled, Retained (Finset.cons load peeled fresh)) →
+                        (∃ finalPeeled ⊆
+                            input.object.routedLoads piece data.threshold
+                              receiver,
+                          Retained finalPeeled ∧ Terminal finalPeeled) ∨
+                        (∃ finalPeeled ⊆
+                            input.object.routedLoads piece data.threshold
+                              receiver,
+                          Retained finalPeeled ∧
+                            ¬ Graph.ExitFour.SaturatedAfter piece
+                              data.threshold data.dischargeScale receiver
+                              finalPeeled)) →
+      typeAExitFourFiniteDescent.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeAExitFourFiniteDescent
+    (rowManifest typeASaturatedExitEntry typeAExitFourFiniteDescent distinct)
+    (fun inputs =>
+      .cons (key := typeAExitFourFiniteDescent)
+        (encode inputs.current (by
+          classical
+          obtain ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, startPeeled, startInside, startSaturated⟩ :=
+            entryOf inputs.current (inputs.get typeASaturatedExitEntry)
+          let piece := inputs.current.object.pieceSupport
+            (inputs.current.object.remainderSupport packing) component
+          refine ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, startPeeled, startInside, startSaturated,
+            ?_⟩
+          intro Retained Terminal startRetained step
+          exact Graph.ExitFour.terminal_or_unsaturated_from piece
+            data.threshold data.dischargeScale receiver startInside
+            startRetained step))
+        .nil)
+
+/-- **`lem:typeA-exit4-residual-routing`, visible/silent split at the current
+peeling state.**
+
+The row reads the current `typeASaturatedExitEntry` state from the ledger and
+asks the paper's first question at that state: does a completion port carry
+four unpeeled visible returns?  The yes arm commits the canonical visible
+package for that same `P₄(w)`; the no arm commits the selected silent residual
+excess. -/
+noncomputable def typeASaturatedHandoffSplitDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeASaturatedExitEntry typeASaturatedHandoffVisible
+      typeASaturatedHandoffSilent :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeASaturatedExitEntry known]
+    (entryOf : typeASaturatedExitEntry.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled)
+    (encodeVisible :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      Nonempty
+                        (Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                          data.threshold data.dischargeScale receiver peeled)) →
+      typeASaturatedHandoffVisible.At current)
+    (encodeSilent :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      Graph.ExitFour.SilentUnpeeledExcessAt piece
+                        data.threshold data.dischargeScale receiver peeled) →
+      typeASaturatedHandoffSilent.At current)
+    (visibleFresh : typeASaturatedHandoffVisible ∉ known)
+    (silentFresh : typeASaturatedHandoffSilent ∉ known) :
+    Decision typeASaturatedHandoffVisible typeASaturatedHandoffSilent
+      previous :=
+  Decision.run previous typeASaturatedHandoffVisible
+    typeASaturatedHandoffSilent
+    `Hypostructure.Graph.Strategy.Spine.typeASaturatedHandoffSplitDichotomy
+    (by
+      classical
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, peeled, peeledSubset, saturated⟩ :=
+        entryOf (ExactLedger.get previous typeASaturatedExitEntry)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      have exactDegree : ∀ vertex ∈ piece,
+          current.object.degree vertex = data.threshold := by
+        intro vertex member
+        have lower : data.threshold ≤ current.object.degree vertex :=
+          le_trans current.baseline
+            (current.object.minDegree_le_degree vertex)
+        have summand : current.object.degree vertex - data.threshold = 0 :=
+          Nat.eq_zero_of_le_zero
+            (zero ▸ Finset.single_le_sum
+              (f := fun other =>
+                current.object.degree other - data.threshold)
+              (fun _ _ => Nat.zero_le _) member)
+        omega
+      by_cases visible :
+          Graph.ExitFour.VisibleFourUnpeeledAt piece data.threshold
+            data.dischargeScale receiver peeled
+      · exact ⟨.inl (encodeVisible
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated,
+            Graph.ExitFour.visibleFourUnpeeledPackage piece data.threshold
+              data.dischargeScale receiver peeled visible⟩)⟩
+      · have silent : Graph.ExitFour.SilentUnpeeledExcessAt piece
+            data.threshold data.dischargeScale receiver peeled := by
+          rcases Graph.ExitFour.visibleFourUnpeeled_or_silentUnpeeledExcess
+              piece data.threshold data.dischargeScale receiver peeled
+              (exactDegree receiver isReceiver.1) isReceiver saturated with
+            overloaded | silent
+          · exact False.elim (visible overloaded)
+          · exact silent
+        exact ⟨.inr (encodeSilent
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated,
+            silent⟩)⟩)
+    visibleFresh silentFresh
+
+/-! ## Node `[101]` inside `lem:typeA-exit4-residual-routing`
+
+After the arbitrary-peeling visible/silent split, exit `(4)` is tested at the
+same selected receiver and the same current `P₄(w)`.  The visible and silent
+sources have different canonical support clauses, but they commit the same
+semantic facts: either an exit-`(4)` witness is present, or the selected current
+state carries the no-exit-`(4)` hypothesis used by node `[103]`. -/
+
+noncomputable def typeASaturatedHandoffVisibleExitFourDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeASaturatedHandoffVisible typeASaturatedHandoffExitFour
+      typeASaturatedHandoffExitFourFree :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeASaturatedHandoffVisible known]
+    (visibleOf : typeASaturatedHandoffVisible.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      Nonempty
+                        (Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                          data.threshold data.dischargeScale receiver peeled))
+    (encodeExit :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ((∃ package :
+                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                            data.threshold data.dischargeScale receiver peeled,
+                        ∃ witness : Graph.ExitFour.Witness
+                            (Graph.HasCycleWithLength data.LengthOK) piece
+                            data.threshold receiver peeled,
+                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                              piece data.threshold data.dischargeScale receiver
+                              package.outside peeled,
+                            witness.load = load) ∨
+                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                            data.threshold data.dischargeScale receiver peeled ∧
+                          ∃ witness : Graph.ExitFour.Witness
+                              (Graph.HasCycleWithLength data.LengthOK) piece
+                              data.threshold receiver peeled,
+                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                              data.threshold data.dischargeScale receiver peeled))) →
+      typeASaturatedHandoffExitFour.At current)
+    (encodeFree :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ((∃ package :
+                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                            data.threshold data.dischargeScale receiver peeled,
+                        ¬ ∃ witness : Graph.ExitFour.Witness
+                            (Graph.HasCycleWithLength data.LengthOK) piece
+                            data.threshold receiver peeled,
+                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                              piece data.threshold data.dischargeScale receiver
+                              package.outside peeled,
+                            witness.load = load) ∨
+                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                            data.threshold data.dischargeScale receiver peeled ∧
+                          ¬ ∃ witness : Graph.ExitFour.Witness
+                              (Graph.HasCycleWithLength data.LengthOK) piece
+                              data.threshold receiver peeled,
+                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                              data.threshold data.dischargeScale receiver peeled))) →
+      typeASaturatedHandoffExitFourFree.At current)
+    (exitFresh : typeASaturatedHandoffExitFour ∉ known)
+    (freeFresh : typeASaturatedHandoffExitFourFree ∉ known) :
+    Decision typeASaturatedHandoffExitFour
+      typeASaturatedHandoffExitFourFree previous :=
+  Decision.run previous typeASaturatedHandoffExitFour
+    typeASaturatedHandoffExitFourFree
+    `Hypostructure.Graph.Strategy.Spine.typeASaturatedHandoffVisibleExitFourDichotomy
+    (by
+      classical
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, peeled, peeledSubset, saturated, packageWitness⟩ :=
+        visibleOf (ExactLedger.get previous typeASaturatedHandoffVisible)
+      obtain ⟨package⟩ := packageWitness
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      by_cases occurs :
+          ∃ witness : Graph.ExitFour.Witness
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              receiver peeled,
+            ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                piece data.threshold data.dischargeScale receiver
+                package.outside peeled,
+              witness.load = load
+      · exact ⟨.inl (encodeExit
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated,
+            Or.inl ⟨package, occurs⟩⟩)⟩
+      · exact ⟨.inr (encodeFree
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated,
+            Or.inl ⟨package, occurs⟩⟩)⟩)
+    exitFresh freeFresh
+
+noncomputable def typeASaturatedHandoffSilentExitFourDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeASaturatedHandoffSilent typeASaturatedHandoffExitFour
+      typeASaturatedHandoffExitFourFree :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeASaturatedHandoffSilent known]
+    (silentOf : typeASaturatedHandoffSilent.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      Graph.ExitFour.SilentUnpeeledExcessAt piece
+                        data.threshold data.dischargeScale receiver peeled)
+    (encodeExit :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ((∃ package :
+                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                            data.threshold data.dischargeScale receiver peeled,
+                        ∃ witness : Graph.ExitFour.Witness
+                            (Graph.HasCycleWithLength data.LengthOK) piece
+                            data.threshold receiver peeled,
+                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                              piece data.threshold data.dischargeScale receiver
+                              package.outside peeled,
+                            witness.load = load) ∨
+                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                            data.threshold data.dischargeScale receiver peeled ∧
+                          ∃ witness : Graph.ExitFour.Witness
+                              (Graph.HasCycleWithLength data.LengthOK) piece
+                              data.threshold receiver peeled,
+                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                              data.threshold data.dischargeScale receiver peeled))) →
+      typeASaturatedHandoffExitFour.At current)
+    (encodeFree :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ((∃ package :
+                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                            data.threshold data.dischargeScale receiver peeled,
+                        ¬ ∃ witness : Graph.ExitFour.Witness
+                            (Graph.HasCycleWithLength data.LengthOK) piece
+                            data.threshold receiver peeled,
+                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                              piece data.threshold data.dischargeScale receiver
+                              package.outside peeled,
+                            witness.load = load) ∨
+                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                            data.threshold data.dischargeScale receiver peeled ∧
+                          ¬ ∃ witness : Graph.ExitFour.Witness
+                              (Graph.HasCycleWithLength data.LengthOK) piece
+                              data.threshold receiver peeled,
+                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                              data.threshold data.dischargeScale receiver peeled))) →
+      typeASaturatedHandoffExitFourFree.At current)
+    (exitFresh : typeASaturatedHandoffExitFour ∉ known)
+    (freeFresh : typeASaturatedHandoffExitFourFree ∉ known) :
+    Decision typeASaturatedHandoffExitFour
+      typeASaturatedHandoffExitFourFree previous :=
+  Decision.run previous typeASaturatedHandoffExitFour
+    typeASaturatedHandoffExitFourFree
+    `Hypostructure.Graph.Strategy.Spine.typeASaturatedHandoffSilentExitFourDichotomy
+    (by
+      classical
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, peeled, peeledSubset, saturated, silent⟩ :=
+        silentOf (ExactLedger.get previous typeASaturatedHandoffSilent)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      by_cases occurs :
+          ∃ witness : Graph.ExitFour.Witness
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              receiver peeled,
+            witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+              data.dischargeScale receiver peeled
+      · exact ⟨.inl (encodeExit
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated,
+            Or.inr ⟨silent, occurs⟩⟩)⟩
+      · exact ⟨.inr (encodeFree
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated,
+            Or.inr ⟨silent, occurs⟩⟩)⟩)
+    exitFresh freeFresh
+
+/-! ## Node `[103]`: exit `(5)`, target-complete compression
+
+The predecessor is the exact no-exit-`(4)` fact from the current saturated
+handoff state.  The decision tests only whether the paper's target-complete
+proper-support compression exists at this same residual. -/
+
+noncomputable def typeAExitFiveDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeASaturatedHandoffExitFourFree typeAExitFive typeAExitFiveFree :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeASaturatedHandoffExitFourFree known]
+    (freeOf : typeASaturatedHandoffExitFourFree.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ((∃ package :
+                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                            data.threshold data.dischargeScale receiver peeled,
+                        ¬ ∃ witness : Graph.ExitFour.Witness
+                            (Graph.HasCycleWithLength data.LengthOK) piece
+                            data.threshold receiver peeled,
+                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                              piece data.threshold data.dischargeScale receiver
+                              package.outside peeled,
+                            witness.load = load) ∨
+                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                            data.threshold data.dischargeScale receiver peeled ∧
+                          ¬ ∃ witness : Graph.ExitFour.Witness
+                              (Graph.HasCycleWithLength data.LengthOK) piece
+                              data.threshold receiver peeled,
+                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                              data.threshold data.dischargeScale receiver peeled)))
+    (encodeExit :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ((∃ package :
+                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                            data.threshold data.dischargeScale receiver peeled,
+                        ¬ ∃ witness : Graph.ExitFour.Witness
+                            (Graph.HasCycleWithLength data.LengthOK) piece
+                            data.threshold receiver peeled,
+                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                              piece data.threshold data.dischargeScale receiver
+                              package.outside peeled,
+                            witness.load = load) ∨
+                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                            data.threshold data.dischargeScale receiver peeled ∧
+                          ¬ ∃ witness : Graph.ExitFour.Witness
+                              (Graph.HasCycleWithLength data.LengthOK) piece
+                              data.threshold receiver peeled,
+                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                              data.threshold data.dischargeScale receiver peeled)) ∧
+                      ∃ support : Finset current.object.Vertex,
+                        Graph.Strategy.InterfaceReplacement.CompressibleSupport
+                          (Graph.MinimumDegreeAtLeast data.threshold)
+                          (Graph.HasCycleWithLength data.LengthOK)
+                          current.object support) →
+      typeAExitFive.At current)
+    (encodeFree :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset current.object.Vertex,
+                    peeled ⊆ current.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ((∃ package :
+                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                            data.threshold data.dischargeScale receiver peeled,
+                        ¬ ∃ witness : Graph.ExitFour.Witness
+                            (Graph.HasCycleWithLength data.LengthOK) piece
+                            data.threshold receiver peeled,
+                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                              piece data.threshold data.dischargeScale receiver
+                              package.outside peeled,
+                            witness.load = load) ∨
+                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
+                            data.threshold data.dischargeScale receiver peeled ∧
+                          ¬ ∃ witness : Graph.ExitFour.Witness
+                              (Graph.HasCycleWithLength data.LengthOK) piece
+                              data.threshold receiver peeled,
+                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
+                              data.threshold data.dischargeScale receiver peeled)) ∧
+                      ¬ ∃ support : Finset current.object.Vertex,
+                        Graph.Strategy.InterfaceReplacement.CompressibleSupport
+                          (Graph.MinimumDegreeAtLeast data.threshold)
+                          (Graph.HasCycleWithLength data.LengthOK)
+                          current.object support) →
+      typeAExitFiveFree.At current)
+    (exitFresh : typeAExitFive ∉ known)
+    (freeFresh : typeAExitFiveFree ∉ known) :
+    Decision typeAExitFive typeAExitFiveFree previous :=
+  Decision.run previous typeAExitFive typeAExitFiveFree
+    `Hypostructure.Graph.Strategy.Spine.typeAExitFiveDichotomy
+    (by
+      classical
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour⟩ :=
+        freeOf (ExactLedger.get previous typeASaturatedHandoffExitFourFree)
+      by_cases compression :
+          ∃ support : Finset current.object.Vertex,
+            Graph.Strategy.InterfaceReplacement.CompressibleSupport
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) current.object support
+      · exact ⟨.inl (encodeExit
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated,
+            noExitFour, compression⟩)⟩
+      · exact ⟨.inr (encodeFree
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, peeled, peeledSubset, saturated,
+            noExitFour, compression⟩)⟩)
+    exitFresh freeFresh
 
 /-! ## Node `[95]`: exit `(1)`, the Mersenne anchored return
 
@@ -4239,68 +5016,67 @@ noncomputable def typeAExitOneDichotomy
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : current.object.Vertex,
                 current.object.IsReceiver piece data.threshold receiver ∧
                   current.object.Saturated piece data.threshold
-                    data.dischargeScale receiver ∧
-                  ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                      current.object piece receiver,
-                    data.dischargeScale ≤
-                      (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                        data.threshold receiver outside).card)
+                      data.dischargeScale receiver ∧
+                  Nonempty
+                    (Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅))
     (encodeReturn :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : current.object.Vertex,
                 current.object.IsReceiver piece data.threshold receiver ∧
                   current.object.Saturated piece data.threshold
-                    data.dischargeScale receiver ∧
-                  ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                      current.object piece receiver,
-                    ∃ return' : Graph.VisibleEntry.AnchoredReturn
-                        current.object receiver outside,
+                      data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    ∃ return' : Graph.VisibleEntry.AnchoredReturn current.object
+                        receiver package.outside,
                       Graph.ShiftedCycleLength data.LengthOK
                         return'.path.length) →
       typeAExitOneReturn.At current)
     (encodeFree :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset current.object.Vertex,
-          current.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          current.object.ambientSurplus piece data.threshold = 0 →
-          ∀ receiver : current.object.Vertex,
-            current.object.IsReceiver piece data.threshold receiver →
-            current.object.Saturated piece data.threshold data.dischargeScale
-              receiver →
-            ∀ outside ∈ Graph.VisibleEntry.completionPorts current.object piece
-              receiver,
-              ∀ return' : Graph.VisibleEntry.AnchoredReturn current.object
-                  receiver outside,
-                ¬ Graph.ShiftedCycleLength data.LengthOK
-                  return'.path.length) →
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                      data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    ∀ return' : Graph.VisibleEntry.AnchoredReturn current.object
+                        receiver package.outside,
+                      ¬ Graph.ShiftedCycleLength data.LengthOK
+                        return'.path.length) →
       typeAExitOneFree.At current)
     (returnFresh : typeAExitOneReturn ∉ known)
     (freeFresh : typeAExitOneFree ∉ known) :
@@ -4309,42 +5085,22 @@ noncomputable def typeAExitOneDichotomy
     `Hypostructure.Graph.Strategy.Spine.typeAExitOneDichotomy
     (by
       classical
-      -- The port this exit is asked of is node `[93]`'s own fact, read by exact
-      -- key: the exit list is entered only where a visible-saturated port
-      -- exists, so neither arm is vacuous.
-      have _visible := visibleOf (ExactLedger.get previous typeAVisibleEntry)
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, packageExists⟩ :=
+        visibleOf (ExactLedger.get previous typeAVisibleEntry)
+      obtain ⟨package⟩ := packageExists
       by_cases realized :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              (∀ window : Finset current.object.Vertex,
-                current.object.InducesWindow data.windowOrder window →
-                ∃ member ∈ packing, ¬ Disjoint window member) ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  current.object.ambientSurplus piece data.threshold = 0 ∧
-                  ∃ receiver : current.object.Vertex,
-                    current.object.IsReceiver piece data.threshold receiver ∧
-                      current.object.Saturated piece data.threshold
-                        data.dischargeScale receiver ∧
-                      ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                          current.object piece receiver,
-                        ∃ return' : Graph.VisibleEntry.AnchoredReturn
-                            current.object receiver outside,
-                          Graph.ShiftedCycleLength data.LengthOK
-                            return'.path.length
-      · exact .inl (encodeReturn realized)
-      · refine .inr (encodeFree ?_)
-        -- The alternative not taken, read at each completion port of each
-        -- saturated receiver of each Type A support.
-        intro packing valid maximal piece inside connected charge surplus
-          receiver isReceiver saturated outside port return' accepted
-        exact realized ⟨packing, valid, maximal, piece, inside, connected,
-          charge, surplus, receiver, isReceiver, saturated, outside, port,
-          return', accepted⟩)
+          ∃ return' : Graph.VisibleEntry.AnchoredReturn current.object receiver
+              package.outside,
+            Graph.ShiftedCycleLength data.LengthOK return'.path.length
+      · exact ⟨.inl (encodeReturn
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, realized⟩)⟩
+      · exact ⟨.inr (encodeFree
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package,
+            fun return' accepted => realized ⟨return', accepted⟩⟩)⟩)
     returnFresh freeFresh
 
 /-! ## Node `[97]`: exit `(2)`, the common-port theta
@@ -4393,64 +5149,63 @@ noncomputable def typeAExitTwoDichotomy
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : current.object.Vertex,
                 current.object.IsReceiver piece data.threshold receiver ∧
                   current.object.Saturated piece data.threshold
-                    data.dischargeScale receiver ∧
-                  ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                      current.object piece receiver,
-                    data.dischargeScale ≤
-                      (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                        data.threshold receiver outside).card)
+                      data.dischargeScale receiver ∧
+                  Nonempty
+                    (Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅))
     (encodeTheta :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : current.object.Vertex,
                 current.object.IsReceiver piece data.threshold receiver ∧
                   current.object.Saturated piece data.threshold
-                    data.dischargeScale receiver ∧
-                  ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                      current.object piece receiver,
+                      data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
                     Graph.VisibleEntry.ExitTwoThrough current.object piece
-                      data.LengthOK receiver outside) →
+                      data.LengthOK receiver package.outside) →
       typeAExitTwoTheta.At current)
     (encodeFree :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset current.object.Vertex,
-          current.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          current.object.ambientSurplus piece data.threshold = 0 →
-          ∀ receiver : current.object.Vertex,
-            current.object.IsReceiver piece data.threshold receiver →
-            current.object.Saturated piece data.threshold data.dischargeScale
-              receiver →
-            ∀ outside ∈ Graph.VisibleEntry.completionPorts current.object piece
-              receiver,
-              ¬ Graph.VisibleEntry.ExitTwoThrough current.object piece
-                data.LengthOK receiver outside) →
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                      data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    ¬ Graph.VisibleEntry.ExitTwoThrough current.object piece
+                      data.LengthOK receiver package.outside) →
       typeAExitTwoFree.At current)
     (thetaFresh : typeAExitTwoTheta ∉ known)
     (freeFresh : typeAExitTwoFree ∉ known) :
@@ -4459,40 +5214,21 @@ noncomputable def typeAExitTwoDichotomy
     `Hypostructure.Graph.Strategy.Spine.typeAExitTwoDichotomy
     (by
       classical
-      -- The port this exit is asked of is node `[93]`'s own fact, read by exact
-      -- key: the exit list is entered only where a visible-saturated port
-      -- exists, so neither arm is vacuous.
-      have _visible := visibleOf (ExactLedger.get previous typeAVisibleEntry)
-      by_cases realized :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              (∀ window : Finset current.object.Vertex,
-                current.object.InducesWindow data.windowOrder window →
-                ∃ member ∈ packing, ¬ Disjoint window member) ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  current.object.ambientSurplus piece data.threshold = 0 ∧
-                  ∃ receiver : current.object.Vertex,
-                    current.object.IsReceiver piece data.threshold receiver ∧
-                      current.object.Saturated piece data.threshold
-                        data.dischargeScale receiver ∧
-                      ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                          current.object piece receiver,
-                        Graph.VisibleEntry.ExitTwoThrough current.object piece
-                          data.LengthOK receiver outside
-      · exact .inl (encodeTheta realized)
-      · refine .inr (encodeFree ?_)
-        -- The alternative not taken, read at each completion port of each
-        -- saturated receiver of each Type A support.
-        intro packing valid maximal piece inside connected charge surplus
-          receiver isReceiver saturated outside port pair
-        exact realized ⟨packing, valid, maximal, piece, inside, connected,
-          charge, surplus, receiver, isReceiver, saturated, outside, port,
-          pair⟩)
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, packageExists⟩ :=
+        visibleOf (ExactLedger.get previous typeAVisibleEntry)
+      obtain ⟨package⟩ := packageExists
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      by_cases realized : Graph.VisibleEntry.ExitTwoThrough current.object piece
+          data.LengthOK receiver package.outside
+      · exact ⟨.inl (encodeTheta
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, realized⟩)⟩
+      · exact ⟨.inr (encodeFree
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, realized⟩)⟩)
     thetaFresh freeFresh
 
 /-! ## Node `[99]`: exit `(3)`, the `P₁₃` label collision
@@ -4550,52 +5286,63 @@ noncomputable def typeAExitThreeDichotomy
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : current.object.Vertex,
                 current.object.IsReceiver piece data.threshold receiver ∧
                   current.object.Saturated piece data.threshold
-                    data.dischargeScale receiver ∧
-                  ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                      current.object piece receiver,
-                    data.dischargeScale ≤
-                      (Graph.VisibleEntry.visibleLoadsAt current.object piece
-                        data.threshold receiver outside).card)
+                      data.dischargeScale receiver ∧
+                  Nonempty
+                    (Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅))
     (encodeCollision :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
-              Graph.WindowLabelCollision.LabelCollision current.object
-                data.windowOrder data.LengthOK packing) →
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                      data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    Graph.WindowLabelCollision.LabelCollision current.object
+                      data.windowOrder data.LengthOK packing) →
       typeAExitThreeCollision.At current)
     (encodeFree :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset current.object.Vertex,
-          current.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          current.object.ambientSurplus piece data.threshold = 0 →
-          Graph.WindowLabelCollision.LabelCollisionFree current.object
-            data.windowOrder data.LengthOK packing) →
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                      data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    Graph.WindowLabelCollision.LabelCollisionFree current.object
+                      data.windowOrder data.LengthOK packing) →
       typeAExitThreeFree.At current)
     (collisionFresh : typeAExitThreeCollision ∉ known)
     (freeFresh : typeAExitThreeFree ∉ known) :
@@ -4604,105 +5351,306 @@ noncomputable def typeAExitThreeDichotomy
     `Hypostructure.Graph.Strategy.Spine.typeAExitThreeDichotomy
     (by
       classical
-      -- The configuration this exit is asked of is node `[93]`'s own fact, read
-      -- by exact key: the exit list is entered only where a visible-saturated
-      -- port exists, so neither arm is vacuous.
-      have _visible := visibleOf (ExactLedger.get previous typeAVisibleEntry)
-      by_cases realized :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              (∀ window : Finset current.object.Vertex,
-                current.object.InducesWindow data.windowOrder window →
-                ∃ member ∈ packing, ¬ Disjoint window member) ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  current.object.ambientSurplus piece data.threshold = 0 ∧
-                  Graph.WindowLabelCollision.LabelCollision
-                    current.object data.windowOrder data.LengthOK packing
-      · exact .inl (encodeCollision realized)
-      · refine .inr (encodeFree ?_)
-        -- The alternative not taken, read at each Type A support of the
-        -- object; clause (3) names no receiver and no port.
-        intro packing valid maximal piece inside connected charge surplus
-          collision
-        exact realized ⟨packing, valid, maximal, piece, inside, connected,
-          charge, surplus, collision⟩)
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, packageExists⟩ :=
+        visibleOf (ExactLedger.get previous typeAVisibleEntry)
+      obtain ⟨package⟩ := packageExists
+      by_cases realized : Graph.WindowLabelCollision.LabelCollision
+          current.object data.windowOrder data.LengthOK packing
+      · exact ⟨.inl (encodeCollision
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, realized⟩)⟩
+      · exact ⟨.inr (encodeFree
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, realized⟩)⟩)
     collisionFresh freeFresh
 
-/-! ## Node `[107]`: exit `(7)`, the decorated handoff fan
+/-! ## Node `[101]`: exit `(4)`, target-defective peeling witness
 
-`def:typeA-saturated-exits` (7): *"a high-degree decorated handoff fan envelope
-is produced"*.  It is the one exit of the list that neither closes nor stays in
-Type A: `lem:typeA-exits-discharged` says the branch *"is reclassified as a
-decorated handoff fan envelope and leaves the Type A charge calculation"*, and
-`lem:typeA-saturated-handoff` records that as the transfer to Type B.
-
-The node is asked under `typeASaturatedExitEntry`, and under nothing else.  That
-is `lem:typeA-exit4-residual-routing`'s hypothesis, and it is what both of Figure
-8's entries into this segment supply: node `[99]`'s no arm through
-`lem:typeA-unpeeled-visible-routing`, and node `[94]` through
-`lem:typeA-unpeeled-silent-routing`.  Neither entry's own data is written into
-this node — a port here would fork it in two — so, exactly as at node `[99]`,
-the branch's warrant for being on the exit list stays on the ledger and is read
-from it.
-
-What the node adds is `def:decorated-fan-envelope`'s envelope on the Type A
-support the entry carries.  The chain that produces it —
-`lem:typeA-continuation-routing`, then `lem:typeA-cubic-switch-absorption`, then
-`lem:typeA-high-degree-handoff` — is `Graph.DecoratedHandoff`'s; the row asks
-only whether the envelope is produced.
-
-The yes arm does not close, and it does not merely record the envelope: it
-commits `lem:decorated-fan-admissibility`'s interface as well, because that is
-what makes the fact usable at the Type B entry.  The upgrade from *produced* to
-*admissible* is `DecoratedHandoff.admissible_of_envelope`, and its three inputs
-are read off the incoming index by exact key — node `[1]`'s target avoidance,
-node `[14]`'s hereditary target-uncompressibility — or derived from the entry's
-own configuration, the `P₁₃`-freeness of a support inside the remainder of a
-maximal packing, which is `not_inducesWindow_of_subset_remainderSupport`.  By
-`rem:typeA-typeB-stratification` no conclusion of `lem:typeB-exclusion` is used
-here, and none is available on this cursor.
-
-The no arm is the last clause of `def:typeA-silent-core-residual`'s *"none of
-the target, quotient, compression, delocalization, or decorated handoff fan
-alternatives applies"*, which is the hypothesis exit `(8)` — the route-8
-residual of node `[109]` — is read under.
-
-This is a `Decision`: the arm not taken is absent from the taken branch's key
-index, so node `[109]` cannot read the handoff and the Type B entry cannot read
-the exit-`(7)`-free hypothesis. -/
-noncomputable def typeAExitSevenDichotomy
+This is the selected-residual branch of `def:typeA-exit4-peeling`: after exits
+`(1)`, `(2)`, and `(3)` are absent, the question is whether the exact visible
+package on the incoming ledger carries a generated target-defective quotient
+supporting one unpeeled routed load.  The no arm is the negation for that same
+package; it is not a global route-8 assertion. -/
+noncomputable def typeAExitFourDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (selection uncompressible typeASaturatedExitEntry typeAExitSevenHandoff
-      typeAExitSevenFree :
+    (typeAExitThreeFree typeAExitFour typeAExitFourFree :
       FactKey (Input BranchState Presentation presentation data))
-    [Core.Residual.FactKeys.Has selection known]
-    [Core.Residual.FactKeys.Has uncompressible known]
-    [Core.Residual.FactKeys.Has typeASaturatedExitEntry known]
-    (avoidsOf : selection.At current →
-      ¬ Graph.HasCycleWithLength data.LengthOK current.object)
-    (uncompressibleOf : uncompressible.At current →
-      ∀ support : Finset current.object.Vertex,
-        handoffUncompressible data current.object support)
-    (entryOf : typeASaturatedExitEntry.At current →
+    [Core.Residual.FactKeys.Has typeAExitThreeFree known]
+    (freeOf : typeAExitThreeFree.At current →
       ∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                    data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    Graph.WindowLabelCollision.LabelCollisionFree current.object
+                      data.windowOrder data.LengthOK packing)
+    (encodeExit :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                    data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    ∃ witness : Graph.ExitFour.Witness
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver ∅,
+                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                          piece data.threshold data.dischargeScale receiver
+                          package.outside ∅,
+                        witness.load = load) →
+      typeAExitFour.At current)
+    (encodeFree :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                    data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    ¬ ∃ witness : Graph.ExitFour.Witness
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver ∅,
+                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                          piece data.threshold data.dischargeScale receiver
+                          package.outside ∅,
+                        witness.load = load) →
+      typeAExitFourFree.At current)
+    (exitFresh : typeAExitFour ∉ known)
+    (freeFresh : typeAExitFourFree ∉ known) :
+    Decision typeAExitFour typeAExitFourFree previous :=
+  Decision.run previous typeAExitFour typeAExitFourFree
+    `Hypostructure.Graph.Strategy.Spine.typeAExitFourDichotomy
+    (by
+      classical
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, package, _labelFree⟩ :=
+        freeOf (ExactLedger.get previous typeAExitThreeFree)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      by_cases occurs :
+          ∃ witness : Graph.ExitFour.Witness
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              receiver ∅,
+            ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                piece data.threshold data.dischargeScale receiver
+                package.outside ∅,
+              witness.load = load
+      · exact ⟨.inl (encodeExit
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, occurs⟩)⟩
+      · exact ⟨.inr (encodeFree
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, occurs⟩)⟩)
+    exitFresh freeFresh
+
+/-- **Node `[102]`, `lem:typeA-exit4-discharge`.**
+
+This is the deterministic ledger update after node `[101]`'s yes arm.  It reads
+the exact exit-`(4)` witness already committed, inserts that witness's unpeeled
+routed load into `P₄(w)`, and publishes the two facts the next receiver test
+will consume: the enlarged peeling set is still a routed-load peeling set and
+the residual load has dropped by exactly one.
+
+No receiver is reselected here and no global exit family is quantified. -/
+@[reducible] noncomputable def typeAExitFourPeelingStepRow
+    (typeAExitFour typeAExitFourPeeled :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : typeAExitFour ≠ typeAExitFourPeeled)
+    (exitOf : (input : Input BranchState Presentation presentation data) →
+      typeAExitFour.At input →
+      ∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              input.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : input.object.Vertex,
+                input.object.IsReceiver piece data.threshold receiver ∧
+                  input.object.Saturated piece data.threshold data.dischargeScale
+                    receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    ∃ witness : Graph.ExitFour.Witness
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver ∅,
+                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                          piece data.threshold data.dischargeScale receiver
+                          package.outside ∅,
+                        witness.load = load)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              input.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : input.object.Vertex,
+                input.object.IsReceiver piece data.threshold receiver ∧
+                  input.object.Saturated piece data.threshold data.dischargeScale
+                    receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    ∃ witness : Graph.ExitFour.Witness
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver ∅,
+                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                          piece data.threshold data.dischargeScale receiver
+                          package.outside ∅,
+                        witness.load = load ∧
+                          Graph.ExitFour.Witness.nextPeeled witness ⊆
+                            input.object.routedLoads piece data.threshold
+                              receiver ∧
+                          Graph.ExitFour.residualLoad piece data.threshold
+                              receiver
+                              (Graph.ExitFour.Witness.nextPeeled witness) + 1 =
+                            Graph.ExitFour.residualLoad piece data.threshold
+                              receiver ∅) →
+      typeAExitFourPeeled.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeAExitFourPeelingStep
+    (rowManifest typeAExitFour typeAExitFourPeeled distinct)
+    (fun inputs =>
+      .cons (key := typeAExitFourPeeled)
+        (encode inputs.current (by
+          classical
+          obtain ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, witness, load, selected,
+            witness_eq⟩ :=
+            exitOf inputs.current (inputs.get typeAExitFour)
+          let piece := inputs.current.object.pieceSupport
+            (inputs.current.object.remainderSupport packing) component
+          have routed : witness.load ∈
+              inputs.current.object.routedLoads piece data.threshold receiver :=
+            Graph.ExitFour.Witness.routed witness
+          have unpeeled : witness.load ∈
+              Graph.ExitFour.unpeeledLoads piece data.threshold receiver ∅ :=
+            witness.unpeeled
+          exact ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, witness, load, selected,
+            witness_eq,
+            Graph.ExitFour.insert_subset_routedLoads piece data.threshold
+              receiver (Finset.empty_subset _) routed,
+            Graph.ExitFour.residualLoad_insert piece data.threshold receiver
+              unpeeled⟩))
+        .nil)
+
+/-- **Node `[102]`/loop retest.**
+
+After the exit-`(4)` peel has been committed, the same receiver is tested at the
+new peeling set.  The yes arm is exactly the shared saturated exit entry again,
+now with `P₄(w)` enlarged.  The no arm publishes the cleared nonnegative
+receiver-charge inequality from `lem:typeA-exit4-peeling-charge`.
+-/
+noncomputable def typeAExitFourRetestDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous :
+      ExactLedger (Input BranchState Presentation presentation data)
+        current known)
+    (typeAExitFourPeeled typeASaturatedExitEntry
+      typeAExitFourReceiverDischarged :
+      FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has typeAExitFourPeeled known]
+    (peeledOf : typeAExitFourPeeled.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              current.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                    data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    ∃ witness : Graph.ExitFour.Witness
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver ∅,
+                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                          piece data.threshold data.dischargeScale receiver
+                          package.outside ∅,
+                        witness.load = load ∧
+                          Graph.ExitFour.Witness.nextPeeled witness ⊆
+                            current.object.routedLoads piece data.threshold
+                              receiver ∧
+                          Graph.ExitFour.residualLoad piece data.threshold
+                              receiver
+                              (Graph.ExitFour.Witness.nextPeeled witness) + 1 =
+                            Graph.ExitFour.residualLoad piece data.threshold
+                              receiver ∅)
+    (encodeSaturated :
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : current.object.Vertex,
@@ -4711,88 +5659,84 @@ noncomputable def typeAExitSevenDichotomy
                     peeled ⊆ current.object.routedLoads piece data.threshold
                         receiver ∧
                       Graph.ExitFour.SaturatedAfter piece data.threshold
-                        data.dischargeScale receiver peeled)
-    (encodeHandoff :
+                        data.dischargeScale receiver peeled) →
+      typeASaturatedExitEntry.At current)
+    (encodeDischarged :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset current.object.Vertex,
             current.object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ piece : Finset current.object.Vertex,
-            piece ⊆ current.object.remainderSupport packing ∧
-              Graph.SupportComponents.Connected.ConnectedOn current.object
-                piece ∧
-              current.object.NegativeNetCharge piece data.threshold
+          ∃ component ∈ current.object.canonicalPieces
+              (current.object.remainderSupport packing),
+            let piece := current.object.pieceSupport
+              (current.object.remainderSupport packing) component
+            current.object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               current.object.ambientSurplus piece data.threshold = 0 ∧
-              HandoffAdmissible data current.object packing piece) →
-      typeAExitSevenHandoff.At current)
-    (encodeFree :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset current.object.Vertex,
-          current.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ piece : Finset current.object.Vertex,
-          piece ⊆ current.object.remainderSupport packing →
-          Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-          current.object.NegativeNetCharge piece data.threshold
-            data.dischargeScale →
-          current.object.ambientSurplus piece data.threshold = 0 →
-          ¬ HandoffProduced data current.object packing piece) →
-      typeAExitSevenFree.At current)
-    (handoffFresh : typeAExitSevenHandoff ∉ known)
-    (freeFresh : typeAExitSevenFree ∉ known) :
-    Decision typeAExitSevenHandoff typeAExitSevenFree previous :=
-  Decision.run previous typeAExitSevenHandoff typeAExitSevenFree
-    `Hypostructure.Graph.Strategy.Spine.typeAExitSevenDichotomy
+              ∃ receiver : current.object.Vertex,
+                current.object.IsReceiver piece data.threshold receiver ∧
+                  current.object.Saturated piece data.threshold
+                    data.dischargeScale receiver ∧
+                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+                      data.threshold data.dischargeScale receiver ∅,
+                    ∃ witness : Graph.ExitFour.Witness
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver ∅,
+                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                          piece data.threshold data.dischargeScale receiver
+                          package.outside ∅,
+                        witness.load = load ∧
+                          Graph.ExitFour.Witness.nextPeeled witness ⊆
+                            current.object.routedLoads piece data.threshold
+                              receiver ∧
+                          Graph.ExitFour.residualLoad piece data.threshold
+                              receiver
+                              (Graph.ExitFour.Witness.nextPeeled witness) + 1 =
+                            Graph.ExitFour.residualLoad piece data.threshold
+                              receiver ∅ ∧
+                          ¬ Graph.ExitFour.SaturatedAfter piece data.threshold
+                              data.dischargeScale receiver
+                              (Graph.ExitFour.Witness.nextPeeled witness) ∧
+                          1 + Graph.ExitFour.residualLoad piece data.threshold
+                              receiver
+                              (Graph.ExitFour.Witness.nextPeeled witness) ≤
+                            data.dischargeScale *
+                              current.object.missingPorts piece data.threshold
+                                receiver) →
+      typeAExitFourReceiverDischarged.At current)
+    (saturatedFresh : typeASaturatedExitEntry ∉ known)
+    (dischargedFresh : typeAExitFourReceiverDischarged ∉ known) :
+    Decision typeASaturatedExitEntry typeAExitFourReceiverDischarged
+      previous :=
+  Decision.run previous typeASaturatedExitEntry
+    typeAExitFourReceiverDischarged
+    `Hypostructure.Graph.Strategy.Spine.typeAExitFourRetestDichotomy
     (by
       classical
-      -- The configuration this exit is asked of is the exit segment's own
-      -- entry, read by exact key, so neither arm is vacuous; the two
-      -- admissibility inputs are nodes `[1]` and `[14]`, read the same way.
-      have _entry := entryOf (ExactLedger.get previous typeASaturatedExitEntry)
-      have avoids := avoidsOf (ExactLedger.get previous selection)
-      have uncompressed :=
-        uncompressibleOf (ExactLedger.get previous uncompressible)
-      by_cases realized :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              (∀ window : Finset current.object.Vertex,
-                current.object.InducesWindow data.windowOrder window →
-                ∃ member ∈ packing, ¬ Disjoint window member) ∧
-              ∃ piece : Finset current.object.Vertex,
-                piece ⊆ current.object.remainderSupport packing ∧
-                  Graph.SupportComponents.Connected.ConnectedOn current.object
-                    piece ∧
-                  current.object.NegativeNetCharge piece data.threshold
-                    data.dischargeScale ∧
-                  current.object.ambientSurplus piece data.threshold = 0 ∧
-                  HandoffProduced data current.object packing piece
-      · -- `lem:decorated-fan-admissibility`: the produced envelope carries the
-        -- Type B interface.  Its counted core is the Type A support the entry
-        -- carries, which inherits `P₁₃`-freeness from lying in the remainder of
-        -- a maximal packing; the other two clauses are the two facts just read.
-        refine .inl (encodeHandoff ?_)
-        clear _entry
-        revert realized
-        rintro ⟨packing, valid, maximal, piece, inside, connected, charge,
-          surplus, envelope, core, decorated⟩
-        refine ⟨packing, valid, maximal, piece, inside, connected, charge,
-          surplus, envelope, core, decorated, ?_⟩
-        refine Graph.DecoratedHandoff.admissible_of_envelope avoids ?_
-          uncompressed
-        intro window contained
-        exact current.object.not_inducesWindow_of_subset_remainderSupport
-          maximal (contained.trans (core ▸ inside))
-      · refine .inr (encodeFree ?_)
-        -- The alternative not taken, read at each Type A support of the object;
-        -- clause (7), like clause (3), names no receiver and no port.
-        intro packing valid maximal piece inside connected charge surplus
-          produced
-        obtain ⟨envelope, core, decorated⟩ := produced
-        exact realized ⟨packing, valid, maximal, piece, inside, connected,
-          charge, surplus, envelope, core, decorated⟩)
-    handoffFresh freeFresh
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, package, witness, load, selected,
+        witness_eq, nextSubset, drop⟩ :=
+        peeledOf (ExactLedger.get previous typeAExitFourPeeled)
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      by_cases stillSaturated :
+          Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
+            receiver (Graph.ExitFour.Witness.nextPeeled witness)
+      · exact ⟨.inl (encodeSaturated
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, Graph.ExitFour.Witness.nextPeeled witness,
+            nextSubset, stillSaturated⟩)⟩
+      · have nonnegative :=
+          (Graph.ExitFour.not_saturatedAfter_iff piece data.threshold
+            data.dischargeScale receiver
+            (Graph.ExitFour.Witness.nextPeeled witness)).mp stillSaturated
+        exact ⟨.inr (encodeDischarged
+          ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, package, witness, load, selected,
+            witness_eq, nextSubset, drop, stillSaturated, nonnegative⟩)⟩)
+    saturatedFresh dischargedFresh
+
 
 end Hypostructure.Graph.Strategy.Spine

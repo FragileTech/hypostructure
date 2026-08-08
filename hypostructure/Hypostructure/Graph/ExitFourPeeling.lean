@@ -143,7 +143,7 @@ peeling set whose residual is unsaturated -- the receiver retested at node
 
 `Retained` is whatever the peeling set is required to carry along the descent;
 `def:typeA-exit4-peeling` equips each listed load with one exit-`(4)` witness,
-which is `ExitFour.Family.IsPeeling`, and the descent preserves it because each
+whose future response-semantic refinement must preserve it because each
 step supplies its own witness. -/
 theorem exists_unsaturated_peeling
     {Retained : Finset object.Vertex → Prop} (empty : Retained ∅)
@@ -189,5 +189,93 @@ theorem exists_unsaturated_peeling
           residualLoad_insert support threshold receiver unpeeled
         omega
       · exact ⟨peeled, inside, retained, saturated⟩
+
+/-- **Finite saturated-handoff descent from an arbitrary peeling state.**
+
+This is the termination core of `lem:typeA-saturated-handoff`, stated at the
+current receiver/peeling state rather than only at the empty peeling set.  If
+every saturated retained peeling state either reaches one of the forward
+terminal alternatives or supplies a fresh exit-`(4)` load, then the iteration
+terminates either at such a terminal state or at an unsaturated peeled
+residual.  The proof uses only the strict one-load decrease of
+`lem:typeA-exit4-discharge`; it does not choose, transport, or publish any
+branch fact. -/
+theorem terminal_or_unsaturated_from
+    {Retained Terminal : Finset object.Vertex → Prop}
+    {start : Finset object.Vertex}
+    (startInside : start ⊆ object.routedLoads support threshold receiver)
+    (startRetained : Retained start)
+    (step : ∀ peeled ⊆ object.routedLoads support threshold receiver,
+      Retained peeled →
+      SaturatedAfter support threshold scale receiver peeled →
+      Terminal peeled ∨
+        ∃ load ∈ object.routedLoads support threshold receiver,
+          ∃ fresh : load ∉ peeled,
+            Retained (Finset.cons load peeled fresh)) :
+    (∃ peeled ⊆ object.routedLoads support threshold receiver,
+      Retained peeled ∧ Terminal peeled) ∨
+    (∃ peeled ⊆ object.routedLoads support threshold receiver,
+      Retained peeled ∧
+        ¬ SaturatedAfter support threshold scale receiver peeled) := by
+  classical
+  suffices claim : ∀ bound : Nat,
+      ∀ peeled ⊆ object.routedLoads support threshold receiver,
+        Retained peeled →
+        residualLoad support threshold receiver peeled ≤ bound →
+        (∃ final ⊆ object.routedLoads support threshold receiver,
+          Retained final ∧ Terminal final) ∨
+        (∃ final ⊆ object.routedLoads support threshold receiver,
+          Retained final ∧
+            ¬ SaturatedAfter support threshold scale receiver final) by
+    exact claim (residualLoad support threshold receiver start)
+      start startInside startRetained le_rfl
+  intro bound
+  induction bound with
+  | zero =>
+      intro peeled inside retained _small
+      by_cases saturated :
+          SaturatedAfter support threshold scale receiver peeled
+      · cases step peeled inside retained saturated with
+        | inl terminal =>
+            exact Or.inl ⟨peeled, inside, retained, terminal⟩
+        | inr next =>
+            obtain ⟨load, routed, fresh, _nextRetained⟩ := next
+            have positive :
+                0 < residualLoad support threshold receiver peeled :=
+              Finset.card_pos.mpr
+                ⟨load, Finset.mem_sdiff.mpr ⟨routed, fresh⟩⟩
+            omega
+      · exact Or.inr ⟨peeled, inside, retained, saturated⟩
+  | succ bound inductionHypothesis =>
+      intro peeled inside retained small
+      by_cases saturated :
+          SaturatedAfter support threshold scale receiver peeled
+      · cases step peeled inside retained saturated with
+        | inl terminal =>
+            exact Or.inl ⟨peeled, inside, retained, terminal⟩
+        | inr next =>
+            obtain ⟨load, routed, fresh, nextRetained⟩ := next
+            have unpeeled : load ∈
+                unpeeledLoads support threshold receiver peeled :=
+              Finset.mem_sdiff.mpr ⟨routed, fresh⟩
+            have consSubset :
+                Finset.cons load peeled fresh ⊆
+                  object.routedLoads support threshold receiver := by
+              intro vertex member
+              rw [Finset.mem_cons] at member
+              rcases member with rfl | member
+              · exact routed
+              · exact inside member
+            refine inductionHypothesis (Finset.cons load peeled fresh)
+              consSubset nextRetained ?_
+            have drop :=
+              residualLoad_insert support threshold receiver unpeeled
+            have consDrop :
+                  residualLoad support threshold receiver
+                    (Finset.cons load peeled fresh) + 1 =
+                  residualLoad support threshold receiver peeled := by
+              simpa [Finset.cons_eq_insert] using drop
+            omega
+      · exact Or.inr ⟨peeled, inside, retained, saturated⟩
 
 end Hypostructure.Graph.ExitFour

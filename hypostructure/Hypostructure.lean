@@ -38,8 +38,6 @@ import Hypostructure.Core.Strategy.FactOnlyStrategy
 import Hypostructure.Core.Strategy.MinimalCounterexampleScope
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Strategy.SpineRows
-import Hypostructure.Graph.Strategy.Route8Rows
-import Hypostructure.Graph.Strategy.Route8Run
 import Hypostructure.Graph.Strategy.TypeAExitRun
 import Hypostructure.Graph.Strategy.SurplusRun
 import Hypostructure.Graph.Strategy.SpineContinuationRun
@@ -57,11 +55,7 @@ import Hypostructure.Fixtures.TypeAReceiverNode
 import Hypostructure.Fixtures.TypeAExitOne
 import Hypostructure.Fixtures.TypeAExitTwo
 import Hypostructure.Fixtures.TypeAExitThree
-import Hypostructure.Fixtures.TypeAExitSeven
 import Hypostructure.Fixtures.TypeBFanWindowNode
-import Hypostructure.Fixtures.TypeBBridgeNode
-import Hypostructure.Fixtures.Route8Run
-import Hypostructure.Fixtures.Route8ExitSix
 import Hypostructure.Fixtures.SurplusRun
 import Hypostructure.Fixtures.ExitFourFamily
 import Hypostructure.Core.Strategy.FactManifest

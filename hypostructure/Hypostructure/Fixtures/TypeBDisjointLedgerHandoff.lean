@@ -66,7 +66,7 @@ theorem output_fresh :
   simp
 
 example :
-    (typeBDisjointLedgerRow (BranchState := BranchState)
+    (disjointPostLedgerComponentsRow (BranchState := BranchState)
       (Presentation := Presentation) (presentation := presentation) (data := data)
       (K .typeBB2Choice) (K .selection)
       (K .remainderNormalized) (K .typeBDisjointLedger) incomingKeys_nodup
@@ -76,7 +76,7 @@ example :
   rfl
 
 example :
-    (typeBDisjointLedgerRow (BranchState := BranchState)
+    (disjointPostLedgerComponentsRow (BranchState := BranchState)
       (Presentation := Presentation) (presentation := presentation) (data := data)
       (K .typeBB2Choice) (K .selection)
       (K .remainderNormalized) (K .typeBDisjointLedger) incomingKeys_nodup
@@ -91,7 +91,7 @@ noncomputable def run
       selected incomingKeys) :
     ExactLedger (Input BranchState Presentation presentation data) selected
       (K .typeBDisjointLedger :: incomingKeys) :=
-  (typeBDisjointLedgerRow (BranchState := BranchState)
+  (disjointPostLedgerComponentsRow (BranchState := BranchState)
     (Presentation := Presentation) (presentation := presentation) (data := data)
     (K .typeBB2Choice) (K .selection)
     (K .remainderNormalized) (K .typeBDisjointLedger) incomingKeys_nodup

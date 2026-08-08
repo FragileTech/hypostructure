@@ -1,4 +1,6 @@
 import Hypostructure.Graph.ExitFourPeeling
+import Hypostructure.Graph.BoundariedAtom
+import Hypostructure.Graph.Response
 import Hypostructure.Graph.Route8Carrier
 
 /-!
@@ -24,16 +26,12 @@ quotient rather than asserted alongside it.
 `u`: a quotient `q ∈ 𝒬₄(w)`, two realizations in the same boundary-degree
 fibre, a compatible outside context distinguishing their target predicates, and
 the requirement that the declared support of `q` contains the canonical
-coordinate of `u`.  All four are `Family.Witness` below: the reading is
-`Route8.Entry`, whose `state` presents every retained coordinate set on *one*
-labelled boundary, so the two realizations are automatically in the same
-boundary-degree fibre; the distinguishing context is `Response.TargetDefect`.
-
-With the witness in hand `lem:typeA-exit4-discharge` is `Family.isPeeling_insert`
--- adjoining one witnessed unpeeled load is again a peeling set and drops
-`L₄(w)` by exactly one -- and the descent
-`lem:typeA-exit4-residual-routing` opens terminates at a witnessed peeling set
-leaving the receiver unsaturated.
+coordinate of `u`.  `Witness` below records exactly that generated
+target-defective family member, the same-boundary realizations, and the routed
+load whose canonical coordinate it supports.  The charge-descent and loop
+termination statements belong to the separate peeling ledger in
+`ExitFourPeeling`; this file only defines the canonical family datum consumed by
+the node `[101]` decision.
 
 Nothing here knows a graph family, a manuscript node, a threshold, or a proof:
 the family is quantified over its target predicate, its reading, its carrier
@@ -46,15 +44,14 @@ open Hypostructure
 
 universe u
 
-/-- **The five canonical generating constructions of `def:typeA-exit4-family`.**
+/-- **The four pre-route generating constructions of `def:typeA-exit4-family`.**
 
 A member of `𝒬₄(w)` records which construction generated it; the mathematical
 content the exit consumes -- target-defectiveness and the declared routed-load
 support -- is the same for all five, exactly as `lem:typeA-exit4-discharge`
-uses them ("the quotient family `𝒬₄(w)` is canonical: its members are exactly
-the visible-coordinate, silent-basin, trace-basin, continuation/switch, and
-two-carrier deletion quotients"). -/
-inductive Clause where
+uses them. The route-8-only carrier-deletion construction is deliberately not
+present: it is an extension indexed by the later selected route-8 collection. -/
+inductive ReceiverClause where
   /-- (Q1): the visible receiver-entry coordinate identifications. -/
   | visibleEntry
   /-- (Q2): the silent/excess boundary-response quotient of the basin `B(w)`. -/
@@ -63,8 +60,6 @@ inductive Clause where
   | traceBasin
   /-- (Q4): the finite continuation or cubic-switch quotient. -/
   | continuationSwitch
-  /-- (Q5): the carrier-deletion quotient of a two-carrier route-8 entry. -/
-  | carrierDeletion
   deriving DecidableEq, Repr
 
 /-- **`𝒬₄(w)`**, at a receiver of a support.
@@ -77,10 +72,10 @@ family's own generation predicate: `Generated clause base identified` says the
 listed construction `clause` generates, from the reading `base`, the quotient
 that identifies or forgets exactly `identified`.
 
-No construction is generated here.  A node that owns one of the five clauses
+No construction is generated here.  A node that owns one of the four clauses
 supplies it through `Generated`; every statement below is quantified over the
 family, so no row invents a member and none is dropped. -/
-structure Family (Target : FiniteObject.{u} → Prop) {object : FiniteObject.{u}}
+structure ReceiverFamily (Target : FiniteObject.{u} → Prop) {object : FiniteObject.{u}}
     (support : Finset object.Vertex) (threshold : Nat)
     (receiver : object.Vertex) (Carrier : Type u) where
   /-- The receiver's declared reading, on one labelled boundary. -/
@@ -91,7 +86,7 @@ structure Family (Target : FiniteObject.{u} → Prop) {object : FiniteObject.{u}
   coordinate_declared : ∀ load ∈ object.routedLoads support threshold receiver,
     coordinate load ∈ entry.coordinates
   /-- The generation predicate of the five canonical constructions. -/
-  Generated : Clause → Finset entry.Coordinate → Finset entry.Coordinate → Prop
+  Generated : ReceiverClause → Finset entry.Coordinate → Finset entry.Coordinate → Prop
   /-- A generated quotient is taken on a declared reading. -/
   generated_base : ∀ {clause base identified}, Generated clause base identified →
     base ⊆ entry.coordinates
@@ -100,25 +95,14 @@ structure Family (Target : FiniteObject.{u} → Prop) {object : FiniteObject.{u}
   generated_identified : ∀ {clause base identified},
     Generated clause base identified → identified ⊆ base
 
-namespace Family
+namespace ReceiverFamily
 
 variable {Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
 variable {support : Finset object.Vertex} {threshold scale : Nat}
 variable {receiver : object.Vertex} {Carrier : Type u}
-variable (family : Family Target support threshold receiver Carrier)
+variable (family : ReceiverFamily Target support threshold receiver Carrier)
 
 attribute [local instance] vertexDecEq
-
-/-- **One member of `𝒬₄(w)` is target-defective**: the two realizations of the
-quotient -- the reading before and after the identification -- are separated by
-one compatible outside context.  Both are presented on the reading's own
-labelled boundary, so the member retains the boundary degree profile, which is
-what `def:typeA-exit4-family` requires of every member. -/
-def Defective (clause : Clause)
-    (base identified : Finset family.entry.Coordinate) : Prop :=
-  family.Generated clause base identified ∧
-    Response.TargetDefect Target
-      (family.entry.state (base \ identified)) (family.entry.state base)
 
 /-- **The declared routed-load support of a member**: the routed loads whose
 canonical declared coordinate the quotient identifies or forgets.  This is
@@ -149,147 +133,77 @@ theorem declaredLoads_subset (identified : Finset family.entry.Coordinate) :
   intro load member
   exact (family.mem_declaredLoads.mp member).1
 
-/-- **Exit `(4)`** of `def:typeA-saturated-exits`: *"a quotient in the canonical
-exit-(4) family `𝒬₄(w)` is target-defective"*. -/
-def Occurs : Prop :=
-  ∃ clause : Clause, ∃ base identified : Finset family.entry.Coordinate,
-    family.Defective clause base identified
+end ReceiverFamily
 
-/-- **An exit-`(4)` witness for a routed load** (`def:typeA-exit4-peeling`): a
-member of `𝒬₄(w)`, its two same-fibre realizations, the compatible outside
-context distinguishing their target predicates, and the requirement that the
-declared support of the member contains the canonical coordinate of the load. -/
-def Witness (load : object.Vertex) : Prop :=
-  ∃ clause : Clause, ∃ base identified : Finset family.entry.Coordinate,
-    family.Defective clause base identified ∧
-      load ∈ family.declaredLoads identified
+/-- **An exit-`(4)` witness for one unpeeled routed load.**
 
-theorem occurs_of_witness {load : object.Vertex}
-    (witness : family.Witness load) : family.Occurs := by
-  obtain ⟨clause, base, identified, defective, _⟩ := witness
-  exact ⟨clause, base, identified, defective⟩
+This is the formal content of `def:typeA-exit4-peeling`: a generated member of
+the canonical receiver family, a load whose declared coordinate is in that
+member's support, two realizations in the same boundary-degree fibre, and a
+compatible outside context distinguishing their target predicates. -/
+structure Witness (Target : FiniteObject.{u} → Prop)
+    {object : FiniteObject.{u}} (support : Finset object.Vertex)
+    (threshold : Nat) (receiver : object.Vertex)
+    (peeled : Finset object.Vertex) where
+  Carrier : Type u
+  family : ReceiverFamily Target support threshold receiver Carrier
+  clause : ReceiverClause
+  base : Finset family.entry.Coordinate
+  identified : Finset family.entry.Coordinate
+  generated : family.Generated clause base identified
+  load : object.Vertex
+  unpeeled : load ∈ unpeeledLoads support threshold receiver peeled
+  declared : load ∈ family.declaredLoads identified
+  boundary : Boundary
+  left : BoundaryPiece boundary
+  right : BoundaryPiece boundary
+  sameBoundaryProfile : left.boundaryDegreeProfile = right.boundaryDegreeProfile
+  targetDefect : Response.TargetDefect Target left right
 
-theorem mem_routedLoads_of_witness {load : object.Vertex}
-    (witness : family.Witness load) :
-    load ∈ object.routedLoads support threshold receiver := by
-  obtain ⟨_, _, identified, _, declared⟩ := witness
-  exact family.declaredLoads_subset identified declared
+namespace Witness
 
-/-- **A peeling set** of `def:typeA-exit4-peeling`: a set of routed loads, each
-equipped with one exit-`(4)` witness, and with no routed load listed twice --
-the last clause being `Finset` membership itself. -/
-structure IsPeeling (peeled : Finset object.Vertex) : Prop where
-  /-- `P₄(w) ⊆ ℒ(w)`. -/
-  inside : peeled ⊆ object.routedLoads support threshold receiver
-  /-- Every listed load carries one exit-`(4)` witness. -/
-  witnessed : ∀ load ∈ peeled, family.Witness load
+variable {Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
+variable {support : Finset object.Vertex} {threshold : Nat}
+variable {receiver : object.Vertex} {peeled : Finset object.Vertex}
 
-theorem isPeeling_empty : family.IsPeeling ∅ where
-  inside := Finset.empty_subset _
-  witnessed := by intro load member; exact absurd member (Finset.notMem_empty load)
+attribute [local instance] vertexDecEq
 
-/-- **`lem:typeA-exit4-discharge`.**
+theorem routed
+    (witness : Witness Target support threshold receiver peeled) :
+    witness.load ∈ object.routedLoads support threshold receiver :=
+  ((mem_unpeeledLoads (object := object) support threshold receiver).mp
+    witness.unpeeled).1
 
-*"If exit (4) occurs through a quotient `q ∈ 𝒬₄(w)` whose declared support
-contains the canonical coordinate of an unpeeled routed load
-`u ∈ ℒ(w) ∖ P₄(w)`, then `P₄(w) ∪ {u}` is a valid peeling set and the remaining
-receiver deficit is reduced by exactly `1/4`."*
+theorem fresh
+    (witness : Witness Target support threshold receiver peeled) :
+    witness.load ∉ peeled :=
+  ((mem_unpeeledLoads (object := object) support threshold receiver).mp
+    witness.unpeeled).2
 
-The no-duplicate condition is preserved because the load was unpeeled, and the
-residual load drops by exactly one, which by `lem:typeA-exit4-peeling-charge` is
-exactly one quarter of remaining deficit. -/
-theorem isPeeling_insert {peeled : Finset object.Vertex}
-    (peeling : family.IsPeeling peeled) {load : object.Vertex}
-    (witness : family.Witness load) (fresh : load ∉ peeled) :
-    family.IsPeeling (insert load peeled) ∧
-      residualLoad support threshold receiver (insert load peeled) + 1 =
-        residualLoad support threshold receiver peeled := by
-  have routed : load ∈ object.routedLoads support threshold receiver :=
-    family.mem_routedLoads_of_witness witness
-  refine ⟨⟨insert_subset_routedLoads support threshold receiver peeling.inside
-      routed, ?_⟩, ?_⟩
-  · intro other member
-    rcases Finset.mem_insert.mp member with same | earlier
-    · exact same ▸ witness
-    · exact peeling.witnessed other earlier
-  · exact residualLoad_insert support threshold receiver
-      ((mem_unpeeledLoads support threshold receiver).mpr ⟨routed, fresh⟩)
+/-- The peeling set after charging this exit-`(4)` witness. -/
+noncomputable def nextPeeled
+    (witness : Witness Target support threshold receiver peeled) :
+    Finset object.Vertex :=
+  Finset.cons witness.load peeled witness.fresh
 
-/-- **`lem:typeA-exit4-residual-routing`, with the descent it opens, carrying
-the witnesses.**
+theorem nextPeeled_subset_routedLoads
+    (witness : Witness Target support threshold receiver peeled)
+    (inside : peeled ⊆ object.routedLoads support threshold receiver) :
+    witness.nextPeeled ⊆ object.routedLoads support threshold receiver := by
+  intro vertex member
+  simp [nextPeeled] at member
+  rcases member with rfl | member
+  · exact witness.routed
+  · exact inside member
 
-*"If `L₄(w) ≥ 4q(w)`, then the unpeeled routed loads at `w` realize one of exits
-(1)--(8).  If the realized exit is (4), the peeling set can be enlarged by one
-additional unpeeled routed load."*
+theorem residualLoad_nextPeeled
+    (witness : Witness Target support threshold receiver peeled) :
+    residualLoad support threshold receiver witness.nextPeeled + 1 =
+      residualLoad support threshold receiver peeled := by
+  classical
+  simpa [nextPeeled] using
+    residualLoad_insert support threshold receiver witness.unpeeled
 
-`step` is that reading at the exit-`(4)` case: while the peeled residual is
-still saturated, some unpeeled routed load carries an exit-`(4)` witness in
-`𝒬₄(w)`.  Each enlargement drops `L₄(w)` by exactly one, so the descent
-terminates -- at a peeling set, every load of which carries its own witness,
-whose residual leaves the receiver unsaturated. -/
-theorem exists_unsaturated_isPeeling
-    (step : ∀ peeled : Finset object.Vertex, family.IsPeeling peeled →
-      SaturatedAfter support threshold scale receiver peeled →
-      ∃ load ∈ unpeeledLoads support threshold receiver peeled,
-        family.Witness load) :
-    ∃ peeled : Finset object.Vertex, family.IsPeeling peeled ∧
-      ¬ SaturatedAfter support threshold scale receiver peeled := by
-  obtain ⟨peeled, _inside, peeling, unsaturated⟩ :=
-    exists_unsaturated_peeling support threshold scale receiver
-      (Retained := family.IsPeeling) family.isPeeling_empty
-      (fun peeled _inside peeling saturated => by
-        obtain ⟨load, unpeeled, witness⟩ := step peeled peeling saturated
-        obtain ⟨routed, fresh⟩ :=
-          (mem_unpeeledLoads support threshold receiver).mp unpeeled
-        exact ⟨load, routed, fresh,
-          (family.isPeeling_insert peeling witness fresh).1⟩)
-  exact ⟨peeled, peeling, unsaturated⟩
-
-end Family
-
-/-! ## Clause (Q5), from a route-8 entry
-
-The carrier-deletion clause is the one a route-8 reading generates on its own:
-`lem:typeA-essential-deletion-witness` forces a deletion witness at every
-essential carrier, `lem:typeA-deletion-witness-declared` says the forgotten
-coordinate is declared and uses the deleted carrier, and
-`lem:typeA-carrier-deletion-exit` reads that separation as the target defect.
-The bridge below says only that a family whose `Generated` contains that
-construction realizes exit `(4)`; it generates nothing itself. -/
-
-/-- The coordinates a carrier deletion forgets: those the core reading retains
-and the deletion does not. -/
-noncomputable def deletionIdentified {Target : FiniteObject.{u} → Prop}
-    {Carrier : Type u} [DecidableEq Carrier]
-    (entry : Route8.Entry Target Carrier) (carrier : Carrier) :
-    Finset entry.Coordinate :=
-  entry.retained entry.essentialCore \
-    entry.retained (entry.essentialCore.erase carrier)
-
-/-- **Clause (Q5) is an exit-`(4)` occurrence.**
-
-At an essential carrier of the reading, the deletion quotient is target-defective
-(`Route8.Entry.deletion_targetDefect`), so as soon as the family's own generation
-predicate lists that construction, exit `(4)` occurs. -/
-theorem occurs_of_carrierDeletion {Target : FiniteObject.{u} → Prop}
-    {object : FiniteObject.{u}} {support : Finset object.Vertex}
-    {threshold : Nat} {receiver : object.Vertex} {Carrier : Type u}
-    [DecidableEq Carrier]
-    (family : Family Target support threshold receiver Carrier)
-    {carrier : Carrier} (member : carrier ∈ family.entry.essentialCore)
-    (generated : family.Generated Clause.carrierDeletion
-      (family.entry.retained family.entry.essentialCore)
-      (deletionIdentified family.entry carrier)) :
-    family.Occurs := by
-  refine ⟨Clause.carrierDeletion, family.entry.retained family.entry.essentialCore,
-    deletionIdentified family.entry carrier, generated, ?_⟩
-  have deleted :
-      family.entry.retained family.entry.essentialCore \
-          deletionIdentified family.entry carrier =
-        family.entry.retained (family.entry.essentialCore.erase carrier) :=
-    Finset.sdiff_sdiff_eq_self
-      (family.entry.retained_mono (Finset.erase_subset _ _))
-  rw [deleted]
-  exact family.entry.deletion_targetDefect member
+end Witness
 
 end Hypostructure.Graph.ExitFour

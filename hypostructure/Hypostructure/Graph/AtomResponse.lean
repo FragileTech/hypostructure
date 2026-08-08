@@ -1,5 +1,4 @@
 import Hypostructure.Graph.BoundariedAtom
-import Hypostructure.Core.Residual.Query
 
 /-!
 # Arbitrary local response coordinates of one boundaried atom
@@ -59,6 +58,43 @@ def ContextEquivalent (system : CoordinateSystem.{u, v} certificate Target)
     (left right : system.Coordinate) : Prop :=
   forall outside : OutsideContext atom.decomposition.interface,
     system.targetResponse left outside <-> system.targetResponse right outside
+
+/-! The literal semantics written in `def:target-complete-quotient` glues one
+fixed atom piece to a context. Without an additional coordinate-specific
+realization relation, that target response cannot distinguish coordinate
+labels. The definitions below state that literal reading directly rather than
+passing through the legacy total `CoordinateSystem.realize` field. -/
+
+/-- Target response obtained by gluing one fixed atom piece to an outside
+context. The coordinate is only an index and does not alter the gluing. -/
+def literalGluingTargetResponse {Coordinate : Type v}
+    (piece : BoundaryPiece atom.decomposition.interface)
+    (Target : FiniteObject.{u} -> Prop) (_coordinate : Coordinate)
+    (outside : OutsideContext atom.decomposition.interface) : Prop :=
+  Target (Graph.glue piece outside)
+
+/-- Fixed-piece gluing is coordinate-insensitive. -/
+theorem literalGluingTargetResponse_coordinateInsensitive
+    {Coordinate : Type v}
+    (piece : BoundaryPiece atom.decomposition.interface)
+    (left right : Coordinate)
+    (outside : OutsideContext atom.decomposition.interface) :
+    literalGluingTargetResponse piece Target left outside <->
+      literalGluingTargetResponse piece Target right outside :=
+  Iff.rfl
+
+/-- Literal fixed-piece gluing supplies no context that distinguishes two
+coordinate labels. -/
+theorem not_exists_literalGluingTargetDefect
+    {Coordinate : Type v}
+    (piece : BoundaryPiece atom.decomposition.interface)
+    (left right : Coordinate) :
+    ¬ exists outside : OutsideContext atom.decomposition.interface,
+      Not (literalGluingTargetResponse piece Target left outside <->
+        literalGluingTargetResponse piece Target right outside) := by
+  rintro ⟨outside, distinguishes⟩
+  exact distinguishes
+    (literalGluingTargetResponse_coordinateInsensitive piece left right outside)
 
 /-- A system represented by same-boundary graph pieces is one specialization
 of the arbitrary-coordinate API.  The caller proves once that each piece lies
@@ -209,52 +245,6 @@ end TargetCompleteQuotient
 read from the same predecessor stage; the pair itself is reconstructed by the
 existing quotient API, so no caller can inject a copied profile or response
 certificate. -/
-namespace QuerySurface
-
-open Hypostructure.Core.Residual
-
-universe uPrevious
-
-variable {Previous : Sort uPrevious}
-variable {object : FiniteObject.{u}}
-variable {atom : ProperBoundariedAtom object}
-variable {certificate : BoundariedAtomProfileCertificate atom}
-variable {Target : FiniteObject.{u} -> Prop}
-variable {system : CoordinateSystem.{u, v} certificate Target}
-
-noncomputable def pairOfIdentified
-    (quotient : Query Previous (fun _ => TargetCompleteQuotient system))
-    (left : Query Previous (fun _ => system.Coordinate))
-    (right : Query Previous (fun _ => system.Coordinate))
-    (identified : Query Previous (fun previous =>
-      (quotient previous).Identified
-        (left previous) (right previous))) :
-  Query Previous (fun previous => SameFibrePair system) :=
-   fun previous =>
-    (quotient previous).pairOfIdentified (identified previous)
-
-def profileEquality
-    (pairs : Query Previous (fun _ => SameFibrePair system)) :
-    Query Previous (fun previous =>
-      system.boundaryDegreeProfile (pairs previous).left =
-        system.boundaryDegreeProfile (pairs previous).right) :=
-   fun previous => (pairs previous).profile_eq
-
-def contextUniversality
-    (quotient : Query Previous (fun _ => TargetCompleteQuotient system))
-    (left : Query Previous (fun _ => system.Coordinate))
-    (right : Query Previous (fun _ => system.Coordinate))
-    (identified : Query Previous (fun previous =>
-      (quotient previous).Identified
-        (left previous) (right previous))) :
-    Query Previous (fun previous =>
-      system.ContextEquivalent (left previous) (right previous)) :=
-   fun previous =>
-    (quotient previous).contextUniversal_of_identified
-      (identified previous)
-
-end QuerySurface
-
 /-- A pair of coordinates is target-completely identified when some certified
 target-complete quotient identifies it. -/
 def TargetCompleteIdentification
@@ -402,31 +392,5 @@ noncomputable def CoordinateSystem.classifyContext
   · exact .exact equivalent
   · exact .defective equivalent
       (targetDefect_of_not_contextEquivalent equivalent)
-
-namespace QuerySurface
-
-open Hypostructure.Core.Residual
-
-universe uPrevious
-
-variable {Previous : Sort uPrevious}
-variable {object : FiniteObject.{u}}
-variable {atom : ProperBoundariedAtom object}
-variable {certificate : BoundariedAtomProfileCertificate atom}
-variable {Target : FiniteObject.{u} -> Prop}
-variable {system : CoordinateSystem.{u, v} certificate Target}
-
-/-- Classify two coordinates read from the same literal predecessor ledger.
-The resulting query preserves their dependent identity and performs the exact
-semantic split only when read at that stage. -/
-noncomputable def contextClassification
-    (left : Query Previous (fun _ => system.Coordinate))
-    (right : Query Previous (fun _ => system.Coordinate)) :
-    Query Previous (fun previous =>
-      ContextClassification system (left previous) (right previous)) :=
-   fun previous =>
-    system.classifyContext (left previous) (right previous)
-
-end QuerySurface
 
 end Hypostructure.Graph.AtomResponse

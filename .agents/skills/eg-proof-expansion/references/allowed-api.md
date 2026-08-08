@@ -4369,28 +4369,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitFourNoPeel`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitFourPeel`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitOneFree`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4524,17 +4502,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeALowSurplus`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.typeAPeeledCharge`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7240,85 +7207,6 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                           typeAExitOneReturn ∉ known →
                             typeAExitOneFree ∉ known →
                               Core.Strategy.Decision typeAExitOneReturn typeAExitOneFree previous
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.typeAExitSevenDichotomy`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-              (previous :
-                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    current known) →
-                (selection uncompressible typeASaturatedExitEntry typeAExitSevenHandoff typeAExitSevenFree :
-                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                  [Core.Residual.FactKeys.Has selection known] →
-                    [Core.Residual.FactKeys.Has uncompressible known] →
-                      [Core.Residual.FactKeys.Has typeASaturatedExitEntry known] →
-                        (∀ (a : selection.At current), ¬Graph.HasCycleWithLength data.LengthOK current.object) →
-                          (∀ (a : uncompressible.At current) (support : Finset current.object.Vertex),
-                              Graph.Strategy.Spine.handoffUncompressible data current.object support) →
-                            (∀ (a : typeASaturatedExitEntry.At current),
-                                ∃ packing,
-                                  Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                                    (∀ (window : Finset current.object.Vertex),
-                                        Graph.FiniteObject.InducesWindow current.object data.windowOrder window →
-                                          ∃ member ∈ packing, ¬Disjoint window member) ∧
-                                      ∃ piece ⊆ Graph.FiniteObject.remainderSupport current.object packing,
-                                        Graph.SupportComponents.Connected.ConnectedOn current.object piece ∧
-                                          Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
-                                              data.dischargeScale ∧
-                                            Graph.FiniteObject.ambientSurplus current.object piece data.threshold = 0 ∧
-                                              ∃ receiver,
-                                                Graph.FiniteObject.IsReceiver current.object piece data.threshold
-                                                    receiver ∧
-                                                  ∃
-                                                    peeled ⊆
-                                                      Graph.FiniteObject.routedLoads current.object piece data.threshold
-                                                        receiver,
-                                                    Graph.ExitFour.SaturatedAfter piece data.threshold
-                                                      data.dischargeScale receiver peeled) →
-                              ((∃ packing,
-                                    Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                                      (∀ (window : Finset current.object.Vertex),
-                                          Graph.FiniteObject.InducesWindow current.object data.windowOrder window →
-                                            ∃ member ∈ packing, ¬Disjoint window member) ∧
-                                        ∃ piece ⊆ Graph.FiniteObject.remainderSupport current.object packing,
-                                          Graph.SupportComponents.Connected.ConnectedOn current.object piece ∧
-                                            Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
-                                                data.dischargeScale ∧
-                                              Graph.FiniteObject.ambientSurplus current.object piece data.threshold =
-                                                  0 ∧
-                                                Graph.Strategy.Spine.HandoffAdmissible data current.object packing
-                                                  piece) →
-                                  typeAExitSevenHandoff.At current) →
-                                ((∀ (packing : Finset (Finset current.object.Vertex)),
-                                      Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
-                                        (∀ (window : Finset current.object.Vertex),
-                                            Graph.FiniteObject.InducesWindow current.object data.windowOrder window →
-                                              ∃ member ∈ packing, ¬Disjoint window member) →
-                                          ∀ piece ⊆ Graph.FiniteObject.remainderSupport current.object packing,
-                                            Graph.SupportComponents.Connected.ConnectedOn current.object piece →
-                                              Graph.FiniteObject.NegativeNetCharge current.object piece data.threshold
-                                                  data.dischargeScale →
-                                                Graph.FiniteObject.ambientSurplus current.object piece data.threshold =
-                                                    0 →
-                                                  ¬Graph.Strategy.Spine.HandoffProduced data current.object packing
-                                                      piece) →
-                                    typeAExitSevenFree.At current) →
-                                  typeAExitSevenHandoff ∉ known →
-                                    typeAExitSevenFree ∉ known →
-                                      Core.Strategy.Decision typeAExitSevenHandoff typeAExitSevenFree previous
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.typeAExitThreeDichotomy`

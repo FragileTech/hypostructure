@@ -16,23 +16,6 @@ inductive TypeAContinuation
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
         (typeAExitOneFreeKeys (residualCTypeAVisibleEntryKeys known)))
-  | peeled {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        (peeledKeys known))
-  | exitFour {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        (exitFourKeys known))
-  | exitFourFree
-      {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        (K .typeAExitFourFree :: K .typeAExitFourNoPeel :: known))
-  | exitFiveTraceLevel
-      {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        (exitFiveTraceLevelKeys known))
-  | free {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        (route8FreeKeys known))
 
 inductive TypeBContinuation
     {BranchState : FiniteObject → Type v}
@@ -77,10 +60,6 @@ inductive TypeBContinuation
       {known : FactKeys (Input BranchState Presentation presentation data)}
       (history : ExactLedger (Input BranchState Presentation presentation data) selected
         (fanOverlapObstructionMassKeys (fanMarkedKeys known)))
-  | exitSevenHandoff
-      {known : FactKeys (Input BranchState Presentation presentation data)}
-      (history : ExactLedger (Input BranchState Presentation presentation data) selected
-        (exitSevenHandoffKeys known))
 
 inductive ColdContinuation
     {BranchState : FiniteObject → Type v}
@@ -119,29 +98,6 @@ private theorem eliminateClosed
   rw [closureKey_eq_closed]
   infer_instance
 
-private noncomputable def normalizeRoute8
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (result : Route8Result selected known) : ChapterOneContinuation selected :=
-  match result with
-  | .peeled history => .typeA (.peeled history)
-  | .exitFour history => .typeA (.exitFour history)
-  | .exitFiveClosed history => (eliminateClosed history).elim
-  | .exitFiveTraceLevel history => .typeA (.exitFiveTraceLevel history)
-  | .exitSixProper history => (eliminateClosed history).elim
-  | .exitSixGlobal history => (eliminateClosed history).elim
-  | .exitSevenHandoff history => .typeB (.exitSevenHandoff history)
-  | .free history => .typeA (.free history)
-  | .closed history => (eliminateClosed history).elim
-
-private noncomputable def normalizeSaturatedExits
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (result : SaturatedExitResult selected known) : ChapterOneContinuation selected :=
-  match result with
-  | .exitOneClosed history => (eliminateClosed history).elim
-  | .exitTwoClosed history => (eliminateClosed history).elim
-  | .exitThreeClosed history => (eliminateClosed history).elim
-  | .segment route => normalizeRoute8 route
-
 private noncomputable def normalizeFanLedger
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (result : TypeBFanLedgerResult selected known) : ChapterOneContinuation selected :=
@@ -165,85 +121,6 @@ private noncomputable def normalizeSurplus
   | .primitiveCapsClosed history => (eliminateClosed history).elim
   | .primitiveBottleneck fan => normalizeFanLedger fan
 
-set_option maxHeartbeats 4000000 in
-/-- Run the Chapter 1 graph from its one opened scope.
-
-`runCore` is invoked exactly once.  Its continuation-bearing arms are consumed
-immediately by their canonical generic runners; every already-closed arm is
-eliminated from the closure evidence stored in the same ledger. -/
-noncomputable def runChapterOne
-    (T : Core.Target (problem BranchState Presentation presentation data))
-    (targetPredicate : T.Predicate = Graph.HasCycleWithLength data.LengthOK)
-    (opened : OpenedScope
-      (P := problem BranchState Presentation presentation data) (K .selection))
-    (sufficientlyLarge :
-      Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
-        data.dischargeScale data.windowOrder data.windowRate
-        data.spineScale opened.selected.object.vertexCount) :
-    ChapterOneContinuation opened.selected := by
-  classical
-  match runCore T targetPredicate opened sufficientlyLarge with
-  | .surplusAbove aboveHistory =>
-      match windowPackageDichotomy aboveHistory (K .windowPackageSeparated)
-          (K .windowPackageCollided) (fun separated => ⟨separated⟩)
-          (fun collided => ⟨collided⟩) (by simp) (by simp) with
-      | .left packageHistory =>
-          exact normalizeSurplus (runSurplusBranch packageHistory)
-      | .right coldHistory =>
-          exact .cold (.windowPackage
-            (runCold coldHistory (by simp) (by simp) (by simp) (by simp)
-              (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
-              (by simp) (by simp) (by simp)))
-  | .windowPackageCollided coldHistory =>
-      exact .cold (.atOrBelowPackage
-        (runCold coldHistory (by simp) (by simp) (by simp) (by simp)
-          (by simp) (by simp) (by simp) (by simp) (by simp) (by simp)
-          (by simp) (by simp) (by simp)))
-  | .typeAVisibleEntry visible =>
-      match runExitOne visible (by simp) (by simp) (by simp) with
-      | .closed history => exact (eliminateClosed history).elim
-      | .free history => exact .typeA (.exitOneFree history)
-  | .typeAVisibleFirstExcess silent =>
-      match typeAExitFourPeelDichotomy silent (K .typeASaturatedExitEntry)
-          (K .typeAExitFourPeel) (K .typeAExitFourNoPeel)
-          (fun fact => fact.down) (fun value => ⟨value⟩)
-          (fun value => ⟨value⟩) (by simp) (by simp) with
-      | .left available =>
-          exact .typeA (.peeled
-            ((typeAPeeledCharge (data := data)).run available (by
-              intro key isNew isOld
-              simp only [List.mem_singleton] at isNew
-              subst isNew
-              revert isOld
-              simp)))
-      | .right noPeel =>
-          match typeAExitFourDichotomy noPeel (K .typeASaturatedExitEntry)
-              (K .typeAExitFour) (K .typeAExitFourFree)
-              (fun fact => fact.down) (fun value => ⟨value⟩)
-              (fun value => ⟨value⟩) (by simp) (by simp) with
-          | .left exitFour => exact .typeA (.exitFour exitFour)
-          | .right free => exact .typeA (.exitFourFree free)
-  | .barrierOverflow history => exact (eliminateClosed history).elim
-  | .contextDefect history => exact (eliminateClosed history).elim
-  | .atomCompression history => exact (eliminateClosed history).elim
-  | .properDelocalization history => exact (eliminateClosed history).elim
-  | .rankDropClosed history => exact (eliminateClosed history).elim
-  | .entropyCapActive history => exact (eliminateClosed history).elim
-  | .typeAUnsaturatedClosed history => exact (eliminateClosed history).elim
-  | .typeBDirectCycleClosed history => exact (eliminateClosed history).elim
-  | .typeBBranchKill history => exact (eliminateClosed history).elim
-  | .typeBExclusionResidual history => exact .typeB (.exclusionResidual history)
-  | .typeBOverlapObstructionMass history =>
-      exact .typeB (.overlapObstructionMass history)
-  | .typeBCertificateResidualMass history =>
-      exact .typeB (.certificateResidualMass history)
-  | .degreeFourResidualMass history => exact .typeB (.degreeFourResidualMass history)
-  | .degreeFourDirectCycleClosed history => exact (eliminateClosed history).elim
-  | .degreeFourBranchKill history => exact (eliminateClosed history).elim
-  | .degreeFourExclusionResidual history =>
-      exact .typeB (.degreeFourExclusionResidual history)
-  | .degreeFourOverlapObstructionMass history =>
-      exact .typeB (.degreeFourOverlapObstructionMass history)
 
 end Run
 

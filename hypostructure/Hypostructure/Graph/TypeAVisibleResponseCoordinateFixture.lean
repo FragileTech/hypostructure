@@ -19,11 +19,14 @@ example
     (load : package.SelectedLoad) :
     (package.selectedResponseCoordinate load).connectorLabel =
         (package.selectedReturn load.1 load.2).connector.length ∧
+      (package.selectedResponseCoordinate load).connector =
+        (package.selectedReturn load.1 load.2).connector ∧
       (package.selectedResponseCoordinate load).entry.1 =
         (package.selectedReturn load.1 load.2).entry ∧
       (package.selectedResponseCoordinate load).channel =
         (package.selectedReturn load.1 load.2).channel :=
   ⟨package.selectedResponseCoordinate_connectorLabel load,
+    package.selectedResponseCoordinate_connector load,
     package.selectedResponseCoordinate_entry load,
     package.selectedResponseCoordinate_channel load⟩
 

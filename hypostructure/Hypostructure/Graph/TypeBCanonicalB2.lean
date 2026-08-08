@@ -109,12 +109,19 @@ noncomputable def reserveUnitSupport
 
 /-! ## Exhaustive finite candidate data -/
 
+/-- A literal local internal/mixed reserve block `Q`.  Its capacity is derived
+from the charges of these selected ledger vertices.  The chosen non-window
+incidences remain separate B1 carriers and are never identified with the core
+charge of their far endpoints. -/
+structure LocalReserveBlock (object : FiniteObject.{u}) where
+  vertices : Finset object.Vertex
+
 inductive CandidateData (object : FiniteObject.{u}) where
   | certificate (profile : TypeBFanClosedPorts.Profile object)
       (assigned : Finset object.Vertex)
   | positive (profile : TypeBFanClosedPorts.Profile object)
-      (localQVertices : Finset object.Vertex)
-      (localQIncidences : Finset (object.Vertex × object.Vertex))
+      (localReserve : LocalReserveBlock object)
+      (chosenNonWindow : Finset (object.Vertex × object.Vertex))
 
 namespace CandidateData
 
@@ -127,23 +134,24 @@ def profile (data : CandidateData object) : TypeBFanClosedPorts.Profile object :
   | .certificate profile _ => profile
   | .positive profile _ _ => profile
 
-def localQ (data : CandidateData object) : Finset object.Vertex :=
+def localReserve (data : CandidateData object) : LocalReserveBlock object :=
   match data with
-  | .certificate _ _ => ∅
-  | .positive _ localQVertices _ => localQVertices
+  | .certificate _ _ => ⟨∅⟩
+  | .positive _ localReserve _ => localReserve
 
-def localQIncidences (data : CandidateData object) :
+def chosenNonWindow (data : CandidateData object) :
     Finset (object.Vertex × object.Vertex) :=
   match data with
   | .certificate _ _ => ∅
-  | .positive _ _ localQIncidences => localQIncidences
+  | .positive _ _ chosen => chosen
 
 noncomputable def chargedVertices (data : CandidateData object)
     (threshold : Nat) (hub : object.Vertex) : Finset object.Vertex :=
   match data with
   | .certificate _ assigned => assigned
-  | .positive profile localQVertices _ =>
-      closedNeighbours object threshold profile.envelope hub ∪ localQVertices
+  | .positive profile localReserve _ =>
+      closedNeighbours object threshold profile.envelope hub ∪
+        localReserve.vertices
 
 /-- The canonical window incidences and precisely those non-window incidences
 whose far endpoint belongs to the selected actual block `Q`. -/
@@ -152,25 +160,33 @@ noncomputable def selectedIncidences (data : CandidateData object)
     (hub : object.Vertex) : Finset (object.Vertex × object.Vertex) :=
   match data with
   | .certificate _ _ => ∅
-  | .positive profile _ localQIncidences =>
+  | .positive profile _ chosenNonWindow =>
       windowIncidenceSet object threshold profile.envelope
           (object.windowSupport packing) hub ∪
-        localQIncidences
+        chosenNonWindow
 
-noncomputable def localQVertexUniverse
+noncomputable def localReserveVertexUniverse
     (profile : TypeBFanClosedPorts.Profile object)
     (threshold : Nat) {packing : Finset (Finset object.Vertex)}
     (piece : CanonicalPiece object packing) (hub : object.Vertex) :
     Finset object.Vertex :=
   (((nonWindowIncidenceSet object threshold profile.envelope
       (object.windowSupport packing) hub).image Prod.snd) ∩ piece.vertices) \
-    centres object threshold piece.vertices
+    (centres object threshold piece.vertices ∪
+      closedNeighbours object threshold profile.envelope hub)
+
+/-- Vertex atoms at both endpoints of every selected incidence. -/
+noncomputable def incidenceEndpointAtoms
+    (incidences : Finset (object.Vertex × object.Vertex)) :
+    Finset (SupportAtom object) :=
+  vertexAtoms (incidences.image Prod.fst ∪ incidences.image Prod.snd)
 
 noncomputable def supportAtoms (data : CandidateData object)
     (threshold : Nat) (packing : Finset (Finset object.Vertex))
     (hub : object.Vertex) : Finset (SupportAtom object) :=
   vertexAtoms (insert hub (data.chargedVertices threshold hub)) ∪
-    incidenceAtoms (data.selectedIncidences threshold packing hub)
+    (incidenceEndpointAtoms (data.selectedIncidences threshold packing hub) ∪
+      incidenceAtoms (data.selectedIncidences threshold packing hub))
 
 /-- The ordinary-reserve units literally met by this candidate carrier.  No
 unit is authored or assigned: this is the intersection induced by support. -/
@@ -191,13 +207,26 @@ theorem consumedReserveUnits_subset (data : CandidateData object)
   classical
   exact Finset.filter_subset _ _
 
-/-- The actual core charge of the selected local block. -/
-noncomputable def localQCharge₂ (data : CandidateData object)
+/-- Exact common-scale capacity of a selected local reserve block. -/
+noncomputable def localReserveCapacity₂
+    (block : LocalReserveBlock object)
     (threshold dischargeScale : Nat)
     {packing : Finset (Finset object.Vertex)}
     (piece : CanonicalPiece object packing) : Int :=
-  2 * ∑ vertex ∈ data.localQ,
+  2 * ∑ vertex ∈ block.vertices,
     scaledCoreCharge object threshold dischargeScale piece.vertices vertex
+
+/-- The literal B1 half-incidence payment made by the chosen non-window
+carriers.  This is independent of the local reserve block's core charge. -/
+def PaysHybridB1 (data : CandidateData object)
+    (threshold dischargeScale : Nat)
+    {packing : Finset (Finset object.Vertex)} (hub : object.Vertex) : Prop :=
+  match data with
+  | .certificate _ _ => True
+  | .positive profile _ chosen =>
+      TypeBHybridIncidence.nonWindowDemand object threshold dischargeScale
+          profile.envelope (object.windowSupport packing) hub ≤
+        (dischargeScale : Int) * (chosen.card : Int)
 
 /-- The candidate's exact common-scale subledger contribution.  Incidences
 are provenance for the refinement; no incidence capacity is added to the core
@@ -230,24 +259,18 @@ def IsCandidate (data : CandidateData object)
   Disjoint (data.chargedVertices threshold hub)
     (centres object threshold piece.vertices) ∧
   data.EntryRefines threshold dischargeScale piece hub ∧
+  data.PaysHybridB1 threshold dischargeScale (packing := packing) hub ∧
   match data with
   | .certificate profile assigned =>
       IsCertificateClosed object threshold dischargeScale profile.envelope hub ∧
         assigned ⊆ TypeBMarkedFan.neighbourRim object hub
-  | .positive profile localQVertices localQIncidences =>
+  | .positive profile localReserve chosenNonWindow =>
       0 < scaledDeficit object threshold dischargeScale profile.envelope hub ∧
-        localQVertices ⊆
-          localQVertexUniverse profile threshold piece hub ∧
-        localQIncidences ⊆
+        localReserve.vertices ⊆
+          localReserveVertexUniverse profile threshold piece hub ∧
+        chosenNonWindow ⊆
           nonWindowIncidenceSet object threshold profile.envelope
-            (object.windowSupport packing) hub ∧
-        localQIncidences.image Prod.snd ⊆ localQVertices ∧
-        TypeBHybridIncidence.nonWindowDemand object threshold dischargeScale
-            profile.envelope (object.windowSupport packing) hub ≤
-          (dischargeScale : Int) * localQIncidences.card ∧
-        TypeBHybridIncidence.nonWindowDemand object threshold dischargeScale
-            profile.envelope (object.windowSupport packing) hub ≤
-          data.localQCharge₂ threshold dischargeScale piece
+            (object.windowSupport packing) hub
 
 theorem IsCandidate.chargedVertices_subset
     {data : CandidateData object}
@@ -266,6 +289,81 @@ theorem IsCandidate.entryRefines {data : CandidateData object}
     (eligible : data.IsCandidate threshold dischargeScale piece hub) :
     data.EntryRefines threshold dischargeScale piece hub :=
   eligible.2.2.2.2.2.1
+
+theorem IsCandidate.paysHybridB1 {data : CandidateData object}
+    (eligible : data.IsCandidate threshold dischargeScale piece hub) :
+    data.PaysHybridB1 threshold dischargeScale (packing := packing) hub :=
+  eligible.2.2.2.2.2.2.1
+
+/-- Paying the exact remaining non-window demand implies the complete B1
+half-incidence inequality by the definition of that remaining demand. -/
+theorem paysHybridB1_total
+    (profile : TypeBFanClosedPorts.Profile object)
+    (localReserve : LocalReserveBlock object)
+    (chosenNonWindow : Finset (object.Vertex × object.Vertex))
+    (pays : (CandidateData.positive profile localReserve chosenNonWindow).PaysHybridB1
+      threshold dischargeScale (packing := packing) hub) :
+    2 * scaledDeficit object threshold dischargeScale profile.envelope hub ≤
+      (dischargeScale : Int) *
+        ((TypeBHybridIncidence.windowIncidences object threshold
+            profile.envelope (object.windowSupport packing) hub : Int) +
+          (chosenNonWindow.card : Int)) := by
+  have demandLower :
+      2 * scaledDeficit object threshold dischargeScale profile.envelope hub -
+          (dischargeScale : Int) *
+            (TypeBHybridIncidence.windowIncidences object threshold
+              profile.envelope (object.windowSupport packing) hub : Int) ≤
+        TypeBHybridIncidence.nonWindowDemand object threshold dischargeScale
+          profile.envelope (object.windowSupport packing) hub := by
+    simp only [TypeBHybridIncidence.nonWindowDemand]
+    exact le_max_right _ _
+  simp only [PaysHybridB1] at pays
+  nlinarith
+
+/-- Exact local B1 output for one positive candidate: its literal augmented
+subledger contribution is nonnegative, and the chosen non-window incidence
+carriers pay both the total hybrid deficit and its non-window remainder. -/
+theorem positiveCandidate_localB1
+    (profile : TypeBFanClosedPorts.Profile object)
+    (localReserve : LocalReserveBlock object)
+    (chosenNonWindow : Finset (object.Vertex × object.Vertex))
+    (eligible : (CandidateData.positive profile localReserve chosenNonWindow).IsCandidate
+      threshold dischargeScale piece hub) :
+    0 ≤ (CandidateData.positive profile localReserve chosenNonWindow).entryPayment₂
+        threshold dischargeScale piece hub ∧
+      2 * scaledDeficit object threshold dischargeScale profile.envelope hub ≤
+          (dischargeScale : Int) *
+            ((TypeBHybridIncidence.windowIncidences object threshold
+                profile.envelope (object.windowSupport packing) hub : Int) +
+              (chosenNonWindow.card : Int)) ∧
+        TypeBHybridIncidence.nonWindowDemand object threshold dischargeScale
+            profile.envelope (object.windowSupport packing) hub ≤
+          (dischargeScale : Int) * (chosenNonWindow.card : Int) := by
+  refine ⟨eligible.entryRefines, ?_⟩
+  exact ⟨paysHybridB1_total profile localReserve chosenNonWindow
+      eligible.paysHybridB1,
+    by simpa [PaysHybridB1] using eligible.paysHybridB1⟩
+
+/-- The positive entry's exact subledger split.  `Q` contributes only the
+charges of its selected vertices; the chosen incidence set remains the B1
+payment certificate and contributes no second copy of core charge. -/
+theorem positive_entryPayment₂_eq
+    (profile : TypeBFanClosedPorts.Profile object)
+    (localReserve : LocalReserveBlock object)
+    (chosenNonWindow : Finset (object.Vertex × object.Vertex))
+    (disjoint : Disjoint
+      (closedNeighbours object threshold profile.envelope hub)
+      localReserve.vertices) :
+    (CandidateData.positive profile localReserve chosenNonWindow).entryPayment₂
+        threshold dischargeScale piece hub =
+      2 * (scaledCentreCharge object threshold dischargeScale hub +
+        ∑ vertex ∈ closedNeighbours object threshold profile.envelope hub,
+          scaledCoreCharge object threshold dischargeScale piece.vertices vertex) +
+        localReserveCapacity₂ localReserve threshold dischargeScale piece := by
+  rw [entryPayment₂, chargedVertices,
+    Finset.sum_union disjoint]
+  simp only [localReserveCapacity₂]
+  ring
 
 noncomputable def isCandidateDecidable (data : CandidateData object)
     (threshold dischargeScale : Nat)
@@ -287,12 +385,13 @@ noncomputable def candidateDataSchedule (object : FiniteObject.{u})
       ((((TypeBMarkedFan.neighbourRim object hub ∩ piece.vertices) \
           centres object threshold piece.vertices).powerset.toList.map
         fun assigned => CandidateData.certificate profile assigned) ++
-      ((CandidateData.localQVertexUniverse profile threshold piece hub).powerset.toList.flatMap
-        fun localQVertices =>
+      ((CandidateData.localReserveVertexUniverse profile threshold piece hub).powerset.toList.flatMap
+        fun localReserveVertices =>
           (nonWindowIncidenceSet object threshold profile.envelope
             (object.windowSupport packing) hub).powerset.toList.map
-              fun localQIncidences =>
-                CandidateData.positive profile localQVertices localQIncidences))
+              fun chosenNonWindow =>
+                CandidateData.positive profile ⟨localReserveVertices⟩
+                  chosenNonWindow))
 
 noncomputable def candidateFamily (object : FiniteObject.{u})
     (threshold dischargeScale : Nat)

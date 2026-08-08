@@ -87,7 +87,7 @@ noncomputable def disjointLedgerHandoff
       selected typeBB2ChoiceKeys) :
     ExactLedger (Input BranchState Presentation presentation data) selected
       (K .typeBDisjointLedger :: typeBB2ChoiceKeys) :=
-  (typeBDisjointLedgerRow (K .typeBB2Choice) (K .selection)
+  (disjointPostLedgerComponentsRow (K .typeBB2Choice) (K .selection)
     (K .remainderNormalized) (K .typeBDisjointLedger) (by simp)
     (fun fact => fact.down) (fun fact => fact.down.1)
     (fun fact => fact.down) (fun handoff => ⟨handoff⟩)).run history (by simp)
@@ -99,7 +99,7 @@ noncomputable def degreeFourDisjointLedgerHandoff
       selected degreeFourB2ChoiceKeys) :
     ExactLedger (Input BranchState Presentation presentation data) selected
       (K .typeBDisjointLedger :: degreeFourB2ChoiceKeys) :=
-  (typeBDisjointLedgerRow (K .typeBB2Choice) (K .selection)
+  (disjointPostLedgerComponentsRow (K .typeBB2Choice) (K .selection)
     (K .remainderNormalized) (K .typeBDisjointLedger) (by simp)
     (fun fact => fact.down) (fun fact => fact.down.1)
     (fun fact => fact.down) (fun handoff => ⟨handoff⟩)).run history (by simp)

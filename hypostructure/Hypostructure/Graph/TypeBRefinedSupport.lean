@@ -1,1 +1,1 @@
-import Hypostructure.Graph.TypeBCanonicalB2
+import Hypostructure.Graph.TypeBGlobalLocalReflection

@@ -20,12 +20,19 @@ structure ResponseCoordinate (object : FiniteObject.{u})
   port : outside ∈ completionPorts object support receiver
   entry :
     Strategy.InterfaceReplacement.SupportAtom.BoundaryVertex object support
-  connectorLabel : Nat
+  connector : object.graph.Walk outside entry.1
+  connectorOutside : ∀ vertex ∈ connector.support, vertex ≠ entry.1 →
+    vertex ∉ support
   channel : object.graph.Walk entry.1 receiver
+  isChannel : IsChannel object support channel
 
 namespace ResponseCoordinate
 
 variable {support : Finset object.Vertex} {receiver : object.Vertex}
+
+/-- The manuscript label `g(Gamma)`, derived from the retained connector. -/
+def connectorLabel (coordinate : ResponseCoordinate object support receiver) : Nat :=
+  coordinate.connector.length
 
 /-- A receiver-entry coordinate is registered in the exact boundary-degree
 fibre of the selected support.  This is coordinate metadata; it does not
@@ -60,8 +67,10 @@ noncomputable def selectedResponseCoordinate
   outside := package.outside
   port := package.port
   entry := package.selectedD1Coordinate load.1 load.2
-  connectorLabel := (package.selectedReturn load.1 load.2).connector.length
+  connector := (package.selectedReturn load.1 load.2).connector
+  connectorOutside := (package.selectedReturn load.1 load.2).connectorOutside
   channel := (package.selectedReturn load.1 load.2).channel
+  isChannel := (package.selectedReturn load.1 load.2).isChannel
 
 @[simp] theorem selectedResponseCoordinate_outside
     (package : VisibleFourUnpeeledPackage support threshold scale receiver peeled)
@@ -83,6 +92,13 @@ noncomputable def selectedResponseCoordinate
     (load : package.SelectedLoad) :
     (package.selectedResponseCoordinate load).connectorLabel =
       (package.selectedReturn load.1 load.2).connector.length := by
+  rfl
+
+@[simp] theorem selectedResponseCoordinate_connector
+    (package : VisibleFourUnpeeledPackage support threshold scale receiver peeled)
+    (load : package.SelectedLoad) :
+    (package.selectedResponseCoordinate load).connector =
+      (package.selectedReturn load.1 load.2).connector := by
   rfl
 
 @[simp] theorem selectedResponseCoordinate_channel
