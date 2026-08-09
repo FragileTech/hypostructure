@@ -3572,16 +3572,86 @@ sealed inputs before the single bridge-mass fact is appended.
               ordinaryComponents groupedComponents))
         .nil)
 
+/-! ## Node `[76]`/`[85]`: Type B local selected-entry charge -/
+@[reducible] noncomputable def typeBSelectedFanChargeRow
+    (fanCertificateMarked typeBHybridEntry typeBDisjointLedger
+      typeBSelectedFanCharge :
+      FactKey (Input BranchState Presentation presentation data))
+    (requiredUnique :
+      [fanCertificateMarked, typeBHybridEntry, typeBDisjointLedger].Nodup)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∀ packing : Finset (Finset input.object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (∀ centre
+                  (member : centre ∈ Graph.TypeBRefinedSupport.centres
+                    input.object data.threshold canonicalPiece.vertices),
+                (ledger.choice.entry centre member).IsCandidate data.threshold
+                  data.dischargeScale canonicalPiece centre) ∧
+                (0 : Int) ≤ ledger.selectedEntryPayment₂) →
+      typeBSelectedFanCharge.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeBSelectedFanCharge
+    { Requires := [fanCertificateMarked, typeBHybridEntry, typeBDisjointLedger]
+      Produces := [typeBSelectedFanCharge]
+      requiresUnique := requiredUnique
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let _markedFact := inputs.get fanCertificateMarked
+      let _hybridFact := inputs.get typeBHybridEntry
+      let _ledgerFact := inputs.get typeBDisjointLedger
+      .cons (key := typeBSelectedFanCharge)
+        (encode inputs.current (by
+          intro packing canonicalPiece ledger _exact
+          have hLocalEntry :
+              ∀ centre
+                  (member : centre ∈ Graph.TypeBRefinedSupport.centres
+                    inputs.current.object data.threshold
+                    canonicalPiece.vertices),
+                (ledger.choice.entry centre member).IsCandidate data.threshold
+                  data.dischargeScale canonicalPiece centre := by
+            intro centre member
+            exact ledger.entry_isCandidate centre member
+          have selected :
+              (0 : Int) ≤ ledger.selectedEntryPayment₂ := by
+            classical
+            rw [Graph.TypeBRefinedSupport.DisjointLedger.selectedEntryPayment₂]
+            refine Finset.sum_nonneg ?_
+            intro hub _member
+            exact (hLocalEntry hub.1 hub.2).entryRefines
+          exact ⟨hLocalEntry, selected⟩))
+        .nil)
+
 /-! ## Node `[76]`/`[85]`: Type B exclusion charge
 
-The charge row runs only after the exact B2 ledger fact is present.  The row
-reads that fact through `FactInputs.get` and appends the B-ledger implication
-used by the exclusion dichotomy.
+The charge row runs only after the exact B2 ledger and the selected local-entry
+charge facts are present.  It reads both through `FactInputs.get` and appends
+the B-ledger implication used by the exclusion dichotomy.
 -/
 @[reducible] noncomputable def typeBExclusionChargeRow
-    (typeBDisjointLedger typeBExclusionCharge :
+    (typeBDisjointLedger typeBSelectedFanCharge typeBExclusionCharge :
       FactKey (Input BranchState Presentation presentation data))
-    (distinct : typeBDisjointLedger ≠ typeBExclusionCharge)
+    (requiredUnique :
+      [typeBDisjointLedger, typeBSelectedFanCharge].Nodup)
+    (localChargeOf :
+      (input : Input BranchState Presentation presentation data) →
+        typeBSelectedFanCharge.At input →
+        ∀ packing : Finset (Finset input.object.Vertex),
+          ∀ canonicalPiece :
+              Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+            ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
+                data.threshold data.dischargeScale canonicalPiece,
+              ledger.ExactAugmentedLedgerRefinement →
+                (∀ centre
+                    (member : centre ∈ Graph.TypeBRefinedSupport.centres
+                      input.object data.threshold canonicalPiece.vertices),
+                  (ledger.choice.entry centre member).IsCandidate data.threshold
+                    data.dischargeScale canonicalPiece centre) ∧
+                  (0 : Int) ≤ ledger.selectedEntryPayment₂)
     (encode : (input : Input BranchState Presentation presentation data) →
       (∀ packing : Finset (Finset input.object.Vertex),
         ∀ canonicalPiece :
@@ -3598,15 +3668,25 @@ used by the exclusion dichotomy.
       typeBExclusionCharge.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBExclusionCharge
-    (rowManifest typeBDisjointLedger typeBExclusionCharge distinct)
+    { Requires := [typeBDisjointLedger, typeBSelectedFanCharge]
+      Produces := [typeBExclusionCharge]
+      requiresUnique := requiredUnique
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let _ledgerFact := inputs.get typeBDisjointLedger
+      let localCharge := localChargeOf inputs.current
+        (inputs.get typeBSelectedFanCharge)
       .cons (key := typeBExclusionCharge)
         (encode inputs.current (by
           intro packing canonicalPiece ledger exact remainingNonnegative
+          have selectedNonnegative :
+              (0 : Int) ≤ ledger.selectedEntryPayment₂ :=
+            (localCharge packing canonicalPiece ledger exact).2
           exact
-            Graph.TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
-              (object := inputs.current.object) ledger exact remainingNonnegative))
+            Graph.TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative
+              (object := inputs.current.object) ledger exact
+              selectedNonnegative remainingNonnegative))
         .nil)
 
 @[reducible] noncomputable def typeBExcludedRow
@@ -5665,9 +5745,20 @@ noncomputable def typeAExitSevenDichotomy
       let free := freeOf inputs.current (inputs.get typeAExitSevenFree)
       .cons (key := route8Residual) (encode inputs.current free) .nil)
 
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def route8ResidualProfileRow
-    : AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.route8ResidualProfile
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8ResidualProfile
     { Requires := [K .route8Residual]
       Produces := [K .route8ResidualProfile]
       requiresUnique := by simp
@@ -5677,10 +5768,22 @@ noncomputable def typeAExitSevenDichotomy
       let residual := inputs.get (K .route8Residual)
       .cons (key := K .route8ResidualProfile)
         ⟨silentCoreResidualProfile_of_route8Residual residual.down⟩ .nil)
+    0 0
 
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def route8GlobalSqueezeRow
-    : AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.route8GlobalSqueeze
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8GlobalSqueeze
     { Requires := [K .route8ResidualProfile, K .largeBudgetResidual]
       Produces := [K .route8GlobalSqueeze]
       requiresUnique := by simp [K_eq_iff]
@@ -5691,10 +5794,22 @@ noncomputable def typeAExitSevenDichotomy
       let largeBudget := inputs.get (K .largeBudgetResidual)
       .cons (key := K .route8GlobalSqueeze)
         ⟨⟨profile.down, largeBudget.down⟩⟩ .nil)
+    0 0
 
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def route8BurdenAndDeficitRow
-    : AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.route8BurdenAndDeficit
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8BurdenAndDeficit
     { Requires := [K .route8GlobalSqueeze, K .typeAVisibleFirstExcess]
       Produces := [K .route8BasinBurden, K .route8LargeBudgetDeficit]
       requiresUnique := by simp [K_eq_iff]
@@ -5708,10 +5823,22 @@ noncomputable def typeAExitSevenDichotomy
       .cons (key := K .route8BasinBurden) ⟨burden⟩
         (.cons (key := K .route8LargeBudgetDeficit)
           ⟨⟨burden, global.down.2⟩⟩ .nil))
+    0 0
 
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def route8CarrierCoreRow
-    : AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.route8CarrierCore
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8CarrierCore
     { Requires := [K .route8LargeBudgetDeficit]
       Produces := [K .route8CarrierCore]
       requiresUnique := by simp
@@ -5725,12 +5852,26 @@ noncomputable def typeAExitSevenDichotomy
             carrierSupply coordinates car car_subset state
           letI : DecidableEq Carrier := carrierDec
           letI : DecidableEq Coordinate := coordinateDec
-          exact Graph.Route8.carrierCoreFacts (Target := Target)
-            carrierSupply coordinates car car_subset state⟩⟩ .nil)
+          exact (Graph.Route8.carrierCoreFacts (Target := Target)
+            carrierSupply coordinates car car_subset state :
+              Graph.Route8.CarrierCoreFacts (Target := Target)
+                carrierSupply coordinates car car_subset state)⟩⟩ .nil)
+    0 0
 
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def route8SmallCoreCollapseRow
-    : AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.route8SmallCoreCollapse
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8SmallCoreCollapse
     { Requires := [K .route8CarrierCore]
       Produces := [K .route8SmallCoreCollapse]
       requiresUnique := by simp
@@ -5744,8 +5885,178 @@ noncomputable def typeAExitSevenDichotomy
             carrierSupply coordinates car car_subset state
           letI : DecidableEq Carrier := carrierDec
           letI : DecidableEq Coordinate := coordinateDec
-          exact Graph.Route8.smallCoreCollapseFacts (Target := Target)
-            carrierSupply coordinates car car_subset state⟩⟩ .nil)
+          exact (Graph.Route8.smallCoreCollapseFacts (Target := Target)
+            carrierSupply coordinates car car_subset state :
+              Graph.Route8.SmallCoreCollapseFacts (Target := Target)
+                carrierSupply coordinates car car_subset state)⟩⟩ .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8TwoCarrierReductionRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8TwoCarrierReduction
+    { Requires := [K .route8SmallCoreCollapse]
+      Produces := [K .route8TwoCarrierReduction]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let collapse := inputs.get (K .route8SmallCoreCollapse)
+      .cons (key := K .route8TwoCarrierReduction)
+        ⟨⟨collapse.down, by
+          intro Carrier carrierDec
+          letI : DecidableEq Carrier := carrierDec
+          exact (Graph.Route8.twoCarrierReductionFacts
+            (Carrier := Carrier) :
+              Graph.Route8.TwoCarrierReductionFacts
+                (Carrier := Carrier))⟩⟩ .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8CarrierDeletionWitnessesRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8CarrierDeletionWitnesses
+    { Requires := [K .route8TwoCarrierReduction]
+      Produces := [K .route8CarrierDeletionWitnesses]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let reduction := inputs.get (K .route8TwoCarrierReduction)
+      .cons (key := K .route8CarrierDeletionWitnesses)
+        ⟨⟨reduction.down, by
+          intro Target Carrier Coordinate carrierDec coordinateDec boundary
+            carrierSupply coordinates car car_subset state
+          letI : DecidableEq Carrier := carrierDec
+          letI : DecidableEq Coordinate := coordinateDec
+          exact (Graph.Route8.twoCarrierDeletionWitnessFacts
+            (Target := Target) carrierSupply coordinates car car_subset state :
+              Graph.Route8.TwoCarrierDeletionWitnessFacts (Target := Target)
+                carrierSupply coordinates car car_subset state)⟩⟩ .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8PrivateCarrierContradictionRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8PrivateCarrierContradiction
+    { Requires := [K .route8CarrierDeletionWitnesses]
+      Produces := [K .route8PrivateCarrierBudget,
+        K .route8NoTwoCarrierContradiction]
+      requiresUnique := by simp
+      producesUnique := by simp [K_eq_iff]
+      producesNonempty := by simp }
+    (fun inputs =>
+      let witnesses := inputs.get (K .route8CarrierDeletionWitnesses)
+      let budget : Route8PrivateCarrierBudget data inputs.current.object :=
+        ⟨witnesses.down, by
+          intro Carrier carrierDec
+          letI : DecidableEq Carrier := carrierDec
+          exact (Graph.Route8.privateCarrierBudgetFacts
+            (Carrier := Carrier) :
+              Graph.Route8.PrivateCarrierBudgetFacts
+                (Carrier := Carrier))⟩
+      .cons (key := K .route8PrivateCarrierBudget) ⟨budget⟩
+        (.cons (key := K .route8NoTwoCarrierContradiction)
+          ⟨⟨budget, by
+            intro Carrier carrierDec
+            letI : DecidableEq Carrier := carrierDec
+            exact (Graph.Route8.noTwoCarrierContradictionFacts
+              (Carrier := Carrier) :
+                Graph.Route8.NoTwoCarrierContradictionFacts
+                  (Carrier := Carrier))⟩⟩ .nil))
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8PressureDescentRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8PressureDescent
+    { Requires := [K .typeAExitFourFiniteDescent,
+        K .route8NoTwoCarrierContradiction]
+      Produces := [K .route8PressureDescent]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let finiteDescent := inputs.get (K .typeAExitFourFiniteDescent)
+      let noTwo := inputs.get (K .route8NoTwoCarrierContradiction)
+      .cons (key := K .route8PressureDescent)
+        ⟨⟨noTwo.down, finiteDescent.down⟩⟩ .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8TerminalNoGoRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8TerminalNoGo
+    { Requires := [K .route8PressureDescent,
+        K .route8CarrierDeletionWitnesses]
+      Produces := [K .route8TerminalNoGo]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let pressure := inputs.get (K .route8PressureDescent)
+      let witnesses := inputs.get (K .route8CarrierDeletionWitnesses)
+      .cons (key := K .route8TerminalNoGo)
+        ⟨⟨pressure.down, witnesses.down, by
+          intro Target Carrier Coordinate carrierDec coordinateDec boundary
+            carrierSupply coordinates car car_subset state
+          letI : DecidableEq Carrier := carrierDec
+          letI : DecidableEq Coordinate := coordinateDec
+          exact (Graph.Route8.terminalTwoCarrierNoGoFacts (Target := Target)
+            carrierSupply coordinates car car_subset state :
+              Graph.Route8.TerminalTwoCarrierNoGoFacts Target carrierSupply
+                coordinates car car_subset state)⟩⟩ .nil)
+    0 0
 
 /-! ## Node `[95]`: exit `(1)`, the Mersenne anchored return
 

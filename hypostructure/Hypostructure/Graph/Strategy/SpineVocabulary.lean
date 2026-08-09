@@ -526,6 +526,11 @@ inductive Key where
   `def:admissible-rank-quotient` yields either a proper-support replacement or
   a strictly smaller admissible closed representative. -/
   | globalBarrier
+  | coldCorridorState
+  | coldSameInterfaceTable
+  | coldGermRealized
+  | coldGermDistinguished
+  | coldGermSilent
   /-- Nodes `[21]`--`[22]`: `lem:p13-window-package`.  The selected coordinates of
   the multi-scale window package are separated, and each carries the audited
   per-window rate.  This is the arm on which `lem:independent-target-entropy`
@@ -731,6 +736,13 @@ inductive Key where
   the saturated exit list continues at exit `(8)`, the route-8 residual of
   `def:typeA-silent-core-residual`. -/
   | typeAExitSevenFree
+  | coldFailureCycle
+  | coldFailureDefect
+  | coldFailureCompression
+  | coldFailureHandoff
+  | coldFailureRouting
+  | coldHandoffTransfer
+  | coldGermExtraction
   | coldGermRouted
   /-- Node `[68]`, the standing law: every high centre of the object has its
   neighbourhood in the normal form of `lem:heavy-neighbourhood-normal-form` --
@@ -801,6 +813,10 @@ inductive Key where
   hygiene of every remaining component, and the grouped exit-`(7)` handoff
   coverage used by B2(d). -/
   | typeBDisjointLedger
+  /-- Node `[76]`/`[85]`, Step 1: every selected B2 fan entry is a certified
+  candidate with nonnegative local augmented charge, and the selected entry sum
+  is therefore nonnegative on the same canonical ledger. -/
+  | typeBSelectedFanCharge
   /-- Node `[72]`/`[81]`, no arm — the entry of `[73]`/`[83]`: B2's
   disjoint-carrier clause fails on some assigned support, which by
   `lem:typeB-bridge-to-overlap` carries a minimal Type B overlap obstruction of
@@ -905,6 +921,28 @@ inductive Key where
   selected trace-basin minimality alternatives, hence the branch returns to
   exits `(4)`--`(7)` rather than continuing as route `8`. -/
   | route8SmallCoreCollapse
+  /-- Node `[117]`: the private-carrier squeeze produces a two-carrier entry
+  from the selected indexed essential-core family. -/
+  | route8TwoCarrierReduction
+  /-- Node `[118]`: a selected two-carrier essential-core entry carries the
+  carrier-deletion target-defect witnesses and declared forgotten coordinates
+  required by the Q5 clause of exit `(4)`. -/
+  | route8CarrierDeletionWitnesses
+  /-- Nodes `[119]`--`[120]`: the no-two-carrier branch gives the private
+  essential-carrier budget against the selected route-`8` carrier supply. -/
+  | route8PrivateCarrierBudget
+  /-- Nodes `[121]`--`[122]`: the no-two-carrier branch contradicts the
+  route-`8` burden/deficit and registered rate facts. -/
+  | route8NoTwoCarrierContradiction
+  /-- Node `[123]`: pressure descent join.  The selected route-`8` branch now
+  carries both the finite exit-`(4)` descent fact and the carrier-reduction
+  contradiction, so any survivor is the terminal two-carrier obstruction sent
+  to node `[124]`. -/
+  | route8PressureDescent
+  /-- Node `[124]`: the terminal two-carrier route-`8` no-go.  Carrier-deletion
+  witnesses become canonical Q5 exit-`(4)` witnesses, contradicting the
+  no-exit-`(4)` fact of the same true route-`8` residual. -/
+  | route8TerminalNoGo
   /-- Node `[126]`, `lem:sparse-slack-surplus`: the sparse slack identity
   `m = (3/2)n + (1/2)σ(G)`, cleared of division at the registered baseline. -/
   | sparseSlackSurplus
@@ -1486,6 +1524,51 @@ theorem silentCoreResidualProfile_of_route8Residual
     receiver, isReceiver, peeled, peeledSubset, saturated, routing,
     noCompression, noDelocalization, noHandoff⟩
 
+/-- The exact finite exit-`(4)` descent theorem committed before the route-`8`
+arm.  This is a schema abbreviation only: the fact is still read from the
+ledger by key and transported by the framework. -/
+abbrev TypeAExitFourFiniteDescentFact (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+      (∀ window : Finset object.Vertex,
+        object.InducesWindow data.windowOrder window →
+        ∃ member ∈ packing, ¬ Disjoint window member) ∧
+      ∃ component ∈ object.canonicalPieces
+          (object.remainderSupport packing),
+        let piece := object.pieceSupport
+          (object.remainderSupport packing) component
+        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+          object.ambientSurplus piece data.threshold = 0 ∧
+          ∃ receiver : object.Vertex,
+            object.IsReceiver piece data.threshold receiver ∧
+              ∃ startPeeled : Finset object.Vertex,
+                startPeeled ⊆ object.routedLoads piece data.threshold
+                    receiver ∧
+                  Graph.ExitFour.SaturatedAfter piece data.threshold
+                    data.dischargeScale receiver startPeeled ∧
+                  ∀ Retained Terminal : Finset object.Vertex → Prop,
+                    Retained startPeeled →
+                    (∀ peeled,
+                      peeled ⊆ object.routedLoads piece data.threshold
+                          receiver →
+                      Retained peeled →
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled →
+                      Terminal peeled ∨
+                        ∃ load ∈ object.routedLoads piece data.threshold
+                            receiver,
+                          ∃ fresh : load ∉ peeled,
+                            Retained (Finset.cons load peeled fresh)) →
+                    (∃ finalPeeled ⊆
+                        object.routedLoads piece data.threshold receiver,
+                      Retained finalPeeled ∧ Terminal finalPeeled) ∨
+                    (∃ finalPeeled ⊆
+                        object.routedLoads piece data.threshold receiver,
+                      Retained finalPeeled ∧
+                        ¬ Graph.ExitFour.SaturatedAfter piece data.threshold
+                          data.dischargeScale receiver finalPeeled)
+
 /-- Residual C, in the exact schema committed earlier by the spine. -/
 abbrev LargeBudgetResidual (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
@@ -1547,12 +1630,8 @@ abbrev Route8LargeBudgetDeficit (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8BasinBurden data object ∧ LargeBudgetResidual data object
 
-/-- Node `[114]`: the carrier-core theorem package, committed as a ledger fact
-on top of the selected `[113]` route-`8` residual.
-
-The quantified arguments are the declared reading of one route-`8` trace-basin
-entry.  They are not transported as a side object; downstream nodes instantiate
-this theorem from the same ledger when they have a concrete declared reading. -/
+/-- Node `[114]`: the carrier-core facts committed as an ordinary ledger fact
+on top of the selected `[113]` route-`8` residual. -/
 abbrev Route8CarrierCore (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8LargeBudgetDeficit data object ∧
@@ -1568,13 +1647,8 @@ abbrev Route8CarrierCore (data : Data.{u})
         Graph.Route8.CarrierCoreFacts (Target := Target) carrierSupply
           coordinates car car_subset state
 
-/-- Nodes `[115]`--`[116]`: the zero/one-core collapse theorem, committed as a
-ledger fact on top of `[114]`.
-
-The fact is stated at the same declared-reading API as `[114]`.  It does not
-transport an entry or search for one: downstream rows instantiate it with the
-concrete trace-basin reading already owned by the incoming residual and then
-close the alternatives using the no-exit facts present in the same ledger. -/
+/-- Nodes `[115]`--`[116]`: the small-core-collapse facts committed after
+`[114]` as an ordinary ledger fact. -/
 abbrev Route8SmallCoreCollapse (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8CarrierCore data object ∧
@@ -1588,6 +1662,80 @@ abbrev Route8SmallCoreCollapse (data : Data.{u})
       (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
       (state : Finset Coordinate → Graph.BoundaryPiece boundary),
         Graph.Route8.SmallCoreCollapseFacts (Target := Target) carrierSupply
+          coordinates car car_subset state
+
+/-- Node `[117]`: the selected two-carrier-reduction stage, as an ordinary
+fact over the current route-`8` residual. -/
+abbrev Route8TwoCarrierReduction (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8SmallCoreCollapse data object ∧
+    ∀ {Carrier : Type u} [DecidableEq Carrier],
+      Graph.Route8.TwoCarrierReductionFacts (Carrier := Carrier)
+
+/-- Node `[118]`: selected carrier-deletion witnesses, committed after the
+two-carrier stage without a terminal-entry wrapper. -/
+abbrev Route8CarrierDeletionWitnesses (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8TwoCarrierReduction data object ∧
+    ∀ {Target : Graph.FiniteObject.{u} → Prop}
+      {Carrier Coordinate : Type u}
+      [DecidableEq Carrier] [DecidableEq Coordinate]
+      {boundary : Graph.Boundary.{u}}
+      (carrierSupply : Hypostructure.Core.Finite.Enumeration Carrier)
+      (coordinates : Finset Coordinate)
+      (car : Coordinate → Finset Carrier)
+      (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
+      (state : Finset Coordinate → Graph.BoundaryPiece boundary),
+        Graph.Route8.TwoCarrierDeletionWitnessFacts (Target := Target)
+          carrierSupply coordinates car car_subset state
+
+/-- Nodes `[119]`--`[120]`: the selected private-carrier budget stage on the
+same route-`8` residual. -/
+abbrev Route8PrivateCarrierBudget (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8CarrierDeletionWitnesses data object ∧
+    ∀ {Carrier : Type u} [DecidableEq Carrier],
+      Graph.Route8.PrivateCarrierBudgetFacts (Carrier := Carrier)
+
+/-- Nodes `[121]`--`[122]`: the selected no-two-carrier contradiction stage. -/
+abbrev Route8NoTwoCarrierContradiction (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8PrivateCarrierBudget data object ∧
+    ∀ {Carrier : Type u} [DecidableEq Carrier],
+      Graph.Route8.NoTwoCarrierContradictionFacts (Carrier := Carrier)
+
+/-- Node `[123]`: the pressure-descent join fact.
+
+This fact is deliberately not a route-`8` data carrier.  The row that commits
+it reads the existing finite exit-`(4)` descent theorem and the carrier
+reduction/no-two-carrier contradiction from the same `ExactLedger` prefix, and
+publishes their semantic conjunction as the paper's pressure-descent survivor
+state for node `[124]`. -/
+abbrev Route8PressureDescent (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8NoTwoCarrierContradiction data object ∧
+    TypeAExitFourFiniteDescentFact data object
+
+/-- Node `[124]`: terminal two-carrier route-`8` no-go.
+
+This is the canonical Q5 carrier-deletion closure.  The fact reads the
+pressure-descent survivor state and exposes the generic theorem that any
+selected terminal two-carrier deletion quotient yields an exit-`(4)` witness,
+contradicting the no-exit-`(4)` ledger fact. -/
+abbrev Route8TerminalNoGo (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8PressureDescent data object ∧
+    Route8CarrierDeletionWitnesses data object ∧
+    ∀ {Target : Graph.FiniteObject.{u} → Prop}
+      {Carrier Coordinate : Type u}
+      [DecidableEq Carrier] [DecidableEq Coordinate]
+      {boundary : Graph.Boundary.{u}}
+      (carrierSupply : Hypostructure.Core.Finite.Enumeration Carrier)
+      (coordinates : Finset Coordinate)
+      (car : Coordinate → Finset Carrier)
+      (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
+      (state : Finset Coordinate → Graph.BoundaryPiece boundary),
+        Graph.Route8.TerminalTwoCarrierNoGoFacts Target carrierSupply
           coordinates car car_subset state
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -2294,69 +2442,60 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         (failure : Graph.ColdCorridor.Corridor.FirstFailureHandoff corridor
           Handoff segment),
         ∃ support, Handoff support ∧ corridor.head segment ∈ support)
-  | .coldGermExtraction, _object =>
-      -- `lem:hot-failure-cold-mass` and `lem:cold-germ-extraction`.
-      --
-      -- First: the hot windows the unclosed comparison leaves are bounded by
-      -- the near-cubic skeleton budget, so across `𝒫 = 𝒫_hot ⊔ 𝒫_cold` the cold
-      -- count carries everything the hot budget could not -- `C ≥ (θ−θ_win)n −
-      -- o(n)`, with every `log₂ n` cancelled and no division.
-      --
-      -- Second: greedy independence.  A candidate germ family whose
-      -- intersection graph has maximum degree `M_cold·B_cold` contains a
-      -- pairwise vertex-disjoint subfamily covering it `D_cold`-fold.  This is
-      -- the extraction, multiplicatively, so nothing rounds.
-      --
-      -- Third: a positive candidate count forces a positive disjoint count.
-      --
-      -- Fourth: the actual quantitative chain used at the oval: stub excess,
-      -- candidate loss, the extracted cover, and the surviving linear margin
-      -- imply that the extracted cold-germ family is nonempty.
-      ((∀ hotRate skeletonRate order slack hotCount coldCount packing : Nat,
-        packing = hotCount + coldCount →
-        hotRate * hotCount ≤ skeletonRate * order + slack →
-          hotRate * packing ≤
-            hotRate * coldCount + (skeletonRate * order + slack)) ∧
-        -- The extraction at the manuscript's own constants: a candidate family
-        -- whose intersection graph has maximum degree `M_cold·B_cold` -- each
-        -- germ has at most `M_cold` vertices and each vertex lies in at most
-        -- `B_cold` germs -- contains a pairwise vertex-disjoint subfamily
-        -- covering it `D_cold`-fold.  `D_cold = M_cold·B_cold + 1` is the
-        -- registered constant of `def:cold-corridor-first-failure`, so this is
-        -- `N_germ ≥ b/D_cold` with the division cleared.
-        (∀ (Germ : Type) (_ : DecidableEq Germ) (Overlaps : Germ → Germ → Prop)
-          (_ : DecidableRel Overlaps),
-          (∀ left right, Overlaps left right → Overlaps right left) →
-          ∀ candidates : Finset Germ,
-            (∀ candidate ∈ candidates,
-              (candidates.filter fun other => Overlaps candidate other).card ≤
-                Graph.ColdCorridor.exchangeBound data.coldSignature *
-                  Graph.ColdCorridor.overlapBound data.threshold
-                    data.coldSignature) →
-            ∃ disjointFamily ⊆ candidates,
-              Graph.ColdCorridor.IndependentFor Overlaps disjointFamily ∧
-                candidates.card ≤ disjointFamily.card *
-                  Graph.ColdCorridor.extractionDenominator data.threshold
-                    data.coldSignature) ∧
-        ∀ (Germ : Type) (_ : DecidableEq Germ)
-          (candidates disjointFamily : Finset Germ) (denominator : Nat),
-          candidates.card ≤ disjointFamily.card * denominator →
-            0 < candidates.card → 0 < disjointFamily.card) ∧
-        ∀ (Germ : Type) (_ : DecidableEq Germ)
-          (candidates disjointFamily : Finset Germ)
-          (perWindow coldCount branchExcess denominator slack : Nat),
-          perWindow * coldCount ≤ branchExcess + slack →
-            branchExcess ≤ candidates.card + slack →
-              candidates.card ≤ disjointFamily.card * denominator →
-                2 * slack < perWindow * coldCount →
-                  0 < disjointFamily.card)
+  | .coldGermExtraction, object =>
+      -- `lem:cold-germ-extraction`, in ledger form on the current object.  The
+      -- candidate family is a family of vertex supports of this residual, and
+      -- each candidate is required to be realized by an ordinary
+      -- `BoundedGerm` of this same object.  No arbitrary `Germ` type,
+      -- disjoint-family carrier, or theorem bundle is exported.
+      ((∀ (windows component : Finset object.Vertex)
+        (corridor : Graph.ColdCorridor.Corridor object windows component)
+        (presentation :
+          Graph.ColdCorridor.Presentation data.coldSignature object)
+        (index : corridor.Segment → presentation.Segment),
+        Function.Injective index →
+          Graph.ColdCorridor.Corridor.TerminalCorridor corridor
+              data.coldSignature ∨
+            Graph.ColdCorridor.Corridor.RepeatedState corridor presentation
+              index) ∧
+        ∀ candidates : Finset (Finset object.Vertex),
+          (∀ support ∈ candidates,
+            ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object,
+              germ.support = support) →
+          (∀ candidate ∈ candidates,
+            ∃ blockers : Finset (Finset object.Vertex),
+              blockers ⊆ candidates ∧
+                blockers.card ≤
+                  Graph.ColdCorridor.exchangeBound data.coldSignature *
+                    Graph.ColdCorridor.overlapBound data.threshold
+                      data.coldSignature ∧
+                ∀ other ∈ candidates, ¬ Disjoint candidate other →
+                  other ∈ blockers) →
+          ∃ disjointFamily ⊆ candidates,
+            Graph.ColdCorridor.IndependentFor
+                (fun left right : Finset object.Vertex => ¬ Disjoint left right)
+                disjointFamily ∧
+              candidates.card ≤ disjointFamily.card *
+                Graph.ColdCorridor.extractionDenominator data.threshold
+                  data.coldSignature ∧
+              (0 < candidates.card → 0 < disjointFamily.card))
   | .coldGermRouted, object =>
       -- The length-changing germ conclusion obtained by eliminating G1 and G3
-      -- against the facts already committed at nodes `[155]` and `[157]`.
+      -- and then reading the G2 route from the ledger.  The fact therefore
+      -- carries the actual target-defect route, not just the intermediate
+      -- `Distinguishing` predicate.
       ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object,
-        germ.increment < 0 → germ.Distinguishing
+        germ.increment < 0 →
+          germ.Distinguishing ∧
+            ∀ (Profile : Type)
+              (profile : Graph.BoundaryPiece germ.atom.interface → Profile),
+              ¬ Graph.Response.TargetComplete profile
+                (Graph.HasCycleWithLength data.LengthOK)
+                germ.piece germ.canonical
   | .forcedCurvatureCost, object =>
       -- `cor:forced-curvature-cost` after substituting the exact equality
       -- proved by `lem:full-rank` into node `[30]`'s demand floor.
@@ -3184,6 +3323,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                                     ledger components,
                                   centre =
                                     (production component).separation.separator)
+  | .typeBSelectedFanCharge, object =>
+      ∀ packing : Finset (Finset object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (∀ centre
+                  (member : centre ∈ Graph.TypeBRefinedSupport.centres object
+                    data.threshold canonicalPiece.vertices),
+                (ledger.choice.entry centre member).IsCandidate data.threshold
+                  data.dischargeScale canonicalPiece centre) ∧
+                (0 : Int) ≤ ledger.selectedEntryPayment₂
   | .typeBOverlapObstruction, object =>
       -- Node `[72]`/`[81]`, no.  `lem:typeB-bridge-to-overlap`: the
       -- disjoint-carrier clause fails on some assigned support, and what that
@@ -3852,6 +4004,30 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Nodes `[115]`--`[116]`: the zero/one-core collapse package, available
       -- on the selected route-8 residual after `[114]`.
       Route8SmallCoreCollapse data object
+  | .route8TwoCarrierReduction, object =>
+      -- Node `[117]`: the private-carrier squeeze package, available on the
+      -- selected route-8 residual after `[115]`--`[116]`.
+      Route8TwoCarrierReduction data object
+  | .route8CarrierDeletionWitnesses, object =>
+      -- Node `[118]`: carrier-deletion target-defect witnesses for every
+      -- selected two-carrier essential-core entry.
+      Route8CarrierDeletionWitnesses data object
+  | .route8PrivateCarrierBudget, object =>
+      -- Nodes `[119]`--`[120]`: no two-carrier entry gives the
+      -- private-carrier budget on the selected route-8 residual.
+      Route8PrivateCarrierBudget data object
+  | .route8NoTwoCarrierContradiction, object =>
+      -- Nodes `[121]`--`[122]`: the no-two-carrier branch contradicts the
+      -- selected burden/deficit and rate facts.
+      Route8NoTwoCarrierContradiction data object
+  | .route8PressureDescent, object =>
+      -- Node `[123]`: the pressure-descent join carries the finite exit-(4)
+      -- descent theorem and the route-8 carrier contradiction on one ledger.
+      Route8PressureDescent data object
+  | .route8TerminalNoGo, object =>
+      -- Node `[124]`: terminal two-carrier route-8 no-go through Q5
+      -- carrier-deletion and the committed no-exit-(4) fact.
+      Route8TerminalNoGo data object
   | .sparseSlackSurplus, object =>
       -- `lem:sparse-slack-surplus`: `2m = δn + σ(G)`, the manuscript's
       -- `m = (3/2)n + (1/2)σ(G)` cleared of division.
@@ -4275,6 +4451,7 @@ def label : Key → String
   | .typeBDirectCycleFree => "typeBDirectCycleFree"
   | .typeBB2Choice => "typeBB2Choice"
   | .typeBDisjointLedger => "typeBDisjointLedger"
+  | .typeBSelectedFanCharge => "typeBSelectedFanCharge"
   | .typeBOverlapObstruction => "typeBOverlapObstruction"
   | .typeBBridgeMass => "typeBBridgeMass"
   | .typeBExclusionCharge => "typeBExclusionCharge"
@@ -4305,6 +4482,12 @@ def label : Key → String
   | .route8LargeBudgetDeficit => "route8LargeBudgetDeficit"
   | .route8CarrierCore => "route8CarrierCore"
   | .route8SmallCoreCollapse => "route8SmallCoreCollapse"
+  | .route8TwoCarrierReduction => "route8TwoCarrierReduction"
+  | .route8CarrierDeletionWitnesses => "route8CarrierDeletionWitnesses"
+  | .route8PrivateCarrierBudget => "route8PrivateCarrierBudget"
+  | .route8NoTwoCarrierContradiction => "route8NoTwoCarrierContradiction"
+  | .route8PressureDescent => "route8PressureDescent"
+  | .route8TerminalNoGo => "route8TerminalNoGo"
   | .sparseSlackSurplus => "sparseSlackSurplus"
   | .activeSurplusFamily => "activeSurplusFamily"
   | .sparsePortActivation => "sparsePortActivation"
@@ -4435,6 +4618,8 @@ example : label .typeBDirectCycle = "typeBDirectCycle" := rfl
 example : label .typeBDirectCycleFree = "typeBDirectCycleFree" := rfl
 example : label .typeBB2Choice = "typeBB2Choice" := rfl
 example : label .typeBDisjointLedger = "typeBDisjointLedger" := rfl
+example : label .typeBSelectedFanCharge =
+    "typeBSelectedFanCharge" := rfl
 example : label .typeBOverlapObstruction = "typeBOverlapObstruction" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
 example : label .typeBExclusionCharge = "typeBExclusionCharge" := rfl
@@ -4472,6 +4657,18 @@ example : label .route8LargeBudgetDeficit = "route8LargeBudgetDeficit" := rfl
 example : label .route8CarrierCore = "route8CarrierCore" := rfl
 example : label .route8SmallCoreCollapse =
     "route8SmallCoreCollapse" := rfl
+example : label .route8TwoCarrierReduction =
+    "route8TwoCarrierReduction" := rfl
+example : label .route8CarrierDeletionWitnesses =
+    "route8CarrierDeletionWitnesses" := rfl
+example : label .route8PrivateCarrierBudget =
+    "route8PrivateCarrierBudget" := rfl
+example : label .route8NoTwoCarrierContradiction =
+    "route8NoTwoCarrierContradiction" := rfl
+example : label .route8PressureDescent =
+    "route8PressureDescent" := rfl
+example : label .route8TerminalNoGo =
+    "route8TerminalNoGo" := rfl
 example : label .sparseSlackSurplus = "sparseSlackSurplus" := rfl
 example : label .activeSurplusFamily = "activeSurplusFamily" := rfl
 example : label .sparsePortActivation = "sparsePortActivation" := rfl
@@ -4607,6 +4804,7 @@ def idx : Key → Nat
   | .typeBDirectCycleFree => 82
   | .typeBB2Choice => 149
   | .typeBDisjointLedger => 150
+  | .typeBSelectedFanCharge => 175
   | .typeBOverlapObstruction => 84
   | .typeBBridgeMass => 85
   | .typeBExclusionCharge => 164
@@ -4636,6 +4834,12 @@ def idx : Key → Nat
   | .route8LargeBudgetDeficit => 162
   | .route8CarrierCore => 163
   | .route8SmallCoreCollapse => 168
+  | .route8TwoCarrierReduction => 169
+  | .route8CarrierDeletionWitnesses => 170
+  | .route8PrivateCarrierBudget => 171
+  | .route8NoTwoCarrierContradiction => 172
+  | .route8PressureDescent => 173
+  | .route8TerminalNoGo => 174
   | .sparseSlackSurplus => 109
   | .activeSurplusFamily => 110
   | .sparsePortActivation => 111
@@ -4755,6 +4959,7 @@ def ofIdx : Nat → Key
   | 82 => .typeBDirectCycleFree
   | 149 => .typeBB2Choice
   | 150 => .typeBDisjointLedger
+  | 175 => .typeBSelectedFanCharge
   | 84 => .typeBOverlapObstruction
   | 85 => .typeBBridgeMass
   | 164 => .typeBExclusionCharge
@@ -4784,6 +4989,12 @@ def ofIdx : Nat → Key
   | 162 => .route8LargeBudgetDeficit
   | 163 => .route8CarrierCore
   | 168 => .route8SmallCoreCollapse
+  | 169 => .route8TwoCarrierReduction
+  | 170 => .route8CarrierDeletionWitnesses
+  | 171 => .route8PrivateCarrierBudget
+  | 172 => .route8NoTwoCarrierContradiction
+  | 173 => .route8PressureDescent
+  | 174 => .route8TerminalNoGo
   | 109 => .sparseSlackSurplus
   | 110 => .activeSurplusFamily
   | 111 => .sparsePortActivation
@@ -5028,6 +5239,9 @@ def name : Key → Lean.Name
   | .typeBDisjointLedger =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBDisjointLedger") 150
+  | .typeBSelectedFanCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBSelectedFanCharge") 175
   | .typeBOverlapObstruction =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBOverlapObstruction") 84
@@ -5100,6 +5314,24 @@ def name : Key → Lean.Name
   | .route8SmallCoreCollapse =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8SmallCoreCollapse") 168
+  | .route8TwoCarrierReduction =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8TwoCarrierReduction") 169
+  | .route8CarrierDeletionWitnesses =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8CarrierDeletionWitnesses") 170
+  | .route8PrivateCarrierBudget =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8PrivateCarrierBudget") 171
+  | .route8NoTwoCarrierContradiction =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8NoTwoCarrierContradiction") 172
+  | .route8PressureDescent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8PressureDescent") 173
+  | .route8TerminalNoGo =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8TerminalNoGo") 174
   | .sparseSlackSurplus =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sparseSlackSurplus") 109
   | .activeSurplusFamily =>

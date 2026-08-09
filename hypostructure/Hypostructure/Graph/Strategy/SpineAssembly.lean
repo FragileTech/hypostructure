@@ -327,12 +327,22 @@ cursor that the local fan walk produces. -/
   bridgeFanMassRow bridgeResidual (K .typeBBridgeMass) distinct
     (fun _input _bridgeResidual value => ⟨value⟩)
 
+/-- Node `[76]`/`[85]`, Step 1 selected fan-entry charge on the B2-success
+cursor. -/
+@[reducible] noncomputable def typeBSelectedFanCharge :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  typeBSelectedFanChargeRow (K .fanCertificateMarked) (K .typeBHybridEntry)
+    (K .typeBDisjointLedger) (K .typeBSelectedFanCharge) (by simp)
+    (fun _input value => ⟨value⟩)
+
 /-- Node `[76]`/`[85]`, the B-ledger charge implication on the B2-success
 cursor. -/
 @[reducible] noncomputable def typeBExclusionCharge :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   typeBExclusionChargeRow (K .typeBDisjointLedger)
-    (K .typeBExclusionCharge) (by simp) (fun _input value => ⟨value⟩)
+    (K .typeBSelectedFanCharge) (K .typeBExclusionCharge) (by simp)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)
 
 @[reducible] noncomputable def typeBExcluded :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
@@ -441,30 +451,6 @@ noncomputable instance instIncompatibleTypeBExcluded :
       excluded.down packing canonicalPiece ledger exact
     exact ((residual.object.not_negativeNetCharge_iff canonicalPiece.vertices
       data.threshold data.dischargeScale).mpr nonnegative) negative
-
-/-- Run the clean Type B `[76]`/`[85]` arm and close it through Core's
-incompatible-fact closure.
-
-The incoming cursor is the single source of truth: `typeBExcluded` is appended
-by its `factOnly` row, which reads `typeBExclusionCharge` and
-`typeBRemainingCoreNonnegative` from `FactInputs.get`, and the closure reads the
-already visible `typeBDisjointLedger` fact from the same exact ledger. -/
-noncomputable def runTypeBExcludedAndClose
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    [FactKeys.Available (typeBExcluded (data := data)).manifest.Requires known]
-    [FactKeys.Has (K (data := data) .typeBDisjointLedger) known]
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current known)
-    (commitFresh :
-      List.Disjoint (typeBExcluded (data := data)).manifest.Produces known :=
-        by decide)
-    (closureFresh :
-      (closed : FactKey (Input BranchState Presentation presentation data)) ∉
-        (typeBExcluded (data := data)).manifest.Produces ++ known := by decide) :=
-  (typeBExcluded (data := data)).runAndCloseIncompatible history
-    (K .typeBDisjointLedger) (K .typeBExcluded)
-    commitFresh (by simpa using closureFresh)
 
 /-- **The terminal `[37]` is uninhabited**, at the spine's own key.
 
@@ -913,11 +899,17 @@ abbrev fanDisjointLedgerKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBDisjointLedger :: fanHybridEntryKeys known
 
+/-- `[76]`/`[85]`: selected fan entries have nonnegative local charge. -/
+abbrev fanSelectedFanChargeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBSelectedFanCharge :: fanDisjointLedgerKeys known
+
 /-- `[76]`/`[85]`: the B-ledger exclusion charge implication. -/
 abbrev fanExclusionChargeKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExclusionCharge :: fanDisjointLedgerKeys known
+  K .typeBExclusionCharge :: fanSelectedFanChargeKeys known
 
 /-- `[76]`/`[85]`, yes arm: the remaining-core charge is nonnegative. -/
 abbrev fanRemainingCoreNonnegativeKeys
@@ -1144,6 +1136,70 @@ abbrev degreeFourExcludedKeys :
 abbrev degreeFourExclusionResidualKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCDegreeFourExclusionResidualKeys remainderEntropyLowKeys
+
+theorem typeBExcluded_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBExcludedKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem typeBExclusionResidual_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBExclusionResidualKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem degreeFourExcluded_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourExcludedKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem degreeFourExclusionResidual_audit_accounts_for_every_fact
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourExclusionResidualKeys) :
+    (ExactLedger.audit history).facts =
+      (ExactLedger.audit history).commits.reverse.flatMap
+        (fun record => record.produced) :=
+  ExactLedger.audit_complete history
+
+theorem typeBExcluded_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBExcludedKeys) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem typeBExclusionResidual_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected typeBExclusionResidualKeys) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem degreeFourExcluded_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourExcludedKeys) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
+
+theorem degreeFourExclusionResidual_audit_facts_unique
+    {selected : Input BranchState Presentation presentation data}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected degreeFourExclusionResidualKeys) :
+    (ExactLedger.audit history).facts.Nodup :=
+  ExactLedger.audit_facts_unique history
 
 /-- Node `[71]`, no arm: a fan-certificate residual centre exists. -/
 abbrev typeBCertificateResidualKeys :

@@ -1,4 +1,5 @@
 import Hypostructure.Core.Finite.EssentialCarrier
+import Hypostructure.Graph.ExitFourFamily
 import Hypostructure.Graph.Response
 
 namespace Hypostructure.Graph.Route8
@@ -22,6 +23,7 @@ variable (state : Finset Coordinate → BoundaryPiece boundary)
 
 /-- The declared coordinates retained by the carrier restriction to `D`. -/
 def retained (D : Finset Carrier) : Finset Coordinate :=
+  let _carrierSupply : Enumeration Carrier := carrierSupply
   coordinates.filter fun r => car r ⊆ D
 
 theorem mem_retained {D : Finset Carrier} {r : Coordinate} :
@@ -40,6 +42,8 @@ theorem retained_mono {D E : Finset Carrier} (subset : D ⊆ E) :
 def restriction (D : Finset Carrier) : BoundaryPiece boundary :=
   state (retained carrierSupply coordinates car D)
 
+include car_subset
+
 /-- Restricting to the whole carrier supply retains every declared coordinate. -/
 theorem retained_carrierSupply :
     retained carrierSupply coordinates car carrierSupply.toFinset =
@@ -52,7 +56,9 @@ theorem retained_carrierSupply :
 @[simp] theorem restriction_carrierSupply :
     restriction carrierSupply coordinates car state carrierSupply.toFinset =
       state coordinates := by
-  rw [restriction, retained_carrierSupply]
+  rw [restriction, retained_carrierSupply (car_subset := car_subset)]
+
+omit car_subset
 
 /-- A carrier set is complete when its restriction is target-equivalent to the
 full reading against every outside context. -/
@@ -60,11 +66,13 @@ def Complete (D : Finset Carrier) : Prop :=
   Response.ContextEquivalent Target
     (restriction carrierSupply coordinates car state D) (state coordinates)
 
+include car_subset
+
 theorem complete_carrierSupply :
     Complete (Target := Target) carrierSupply coordinates car state
       carrierSupply.toFinset := by
   intro outside
-  rw [restriction_carrierSupply]
+  rw [restriction_carrierSupply (car_subset := car_subset)]
 
 theorem retained_erase_of_not_mem {D : Finset Carrier} {carrier : Carrier}
     (outside : carrier ∉ carrierSupply.toFinset) :
@@ -199,7 +207,7 @@ theorem exists_forgotten_coordinate {carrier : Carrier}
   by_contra missing
   simp only [not_exists, not_and] at missing
   refine retained_erase_ne (Target := Target) carrierSupply coordinates car state
-    member (Finset.Subset.antisymm ?_ ?_)
+    (car_subset := car_subset) member (Finset.Subset.antisymm ?_ ?_)
   · exact retained_mono carrierSupply coordinates car (Finset.erase_subset _ _)
   · intro r inCore
     rw [mem_retained] at inCore ⊢
@@ -332,5 +340,434 @@ theorem smallCoreCollapseFacts :
     car_subset state parity minimality small
 
 end Core
+
+section IndexedCoreAccounting
+
+variable {Carrier Index : Type u}
+variable [DecidableEq Carrier] [DecidableEq Index]
+
+/-- The carriers private to one indexed entry, counted inside the selected
+essential-core family and not in a secondary entry object. -/
+noncomputable def indexedPrivateCoreCarriers
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (index : Index) : Finset Carrier :=
+  (core index).filter fun carrier =>
+    ∀ other ∈ entries, other ≠ index → carrier ∉ core other
+
+/-- The private essential-carrier count `π_X(ξ)`. -/
+noncomputable def indexedPrivateCoreCount
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (index : Index) : Nat :=
+  (indexedPrivateCoreCarriers entries core index).card
+
+/-- The terminal two-carrier condition of node `[117]`, stated on the selected
+indexed core family. -/
+def IndexedTwoCarrierCore
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (threshold : Nat) (index : Index) : Prop :=
+  indexedPrivateCoreCount entries core index ≤ threshold
+
+theorem indexedPrivateCoreCarriers_subset_core
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (index : Index) :
+    indexedPrivateCoreCarriers entries core index ⊆ core index := by
+  intro carrier hcarrier
+  exact (Finset.mem_filter.mp hcarrier).1
+
+theorem indexedPrivateCoreCarriers_subset_supply
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+    {index : Index} (index_mem : index ∈ entries) :
+    indexedPrivateCoreCarriers entries core index ⊆ supply := by
+  exact subset_trans (indexedPrivateCoreCarriers_subset_core entries core index)
+    (core_subset index index_mem)
+
+theorem indexedPrivateCoreCarriers_disjoint
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    {left right : Index} (left_mem : left ∈ entries)
+    (right_mem : right ∈ entries) (distinct : left ≠ right) :
+    Disjoint (indexedPrivateCoreCarriers entries core left)
+      (indexedPrivateCoreCarriers entries core right) := by
+  rw [Finset.disjoint_left]
+  intro carrier hleft hright
+  have hleft_private := (Finset.mem_filter.mp hleft).2
+  exact hleft_private right right_mem (fun same => distinct same.symm)
+    ((indexedPrivateCoreCarriers_subset_core entries core right) hright)
+
+theorem indexedPrivateCoreCarriers_card_biUnion_le_supply
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply) :
+    (entries.biUnion fun index =>
+      indexedPrivateCoreCarriers entries core index).card ≤ supply.card := by
+  refine Finset.card_le_card ?_
+  intro carrier hcarrier
+  rcases Finset.mem_biUnion.mp hcarrier with ⟨index, index_mem, carrier_mem⟩
+  exact indexedPrivateCoreCarriers_subset_supply entries core supply core_subset
+    index_mem carrier_mem
+
+theorem indexedPrivateCoreCarriers_card_sum_le_supply
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply) :
+    (∑ index ∈ entries, indexedPrivateCoreCount entries core index) ≤
+      supply.card := by
+  change (∑ index ∈ entries,
+      (indexedPrivateCoreCarriers entries core index).card) ≤ supply.card
+  rw [← Finset.card_biUnion]
+  · exact indexedPrivateCoreCarriers_card_biUnion_le_supply entries core
+      supply core_subset
+  intro left left_mem right right_mem distinct
+  exact indexedPrivateCoreCarriers_disjoint entries core left_mem right_mem
+    distinct
+
+theorem indexedCoreCardMul_le_supply
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+    {floor : Nat}
+    (lower :
+      ∀ index ∈ entries, floor ≤ indexedPrivateCoreCount entries core index) :
+    floor * entries.card ≤ supply.card := by
+  calc
+    floor * entries.card
+        = ∑ _index ∈ entries, floor := by
+          rw [Finset.sum_const]
+          simpa [mul_comm]
+    _ ≤ ∑ index ∈ entries, indexedPrivateCoreCount entries core index := by
+          exact Finset.sum_le_sum fun index index_mem => lower index index_mem
+    _ ≤ supply.card :=
+          indexedPrivateCoreCarriers_card_sum_le_supply entries core supply
+            core_subset
+
+/-- The integer squeeze used by the route-`8` carrier reduction. -/
+theorem privateCarrierCensus_contradiction
+    {floor discharge basins supply ambient : Nat}
+    (deficit : ambient ≤ basins + discharge * supply)
+    (budget : floor * basins ≤ supply)
+    (rate : (floor * discharge + 1) * supply < floor * ambient) :
+    False := by
+  have scaled :
+      floor * ambient ≤ floor * basins + floor * (discharge * supply) := by
+    have step : floor * ambient ≤ floor * (basins + discharge * supply) :=
+      Nat.mul_le_mul_left _ deficit
+    rwa [Nat.mul_add] at step
+  have assoc : floor * (discharge * supply) = floor * discharge * supply :=
+    (mul_assoc _ _ _).symm
+  rw [assoc] at scaled
+  have expand : (floor * discharge + 1) * supply =
+      floor * discharge * supply + supply := by
+    rw [add_mul, one_mul]
+  omega
+
+/-- The node-`[117]` carrier-reduction squeeze, stated directly on the selected
+indexed essential-core family. -/
+theorem exists_indexedTwoCarrierCore
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+    {threshold discharge ambient : Nat}
+    (deficit : ambient ≤ entries.card + discharge * supply.card)
+    (rate : ((threshold + 1) * discharge + 1) * supply.card <
+      (threshold + 1) * ambient) :
+    ∃ index ∈ entries, IndexedTwoCarrierCore entries core threshold index := by
+  classical
+  by_contra missing
+  simp only [not_exists, not_and] at missing
+  have lower :
+      ∀ index ∈ entries,
+        threshold + 1 ≤ indexedPrivateCoreCount entries core index := by
+    intro index index_mem
+    have not_two : ¬ IndexedTwoCarrierCore entries core threshold index :=
+      missing index index_mem
+    unfold IndexedTwoCarrierCore at not_two
+    omega
+  exact privateCarrierCensus_contradiction deficit
+    (indexedCoreCardMul_le_supply entries core supply core_subset lower) rate
+
+/-- The no-two-carrier branch of node `[119]`: every indexed entry has at
+least `threshold + 1` private essential carriers. -/
+theorem privateCarrierLower_of_noTwoCarrier
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    {threshold : Nat}
+    (noTwo :
+      ∀ index ∈ entries,
+        ¬ IndexedTwoCarrierCore entries core threshold index) :
+    ∀ index ∈ entries,
+      threshold + 1 ≤ indexedPrivateCoreCount entries core index := by
+  intro index index_mem
+  have not_two := noTwo index index_mem
+  unfold IndexedTwoCarrierCore at not_two
+  omega
+
+/-- Nodes `[119]`--`[120]`: the no-two-carrier branch gives the private-carrier
+budget bound against the single carrier supply. -/
+theorem privateCarrierBudget_of_noTwoCarrier
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+    {threshold : Nat}
+    (noTwo :
+      ∀ index ∈ entries,
+        ¬ IndexedTwoCarrierCore entries core threshold index) :
+    (threshold + 1) * entries.card ≤ supply.card :=
+  indexedCoreCardMul_le_supply entries core supply core_subset
+    (privateCarrierLower_of_noTwoCarrier entries core noTwo)
+
+/-- Nodes `[121]`--`[122]`: the private-carrier budget contradicts the
+selected burden/deficit inequality and registered rate bound. -/
+theorem noTwoCarrier_contradiction
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+    {threshold discharge ambient : Nat}
+    (deficit : ambient ≤ entries.card + discharge * supply.card)
+    (rate : ((threshold + 1) * discharge + 1) * supply.card <
+      (threshold + 1) * ambient)
+    (noTwo :
+      ∀ index ∈ entries,
+        ¬ IndexedTwoCarrierCore entries core threshold index) :
+    False :=
+  privateCarrierCensus_contradiction deficit
+    (privateCarrierBudget_of_noTwoCarrier entries core supply core_subset noTwo)
+    rate
+
+/-- The reusable theorem package for node `[117]`: any concrete route-`8`
+indexed core family satisfying the selected burden/deficit/rate readings has a
+two-carrier entry. -/
+def TwoCarrierReductionFacts : Prop :=
+  ∀ {Index : Type u} [DecidableEq Index]
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+    {threshold discharge ambient : Nat}
+    (deficit : ambient ≤ entries.card + discharge * supply.card)
+    (rate : ((threshold + 1) * discharge + 1) * supply.card <
+      (threshold + 1) * ambient),
+      ∃ index ∈ entries, IndexedTwoCarrierCore entries core threshold index
+
+/-- The reusable theorem package for nodes `[119]`--`[120]`: no selected
+two-carrier entry forces the private essential-carrier budget. -/
+def PrivateCarrierBudgetFacts : Prop :=
+  ∀ {Index : Type u} [DecidableEq Index]
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+    {threshold : Nat},
+      (∀ index ∈ entries,
+        ¬ IndexedTwoCarrierCore entries core threshold index) →
+      (threshold + 1) * entries.card ≤ supply.card
+
+/-- The reusable theorem package for nodes `[121]`--`[122]`: no selected
+two-carrier entry is incompatible with the route-`8` burden/deficit and rate
+readings. -/
+def NoTwoCarrierContradictionFacts : Prop :=
+  ∀ {Index : Type u} [DecidableEq Index]
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (supply : Finset Carrier)
+    (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+    {threshold discharge ambient : Nat}
+    (deficit : ambient ≤ entries.card + discharge * supply.card)
+    (rate : ((threshold + 1) * discharge + 1) * supply.card <
+      (threshold + 1) * ambient),
+      (∀ index ∈ entries,
+        ¬ IndexedTwoCarrierCore entries core threshold index) →
+      False
+
+theorem twoCarrierReductionFacts :
+    TwoCarrierReductionFacts (Carrier := Carrier) := by
+  intro Index indexDec entries core supply core_subset threshold discharge
+    ambient deficit rate
+  letI : DecidableEq Index := indexDec
+  exact exists_indexedTwoCarrierCore entries core supply core_subset deficit rate
+
+theorem privateCarrierBudgetFacts :
+    PrivateCarrierBudgetFacts (Carrier := Carrier) := by
+  intro Index indexDec entries core supply core_subset threshold noTwo
+  letI : DecidableEq Index := indexDec
+  exact privateCarrierBudget_of_noTwoCarrier entries core supply core_subset
+    noTwo
+
+theorem noTwoCarrierContradictionFacts :
+    NoTwoCarrierContradictionFacts (Carrier := Carrier) := by
+  intro Index indexDec entries core supply core_subset threshold discharge
+    ambient deficit rate noTwo
+  letI : DecidableEq Index := indexDec
+  exact noTwoCarrier_contradiction entries core supply core_subset deficit
+    rate noTwo
+
+end IndexedCoreAccounting
+
+section TerminalTwoCarrier
+
+variable {Target : FiniteObject.{u} → Prop}
+variable {Carrier Coordinate Index : Type u}
+variable [DecidableEq Carrier] [DecidableEq Coordinate] [DecidableEq Index]
+variable {boundary : Boundary.{u}}
+variable (carrierSupply : Enumeration Carrier)
+variable (coordinates : Finset Coordinate) (car : Coordinate → Finset Carrier)
+variable (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
+variable (state : Finset Coordinate → BoundaryPiece boundary)
+
+/-- The node-`[118]` carrier-deletion witness package for one already selected
+two-carrier indexed core.  It contains no route-`8` collection carrier: the
+index, core family, and two-carrier fact are the concrete facts read from the
+ledger by the caller. -/
+def TwoCarrierDeletionWitnesses
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    (threshold : Nat) (index : Index) : Prop :=
+  IndexedTwoCarrierCore entries core threshold index ∧
+    ∀ carrier ∈ core index,
+      Response.TargetDefect Target
+        (restriction carrierSupply coordinates car state
+          ((core index).erase carrier))
+        (restriction carrierSupply coordinates car state (core index)) ∧
+      ∃ r ∈ coordinates, car r ⊆ core index ∧ carrier ∈ car r
+
+/-- The canonical deletion witnesses attached to a selected two-carrier core.
+
+This is `lem:typeA-essential-deletion-witness` and
+`lem:typeA-deletion-witness-declared` in raw carrier-core form: once the
+selected indexed core is identified with the canonical essential core of the
+selected reading, every essential carrier has the separating deletion quotient
+and a declared forgotten coordinate whose carrier support contains it. -/
+theorem twoCarrierDeletionWitnesses
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    {threshold : Nat} {index : Index}
+    (two : IndexedTwoCarrierCore entries core threshold index)
+    (core_eq :
+      core index =
+        essentialCore (Target := Target) carrierSupply coordinates car
+          (car_subset := car_subset) state) :
+    TwoCarrierDeletionWitnesses (Target := Target) carrierSupply coordinates car
+      state entries core threshold index := by
+  refine ⟨two, ?_⟩
+  intro carrier member
+  have essentialMember :
+      carrier ∈ essentialCore (Target := Target) carrierSupply coordinates car
+        (car_subset := car_subset) state := by
+    simpa [core_eq] using member
+  have defect := deletion_targetDefect (Target := Target)
+    carrierSupply coordinates car (car_subset := car_subset) state
+    essentialMember
+  have declared := exists_forgotten_coordinate (Target := Target)
+    carrierSupply coordinates car car_subset state essentialMember
+  refine ⟨?_, ?_⟩
+  · simpa [core_eq] using defect
+  · simpa [core_eq] using declared
+
+/-- The reusable theorem package for node `[118]`: every selected two-carrier
+essential-core entry has its carrier-deletion target-defect witnesses and the
+declared forgotten coordinates required by the canonical Q5 clause. -/
+def TwoCarrierDeletionWitnessFacts : Prop :=
+  ∀ {Index : Type u} [DecidableEq Index]
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    {threshold : Nat} {index : Index},
+      IndexedTwoCarrierCore entries core threshold index →
+      core index =
+        essentialCore (Target := Target) carrierSupply coordinates car
+          (car_subset := car_subset) state →
+      TwoCarrierDeletionWitnesses (Target := Target) carrierSupply coordinates
+        car state entries core threshold index
+
+theorem twoCarrierDeletionWitnessFacts :
+    TwoCarrierDeletionWitnessFacts (Target := Target) carrierSupply coordinates
+      car car_subset state := by
+  intro Index indexDec entries core threshold index two core_eq
+  letI : DecidableEq Index := indexDec
+  exact twoCarrierDeletionWitnesses (Target := Target) carrierSupply
+    coordinates car car_subset state entries core two core_eq
+
+/-- The terminal no-go consumed at node `[124]`.
+
+Once a selected two-carrier core has carrier-deletion witnesses, any generated
+Q5 carrier-deletion quotient with the recorded boundary-profile preservation is
+an ordinary exit-`(4)` witness.  The already committed no-exit-`(4)` ledger fact
+therefore closes the terminal route-`8` survivor. -/
+theorem terminalTwoCarrierNoGo
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    {carrierBound : Nat} {index : Index}
+    (witnesses :
+      TwoCarrierDeletionWitnesses (Target := Target) carrierSupply coordinates
+        car state entries core carrierBound index)
+    {object : FiniteObject.{u}} {support : Finset object.Vertex}
+    {degreeThreshold : Nat} {receiver : object.Vertex}
+    {peeled : Finset object.Vertex} {eligible : object.Vertex → Prop}
+    (noExitFour :
+      ¬ ∃ witness : ExitFour.Witness Target support degreeThreshold receiver
+          peeled,
+        eligible witness.load)
+    (family : ExitFour.ReceiverFamily Target support degreeThreshold receiver)
+    {base identified : Finset family.Coordinate}
+    (generated :
+      family.Generated ExitFour.ReceiverClause.carrierDeletion base identified)
+    {load : object.Vertex}
+    (unpeeled :
+      load ∈ ExitFour.unpeeledLoads support degreeThreshold receiver peeled)
+    (declared : load ∈ family.declaredLoads identified)
+    (eligibleLoad : eligible load)
+    {carrier : Carrier} (member : carrier ∈ core index)
+    (sameBoundaryProfile :
+      (restriction carrierSupply coordinates car state
+          ((core index).erase carrier)).boundaryDegreeProfile =
+        (restriction carrierSupply coordinates car state
+          (core index)).boundaryDegreeProfile) :
+    False := by
+  have defect := (witnesses.2 carrier member).1
+  exact ExitFour.Witness.carrierDeletion_contradicts_noExitFour noExitFour
+    family generated unpeeled declared eligibleLoad sameBoundaryProfile defect
+
+/-- The reusable theorem package for node `[124]`: a terminal selected
+two-carrier carrier-deletion quotient contradicts the no-exit-`(4)` fact from
+the same residual. -/
+def TerminalTwoCarrierNoGoFacts
+    (Target : FiniteObject.{u} → Prop)
+    (carrierSupply : Enumeration Carrier) (coordinates : Finset Coordinate)
+    (car : Coordinate → Finset Carrier)
+    (_car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
+    (state : Finset Coordinate → BoundaryPiece boundary) : Prop :=
+  ∀ {Index : Type u} [DecidableEq Index]
+    (entries : Finset Index) (core : Index → Finset Carrier)
+    {carrierBound : Nat} {index : Index},
+      TwoCarrierDeletionWitnesses (Target := Target) carrierSupply coordinates
+        car state entries core carrierBound index →
+      ∀ {object : FiniteObject.{u}} {support : Finset object.Vertex}
+        {degreeThreshold : Nat} {receiver : object.Vertex}
+        {peeled : Finset object.Vertex} {eligible : object.Vertex → Prop},
+        (¬ ∃ witness : ExitFour.Witness Target support degreeThreshold receiver
+            peeled,
+          eligible witness.load) →
+        (family : ExitFour.ReceiverFamily Target support degreeThreshold
+          receiver) →
+        ∀ {base identified : Finset family.Coordinate},
+          family.Generated ExitFour.ReceiverClause.carrierDeletion base
+            identified →
+          ∀ {load : object.Vertex},
+            load ∈ ExitFour.unpeeledLoads support degreeThreshold receiver
+              peeled →
+            load ∈ family.declaredLoads identified →
+            eligible load →
+            ∀ {carrier : Carrier},
+              carrier ∈ core index →
+              (restriction carrierSupply coordinates car state
+                  ((core index).erase carrier)).boundaryDegreeProfile =
+                (restriction carrierSupply coordinates car state
+                  (core index)).boundaryDegreeProfile →
+              False
+
+theorem terminalTwoCarrierNoGoFacts :
+    TerminalTwoCarrierNoGoFacts Target carrierSupply coordinates
+      car car_subset state := by
+  intro Index indexDec entries core carrierBound index witnesses object
+    support degreeThreshold receiver peeled eligible noExitFour family base
+    identified generated load unpeeled declared eligibleLoad carrier member
+    sameBoundaryProfile
+  letI : DecidableEq Index := indexDec
+  exact terminalTwoCarrierNoGo (Target := Target) carrierSupply coordinates
+    car state entries core witnesses noExitFour family generated
+    unpeeled declared eligibleLoad member sameBoundaryProfile
+
+end TerminalTwoCarrier
 
 end Hypostructure.Graph.Route8

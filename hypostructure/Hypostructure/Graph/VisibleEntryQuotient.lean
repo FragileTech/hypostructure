@@ -42,6 +42,8 @@ open Hypostructure
 
 universe u
 
+attribute [local instance] Graph.ExitFour.ReceiverFamily.coordinateDecEq
+
 variable {object : FiniteObject.{u}}
 
 section Clause
@@ -132,8 +134,8 @@ theorem generated_visibleEntry (outside : object.Vertex)
     (declared : ∀ load ∈ object.routedLoads support threshold receiver,
       coordinate load ∈ coordinates)
     (base : Finset Coordinate) (readings : base ⊆ coordinates) :
-    (visibleEntryFamily support threshold receiver coordinates coordinate outside
-        declared).Generated
+    (visibleEntryFamily (Target := Target) support threshold receiver
+        coordinates coordinate outside declared).Generated
       Graph.ExitFour.ReceiverClause.visibleEntry base
       (visibleCoordinates support threshold receiver coordinate outside base) :=
   ⟨rfl, readings, rfl⟩
@@ -150,14 +152,14 @@ theorem visibleLoads_subset_declaredLoads (outside : object.Vertex)
     (base : Finset Coordinate) :
     (visibleLoadsAt object support threshold receiver outside).filter
         (fun load => coordinate load ∈ base) ⊆
-      (visibleEntryFamily support threshold receiver coordinates coordinate outside
-          declared).declaredLoads
+      (visibleEntryFamily (Target := Target) support threshold receiver
+          coordinates coordinate outside declared).declaredLoads
         (visibleCoordinates support threshold receiver coordinate outside base) := by
   classical
   intro load member
   obtain ⟨visible, inBase⟩ := Finset.mem_filter.mp member
-  refine (visibleEntryFamily support threshold receiver coordinates coordinate
-    outside declared).mem_declaredLoads.mpr
+  refine (visibleEntryFamily (Target := Target) support threshold receiver
+    coordinates coordinate outside declared).mem_declaredLoads.mpr
     ⟨visibleLoadsAt_subset object support threshold receiver outside visible,
       ?_⟩
   exact (mem_visibleCoordinates support threshold receiver coordinate).mpr
@@ -173,8 +175,8 @@ theorem mem_declaredLoads_visibleCoordinates (outside : object.Vertex)
       coordinate load ∈ coordinates)
     (base : Finset Coordinate) {load : object.Vertex} :
     load ∈
-        (visibleEntryFamily support threshold receiver coordinates coordinate outside
-            declared).declaredLoads
+        (visibleEntryFamily (Target := Target) support threshold receiver
+            coordinates coordinate outside declared).declaredLoads
           (visibleCoordinates support threshold receiver coordinate outside
             base) ↔
       load ∈ object.routedLoads support threshold receiver ∧
@@ -185,15 +187,15 @@ theorem mem_declaredLoads_visibleCoordinates (outside : object.Vertex)
   constructor
   · intro member
     obtain ⟨routed, identified⟩ :=
-      (visibleEntryFamily support threshold receiver coordinates coordinate
-        outside declared).mem_declaredLoads.mp member
+      (visibleEntryFamily (Target := Target) support threshold receiver
+        coordinates coordinate outside declared).mem_declaredLoads.mp member
     obtain ⟨inBase, seen⟩ :=
       (mem_visibleCoordinates support threshold receiver coordinate).mp
         identified
     exact ⟨routed, inBase, seen⟩
   · rintro ⟨routed, inBase, seen⟩
-    exact (visibleEntryFamily support threshold receiver coordinates coordinate
-      outside declared).mem_declaredLoads.mpr
+    exact (visibleEntryFamily (Target := Target) support threshold receiver
+      coordinates coordinate outside declared).mem_declaredLoads.mpr
       ⟨routed, (mem_visibleCoordinates support threshold receiver
         coordinate).mpr ⟨inBase, seen⟩⟩
 
@@ -209,14 +211,14 @@ theorem visibleLoadsAt_subset_declaredLoads (outside : object.Vertex)
     (declared : ∀ load ∈ object.routedLoads support threshold receiver,
       coordinate load ∈ coordinates) :
     visibleLoadsAt object support threshold receiver outside ⊆
-      (visibleEntryFamily support threshold receiver coordinates coordinate outside
-          declared).declaredLoads
+      (visibleEntryFamily (Target := Target) support threshold receiver
+          coordinates coordinate outside declared).declaredLoads
         (visibleCoordinates support threshold receiver coordinate outside
           coordinates) := by
   classical
   intro load visible
-  refine (visibleEntryFamily support threshold receiver coordinates coordinate
-    outside declared).mem_declaredLoads.mpr
+  refine (visibleEntryFamily (Target := Target) support threshold receiver
+    coordinates coordinate outside declared).mem_declaredLoads.mpr
     ⟨visibleLoadsAt_subset object support threshold receiver outside visible,
       ?_⟩
   refine (mem_visibleCoordinates support threshold receiver coordinate).mpr

@@ -204,15 +204,16 @@ theorem nonNegativeNetCharge_of_augmentedLedger_add_centres_nonneg
     linarith
   exact_mod_cast cast
 
-/-- The exact B2 partition gives the exclusion charge once the remaining core
-has nonnegative scaled charge. -/
-theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
+/-- The exact B2 partition gives the exclusion charge once the local selected
+entries and the remaining core both have nonnegative scaled charge. -/
+theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
     {piece : TypeBRefinedSupport.CanonicalPiece object packing}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
       piece)
     (exact : ledger.ExactAugmentedLedgerRefinement)
+    (selectedNonnegative : 0 ≤ ledger.selectedEntryPayment₂)
     (remainingNonnegative :
       0 ≤ ∑ vertex ∈ ledger.remainingCore,
         scaledCoreCharge object threshold dischargeScale piece.vertices vertex) :
@@ -231,8 +232,6 @@ theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
             (threshold - object.internalDegree piece.vertices centre) : Nat) :
             Int) := Int.natCast_nonneg _
     linarith
-  have selectedNonnegative : 0 ≤ ledger.selectedEntryPayment₂ :=
-    exact.selectedNonnegative
   have doubled :
       0 ≤ 2 *
         (augmentedLedger object threshold dischargeScale piece.vertices +
@@ -247,6 +246,22 @@ theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
     nlinarith
   exact nonNegativeNetCharge_of_augmentedLedger_add_centres_nonneg object
     threshold dischargeScale piece.vertices ledgerNonnegative
+
+/-- The exact B2 refinement gives the exclusion charge once the remaining core
+has nonnegative scaled charge. -/
+theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
+    {threshold dischargeScale : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      piece)
+    (exact : ledger.ExactAugmentedLedgerRefinement)
+    (remainingNonnegative :
+      0 ≤ ∑ vertex ∈ ledger.remainingCore,
+        scaledCoreCharge object threshold dischargeScale piece.vertices vertex) :
+    object.NonNegativeNetCharge piece.vertices threshold dischargeScale :=
+  nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative
+    ledger exact exact.selectedNonnegative remainingNonnegative
 
 
 
