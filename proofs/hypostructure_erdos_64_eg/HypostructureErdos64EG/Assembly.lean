@@ -1031,6 +1031,1682 @@ noncomputable def selectedHighEntropyTypeBDegreeDichotomy
     (by simp [selectedHighEntropyTypeBNormalForm, K_eq_iff])
     (by simp [selectedHighEntropyTypeBNormalForm, K_eq_iff])
 
+/-- Node `[69]`, local heavy-centre dichotomy on the low-entropy Type B heavy arm. -/
+noncomputable def selectedLowEntropyTypeBLocalDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (heavyCentreLocalDichotomy (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by simp [heavyCentreLocalDichotomy, K_eq_iff])
+
+/-- Node `[70]`, fan certificate cap on the low-entropy Type B heavy arm. -/
+noncomputable def selectedLowEntropyTypeBHeavyFanCap
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  let afterLocal := selectedLowEntropyTypeBLocalDichotomy history
+  exact
+    (fanCertificateCap (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      afterLocal (by
+        simp [fanCertificateCap, selectedLowEntropyTypeBLocalDichotomy,
+          K_eq_iff])
+
+/-- Node `[70]`, fan certificate cap on the low-entropy Type B degree-four arm. -/
+noncomputable def selectedLowEntropyTypeBDegreeFourFanCap
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (fanCertificateCap (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by simp [fanCertificateCap, K_eq_iff])
+
+/-- Nodes `[78]`--`[79]`, degree-four profile on the low-entropy Type B arm. -/
+noncomputable def selectedLowEntropyTypeBDegreeFourProfile
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  let afterCap := selectedLowEntropyTypeBDegreeFourFanCap history
+  exact
+    (degreeFourProfile (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      afterCap (by
+        simp [degreeFourProfile, selectedLowEntropyTypeBDegreeFourFanCap,
+          K_eq_iff])
+
+/-- Node `[69]`, local heavy-centre dichotomy on the high-entropy Type B heavy arm. -/
+noncomputable def selectedHighEntropyTypeBLocalDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (heavyCentreLocalDichotomy (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by simp [heavyCentreLocalDichotomy, K_eq_iff])
+
+/-- Node `[70]`, fan certificate cap on the high-entropy Type B heavy arm. -/
+noncomputable def selectedHighEntropyTypeBHeavyFanCap
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  let afterLocal := selectedHighEntropyTypeBLocalDichotomy history
+  exact
+    (fanCertificateCap (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      afterLocal (by
+        simp [fanCertificateCap, selectedHighEntropyTypeBLocalDichotomy,
+          K_eq_iff])
+
+/-- Node `[70]`, fan certificate cap on the high-entropy Type B degree-four arm. -/
+noncomputable def selectedHighEntropyTypeBDegreeFourFanCap
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (fanCertificateCap (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by simp [fanCertificateCap, K_eq_iff])
+
+/-- Nodes `[78]`--`[79]`, degree-four profile on the high-entropy Type B arm. -/
+noncomputable def selectedHighEntropyTypeBDegreeFourProfile
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  let afterCap := selectedHighEntropyTypeBDegreeFourFanCap history
+  exact
+    (degreeFourProfile (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      afterCap (by
+        simp [degreeFourProfile, selectedHighEntropyTypeBDegreeFourFanCap,
+          K_eq_iff])
+
+/-- Node `[71]`, certificate split on the low-entropy Type B heavy arm. -/
+noncomputable def selectedLowEntropyTypeBFanCertificateDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateMarked)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateResidual)
+      history :=
+  fanCertificateDichotomy (data := spineData) history
+    (K .typeBHighSurplus) (K .fanCertificateMarked)
+    (K .fanCertificateResidual)
+    (fun fact => fact.down)
+    (fun marked => ⟨marked⟩)
+    (fun residual => ⟨residual⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[75]`, bridge mass on the low-entropy fan-certificate residual arm. -/
+noncomputable def selectedLowEntropyTypeBCertificateResidualMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateResidual, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .fanCertificateResidual,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .fanCertificateResidual) (by simp [K_eq_iff])).run
+    history (by simp [bridgeFanMass, K_eq_iff])
+
+/-- Node `[72]`, direct-cycle split on the low-entropy Type B heavy marked arm. -/
+noncomputable def selectedLowEntropyTypeBDirectCycleDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBDirectCycle)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBDirectCycleFree)
+      history :=
+  directCycleDichotomy (data := spineData) history
+    (K .typeBDirectCycle) (K .typeBDirectCycleFree)
+    (K .typeBHighSurplus)
+    (fun fact => fact.down)
+    (fun cycle => ⟨cycle⟩)
+    (fun free => ⟨free⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[72]`, closing the direct-cycle arm on the low-entropy Type B heavy path. -/
+noncomputable def selectedLowEntropyTypeBDirectCycleCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycle, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .selection) (K .typeBDirectCycle)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Node `[72]`, B2 assignment split on the low-entropy Type B heavy path. -/
+noncomputable def selectedLowEntropyTypeBB2AssignmentDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBB2Choice)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBOverlapObstruction)
+      history :=
+  b2AssignmentDichotomy (data := spineData) history
+    (K .typeBB2Choice) (K .typeBOverlapObstruction)
+    (K .typeBDirectCycleFree)
+    (fun fact => fact.down)
+    (fun choice => ⟨choice⟩)
+    (fun obstruction => ⟨obstruction⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[73]`, bridge mass on the low-entropy Type B heavy overlap-obstruction arm. -/
+noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBOverlapObstruction, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBOverlapObstruction,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
+    history (by simp [bridgeFanMass, K_eq_iff])
+
+/-- Node `[71]`, certificate split on the high-entropy Type B heavy arm. -/
+noncomputable def selectedHighEntropyTypeBFanCertificateDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateMarked)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateResidual)
+      history :=
+  fanCertificateDichotomy (data := spineData) history
+    (K .typeBHighSurplus) (K .fanCertificateMarked)
+    (K .fanCertificateResidual)
+    (fun fact => fact.down)
+    (fun marked => ⟨marked⟩)
+    (fun residual => ⟨residual⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[75]`, bridge mass on the high-entropy fan-certificate residual arm. -/
+noncomputable def selectedHighEntropyTypeBCertificateResidualMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateResidual, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .fanCertificateResidual,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .fanCertificateResidual) (by simp [K_eq_iff])).run
+    history (by simp [bridgeFanMass, K_eq_iff])
+
+/-- Node `[72]`, direct-cycle split on the high-entropy Type B heavy marked arm. -/
+noncomputable def selectedHighEntropyTypeBDirectCycleDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBDirectCycle)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBDirectCycleFree)
+      history :=
+  directCycleDichotomy (data := spineData) history
+    (K .typeBDirectCycle) (K .typeBDirectCycleFree)
+    (K .typeBHighSurplus)
+    (fun fact => fact.down)
+    (fun cycle => ⟨cycle⟩)
+    (fun free => ⟨free⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[72]`, closing the direct-cycle arm on the high-entropy Type B heavy path. -/
+noncomputable def selectedHighEntropyTypeBDirectCycleCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycle, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .selection) (K .typeBDirectCycle)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Node `[72]`, B2 assignment split on the high-entropy Type B heavy path. -/
+noncomputable def selectedHighEntropyTypeBB2AssignmentDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBB2Choice)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBOverlapObstruction)
+      history :=
+  b2AssignmentDichotomy (data := spineData) history
+    (K .typeBB2Choice) (K .typeBOverlapObstruction)
+    (K .typeBDirectCycleFree)
+    (fun fact => fact.down)
+    (fun choice => ⟨choice⟩)
+    (fun obstruction => ⟨obstruction⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[73]`, bridge mass on the high-entropy Type B heavy overlap-obstruction arm. -/
+noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBOverlapObstruction, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBOverlapObstruction,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
+    history (by simp [bridgeFanMass, K_eq_iff])
+
+/-- Node `[80]`, certificate split on the low-entropy Type B degree-four arm. -/
+noncomputable def selectedLowEntropyDegreeFourFanCertificateDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateMarked)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateResidual)
+      history :=
+  fanCertificateDichotomy (data := spineData) history
+    (K .typeBHighSurplus) (K .fanCertificateMarked)
+    (K .fanCertificateResidual)
+    (fun fact => fact.down)
+    (fun marked => ⟨marked⟩)
+    (fun residual => ⟨residual⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[84]`, bridge mass on the low-entropy degree-four certificate-residual arm. -/
+noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateResidual, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .fanCertificateResidual,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .fanCertificateResidual) (by simp [K_eq_iff])).run
+    history (by simp [bridgeFanMass, K_eq_iff])
+
+/-- Node `[81]`, direct-cycle split on the low-entropy Type B degree-four marked arm. -/
+noncomputable def selectedLowEntropyDegreeFourDirectCycleDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBDirectCycle)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBDirectCycleFree)
+      history :=
+  directCycleDichotomy (data := spineData) history
+    (K .typeBDirectCycle) (K .typeBDirectCycleFree)
+    (K .typeBHighSurplus)
+    (fun fact => fact.down)
+    (fun cycle => ⟨cycle⟩)
+    (fun free => ⟨free⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[81]`, closing the direct-cycle arm on the low-entropy degree-four path. -/
+noncomputable def selectedLowEntropyDegreeFourDirectCycleCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycle, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .selection) (K .typeBDirectCycle)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Node `[81]`, B2 assignment split on the low-entropy degree-four path. -/
+noncomputable def selectedLowEntropyDegreeFourB2AssignmentDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBB2Choice)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBOverlapObstruction)
+      history :=
+  b2AssignmentDichotomy (data := spineData) history
+    (K .typeBB2Choice) (K .typeBOverlapObstruction)
+    (K .typeBDirectCycleFree)
+    (fun fact => fact.down)
+    (fun choice => ⟨choice⟩)
+    (fun obstruction => ⟨obstruction⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[83]`, bridge mass on the low-entropy degree-four overlap-obstruction arm. -/
+noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBOverlapObstruction, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBOverlapObstruction,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
+    history (by simp [bridgeFanMass, K_eq_iff])
+
+/-- Node `[80]`, certificate split on the high-entropy Type B degree-four arm. -/
+noncomputable def selectedHighEntropyDegreeFourFanCertificateDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateMarked)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateResidual)
+      history :=
+  fanCertificateDichotomy (data := spineData) history
+    (K .typeBHighSurplus) (K .fanCertificateMarked)
+    (K .fanCertificateResidual)
+    (fun fact => fact.down)
+    (fun marked => ⟨marked⟩)
+    (fun residual => ⟨residual⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[84]`, bridge mass on the high-entropy degree-four certificate-residual arm. -/
+noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateResidual, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .fanCertificateResidual,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .fanCertificateResidual) (by simp [K_eq_iff])).run
+    history (by simp [bridgeFanMass, K_eq_iff])
+
+/-- Node `[81]`, direct-cycle split on the high-entropy Type B degree-four marked arm. -/
+noncomputable def selectedHighEntropyDegreeFourDirectCycleDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBDirectCycle)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBDirectCycleFree)
+      history :=
+  directCycleDichotomy (data := spineData) history
+    (K .typeBDirectCycle) (K .typeBDirectCycleFree)
+    (K .typeBHighSurplus)
+    (fun fact => fact.down)
+    (fun cycle => ⟨cycle⟩)
+    (fun free => ⟨free⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[81]`, closing the direct-cycle arm on the high-entropy degree-four path. -/
+noncomputable def selectedHighEntropyDegreeFourDirectCycleCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycle, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .selection) (K .typeBDirectCycle)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Node `[81]`, B2 assignment split on the high-entropy degree-four path. -/
+noncomputable def selectedHighEntropyDegreeFourB2AssignmentDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBB2Choice)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBOverlapObstruction)
+      history :=
+  b2AssignmentDichotomy (data := spineData) history
+    (K .typeBB2Choice) (K .typeBOverlapObstruction)
+    (K .typeBDirectCycleFree)
+    (fun fact => fact.down)
+    (fun choice => ⟨choice⟩)
+    (fun obstruction => ⟨obstruction⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[83]`, bridge mass on the high-entropy degree-four overlap-obstruction arm. -/
+noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBOverlapObstruction, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBOverlapObstruction,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
+    history (by simp [bridgeFanMass, K_eq_iff])
+
+/-- Nodes `[74]`--`[76]`, B2-success charge ledger on the low-entropy heavy path. -/
+noncomputable def selectedLowEntropyTypeBB2ExclusionCharge
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  let h1 :=
+    (hybridEntry (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [hybridEntry, K_eq_iff])
+  let h2 :=
+    (disjointPostLedgerComponents (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h1 (by simp [disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+  let h3 :=
+    (typeBSelectedFanCharge (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h2 (by
+        simp [typeBSelectedFanCharge, disjointPostLedgerComponents,
+          hybridEntry, K_eq_iff])
+  exact
+    (typeBExclusionCharge (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h3 (by
+        simp [typeBExclusionCharge, typeBSelectedFanCharge,
+          disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+
+/-- Node `[76]`, exclusion split after the low-entropy heavy B2 charge ledger. -/
+noncomputable def selectedLowEntropyTypeBExclusionDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBRemainingCoreNonnegative)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBExclusionResidual)
+      (selectedLowEntropyTypeBB2ExclusionCharge history) :=
+  typeBExclusionDichotomy (data := spineData)
+    (selectedLowEntropyTypeBB2ExclusionCharge history)
+    (K .typeBDisjointLedger) (K .typeBRemainingCoreNonnegative)
+    (K .typeBExclusionResidual)
+    (fun core => ⟨core⟩)
+    (fun residual => ⟨residual⟩)
+    (by
+      simp [selectedLowEntropyTypeBB2ExclusionCharge, typeBExclusionCharge,
+        typeBSelectedFanCharge, disjointPostLedgerComponents, hybridEntry,
+        K_eq_iff])
+    (by
+      simp [selectedLowEntropyTypeBB2ExclusionCharge, typeBExclusionCharge,
+        typeBSelectedFanCharge, disjointPostLedgerComponents, hybridEntry,
+        K_eq_iff])
+
+/-- Node `[76]`, closing the excluded arm on the low-entropy heavy Type B path. -/
+noncomputable def selectedLowEntropyTypeBExcludedCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBRemainingCoreNonnegative, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let excluded :=
+    (typeBExcluded (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [typeBExcluded, K_eq_iff])
+  let closedHistory :=
+    closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
+      (by simp [typeBExcluded, K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Nodes `[74]`--`[76]`, B2-success charge ledger on the high-entropy heavy path. -/
+noncomputable def selectedHighEntropyTypeBB2ExclusionCharge
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  let h1 :=
+    (hybridEntry (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [hybridEntry, K_eq_iff])
+  let h2 :=
+    (disjointPostLedgerComponents (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h1 (by simp [disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+  let h3 :=
+    (typeBSelectedFanCharge (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h2 (by
+        simp [typeBSelectedFanCharge, disjointPostLedgerComponents,
+          hybridEntry, K_eq_iff])
+  exact
+    (typeBExclusionCharge (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h3 (by
+        simp [typeBExclusionCharge, typeBSelectedFanCharge,
+          disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+
+/-- Node `[76]`, exclusion split after the high-entropy heavy B2 charge ledger. -/
+noncomputable def selectedHighEntropyTypeBExclusionDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBRemainingCoreNonnegative)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBExclusionResidual)
+      (selectedHighEntropyTypeBB2ExclusionCharge history) :=
+  typeBExclusionDichotomy (data := spineData)
+    (selectedHighEntropyTypeBB2ExclusionCharge history)
+    (K .typeBDisjointLedger) (K .typeBRemainingCoreNonnegative)
+    (K .typeBExclusionResidual)
+    (fun core => ⟨core⟩)
+    (fun residual => ⟨residual⟩)
+    (by
+      simp [selectedHighEntropyTypeBB2ExclusionCharge, typeBExclusionCharge,
+        typeBSelectedFanCharge, disjointPostLedgerComponents, hybridEntry,
+        K_eq_iff])
+    (by
+      simp [selectedHighEntropyTypeBB2ExclusionCharge, typeBExclusionCharge,
+        typeBSelectedFanCharge, disjointPostLedgerComponents, hybridEntry,
+        K_eq_iff])
+
+/-- Node `[76]`, closing the excluded arm on the high-entropy heavy Type B path. -/
+noncomputable def selectedHighEntropyTypeBExcludedCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBRemainingCoreNonnegative, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) : False := by
+  let excluded :=
+    (typeBExcluded (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [typeBExcluded, K_eq_iff])
+  let closedHistory :=
+    closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
+      (by simp [typeBExcluded, K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Nodes `[82]`--`[85]`, B2-success charge ledger on the low-entropy degree-four path. -/
+noncomputable def selectedLowEntropyDegreeFourB2ExclusionCharge
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  let h1 :=
+    (hybridEntry (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [hybridEntry, K_eq_iff])
+  let h2 :=
+    (disjointPostLedgerComponents (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h1 (by simp [disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+  let h3 :=
+    (typeBSelectedFanCharge (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h2 (by
+        simp [typeBSelectedFanCharge, disjointPostLedgerComponents,
+          hybridEntry, K_eq_iff])
+  exact
+    (typeBExclusionCharge (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h3 (by
+        simp [typeBExclusionCharge, typeBSelectedFanCharge,
+          disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+
+/-- Node `[85]`, exclusion split after the low-entropy degree-four B2 charge ledger. -/
+noncomputable def selectedLowEntropyDegreeFourExclusionDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBRemainingCoreNonnegative)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBExclusionResidual)
+      (selectedLowEntropyDegreeFourB2ExclusionCharge history) :=
+  typeBExclusionDichotomy (data := spineData)
+    (selectedLowEntropyDegreeFourB2ExclusionCharge history)
+    (K .typeBDisjointLedger) (K .typeBRemainingCoreNonnegative)
+    (K .typeBExclusionResidual)
+    (fun core => ⟨core⟩)
+    (fun residual => ⟨residual⟩)
+    (by
+      simp [selectedLowEntropyDegreeFourB2ExclusionCharge,
+        typeBExclusionCharge, typeBSelectedFanCharge,
+        disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+    (by
+      simp [selectedLowEntropyDegreeFourB2ExclusionCharge,
+        typeBExclusionCharge, typeBSelectedFanCharge,
+        disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+
+/-- Node `[85]`, closing the excluded arm on the low-entropy degree-four path. -/
+noncomputable def selectedLowEntropyDegreeFourExcludedCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBRemainingCoreNonnegative, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let excluded :=
+    (typeBExcluded (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [typeBExcluded, K_eq_iff])
+  let closedHistory :=
+    closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
+      (by simp [typeBExcluded, K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Nodes `[82]`--`[85]`, B2-success charge ledger on the high-entropy degree-four path. -/
+noncomputable def selectedHighEntropyDegreeFourB2ExclusionCharge
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  let h1 :=
+    (hybridEntry (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [hybridEntry, K_eq_iff])
+  let h2 :=
+    (disjointPostLedgerComponents (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h1 (by simp [disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+  let h3 :=
+    (typeBSelectedFanCharge (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h2 (by
+        simp [typeBSelectedFanCharge, disjointPostLedgerComponents,
+          hybridEntry, K_eq_iff])
+  exact
+    (typeBExclusionCharge (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h3 (by
+        simp [typeBExclusionCharge, typeBSelectedFanCharge,
+          disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+
+/-- Node `[85]`, exclusion split after the high-entropy degree-four B2 charge ledger. -/
+noncomputable def selectedHighEntropyDegreeFourExclusionDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBRemainingCoreNonnegative)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBExclusionResidual)
+      (selectedHighEntropyDegreeFourB2ExclusionCharge history) :=
+  typeBExclusionDichotomy (data := spineData)
+    (selectedHighEntropyDegreeFourB2ExclusionCharge history)
+    (K .typeBDisjointLedger) (K .typeBRemainingCoreNonnegative)
+    (K .typeBExclusionResidual)
+    (fun core => ⟨core⟩)
+    (fun residual => ⟨residual⟩)
+    (by
+      simp [selectedHighEntropyDegreeFourB2ExclusionCharge,
+        typeBExclusionCharge, typeBSelectedFanCharge,
+        disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+    (by
+      simp [selectedHighEntropyDegreeFourB2ExclusionCharge,
+        typeBExclusionCharge, typeBSelectedFanCharge,
+        disjointPostLedgerComponents, hybridEntry, K_eq_iff])
+
+/-- Node `[85]`, closing the excluded arm on the high-entropy degree-four path. -/
+noncomputable def selectedHighEntropyDegreeFourExcludedCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBRemainingCoreNonnegative, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) : False := by
+  let excluded :=
+    (typeBExcluded (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [typeBExcluded, K_eq_iff])
+  let closedHistory :=
+    closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
+      (by simp [typeBExcluded, K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Cold corridor closure, once the selected ledger carries the cold terminal residual. -/
+noncomputable def selectedColdCorridorCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .coldTerminalResidual, K .route8TerminalNoGo, K .typeBExcluded,
+        K .sparsePressureNearCubic, K .spineSurplusEstimate,
+        K .sparseSurplusSurvivor, K .negativeSupport, K .largeBudgetResidual,
+        K .densityCap, K .windowPackageCollided, K .uncompressible,
+        K .selection]) : False := by
+  let closedHistory :=
+    runCold (data := spineData) history
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by
+    dsimp [coldKeys]
+    infer_instance)
+
 /-- The exact selected-residual closure contract consumed by final assembly. -/
 noncomputable abbrev SelectedResidualCloses : Prop :=
   ∀ {selected : EGInput.{u}},

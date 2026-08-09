@@ -31,6 +31,8 @@ CANONICAL_MODULES = {
         "Canonical exhaustive decisions",
     "Hypostructure.Core.Strategy.ClosingProgram":
         "Sealed total closure",
+    "Hypostructure.Core.Strategy.StrategyProgram":
+        "Typed partial topology and sealed completion",
     "Hypostructure.Graph.Strategy.SpineVocabulary":
         "Minimum-degree cycle spine vocabulary",
     "Hypostructure.Graph.Strategy.SpineRows":
@@ -178,6 +180,18 @@ REQUIRED_CANONICAL_DECLARATIONS = {
     "Hypostructure.Core.Strategy.ClosingDag",
     "Hypostructure.Core.Strategy.ClosingDag.ofCounterexampleScope",
     "Hypostructure.Core.Strategy.ClosingDag.statement",
+    "Hypostructure.Core.Strategy.StrategyProgram",
+    "Hypostructure.Core.Strategy.StrategyProgram.defer",
+    "Hypostructure.Core.Strategy.StrategyProgram.ofClosing",
+    "Hypostructure.Core.Strategy.StrategyProgram.closed",
+    "Hypostructure.Core.Strategy.StrategyProgram.atomic",
+    "Hypostructure.Core.Strategy.StrategyProgram.branch",
+    "Hypostructure.Core.Strategy.StrategyProgram.closeIncompatible",
+    "Hypostructure.Core.Strategy.StrategyProgram.closeImpossible",
+    "Hypostructure.Core.Strategy.StrategyProgram.complete",
+    "Hypostructure.Core.Strategy.StrategyDag",
+    "Hypostructure.Core.Strategy.StrategyDag.ofCounterexampleScope",
+    "Hypostructure.Core.Strategy.StrategyDag.complete",
     "Hypostructure.Core.Strategy.RoutedTask.selectFor",
     "Hypostructure.Core.Strategy.RoutedTask.dispatchFor",
 }
