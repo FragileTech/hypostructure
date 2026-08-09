@@ -831,6 +831,15 @@ inductive Key where
   `def:typeB-overlap-obstruction`.  The fact records the obstruction, not the
   bare failure: the minimality is what the fan-mass accounting consumes. -/
   | typeBOverlapObstruction
+  /-- Nodes `[73]`/`[75]`: the fan-mass bound instantiated at the certificate
+  residual selected by the incoming ledger. -/
+  | fanCertificateResidualMass
+  /-- Nodes `[83]`/`[84]`: the fan-mass bound instantiated at the selected
+  minimal overlap obstruction. -/
+  | typeBOverlapObstructionMass
+  /-- Nodes `[76]`/`[85]`: the fan-mass bound instantiated at the selected
+  failure of the disjoint B2 ledger. -/
+  | typeBExclusionResidualMass
   /-- Nodes `[73]`/`[75]` and `[83]`/`[84]`: the Type B residual fan-mass facts
   for certificate residuals, overlap obstructions, and grouped decorated
   envelope residuals. -/
@@ -947,6 +956,9 @@ inductive Key where
   contradiction, so any survivor is the terminal two-carrier obstruction sent
   to node `[124]`. -/
   | route8PressureDescent
+  /-- Node `[123]`, terminal survivor arm: the incoming pressure residual still
+  presents a terminal two-carrier route-`8` obstruction to node `[124]`. -/
+  | route8TerminalResidual
   /-- Node `[124]`: the terminal two-carrier route-`8` no-go.  Carrier-deletion
   witnesses become canonical Q5 exit-`(4)` witnesses, contradicting the
   no-exit-`(4)` fact of the same true route-`8` residual. -/
@@ -1743,6 +1755,24 @@ abbrev Route8PressureDescent (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8NoTwoCarrierContradiction data object ∧
     TypeAExitFourFiniteDescentFact data object
+
+/-- Node `[123]`, terminal-survivor arm: the surviving pressure residual
+presents a terminal two-carrier route-`8` obstruction to node `[124]`.
+
+This is an ordinary fact about the selected object.  It is read from the
+incoming `ExactLedger` on a branch that claims the terminal survivor exists;
+node `[124]` appends the no-go fact separately, and Core closes from the two
+facts. -/
+abbrev Route8TerminalResidual (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8PressureDescent data object ∧
+    Route8CarrierDeletionWitnesses data object ∧
+    letI : DecidableEq object.Vertex := object.vertices.decEq
+    ∃ presented : Graph.Route8.PresentedEntry object,
+      let entry := presented.toEntry (Graph.HasCycleWithLength data.LengthOK)
+      ¬ Graph.Route8.TerminalTwoCarrierNoGoFacts
+        (Graph.HasCycleWithLength data.LengthOK) entry.carriers
+        entry.coordinates entry.car entry.car_subset entry.state
 
 /-- Node `[124]`: terminal two-carrier route-`8` no-go.
 
@@ -3358,6 +3388,65 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               0 < object.ambientSurplus canonicalPiece.vertices data.threshold ∧
               Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
                 data.threshold data.dischargeScale canonicalPiece))
+  | .fanCertificateResidualMass, object =>
+      ∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset object.Vertex,
+            object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ object.canonicalPieces
+              (object.remainderSupport packing),
+            let piece := object.pieceSupport
+              (object.remainderSupport packing) component
+            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+              0 < object.ambientSurplus piece data.threshold ∧
+              ∃ centre ∈ piece,
+                Graph.IsHighCentre object data.threshold centre ∧
+                  IsEmpty (Graph.FanCertificateLabelling object
+                    data.windowOrder centre) ∧
+                  ∀ envelope : Finset object.Vertex,
+                    Graph.TypeBEnvelopeCharge.envelopeNegativePart object
+                        data.threshold data.dischargeScale envelope centre ≤
+                      data.bridgeMassFactor * data.dischargeScale *
+                        (object.degree centre - data.threshold)
+  | .typeBOverlapObstructionMass, object =>
+      ∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset object.Vertex,
+            object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ canonicalPiece :
+              Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+            object.NegativeNetCharge canonicalPiece.vertices data.threshold
+                data.dischargeScale ∧
+              0 < object.ambientSurplus canonicalPiece.vertices data.threshold ∧
+              Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
+                data.threshold data.dischargeScale canonicalPiece) ∧
+              ∀ centre ∈ canonicalPiece.vertices,
+                Graph.IsHighCentre object data.threshold centre →
+                ∀ envelope : Finset object.Vertex,
+                  Graph.TypeBEnvelopeCharge.envelopeNegativePart object
+                      data.threshold data.dischargeScale envelope centre ≤
+                    data.bridgeMassFactor * data.dischargeScale *
+                      (object.degree centre - data.threshold)
+  | .typeBExclusionResidualMass, object =>
+      ∃ packing : Finset (Finset object.Vertex),
+        ∃ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+          ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement ∧
+              (¬ (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex) ∧
+              ∀ centre ∈ canonicalPiece.vertices,
+                Graph.IsHighCentre object data.threshold centre →
+                ∀ envelope : Finset object.Vertex,
+                  Graph.TypeBEnvelopeCharge.envelopeNegativePart object
+                      data.threshold data.dischargeScale envelope centre ≤
+                    data.bridgeMassFactor * data.dischargeScale *
+                      (object.degree centre - data.threshold)
   | .typeBBridgeMass, object =>
       ((∀ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing →
@@ -3460,35 +3549,74 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 data.threshold data.dischargeScale
   | .typeBRemainingCoreNonnegative, object =>
       ∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset object.Vertex,
+          object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
         ∀ canonicalPiece :
             Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+          object.NegativeNetCharge canonicalPiece.vertices data.threshold
+              data.dischargeScale →
+          0 < object.ambientSurplus canonicalPiece.vertices data.threshold →
           ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
               data.threshold data.dischargeScale canonicalPiece,
             ledger.ExactAugmentedLedgerRefinement →
-              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-                Graph.TypeBRefinedSupport.scaledCoreCharge object
-                  data.threshold data.dischargeScale canonicalPiece.vertices
-                  vertex
+            (∀ component : Graph.SupportComponents.Connected.Component
+                  object ledger.remainingCore,
+                component ∈ Graph.SupportComponents.Connected.order object
+                    ledger.remainingCore →
+                  Graph.TypeBPostLedgerCore.PostLedgerComponent
+                    data.typeABPresentation ledger component) →
+            (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+              Graph.TypeBRefinedSupport.scaledCoreCharge object
+                data.threshold data.dischargeScale canonicalPiece.vertices
+                vertex
   | .typeBExcluded, object =>
       ∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset object.Vertex,
+          object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
         ∀ canonicalPiece :
             Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+          object.NegativeNetCharge canonicalPiece.vertices data.threshold
+              data.dischargeScale →
+          0 < object.ambientSurplus canonicalPiece.vertices data.threshold →
           ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
               data.threshold data.dischargeScale canonicalPiece,
             ledger.ExactAugmentedLedgerRefinement →
-              object.NonNegativeNetCharge canonicalPiece.vertices
-                data.threshold data.dischargeScale
+            (∀ component : Graph.SupportComponents.Connected.Component
+                  object ledger.remainingCore,
+                component ∈ Graph.SupportComponents.Connected.order object
+                    ledger.remainingCore →
+                  Graph.TypeBPostLedgerCore.PostLedgerComponent
+                    data.typeABPresentation ledger component) →
+            object.NonNegativeNetCharge canonicalPiece.vertices
+              data.threshold data.dischargeScale
   | .typeBExclusionResidual, object =>
-      ¬ ∀ packing : Finset (Finset object.Vertex),
-        ∀ canonicalPiece :
-            Graph.TypeBRefinedSupport.CanonicalPiece object packing,
-          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
-              data.threshold data.dischargeScale canonicalPiece,
-            ledger.ExactAugmentedLedgerRefinement →
-              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-                Graph.TypeBRefinedSupport.scaledCoreCharge object
-                  data.threshold data.dischargeScale canonicalPiece.vertices
-                  vertex
+      ∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset object.Vertex,
+            object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ canonicalPiece :
+              Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+            object.NegativeNetCharge canonicalPiece.vertices data.threshold
+                data.dischargeScale ∧
+              0 < object.ambientSurplus canonicalPiece.vertices data.threshold ∧
+              ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+                  data.threshold data.dischargeScale canonicalPiece,
+                ledger.ExactAugmentedLedgerRefinement ∧
+                  (∀ component : Graph.SupportComponents.Connected.Component
+                        object ledger.remainingCore,
+                      component ∈ Graph.SupportComponents.Connected.order object
+                          ledger.remainingCore →
+                        Graph.TypeBPostLedgerCore.PostLedgerComponent
+                          data.typeABPresentation ledger component) ∧
+                  ¬ (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                    Graph.TypeBRefinedSupport.scaledCoreCharge object
+                      data.threshold data.dischargeScale canonicalPiece.vertices
+                      vertex
   | .typeAExitFour, object =>
       -- Node `[101]`, yes: on the selected visible package after exits `(1)`,
       -- `(2)`, and `(3)` are absent, a canonical exit-`(4)` witness peels one
@@ -4030,6 +4158,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Node `[123]`: the pressure-descent join carries the finite exit-(4)
       -- descent theorem and the route-8 carrier contradiction on one ledger.
       Route8PressureDescent data object
+  | .route8TerminalResidual, object =>
+      -- Node `[123]`: the incoming pressure residual still presents the
+      -- terminal two-carrier route-8 obstruction.
+      Route8TerminalResidual data object
   | .route8TerminalNoGo, object =>
       -- Node `[124]`: terminal two-carrier route-8 no-go through Q5
       -- carrier-deletion and the committed no-exit-(4) fact.
@@ -4467,6 +4599,9 @@ def label : Key → String
   | .typeBDisjointLedger => "typeBDisjointLedger"
   | .typeBSelectedFanCharge => "typeBSelectedFanCharge"
   | .typeBOverlapObstruction => "typeBOverlapObstruction"
+  | .fanCertificateResidualMass => "fanCertificateResidualMass"
+  | .typeBOverlapObstructionMass => "typeBOverlapObstructionMass"
+  | .typeBExclusionResidualMass => "typeBExclusionResidualMass"
   | .typeBBridgeMass => "typeBBridgeMass"
   | .typeBExclusionCharge => "typeBExclusionCharge"
   | .typeBRemainingCoreNonnegative => "typeBRemainingCoreNonnegative"
@@ -4501,6 +4636,7 @@ def label : Key → String
   | .route8PrivateCarrierBudget => "route8PrivateCarrierBudget"
   | .route8NoTwoCarrierContradiction => "route8NoTwoCarrierContradiction"
   | .route8PressureDescent => "route8PressureDescent"
+  | .route8TerminalResidual => "route8TerminalResidual"
   | .route8TerminalNoGo => "route8TerminalNoGo"
   | .sparseSlackSurplus => "sparseSlackSurplus"
   | .activeSurplusFamily => "activeSurplusFamily"
@@ -4644,6 +4780,9 @@ example : label .typeBDisjointLedger = "typeBDisjointLedger" := rfl
 example : label .typeBSelectedFanCharge =
     "typeBSelectedFanCharge" := rfl
 example : label .typeBOverlapObstruction = "typeBOverlapObstruction" := rfl
+example : label .fanCertificateResidualMass = "fanCertificateResidualMass" := rfl
+example : label .typeBOverlapObstructionMass = "typeBOverlapObstructionMass" := rfl
+example : label .typeBExclusionResidualMass = "typeBExclusionResidualMass" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
 example : label .typeBExclusionCharge = "typeBExclusionCharge" := rfl
 example : label .typeBRemainingCoreNonnegative =
@@ -4690,6 +4829,8 @@ example : label .route8NoTwoCarrierContradiction =
     "route8NoTwoCarrierContradiction" := rfl
 example : label .route8PressureDescent =
     "route8PressureDescent" := rfl
+example : label .route8TerminalResidual =
+    "route8TerminalResidual" := rfl
 example : label .route8TerminalNoGo =
     "route8TerminalNoGo" := rfl
 example : label .sparseSlackSurplus = "sparseSlackSurplus" := rfl
@@ -4838,6 +4979,9 @@ def idx : Key → Nat
   | .typeBDisjointLedger => 150
   | .typeBSelectedFanCharge => 175
   | .typeBOverlapObstruction => 84
+  | .fanCertificateResidualMass => 186
+  | .typeBOverlapObstructionMass => 187
+  | .typeBExclusionResidualMass => 188
   | .typeBBridgeMass => 85
   | .typeBExclusionCharge => 164
   | .typeBRemainingCoreNonnegative => 165
@@ -4871,6 +5015,7 @@ def idx : Key → Nat
   | .route8PrivateCarrierBudget => 171
   | .route8NoTwoCarrierContradiction => 172
   | .route8PressureDescent => 173
+  | .route8TerminalResidual => 185
   | .route8TerminalNoGo => 174
   | .sparseSlackSurplus => 109
   | .activeSurplusFamily => 110
@@ -5002,6 +5147,9 @@ def ofIdx : Nat → Key
   | 150 => .typeBDisjointLedger
   | 175 => .typeBSelectedFanCharge
   | 84 => .typeBOverlapObstruction
+  | 186 => .fanCertificateResidualMass
+  | 187 => .typeBOverlapObstructionMass
+  | 188 => .typeBExclusionResidualMass
   | 85 => .typeBBridgeMass
   | 164 => .typeBExclusionCharge
   | 165 => .typeBRemainingCoreNonnegative
@@ -5035,6 +5183,7 @@ def ofIdx : Nat → Key
   | 171 => .route8PrivateCarrierBudget
   | 172 => .route8NoTwoCarrierContradiction
   | 173 => .route8PressureDescent
+  | 185 => .route8TerminalResidual
   | 174 => .route8TerminalNoGo
   | 109 => .sparseSlackSurplus
   | 110 => .activeSurplusFamily
@@ -5307,6 +5456,15 @@ def name : Key → Lean.Name
   | .typeBOverlapObstruction =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBOverlapObstruction") 84
+  | .fanCertificateResidualMass =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "fanCertificateResidualMass") 186
+  | .typeBOverlapObstructionMass =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBOverlapObstructionMass") 187
+  | .typeBExclusionResidualMass =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBExclusionResidualMass") 188
   | .typeBBridgeMass =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBBridgeMass") 85
   | .typeBExclusionCharge =>
@@ -5391,6 +5549,9 @@ def name : Key → Lean.Name
   | .route8PressureDescent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8PressureDescent") 173
+  | .route8TerminalResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8TerminalResidual") 185
   | .route8TerminalNoGo =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8TerminalNoGo") 174

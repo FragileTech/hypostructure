@@ -556,7 +556,7 @@ bookkeeping; the first is not:
 | 24 | Direct-cycle removal [72] | `Spine.directCycleDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 25 | B2 ledger [72]/[81] | `Spine.b2AssignmentDichotomy` | ✅ | ✅ | ✅ | ✅ |
 | 26 | Hybrid B1 entry [74]/[82] | `Spine.hybridEntry` | ✅ | ✅ | ✅ | ✅ |
-| 27 | Bridge fan-mass [73],[75],[83],[84] | `Spine.bridgeFanMass` reads the active residual fact and appends `typeBBridgeMass` | ✅ | ✅ | ✅ | ✅ |
+| 27 | Bridge fan-mass [73],[75],[83],[84] | residual-specific mass rows append selected certificate, overlap, and B2-exclusion facts; family aggregation remains | ✅ | ✅ | ✅ | ❌ |
 | 28 | Bridge deficit [76]/[85] | `Spine.typeBSelectedFanCharge`, `Spine.typeBExclusionCharge`, `Spine.typeBExclusionDichotomy`, `Spine.typeBExcluded` | ✅ | ✅ | ✅ | ✅ |
 | 29 | Degree-four fan profile [78],[79] | `Spine.degreeFourProfile` | ✅ | ✅ | ✅ | ✅ |
 ## D. Non-near-cubic surplus branch
@@ -2789,120 +2789,42 @@ adding a comparison.
 
 ### Row 27 — Bridge fan-mass `[73]`,`[75]`,`[83]`,`[84]` (ported: `Spine.bridgeFanMass`)
 
-- **Paper fact.**  `def:typeB-residual-mass` sets `No_-(X) = max{0, −No(X)}`,
-  `M_B(𝒳_B) = Σ_X No_-(X)`, `S_B(𝒳_B) = Σ_X Σ_{h∈H_X}(d_G(h) − 3)`, and records
-  `S_B ≤ 2σ(G)` from the at-most-twice occurrence convention — the ordinary
-  assigned role and the grouped-envelope role.
-  `lem:typeB-bridge-deficit-bound` proves `No_-(X) ≤ 8 Σ_{h∈H_X}(d_G(h) − 3)`
-  through `(k − 3 + ¼) + c/4 ≤ 5k/4 − 11/4 ≤ 8(k−3)`, valid for `k ≥ 4` because
-  it is equivalent to `27k ≥ 85`.  `lem:decorated-envelope-deficit-bound` is the
-  same bound for grouped decorated envelopes;
-  `lem:typeB-bridge-with-route8-core` and
-  `lem:decorated-envelope-with-route8-core` extract a route-8 non-window core
-  into `D_A` first.  `prop:typeB-bridge-sublinear` concludes
-  `M_B ≤ 8 S_B ≤ 16σ(G) = O(√n) = o(|R|)`.
-- **What the Lean does.**  `Spine.bridgeFanMass` is the one parameterized value
-  `SpineRows.bridgeFanMassRow bridgeResidual (K .typeBBridgeMass)`, run at the
-  manuscript bridge-residual cursors.  The certificate-residual arm passes
-  `bridgeResidual = K .fanCertificateResidual`; the overlap-obstruction arm
-  passes `bridgeResidual = K .typeBOverlapObstruction`.  The degree-four walk
-  uses the same two active residual facts at `[84]`.
-
-  Its manifest is `rowManifest bridgeResidual typeBBridgeMass`: **`Requires :=
-  [bridgeResidual]`** and **`Produces := [typeBBridgeMass]`**.  The executor
-  reads the active bridge-residual fact with `FactInputs.get bridgeResidual`
-  and passes that fact into the output encoder before appending the mass fact.
-  There is no source-free bridge-mass commit and no sibling residual is merged
-  into the branch.
-
-  The selected assembly now wires the B2 exclusion survivor arms through the
-  same row after the exclusion dichotomy closes the nonnegative sibling:
-  `selectedLowEntropyTypeBExclusionMassAfterDichotomy`,
-  `selectedHighEntropyTypeBExclusionMassAfterDichotomy`,
-  `selectedLowEntropyDegreeFourExclusionMassAfterDichotomy`, and
-  `selectedHighEntropyDegreeFourExclusionMassAfterDichotomy`.  Each one passes
-  the incoming exact ledger to the existing residual reducer and then appends
-  `typeBBridgeMass` from the resulting `typeBExclusionResidual` fact.
-
-  Every clause is stated **at this residual**, scoped by
-  `∀ packing, IsWindowPacking → ∀ piece ⊆ remainderSupport packing, Connected →
-  NegativeNetCharge → 0 < ambientSurplus`, and there are three:
-
-  1. `lem:typeB-bridge-deficit-bound` display (1) at each assigned centre of such
-     a support, `envelopeNegativePart ≤ F·s·(k − δ)`
-     (`TypeBEnvelopeCharge.envelopeNegativePart_le`).  The envelope is fan data,
-     so it is quantified.
-  2. **`lem:typeB-bridge-deficit-bound`**: `No_-(X) ≤ F·σ(X)` at such a support
-     (`bridgeDeficitBound`), subtraction-free as
-     `|V(X)| + s·σ(X) ≤ s·defp(X) + F·s·σ(X)`.
-  3. **`lem:typeB-bridge-with-route8-core`**, and at an empty route-8 ledger residual
-     **`prop:typeB-bridge-sublinear`**, over the canonical decomposition of this
-     residual's packed-window remainder (`bridgeResidualMass_le_route8`,
-     `bridgeResidualMass_le`); and **`def:typeB-residual-mass`'s at-most-twice
-     convention** with both roles drawn from that remainder
-     (`bridgeResidualMass_le_twice`), giving the manuscript's `16σ(G)`.
-
-  The accounting is the manuscript's without its deletion step, and that is what
-  makes it provable.  The only vertices of an assigned Type B support above the
-  baseline are its assigned centres, so every other vertex carries the Type A
-  charge and `lem:typeA-unsaturated-discharge` runs on the support itself with
-  the centres as an exceptional set —
-  `FiniteObject.card_le_scaled_deficiency_off`.  A centre contributes
-  `−(s(k−δ)+1)` through `ch_X(h)` and at worst `−α` more through its own core
-  term, so `Ĉh_B(X) ≥ −Σ_h(s(k−δ)+2)`
-  (`neg_centreAllowance_le_augmentedLedger`), and `Data.bridgeMassSlack` pays
-  that against `F·s·(k−δ)`.  **No carrier is deleted, so no boundary deficit is
-  created and the ordinary deficiency reserve is not needed.**
-- **What it should do.**  This.
-- **Gap.**  None.  **Facts passes.**  Two notes.
-
-  The two Type A conditions of clause 2 are named once as
-  `TypeBEnvelopeCharge.BridgeResidualComponentAt` — off the assigned centres the
-  canonical routing is total and lands off them, and every receiver outside them
-  is unsaturated.  They are nodes `[88]` and `[90]` at the region
-  `lem:typeB-postledger-core-hygiene` leaves, and they are hypotheses of the
-  committed implication because node `[90]` lives on the sibling Type A arm of
-  `[62]` and a sibling fact is not readable across an immutable prefix.
-
-  `lem:decorated-envelope-deficit-bound` and
-  `lem:decorated-envelope-with-route8-core` need no separate estimate: the
-  manuscript is explicit that "the local calculation at a fixed center is the
-  same as the one used for an ordinary Type B bridge center", and clause 2 is
-  stated for an arbitrary support of the remainder with `centres` as its `H_X`,
-  so it *is* the grouped-envelope estimate.  The grouped role enters the
-  at-most-twice clause as the second decomposition.  No `Graph.DecoratedFan` type
-  is required and none is introduced.
-- **Ledger and residual.**  `factOnly` lowered by `AtomicCT.run`; the residual is
-  unchanged, `Refines` is equality, and the output index is `Produces ++ known`.
-  The active residual fact is part of `Requires` and is read from the sealed
-  inputs.  Certificate-residual and overlap-obstruction branches therefore
-  extend their own immutable prefixes monotonically, and the selected B2
-  exclusion-residual continuations do the same after `typeBExclusionResidual`;
-  each appends only `typeBBridgeMass`.
-- **Transport and terminals.**  No terminal.  The four retained leaves are the
-  exact ledgers indexed by `typeBCertificateResidualMassKeys`,
-  `typeBOverlapObstructionMassKeys`, `degreeFourResidualMassKeys` and
-  `degreeFourOverlapObstructionMassKeys`, which is what a bridge *residual* is.
+- **Paper fact.** Certificate residuals, minimal overlap obstructions, and B2
+  exclusion residuals retain their selected support and receive the local
+  centre-envelope estimate used by `lem:typeB-bridge-deficit-bound` before
+  family aggregation.
+- **What the Lean does.** Three ordinary keys are now distinct:
+  `fanCertificateResidualMass`, `typeBOverlapObstructionMass`, and
+  `typeBExclusionResidualMass`. Their `factOnly` rows require exactly the
+  corresponding residual key, read it with `FactInputs.get`, retain its
+  selected witnesses in the proposition, instantiate
+  `TypeBEnvelopeCharge.envelopeNegativePart_le`, and append the new fact to
+  the same `ExactLedger`.
+- **What it should do.** Continue from these selected-residual facts to the
+  canonical-family sum, route-8-core extraction, and the final
+  `M_B <= 16 sigma(G)` comparison without returning to the universal
+  `typeBBridgeMass` package.
+- **Gap.** The selected per-residual publication is kernel checked. The family
+  aggregation and route-8 extraction still use the old generic mass key and
+  must be migrated before this row is complete.
+- **Ledger and residual.** Each row has one required residual key and one fresh
+  produced mass key. `AtomicCT.run` yields `Produces ++ known`; no upstream
+  fact is removed and no sibling history is merged.
+- **Transport and terminals.** Fact-only equality refinement. No terminal at
+  this row.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `def:typeB-residual-mass` | def | `TypeBEnvelopeCharge.envelopeNegativePart`<br>`TypeBEnvelopeCharge.sum_centres_surplus`<br>`TypeBEnvelopeCharge.route8Deficit`<br>`TypeBEnvelopeCharge.bridgeResidualMass_le_twice` | consumed by `Spine.bridgeFanMass` |
-| `def:typeB-assigned-ledger` | def | `TypeBEnvelopeCharge.scaledCoreCharge`<br>`TypeBEnvelopeCharge.scaledCentreCharge` | consumed here; the identity is row 28's |
-| `lem:typeB-bridge-deficit-bound` | lem | `TypeBEnvelopeCharge.envelopeNegativePart_le`<br>`TypeBEnvelopeCharge.neg_centreAllowance_le_augmentedLedger`<br>`TypeBEnvelopeCharge.sum_centreAllowance_le`<br>`TypeBEnvelopeCharge.bridgeDeficitBound` | consumed by `Spine.bridgeFanMass` |
-| `lem:typeB-bridge-with-route8-core` | lem | `TypeBEnvelopeCharge.route8Deficit`<br>`TypeBEnvelopeCharge.bridgeResidualMass_le_route8` | consumed by `Spine.bridgeFanMass` |
-| `lem:decorated-envelope-deficit-bound` | lem | `TypeBEnvelopeCharge.bridgeDeficitBound` | the same estimate at a grouped envelope centre |
-| `lem:decorated-envelope-with-route8-core` | lem | `TypeBEnvelopeCharge.bridgeResidualMass_le_route8` | the grouped role is the second decomposition |
-| `prop:typeB-bridge-sublinear` | pro | `TypeBEnvelopeCharge.bridgeResidualMass_le`<br>`TypeBEnvelopeCharge.bridgeResidualMass_le_twice`<br>`TypeBEnvelopeCharge.ambientSurplus_le_degreeSurplus` | consumed by `Spine.bridgeFanMass` |
-| `lem:typeA-unsaturated-discharge` (off an exceptional set) | lem | `FiniteObject.restrictedLoad`<br>`FiniteObject.sum_restrictedLoad`<br>`FiniteObject.card_le_scaled_deficiency_off` | consumed by `neg_centreAllowance_le_augmentedLedger` |
-| `rem:typeB-status` | rem | | |
+| selected certificate residual mass | fact | `fanCertificateResidualMassRow` | `factOnly`, reads `fanCertificateResidual` |
+| selected overlap obstruction mass | fact | `typeBOverlapObstructionMassRow` | `factOnly`, reads `typeBOverlapObstruction` |
+| selected B2 exclusion residual mass | fact | `typeBExclusionResidualMassRow` | `factOnly`, reads `typeBExclusionResidual` |
+| centre-envelope bound | lemma | `TypeBEnvelopeCharge.envelopeNegativePart_le` | instantiated inside each row |
 
-**CT composition at this row.**  No CT.  One `factOnly` `AtomicStrategy` at four
-cursors.  The global step is a family aggregation, but the family is the
-canonical decomposition, whose sum laws
-(`FiniteObject.sum_ambientSurplus_canonicalPieces`) the framework already owns
-and the row consumes directly.
+**CT composition at this row.** Three residual-specific `factOnly` rows. The
+old parameterized `bridgeFanMassRow` is not consumed by these residual
+branches.
 
 ### Row 28 — Bridge deficit `[76]`/`[85]` (`Spine.typeBSelectedFanCharge`, `Spine.typeBExclusionCharge`, `Spine.typeBExclusionDichotomy`)
 

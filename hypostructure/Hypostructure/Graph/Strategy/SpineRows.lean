@@ -1172,10 +1172,10 @@ diagram.  The branch test at `[36]` still has to offer the alternative -- it is
 decided on the identification, not on the certificate's provenance -- and this
 is the theorem that closes the arm once it is taken. -/
 theorem not_contextDefect
-    (object : Graph.FiniteObject.{u})
-    (defect : ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        ∃ quotient : remainderQuotient data object packing,
+    (residual : Input BranchState Presentation presentation data)
+    (defect : ∃ packing : Finset (Finset residual.object.Vertex),
+      residual.object.IsWindowPacking data.windowOrder packing ∧
+        ∃ quotient : remainderQuotient data residual.object packing,
           ∃ left right, Identified quotient left right ∧
             (left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
               Graph.Response.TargetDefect
@@ -1224,25 +1224,23 @@ the selection's own minimality and avoidance for the closed representative.
 Nothing is recomputed: `Graph.DeclaredQuotient.localize` is applied once, in
 the row that commits `[45]`, and never again. -/
 theorem not_globalBarrierReading
-    {object : Graph.FiniteObject.{u}}
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (state : BranchState object)
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (residual : Input BranchState Presentation presentation data)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK residual.object)
     (minimal : ∀ smaller : Graph.FiniteObject.{u},
       (progress BranchState Presentation presentation data).Smaller
-        smaller object →
+        smaller residual.object →
       Graph.MinimumDegreeAtLeast data.threshold smaller →
       Graph.HasCycleWithLength data.LengthOK smaller)
-    {support : Finset object.Vertex}
+    {support : Finset residual.object.Vertex}
     (reading :
       Graph.Strategy.InterfaceReplacement.ReplacementSupport
           (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object support ∨
+          (Graph.HasCycleWithLength data.LengthOK) residual.object support ∨
         ∃ representative : Graph.FiniteObject.{u},
-          representative.LexicographicallySmaller object ∧
+          representative.LexicographicallySmaller residual.object ∧
             Graph.MinimumDegreeAtLeast data.threshold representative ∧
               (Graph.HasCycleWithLength data.LengthOK representative →
-                Graph.HasCycleWithLength data.LengthOK object)) :
+              Graph.HasCycleWithLength data.LengthOK residual.object)) :
     False := by
   rcases reading with
     replacement | ⟨representative, smaller, representativeBaseline, transfer⟩
@@ -1255,30 +1253,29 @@ theorem not_globalBarrierReading
         (Graph.MinimumDegreeAtLeast data.threshold) BranchState
         Presentation presentation
         (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-      { G := object, baseline := baseline, state := state, avoids := avoids,
+      { G := residual.object, baseline := residual.baseline,
+        state := residual.branchState, avoids := avoids,
         minimal := minimal }
       support replacement
   · exact avoids (transfer (minimal representative smaller
       representativeBaseline))
 
 theorem not_determinationCertificate
-    {object : Graph.FiniteObject.{u}}
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (state : BranchState object)
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (residual : Input BranchState Presentation presentation data)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK residual.object)
     (minimal : ∀ smaller : Graph.FiniteObject.{u},
       (progress BranchState Presentation presentation data).Smaller
-        smaller object →
+        smaller residual.object →
       Graph.MinimumDegreeAtLeast data.threshold smaller →
       Graph.HasCycleWithLength data.LengthOK smaller)
-    {packing : Finset (Finset object.Vertex)}
-    {quotient : remainderQuotient data object packing}
-    (certified : DeterminationCertificate data object packing quotient) :
+    {packing : Finset (Finset residual.object.Vertex)}
+    {quotient : remainderQuotient data residual.object packing}
+    (certified : DeterminationCertificate data residual.object packing quotient) :
     False := by
   -- `[39]` and `[42]` reach their terminal straight from a branch test, with no
   -- row in between to commit the reading, so the scope split is taken here --
   -- once -- and handed to the same refutation `[46]` uses.
-  exact not_globalBarrierReading baseline state avoids minimal
+  exact not_globalBarrierReading residual avoids minimal
     (Graph.DeclaredQuotient.localize quotient certified.1)
 
 /-! ### Node `[38]`: is the determination certified already at `C`?
@@ -1532,22 +1529,20 @@ closed representative.  The three differ in *which* support the manuscript says
 is being compressed -- `C` at `[39]`, the enlarged `Z ⊊ G` at `[42]`, and `G`
 itself at `[46]` -- which is why they are three terminals and not one. -/
 theorem not_branchDCertificate
-    (object : Graph.FiniteObject.{u})
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (state : BranchState object)
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (residual : Input BranchState Presentation presentation data)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK residual.object)
     (minimal : ∀ smaller : Graph.FiniteObject.{u},
       (progress BranchState Presentation presentation data).Smaller
-        smaller object →
+        smaller residual.object →
       Graph.MinimumDegreeAtLeast data.threshold smaller →
       Graph.HasCycleWithLength data.LengthOK smaller)
-    (certificate : ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        ∃ quotient : remainderQuotient data object packing,
-          DeterminationCertificate data object packing quotient) :
+    (certificate : ∃ packing : Finset (Finset residual.object.Vertex),
+      residual.object.IsWindowPacking data.windowOrder packing ∧
+        ∃ quotient : remainderQuotient data residual.object packing,
+          DeterminationCertificate data residual.object packing quotient) :
     False := by
   obtain ⟨_packing, _valid, quotient, certified⟩ := certificate
-  exact not_determinationCertificate baseline state avoids minimal certified
+  exact not_determinationCertificate residual avoids minimal certified
 
 /-! ## Nodes `[47]`--`[48]`: the forced curvature cost
 
@@ -3572,6 +3567,105 @@ sealed inputs before the single bridge-mass fact is appended.
               ordinaryComponents groupedComponents))
         .nil)
 
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def fanCertificateResidualMassRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.fanCertificateResidualMass
+    { Requires := [K .fanCertificateResidual]
+      Produces := [K .fanCertificateResidualMass]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let residual := inputs.get (K .fanCertificateResidual)
+      .cons (key := K .fanCertificateResidualMass) (by
+        refine ⟨?_⟩
+        obtain ⟨packing, valid, maximal, component, componentMem, negative,
+          positive, centre, centreMem, high, empty⟩ := residual.down
+        exact ⟨packing, valid, maximal, component, componentMem, negative,
+          positive, centre, centreMem, high, empty, fun envelope =>
+            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
+              data.bridgeMassSlack⟩)
+      .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def typeBOverlapObstructionMassRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.typeBOverlapObstructionMass
+    { Requires := [K .typeBOverlapObstruction]
+      Produces := [K .typeBOverlapObstructionMass]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let residual := inputs.get (K .typeBOverlapObstruction)
+      .cons (key := K .typeBOverlapObstructionMass) (by
+        refine ⟨?_⟩
+        obtain ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+          obstruction⟩ := residual.down
+        exact ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+          obstruction, fun centre _member high envelope =>
+            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
+              data.bridgeMassSlack⟩)
+      .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def typeBExclusionResidualMassRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.typeBExclusionResidualMass
+    { Requires := [K .typeBExclusionResidual]
+      Produces := [K .typeBExclusionResidualMass]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let residual := inputs.get (K .typeBExclusionResidual)
+      .cons (key := K .typeBExclusionResidualMass) (by
+        classical
+        refine ⟨?_⟩
+        have residualFact := residual.down
+        obtain ⟨packing, _packingValid, _packingMaximal, canonicalPiece,
+          _negative, _surplus, ledger, exact, _postLedger, negative⟩ :=
+          residualFact
+        exact ⟨packing, canonicalPiece, ledger, exact, negative,
+          fun centre _member high envelope =>
+            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
+              data.bridgeMassSlack⟩)
+      .nil)
+    0 0
+
 /-! ## Node `[76]`/`[85]`: Type B local selected-entry charge -/
 @[reducible] noncomputable def typeBSelectedFanChargeRow
     (fanCertificateMarked typeBHybridEntry typeBDisjointLedger
@@ -3711,24 +3805,50 @@ the B-ledger implication used by the exclusion dichotomy.
     (coreOf : (input : Input BranchState Presentation presentation data) →
       typeBRemainingCoreNonnegative.At input →
       ∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
         ∀ canonicalPiece :
             Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+          input.object.NegativeNetCharge canonicalPiece.vertices
+              data.threshold data.dischargeScale →
+          0 < input.object.ambientSurplus canonicalPiece.vertices data.threshold →
           ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
               data.threshold data.dischargeScale canonicalPiece,
             ledger.ExactAugmentedLedgerRefinement →
-              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-                Graph.TypeBRefinedSupport.scaledCoreCharge input.object
-                  data.threshold data.dischargeScale canonicalPiece.vertices
-                  vertex)
+            (∀ component : Graph.SupportComponents.Connected.Component
+                  input.object ledger.remainingCore,
+                component ∈ Graph.SupportComponents.Connected.order input.object
+                    ledger.remainingCore →
+                  Graph.TypeBPostLedgerCore.PostLedgerComponent
+                    data.typeABPresentation ledger component) →
+            (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+              Graph.TypeBRefinedSupport.scaledCoreCharge input.object
+                data.threshold data.dischargeScale canonicalPiece.vertices
+                vertex)
     (encode : (input : Input BranchState Presentation presentation data) →
       (∀ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset input.object.Vertex,
+          input.object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
         ∀ canonicalPiece :
             Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
+          input.object.NegativeNetCharge canonicalPiece.vertices
+              data.threshold data.dischargeScale →
+          0 < input.object.ambientSurplus canonicalPiece.vertices data.threshold →
           ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
               data.threshold data.dischargeScale canonicalPiece,
             ledger.ExactAugmentedLedgerRefinement →
-              input.object.NonNegativeNetCharge canonicalPiece.vertices
-                data.threshold data.dischargeScale) →
+            (∀ component : Graph.SupportComponents.Connected.Component
+                  input.object ledger.remainingCore,
+                component ∈ Graph.SupportComponents.Connected.order input.object
+                    ledger.remainingCore →
+                  Graph.TypeBPostLedgerCore.PostLedgerComponent
+                    data.typeABPresentation ledger component) →
+            input.object.NonNegativeNetCharge canonicalPiece.vertices
+              data.threshold data.dischargeScale) →
       typeBExcluded.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBExcluded
@@ -3743,9 +3863,11 @@ the B-ledger implication used by the exclusion dichotomy.
         (inputs.get typeBRemainingCoreNonnegative)
       .cons (key := typeBExcluded)
         (encode inputs.current (by
-          intro packing canonicalPiece ledger exact
+          intro packing valid maximal canonicalPiece negative surplus ledger exact
+            postLedger
           exact charge packing canonicalPiece ledger exact
-            (core packing canonicalPiece ledger exact)))
+            (core packing valid maximal canonicalPiece negative surplus ledger
+              exact postLedger)))
         .nil)
 
 /-! ## Node `[76]`/`[85]`: Type B exclusion split -/
@@ -3760,50 +3882,73 @@ noncomputable def typeBExclusionDichotomy
       FactKey (Input BranchState Presentation presentation data))
     [Core.Residual.FactKeys.Has typeBDisjointLedger known]
     (encodeCore :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        ∀ canonicalPiece :
-            Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
-          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger current.object
-              data.threshold data.dischargeScale canonicalPiece,
-            ledger.ExactAugmentedLedgerRefinement →
-              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-                Graph.TypeBRefinedSupport.scaledCoreCharge current.object
-                  data.threshold data.dischargeScale canonicalPiece.vertices
-                  vertex) →
+      Holds BranchState Presentation presentation data
+        .typeBRemainingCoreNonnegative current.object →
       typeBRemainingCoreNonnegative.At current)
     (encodeResidual :
-      (¬ ∀ packing : Finset (Finset current.object.Vertex),
-        ∀ canonicalPiece :
-            Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
-          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger current.object
-              data.threshold data.dischargeScale canonicalPiece,
-            ledger.ExactAugmentedLedgerRefinement →
-              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-                Graph.TypeBRefinedSupport.scaledCoreCharge current.object
-                  data.threshold data.dischargeScale canonicalPiece.vertices
-                  vertex) →
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ canonicalPiece :
+              Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
+            current.object.NegativeNetCharge canonicalPiece.vertices
+                data.threshold data.dischargeScale ∧
+              0 < current.object.ambientSurplus canonicalPiece.vertices
+                data.threshold ∧
+              ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger current.object
+                  data.threshold data.dischargeScale canonicalPiece,
+                ledger.ExactAugmentedLedgerRefinement ∧
+                  (∀ component : Graph.SupportComponents.Connected.Component
+                        current.object ledger.remainingCore,
+                      component ∈ Graph.SupportComponents.Connected.order
+                          current.object ledger.remainingCore →
+                        Graph.TypeBPostLedgerCore.PostLedgerComponent
+                          data.typeABPresentation ledger component) ∧
+                  ¬ (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                    Graph.TypeBRefinedSupport.scaledCoreCharge current.object
+                      data.threshold data.dischargeScale canonicalPiece.vertices
+                      vertex) →
       typeBExclusionResidual.At current)
+    (ledgerOf : typeBDisjointLedger.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset current.object.Vertex,
+            current.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ canonicalPiece :
+              Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
+            current.object.NegativeNetCharge canonicalPiece.vertices
+                data.threshold data.dischargeScale ∧
+              0 < current.object.ambientSurplus canonicalPiece.vertices
+                data.threshold ∧
+              ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger current.object
+                  data.threshold data.dischargeScale canonicalPiece,
+                ledger.ExactAugmentedLedgerRefinement ∧
+                  (∀ component : Graph.SupportComponents.Connected.Component
+                        current.object ledger.remainingCore,
+                      component ∈ Graph.SupportComponents.Connected.order
+                          current.object ledger.remainingCore →
+                        Graph.TypeBPostLedgerCore.PostLedgerComponent
+                          data.typeABPresentation ledger component))
     (coreFresh : typeBRemainingCoreNonnegative ∉ known)
     (residualFresh : typeBExclusionResidual ∉ known) :
     Decision typeBRemainingCoreNonnegative typeBExclusionResidual previous :=
-  Decision.run previous typeBRemainingCoreNonnegative typeBExclusionResidual
+  Decision.run previous
+    typeBRemainingCoreNonnegative typeBExclusionResidual
     `Hypostructure.Graph.Strategy.Spine.typeBExclusionDichotomy
     (by
       classical
-      let _ledgerFact := ExactLedger.get previous typeBDisjointLedger
+      have := ledgerOf (ExactLedger.get previous typeBDisjointLedger)
       by_cases clean :
-          ∀ packing : Finset (Finset current.object.Vertex),
-            ∀ canonicalPiece :
-                Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
-              ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger current.object
-                  data.threshold data.dischargeScale canonicalPiece,
-                ledger.ExactAugmentedLedgerRefinement →
-                  (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-                    Graph.TypeBRefinedSupport.scaledCoreCharge current.object
-                      data.threshold data.dischargeScale canonicalPiece.vertices
-                      vertex
+          Holds BranchState Presentation presentation data
+            .typeBRemainingCoreNonnegative current.object
       · exact .inl (encodeCore clean)
-      · exact .inr (encodeResidual clean))
+      · exact .inr (encodeResidual (by
+          simp only [Holds] at clean
+          push_neg at clean
+          simpa [not_le] using clean)))
     coreFresh residualFresh
 
 /-! ## Node `[88]`: the routing and threshold algebra of a Type A support

@@ -801,8 +801,8 @@ The manifest lists the two keys the executor reads and nothing else. -/
             fun _support replacement =>
               not_globalBarrierReading (BranchState := BranchState)
                 (Presentation := Presentation) (presentation := presentation)
-                (data := data) inputs.current.baseline
-                inputs.current.branchState (avoidsOf inputs.current fact)
+                (data := data) inputs.current
+                (avoidsOf inputs.current fact)
                 (minimalOf inputs.current fact) (Or.inl replacement)⟩)
         .nil)
 

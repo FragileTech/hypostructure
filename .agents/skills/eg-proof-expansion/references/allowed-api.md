@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **536**.
+Compiled declarations: **577**.
 
-Category counts: **Canonical execution** 33, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 32, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 83, **Minimum-degree cycle spine vocabulary** 263.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 87, **Minimum-degree cycle spine vocabulary** 274, **Sealed total closure** 12.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -1493,6 +1493,50 @@ Core.Residual.CommitRecord → ℕ → Format
                               (Core.Residual.FactSystem.closureKey :: (ct.manifest.Produces ++ known))
 ```
 
+### `Hypostructure.Core.Strategy.AtomicDecision`
+
+#### `Hypostructure.Core.Strategy.AtomicDecision`
+
+- Category: Canonical exhaustive decisions
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+(Residual : Type uResidual) →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [Core.Residual.FactSystem Residual] → Type (max (max uKey uResidual) (uValue + 2))
+```
+
+#### `Hypostructure.Core.Strategy.AtomicDecision.id`
+
+- Category: Canonical exhaustive decisions
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] → Core.Strategy.AtomicDecision Residual → Name
+```
+
+#### `Hypostructure.Core.Strategy.AtomicDecision.manifest`
+
+- Category: Canonical exhaustive decisions
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      Core.Strategy.AtomicDecision Residual → Core.Strategy.DecisionManifest Residual
+```
+
+### `Hypostructure.Core.Strategy.ExactExecution`
+
 #### `Hypostructure.Core.Strategy.AtomicResult`
 
 - Category: Canonical execution
@@ -1593,6 +1637,184 @@ Core.Residual.CommitRecord → ℕ → Format
 Type
 ```
 
+### `Hypostructure.Core.Strategy.ClosingProgram`
+
+#### `Hypostructure.Core.Strategy.ClosingDag`
+
+- Category: Sealed total closure
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  Core.Target P →
+    [Core.Residual.FactSystem (Core.Strategy.ProblemInput P)] →
+      Type (max (max (max (uAmbient + 1) (uBranch + 1)) (u_1 + 1)) (u_2 + 3))
+```
+
+#### `Hypostructure.Core.Strategy.ClosingDag.ofCounterexampleScope`
+
+- Category: Sealed total closure
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  (T : Core.Target P) →
+    [inst : Core.Residual.FactSystem (Core.Strategy.ProblemInput P)] →
+      (scope : Core.Strategy.CounterexampleScope T) →
+        Core.Strategy.ClosingProgram (Core.Strategy.ProblemInput P) [scope.selection] → Core.Strategy.ClosingDag T
+```
+
+#### `Hypostructure.Core.Strategy.ClosingDag.statement`
+
+- Category: Sealed total closure
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+∀ {P : Core.Problem} {T : Core.Target P} [inst : Core.Residual.FactSystem (Core.Strategy.ProblemInput P)]
+  (dag : Core.Strategy.ClosingDag T), T.Statement
+```
+
+#### `Hypostructure.Core.Strategy.ClosingProgram`
+
+- Category: Sealed total closure
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+(Residual : Type uResidual) →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      Core.Residual.FactKeys Residual → Type (max (max (uKey + 1) (uResidual + 1)) (uValue + 3))
+```
+
+#### `Hypostructure.Core.Strategy.ClosingProgram.atomic`
+
+- Category: Sealed total closure
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      {known : Core.Residual.FactKeys Residual} →
+        (ct : Core.Strategy.AtomicCT Residual) →
+          [Core.Strategy.FactKeys.Available ct.manifest.Requires known] →
+            Core.Strategy.ClosingProgram Residual (ct.manifest.Produces ++ known) →
+              autoParam (Core.Residual.FactSystem.closureKey ∉ known) Core.Strategy.ClosingProgram.atomic._auto_1 →
+                autoParam (Core.Residual.FactSystem.closureKey ∉ ct.manifest.Produces)
+                    Core.Strategy.ClosingProgram.atomic._auto_3 →
+                  autoParam (List.Disjoint ct.manifest.Produces known) Core.Strategy.ClosingProgram.atomic._auto_5 →
+                    Core.Strategy.ClosingProgram Residual known
+```
+
+#### `Hypostructure.Core.Strategy.ClosingProgram.branch`
+
+- Category: Sealed total closure
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      {known : Core.Residual.FactKeys Residual} →
+        (decision : Core.Strategy.AtomicDecision Residual) →
+          [Core.Strategy.FactKeys.Available decision.manifest.Requires known] →
+            Core.Strategy.ClosingProgram Residual (decision.manifest.left :: known) →
+              Core.Strategy.ClosingProgram Residual (decision.manifest.right :: known) →
+                autoParam (Core.Residual.FactSystem.closureKey ∉ known) Core.Strategy.ClosingProgram.branch._auto_1 →
+                  autoParam (decision.manifest.left ∉ known) Core.Strategy.ClosingProgram.branch._auto_3 →
+                    autoParam (decision.manifest.right ∉ known) Core.Strategy.ClosingProgram.branch._auto_5 →
+                      Core.Strategy.ClosingProgram Residual known
+```
+
+#### `Hypostructure.Core.Strategy.ClosingProgram.closeIfEmpty`
+
+- Category: Sealed total closure
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      {known : Core.Residual.FactKeys Residual} →
+        [Core.Strategy.EmptinessOracle Residual] →
+          Core.Strategy.ClosingProgram Residual known →
+            autoParam (Core.Residual.FactSystem.closureKey ∉ known) Core.Strategy.ClosingProgram.closeIfEmpty._auto_1 →
+              Core.Strategy.ClosingProgram Residual known
+```
+
+#### `Hypostructure.Core.Strategy.ClosingProgram.closeImpossible`
+
+- Category: Sealed total closure
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      {known : Core.Residual.FactKeys Residual} →
+        (key : Core.Residual.FactKey Residual) →
+          [Core.Residual.FactKeys.Has key known] →
+            [Core.Strategy.Impossible Residual key] →
+              autoParam (Core.Residual.FactSystem.closureKey ∉ known)
+                  Core.Strategy.ClosingProgram.closeImpossible._auto_1 →
+                Core.Strategy.ClosingProgram Residual known
+```
+
+#### `Hypostructure.Core.Strategy.ClosingProgram.closeIncompatible`
+
+- Category: Sealed total closure
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      {known : Core.Residual.FactKeys Residual} →
+        (left right : Core.Residual.FactKey Residual) →
+          [Core.Residual.FactKeys.Has left known] →
+            [Core.Residual.FactKeys.Has right known] →
+              [Core.Strategy.Incompatible Residual left right] →
+                autoParam (Core.Residual.FactSystem.closureKey ∉ known)
+                    Core.Strategy.ClosingProgram.closeIncompatible._auto_1 →
+                  Core.Strategy.ClosingProgram Residual known
+```
+
+#### `Hypostructure.Core.Strategy.ClosingProgram.closed`
+
+- Category: Sealed total closure
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      {known : Core.Residual.FactKeys Residual} →
+        [present : Core.Residual.FactKeys.Has Core.Residual.FactSystem.closureKey known] →
+          Core.Strategy.ClosingProgram Residual known
+```
+
+### `Hypostructure.Core.Strategy.ExactExecution`
+
 #### `Hypostructure.Core.Strategy.ContradictionEvidence`
 
 - Category: Canonical execution
@@ -1602,6 +1824,36 @@ Type
 
 ```lean
 Type
+```
+
+### `Hypostructure.Core.Strategy.ClosingProgram`
+
+#### `Hypostructure.Core.Strategy.CounterexampleScope`
+
+- Category: Sealed total closure
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  Core.Target P →
+    [Core.Residual.FactSystem (Core.Strategy.ProblemInput P)] →
+      Type (max (max (max uAmbient uBranch) (u_1 + 1)) (u_2 + 2))
+```
+
+#### `Hypostructure.Core.Strategy.CounterexampleScope.selection`
+
+- Category: Sealed total closure
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/ClosingProgram.lean`
+- Compiled type:
+
+```lean
+{P : Core.Problem} →
+  {T : Core.Target P} →
+    [inst : Core.Residual.FactSystem (Core.Strategy.ProblemInput P)] →
+      Core.Strategy.CounterexampleScope T → Core.Residual.FactKey (Core.Strategy.ProblemInput P)
 ```
 
 ### `Hypostructure.Core.Strategy.FactOnlyStrategy`
@@ -1680,6 +1932,118 @@ Type
                   autoParam (left ∉ known) Core.Strategy.Decision.run._auto_1 →
                     autoParam (right ∉ known) Core.Strategy.Decision.run._auto_3 →
                       Core.Strategy.Decision left right previous
+```
+
+### `Hypostructure.Core.Strategy.AtomicDecision`
+
+#### `Hypostructure.Core.Strategy.DecisionManifest`
+
+- Category: Canonical exhaustive decisions
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+(Residual : Type uResidual) →
+  [inst : Core.Residual.RefinementSystem Residual] → [system : Core.Residual.FactSystem Residual] → Type uKey
+```
+
+#### `Hypostructure.Core.Strategy.DecisionManifest.distinct`
+
+- Category: Canonical exhaustive decisions
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+∀ {Residual : Type uResidual} [inst : Core.Residual.RefinementSystem Residual]
+  [system : Core.Residual.FactSystem Residual] (self : Core.Strategy.DecisionManifest Residual), self.left ≠ self.right
+```
+
+#### `Hypostructure.Core.Strategy.DecisionManifest.left`
+
+- Category: Canonical exhaustive decisions
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      Core.Strategy.DecisionManifest Residual → Core.Residual.FactKey Residual
+```
+
+#### `Hypostructure.Core.Strategy.DecisionManifest.left_ne_closure`
+
+- Category: Canonical exhaustive decisions
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+∀ {Residual : Type uResidual} [inst : Core.Residual.RefinementSystem Residual]
+  [system : Core.Residual.FactSystem Residual] (self : Core.Strategy.DecisionManifest Residual),
+  self.left ≠ Core.Residual.FactSystem.closureKey
+```
+
+#### `Hypostructure.Core.Strategy.DecisionManifest.mk`
+
+- Category: Canonical exhaustive decisions
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      Core.Strategy.FactRequirements Residual →
+        (left right : Core.Residual.FactKey Residual) →
+          left ≠ right →
+            left ≠ Core.Residual.FactSystem.closureKey →
+              right ≠ Core.Residual.FactSystem.closureKey → Core.Strategy.DecisionManifest Residual
+```
+
+#### `Hypostructure.Core.Strategy.DecisionManifest.right`
+
+- Category: Canonical exhaustive decisions
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      Core.Strategy.DecisionManifest Residual → Core.Residual.FactKey Residual
+```
+
+#### `Hypostructure.Core.Strategy.DecisionManifest.right_ne_closure`
+
+- Category: Canonical exhaustive decisions
+- Kind: `theorem`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+∀ {Residual : Type uResidual} [inst : Core.Residual.RefinementSystem Residual]
+  [system : Core.Residual.FactSystem Residual] (self : Core.Strategy.DecisionManifest Residual),
+  self.right ≠ Core.Residual.FactSystem.closureKey
+```
+
+#### `Hypostructure.Core.Strategy.DecisionManifest.toFactRequirements`
+
+- Category: Canonical exhaustive decisions
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/AtomicDecision.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [system : Core.Residual.FactSystem Residual] →
+      Core.Strategy.DecisionManifest Residual → Core.Strategy.FactRequirements Residual
 ```
 
 ### `Hypostructure.Core.Strategy.ExactExecution`
@@ -1815,7 +2179,7 @@ Type
 {Residual : Type uResidual} →
   [inst : Core.Residual.RefinementSystem Residual] →
     [inst_1 : Core.Residual.FactSystem Residual] →
-      Core.Strategy.FactManifest Residual → Type (max (max uKey uResidual) (uValue + 2))
+      Core.Strategy.FactRequirements Residual → Type (max (max uKey uResidual) (uValue + 2))
 ```
 
 #### `Hypostructure.Core.Strategy.FactInputs.current`
@@ -1829,7 +2193,7 @@ Type
 {Residual : Type uResidual} →
   [inst : Core.Residual.RefinementSystem Residual] →
     [inst_1 : Core.Residual.FactSystem Residual] →
-      {manifest : Core.Strategy.FactManifest Residual} → Core.Strategy.FactInputs manifest → Residual
+      {requirements : Core.Strategy.FactRequirements Residual} → Core.Strategy.FactInputs requirements → Residual
 ```
 
 #### `Hypostructure.Core.Strategy.FactInputs.get`
@@ -1843,10 +2207,10 @@ Type
 {Residual : Type uResidual} →
   [inst : Core.Residual.RefinementSystem Residual] →
     [inst_1 : Core.Residual.FactSystem Residual] →
-      {manifest : Core.Strategy.FactManifest Residual} →
-        (inputs : Core.Strategy.FactInputs manifest) →
+      {requirements : Core.Strategy.FactRequirements Residual} →
+        (inputs : Core.Strategy.FactInputs requirements) →
           (key : Core.Residual.FactKey Residual) →
-            [Core.Residual.FactKeys.Has key manifest.Requires] → key.At inputs.current
+            [Core.Residual.FactKeys.Has key requirements.Requires] → key.At inputs.current
 ```
 
 #### `Hypostructure.Core.Strategy.FactKeys.Available`
@@ -1920,19 +2284,6 @@ Type
     [inst_1 : Core.Residual.FactSystem Residual] → Core.Strategy.FactManifest Residual → Core.Residual.FactKeys Residual
 ```
 
-#### `Hypostructure.Core.Strategy.FactManifest.Requires`
-
-- Category: Canonical manifest
-- Kind: `definition`
-- Source: `Hypostructure/Core/Strategy/FactManifest.lean`
-- Compiled type:
-
-```lean
-{Residual : Type uResidual} →
-  [inst : Core.Residual.RefinementSystem Residual] →
-    [inst_1 : Core.Residual.FactSystem Residual] → Core.Strategy.FactManifest Residual → Core.Residual.FactKeys Residual
-```
-
 #### `Hypostructure.Core.Strategy.FactManifest.mk`
 
 - Category: Canonical manifest
@@ -1944,8 +2295,9 @@ Type
 {Residual : Type uResidual} →
   [inst : Core.Residual.RefinementSystem Residual] →
     [inst_1 : Core.Residual.FactSystem Residual] →
-      (Requires Produces : Core.Residual.FactKeys Residual) →
-        List.Nodup Requires → List.Nodup Produces → Produces ≠ [] → Core.Strategy.FactManifest Residual
+      Core.Strategy.FactRequirements Residual →
+        (Produces : Core.Residual.FactKeys Residual) →
+          List.Nodup Produces → Produces ≠ [] → Core.Strategy.FactManifest Residual
 ```
 
 #### `Hypostructure.Core.Strategy.FactManifest.producedNames`
@@ -1998,7 +2350,61 @@ Type
     [inst_1 : Core.Residual.FactSystem Residual] → Core.Strategy.FactManifest Residual → List Name
 ```
 
-#### `Hypostructure.Core.Strategy.FactManifest.requiresUnique`
+#### `Hypostructure.Core.Strategy.FactManifest.toFactRequirements`
+
+- Category: Canonical manifest
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/FactManifest.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      Core.Strategy.FactManifest Residual → Core.Strategy.FactRequirements Residual
+```
+
+#### `Hypostructure.Core.Strategy.FactRequirements`
+
+- Category: Canonical manifest
+- Kind: `inductive`
+- Source: `Hypostructure/Core/Strategy/FactManifest.lean`
+- Compiled type:
+
+```lean
+(Residual : Type uResidual) →
+  [inst : Core.Residual.RefinementSystem Residual] → [Core.Residual.FactSystem Residual] → Type uKey
+```
+
+#### `Hypostructure.Core.Strategy.FactRequirements.Requires`
+
+- Category: Canonical manifest
+- Kind: `definition`
+- Source: `Hypostructure/Core/Strategy/FactManifest.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      Core.Strategy.FactRequirements Residual → Core.Residual.FactKeys Residual
+```
+
+#### `Hypostructure.Core.Strategy.FactRequirements.mk`
+
+- Category: Canonical manifest
+- Kind: `constructor`
+- Source: `Hypostructure/Core/Strategy/FactManifest.lean`
+- Compiled type:
+
+```lean
+{Residual : Type uResidual} →
+  [inst : Core.Residual.RefinementSystem Residual] →
+    [inst_1 : Core.Residual.FactSystem Residual] →
+      (Requires : Core.Residual.FactKeys Residual) → List.Nodup Requires → Core.Strategy.FactRequirements Residual
+```
+
+#### `Hypostructure.Core.Strategy.FactRequirements.requiresUnique`
 
 - Category: Canonical manifest
 - Kind: `theorem`
@@ -2007,7 +2413,8 @@ Type
 
 ```lean
 ∀ {Residual : Type uResidual} [inst : Core.Residual.RefinementSystem Residual]
-  [inst_1 : Core.Residual.FactSystem Residual] (self : Core.Strategy.FactManifest Residual), List.Nodup self.Requires
+  [inst_1 : Core.Residual.FactSystem Residual] (self : Core.Strategy.FactRequirements Residual),
+  List.Nodup self.Requires
 ```
 
 ### `Hypostructure.Core.Strategy.ProblemResidual`
@@ -2641,7 +3048,7 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
     [inst_1 : Core.Residual.FactSystem Residual] →
       Name →
         (manifest : Core.Strategy.FactManifest Residual) →
-          ((inputs : Core.Strategy.FactInputs manifest) →
+          ((inputs : Core.Strategy.FactInputs manifest.toFactRequirements) →
               Core.Residual.FactKeys.Values inputs.current manifest.Produces) →
             optParam ℕ 0 → optParam ℕ 0 → Core.Strategy.AtomicStrategy Residual
 ```
@@ -3461,6 +3868,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldAmbientCubicStubExcess`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldBranchClosed`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3473,6 +3891,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldCorridorState`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldExchangeBound`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -3604,7 +4033,40 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldHotFailureMass`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldPositiveGerm`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldSameInterfaceTable`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldSelectedBranchExcess`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -3759,6 +4221,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.fanCertificateResidual`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.fanCertificateResidualMass`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4265,6 +4738,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.route8TerminalNoGo`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.route8TerminalResidual`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4924,6 +5408,28 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeBExclusionResidualMass`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeBHandoff`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeBHeavyCentre`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4969,6 +5475,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeBOverlapObstruction`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeBOverlapObstructionMass`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5200,6 +5717,17 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Route8TerminalNoGo`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Route8TerminalResidual`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `definition`
@@ -6413,6 +6941,21 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
                           fanCertificateMarked ∉ known →
                             fanCertificateResidual ∉ known →
                               Core.Strategy.Decision fanCertificateMarked fanCertificateResidual previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.fanCertificateResidualMassRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCostRow`
@@ -9419,6 +9962,73 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                 previous
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.typeASaturatedHandoffSilentFromFirstExcessRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (typeAVisibleFirstExcess typeASaturatedHandoffSilent :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            typeAVisibleFirstExcess ≠ typeASaturatedHandoffSilent →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : typeAVisibleFirstExcess.At input),
+                  ∃ packing,
+                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                      (∀ (window : Finset input.object.Vertex),
+                          Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
+                            ∃ member ∈ packing, ¬Disjoint window member) ∧
+                        ∃
+                          component ∈
+                            Graph.FiniteObject.canonicalPieces input.object
+                              (Graph.FiniteObject.remainderSupport input.object packing),
+                          have piece :=
+                            Graph.FiniteObject.pieceSupport input.object
+                              (Graph.FiniteObject.remainderSupport input.object packing) component;
+                          Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold data.dischargeScale ∧
+                            Graph.FiniteObject.ambientSurplus input.object piece data.threshold = 0 ∧
+                              ∃ receiver,
+                                Graph.FiniteObject.IsReceiver input.object piece data.threshold receiver ∧
+                                  Graph.FiniteObject.Saturated input.object piece data.threshold data.dischargeScale
+                                      receiver ∧
+                                    Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold data.dischargeScale
+                                      receiver ∅) →
+                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                    (∃ packing,
+                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
+                          (∀ (window : Finset input.object.Vertex),
+                              Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
+                                ∃ member ∈ packing, ¬Disjoint window member) ∧
+                            ∃
+                              component ∈
+                                Graph.FiniteObject.canonicalPieces input.object
+                                  (Graph.FiniteObject.remainderSupport input.object packing),
+                              have piece :=
+                                Graph.FiniteObject.pieceSupport input.object
+                                  (Graph.FiniteObject.remainderSupport input.object packing) component;
+                              Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold
+                                  data.dischargeScale ∧
+                                Graph.FiniteObject.ambientSurplus input.object piece data.threshold = 0 ∧
+                                  ∃ receiver,
+                                    Graph.FiniteObject.IsReceiver input.object piece data.threshold receiver ∧
+                                      ∃
+                                        peeled ⊆
+                                          Graph.FiniteObject.routedLoads input.object piece data.threshold receiver,
+                                        Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale receiver
+                                            peeled ∧
+                                          Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold data.dischargeScale
+                                            receiver peeled) →
+                      typeASaturatedHandoffSilent.At input) →
+                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.typeASaturatedHandoffSplitDichotomy`
 
 - Category: Minimum-degree cycle spine rows
@@ -10033,6 +10643,36 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                               typeAVisibleEntry ∉ known →
                                 typeAVisibleFirstExcess ∉ known →
                                   Core.Strategy.Decision typeAVisibleEntry typeAVisibleFirstExcess previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.typeBExclusionResidualMassRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.typeBOverlapObstructionMassRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.typeSplitDichotomy`

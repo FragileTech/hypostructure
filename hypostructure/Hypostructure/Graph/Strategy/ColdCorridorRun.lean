@@ -56,6 +56,21 @@ abbrev coldKeys
     K .coldGermDistinguished :: K .coldGermRealized ::
     K .coldSameInterfaceTable :: K .coldCorridorState :: known
 
+/-- The key index after the cold rows have proved the no-terminal fact, before
+the framework-owned closure entry is appended. -/
+abbrev coldBranchClosedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .coldBranchClosed :: K .coldGermRouted ::
+    K .coldPositiveGerm :: K .coldGermExtraction ::
+    K .coldHandoffTransfer :: K .coldAmbientCubicStubExcess ::
+    K .coldSelectedBranchExcess :: K .coldHotFailureMass ::
+    K .coldWindowLedgerSplit :: K .coldExchangeBound :: K .coldFailureRouting ::
+    K .coldFailureHandoff :: K .coldFailureCompression ::
+    K .coldFailureDefect :: K .coldFailureCycle :: K .coldGermSilent ::
+    K .coldGermDistinguished :: K .coldGermRealized ::
+    K .coldSameInterfaceTable :: K .coldCorridorState :: known
+
 /-- **The cold corridor ledger prefix, run.**
 
 The cold rows are composed by `AtomicCT.run`, which appends each row's declared
@@ -63,7 +78,7 @@ productions to the incoming index while retaining the literal ancestry.  The
 output index is the incoming one with the cold facts on top, so every earlier
 ledger fact remains readable and no cold fact can be read by a branch that did
 not run this prefix. -/
-noncomputable def runCold
+noncomputable def runColdBranchClosed
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
@@ -77,7 +92,6 @@ noncomputable def runCold
     [FactKeys.Has (K (data := data) .sparsePressureNearCubic) known]
     [FactKeys.Has (K (data := data) .typeBExcluded) known]
     [FactKeys.Has (K (data := data) .route8TerminalNoGo) known]
-    [FactKeys.Has (K (data := data) .coldTerminalResidual) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
     (stateFresh : K (data := data) .coldCorridorState ∉ known)
@@ -99,22 +113,9 @@ noncomputable def runCold
     (extractionFresh : K (data := data) .coldGermExtraction ∉ known)
     (positiveFresh : K (data := data) .coldPositiveGerm ∉ known)
     (routedFresh : K (data := data) .coldGermRouted ∉ known)
-    (branchClosedFresh : K (data := data) .coldBranchClosed ∉ known)
-    (closureFresh :
-      closed (BranchState := BranchState) (Presentation := Presentation)
-        (presentation := presentation) (data := data) ∉
-        K .coldBranchClosed :: K .coldGermRouted ::
-          K .coldPositiveGerm :: K .coldGermExtraction ::
-          K .coldHandoffTransfer :: K .coldAmbientCubicStubExcess ::
-          K .coldSelectedBranchExcess :: K .coldHotFailureMass ::
-          K .coldWindowLedgerSplit :: K .coldExchangeBound ::
-          K .coldFailureRouting :: K .coldFailureHandoff ::
-          K .coldFailureCompression :: K .coldFailureDefect ::
-          K .coldFailureCycle :: K .coldGermSilent ::
-          K .coldGermDistinguished :: K .coldGermRealized ::
-          K .coldSameInterfaceTable :: K .coldCorridorState :: known) :
+    (branchClosedFresh : K (data := data) .coldBranchClosed ∉ known) :
     ExactLedger (Input BranchState Presentation presentation data) current
-      (coldKeys known) := by
+      (coldBranchClosedKeys known) := by
   classical
   -- The cut-state first: it requires nothing, and the three later cold rows
   -- read it.
@@ -257,6 +258,64 @@ noncomputable def runCold
       subst isNew
       revert isOld
       simp [branchClosedFresh])
+  exact afterBranchClosed
+
+/-- **The cold corridor ledger prefix, run and closed at the terminal oval.**
+
+After the cold rows append `K .coldBranchClosed`, the framework-owned closure
+entry is appended only when the incoming branch also carries the ordinary
+positive terminal-residual fact `K .coldTerminalResidual`. -/
+noncomputable def runCold
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .selection) known]
+    [FactKeys.Has (K (data := data) .uncompressible) known]
+    [FactKeys.Has (K (data := data) .windowPackageCollided) known]
+    [FactKeys.Has (K (data := data) .densityCap) known]
+    [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
+    [FactKeys.Has (K (data := data) .negativeSupport) known]
+    [FactKeys.Has (K (data := data) .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K (data := data) .spineSurplusEstimate) known]
+    [FactKeys.Has (K (data := data) .sparsePressureNearCubic) known]
+    [FactKeys.Has (K (data := data) .typeBExcluded) known]
+    [FactKeys.Has (K (data := data) .route8TerminalNoGo) known]
+    [FactKeys.Has (K (data := data) .coldTerminalResidual) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (stateFresh : K (data := data) .coldCorridorState ∉ known)
+    (tableFresh : K (data := data) .coldSameInterfaceTable ∉ known)
+    (realizedFresh : K (data := data) .coldGermRealized ∉ known)
+    (distinguishedFresh : K (data := data) .coldGermDistinguished ∉ known)
+    (silentFresh : K (data := data) .coldGermSilent ∉ known)
+    (cycleFresh : K (data := data) .coldFailureCycle ∉ known)
+    (defectFresh : K (data := data) .coldFailureDefect ∉ known)
+    (compressionFresh : K (data := data) .coldFailureCompression ∉ known)
+    (handoffFresh : K (data := data) .coldFailureHandoff ∉ known)
+    (routingFresh : K (data := data) .coldFailureRouting ∉ known)
+    (exchangeFresh : K (data := data) .coldExchangeBound ∉ known)
+    (windowSplitFresh : K (data := data) .coldWindowLedgerSplit ∉ known)
+    (hotMassFresh : K (data := data) .coldHotFailureMass ∉ known)
+    (selectedExcessFresh : K (data := data) .coldSelectedBranchExcess ∉ known)
+    (ambientStubFresh : K (data := data) .coldAmbientCubicStubExcess ∉ known)
+    (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
+    (extractionFresh : K (data := data) .coldGermExtraction ∉ known)
+    (positiveFresh : K (data := data) .coldPositiveGerm ∉ known)
+    (routedFresh : K (data := data) .coldGermRouted ∉ known)
+    (branchClosedFresh : K (data := data) .coldBranchClosed ∉ known)
+    (closureFresh :
+      closed (BranchState := BranchState) (Presentation := Presentation)
+        (presentation := presentation) (data := data) ∉
+        coldBranchClosedKeys known) :
+    ExactLedger (Input BranchState Presentation presentation data) current
+      (coldKeys known) := by
+  classical
+  have afterBranchClosed :=
+    runColdBranchClosed (data := data) history
+      stateFresh tableFresh realizedFresh distinguishedFresh silentFresh
+      cycleFresh defectFresh compressionFresh handoffFresh routingFresh
+      exchangeFresh windowSplitFresh hotMassFresh selectedExcessFresh
+      ambientStubFresh transferFresh extractionFresh positiveFresh routedFresh
+      branchClosedFresh
   exact closeIncompatible afterBranchClosed (K .coldTerminalResidual)
     (K .coldBranchClosed) (by
       simpa using closureFresh)

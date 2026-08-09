@@ -375,8 +375,7 @@ noncomputable instance instIncompatibleAtomCompression :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .atomCompression) where
   contradiction := fun residual selected compression =>
-    not_branchDCertificate residual.object residual.baseline
-      residual.branchState selected.down.1 selected.down.2
+    not_branchDCertificate residual selected.down.1 selected.down.2
       (by
         obtain ⟨packing, valid, quotient, certified, _complete, _inside⟩ :=
           compression.down
@@ -386,8 +385,7 @@ noncomputable instance instIncompatibleProperDelocalization :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .properDelocalization) where
   contradiction := fun residual selected smearing =>
-    not_branchDCertificate residual.object residual.baseline
-      residual.branchState selected.down.1 selected.down.2
+    not_branchDCertificate residual selected.down.1 selected.down.2
       (by
         obtain ⟨packing, valid, quotient, certified, _complete, _outside,
           _proper⟩ := smearing.down
@@ -401,23 +399,21 @@ noncomputable instance instIncompatibleGlobalBarrier :
     -- the one place `lem:no-silent-global-smearing`'s disjunction is consumed,
     -- and the row that produced it is the one place it was derived.
     obtain ⟨_packing, _valid, _quotient, _certified, reading⟩ := barrier.down
-    exact not_globalBarrierReading residual.baseline residual.branchState
-      selected.down.1 selected.down.2 reading
+    exact not_globalBarrierReading residual selected.down.1 selected.down.2 reading
 
 noncomputable instance instIncompatibleTypeAExitSixProper :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .typeAExitSixProper) where
   contradiction := fun residual selected proper => by
     obtain ⟨_support, replacement⟩ := proper.down
-    exact not_globalBarrierReading residual.baseline residual.branchState
-      selected.down.1 selected.down.2 (Or.inl replacement)
+    exact not_globalBarrierReading residual selected.down.1 selected.down.2
+      (Or.inl replacement)
 
 noncomputable instance instIncompatibleTypeAExitSixGlobal :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .typeAExitSixGlobal) where
   contradiction := fun residual selected global => by
-    exact not_globalBarrierReading residual.baseline residual.branchState
-      selected.down.1 selected.down.2
+    exact not_globalBarrierReading residual selected.down.1 selected.down.2
       (support := (∅ : Finset residual.object.Vertex)) (Or.inr global.down)
 
 /-- **The node-`[72]` closing arm is uninhabited**, at the spine's own keys.
@@ -445,10 +441,11 @@ noncomputable instance instIncompatibleTypeBExcluded :
     Incompatible (Input BranchState Presentation presentation data)
       (K .typeBDisjointLedger) (K .typeBExcluded) where
   contradiction := fun residual ledgerFact excluded => by
-    obtain ⟨packing, _valid, _maximal, canonicalPiece, negative, _positive,
-      ledger, exact, _componentFacts, _groupedCoverage⟩ := ledgerFact.down
+    obtain ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+      ledger, exact, componentFacts, _groupedCoverage⟩ := ledgerFact.down
     have nonnegative :=
-      excluded.down packing canonicalPiece ledger exact
+      excluded.down packing valid maximal canonicalPiece negative positive ledger
+        exact componentFacts
     exact ((residual.object.not_negativeNetCharge_iff canonicalPiece.vertices
       data.threshold data.dischargeScale).mpr nonnegative) negative
 
@@ -475,7 +472,7 @@ noncomputable instance instImpossibleContextDefect :
     Impossible (Input BranchState Presentation presentation data)
       (K .contextDefect) where
   contradiction := fun residual value =>
-    not_contextDefect (data := data) residual.object value.down
+    not_contextDefect (data := data) residual value.down
 
 /-- **The node-`[54]` terminal is uninhabited**, at the spine's own keys.
 

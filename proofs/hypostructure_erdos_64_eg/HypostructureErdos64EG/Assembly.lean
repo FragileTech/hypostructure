@@ -1421,6 +1421,51 @@ theorem selectedWindowOverload_typeBHandoff
   (ExactLedger.get (selectedWindowOverloadBottleneckRouting history)
     (K .typeBHandoff)).down
 
+/-- Nodes `[140]`--`[144]`, window-overload bottleneck arm through the Type B
+bridge-mass ledger row. -/
+noncomputable def selectedWindowOverloadBridgeMassHistory
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .windowClassOverload, K .sparsePressureOverload,
+        K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
+        K .capacityTokenLedger, K .canonicalPairLedger,
+        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) := by
+  let routed := selectedWindowOverloadBottleneckRouting history
+  exact
+    (bridgeFanMass (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      (K .typeBHandoff) (by simp [K_eq_iff])).run routed
+      (by simp [selectedWindowOverloadBottleneckRouting, K_eq_iff])
+
+/-- Nodes `[140]`--`[144]`, window-overload bottleneck arm through the Type B
+bridge-mass ledger fact. -/
+noncomputable def selectedWindowOverload_bridgeMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .windowClassOverload, K .sparsePressureOverload,
+        K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
+        K .capacityTokenLedger, K .canonicalPairLedger,
+        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    (K (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      .typeBBridgeMass).At selected := by
+  exact ExactLedger.get (selectedWindowOverloadBridgeMassHistory history)
+    (K .typeBBridgeMass)
+
 /-- Nodes `[142]`--`[144]`, remainder-overload arm reduced to bottleneck routing. -/
 noncomputable def selectedRemainderOverloadBottleneckRouting
     {selected : EGInput.{u}}
@@ -1477,6 +1522,53 @@ theorem selectedRemainderOverload_typeBHandoff
   (ExactLedger.get (selectedRemainderOverloadBottleneckRouting history)
     (K .typeBHandoff)).down
 
+/-- Nodes `[142]`--`[144]`, remainder-overload bottleneck arm through the Type B
+bridge-mass ledger row. -/
+noncomputable def selectedRemainderOverloadBridgeMassHistory
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .remainderClassOverload, K .windowClassAbsent,
+        K .sparsePressureOverload, K .roleFibrePartition,
+        K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
+        K .canonicalPairLedger, K .canonicalBlockerRoute,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) := by
+  let routed := selectedRemainderOverloadBottleneckRouting history
+  exact
+    (bridgeFanMass (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      (K .typeBHandoff) (by simp [K_eq_iff])).run routed
+      (by simp [selectedRemainderOverloadBottleneckRouting, K_eq_iff])
+
+/-- Nodes `[142]`--`[144]`, remainder-overload bottleneck arm through the Type B
+bridge-mass ledger fact. -/
+noncomputable def selectedRemainderOverload_bridgeMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .remainderClassOverload, K .windowClassAbsent,
+        K .sparsePressureOverload, K .roleFibrePartition,
+        K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
+        K .canonicalPairLedger, K .canonicalBlockerRoute,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    (K (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      .typeBBridgeMass).At selected := by
+  exact ExactLedger.get (selectedRemainderOverloadBridgeMassHistory history)
+    (K .typeBBridgeMass)
+
 /-- Nodes `[143]`--`[144]`, primitive-overload arm reduced to bottleneck routing. -/
 noncomputable def selectedPrimitiveOverloadBottleneckRouting
     {selected : EGInput.{u}}
@@ -1532,6 +1624,53 @@ theorem selectedPrimitiveOverload_typeBHandoff
       spineData.windowOrder :=
   (ExactLedger.get (selectedPrimitiveOverloadBottleneckRouting history)
     (K .typeBHandoff)).down
+
+/-- Nodes `[143]`--`[144]`, primitive-overload bottleneck arm through the Type B
+bridge-mass ledger row. -/
+noncomputable def selectedPrimitiveOverloadBridgeMassHistory
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .remainderClassAbsent, K .windowClassAbsent,
+        K .sparsePressureOverload, K .roleFibrePartition,
+        K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
+        K .canonicalPairLedger, K .canonicalBlockerRoute,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) := by
+  let routed := selectedPrimitiveOverloadBottleneckRouting history
+  exact
+    (bridgeFanMass (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      (K .typeBHandoff) (by simp [K_eq_iff])).run routed
+      (by simp [selectedPrimitiveOverloadBottleneckRouting, K_eq_iff])
+
+/-- Nodes `[143]`--`[144]`, primitive-overload bottleneck arm through the Type B
+bridge-mass ledger fact. -/
+noncomputable def selectedPrimitiveOverload_bridgeMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .remainderClassAbsent, K .windowClassAbsent,
+        K .sparsePressureOverload, K .roleFibrePartition,
+        K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
+        K .canonicalPairLedger, K .canonicalBlockerRoute,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    (K (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      .typeBBridgeMass).At selected := by
+  exact ExactLedger.get (selectedPrimitiveOverloadBridgeMassHistory history)
+    (K .typeBBridgeMass)
 
 /-- Nodes `[125]`--`[139]`, strict separated surplus through the window-class split. -/
 noncomputable def selectedStrictSeparatedWindowClassDichotomy
@@ -1602,6 +1741,29 @@ theorem selectedStrictSeparated_typeBHandoff
           selectedRemainderOverload_typeBHandoff remainderHistory
       | .right remainderAbsentHistory =>
           selectedPrimitiveOverload_typeBHandoff remainderAbsentHistory
+
+/-- Nodes `[125]`--`[144]`, strict separated surplus branch through Type B
+bridge mass. -/
+noncomputable def selectedStrictSeparated_bridgeMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    (K (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      .typeBBridgeMass).At selected := by
+  match selectedStrictSeparatedWindowClassDichotomy history with
+  | .left windowHistory =>
+      exact selectedWindowOverload_bridgeMass windowHistory
+  | .right windowAbsentHistory =>
+      match selectedRemainderClassDichotomy windowAbsentHistory with
+      | .left remainderHistory =>
+          exact selectedRemainderOverload_bridgeMass remainderHistory
+      | .right remainderAbsentHistory =>
+          exact selectedPrimitiveOverload_bridgeMass remainderAbsentHistory
 
 /-- Node `[21]`, on the near-cubic arm of node `[19]`. -/
 noncomputable def selectedWindowPackageDichotomy
@@ -6645,7 +6807,7 @@ noncomputable def selectedLowEntropyTypeBCertificateResidualMass
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .fanCertificateResidual,
+      [K .fanCertificateResidualMass, K .fanCertificateResidual,
         K .fanCertificateCap, K .typeBLocalDichotomy,
         K .typeBHeavyCentre, K .highCentreNormalForm,
         K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
@@ -6658,10 +6820,9 @@ noncomputable def selectedLowEntropyTypeBCertificateResidualMass
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (fanCertificateResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .fanCertificateResidual) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[72]`, direct-cycle split on the low-entropy Type B heavy marked arm. -/
@@ -6844,7 +7005,7 @@ noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBOverlapObstruction,
+      [K .typeBOverlapObstructionMass, K .typeBOverlapObstruction,
         K .typeBDirectCycleFree, K .fanCertificateMarked,
         K .fanCertificateCap, K .typeBLocalDichotomy,
         K .typeBHeavyCentre, K .highCentreNormalForm,
@@ -6858,10 +7019,9 @@ noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (typeBOverlapObstructionMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[71]`, certificate split on the high-entropy Type B heavy arm. -/
@@ -6947,7 +7107,7 @@ noncomputable def selectedHighEntropyTypeBCertificateResidualMass
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .fanCertificateResidual,
+      [K .fanCertificateResidualMass, K .fanCertificateResidual,
         K .fanCertificateCap, K .typeBLocalDichotomy,
         K .typeBHeavyCentre, K .highCentreNormalForm,
         K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
@@ -6961,10 +7121,9 @@ noncomputable def selectedHighEntropyTypeBCertificateResidualMass
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (fanCertificateResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .fanCertificateResidual) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[72]`, direct-cycle split on the high-entropy Type B heavy marked arm. -/
@@ -7150,7 +7309,7 @@ noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBOverlapObstruction,
+      [K .typeBOverlapObstructionMass, K .typeBOverlapObstruction,
         K .typeBDirectCycleFree, K .fanCertificateMarked,
         K .fanCertificateCap, K .typeBLocalDichotomy,
         K .typeBHeavyCentre, K .highCentreNormalForm,
@@ -7165,10 +7324,9 @@ noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (typeBOverlapObstructionMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[80]`, certificate split on the low-entropy Type B degree-four arm. -/
@@ -7252,7 +7410,7 @@ noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .fanCertificateResidual,
+      [K .fanCertificateResidualMass, K .fanCertificateResidual,
         K .typeBDegreeFourProfile, K .fanCertificateCap,
         K .typeBDegreeFourCentres, K .highCentreNormalForm,
         K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
@@ -7265,10 +7423,9 @@ noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (fanCertificateResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .fanCertificateResidual) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[81]`, direct-cycle split on the low-entropy Type B degree-four marked arm. -/
@@ -7451,7 +7608,7 @@ noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBOverlapObstruction,
+      [K .typeBOverlapObstructionMass, K .typeBOverlapObstruction,
         K .typeBDirectCycleFree, K .fanCertificateMarked,
         K .typeBDegreeFourProfile, K .fanCertificateCap,
         K .typeBDegreeFourCentres, K .highCentreNormalForm,
@@ -7465,10 +7622,9 @@ noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (typeBOverlapObstructionMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[80]`, certificate split on the high-entropy Type B degree-four arm. -/
@@ -7554,7 +7710,7 @@ noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .fanCertificateResidual,
+      [K .fanCertificateResidualMass, K .fanCertificateResidual,
         K .typeBDegreeFourProfile, K .fanCertificateCap,
         K .typeBDegreeFourCentres, K .highCentreNormalForm,
         K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
@@ -7568,10 +7724,9 @@ noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (fanCertificateResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .fanCertificateResidual) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[81]`, direct-cycle split on the high-entropy Type B degree-four marked arm. -/
@@ -7757,7 +7912,7 @@ noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBOverlapObstruction,
+      [K .typeBOverlapObstructionMass, K .typeBOverlapObstruction,
         K .typeBDirectCycleFree, K .fanCertificateMarked,
         K .typeBDegreeFourProfile, K .fanCertificateCap,
         K .typeBDegreeFourCentres, K .highCentreNormalForm,
@@ -7772,10 +7927,9 @@ noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (typeBOverlapObstructionMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Nodes `[74]`--`[76]`, B2-success charge ledger on the low-entropy heavy path. -/
@@ -7868,10 +8022,9 @@ noncomputable def selectedLowEntropyTypeBExclusionDichotomy
       (selectedLowEntropyTypeBB2ExclusionCharge history) :=
   typeBExclusionDichotomy (data := spineData)
     (selectedLowEntropyTypeBB2ExclusionCharge history)
-    (K .typeBDisjointLedger) (K .typeBRemainingCoreNonnegative)
-    (K .typeBExclusionResidual)
     (fun core => ⟨core⟩)
     (fun residual => ⟨residual⟩)
+    (fun ledger => ledger.down)
     (by
       simp [selectedLowEntropyTypeBB2ExclusionCharge, typeBExclusionCharge,
         typeBSelectedFanCharge, disjointPostLedgerComponents, hybridEntry,
@@ -8042,10 +8195,9 @@ noncomputable def selectedHighEntropyTypeBExclusionDichotomy
       (selectedHighEntropyTypeBB2ExclusionCharge history) :=
   typeBExclusionDichotomy (data := spineData)
     (selectedHighEntropyTypeBB2ExclusionCharge history)
-    (K .typeBDisjointLedger) (K .typeBRemainingCoreNonnegative)
-    (K .typeBExclusionResidual)
     (fun core => ⟨core⟩)
     (fun residual => ⟨residual⟩)
+    (fun ledger => ledger.down)
     (by
       simp [selectedHighEntropyTypeBB2ExclusionCharge, typeBExclusionCharge,
         typeBSelectedFanCharge, disjointPostLedgerComponents, hybridEntry,
@@ -8218,10 +8370,9 @@ noncomputable def selectedLowEntropyDegreeFourExclusionDichotomy
       (selectedLowEntropyDegreeFourB2ExclusionCharge history) :=
   typeBExclusionDichotomy (data := spineData)
     (selectedLowEntropyDegreeFourB2ExclusionCharge history)
-    (K .typeBDisjointLedger) (K .typeBRemainingCoreNonnegative)
-    (K .typeBExclusionResidual)
     (fun core => ⟨core⟩)
     (fun residual => ⟨residual⟩)
+    (fun ledger => ledger.down)
     (by
       simp [selectedLowEntropyDegreeFourB2ExclusionCharge,
         typeBExclusionCharge, typeBSelectedFanCharge,
@@ -8393,10 +8544,9 @@ noncomputable def selectedHighEntropyDegreeFourExclusionDichotomy
       (selectedHighEntropyDegreeFourB2ExclusionCharge history) :=
   typeBExclusionDichotomy (data := spineData)
     (selectedHighEntropyDegreeFourB2ExclusionCharge history)
-    (K .typeBDisjointLedger) (K .typeBRemainingCoreNonnegative)
-    (K .typeBExclusionResidual)
     (fun core => ⟨core⟩)
     (fun residual => ⟨residual⟩)
+    (fun ledger => ledger.down)
     (by
       simp [selectedHighEntropyDegreeFourB2ExclusionCharge,
         typeBExclusionCharge, typeBSelectedFanCharge,
@@ -8501,7 +8651,7 @@ noncomputable def selectedLowEntropyTypeBExclusionResidualMass
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBExclusionResidual,
+      [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
         K .typeBExclusionCharge, K .typeBSelectedFanCharge,
         K .typeBDisjointLedger, K .typeBHybridEntry,
         K .typeBB2Choice, K .typeBDirectCycleFree,
@@ -8518,10 +8668,9 @@ noncomputable def selectedLowEntropyTypeBExclusionResidualMass
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (typeBExclusionResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .typeBExclusionResidual) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[76]`, bridge mass on the high-entropy heavy B2 residual arm. -/
@@ -8546,7 +8695,7 @@ noncomputable def selectedHighEntropyTypeBExclusionResidualMass
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBExclusionResidual,
+      [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
         K .typeBExclusionCharge, K .typeBSelectedFanCharge,
         K .typeBDisjointLedger, K .typeBHybridEntry,
         K .typeBB2Choice, K .typeBDirectCycleFree,
@@ -8563,10 +8712,9 @@ noncomputable def selectedHighEntropyTypeBExclusionResidualMass
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (typeBExclusionResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .typeBExclusionResidual) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[85]`, bridge mass on the low-entropy degree-four B2 residual arm. -/
@@ -8590,7 +8738,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidualMass
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBExclusionResidual,
+      [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
         K .typeBExclusionCharge, K .typeBSelectedFanCharge,
         K .typeBDisjointLedger, K .typeBHybridEntry,
         K .typeBB2Choice, K .typeBDirectCycleFree,
@@ -8607,10 +8755,9 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidualMass
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (typeBExclusionResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .typeBExclusionResidual) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Node `[85]`, bridge mass on the high-entropy degree-four B2 residual arm. -/
@@ -8635,7 +8782,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidualMass
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBExclusionResidual,
+      [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
         K .typeBExclusionCharge, K .typeBSelectedFanCharge,
         K .typeBDisjointLedger, K .typeBHybridEntry,
         K .typeBB2Choice, K .typeBDirectCycleFree,
@@ -8652,10 +8799,9 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidualMass
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (bridgeFanMass (BranchState := BranchState)
+  (typeBExclusionResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    (K .typeBExclusionResidual) (by simp [K_eq_iff])).run
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [K_eq_iff])
 
 /-- Nodes `[74]`--`[76]`, low-entropy heavy B2-success arm through bridge mass. -/
@@ -8677,7 +8823,7 @@ noncomputable def selectedLowEntropyTypeBExclusionMassAfterDichotomy
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBExclusionResidual,
+      [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
         K .typeBExclusionCharge, K .typeBSelectedFanCharge,
         K .typeBDisjointLedger, K .typeBHybridEntry,
         K .typeBB2Choice, K .typeBDirectCycleFree,
@@ -8716,7 +8862,7 @@ noncomputable def selectedHighEntropyTypeBExclusionMassAfterDichotomy
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBExclusionResidual,
+      [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
         K .typeBExclusionCharge, K .typeBSelectedFanCharge,
         K .typeBDisjointLedger, K .typeBHybridEntry,
         K .typeBB2Choice, K .typeBDirectCycleFree,
@@ -8755,7 +8901,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionMassAfterDichotomy
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBExclusionResidual,
+      [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
         K .typeBExclusionCharge, K .typeBSelectedFanCharge,
         K .typeBDisjointLedger, K .typeBHybridEntry,
         K .typeBB2Choice, K .typeBDirectCycleFree,
@@ -8794,7 +8940,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionMassAfterDichotomy
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .typeBBridgeMass, K .typeBExclusionResidual,
+      [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
         K .typeBExclusionCharge, K .typeBSelectedFanCharge,
         K .typeBDisjointLedger, K .typeBHybridEntry,
         K .typeBB2Choice, K .typeBDirectCycleFree,
@@ -8814,11 +8960,13 @@ noncomputable def selectedHighEntropyDegreeFourExclusionMassAfterDichotomy
   selectedHighEntropyDegreeFourExclusionResidualMass
     (selectedHighEntropyDegreeFourExclusionResidual history)
 
-noncomputable def selectedLowEntropyTypeBHeavy_bridgeMass
+/-- Node `[91]`, closing the unsaturated Type A arm using the registered
+incompatibility between the low-surplus support and its nonnegative discharge. -/
+noncomputable def selectedLowEntropyTypeAUnsaturatedCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .typeBHeavyCentre, K .highCentreNormalForm,
-        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+      [K .typeAUnsaturatedReceivers, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
@@ -8827,35 +8975,21 @@ noncomputable def selectedLowEntropyTypeBHeavy_bridgeMass
         K .densityCap, K .barrierCap, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
-    (K (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      .typeBBridgeMass).At selected := by
-  match selectedLowEntropyTypeBHeavyFanCertificateDichotomy history with
-  | .left markedHistory =>
-      match selectedLowEntropyTypeBB2AssignmentAfterDirectCycleDichotomy markedHistory with
-      | .left choiceHistory =>
-          exact
-            ExactLedger.get
-              (selectedLowEntropyTypeBExclusionMassAfterDichotomy choiceHistory)
-              (K .typeBBridgeMass)
-      | .right obstructionHistory =>
-          exact
-            ExactLedger.get
-              (selectedLowEntropyTypeBOverlapObstructionMass obstructionHistory)
-              (K .typeBBridgeMass)
-  | .right residualHistory =>
-      exact
-        ExactLedger.get
-          (selectedLowEntropyTypeBCertificateResidualMass residualHistory)
-          (K .typeBBridgeMass)
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let discharged := selectedLowEntropyTypeAUnsaturatedDischarge history
+  let closedHistory :=
+    closeIncompatible discharged (K .typeALowSurplus)
+      (K .typeAUnsaturatedDischarge) (by
+        simp [selectedLowEntropyTypeAUnsaturatedDischarge, K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
 
-noncomputable def selectedHighEntropyTypeBHeavy_bridgeMass
+/-- Node `[91]`, closing the high-entropy unsaturated Type A arm using the same
+ledger incompatibility. -/
+noncomputable def selectedHighEntropyTypeAUnsaturatedCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .typeBHeavyCentre, K .highCentreNormalForm,
-        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+      [K .typeAUnsaturatedReceivers, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
@@ -8865,104 +8999,13 @@ noncomputable def selectedHighEntropyTypeBHeavy_bridgeMass
         K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    (K (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      .typeBBridgeMass).At selected := by
-  match selectedHighEntropyTypeBHeavyFanCertificateDichotomy history with
-  | .left markedHistory =>
-      match selectedHighEntropyTypeBB2AssignmentAfterDirectCycleDichotomy markedHistory with
-      | .left choiceHistory =>
-          exact
-            ExactLedger.get
-              (selectedHighEntropyTypeBExclusionMassAfterDichotomy choiceHistory)
-              (K .typeBBridgeMass)
-      | .right obstructionHistory =>
-          exact
-            ExactLedger.get
-              (selectedHighEntropyTypeBOverlapObstructionMass obstructionHistory)
-              (K .typeBBridgeMass)
-  | .right residualHistory =>
-      exact
-        ExactLedger.get
-          (selectedHighEntropyTypeBCertificateResidualMass residualHistory)
-          (K .typeBBridgeMass)
-
-noncomputable def selectedLowEntropyDegreeFour_bridgeMass
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
-        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
-        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
-        K .largeBudgetResidual, K .remainderEntropyLow,
-        K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
-    (K (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      .typeBBridgeMass).At selected := by
-  match selectedLowEntropyDegreeFourProfileFanCertificateDichotomy history with
-  | .left markedHistory =>
-      match selectedLowEntropyDegreeFourB2AssignmentAfterDirectCycleDichotomy markedHistory with
-      | .left choiceHistory =>
-          exact
-            ExactLedger.get
-              (selectedLowEntropyDegreeFourExclusionMassAfterDichotomy choiceHistory)
-              (K .typeBBridgeMass)
-      | .right obstructionHistory =>
-          exact
-            ExactLedger.get
-              (selectedLowEntropyDegreeFourOverlapObstructionMass obstructionHistory)
-              (K .typeBBridgeMass)
-  | .right residualHistory =>
-      exact
-        ExactLedger.get
-          (selectedLowEntropyDegreeFourCertificateResidualMass residualHistory)
-          (K .typeBBridgeMass)
-
-noncomputable def selectedHighEntropyDegreeFour_bridgeMass
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
-        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
-        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
-        K .largeBudgetResidual, K .entropyPackageDemand,
-        K .remainderEntropyHigh, K .forcedCurvatureCost,
-        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    (K (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      .typeBBridgeMass).At selected := by
-  match selectedHighEntropyDegreeFourProfileFanCertificateDichotomy history with
-  | .left markedHistory =>
-      match selectedHighEntropyDegreeFourB2AssignmentAfterDirectCycleDichotomy markedHistory with
-      | .left choiceHistory =>
-          exact
-            ExactLedger.get
-              (selectedHighEntropyDegreeFourExclusionMassAfterDichotomy choiceHistory)
-              (K .typeBBridgeMass)
-      | .right obstructionHistory =>
-          exact
-            ExactLedger.get
-              (selectedHighEntropyDegreeFourOverlapObstructionMass obstructionHistory)
-              (K .typeBBridgeMass)
-  | .right residualHistory =>
-      exact
-        ExactLedger.get
-          (selectedHighEntropyDegreeFourCertificateResidualMass residualHistory)
-          (K .typeBBridgeMass)
+        K .selection]) : False := by
+  let discharged := selectedHighEntropyTypeAUnsaturatedDischarge history
+  let closedHistory :=
+    closeIncompatible discharged (K .typeALowSurplus)
+      (K .typeAUnsaturatedDischarge) (by
+        simp [selectedHighEntropyTypeAUnsaturatedDischarge, K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
 
 /-- Node `[125]`, appended on the cold corridor prefix before the cold oval. -/
 noncomputable def selectedColdSparseSurplusSurvivor
@@ -8990,6 +9033,37 @@ noncomputable def selectedColdSparseSurplusSurvivor
     history (by simp [K_eq_iff])
 
 /-- Cold corridor closed ledger after appending node `[125]` on the same ledger. -/
+noncomputable def selectedColdCorridorBranchClosedHistory
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .coldTerminalResidual, K .route8TerminalNoGo, K .typeBExcluded,
+        K .sparsePressureNearCubic, K .spineSurplusEstimate,
+        K .negativeSupport, K .largeBudgetResidual, K .densityCap,
+        K .windowPackageCollided, K .uncompressible, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      (coldBranchClosedKeys (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        [K .sparseSurplusSurvivor, K .coldTerminalResidual,
+          K .route8TerminalNoGo, K .typeBExcluded, K .sparsePressureNearCubic,
+          K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
+          K .densityCap, K .windowPackageCollided, K .uncompressible,
+          K .selection]) := by
+  let withSurvivor := selectedColdSparseSurplusSurvivor history
+  exact
+    runColdBranchClosed (data := spineData) withSurvivor
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+
+/-- Cold corridor closure after appending node `[125]` on the same ledger. -/
 noncomputable def selectedColdCorridorClosedHistory
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -9006,20 +9080,12 @@ noncomputable def selectedColdCorridorClosedHistory
           K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
           K .densityCap, K .windowPackageCollided, K .uncompressible,
           K .selection]) := by
-  let withSurvivor := selectedColdSparseSurplusSurvivor history
+  let afterBranchClosed := selectedColdCorridorBranchClosedHistory history
   exact
-    runCold (data := spineData) withSurvivor
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp)
+    closeIncompatible afterBranchClosed (K .coldTerminalResidual)
+      (K .coldBranchClosed) (by
+        dsimp [coldBranchClosedKeys]
+        simp)
 
 /-- Cold corridor closure after appending node `[125]` on the same ledger. -/
 noncomputable def selectedColdCorridorCloses

@@ -40,6 +40,15 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+noncomputable instance instIncompatibleRoute8TerminalResidualNoGo :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .route8TerminalResidual)
+      (K (data := data) .route8TerminalNoGo) where
+  contradiction := fun _input terminal noGo => by
+    obtain ⟨_pressure, _witnesses, presented, terminalContradiction⟩ :=
+      terminal.down
+    exact terminalContradiction (noGo.down.2.2 presented)
+
 /-! ## The row, at the spine's own keys
 
 The schema bridges are the identity on `PLift`: the spine's value at each
@@ -426,6 +435,11 @@ abbrev route8TerminalNoGoKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .route8TerminalNoGo :: route8PressureDescentKeys known
 
+abbrev route8TerminalClosedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  closed :: route8TerminalNoGoKeys known
+
 abbrev typeAExitFourReceiverDischargedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -600,6 +614,52 @@ noncomputable def runRoute8Tail
     subst isNew
     revert isOld
     simp [K_eq_iff, terminalFresh])
+
+noncomputable def runRoute8TailClosed
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .route8TerminalResidual) known]
+    [FactKeys.Has (K (data := data) .route8Residual) known]
+    [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
+    [FactKeys.Has (K (data := data) .typeAVisibleFirstExcess) known]
+    [FactKeys.Has (K (data := data) .typeAExitFourFiniteDescent) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (profileFresh : K (data := data) .route8ResidualProfile ∉ known)
+    (globalFresh : K (data := data) .route8GlobalSqueeze ∉ known)
+    (basinFresh : K (data := data) .route8BasinBurden ∉ known)
+    (deficitFresh : K (data := data) .route8LargeBudgetDeficit ∉ known)
+    (coreFresh : K (data := data) .route8CarrierCore ∉ known)
+    (smallFresh : K (data := data) .route8SmallCoreCollapse ∉ known)
+    (twoFresh : K (data := data) .route8TwoCarrierReduction ∉ known)
+    (witnessesFresh :
+      K (data := data) .route8CarrierDeletionWitnesses ∉ known)
+    (privateFresh : K (data := data) .route8PrivateCarrierBudget ∉ known)
+    (noTwoFresh :
+      K (data := data) .route8NoTwoCarrierContradiction ∉ known)
+    (pressureFresh : K (data := data) .route8PressureDescent ∉ known)
+    (terminalFresh : K (data := data) .route8TerminalNoGo ∉ known)
+    (closureFresh :
+      closed ∉
+        (K .route8TerminalNoGo :: K .route8PressureDescent ::
+          K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction ::
+          K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction ::
+          K .route8SmallCoreCollapse :: K .route8CarrierCore ::
+          K .route8BasinBurden :: K .route8LargeBudgetDeficit ::
+          K .route8GlobalSqueeze :: K .route8ResidualProfile :: known)) :
+    ExactLedger (Input BranchState Presentation presentation data) current
+      (closed :: K .route8TerminalNoGo :: K .route8PressureDescent ::
+        K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction ::
+        K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction ::
+        K .route8SmallCoreCollapse :: K .route8CarrierCore ::
+        K .route8BasinBurden :: K .route8LargeBudgetDeficit ::
+        K .route8GlobalSqueeze :: K .route8ResidualProfile :: known) := by
+  classical
+  have afterNoGo := runRoute8Tail (data := data) history profileFresh
+    globalFresh basinFresh deficitFresh coreFresh smallFresh twoFresh
+    witnessesFresh privateFresh noTwoFresh pressureFresh terminalFresh
+  exact closeIncompatible afterNoGo (K .route8TerminalResidual)
+    (K .route8TerminalNoGo) closureFresh
 
 noncomputable def runRoute8FromExitSevenFree
     {current : Input BranchState Presentation presentation data}
