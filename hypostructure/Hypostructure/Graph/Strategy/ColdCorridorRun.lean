@@ -5,7 +5,7 @@ import Hypostructure.Graph.Strategy.SpineAssembly
 # The cold return corridor, ledger prefix
 
 The rows of `ColdCorridorRows` publish concrete `Spine.Key` facts.  This module
-runs them in the manuscript's order against the one canonical `ExactLedger`,
+appends them in the manuscript's order to the one canonical `ExactLedger`,
 from the cut-state of `def:cold-corridor-first-failure` through the three arms
 of `lem:cold-bounded-germ-trichotomy` and the local cold-oval closure fact.
 
@@ -13,7 +13,7 @@ The block is entered only from a branch cursor whose key index already carries
 the surviving cold prefix: the selected counterexample, uncompressibility, the
 cold/collided window and density facts, the large-budget residual, the live
 negative-support path, the near-cubic spine estimate, and the Type B/route-8
-closures.  The runner does not reconstruct those facts or store a side object;
+closures.  The prefix does not reconstruct those facts or store a side object;
 it requires them in `known`, so the same full residual ancestry is retained
 while the cold facts are appended.
 
@@ -47,7 +47,10 @@ abbrev coldKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
   closed :: K .coldBranchClosed :: K .coldGermRouted ::
-    K .coldGermExtraction :: K .coldHandoffTransfer :: K .coldFailureRouting ::
+    K .coldPositiveGerm :: K .coldGermExtraction ::
+    K .coldHandoffTransfer :: K .coldAmbientCubicStubExcess ::
+    K .coldSelectedBranchExcess :: K .coldHotFailureMass ::
+    K .coldWindowLedgerSplit :: K .coldExchangeBound :: K .coldFailureRouting ::
     K .coldFailureHandoff :: K .coldFailureCompression ::
     K .coldFailureDefect :: K .coldFailureCycle :: K .coldGermSilent ::
     K .coldGermDistinguished :: K .coldGermRealized ::
@@ -87,15 +90,24 @@ noncomputable def runCold
     (compressionFresh : K (data := data) .coldFailureCompression ∉ known)
     (handoffFresh : K (data := data) .coldFailureHandoff ∉ known)
     (routingFresh : K (data := data) .coldFailureRouting ∉ known)
+    (exchangeFresh : K (data := data) .coldExchangeBound ∉ known)
+    (windowSplitFresh : K (data := data) .coldWindowLedgerSplit ∉ known)
+    (hotMassFresh : K (data := data) .coldHotFailureMass ∉ known)
+    (selectedExcessFresh : K (data := data) .coldSelectedBranchExcess ∉ known)
+    (ambientStubFresh : K (data := data) .coldAmbientCubicStubExcess ∉ known)
     (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
     (extractionFresh : K (data := data) .coldGermExtraction ∉ known)
+    (positiveFresh : K (data := data) .coldPositiveGerm ∉ known)
     (routedFresh : K (data := data) .coldGermRouted ∉ known)
     (branchClosedFresh : K (data := data) .coldBranchClosed ∉ known)
     (closureFresh :
       closed (BranchState := BranchState) (Presentation := Presentation)
         (presentation := presentation) (data := data) ∉
         K .coldBranchClosed :: K .coldGermRouted ::
-          K .coldGermExtraction :: K .coldHandoffTransfer ::
+          K .coldPositiveGerm :: K .coldGermExtraction ::
+          K .coldHandoffTransfer :: K .coldAmbientCubicStubExcess ::
+          K .coldSelectedBranchExcess :: K .coldHotFailureMass ::
+          K .coldWindowLedgerSplit :: K .coldExchangeBound ::
           K .coldFailureRouting :: K .coldFailureHandoff ::
           K .coldFailureCompression :: K .coldFailureDefect ::
           K .coldFailureCycle :: K .coldGermSilent ::
@@ -173,10 +185,45 @@ noncomputable def runCold
       subst isNew
       revert isOld
       simp [routingFresh])
+  have afterExchange :=
+    (coldExchangeBoundRow (data := data)).run afterRouting (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [exchangeFresh])
+  have afterWindowSplit :=
+    (coldWindowLedgerSplitRow (data := data)).run afterExchange (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [windowSplitFresh])
+  have afterHotMass :=
+    (coldHotFailureMassRow (data := data)).run afterWindowSplit (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [hotMassFresh])
+  have afterSelectedExcess :=
+    (coldSelectedBranchExcessRow (data := data)).run afterHotMass (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [selectedExcessFresh])
+  have afterAmbientStub :=
+    (coldAmbientCubicStubExcessRow (data := data)).run afterSelectedExcess (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [ambientStubFresh])
   -- Rows 57--61: the (F4) transfer, the (F5) extraction, and the remaining
   -- cold-germ routing fact.
   have afterTransfer :=
-    (coldHandoffTransferRow (data := data)).run afterRouting (by
+    (coldHandoffTransferRow (data := data)).run afterAmbientStub (by
       intro key isNew isOld
       simp only [List.mem_singleton] at isNew
       subst isNew
@@ -189,8 +236,15 @@ noncomputable def runCold
       subst isNew
       revert isOld
       simp [extractionFresh])
+  have afterPositive :=
+    (coldPositiveGermRow (data := data)).run afterExtraction (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [positiveFresh])
   have afterRouted :=
-    (coldGermRoutedRow (data := data)).run afterExtraction (by
+    (coldGermRoutedRow (data := data)).run afterPositive (by
       intro key isNew isOld
       simp only [List.mem_singleton] at isNew
       subst isNew

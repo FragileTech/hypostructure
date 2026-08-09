@@ -40,42 +40,22 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 
 ## Build status
 
-### 2026-08-09 generic continuation import and official theorem check
+### 2026-08-09 cold endpoint correction and official theorem check
 
-- `Hypostructure.Graph.Strategy.SpineContinuationRun` now imports the generic
-  end-to-end spine surface `Hypostructure.Graph.Strategy.SpineEndToEnd`, so the
-  minimal-counterexample scope opener and common prefix runner are checked by
-  ordinary package builds.
-- `lake build Hypostructure.Graph.Strategy.SpineContinuationRun` is green
-  (8727 jobs).  The new module adds no proof-specific carrier, side channel, or
-  local wrapper around Core closure; final contradiction elimination must use
-  `ExactLedger.elimClosed` directly at the framework-owned closure boundary.
-- `make erdos` is strict again: it first checks the currently declared
-  exact-ledger closure probes
-  `HypostructureErdos64EG.erdos_64_of_selectedContradiction` and
-  `Spine.closeColdTerminalBranch`, then requires the actual final export
-  `HypostructureErdos64EG.erdos_64 : OfficialStatement` and rejects `sorryAx`
-  in every axiom report.
-- The official theorem export is now written in
-  `HypostructureErdos64EG.lean` as the direct composition
-  `erdos_64_of_selectedContradiction Spine.selectedContradiction`.  The package
-  build now reaches the framework theorem source.  `Spine.selectedContradiction`
-  is wired as a single exact-ledger case tree through the selected prefix,
-  surplus split, sparse separated branch, homogeneous bottleneck split, and
-  at-or-below barrier/rank split.  It closes every branch with an existing
-  canonical closure row, and the kernel now fails exactly at the still-unwired
-  continuations:
-  `closeBottleneckRouted`, `closeSurplusAboveWindowCollided`,
-  `closeCurvatureFullRank`, and `closeSurplusAtOrBelowWindowCollided`.
-  The final unconditional theorem is not kernel-checked until those names are
-  replaced by real exact-ledger continuations that append the paper's next facts
-  and close on the same selected residual.
-- The remaining kernel-visible facts needed for that final join are still the
-  ordinary ledger facts described below for `thm:branch-kill`,
-  `thm:large-budget-route8-only`, and the cold terminal/survivor contradiction.
-  In particular, `route8TerminalNoGo` and `coldBranchClosed` are theorem
-  packages, not by themselves `False`; a final close must pair them with the
-  corresponding survivor/terminal facts already on the same active ledger.
+- The cold prefix consumes the surviving upstream ledger and appends the split
+  cold facts through `K .coldBranchClosed`, then appends Core's reserved
+  closure key by the canonical incompatibility between the incoming
+  `K .coldTerminalResidual` fact and the new no-terminal fact.
+- `lake build Hypostructure.Graph.Strategy.ColdCorridorRun
+  Hypostructure.Graph.Strategy.SpineContinuationRun` is green.  The cold fixture
+  audits the semantic facts, the reserved closure fact, exact chronological
+  commits, fact uniqueness, and the concrete `closeIncompatible` reason.
+- `make erdos` remains strict: it requires
+  `HypostructureErdos64EG.erdos_64 : OfficialStatement` and prints its axioms.
+  That declaration is not yet present.
+- The cold quantitative route from hot failure through cold mass, stub excess,
+  first-failure extraction, and positive bounded-germ production is now
+  committed as ordinary ledger facts before `coldBranchClosed`.
 
 ### 2026-08-08 OOM repair and canonical endpoint check
 
@@ -708,11 +688,9 @@ bookkeeping; the first is not:
 > of `factOnly` rows; each executor receives sealed `FactInputs`, reads
 > prerequisites by exact key, and appends declared facts to the same
 > `ExactLedger`.  The row declarations themselves name concrete `Spine.Key`
-> manifests; `runCold` is only a ledger-prefix composition, with no
-> `fact.down`/`PLift` adapter callbacks and no carrier installation layer.  It
-> appends fourteen ordinary cold facts, ending with `K .coldBranchClosed`, then
-> closes the active terminal cold branch by Core's `closeIncompatible` against
-> the incoming `K .coldTerminalResidual` fact on the same residual.
+> manifests, with no `fact.down`/`PLift` adapter callbacks and no carrier
+> installation layer.  The cold prefix appends ordinary cold facts through
+> `K .coldBranchClosed`, then Core's reserved closure fact.
 >
 > **Carrier cleanup.** The cold Strategy slice no longer exports a side object
 > for handoff routing, no longer exports a cold routing state object, and no
@@ -724,8 +702,8 @@ bookkeeping; the first is not:
 > `selection` and `uncompressible`; its type now requires the surviving cold
 > prefix facts, including the cold/collided window-density path,
 > `largeBudgetResidual`,
-> `negativeSupport`, `sparsePressureNearCubic`, `typeBExcluded`,
-> `route8TerminalNoGo`, and the positive branch fact
+> `negativeSupport`, `sparsePressureNearCubic`, `typeBExcluded`, and
+> `route8TerminalNoGo`, together with the incoming terminal-leaf fact
 > `coldTerminalResidual`.
 >
 > **Oval boundary.** Carrier-core information in the cold corridor is represented
@@ -733,17 +711,17 @@ bookkeeping; the first is not:
 > now reads the first-failure ledger fact and extracts only from vertex supports
 > of the current residual whose candidates are realized by current-object
 > bounded germs; the disjoint subfamily is existential inside that local fact.
-> `K .coldGermRouted` records the target-defect routing conclusion after G1,
-> G2, and G3 are read from the ledger.  `K .coldTerminalResidual` is the
-> ordinary key for the terminal cold branch entered from upstream.  `K
-> .coldBranchClosed` then records
-> `ColdCorridor.NoTerminalColdResidual` by reading the local extraction fact,
-> the routed length-changing fact, and the same-interface table fact from the
-> same ledger.  The two facts are registered as incompatible, and
-> `Spine.runCold` publishes only Core's reserved contradiction fact above the
-> same ledger.  `Spine.closeColdTerminalBranch` is the end-to-end closure
-> boundary: it consumes that full incoming exact ledger, runs the cold rows, and
-> eliminates the reserved `closed` key by `ExactLedger.elimClosed`.  There is no
+> `K .coldExchangeBound`, `K .coldWindowLedgerSplit`,
+> `K .coldHotFailureMass`, `K .coldSelectedBranchExcess`,
+> `K .coldAmbientCubicStubExcess`, and `K .coldPositiveGerm` record the
+> quantitative chain as separate ordinary facts.  `K .coldGermRouted` records
+> the target-defect routing conclusion after G1, G2, and G3 are read from the
+> ledger.  `K .coldBranchClosed` records `ColdCorridor.NoTerminalColdResidual`
+> by reading the local extraction fact, the positive-germ fact, the routed
+> length-changing fact, and the same-interface table fact from the same ledger.
+> `Spine.runCold` then closes the oval by `closeIncompatible` from the incoming
+> `K .coldTerminalResidual` fact and the appended `K .coldBranchClosed` fact,
+> adding Core's reserved closure fact to the same `ExactLedger`.  There is no
 > wrapper, side theorem bundle, or payload.
 >
 > **Build surface.** The active cold fixtures are the signature, ledger,
@@ -760,8 +738,12 @@ bookkeeping; the first is not:
 | 47 | (F3) producer | `ColdCorridor.Corridor.FirstFailureCompression` (`Spine.coldFailureCompression`) | ✅ | ✅ | ✅ | ✅ |
 | 48 | (F4) producer | `ColdCorridor.Corridor.FirstFailureHandoff` (`Spine.coldFailureHandoff`) | ✅ | ✅ | ✅ | ✅ |
 | 49 | (F4) membership | `ColdCorridor.Corridor.handoff_mem` (`Spine.coldFailureHandoff`) | ✅ | ✅ | ✅ | ✅ |
-| 50 | First-failure routing facts | `ColdCorridor.Corridor.exists_firstFailure` (`Spine.coldFailureRouting`) | ✅ | ✅ | ✅ | ✅ |
-| 51 | F5 bounded-germ residual facts | `ColdCorridor.BoundedGerm`, `Corridor.exchange_card_le` | ✅ | ✅ | ✅ | ✅ |
+| 50 | First-failure routing | `ColdCorridor.Corridor.exists_firstFailure` (`Spine.coldFailureRouting`) | ✅ | ✅ | ✅ | ✅ |
+| 51 | F5 exchange bound | `ColdCorridor.Corridor.exchange_card_le` (`Spine.coldExchangeBound`) | ✅ | ✅ | ✅ | ✅ |
+| 51a | Hot/cold window split | `ColdCorridor.coldCount_add_hotCount` (`Spine.coldWindowLedgerSplit`) | ✅ | ✅ | ✅ | ✅ |
+| 51b | Hot failure cold mass | `ColdCorridor.hotFailure_coldMass` (`Spine.coldHotFailureMass`) | ✅ | ✅ | ✅ | ✅ |
+| 51c | Selected branch excess | `ColdCorridor.selectedBranchExcess_length` (`Spine.coldSelectedBranchExcess`) | ✅ | ✅ | ✅ | ✅ |
+| 51d | Ambient-cubic stub excess | `ColdCorridor.branchExcess_ge_of_cubic` (`Spine.coldAmbientCubicStubExcess`) | ✅ | ✅ | ✅ | ✅ |
 | 52 | `[155]` G1 realizing | `Spine.coldGermRealizedRow` | ✅ | ✅ | ✅ | ✅ |
 | 53 | `[156]` G2 distinguishing | `Spine.coldGermDistinguishedRow` | ✅ | ✅ | ✅ | ✅ |
 | 54 | `[157]` G3 neutral | `Spine.coldGermSilentRow` | ✅ | ✅ | ✅ | ✅ |
@@ -769,9 +751,10 @@ bookkeeping; the first is not:
 | 56 | Core dispatch (F3) | `Spine.runCold` row composition | ✅ | ✅ | ✅ | ✅ |
 | 57 | (F4) dispatch arm | `ColdCorridor.Corridor.handoff_mem` (`Spine.coldHandoffTransfer`) | ✅ | ✅ | ✅ | ✅ |
 | 58 | (F5) extraction | current-object support extraction (`Spine.coldGermExtraction`) | ✅ | ✅ | ✅ | ✅ |
+| 58a | Positive germ production | `ColdCorridor.coldGerm_positive` (`Spine.coldPositiveGerm`) | ✅ | ✅ | ✅ | ✅ |
 | 59 | (F5) G2 routing after G1/G2/G3 | `ColdCorridor.boundedGerm_not_survives` plus G2 target-defect route (`Spine.coldGermRouted`) | ✅ | ✅ | ✅ | ✅ |
 | 60 | Registrations `atStage` | `Spine.runCold` row composition, no registration payload | ✅ | ✅ | ✅ | ✅ |
-| 61 | Cold oval closure | `ColdCorridor.TerminalColdResidual` (`Spine.coldTerminalResidual`) vs. `ColdCorridor.NoTerminalColdResidual` (`Spine.coldBranchClosed`) | ✅ | ✅ | ✅ | ✅ |
+| 61 | Cold oval closure | `ColdCorridor.NoTerminalColdResidual` (`Spine.coldBranchClosed`) | ✅ | ✅ | ✅ | ✅ |
 
 The cold rows are expressed as a canonical ledger prefix, ending in the ordinary
 `Spine.Key` fact `coldBranchClosed` and Core's reserved closure fact; they are
@@ -5477,12 +5460,9 @@ would interpose machinery between a constructed cycle and its certificate.
 ### Row 50 — First-failure routing facts `[154]`
 
 - **Paper fact.** Every cold return corridor has a first failure: terminal
-  corridor inside the cold bound or a repeated state after `Q_cold + 1` states,
-  together with the exchange bound, the hot/cold split, and the cold stub-excess
-  inequality.
+  corridor inside the cold bound or a repeated state after `Q_cold + 1` states.
 - **What the Lean does.** `coldFailureRoutingRow` commits the existence
-  dichotomy, `exchange_card_le`, `coldCount_add_hotCount`,
-  `selectedBranchExcess_length`, and `branchExcess_ge_of_cubic`.
+  dichotomy as the single ordinary fact `K .coldFailureRouting`.
 - **Gap.** none for carrier cleanup.  The row no longer defines or transports a
   cold-branch object.
 - **Ledger and residual.** `factOnly` with `Requires := [coldCorridorState]` and
@@ -5494,23 +5474,35 @@ would interpose machinery between a constructed cycle and its certificate.
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
 | `lem:cold-corridor-first-failure`, existence | lem | `ColdCorridor.Corridor.exists_firstFailure` | no CT — `Spine.coldFailureRoutingRow` |
-| exchange and ledger counts | lem | `ColdCorridor.Corridor.exchange_card_le`<br>`ColdCorridor.coldCount_add_hotCount`<br>`ColdCorridor.selectedBranchExcess_length`<br>`ColdCorridor.branchExcess_ge_of_cubic` | standalone |
 
 **CT composition at this row.** No CT.
 
 ### Row 51 — Terminal-F5 residual `[154]`
 
-- **Paper fact.** The F5 residual is represented by bounded cold germs and the
-  finite exchange bound.
-- **What the Lean does.** The bounded-germ definitions stay in graph-level cold
-  mathematics.  The Strategy rows do not package a residual object; they publish
-  the facts later rows consume.
+- **Paper fact.** The finite first-failure exchange bound, the hot/cold window
+  split, hot-failure cold mass, selected branch-excess identity, and
+  ambient-cubic stub-excess inequality are each facts used by the cold
+  quantitative ledger.
+- **What the Lean does.** These are separate ordinary ledger facts:
+  `coldExchangeBoundRow`, `coldWindowLedgerSplitRow`,
+  `coldHotFailureMassRow`, `coldSelectedBranchExcessRow`, and
+  `coldAmbientCubicStubExcessRow`.  Each appends exactly one `Spine.Key` fact.
 - **Gap.** none for carrier cleanup.
 - **Ledger and residual.** The full residual remains the same `ExactLedger`
   cursor; later F5 rows append facts on top of it.
 - **Transport and terminals.** No separate terminal object.
 
 **CT composition at this row.** No CT.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| exchange bound | lem | `ColdCorridor.Corridor.exchange_card_le` | no CT — `Spine.coldExchangeBoundRow` |
+| hot/cold split | lem | `ColdCorridor.coldCount_add_hotCount` | no CT — `Spine.coldWindowLedgerSplitRow` |
+| hot failure cold mass | lem | `ColdCorridor.hotFailure_coldMass` | no CT — `Spine.coldHotFailureMassRow` |
+| selected branch excess | def/lem | `ColdCorridor.selectedBranchExcess_length` | no CT — `Spine.coldSelectedBranchExcessRow` |
+| ambient-cubic stub excess | lem | `ColdCorridor.branchExcess_ge_of_cubic` | no CT — `Spine.coldAmbientCubicStubExcessRow` |
 
 ### Row 52 — `[155]` G1 realizing
 
@@ -5601,16 +5593,17 @@ would interpose machinery between a constructed cycle and its certificate.
   incidences form current-object bounded-germ candidates, and greedy extraction
   gives a vertex-disjoint subfamily at the manuscript's constant
   `D_cold = M_cold B_cold + 1`.
-- **What the Lean does.** `coldGermExtractionRow` reads `coldFailureRouting` by
-  `FactInputs.get`, republishes the local first-failure dichotomy on the same
-  residual, and commits `ColdCorridor.ColdGermExtractionLocal` for the current
-  object's bounded-germ candidate families.  The input family is constrained by
+- **What the Lean does.** `coldGermExtractionRow` reads `coldFailureRouting`,
+  `coldExchangeBound`, and `coldAmbientCubicStubExcess` by `FactInputs.get`,
+  then commits `ColdCorridor.ColdGermExtractionLocal` for the current object's
+  bounded-germ candidate families.  The input family is constrained by
   `ColdCorridor.CandidateGermFamily`, overlap is tested on literal current
   supports, and the extracted disjoint subfamily is an existential conclusion
   of the fact.  No arbitrary `Germ` type, disjoint-family carrier, or theorem
   bundle is exported as the ledger fact.
 - **Gap.** none for carrier cleanup.
-- **Ledger and residual.** `Requires := [coldFailureRouting]`,
+- **Ledger and residual.** `Requires := [coldFailureRouting,
+  coldExchangeBound, coldAmbientCubicStubExcess]`,
   `Produces := [coldGermExtraction]`; residual unchanged.
 - **Transport and terminals.** No payload.
 
@@ -5620,6 +5613,29 @@ would interpose machinery between a constructed cycle and its certificate.
 |---|---|---|---|
 | `lem:cold-corridor-first-failure` (F5 entry) | lem | `ColdCorridor.Corridor.exists_firstFailure` | read from `K .coldFailureRouting` |
 | `lem:cold-germ-extraction` | lem | `ColdCorridor.CandidateGermFamily`<br>`ColdCorridor.ExtractedGermFamily`<br>`ColdCorridor.ColdGermExtractionLocal`<br>`ColdCorridor.coldGermExtractionLocal` | no CT — `Spine.coldGermExtractionRow` |
+
+**CT composition at this row.** No CT.
+
+### Row 58a — Positive germ production `[153]`
+
+- **Paper fact.** The quantitative chain makes the extracted cold-germ family
+  nonempty once the hot-failure mass, stub-excess, candidate-loss, overlap
+  cover, and linear-slack inequalities are read.
+- **What the Lean does.** `coldPositiveGermRow` reads `coldHotFailureMass`,
+  `coldAmbientCubicStubExcess`, and `coldGermExtraction` with `FactInputs.get`,
+  then appends the cleared arithmetic implication `ColdCorridor.coldGerm_positive`.
+- **Gap.** none for carrier cleanup.
+- **Ledger and residual.** `Requires := [coldHotFailureMass,
+  coldAmbientCubicStubExcess, coldGermExtraction]`,
+  `Produces := [coldPositiveGerm]`; residual unchanged.
+- **Transport and terminals.** Ledger fact only.  No candidate family is
+  transported.
+
+**Paper objects at this row.**
+
+| Paper object | Kind | Lean declaration | CT / standalone |
+|---|---|---|---|
+| positive extracted germ | lem | `ColdCorridor.coldGerm_positive` | no CT — `Spine.coldPositiveGermRow` |
 
 **CT composition at this row.** No CT.
 
@@ -5669,36 +5685,37 @@ would interpose machinery between a constructed cycle and its certificate.
 
 - **Paper fact.** The cold branch should terminate at the paper's oval once all
   alternatives have been routed.
-- **What the Lean does.** `coldBranchClosedRow` reads `coldGermExtraction`,
-  `coldGermRouted`, and `coldSameInterfaceTable` with `FactInputs.get` and
-  appends the ordinary fact `K .coldBranchClosed`.  The fact is
+- **What the Lean does.** `coldBranchClosedRow` reads `coldPositiveGerm`,
+  `coldGermExtraction`, `coldGermRouted`, and `coldSameInterfaceTable` with
+  `FactInputs.get` and appends the ordinary fact `K .coldBranchClosed`.  The fact is
   `ColdCorridor.NoTerminalColdResidual` on the current residual: the extraction
-  fact turns a terminal candidate family into a positive extracted subfamily,
+  fact turns any terminal candidate family into a positive extracted subfamily,
   `coldGermRouted` closes its length-changing member, and the same-interface
-  table fact closes equal-length table/self-return rows.  `Spine.runCold` then
-  reads the incoming `K .coldTerminalResidual` branch fact from the same ledger
-  index and closes by `closeIncompatible`, appending Core's reserved
-  contradiction fact.  `Spine.closeColdTerminalBranch` is the corresponding
-  `SpineEndToEnd` boundary: it takes the same exact ledger, runs `Spine.runCold`,
-  and eliminates that reserved key with `ExactLedger.elimClosed`.
-- **Gap.** none for the cold oval's local ledger closure.  The later global
-  proof join is separate from this cold-corridor block.
-- **Ledger and residual.** `Requires := [coldGermExtraction, coldGermRouted,
-  coldSameInterfaceTable]`, `Produces := [coldBranchClosed]`; residual
-  unchanged.  `Spine.runCold` additionally requires `coldTerminalResidual ∈
-  known` and returns `closed :: coldBranchClosed :: coldGermRouted ::
-  coldGermExtraction :: ... :: known`, preserving the incoming residual and all
-  upstream facts.
-- **Transport and terminals.** Ledger facts only.  The terminal and
-  no-terminal statements are ordinary keys; the contradiction is the framework
-  closure key.  No wrapper, side theorem bundle, custom handoff, or result
-  carrier is present.
+  table fact closes equal-length table/self-return rows.  `Spine.runCold`
+  then reads the incoming `K .coldTerminalResidual` fact at the closure boundary
+  and appends Core's reserved closure key by `closeIncompatible` against the
+  new `K .coldBranchClosed` fact.
+- **Gap.** none for carrier cleanup.
+- **Ledger and residual.** `Requires := [coldPositiveGerm,
+  coldGermExtraction, coldGermRouted, coldSameInterfaceTable]`,
+  `Produces := [coldBranchClosed]`; residual
+  unchanged.  `Spine.runCold` requires `K .coldTerminalResidual` in the incoming
+  key index and returns `closed :: coldBranchClosed :: coldGermRouted ::
+  coldPositiveGerm :: coldGermExtraction :: ... :: known`, preserving the
+  incoming residual and all upstream facts.  The fixture
+  `runCold_closure_reason` checks that the closure entry is exactly
+  `AutomaticClosureReason.incompatibleFacts (name .coldTerminalResidual)
+  (name .coldBranchClosed)`.
+- **Transport and terminals.** Ledger facts only.  The no-terminal statement
+  is an ordinary key, and the terminal oval is the framework-owned closure key
+  appended from incompatible ordinary facts.  No wrapper, side theorem bundle,
+  custom handoff, result carrier, or unproduced positive residual is present.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| cold terminal oval | thm | `ColdCorridor.TerminalColdResidual`<br>`ColdCorridor.noTerminalColdResidual_of_routing`<br>`Spine.instIncompatibleColdTerminalResidualClosed` | no CT — `Spine.coldBranchClosedRow`, then Core `closeIncompatible` |
+| cold terminal oval | thm | `ColdCorridor.noTerminalColdResidual_of_routing` | `Spine.coldBranchClosedRow` |
 
 **CT composition at this row.** No CT.
 

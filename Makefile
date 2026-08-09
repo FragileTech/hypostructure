@@ -39,11 +39,9 @@ erdos: erdos-build
 	printf '%s\n' \
 	  'import HypostructureErdos64EG' \
 	  '' \
-	  '#check HypostructureErdos64EG.erdos_64_of_selectedContradiction' \
 	  '#check HypostructureErdos64EG.erdos_64' \
 	  'example : HypostructureErdos64EG.OfficialStatement :=' \
 	  '  HypostructureErdos64EG.erdos_64' \
-	  '#print axioms HypostructureErdos64EG.erdos_64_of_selectedContradiction' \
 	  '#print axioms HypostructureErdos64EG.erdos_64' > "$$tmp"; \
 	output=$$(cd $(ERDOS_DIR) && lake env lean "$$tmp" 2>&1); \
 	status=$$?; \

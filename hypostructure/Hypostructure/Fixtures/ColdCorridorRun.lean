@@ -3,18 +3,17 @@ import Hypostructure.Graph.Strategy.ColdCorridorRun
 /-!
 # Fixture: the cold corridor ledger prefix
 
-`Spine.runCold` is quantified over the keys it consumes and produces.  This
-fixture checks the audit shape of a ledger that already carries the cold
+This fixture checks the audit shape of a ledger that already carries the cold
 corridor prefix at the spine's *own* vocabulary:
 
-* the index is the incoming one with the fourteen cold facts and the framework
-  closure key on top, so every earlier fact of the branch is still in the type;
+* the index is the incoming one with the cold facts on top, so every
+  earlier fact of the branch is still in the type;
 * the audit contains those facts and accounts for every fact with a
   chronological commit.
 
 This fixture audits the prefix at an arbitrary incoming live cold residual.
-Row 61 is audited here as the ordinary ledger fact `coldBranchClosed` on that
-same residual, followed by Core's reserved contradiction entry.
+Row 61 is audited here as the ordinary ledger fact `coldBranchClosed` followed
+by Core's reserved closure fact on that same residual.
 -/
 
 namespace Hypostructure.Fixtures.ColdCorridorRun
@@ -36,7 +35,7 @@ abbrev coldKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   Hypostructure.Graph.Strategy.Spine.coldKeys known
 
-/-- **The fourteen facts of rows 43--61 are all on the ledger after the prefix.**
+/-- **The facts of rows 43--61 are all on the ledger after the prefix.**
 
 Membership rather than position: later rows may extend this same ledger, and
 this check is about what the cold prefix contributes, so it must not depend on
@@ -48,7 +47,8 @@ theorem run_audit_contains_cold_facts
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected (coldKeys known)) :
-    ∀ fact ∈ [(name .coldCorridorState),
+    ∀ fact ∈ [closureFactName,
+        (name .coldCorridorState),
         (name .coldSameInterfaceTable),
         (name .coldGermRealized),
         (name .coldGermDistinguished),
@@ -58,15 +58,22 @@ theorem run_audit_contains_cold_facts
         (name .coldFailureCompression),
         (name .coldFailureHandoff),
         (name .coldFailureRouting),
+        (name .coldExchangeBound),
+        (name .coldWindowLedgerSplit),
+        (name .coldHotFailureMass),
+        (name .coldSelectedBranchExcess),
+        (name .coldAmbientCubicStubExcess),
         (name .coldHandoffTransfer),
         (name .coldGermExtraction),
+        (name .coldPositiveGerm),
         (name .coldGermRouted),
         (name .coldBranchClosed)],
       fact ∈ (ExactLedger.audit history).facts := by
   intro fact member
   simp only [List.mem_cons, List.not_mem_nil, or_false] at member
   rcases member with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  · exact List.mem_map.mpr ⟨closed, by simp [coldKeys], rfl⟩
   · exact List.mem_map.mpr ⟨K .coldCorridorState, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldSameInterfaceTable, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldGermRealized, by simp, rfl⟩
@@ -77,19 +84,16 @@ theorem run_audit_contains_cold_facts
   · exact List.mem_map.mpr ⟨K .coldFailureCompression, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldFailureHandoff, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldFailureRouting, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldExchangeBound, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldWindowLedgerSplit, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldHotFailureMass, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldSelectedBranchExcess, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldAmbientCubicStubExcess, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldHandoffTransfer, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldGermExtraction, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldPositiveGerm, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldGermRouted, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldBranchClosed, by simp, rfl⟩
-
-/-- **The cold runner closes by Core's reserved contradiction fact.** -/
-theorem run_audit_contains_closure
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (coldKeys known)) :
-    Core.Residual.closureFactName ∈ (ExactLedger.audit history).facts :=
-  List.mem_map.mpr ⟨closed, by simp [coldKeys], rfl⟩
 
 /-- **Every fact of the cold block is accounted for by a chronological
 commit.** -/
@@ -111,5 +115,69 @@ theorem run_audit_facts_unique
       selected (coldKeys known)) :
     (ExactLedger.audit history).facts.Nodup :=
   ExactLedger.audit_facts_unique history
+
+/-- **The concrete cold prefix closes by the terminal/no-terminal
+incompatibility.** -/
+theorem runCold_closure_reason
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .selection) known]
+    [FactKeys.Has (K (data := data) .uncompressible) known]
+    [FactKeys.Has (K (data := data) .windowPackageCollided) known]
+    [FactKeys.Has (K (data := data) .densityCap) known]
+    [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
+    [FactKeys.Has (K (data := data) .negativeSupport) known]
+    [FactKeys.Has (K (data := data) .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K (data := data) .spineSurplusEstimate) known]
+    [FactKeys.Has (K (data := data) .sparsePressureNearCubic) known]
+    [FactKeys.Has (K (data := data) .typeBExcluded) known]
+    [FactKeys.Has (K (data := data) .route8TerminalNoGo) known]
+    [FactKeys.Has (K (data := data) .coldTerminalResidual) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (stateFresh : K (data := data) .coldCorridorState ∉ known)
+    (tableFresh : K (data := data) .coldSameInterfaceTable ∉ known)
+    (realizedFresh : K (data := data) .coldGermRealized ∉ known)
+    (distinguishedFresh : K (data := data) .coldGermDistinguished ∉ known)
+    (silentFresh : K (data := data) .coldGermSilent ∉ known)
+    (cycleFresh : K (data := data) .coldFailureCycle ∉ known)
+    (defectFresh : K (data := data) .coldFailureDefect ∉ known)
+    (compressionFresh : K (data := data) .coldFailureCompression ∉ known)
+    (handoffFresh : K (data := data) .coldFailureHandoff ∉ known)
+    (routingFresh : K (data := data) .coldFailureRouting ∉ known)
+    (exchangeFresh : K (data := data) .coldExchangeBound ∉ known)
+    (windowSplitFresh : K (data := data) .coldWindowLedgerSplit ∉ known)
+    (hotMassFresh : K (data := data) .coldHotFailureMass ∉ known)
+    (selectedExcessFresh : K (data := data) .coldSelectedBranchExcess ∉ known)
+    (ambientStubFresh : K (data := data) .coldAmbientCubicStubExcess ∉ known)
+    (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
+    (extractionFresh : K (data := data) .coldGermExtraction ∉ known)
+    (positiveFresh : K (data := data) .coldPositiveGerm ∉ known)
+    (routedFresh : K (data := data) .coldGermRouted ∉ known)
+    (branchClosedFresh : K (data := data) .coldBranchClosed ∉ known)
+    (closureFresh :
+      closed (BranchState := BranchState) (Presentation := Presentation)
+        (presentation := presentation) (data := data) ∉
+        K .coldBranchClosed :: K .coldGermRouted ::
+          K .coldPositiveGerm :: K .coldGermExtraction ::
+          K .coldHandoffTransfer :: K .coldAmbientCubicStubExcess ::
+          K .coldSelectedBranchExcess :: K .coldHotFailureMass ::
+          K .coldWindowLedgerSplit :: K .coldExchangeBound ::
+          K .coldFailureRouting :: K .coldFailureHandoff ::
+          K .coldFailureCompression :: K .coldFailureDefect ::
+          K .coldFailureCycle :: K .coldGermSilent ::
+          K .coldGermDistinguished :: K .coldGermRealized ::
+          K .coldSameInterfaceTable :: K .coldCorridorState :: known) :
+    (ExactLedger.get
+      (Hypostructure.Graph.Strategy.Spine.runCold
+        (data := data) history stateFresh tableFresh realizedFresh
+        distinguishedFresh silentFresh cycleFresh defectFresh compressionFresh
+        handoffFresh routingFresh exchangeFresh windowSplitFresh hotMassFresh
+        selectedExcessFresh ambientStubFresh transferFresh extractionFresh
+        positiveFresh routedFresh branchClosedFresh closureFresh)
+      (closed : FactKey (Input BranchState Presentation presentation data))).down.reason =
+      AutomaticClosureReason.incompatibleFacts
+        (name .coldTerminalResidual) (name .coldBranchClosed) := by
+  rfl
 
 end Hypostructure.Fixtures.ColdCorridorRun

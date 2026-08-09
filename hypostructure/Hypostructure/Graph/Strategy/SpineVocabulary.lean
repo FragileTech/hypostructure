@@ -741,8 +741,14 @@ inductive Key where
   | coldFailureCompression
   | coldFailureHandoff
   | coldFailureRouting
+  | coldExchangeBound
+  | coldWindowLedgerSplit
+  | coldHotFailureMass
+  | coldSelectedBranchExcess
+  | coldAmbientCubicStubExcess
   | coldHandoffTransfer
   | coldGermExtraction
+  | coldPositiveGerm
   | coldGermRouted
   | coldTerminalResidual
   | coldBranchClosed
@@ -2384,59 +2390,50 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         Graph.ColdCorridor.Corridor.FirstFailureHandoff corridor Handoff segment →
           ∃ support, Handoff support ∧ corridor.head segment ∈ support)
   | .coldFailureRouting, object =>
-      -- `lem:cold-corridor-first-failure`, the existence half, together with
-      -- the two ledgers it is counted against.
-      --
-      -- First clause: every cold return corridor has a first failure.  Either
-      -- it reaches its successor boundary stub inside `Q_cold` states, or
-      -- `Q_cold + 1` states are read and two of them are equal.  This is a case
-      -- split on the corridor's own length against `Q_cold`, so (F5) is not the
-      -- complement of the other four and the conclusion is not vacuous.
-      --
-      -- Second: `M_cold` bounds the first-failure cold exchange.
-      --
-      -- Third: `def:cold-window-ledger`'s split `𝒫 = 𝒫_hot ⊔ 𝒫_cold`.
-      --
-      -- Fourth: `lem:cold-window-stub-excess`, subtraction-free -- the
-      -- branch excess of the ambient-cubic cold windows plus the excess spent
-      -- on the `o(n)` non-cubic ones covers `b(P)·C`.
-      ((∀ (windows component : Finset object.Vertex)
+      ∀ (windows component : Finset object.Vertex)
         (corridor : Graph.ColdCorridor.Corridor object windows component)
         (presentation :
           Graph.ColdCorridor.Presentation data.coldSignature object)
         (index : corridor.Segment → presentation.Segment),
         Function.Injective index →
           Graph.ColdCorridor.Corridor.TerminalCorridor corridor data.coldSignature ∨
-            Graph.ColdCorridor.Corridor.RepeatedState corridor presentation index) ∧
-        (∀ (windows component : Finset object.Vertex)
-          (corridor : Graph.ColdCorridor.Corridor object windows component),
-          Graph.ColdCorridor.Corridor.TerminalCorridor corridor data.coldSignature →
-            corridor.statesRead +
-                Graph.ColdCorridor.interfaceBudget data.coldSignature ≤
-              Graph.ColdCorridor.exchangeBound data.coldSignature) ∧
-        (∀ (Window Coordinate : Type) (_ : DecidableEq Window)
-          (_ : DecidableEq Coordinate) (retained : Window → List Coordinate)
-          (packageLength : Nat) (packing : Finset Window),
-          Graph.ColdCorridor.coldCount retained packageLength packing +
-              (Graph.ColdCorridor.hotWindows retained packageLength packing).card =
-            packing.card) ∧
-        -- `def:cold-skeleton-excess`: dropping the two transit stubs leaves
-        -- exactly the branch-excess contribution, so `|𝓔_br(P)| = b(P)` is the
-        -- definition and not a second number.
-        (∀ (Stub : Type) (stubs : List Stub),
-          (Graph.ColdCorridor.selectedBranchExcess stubs).length =
-            Graph.ColdCorridor.branchExcessOf stubs.length) ∧
-        ∀ cubicCount coldCount nonCubicBound : Nat,
-          coldCount ≤ cubicCount + nonCubicBound →
+            Graph.ColdCorridor.Corridor.RepeatedState corridor presentation index
+  | .coldExchangeBound, object =>
+      ∀ (windows component : Finset object.Vertex)
+        (corridor : Graph.ColdCorridor.Corridor object windows component),
+        Graph.ColdCorridor.Corridor.TerminalCorridor corridor data.coldSignature →
+          corridor.statesRead +
+              Graph.ColdCorridor.interfaceBudget data.coldSignature ≤
+            Graph.ColdCorridor.exchangeBound data.coldSignature
+  | .coldWindowLedgerSplit, _object =>
+      ∀ (Window Coordinate : Type) (_ : DecidableEq Window)
+        (_ : DecidableEq Coordinate) (retained : Window → List Coordinate)
+        (packageLength : Nat) (packing : Finset Window),
+        Graph.ColdCorridor.coldCount retained packageLength packing +
+            (Graph.ColdCorridor.hotWindows retained packageLength packing).card =
+          packing.card
+  | .coldHotFailureMass, _object =>
+      ∀ hotRate skeletonRate order slack hotCount coldCount packing : Nat,
+        packing = hotCount + coldCount →
+          hotRate * hotCount ≤ skeletonRate * order + slack →
+            hotRate * packing ≤
+              hotRate * coldCount + (skeletonRate * order + slack)
+  | .coldSelectedBranchExcess, _object =>
+      ∀ (Stub : Type) (stubs : List Stub),
+        (Graph.ColdCorridor.selectedBranchExcess stubs).length =
+          Graph.ColdCorridor.branchExcessOf stubs.length
+  | .coldAmbientCubicStubExcess, _object =>
+      ∀ cubicCount coldCount nonCubicBound : Nat,
+        coldCount ≤ cubicCount + nonCubicBound →
+          Graph.ColdCorridor.branchExcessOf
+                (data.threshold * data.windowOrder -
+                  2 * (data.windowOrder - 1)) * coldCount ≤
             Graph.ColdCorridor.branchExcessOf
                   (data.threshold * data.windowOrder -
-                    2 * (data.windowOrder - 1)) * coldCount ≤
+                    2 * (data.windowOrder - 1)) * cubicCount +
               Graph.ColdCorridor.branchExcessOf
-                    (data.threshold * data.windowOrder -
-                      2 * (data.windowOrder - 1)) * cubicCount +
-                Graph.ColdCorridor.branchExcessOf
-                  (data.threshold * data.windowOrder -
-                    2 * (data.windowOrder - 1)) * nonCubicBound)
+                (data.threshold * data.windowOrder -
+                  2 * (data.windowOrder - 1)) * nonCubicBound
   | .windowPackageSeparated, object =>
       -- `lem:p13-window-package`, including the actual declared target family,
       -- its support map, full rank, and exact-stratum entropy realization.
@@ -2462,19 +2459,18 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- the overlap graph is the one on their literal supports.  No arbitrary
       -- `Germ` type, support-realization premise, disjoint-family carrier, or
       -- theorem bundle is exported.
-      ((∀ (windows component : Finset object.Vertex)
-        (corridor : Graph.ColdCorridor.Corridor object windows component)
-        (presentation :
-          Graph.ColdCorridor.Presentation data.coldSignature object)
-        (index : corridor.Segment → presentation.Segment),
-        Function.Injective index →
-          Graph.ColdCorridor.Corridor.TerminalCorridor corridor
-              data.coldSignature ∨
-            Graph.ColdCorridor.Corridor.RepeatedState corridor presentation
-              index) ∧
-        Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
-          data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
+      Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
+        data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object
+  | .coldPositiveGerm, _object =>
+      ∀ (Germ : Type u) (_ : DecidableEq Germ)
+        (candidates disjointFamily : Finset Germ)
+        (perWindow coldCount branchExcess denominator slack : Nat),
+        perWindow * coldCount ≤ branchExcess + slack →
+          branchExcess ≤ candidates.card + slack →
+            candidates.card ≤ disjointFamily.card * denominator →
+              2 * slack < perWindow * coldCount →
+                0 < disjointFamily.card
   | .coldGermRouted, object =>
       -- The length-changing germ conclusion obtained by eliminating G1 and G3
       -- and then reading the G2 route from the ledger.  The fact therefore
@@ -4441,8 +4437,14 @@ def label : Key → String
   | .coldFailureCompression => "coldFailureCompression"
   | .coldFailureHandoff => "coldFailureHandoff"
   | .coldFailureRouting => "coldFailureRouting"
+  | .coldExchangeBound => "coldExchangeBound"
+  | .coldWindowLedgerSplit => "coldWindowLedgerSplit"
+  | .coldHotFailureMass => "coldHotFailureMass"
+  | .coldSelectedBranchExcess => "coldSelectedBranchExcess"
+  | .coldAmbientCubicStubExcess => "coldAmbientCubicStubExcess"
   | .coldHandoffTransfer => "coldHandoffTransfer"
   | .coldGermExtraction => "coldGermExtraction"
+  | .coldPositiveGerm => "coldPositiveGerm"
   | .coldGermRouted => "coldGermRouted"
   | .coldTerminalResidual => "coldTerminalResidual"
   | .coldBranchClosed => "coldBranchClosed"
@@ -4610,8 +4612,14 @@ example : label .coldFailureDefect = "coldFailureDefect" := rfl
 example : label .coldFailureCompression = "coldFailureCompression" := rfl
 example : label .coldFailureHandoff = "coldFailureHandoff" := rfl
 example : label .coldFailureRouting = "coldFailureRouting" := rfl
+example : label .coldExchangeBound = "coldExchangeBound" := rfl
+example : label .coldWindowLedgerSplit = "coldWindowLedgerSplit" := rfl
+example : label .coldHotFailureMass = "coldHotFailureMass" := rfl
+example : label .coldSelectedBranchExcess = "coldSelectedBranchExcess" := rfl
+example : label .coldAmbientCubicStubExcess = "coldAmbientCubicStubExcess" := rfl
 example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
 example : label .coldGermExtraction = "coldGermExtraction" := rfl
+example : label .coldPositiveGerm = "coldPositiveGerm" := rfl
 example : label .coldGermRouted = "coldGermRouted" := rfl
 example : label .coldTerminalResidual = "coldTerminalResidual" := rfl
 example : label .coldBranchClosed = "coldBranchClosed" := rfl
@@ -4798,10 +4806,16 @@ def idx : Key → Nat
   | .coldFailureCompression => 66
   | .coldFailureHandoff => 67
   | .coldFailureRouting => 68
+  | .coldExchangeBound => 177
+  | .coldWindowLedgerSplit => 178
+  | .coldHotFailureMass => 181
+  | .coldSelectedBranchExcess => 179
+  | .coldAmbientCubicStubExcess => 180
+  | .coldPositiveGerm => 182
   | .coldHandoffTransfer => 69
   | .coldGermExtraction => 70
   | .coldGermRouted => 71
-  | .coldTerminalResidual => 177
+  | .coldTerminalResidual => 183
   | .coldBranchClosed => 176
   | .highCentreNormalForm => 72
   | .typeBHeavyCentre => 73
@@ -4955,10 +4969,16 @@ def ofIdx : Nat → Key
   | 66 => .coldFailureCompression
   | 67 => .coldFailureHandoff
   | 68 => .coldFailureRouting
+  | 177 => .coldExchangeBound
+  | 178 => .coldWindowLedgerSplit
+  | 181 => .coldHotFailureMass
+  | 179 => .coldSelectedBranchExcess
+  | 180 => .coldAmbientCubicStubExcess
+  | 182 => .coldPositiveGerm
+  | 183 => .coldTerminalResidual
   | 69 => .coldHandoffTransfer
   | 70 => .coldGermExtraction
   | 71 => .coldGermRouted
-  | 177 => .coldTerminalResidual
   | 176 => .coldBranchClosed
   | 72 => .highCentreNormalForm
   | 73 => .typeBHeavyCentre
@@ -5216,15 +5236,30 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureHandoff") 67
   | .coldFailureRouting =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureRouting") 68
+  | .coldExchangeBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldExchangeBound") 177
+  | .coldWindowLedgerSplit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldWindowLedgerSplit") 178
+  | .coldHotFailureMass =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldHotFailureMass") 181
+  | .coldSelectedBranchExcess =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldSelectedBranchExcess") 179
+  | .coldAmbientCubicStubExcess =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldAmbientCubicStubExcess") 180
   | .coldHandoffTransfer =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldHandoffTransfer") 69
   | .coldGermExtraction =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermExtraction") 70
+  | .coldPositiveGerm =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldPositiveGerm") 182
   | .coldGermRouted =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermRouted") 71
   | .coldTerminalResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
-        "coldTerminalResidual") 177
+        "coldTerminalResidual") 183
   | .coldBranchClosed =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldBranchClosed") 176
   | .highCentreNormalForm =>
