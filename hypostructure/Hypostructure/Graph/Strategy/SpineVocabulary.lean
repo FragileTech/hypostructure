@@ -844,6 +844,10 @@ inductive Key where
   for certificate residuals, overlap obstructions, and grouped decorated
   envelope residuals. -/
   | typeBBridgeMass
+  /-- `prop:typeB-bridge-sublinear`: after route-`8` non-window cores have been
+  extracted into the Type A ledger, the remaining Type B bridge residual mass is
+  paid by the assigned high-centre surplus. -/
+  | typeBBridgeSublinear
   /-- Node `[76]`/`[85]`: the Type B B-ledger charge implication read from the
   selected disjoint ledger. -/
   | typeBExclusionCharge
@@ -960,6 +964,9 @@ inductive Key where
   witnesses become canonical Q5 exit-`(4)` witnesses, contradicting the
   no-exit-`(4)` fact of the same true route-`8` residual. -/
   | route8TerminalNoGo
+  /-- `thm:large-budget-route8-only`, terminal route-`8` survivor closed by
+  the node `[124]` no-go. -/
+  | largeBudgetRoute8Closed
   /-- Node `[126]`, `lem:sparse-slack-surplus`: the sparse slack identity
   `m = (3/2)n + (1/2)σ(G)`, cleared of division at the registered baseline. -/
   | sparseSlackSurplus
@@ -1325,6 +1332,87 @@ def WindowPackageStatement (data : Data.{u})
             (data.windowRate * data.separatedScaleCount object.vertexCount *
               object.windowPackingNumber data.windowOrder) ≤
           data.surplusScale * object.vertexCount
+
+/-- The local `[145]` hot/cold ledger on the current residual.  Its packing is
+the maximal packing already committed for this object, and `packageFailed` is
+the negative arm committed by the immediately preceding package dichotomy.
+The numerical split is therefore stored for this packing only; downstream
+rows do not receive an arbitrary packing or comparison as an argument. -/
+def ColdWindowLedgerStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+    packing.card = object.windowPackingNumber data.windowOrder ∧
+    (∀ support : Finset object.Vertex,
+      object.InducesWindow data.windowOrder support →
+        ∃ member ∈ packing, ¬ Disjoint support member) ∧
+    ¬ WindowPackageStatement data object ∧
+    ∃ coldCount hotCount : Nat,
+      coldCount = packing.card ∧ hotCount = 0 ∧
+        coldCount + hotCount = packing.card
+
+/-- Node `[150]` specialized to the packing and hot/cold counts already stored
+by `[145]` on this residual.  No numerical datum is supplied by a consumer. -/
+def ColdHotFailureMassStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex), ∃ coldCount hotCount : Nat,
+    object.IsWindowPacking data.windowOrder packing ∧
+    coldCount = packing.card ∧ hotCount = 0 ∧
+    data.windowRate * packing.card ≤
+      data.windowRate * coldCount +
+        data.surplusScale * object.vertexCount
+
+/-- The branch-excess quantity for the exact cold family committed by `[150]`.
+The witness is tied to the current object's packing and cannot be instantiated
+with a caller-selected list of stubs. -/
+def ColdSelectedBranchExcessStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex), ∃ coldCount excess : Nat,
+    object.IsWindowPacking data.windowOrder packing ∧
+    coldCount = packing.card ∧
+    excess = Graph.ColdCorridor.branchExcessOf
+      (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
+        coldCount
+
+/-- Nodes `[151]`--`[152]` on the current near-cubic residual.  It retains the
+same concrete cold family and branch-excess witness while recording the two
+incoming near-cubic estimates used to justify that this is the surviving
+ambient-cubic contribution. -/
+def ColdAmbientCubicStubExcessStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex), ∃ coldCount excess : Nat,
+    object.IsWindowPacking data.windowOrder packing ∧
+    coldCount = packing.card ∧
+    excess = Graph.ColdCorridor.branchExcessOf
+      (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
+        coldCount ∧
+    object.degreeSurplus data.threshold ≤
+      data.spineScale * Core.ceilSqrt object.vertexCount ∧
+    Graph.SparsePressureCapped object data.threshold data.windowOrder
+
+/-- First-failure routing specialized to the current residual's committed cold
+family.  The corridor quantification ranges only over the current object and is
+paired with the exact `[152]` witness that activates the extraction. -/
+def ColdFailureRoutingStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ColdAmbientCubicStubExcessStatement data object ∧
+  ∀ (windows component : Finset object.Vertex)
+    (corridor : Graph.ColdCorridor.Corridor object windows component)
+    (presentation : Graph.ColdCorridor.Presentation data.coldSignature object)
+    (index : corridor.Segment → presentation.Segment),
+    Function.Injective index →
+      Graph.ColdCorridor.Corridor.TerminalCorridor corridor data.coldSignature ∨
+        Graph.ColdCorridor.Corridor.RepeatedState corridor presentation index
+
+/-- The exchange bound for the same current-residual first-failure routing. -/
+def ColdExchangeBoundStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ColdFailureRoutingStatement data object ∧
+  ∀ (windows component : Finset object.Vertex)
+    (corridor : Graph.ColdCorridor.Corridor object windows component),
+    Graph.ColdCorridor.Corridor.TerminalCorridor corridor data.coldSignature →
+      corridor.statesRead + Graph.ColdCorridor.interfaceBudget data.coldSignature ≤
+        Graph.ColdCorridor.exchangeBound data.coldSignature
 
 attribute [instance] Data.boundaryProfileFintype
 
@@ -2145,6 +2233,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- (F2), equality of cold corridor states is equality for every
       -- target-response coordinate used by the local replacement".  It holds at
       -- every reading of the corridor's responses, so no carrier travels.
+      ¬ WindowPackageStatement data object ∧
       (∀ presentation : Graph.ColdCorridor.Presentation data.coldSignature object,
         (∀ left right : presentation.Segment,
           presentation.state left = presentation.state right →
@@ -2267,6 +2356,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- for the (F2) discrepancy.  No cycle is claimed: the manuscript is
       -- explicit that G2 distinguishes "without already realizing the cycle in
       -- the current graph", and what the germ is routed to is the defect exit.
+      ¬ WindowPackageStatement data object ∧
       (∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object,
@@ -2420,50 +2510,17 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         Graph.ColdCorridor.Corridor.FirstFailureHandoff corridor Handoff segment →
           ∃ support, Handoff support ∧ corridor.head segment ∈ support)
   | .coldFailureRouting, object =>
-      ∀ (windows component : Finset object.Vertex)
-        (corridor : Graph.ColdCorridor.Corridor object windows component)
-        (presentation :
-          Graph.ColdCorridor.Presentation data.coldSignature object)
-        (index : corridor.Segment → presentation.Segment),
-        Function.Injective index →
-          Graph.ColdCorridor.Corridor.TerminalCorridor corridor data.coldSignature ∨
-            Graph.ColdCorridor.Corridor.RepeatedState corridor presentation index
+      ColdFailureRoutingStatement data object
   | .coldExchangeBound, object =>
-      ∀ (windows component : Finset object.Vertex)
-        (corridor : Graph.ColdCorridor.Corridor object windows component),
-        Graph.ColdCorridor.Corridor.TerminalCorridor corridor data.coldSignature →
-          corridor.statesRead +
-              Graph.ColdCorridor.interfaceBudget data.coldSignature ≤
-            Graph.ColdCorridor.exchangeBound data.coldSignature
-  | .coldWindowLedgerSplit, _object =>
-      ∀ (Window Coordinate : Type) (_ : DecidableEq Window)
-        (_ : DecidableEq Coordinate) (retained : Window → List Coordinate)
-        (packageLength : Nat) (packing : Finset Window),
-        Graph.ColdCorridor.coldCount retained packageLength packing +
-            (Graph.ColdCorridor.hotWindows retained packageLength packing).card =
-          packing.card
-  | .coldHotFailureMass, _object =>
-      ∀ hotRate skeletonRate order slack hotCount coldCount packing : Nat,
-        packing = hotCount + coldCount →
-          hotRate * hotCount ≤ skeletonRate * order + slack →
-            hotRate * packing ≤
-              hotRate * coldCount + (skeletonRate * order + slack)
-  | .coldSelectedBranchExcess, _object =>
-      ∀ (Stub : Type) (stubs : List Stub),
-        (Graph.ColdCorridor.selectedBranchExcess stubs).length =
-          Graph.ColdCorridor.branchExcessOf stubs.length
-  | .coldAmbientCubicStubExcess, _object =>
-      ∀ cubicCount coldCount nonCubicBound : Nat,
-        coldCount ≤ cubicCount + nonCubicBound →
-          Graph.ColdCorridor.branchExcessOf
-                (data.threshold * data.windowOrder -
-                  2 * (data.windowOrder - 1)) * coldCount ≤
-            Graph.ColdCorridor.branchExcessOf
-                  (data.threshold * data.windowOrder -
-                    2 * (data.windowOrder - 1)) * cubicCount +
-              Graph.ColdCorridor.branchExcessOf
-                (data.threshold * data.windowOrder -
-                  2 * (data.windowOrder - 1)) * nonCubicBound
+      ColdExchangeBoundStatement data object
+  | .coldWindowLedgerSplit, object =>
+      ColdWindowLedgerStatement data object
+  | .coldHotFailureMass, object =>
+      ColdHotFailureMassStatement data object
+  | .coldSelectedBranchExcess, object =>
+      ColdSelectedBranchExcessStatement data object
+  | .coldAmbientCubicStubExcess, object =>
+      ColdAmbientCubicStubExcessStatement data object
   | .windowPackageSeparated, object =>
       -- `lem:p13-window-package`, including the actual declared target family,
       -- its support map, full rank, and exact-stratum entropy realization.
@@ -2489,9 +2546,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- the overlap graph is the one on their literal supports.  No arbitrary
       -- `Germ` type, support-realization premise, disjoint-family carrier, or
       -- theorem bundle is exported.
-      Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
-        data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object
+      ColdExchangeBoundStatement data object ∧
+        Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
+          data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object
   | .coldPositiveGerm, _object =>
       ∀ (Germ : Type u) (_ : DecidableEq Germ)
         (candidates disjointFamily : Finset Germ)
@@ -3528,9 +3586,35 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                   Graph.TypeBEnvelopeCharge.route8Deficit object ordinary
                     data.threshold data.dischargeScale ordinaryRoute8 +
                   Graph.TypeBEnvelopeCharge.route8Deficit object grouped
-                      data.threshold data.dischargeScale groupedRoute8 +
+                    data.threshold data.dischargeScale groupedRoute8 +
                     2 * (data.bridgeMassFactor * data.dischargeScale *
                       object.degreeSurplus data.threshold))
+  | .typeBBridgeSublinear, object =>
+      ∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
+        ∀ route8 : Finset (Graph.SupportComponents.Connected.Component object
+            (object.remainderSupport packing)),
+          (∀ piece ∈ route8,
+            object.ambientSurplus (object.pieceSupport
+              (object.remainderSupport packing) piece) data.threshold = 0) →
+          (∀ piece ∈ object.canonicalPieces (object.remainderSupport packing),
+            piece ∉ route8 →
+            Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt object
+              (object.pieceSupport (object.remainderSupport packing) piece)
+              data.threshold data.dischargeScale) →
+          ∑ piece ∈ object.canonicalPieces (object.remainderSupport packing),
+              ((object.pieceSupport (object.remainderSupport packing) piece).card +
+                  data.dischargeScale * object.ambientSurplus
+                    (object.pieceSupport (object.remainderSupport packing) piece)
+                    data.threshold -
+                data.dischargeScale * object.positiveDeficiency
+                  (object.pieceSupport (object.remainderSupport packing) piece)
+                  data.threshold) ≤
+            Graph.TypeBEnvelopeCharge.route8Deficit object
+                (object.remainderSupport packing) data.threshold
+                data.dischargeScale route8 +
+              data.bridgeMassFactor * data.dischargeScale *
+                object.degreeSurplus data.threshold
   | .typeBExclusionCharge, object =>
       ∀ packing : Finset (Finset object.Vertex),
         ∀ canonicalPiece :
@@ -4119,6 +4203,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Node `[124]`: terminal two-carrier route-8 no-go through Q5
       -- carrier-deletion and the committed no-exit-(4) fact.
       Route8TerminalNoGo data object
+  | .largeBudgetRoute8Closed, _object =>
+      False
   | .sparseSlackSurplus, object =>
       -- `lem:sparse-slack-surplus`: `2m = δn + σ(G)`, the manuscript's
       -- `m = (3/2)n + (1/2)σ(G)` cleared of division.
@@ -4556,6 +4642,7 @@ def label : Key → String
   | .typeBOverlapObstructionMass => "typeBOverlapObstructionMass"
   | .typeBExclusionResidualMass => "typeBExclusionResidualMass"
   | .typeBBridgeMass => "typeBBridgeMass"
+  | .typeBBridgeSublinear => "typeBBridgeSublinear"
   | .typeBExclusionCharge => "typeBExclusionCharge"
   | .typeBExcluded => "typeBExcluded"
   | .typeBExclusionResidual => "typeBExclusionResidual"
@@ -4590,6 +4677,7 @@ def label : Key → String
   | .route8PressureDescent => "route8PressureDescent"
   | .route8TerminalResidual => "route8TerminalResidual"
   | .route8TerminalNoGo => "route8TerminalNoGo"
+  | .largeBudgetRoute8Closed => "largeBudgetRoute8Closed"
   | .sparseSlackSurplus => "sparseSlackSurplus"
   | .activeSurplusFamily => "activeSurplusFamily"
   | .sparsePortActivation => "sparsePortActivation"
@@ -4736,6 +4824,7 @@ example : label .fanCertificateResidualMass = "fanCertificateResidualMass" := rf
 example : label .typeBOverlapObstructionMass = "typeBOverlapObstructionMass" := rfl
 example : label .typeBExclusionResidualMass = "typeBExclusionResidualMass" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
+example : label .typeBBridgeSublinear = "typeBBridgeSublinear" := rfl
 example : label .typeBExclusionCharge = "typeBExclusionCharge" := rfl
 example : label .typeBExcluded = "typeBExcluded" := rfl
 example : label .typeBExclusionResidual = "typeBExclusionResidual" := rfl
@@ -4783,6 +4872,8 @@ example : label .route8TerminalResidual =
     "route8TerminalResidual" := rfl
 example : label .route8TerminalNoGo =
     "route8TerminalNoGo" := rfl
+example : label .largeBudgetRoute8Closed =
+    "largeBudgetRoute8Closed" := rfl
 example : label .sparseSlackSurplus = "sparseSlackSurplus" := rfl
 example : label .activeSurplusFamily = "activeSurplusFamily" := rfl
 example : label .sparsePortActivation = "sparsePortActivation" := rfl
@@ -4933,6 +5024,7 @@ def idx : Key → Nat
   | .typeBOverlapObstructionMass => 187
   | .typeBExclusionResidualMass => 188
   | .typeBBridgeMass => 85
+  | .typeBBridgeSublinear => 189
   | .typeBExclusionCharge => 164
   | .typeBExcluded => 166
   | .typeBExclusionResidual => 167
@@ -4966,6 +5058,7 @@ def idx : Key → Nat
   | .route8PressureDescent => 173
   | .route8TerminalResidual => 185
   | .route8TerminalNoGo => 174
+  | .largeBudgetRoute8Closed => 190
   | .sparseSlackSurplus => 109
   | .activeSurplusFamily => 110
   | .sparsePortActivation => 111
@@ -5100,6 +5193,7 @@ def ofIdx : Nat → Key
   | 187 => .typeBOverlapObstructionMass
   | 188 => .typeBExclusionResidualMass
   | 85 => .typeBBridgeMass
+  | 189 => .typeBBridgeSublinear
   | 164 => .typeBExclusionCharge
   | 166 => .typeBExcluded
   | 167 => .typeBExclusionResidual
@@ -5133,6 +5227,7 @@ def ofIdx : Nat → Key
   | 173 => .route8PressureDescent
   | 185 => .route8TerminalResidual
   | 174 => .route8TerminalNoGo
+  | 190 => .largeBudgetRoute8Closed
   | 109 => .sparseSlackSurplus
   | 110 => .activeSurplusFamily
   | 111 => .sparsePortActivation
@@ -5415,6 +5510,9 @@ def name : Key → Lean.Name
         "typeBExclusionResidualMass") 188
   | .typeBBridgeMass =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBBridgeMass") 85
+  | .typeBBridgeSublinear =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBBridgeSublinear") 189
   | .typeBExclusionCharge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBExclusionCharge") 164
@@ -5500,6 +5598,9 @@ def name : Key → Lean.Name
   | .route8TerminalNoGo =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8TerminalNoGo") 174
+  | .largeBudgetRoute8Closed =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "largeBudgetRoute8Closed") 190
   | .sparseSlackSurplus =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sparseSlackSurplus") 109
   | .activeSurplusFamily =>

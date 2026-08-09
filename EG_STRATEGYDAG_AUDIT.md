@@ -5094,17 +5094,19 @@ rows go through the framework's one `AtomicCT.run` and its one `Decision.run`.
   extraction and closure rows consume the cold bounds through the ledgered
   facts.  **Facts passes.**
 - **Ledger and residual.** `Spine.coldCorridorStateRow` is a `factOnly` atomic
-  Strategy with `Requires := []` and `Produces := [coldCorridorState]`.  The
+  Strategy with `Requires := [windowPackageCollided]` and `Produces :=
+  [coldCorridorState]`.  The produced schema retains the literal incoming
+  `¬ WindowPackageStatement` witness together with the local cut-state theorem;
+  it cannot be published on a detached object or before entering the cold
+  package residual.  The
   committed statement has three clauses: the retention's completeness, the
   `Q_cold` pigeonhole, and *both* directions of the (F2) sentence — the second
   direction was proved but unregistered until the registered-fact review, which
   left the manuscript's dichotomy at a repeated state half-stated on the
   ledger.  Its
-  requirement list is empty because neither clause depends on anything an
-  earlier node proved — both are theorems about the registered signature — and
-  the framework runner still appends the production to the incoming index while
-  retaining the literal ancestry, so every earlier fact of the branch stays in
-  the output type.  The residual is unchanged: `factOnly` supplies
+  cut-state clauses are signature theorems, but their ledger fact is specialized
+  to and stores the incoming cold residual rather than being published
+  source-free.  The residual is unchanged: `factOnly` supplies
   `RefinementSystem.refl`, the equality refinement.  The committed statement is
   `Spine.Holds .coldCorridorState`, quantified over *every*
   `ColdCorridor.Presentation` of the object's corridor segments, so no corridor
@@ -5489,11 +5491,14 @@ would interpose machinery between a constructed cycle and its certificate.
 
 - **Paper fact.** A distinguishing germ gives a target-incomplete quotient in
   every immutable profile fibre.
-- **What the Lean does.** `coldGermDistinguishedRow` is source-free and commits
-  the germ theorem directly.
+- **What the Lean does.** `coldGermDistinguishedRow` reads
+  `windowPackageCollided` and commits that exact cold-residual witness together
+  with the current-object germ theorem.  `coldGermRoutedRow` projects the germ
+  theorem from this ledger-backed pair.
 - **Gap.** none for carrier cleanup.  This is a semantic fact, not a closure by
   itself.
-- **Ledger and residual.** `Requires := []`, `Produces := [coldGermDistinguished]`.
+- **Ledger and residual.** `Requires := [windowPackageCollided]`, `Produces :=
+  [coldGermDistinguished]`; the step is fact-only and preserves the residual.
 - **Transport and terminals.** No payload and no terminal.
 
 **CT composition at this row.** No CT.
@@ -5589,23 +5594,22 @@ would interpose machinery between a constructed cycle and its certificate.
 ### Row 58a — Positive germ production `[153]`
 
 - **Paper fact.** The quantitative chain makes the extracted cold-germ family
-  nonempty once the hot-failure mass, stub-excess, candidate-loss, overlap
-  cover, and linear-slack inequalities are read.
-- **What the Lean does.** `coldPositiveGermRow` reads `coldHotFailureMass`,
-  `coldAmbientCubicStubExcess`, and `coldGermExtraction` with `FactInputs.get`,
-  then appends the cleared arithmetic implication `ColdCorridor.coldGerm_positive`.
-- **Gap.** none for carrier cleanup.
-- **Ledger and residual.** `Requires := [coldHotFailureMass,
-  coldAmbientCubicStubExcess, coldGermExtraction]`,
-  `Produces := [coldPositiveGerm]`; residual unchanged.
-- **Transport and terminals.** Ledger fact only.  No candidate family is
-  transported.
+  nonempty.
+- **What the Lean does.** Positivity is the final conjunct of
+  `ExtractedGermFamily`, produced existentially by the current-object
+  `ColdGermExtractionLocal` fact stored at Row 58.  The former standalone
+  universal `coldPositiveGermRow` was deleted from the executable chain: it
+  accepted caller-supplied arithmetic objects and its ledger reads were unused.
+- **Gap.** none; there is no separate positive-germ node.
+- **Ledger and residual.** No additional commit.  Consumers obtain positivity
+  from `K .coldGermExtraction` on the same residual.
+- **Transport and terminals.** No separate transport or terminal.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| positive extracted germ | lem | `ColdCorridor.coldGerm_positive` | no CT — `Spine.coldPositiveGermRow` |
+| positive extracted germ | lem | `ColdCorridor.ExtractedGermFamily` | stored inside `K .coldGermExtraction` |
 
 **CT composition at this row.** No CT.
 

@@ -3568,6 +3568,30 @@ sealed inputs before the single bridge-mass fact is appended.
         .nil)
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def typeBBridgeSublinearRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.typeBBridgeSublinear
+    { Requires := [K .typeBBridgeMass]
+      Produces := [K .typeBBridgeSublinear]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let bridge := inputs.get (K .typeBBridgeMass)
+      .cons (key := K .typeBBridgeSublinear) ⟨bridge.down.2.1⟩ .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def fanCertificateResidualMassRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
       (instFactSystem (BranchState := BranchState)
@@ -6199,6 +6223,36 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               Graph.Route8.TerminalTwoCarrierNoGoFacts
                 (Graph.HasCycleWithLength data.LengthOK) entry.carriers
                 entry.coordinates entry.car entry.car_subset entry.state)⟩⟩ .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def largeBudgetRoute8ClosedRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.largeBudgetRoute8Closed
+    { Requires := [K .route8TerminalResidual, K .route8TerminalNoGo]
+      Produces := [K .largeBudgetRoute8Closed]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let terminal := inputs.get (K .route8TerminalResidual)
+      let noGo := inputs.get (K .route8TerminalNoGo)
+      .cons (key := K .largeBudgetRoute8Closed)
+        ⟨by
+          rcases terminal.down with ⟨_pressure, _witnesses, presented,
+            terminalSurvives⟩
+          rcases noGo.down with ⟨_pressureNoGo, _witnessesNoGo, terminalNoGo⟩
+          exact terminalSurvives (terminalNoGo presented)⟩ .nil)
     0 0
 
 /-! ## Node `[95]`: exit `(1)`, the Mersenne anchored return

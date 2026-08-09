@@ -327,6 +327,22 @@ cursor that the local fan walk produces. -/
   bridgeFanMassRow bridgeResidual (K .typeBBridgeMass) distinct
     (fun _input _bridgeResidual value => ⟨value⟩)
 
+/-- The paper's Type B bridge sublinearity fact, published as an ordinary
+ledger fact after the bridge mass ledger and the shared budget facts are all
+present. -/
+@[reducible] noncomputable def typeBBridgeSublinear :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  typeBBridgeSublinearRow
+
+@[reducible] noncomputable def largeBudgetRoute8Closed :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  largeBudgetRoute8ClosedRow
+
+noncomputable instance instImpossibleLargeBudgetRoute8Closed :
+    Impossible (Input BranchState Presentation presentation data)
+      (K .largeBudgetRoute8Closed) where
+  contradiction := fun _residual closed => closed.down
+
 /-- Node `[76]`/`[85]`, Step 1 selected fan-entry charge on the B2-success
 cursor. -/
 @[reducible] noncomputable def typeBSelectedFanCharge :
