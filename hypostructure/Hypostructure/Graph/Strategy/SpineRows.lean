@@ -5020,6 +5020,72 @@ noncomputable def typeASaturatedHandoffVisibleExitFourDichotomy
             Or.inl ⟨package, occurs⟩⟩)⟩)
     exitFresh freeFresh
 
+@[reducible] noncomputable def typeASaturatedHandoffSilentFromFirstExcessRow
+    (typeAVisibleFirstExcess typeASaturatedHandoffSilent :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : typeAVisibleFirstExcess ≠ typeASaturatedHandoffSilent)
+    (excessOf : (input : Input BranchState Presentation presentation data) →
+      typeAVisibleFirstExcess.At input →
+      ∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              input.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : input.object.Vertex,
+                input.object.IsReceiver piece data.threshold receiver ∧
+                  input.object.Saturated piece data.threshold
+                    data.dischargeScale receiver ∧
+                  Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+                    data.dischargeScale receiver ∅)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      (∃ packing : Finset (Finset input.object.Vertex),
+        input.object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset input.object.Vertex,
+            input.object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ input.object.canonicalPieces
+              (input.object.remainderSupport packing),
+            let piece := input.object.pieceSupport
+              (input.object.remainderSupport packing) component
+            input.object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              input.object.ambientSurplus piece data.threshold = 0 ∧
+              ∃ receiver : input.object.Vertex,
+                input.object.IsReceiver piece data.threshold receiver ∧
+                  ∃ peeled : Finset input.object.Vertex,
+                    peeled ⊆ input.object.routedLoads piece data.threshold
+                        receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      Graph.ExitFour.SilentUnpeeledExcessAt piece
+                        data.threshold data.dischargeScale receiver peeled) →
+      typeASaturatedHandoffSilent.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly
+    `Hypostructure.Graph.Strategy.Spine.typeASaturatedHandoffSilentFromFirstExcess
+    (rowManifest typeAVisibleFirstExcess typeASaturatedHandoffSilent distinct)
+    (fun inputs =>
+      .cons (key := typeASaturatedHandoffSilent)
+        (encode inputs.current (by
+          classical
+          obtain ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, saturated, silent⟩ :=
+            excessOf inputs.current (inputs.get typeAVisibleFirstExcess)
+          let piece := inputs.current.object.pieceSupport
+            (inputs.current.object.remainderSupport packing) component
+          exact ⟨packing, valid, maximal, component, present, negative, zero,
+            receiver, isReceiver, ∅, Finset.empty_subset _,
+            (Graph.ExitFour.saturatedAfter_empty piece data.threshold
+              data.dischargeScale receiver).mpr saturated, silent⟩))
+        .nil)
+
 noncomputable def typeASaturatedHandoffSilentExitFourDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}

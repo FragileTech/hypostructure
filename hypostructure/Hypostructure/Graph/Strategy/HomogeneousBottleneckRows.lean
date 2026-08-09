@@ -657,13 +657,15 @@ ledger's own predicate*, so nothing is re-derived and nothing is parameterised
 into triviality. -/
 @[reducible] noncomputable def bottleneckRoutingRow
     (selection uncompressible sparseSurplusSurvivor homogeneousBottleneckPattern
-      bottleneckRouting : FactKey (Input BranchState Presentation presentation data))
+      bottleneckRouting typeBHandoff :
+      FactKey (Input BranchState Presentation presentation data))
     (distinct : selection ≠ uncompressible)
     (selectionNeSurvivor : selection ≠ sparseSurplusSurvivor)
     (selectionNePattern : selection ≠ homogeneousBottleneckPattern)
     (uncompressibleNeSurvivor : uncompressible ≠ sparseSurplusSurvivor)
     (uncompressibleNePattern : uncompressible ≠ homogeneousBottleneckPattern)
     (survivorNePattern : sparseSurplusSurvivor ≠ homogeneousBottleneckPattern)
+    (routingNeHandoff : bottleneckRouting ≠ typeBHandoff)
     (patternOf : (input : Input BranchState Presentation presentation data) →
       homogeneousBottleneckPattern.At input →
       Graph.HomogeneousBottleneckPatternStatement input.object
@@ -684,24 +686,26 @@ into triviality. -/
         ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) input.object piece)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (Graph.BottleneckRoutingStatement input.object
-          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-          data.windowOrder ∧
-        Graph.TypeBHandoffStatement input.object
-          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-          data.windowOrder) →
-      bottleneckRouting.At input) :
+    (encodeRouting : (input : Input BranchState Presentation presentation data) →
+      Graph.BottleneckRoutingStatement input.object
+        (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+        data.windowOrder →
+      bottleneckRouting.At input)
+    (encodeHandoff : (input : Input BranchState Presentation presentation data) →
+      Graph.TypeBHandoffStatement input.object
+        (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+        data.windowOrder →
+      typeBHandoff.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.bottleneckRouting
     { Requires :=
         [selection, uncompressible, sparseSurplusSurvivor,
           homogeneousBottleneckPattern]
-      Produces := [bottleneckRouting]
+      Produces := [bottleneckRouting, typeBHandoff]
       requiresUnique := by
         simp [distinct, selectionNeSurvivor, selectionNePattern,
           uncompressibleNeSurvivor, uncompressibleNePattern, survivorNePattern]
-      producesUnique := by simp
+      producesUnique := by simp [routingNeHandoff]
       producesNonempty := by simp }
     (fun inputs =>
       let avoids := avoidsOf inputs.current (inputs.get selection)
@@ -711,15 +715,18 @@ into triviality. -/
       let pattern :=
         patternOf inputs.current (inputs.get homogeneousBottleneckPattern)
       .cons (key := bottleneckRouting)
-        (encode inputs.current (by
+        (encodeRouting inputs.current (by
           rcases pattern with ⟨_presentation, _ledger, _token, _tokenMem,
             _role, _largePattern⟩
-          exact
-            ⟨Graph.bottleneckRoutingStatement inputs.current.object avoids
-                uncompressed,
-              Graph.typeBHandoffStatement inputs.current.object survives avoids
-                uncompressed⟩))
-        .nil)
+          exact Graph.bottleneckRoutingStatement inputs.current.object avoids
+            uncompressed))
+        (.cons (key := typeBHandoff)
+          (encodeHandoff inputs.current (by
+            rcases pattern with ⟨_presentation, _ledger, _token, _tokenMem,
+              _role, _largePattern⟩
+            exact Graph.typeBHandoffStatement inputs.current.object survives
+              avoids uncompressed))
+          .nil))
 
 /-! ## Node `[125]`: the survivor of the sparse surplus exits
 

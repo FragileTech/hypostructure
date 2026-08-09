@@ -1094,6 +1094,9 @@ inductive Key where
   `thm:homogeneous-overload-geometric-closure`'s first assertion, which is
   `lem:same-token-bottleneck-routing` at every declared routed bottleneck. -/
   | bottleneckRouting
+  /-- Node `[144]`, the bottleneck arm's Type B handoff fact: every declared
+  routed bottleneck produces admissible decorated Type B handoff fan data. -/
+  | typeBHandoff
   /-- Node `[144]`, `cor:homogeneous-same-token-caps-close` at the counted
   `L_geom` and the ledger's own token supply: every token load is at most
   `M₀ = Cap_hom(L_geom)`, hence `|Π_blk| ≤ M₀|𝔗_cap|`,
@@ -4324,17 +4327,18 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `thm:homogeneous-overload-geometric-closure`'s first assertion:
       -- `lem:same-token-bottleneck-routing` at every declared routed
       -- bottleneck of the object.
+      Graph.BottleneckRoutingStatement object
+        (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+        data.windowOrder
+  | .typeBHandoff, object =>
       -- and, at a survivor, the outcome itself: every declared routed
       -- bottleneck produces admissible decorated Type B handoff fan data.
       -- `prop:nonnear-cubic-sharp-overload-routing` opens *"if a sparse surplus
       -- exit occurs, there is nothing to route; otherwise..."*, and node `[125]`
       -- has already excluded that arm.
-      (Graph.BottleneckRoutingStatement object
-          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-          data.windowOrder ∧
-        Graph.TypeBHandoffStatement object
-          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-          data.windowOrder)
+      Graph.TypeBHandoffStatement object
+        (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
+        data.windowOrder
   | .homogeneousBottleneck, object =>
       -- `cor:homogeneous-same-token-caps-close` at the counted `L_geom`, with
       -- `thm:homogeneous-overload-geometric-closure`'s edge-count half.
@@ -4524,6 +4528,7 @@ def label : Key → String
   | .homogeneousCapsHold => "homogeneousCapsHold"
   | .homogeneousBottleneckPattern => "homogeneousBottleneckPattern"
   | .bottleneckRouting => "bottleneckRouting"
+  | .typeBHandoff => "typeBHandoff"
   | .homogeneousBottleneck => "homogeneousBottleneck"
   | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
   | .activeSurplusDemands => "activeSurplusDemands"
@@ -4713,6 +4718,7 @@ example : label .quantitativeOverload = "quantitativeOverload" := rfl
 example : label .homogeneousCapsHold = "homogeneousCapsHold" := rfl
 example : label .homogeneousBottleneckPattern = "homogeneousBottleneckPattern" := rfl
 example : label .bottleneckRouting = "bottleneckRouting" := rfl
+example : label .typeBHandoff = "typeBHandoff" := rfl
 example : label .homogeneousBottleneck = "homogeneousBottleneck" := rfl
 example : label .sparseSurplusSurvivor = "sparseSurplusSurvivor" := rfl
 example : label .activeSurplusDemands = "activeSurplusDemands" := rfl
@@ -4892,6 +4898,7 @@ def idx : Key → Nat
   | .homogeneousCapsHold => 140
   | .homogeneousBottleneckPattern => 141
   | .bottleneckRouting => 142
+  | .typeBHandoff => 184
   | .homogeneousBottleneck => 118
   | .sparseSurplusSurvivor => 119
   | .activeSurplusDemands => 120
@@ -5052,6 +5059,7 @@ def ofIdx : Nat → Key
   | 140 => .homogeneousCapsHold
   | 141 => .homogeneousBottleneckPattern
   | 142 => .bottleneckRouting
+  | 184 => .typeBHandoff
   | 118 => .homogeneousBottleneck
   | 119 => .sparseSurplusSurvivor
   | 120 => .activeSurplusDemands
@@ -5443,6 +5451,8 @@ def name : Key → Lean.Name
         "homogeneousBottleneckPattern") 141
   | .bottleneckRouting =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "bottleneckRouting") 142
+  | .typeBHandoff =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBHandoff") 184
   | .homogeneousBottleneck =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "homogeneousBottleneck") 118

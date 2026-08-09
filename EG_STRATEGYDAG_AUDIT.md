@@ -1679,6 +1679,12 @@ carried outside the canonical ledger.
   schedules; and the first-separator `SeparatesAt` and list-head identities.
   The row does not assert Q1 semantic classification and does not construct a
   `DecoratedHandoff.Separation`.
+
+  On the no arm, `Spine.typeASaturatedHandoffSilentFromFirstExcessRow` reads the
+  committed `typeAVisibleFirstExcess` fact with `FactInputs.get` and appends the
+  ordinary ledger fact `typeASaturatedHandoffSilent` for the same selected
+  support, receiver, and empty peeling set.  The row produces no carrier and
+  uses the saturated-after-empty theorem only inside the declared fact.
 - **What it should do.** This is the maximal paper-valid prefix currently
   available.  The support-local receiver quantifier matches
   `lem:typeA-visible-entry`, and its universal negation matches the hypothesis
@@ -1693,18 +1699,22 @@ carried outside the canonical ledger.
 - **Ledger and residual.** One canonical `ExactLedger` is used throughout.
   The dichotomy reads `typeAReceiverRouting` and `typeASaturatedReceiver` with
   `ExactLedger.get`; the package prefix reads `typeAVisibleEntry` through
-  `FactInputs.get`.  Every output prepends one semantic key to the literal
-  incoming `known`.  `Fixtures/TypeAVisiblePackageLedger.lean` checks the
+  `FactInputs.get`; the no-arm silent-handoff row reads
+  `typeAVisibleFirstExcess` through `FactInputs.get`.  Every output prepends one
+  semantic key to the literal incoming `known`.
+  `Fixtures/TypeAVisiblePackageLedger.lean` checks the
   manifest, freshness, retained incoming key, complete audit, and nonempty
   commits without importing `SpineAssembly`.
   `Fixtures/TypeASelectedResidualWiring.lean` additionally instantiates the
   exact `[62]`, `[89]`, `[93]/[94]`, unsaturated-discharge, and exit-(1)--(3)
   interfaces without any continuation wrapper.
 - **Transport and terminals.** The split is Core `Decision`; the compiled
-  package prefix is `factOnly`.  No custom result carrier, history wrapper,
-  native decision, table computation, or reconstructed residual appears.  The
-  yes arm continues to node `[95]`; the no arm remains open for the paper's
-  silent routing.
+  package prefix and the no-arm silent-handoff publication are `factOnly`.
+  No custom result carrier, history wrapper, native decision, table computation,
+  or reconstructed residual appears.  The yes arm continues to node `[95]`; the
+  no arm now carries the committed silent fact required by the paper's silent
+  routing, while the downstream route-8/exit-free continuation remains to be
+  composed.
 
 **Paper objects at this row.**
 
@@ -1713,6 +1723,7 @@ carried outside the canonical ledger.
 | `def:typeA-visible-load` | def | `Graph.VisibleEntry.ReceiverEntryReturn`<br>`Graph.VisibleEntry.VisibleFor`<br>`Graph.VisibleEntry.visibleLoadsAt` | standalone Graph |
 | `lem:typeA-port-return` | lem | `Graph.VisibleEntry.exists_anchoredReturn_of_mem_completionPorts`<br>`Spine.typeAPortReturn` | fact-only row |
 | `[93]` support-local split | decision | `Spine.typeAVisibleEntryDichotomy` | Core `Decision` |
+| `[94]` silent selected state | row | `Spine.typeASaturatedHandoffSilentFromFirstExcessRow` | fact-only row |
 | canonical four-return package | def/lem | `Graph.ExitFour.VisibleFourUnpeeledPackage`<br>`Graph.ExitFour.visibleFourUnpeeledPackage` | standalone Graph |
 | `lem:typeA-silent-excess-count` | lem | `Graph.VisibleEntry.card_le_sum_silentExcess_add_positiveDeficiency` | standalone Graph |
 | selected silent state | lem | `Graph.ExitFour.visibleFourUnpeeled_or_silentUnpeeledExcess` | standalone Graph |
@@ -2804,6 +2815,15 @@ adding a comparison.
   There is no source-free bridge-mass commit and no sibling residual is merged
   into the branch.
 
+  The selected assembly now wires the B2 exclusion survivor arms through the
+  same row after the exclusion dichotomy closes the nonnegative sibling:
+  `selectedLowEntropyTypeBExclusionMassAfterDichotomy`,
+  `selectedHighEntropyTypeBExclusionMassAfterDichotomy`,
+  `selectedLowEntropyDegreeFourExclusionMassAfterDichotomy`, and
+  `selectedHighEntropyDegreeFourExclusionMassAfterDichotomy`.  Each one passes
+  the incoming exact ledger to the existing residual reducer and then appends
+  `typeBBridgeMass` from the resulting `typeBExclusionResidual` fact.
+
   Every clause is stated **at this residual**, scoped by
   `∀ packing, IsWindowPacking → ∀ piece ⊆ remainderSupport packing, Connected →
   NegativeNetCharge → 0 < ambientSurplus`, and there are three:
@@ -2856,8 +2876,9 @@ adding a comparison.
   unchanged, `Refines` is equality, and the output index is `Produces ++ known`.
   The active residual fact is part of `Requires` and is read from the sealed
   inputs.  Certificate-residual and overlap-obstruction branches therefore
-  extend their own immutable prefixes monotonically, appending only
-  `typeBBridgeMass`.
+  extend their own immutable prefixes monotonically, and the selected B2
+  exclusion-residual continuations do the same after `typeBExclusionResidual`;
+  each appends only `typeBBridgeMass`.
 - **Transport and terminals.**  No terminal.  The four retained leaves are the
   exact ledgers indexed by `typeBCertificateResidualMassKeys`,
   `typeBOverlapObstructionMassKeys`, `degreeFourResidualMassKeys` and
@@ -5505,9 +5526,19 @@ would interpose machinery between a constructed cycle and its certificate.
   `coldExchangeBoundRow`, `coldWindowLedgerSplitRow`,
   `coldHotFailureMassRow`, `coldSelectedBranchExcessRow`, and
   `coldAmbientCubicStubExcessRow`.  Each appends exactly one `Spine.Key` fact.
+  The split row reads `windowPackageCollided`; the hot-failure mass row reads
+  `densityCap`, `spineSurplusEstimate`, and `sparsePressureNearCubic`; and the
+  ambient-cubic stub-excess row reads `spineSurplusEstimate` and
+  `sparsePressureNearCubic`.  These are ordinary upstream keys, not a cold
+  carrier.
 - **Gap.** none for carrier cleanup.
 - **Ledger and residual.** The full residual remains the same `ExactLedger`
-  cursor; later F5 rows append facts on top of it.
+  cursor.  `coldWindowLedgerSplit` requires `windowPackageCollided`,
+  `coldHotFailureMass` requires `coldWindowLedgerSplit`, `densityCap`,
+  `spineSurplusEstimate`, and `sparsePressureNearCubic`, and
+  `coldAmbientCubicStubExcess` requires `coldSelectedBranchExcess`,
+  `spineSurplusEstimate`, and `sparsePressureNearCubic`.  Later F5 rows append
+  facts on top of the same ledger.
 - **Transport and terminals.** No separate terminal object.
 
 **CT composition at this row.** No CT.
@@ -5589,12 +5620,14 @@ would interpose machinery between a constructed cycle and its certificate.
 ### Row 57 — (F4) dispatch arm `[156]`
 
 - **Paper fact.** The F4 arm transfers to a support already recorded upstream.
-- **What the Lean does.** `coldHandoffTransferRow` reads `coldFailureHandoff` by
-  exact key and commits the membership theorem for every supplied handoff
-  predicate.  No handoff object is constructed or returned.
+- **What the Lean does.** `coldHandoffTransferRow` reads `coldFailureHandoff`,
+  `typeBExcluded`, and `route8TerminalNoGo` by exact key and commits the
+  membership theorem for every supplied handoff predicate.  No handoff object is
+  constructed or returned.
 - **Gap.** none for carrier cleanup.
-- **Ledger and residual.** `Requires := [coldFailureHandoff]`,
-  `Produces := [coldHandoffTransfer]`; residual unchanged.
+- **Ledger and residual.** `Requires := [coldFailureHandoff, typeBExcluded,
+  route8TerminalNoGo]`, `Produces := [coldHandoffTransfer]`; residual
+  unchanged.
 - **Transport and terminals.** Ledger fact only; no terminal.
 
 **Paper objects at this row.**
@@ -5686,13 +5719,16 @@ would interpose machinery between a constructed cycle and its certificate.
 
 - **Paper fact.** The manuscript orders the cold alternatives; it does not
   require an application-owned registration payload.
-- **What the Lean does.** `Spine.runCold` composes the rows directly and now
-  requires the surviving cold prefix keys in `known`, including the large-budget
-  residual, near-cubic pressure, Type B closure, and route-8 terminal no-go.
-  Each row prerequisite is checked by the exact key index, and each row appends
-  only its declared production.  The run file no longer passes `encode`,
-  `fact.down`, or `PLift` wrapper callbacks; the row declarations already publish
-  concrete `Spine.Key` facts.
+- **What the Lean does.** `Spine.runCold` composes the rows directly and
+  requires the surviving cold prefix keys in `known`.  Those prefix facts are
+  also consumed at the row that spends them: collided-window input at the split,
+  density and near-cubic spine facts at the hot/cubic mass rows, sparse/negative
+  and large-budget survivor facts at first-failure routing and branch closure,
+  and Type B/route-8 closure facts at the handoff-transfer row.  Each row
+  prerequisite is checked by the exact key index, and each row appends only its
+  declared production.  The run file no longer passes `encode`, `fact.down`, or
+  `PLift` wrapper callbacks; the row declarations already publish concrete
+  `Spine.Key` facts.
 - **Gap.** none for carrier cleanup.
 - **Ledger and residual.** One `ExactLedger` is threaded through the block.
 - **Transport and terminals.** No registration object, no side dispatcher.
@@ -5704,7 +5740,8 @@ would interpose machinery between a constructed cycle and its certificate.
 - **Paper fact.** The cold branch should terminate at the paper's oval once all
   alternatives have been routed.
 - **What the Lean does.** `coldBranchClosedRow` reads `coldPositiveGerm`,
-  `coldGermExtraction`, `coldGermRouted`, and `coldSameInterfaceTable` with
+  `coldGermExtraction`, `coldGermRouted`, `coldSameInterfaceTable`,
+  `largeBudgetResidual`, `negativeSupport`, and `sparseSurplusSurvivor` with
   `FactInputs.get` and appends the ordinary fact `K .coldBranchClosed`.  The fact is
   `ColdCorridor.NoTerminalColdResidual` on the current residual: the extraction
   fact turns any terminal candidate family into a positive extracted subfamily,
@@ -5715,7 +5752,8 @@ would interpose machinery between a constructed cycle and its certificate.
   new `K .coldBranchClosed` fact.
 - **Gap.** none for carrier cleanup.
 - **Ledger and residual.** `Requires := [coldPositiveGerm,
-  coldGermExtraction, coldGermRouted, coldSameInterfaceTable]`,
+  coldGermExtraction, coldGermRouted, coldSameInterfaceTable,
+  largeBudgetResidual, negativeSupport, sparseSurplusSurvivor]`,
   `Produces := [coldBranchClosed]`; residual
   unchanged.  `Spine.runCold` requires `K .coldTerminalResidual` in the incoming
   key index and returns `closed :: coldBranchClosed :: coldGermRouted ::

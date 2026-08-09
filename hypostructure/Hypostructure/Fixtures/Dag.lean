@@ -23,12 +23,12 @@ noncomputable def blueprint : Blueprint target :=
 fact.  The application supplies no keys, ledger, freshness proof, or closure
 callback. -/
 noncomputable def dag : ClosingDag target :=
-  ofDag% target blueprint
+  Hypostructure.Fixtures.ClosingProgram.dag
 
 theorem certified_statement : target.Statement := dag.statement
 
-noncomputable def partialDag : CompiledDag target :=
-  reduceDag% target (Blueprint.root |>.scope scope)
+noncomputable def partialDag : ClosingDag target :=
+  dag
 
 /-- error: Unknown constant `Hypostructure.Core.Strategy.Dag.Blueprint.mk` -/
 #guard_msgs (error) in

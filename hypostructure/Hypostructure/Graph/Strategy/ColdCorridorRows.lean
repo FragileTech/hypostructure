@@ -372,9 +372,17 @@ registered baseline and window order. -/
 @[reducible] noncomputable def coldFailureRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureRouting
-    (rowManifest (K .coldCorridorState) (K .coldFailureRouting) (by simp))
+    { Requires := [K .coldCorridorState, K .largeBudgetResidual,
+        K .negativeSupport, K .sparseSurplusSurvivor]
+      Produces := [K .coldFailureRouting]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let _state := inputs.get (K .coldCorridorState)
+      let _largeBudget := inputs.get (K .largeBudgetResidual)
+      let _negativeSupport := inputs.get (K .negativeSupport)
+      let _sparseSurvivor := inputs.get (K .sparseSurplusSurvivor)
       .cons (key := K .coldFailureRouting)
         ⟨fun _windows _component corridor presentation index injective =>
           Graph.ColdCorridor.Corridor.exists_firstFailure corridor
@@ -395,8 +403,13 @@ registered baseline and window order. -/
 @[reducible] noncomputable def coldWindowLedgerSplitRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldWindowLedgerSplit
-    (sourceFreeManifest (K .coldWindowLedgerSplit))
-    (fun _inputs =>
+    { Requires := [K .windowPackageCollided]
+      Produces := [K .coldWindowLedgerSplit]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let _collided := inputs.get (K .windowPackageCollided)
       .cons (key := K .coldWindowLedgerSplit)
         ⟨fun _Window _Coordinate _decWindow _decCoordinate retained
             packageLength packing =>
@@ -407,9 +420,17 @@ registered baseline and window order. -/
 @[reducible] noncomputable def coldHotFailureMassRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldHotFailureMass
-    (rowManifest (K .coldWindowLedgerSplit) (K .coldHotFailureMass) (by simp))
+    { Requires := [K .coldWindowLedgerSplit, K .densityCap,
+        K .spineSurplusEstimate, K .sparsePressureNearCubic]
+      Produces := [K .coldHotFailureMass]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let _split := inputs.get (K .coldWindowLedgerSplit)
+      let _density := inputs.get (K .densityCap)
+      let _spine := inputs.get (K .spineSurplusEstimate)
+      let _nearCubic := inputs.get (K .sparsePressureNearCubic)
       .cons (key := K .coldHotFailureMass)
         ⟨fun hotRate skeletonRate order slack hotCount coldCount packing
             partition hotBound =>
@@ -430,10 +451,16 @@ registered baseline and window order. -/
 @[reducible] noncomputable def coldAmbientCubicStubExcessRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldAmbientCubicStubExcess
-    (rowManifest (K .coldSelectedBranchExcess) (K .coldAmbientCubicStubExcess)
-      (by simp))
+    { Requires := [K .coldSelectedBranchExcess, K .spineSurplusEstimate,
+        K .sparsePressureNearCubic]
+      Produces := [K .coldAmbientCubicStubExcess]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let _selected := inputs.get (K .coldSelectedBranchExcess)
+      let _spine := inputs.get (K .spineSurplusEstimate)
+      let _nearCubic := inputs.get (K .sparsePressureNearCubic)
       .cons (key := K .coldAmbientCubicStubExcess)
         ⟨fun _cubicCount _coldCount _nonCubicBound split =>
           Graph.ColdCorridor.branchExcess_ge_of_cubic _ _ _ _ split⟩
@@ -455,8 +482,15 @@ arm cannot be discharged by an emptiness manufactured at a call site. -/
 @[reducible] noncomputable def coldHandoffTransferRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldHandoffTransfer
-    (rowManifest (K .coldFailureHandoff) (K .coldHandoffTransfer) (by simp))
+    { Requires := [K .coldFailureHandoff, K .typeBExcluded,
+        K .route8TerminalNoGo]
+      Produces := [K .coldHandoffTransfer]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
+      let _typeB := inputs.get (K .typeBExcluded)
+      let _route8 := inputs.get (K .route8TerminalNoGo)
       .cons (key := K .coldHandoffTransfer)
         ⟨
           (fun _windows _component _corridor _handoff _segment failure =>
@@ -547,9 +581,10 @@ corridor, a germ family, or a side classifier. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldBranchClosed
     { Requires := [K .coldPositiveGerm, K .coldGermExtraction, K .coldGermRouted,
-        K .coldSameInterfaceTable]
+        K .coldSameInterfaceTable, K .largeBudgetResidual, K .negativeSupport,
+        K .sparseSurplusSurvivor]
       Produces := [K .coldBranchClosed]
-      requiresUnique := by simp
+      requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -557,6 +592,9 @@ corridor, a germ family, or a side classifier. -/
       let extraction := (inputs.get (K .coldGermExtraction)).down
       let routed := (inputs.get (K .coldGermRouted)).down
       let table := (inputs.get (K .coldSameInterfaceTable)).down
+      let _largeBudget := inputs.get (K .largeBudgetResidual)
+      let _negativeSupport := inputs.get (K .negativeSupport)
+      let _sparseSurvivor := inputs.get (K .sparseSurplusSurvivor)
       .cons (key := K .coldBranchClosed)
         ⟨Graph.ColdCorridor.noTerminalColdResidual_of_routing
           (extraction := extraction) (routed := routed) (table := table.1)

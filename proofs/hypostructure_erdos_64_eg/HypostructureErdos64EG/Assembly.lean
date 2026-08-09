@@ -5,10 +5,9 @@ import Hypostructure.Graph.Strategy.SpineContinuationRun
 # Final Erdős assembly boundary
 
 This file connects the public `Core.Target` registered in `Problem.lean` to the
-canonical exact-ledger residual used by the spine.  It does not define rows,
-carriers, routers, or side payloads: the only proof input it accepts is the
-ledger theorem that the selected residual whose ledger starts with
-`K .selection` closes.
+canonical exact-ledger residual used by the spine.  It does not define rows or
+transport state: the only proof input it accepts is the ledger theorem that the
+selected residual whose ledger starts with `K .selection` closes.
 -/
 
 namespace HypostructureErdos64EG
@@ -290,7 +289,7 @@ noncomputable def selectedBaselineSpineDemand
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)
       (K .windowPackageSeparated) (K .baselineSpineDemand)
-      (by simp [K_eq_iff])
+      (by simp)
       (fun _input fact => fact.down)
       (fun _input fact => ⟨fact⟩)).run afterActivation (by
         simp [baselineSpineDemandRow, selectedSeparatedSparseSurplusActivation,
@@ -357,7 +356,7 @@ noncomputable def selectedSparsePairExitCloses
         K .selection]) : False := by
   let closedHistory :=
     closeIncompatible history (K .sparseSurplusSurvivor) (K .sparsePairExit)
-      (by simp [K_eq_iff])
+      (by simp)
   exact closedHistory.elimClosed (by infer_instance)
 
 /-- Nodes `[130]` and `[134]`, canonical pair ledger on the blocker arm. -/
@@ -392,7 +391,7 @@ noncomputable def selectedCanonicalPairFacts
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff])
+      (by simp)
       (fun _input fact => fact.down)
       (fun _input fact => fact.down)
       (fun _input fact Coordinate family coordinateSupport =>
@@ -931,8 +930,9 @@ noncomputable def selectedWindowBottleneckRouting
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .bottleneckRouting, K .homogeneousBottleneckPattern,
-        K .windowIncidenceAudit, K .quantitativeOverload,
+      [K .bottleneckRouting, K .typeBHandoff,
+        K .homogeneousBottleneckPattern, K .windowIncidenceAudit,
+        K .quantitativeOverload,
         K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
@@ -949,13 +949,16 @@ noncomputable def selectedWindowBottleneckRouting
       (presentation := erdosReceiverLoadProfile) (data := spineData)
       (K .selection) (K .uncompressible) (K .sparseSurplusSurvivor)
       (K .homogeneousBottleneckPattern) (K .bottleneckRouting)
+      (K .typeBHandoff)
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff])
       (fun _input fact => fact.down)
       (fun _input fact => fact.down.1)
       (fun _input fact => fact.down.1)
       (fun _input fact => fact.down)
+      (fun _input fact => ⟨fact⟩)
       (fun _input fact => ⟨fact⟩)).run history (by
         simp [bottleneckRoutingRow, K_eq_iff])
 
@@ -1086,8 +1089,9 @@ noncomputable def selectedRemainderBottleneckRouting
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .bottleneckRouting, K .homogeneousBottleneckPattern,
-        K .remainderSurplusAudit, K .quantitativeOverload,
+      [K .bottleneckRouting, K .typeBHandoff,
+        K .homogeneousBottleneckPattern, K .remainderSurplusAudit,
+        K .quantitativeOverload,
         K .remainderClassOverload, K .windowClassAbsent,
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
@@ -1105,13 +1109,16 @@ noncomputable def selectedRemainderBottleneckRouting
       (presentation := erdosReceiverLoadProfile) (data := spineData)
       (K .selection) (K .uncompressible) (K .sparseSurplusSurvivor)
       (K .homogeneousBottleneckPattern) (K .bottleneckRouting)
+      (K .typeBHandoff)
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff])
       (fun _input fact => fact.down)
       (fun _input fact => fact.down.1)
       (fun _input fact => fact.down.1)
       (fun _input fact => fact.down)
+      (fun _input fact => ⟨fact⟩)
       (fun _input fact => ⟨fact⟩)).run history (by
         simp [bottleneckRoutingRow, K_eq_iff])
 
@@ -1246,8 +1253,9 @@ noncomputable def selectedPrimitiveBottleneckRouting
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .bottleneckRouting, K .homogeneousBottleneckPattern,
-        K .primitiveClassOverload, K .primitiveCarrierAudit,
+      [K .bottleneckRouting, K .typeBHandoff,
+        K .homogeneousBottleneckPattern, K .primitiveClassOverload,
+        K .primitiveCarrierAudit,
         K .quantitativeOverload, K .remainderClassAbsent,
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
@@ -1265,13 +1273,16 @@ noncomputable def selectedPrimitiveBottleneckRouting
       (presentation := erdosReceiverLoadProfile) (data := spineData)
       (K .selection) (K .uncompressible) (K .sparseSurplusSurvivor)
       (K .homogeneousBottleneckPattern) (K .bottleneckRouting)
+      (K .typeBHandoff)
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
+      (by simp [K_eq_iff])
       (fun _input fact => fact.down)
       (fun _input fact => fact.down.1)
       (fun _input fact => fact.down.1)
       (fun _input fact => fact.down)
+      (fun _input fact => ⟨fact⟩)
       (fun _input fact => ⟨fact⟩)).run history (by
         simp [bottleneckRoutingRow, K_eq_iff])
 
@@ -1372,8 +1383,9 @@ noncomputable def selectedWindowOverloadBottleneckRouting
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .bottleneckRouting, K .homogeneousBottleneckPattern,
-        K .windowIncidenceAudit, K .quantitativeOverload,
+      [K .bottleneckRouting, K .typeBHandoff,
+        K .homogeneousBottleneckPattern, K .windowIncidenceAudit,
+        K .quantitativeOverload,
         K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
@@ -1389,6 +1401,25 @@ noncomputable def selectedWindowOverloadBottleneckRouting
       exact False.elim (selectedWindowHomogeneousCapsCloses capsHistory)
   | .right patternHistory =>
       exact selectedWindowBottleneckRouting patternHistory
+
+theorem selectedWindowOverload_typeBHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .windowClassOverload, K .sparsePressureOverload,
+        K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
+        K .capacityTokenLedger, K .canonicalPairLedger,
+        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Graph.TypeBHandoffStatement selected.object
+      (Graph.MinimumDegreeAtLeast spineData.threshold) spineData.LengthOK
+      spineData.windowOrder :=
+  (ExactLedger.get (selectedWindowOverloadBottleneckRouting history)
+    (K .typeBHandoff)).down
 
 /-- Nodes `[142]`--`[144]`, remainder-overload arm reduced to bottleneck routing. -/
 noncomputable def selectedRemainderOverloadBottleneckRouting
@@ -1406,8 +1437,9 @@ noncomputable def selectedRemainderOverloadBottleneckRouting
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .bottleneckRouting, K .homogeneousBottleneckPattern,
-        K .remainderSurplusAudit, K .quantitativeOverload,
+      [K .bottleneckRouting, K .typeBHandoff,
+        K .homogeneousBottleneckPattern, K .remainderSurplusAudit,
+        K .quantitativeOverload,
         K .remainderClassOverload, K .windowClassAbsent,
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
@@ -1425,6 +1457,26 @@ noncomputable def selectedRemainderOverloadBottleneckRouting
   | .right patternHistory =>
       exact selectedRemainderBottleneckRouting patternHistory
 
+theorem selectedRemainderOverload_typeBHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .remainderClassOverload, K .windowClassAbsent,
+        K .sparsePressureOverload, K .roleFibrePartition,
+        K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
+        K .canonicalPairLedger, K .canonicalBlockerRoute,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Graph.TypeBHandoffStatement selected.object
+      (Graph.MinimumDegreeAtLeast spineData.threshold) spineData.LengthOK
+      spineData.windowOrder :=
+  (ExactLedger.get (selectedRemainderOverloadBottleneckRouting history)
+    (K .typeBHandoff)).down
+
 /-- Nodes `[143]`--`[144]`, primitive-overload arm reduced to bottleneck routing. -/
 noncomputable def selectedPrimitiveOverloadBottleneckRouting
     {selected : EGInput.{u}}
@@ -1441,8 +1493,9 @@ noncomputable def selectedPrimitiveOverloadBottleneckRouting
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .bottleneckRouting, K .homogeneousBottleneckPattern,
-        K .primitiveClassOverload, K .primitiveCarrierAudit,
+      [K .bottleneckRouting, K .typeBHandoff,
+        K .homogeneousBottleneckPattern, K .primitiveClassOverload,
+        K .primitiveCarrierAudit,
         K .quantitativeOverload, K .remainderClassAbsent,
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
@@ -1459,6 +1512,96 @@ noncomputable def selectedPrimitiveOverloadBottleneckRouting
       exact False.elim (selectedPrimitiveHomogeneousCapsCloses capsHistory)
   | .right patternHistory =>
       exact selectedPrimitiveBottleneckRouting patternHistory
+
+theorem selectedPrimitiveOverload_typeBHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .remainderClassAbsent, K .windowClassAbsent,
+        K .sparsePressureOverload, K .roleFibrePartition,
+        K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
+        K .canonicalPairLedger, K .canonicalBlockerRoute,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Graph.TypeBHandoffStatement selected.object
+      (Graph.MinimumDegreeAtLeast spineData.threshold) spineData.LengthOK
+      spineData.windowOrder :=
+  (ExactLedger.get (selectedPrimitiveOverloadBottleneckRouting history)
+    (K .typeBHandoff)).down
+
+/-- Nodes `[125]`--`[139]`, strict separated surplus through the window-class split. -/
+noncomputable def selectedStrictSeparatedWindowClassDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .windowClassOverload)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .windowClassAbsent)
+      (selectedStrictSeparatedOverload history) :=
+  selectedWindowClassDichotomy (selectedStrictSeparatedOverload history)
+
+noncomputable def selectedStrictSeparated_bottleneckRouting
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    (K (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      .bottleneckRouting).At selected := by
+  match selectedStrictSeparatedWindowClassDichotomy history with
+  | .left windowHistory =>
+      exact
+        ExactLedger.get
+          (selectedWindowOverloadBottleneckRouting windowHistory)
+          (K .bottleneckRouting)
+  | .right windowAbsentHistory =>
+      match selectedRemainderClassDichotomy windowAbsentHistory with
+      | .left remainderHistory =>
+          exact
+            ExactLedger.get
+              (selectedRemainderOverloadBottleneckRouting remainderHistory)
+              (K .bottleneckRouting)
+      | .right remainderAbsentHistory =>
+          exact
+            ExactLedger.get
+              (selectedPrimitiveOverloadBottleneckRouting remainderAbsentHistory)
+              (K .bottleneckRouting)
+
+theorem selectedStrictSeparated_typeBHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Graph.TypeBHandoffStatement selected.object
+      (Graph.MinimumDegreeAtLeast spineData.threshold) spineData.LengthOK
+      spineData.windowOrder :=
+  match selectedStrictSeparatedWindowClassDichotomy history with
+  | .left windowHistory =>
+      selectedWindowOverload_typeBHandoff windowHistory
+  | .right windowAbsentHistory =>
+      match selectedRemainderClassDichotomy windowAbsentHistory with
+      | .left remainderHistory =>
+          selectedRemainderOverload_typeBHandoff remainderHistory
+      | .right remainderAbsentHistory =>
+          selectedPrimitiveOverload_typeBHandoff remainderAbsentHistory
 
 /-- Node `[21]`, on the near-cubic arm of node `[19]`. -/
 noncomputable def selectedWindowPackageDichotomy
@@ -1926,6 +2069,34 @@ noncomputable def selectedEntropyCapActiveCloses
       (K .entropyCapActive) (by simp [K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
+/-- Nodes `[52]`--`[54]`, high-entropy arm reduced to the large-budget survivor. -/
+noncomputable def selectedHighEntropyLargeBudget
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  match selectedHighEntropyCapDichotomy history with
+  | .left activeHistory =>
+      exact False.elim (selectedEntropyCapActiveCloses activeHistory)
+  | .right largeHistory =>
+      exact largeHistory
+
 /-- Node `[55]`, on the low-entropy arm. -/
 noncomputable def selectedLowEntropyLargeBudget
     {selected : EGInput.{u}}
@@ -2162,6 +2333,79 @@ noncomputable def selectedLowEntropyTypeSplitDichotomy
     (by simp [selectedLowEntropyNegativeSupport, K_eq_iff])
     (by simp [selectedLowEntropyNegativeSupport, K_eq_iff])
 
+/-- Nodes `[57]`--`[61]`, low-entropy large-charge arm reduced to negative support. -/
+noncomputable def selectedLowEntropyNegativeSupportAfterNetChargeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyNetChargeDichotomy history with
+  | .left nonNegativeHistory =>
+      exact False.elim
+        (selectedLowEntropyNetChargeNonNegativeCloses nonNegativeHistory)
+  | .right negativeHistory =>
+      exact selectedLowEntropyNegativeSupport negativeHistory
+
+/-- Nodes `[57]`--`[62]`, low-entropy large-charge arm through the Type A/B split. -/
+noncomputable def selectedLowEntropyTypeSplitAfterNetChargeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeALowSurplus)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBHighSurplus)
+      (selectedLowEntropyNegativeSupportAfterNetChargeDichotomy history) :=
+  typeSplitDichotomy (data := spineData)
+    (selectedLowEntropyNegativeSupportAfterNetChargeDichotomy history)
+    (K .negativeSupport) (K .typeALowSurplus) (K .typeBHighSurplus)
+    (fun fact => fact.down)
+    (fun typeA => ⟨typeA⟩)
+    (fun typeB => ⟨typeB⟩)
+    (by
+      simp [selectedLowEntropyNegativeSupportAfterNetChargeDichotomy,
+        selectedLowEntropyNetChargeDichotomy,
+        selectedLowEntropyNetChargeLocalization,
+        selectedLowEntropyNetChargeCap, selectedLowEntropyNegativeSupport,
+        K_eq_iff])
+    (by
+      simp [selectedLowEntropyNegativeSupportAfterNetChargeDichotomy,
+        selectedLowEntropyNetChargeDichotomy,
+        selectedLowEntropyNetChargeLocalization,
+        selectedLowEntropyNetChargeCap, selectedLowEntropyNegativeSupport,
+        K_eq_iff])
+
 /-- Node `[60]`, the order-regime split on the high-entropy Residual C arm. -/
 noncomputable def selectedHighEntropyNetChargeOrderDichotomy
     {selected : EGInput.{u}}
@@ -2191,6 +2435,31 @@ noncomputable def selectedHighEntropyNetChargeOrderDichotomy
     (fun small => ⟨small⟩)
     (by simp [K_eq_iff])
     (by simp [K_eq_iff])
+
+/-- Nodes `[52]`--`[60]`, high-entropy survivor through the net-charge order split. -/
+noncomputable def selectedHighEntropyNetChargeOrderAfterCapDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .netChargeLarge)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .netChargeSmall)
+      (selectedHighEntropyLargeBudget history) :=
+  selectedHighEntropyNetChargeOrderDichotomy
+    (selectedHighEntropyLargeBudget history)
 
 /-- Node `[60]`, the net-charge cap on the large high-entropy arm. -/
 noncomputable def selectedHighEntropyNetChargeCap
@@ -2373,6 +2642,3509 @@ noncomputable def selectedHighEntropyTypeSplitDichotomy
     (fun typeB => ⟨typeB⟩)
     (by simp [selectedHighEntropyNegativeSupport, K_eq_iff])
     (by simp [selectedHighEntropyNegativeSupport, K_eq_iff])
+
+/-- Nodes `[57]`--`[61]`, high-entropy large-charge arm reduced to negative support. -/
+noncomputable def selectedHighEntropyNegativeSupportAfterNetChargeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  match selectedHighEntropyNetChargeDichotomy history with
+  | .left nonNegativeHistory =>
+      exact False.elim
+        (selectedHighEntropyNetChargeNonNegativeCloses nonNegativeHistory)
+  | .right negativeHistory =>
+      exact selectedHighEntropyNegativeSupport negativeHistory
+
+/-- Nodes `[57]`--`[62]`, high-entropy large-charge arm through the Type A/B split. -/
+noncomputable def selectedHighEntropyTypeSplitAfterNetChargeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeALowSurplus)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBHighSurplus)
+      (selectedHighEntropyNegativeSupportAfterNetChargeDichotomy history) :=
+  typeSplitDichotomy (data := spineData)
+    (selectedHighEntropyNegativeSupportAfterNetChargeDichotomy history)
+    (K .negativeSupport) (K .typeALowSurplus) (K .typeBHighSurplus)
+    (fun fact => fact.down)
+    (fun typeA => ⟨typeA⟩)
+    (fun typeB => ⟨typeB⟩)
+    (by
+      simp [selectedHighEntropyNegativeSupportAfterNetChargeDichotomy,
+        selectedHighEntropyNetChargeDichotomy,
+        selectedHighEntropyNetChargeLocalization,
+        selectedHighEntropyNetChargeCap, selectedHighEntropyNegativeSupport,
+        K_eq_iff])
+    (by
+      simp [selectedHighEntropyNegativeSupportAfterNetChargeDichotomy,
+        selectedHighEntropyNetChargeDichotomy,
+        selectedHighEntropyNetChargeLocalization,
+        selectedHighEntropyNetChargeCap, selectedHighEntropyNegativeSupport,
+        K_eq_iff])
+
+/-- Node `[88]`, receiver routing on the low-entropy Type A arm. -/
+noncomputable def selectedLowEntropyTypeAReceiverRouting
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAReceiverRouting, K .typeALowSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (typeAReceiverRoutingRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .remainderNormalized) (K .typeAReceiverRouting)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeAReceiverRoutingRow, K_eq_iff])
+
+/-- Node `[89]`, saturation split on the low-entropy Type A arm. -/
+noncomputable def selectedLowEntropyTypeASaturationDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedReceiver)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAUnsaturatedReceivers)
+      (selectedLowEntropyTypeAReceiverRouting history) :=
+  typeASaturationDichotomy (selectedLowEntropyTypeAReceiverRouting history)
+    (K .typeALowSurplus) (K .typeASaturatedReceiver)
+    (K .typeAUnsaturatedReceivers)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [selectedLowEntropyTypeAReceiverRouting, K_eq_iff])
+    (by simp [selectedLowEntropyTypeAReceiverRouting, K_eq_iff])
+
+/-- Nodes `[90]`--`[91]`, unsaturated discharge on the low-entropy Type A arm. -/
+noncomputable def selectedLowEntropyTypeAUnsaturatedDischarge
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAUnsaturatedReceivers, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAUnsaturatedDischarge, K .typeAUnsaturatedReceivers,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeAUnsaturatedDischargeRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeAReceiverRouting) (K .typeAUnsaturatedReceivers)
+    (K .typeAUnsaturatedDischarge) (by simp [K_eq_iff])
+    (fun _input fact => fact.down)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeAUnsaturatedDischargeRow, K_eq_iff])
+
+/-- Nodes `[89]`--`[94]`, port-return fact on the saturated Type A arm. -/
+noncomputable def selectedLowEntropyTypeAPortReturn
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeAPortReturnRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .selection) (K .typeAPortReturn) (by simp [K_eq_iff])
+    (fun _input fact => fact.down.1)
+    (fun _input fact => fact.down.2)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeAPortReturnRow, K_eq_iff])
+
+/-- Node `[93]`, visible-entry split on the saturated Type A arm. -/
+noncomputable def selectedLowEntropyTypeAVisibleEntryDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAVisibleEntry)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAVisibleFirstExcess)
+      (selectedLowEntropyTypeAPortReturn history) :=
+  typeAVisibleEntryDichotomy (selectedLowEntropyTypeAPortReturn history)
+    (K .typeAReceiverRouting) (K .typeASaturatedReceiver)
+    (K .typeAVisibleEntry) (K .typeAVisibleFirstExcess)
+    (fun fact packing valid maximal piece inside surplus =>
+      fact.down packing valid maximal piece inside surplus)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [selectedLowEntropyTypeAPortReturn, K_eq_iff])
+    (by simp [selectedLowEntropyTypeAPortReturn, K_eq_iff])
+
+/-- Node `[88]`, receiver routing on the high-entropy Type A arm. -/
+noncomputable def selectedHighEntropyTypeAReceiverRouting
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAReceiverRouting, K .typeALowSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeAReceiverRoutingRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .remainderNormalized) (K .typeAReceiverRouting)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeAReceiverRoutingRow, K_eq_iff])
+
+/-- Node `[89]`, saturation split on the high-entropy Type A arm. -/
+noncomputable def selectedHighEntropyTypeASaturationDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedReceiver)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAUnsaturatedReceivers)
+      (selectedHighEntropyTypeAReceiverRouting history) :=
+  typeASaturationDichotomy (selectedHighEntropyTypeAReceiverRouting history)
+    (K .typeALowSurplus) (K .typeASaturatedReceiver)
+    (K .typeAUnsaturatedReceivers)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [selectedHighEntropyTypeAReceiverRouting, K_eq_iff])
+    (by simp [selectedHighEntropyTypeAReceiverRouting, K_eq_iff])
+
+/-- Nodes `[90]`--`[91]`, unsaturated discharge on the high-entropy Type A arm. -/
+noncomputable def selectedHighEntropyTypeAUnsaturatedDischarge
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAUnsaturatedReceivers, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAUnsaturatedDischarge, K .typeAUnsaturatedReceivers,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeAUnsaturatedDischargeRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeAReceiverRouting) (K .typeAUnsaturatedReceivers)
+    (K .typeAUnsaturatedDischarge) (by simp [K_eq_iff])
+    (fun _input fact => fact.down)
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeAUnsaturatedDischargeRow, K_eq_iff])
+
+/-- Nodes `[89]`--`[94]`, port-return fact on the high-entropy saturated Type A arm. -/
+noncomputable def selectedHighEntropyTypeAPortReturn
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeAPortReturnRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .selection) (K .typeAPortReturn) (by simp [K_eq_iff])
+    (fun _input fact => fact.down.1)
+    (fun _input fact => fact.down.2)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeAPortReturnRow, K_eq_iff])
+
+/-- Node `[93]`, visible-entry split on the high-entropy saturated Type A arm. -/
+noncomputable def selectedHighEntropyTypeAVisibleEntryDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAVisibleEntry)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAVisibleFirstExcess)
+      (selectedHighEntropyTypeAPortReturn history) :=
+  typeAVisibleEntryDichotomy (selectedHighEntropyTypeAPortReturn history)
+    (K .typeAReceiverRouting) (K .typeASaturatedReceiver)
+    (K .typeAVisibleEntry) (K .typeAVisibleFirstExcess)
+    (fun fact packing valid maximal piece inside surplus =>
+      fact.down packing valid maximal piece inside surplus)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [selectedHighEntropyTypeAPortReturn, K_eq_iff])
+    (by simp [selectedHighEntropyTypeAPortReturn, K_eq_iff])
+
+/-- Node `[94]`, silent handoff fact on the low-entropy no-visible Type A arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessSilentHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffSilent, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeASaturatedHandoffSilentFromFirstExcessRow
+    (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeAVisibleFirstExcess) (K .typeASaturatedHandoffSilent)
+    (by simp [K_eq_iff])
+    (fun _input fact => by
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, silent, _count⟩ := fact.down
+      exact ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, silent⟩)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeASaturatedHandoffSilentFromFirstExcessRow, K_eq_iff])
+
+/-- Node `[94]`, silent handoff fact on the high-entropy no-visible Type A arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessSilentHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffSilent, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeASaturatedHandoffSilentFromFirstExcessRow
+    (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeAVisibleFirstExcess) (K .typeASaturatedHandoffSilent)
+    (by simp [K_eq_iff])
+    (fun _input fact => by
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, silent, _count⟩ := fact.down
+      exact ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, silent⟩)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeASaturatedHandoffSilentFromFirstExcessRow, K_eq_iff])
+
+/-- Node `[101]` entry state on the low-entropy first-excess Type A arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessExitEntry
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeASaturatedExitEntryRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeAVisibleFirstExcess) (K .typeASaturatedExitEntry)
+    (by simp [K_eq_iff])
+    (fun _input fact => by
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, _silent, _count⟩ := fact.down
+      exact ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated⟩)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeASaturatedExitEntryRow, K_eq_iff])
+
+/-- Node `[101]` finite-descent fact on the low-entropy first-excess Type A arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessExitFourFiniteDescent
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFourFiniteDescent, K .typeASaturatedExitEntry,
+        K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  let h1 := selectedLowEntropyTypeAFirstExcessExitEntry history
+  exact
+    (typeAExitFourFiniteDescentRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      (K .typeASaturatedExitEntry) (K .typeAExitFourFiniteDescent)
+      (by simp [K_eq_iff])
+      (fun _input fact => fact.down)
+      (fun _input value => ⟨value⟩)).run h1
+      (by simp [selectedLowEntropyTypeAFirstExcessExitEntry,
+        typeAExitFourFiniteDescentRow, K_eq_iff])
+
+/-- Node `[101]` entry state on the high-entropy first-excess Type A arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessExitEntry
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeASaturatedExitEntryRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeAVisibleFirstExcess) (K .typeASaturatedExitEntry)
+    (by simp [K_eq_iff])
+    (fun _input fact => by
+      obtain ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated, _silent, _count⟩ := fact.down
+      exact ⟨packing, valid, maximal, component, present, negative, zero,
+        receiver, isReceiver, saturated⟩)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeASaturatedExitEntryRow, K_eq_iff])
+
+/-- Node `[101]` finite-descent fact on the high-entropy first-excess Type A arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessExitFourFiniteDescent
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFourFiniteDescent, K .typeASaturatedExitEntry,
+        K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  let h1 := selectedHighEntropyTypeAFirstExcessExitEntry history
+  exact
+    (typeAExitFourFiniteDescentRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      (K .typeASaturatedExitEntry) (K .typeAExitFourFiniteDescent)
+      (by simp [K_eq_iff])
+      (fun _input fact => fact.down)
+      (fun _input value => ⟨value⟩)).run h1
+      (by simp [selectedHighEntropyTypeAFirstExcessExitEntry,
+        typeAExitFourFiniteDescentRow, K_eq_iff])
+
+/-- Node `[101]` ready state on the low-entropy first-excess Type A arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessSilentExitFourReady
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  let h1 := selectedLowEntropyTypeAFirstExcessExitFourFiniteDescent history
+  exact
+    (typeASaturatedHandoffSilentFromFirstExcessRow
+      (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      (K .typeAVisibleFirstExcess) (K .typeASaturatedHandoffSilent)
+      (by simp [K_eq_iff])
+      (fun _input fact => by
+        obtain ⟨packing, valid, maximal, component, present, negative, zero,
+          receiver, isReceiver, saturated, silent, _count⟩ := fact.down
+        exact ⟨packing, valid, maximal, component, present, negative, zero,
+          receiver, isReceiver, saturated, silent⟩)
+      (fun _input value => ⟨value⟩)).run h1
+      (by simp [selectedLowEntropyTypeAFirstExcessExitFourFiniteDescent,
+        selectedLowEntropyTypeAFirstExcessExitEntry,
+        typeASaturatedHandoffSilentFromFirstExcessRow, K_eq_iff])
+
+/-- Node `[101]`, exit-`(4)` split on the low-entropy first-excess Type A arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessExitFourDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFour)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFourFree)
+      history :=
+  typeASaturatedHandoffSilentExitFourDichotomy history
+    (K .typeASaturatedHandoffSilent)
+    (K .typeASaturatedHandoffExitFour)
+    (K .typeASaturatedHandoffExitFourFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[101]` ready state on the high-entropy first-excess Type A arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessSilentExitFourReady
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleFirstExcess, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  let h1 := selectedHighEntropyTypeAFirstExcessExitFourFiniteDescent history
+  exact
+    (typeASaturatedHandoffSilentFromFirstExcessRow
+      (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      (K .typeAVisibleFirstExcess) (K .typeASaturatedHandoffSilent)
+      (by simp [K_eq_iff])
+      (fun _input fact => by
+        obtain ⟨packing, valid, maximal, component, present, negative, zero,
+          receiver, isReceiver, saturated, silent, _count⟩ := fact.down
+        exact ⟨packing, valid, maximal, component, present, negative, zero,
+          receiver, isReceiver, saturated, silent⟩)
+      (fun _input value => ⟨value⟩)).run h1
+      (by simp [selectedHighEntropyTypeAFirstExcessExitFourFiniteDescent,
+        selectedHighEntropyTypeAFirstExcessExitEntry,
+        typeASaturatedHandoffSilentFromFirstExcessRow, K_eq_iff])
+
+/-- Node `[101]`, exit-`(4)` split on the high-entropy first-excess Type A arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessExitFourDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFour)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFourFree)
+      history :=
+  typeASaturatedHandoffSilentExitFourDichotomy history
+    (K .typeASaturatedHandoffSilent)
+    (K .typeASaturatedHandoffExitFour)
+    (K .typeASaturatedHandoffExitFourFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[103]`, exit-`(5)` split on the low-entropy first-excess arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFive)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFiveFree)
+      history :=
+  typeAExitFiveDichotomy history
+    (K .typeASaturatedHandoffExitFourFree)
+    (K .typeAExitFive) (K .typeAExitFiveFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Low-entropy first-excess Type A continuation after node `[104]`. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyTypeAFirstExcessExitFiveDichotomy history with
+  | .left exitHistory =>
+      let closedHistory :=
+        closeIncompatible exitHistory (K .uncompressible) (K .typeAExitFive)
+          (by simp [K_eq_iff])
+      exact False.elim (closedHistory.elimClosed (by infer_instance))
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[105]`, exit-`(6)` split on the low-entropy first-excess arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessExitSixDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSix)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixFree)
+      history :=
+  typeAExitSixDichotomy history
+    (K .typeAExitFiveFree) (K .typeAExitSix) (K .typeAExitSixFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[106]`, scope split on the low-entropy first-excess exit-`(6)` arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessExitSixScopeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixProper)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixGlobal)
+      history :=
+  typeAExitSixScopeDichotomy history
+    (K .typeAExitSix) (K .typeAExitSixProper) (K .typeAExitSixGlobal)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Low-entropy first-excess Type A continuation after node `[106]`. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessExitSixFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyTypeAFirstExcessExitSixDichotomy history with
+  | .left exitHistory =>
+      match selectedLowEntropyTypeAFirstExcessExitSixScopeDichotomy exitHistory with
+      | .left properHistory =>
+          let closedHistory :=
+            closeIncompatible properHistory (K .selection)
+              (K .typeAExitSixProper) (by simp [K_eq_iff])
+          exact False.elim (closedHistory.elimClosed (by infer_instance))
+      | .right globalHistory =>
+          let closedHistory :=
+            closeIncompatible globalHistory (K .selection)
+              (K .typeAExitSixGlobal) (by simp [K_eq_iff])
+          exact False.elim (closedHistory.elimClosed (by infer_instance))
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[107]`, exit-`(7)` split on the low-entropy first-excess arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessExitSevenDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenProduced)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenFree)
+      history :=
+  runTypeAExitSevenDecision (data := spineData) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+
+/-- Nodes `[109]`--`[124]`, route-8 terminal no-go on the low-entropy first-excess arm. -/
+noncomputable def selectedLowEntropyTypeAFirstExcessRoute8TerminalNoGo
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenFree, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      (route8TerminalNoGoKeys (data := spineData)
+        [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+          K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+          K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+          K .typeAPortReturn, K .typeASaturatedReceiver,
+          K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+          K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+          K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+          K .forcedCurvatureCost, K .curvatureFullRank,
+          K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+          K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+          K .densityCap, K .barrierCap, K .windowPackageSeparated,
+          K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+          K .uncompressible, K .tightEndpoint, K .slackIndependent,
+          K .noProperBaseline, K .returnAvoidance, K .selection]) :=
+  runRoute8FromExitSevenFree (data := spineData)
+    (known :=
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[103]`, exit-`(5)` split on the high-entropy first-excess arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFive)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFiveFree)
+      history :=
+  typeAExitFiveDichotomy history
+    (K .typeASaturatedHandoffExitFourFree)
+    (K .typeAExitFive) (K .typeAExitFiveFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- High-entropy first-excess Type A continuation after node `[104]`. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedHighEntropyTypeAFirstExcessExitFiveDichotomy history with
+  | .left exitHistory =>
+      let closedHistory :=
+        closeIncompatible exitHistory (K .uncompressible) (K .typeAExitFive)
+          (by simp [K_eq_iff])
+      exact False.elim (closedHistory.elimClosed (by infer_instance))
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[105]`, exit-`(6)` split on the high-entropy first-excess arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessExitSixDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSix)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixFree)
+      history :=
+  typeAExitSixDichotomy history
+    (K .typeAExitFiveFree) (K .typeAExitSix) (K .typeAExitSixFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[106]`, scope split on the high-entropy first-excess exit-`(6)` arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessExitSixScopeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixProper)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixGlobal)
+      history :=
+  typeAExitSixScopeDichotomy history
+    (K .typeAExitSix) (K .typeAExitSixProper) (K .typeAExitSixGlobal)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- High-entropy first-excess Type A continuation after node `[106]`. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessExitSixFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedHighEntropyTypeAFirstExcessExitSixDichotomy history with
+  | .left exitHistory =>
+      match selectedHighEntropyTypeAFirstExcessExitSixScopeDichotomy exitHistory with
+      | .left properHistory =>
+          let closedHistory :=
+            closeIncompatible properHistory (K .selection)
+              (K .typeAExitSixProper) (by simp [K_eq_iff])
+          exact False.elim (closedHistory.elimClosed (by infer_instance))
+      | .right globalHistory =>
+          let closedHistory :=
+            closeIncompatible globalHistory (K .selection)
+              (K .typeAExitSixGlobal) (by simp [K_eq_iff])
+          exact False.elim (closedHistory.elimClosed (by infer_instance))
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[107]`, exit-`(7)` split on the high-entropy first-excess arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessExitSevenDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenProduced)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenFree)
+      history :=
+  runTypeAExitSevenDecision (data := spineData) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+
+/-- Nodes `[109]`--`[124]`, route-8 terminal no-go on the high-entropy first-excess arm. -/
+noncomputable def selectedHighEntropyTypeAFirstExcessRoute8TerminalNoGo
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenFree, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      (route8TerminalNoGoKeys (data := spineData)
+        [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+          K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+          K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+          K .typeAPortReturn, K .typeASaturatedReceiver,
+          K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+          K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+          K .netChargeLarge, K .largeBudgetResidual,
+          K .entropyPackageDemand, K .remainderEntropyHigh,
+          K .forcedCurvatureCost, K .curvatureFullRank,
+          K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+          K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+          K .densityCap, K .barrierCap, K .windowPackageSeparated,
+          K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+          K .uncompressible, K .tightEndpoint, K .slackIndependent,
+          K .noProperBaseline, K .returnAvoidance, K .selection]) :=
+  runRoute8FromExitSevenFree (data := spineData)
+    (known :=
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleFirstExcess,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[93]` yes arm, visible-entry clause on the low-entropy Type A arm. -/
+noncomputable def selectedLowEntropyTypeAVisibleEntryClause
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeAVisibleEntryClauseRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeAVisibleEntry) (K .typeAVisibleEntryClause)
+    (by simp [K_eq_iff])
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeAVisibleEntryClauseRow, K_eq_iff])
+
+/-- Node `[101]` entry state on the low-entropy visible Type A arm. -/
+noncomputable def selectedLowEntropyTypeASaturatedExitEntry
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeASaturatedExitEntryRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeASaturatedReceiver) (K .typeASaturatedExitEntry)
+    (by simp [K_eq_iff])
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeASaturatedExitEntryRow, K_eq_iff])
+
+/-- Node `[101]` finite-descent fact on the low-entropy visible Type A arm. -/
+noncomputable def selectedLowEntropyTypeAExitFourFiniteDescent
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFourFiniteDescent, K .typeASaturatedExitEntry,
+        K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  let h1 := selectedLowEntropyTypeASaturatedExitEntry history
+  exact
+    (typeAExitFourFiniteDescentRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      (K .typeASaturatedExitEntry) (K .typeAExitFourFiniteDescent)
+      (by simp [K_eq_iff])
+      (fun _input fact => fact.down)
+      (fun _input value => ⟨value⟩)).run h1
+      (by simp [selectedLowEntropyTypeASaturatedExitEntry,
+        typeAExitFourFiniteDescentRow, K_eq_iff])
+
+/-- Node `[93]` yes arm, visible-entry clause on the high-entropy Type A arm. -/
+noncomputable def selectedHighEntropyTypeAVisibleEntryClause
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (typeAVisibleEntryClauseRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeAVisibleEntry) (K .typeAVisibleEntryClause)
+    (by simp [K_eq_iff])
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeAVisibleEntryClauseRow, K_eq_iff])
+
+/-- Node `[101]` entry state on the high-entropy visible Type A arm. -/
+noncomputable def selectedHighEntropyTypeASaturatedExitEntry
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (typeASaturatedExitEntryRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeASaturatedReceiver) (K .typeASaturatedExitEntry)
+    (by simp [K_eq_iff])
+    (fun _input fact => fact.down)
+    (fun _input value => ⟨value⟩)).run history
+    (by simp [typeASaturatedExitEntryRow, K_eq_iff])
+
+/-- Node `[101]` finite-descent fact on the high-entropy visible Type A arm. -/
+noncomputable def selectedHighEntropyTypeAExitFourFiniteDescent
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFourFiniteDescent, K .typeASaturatedExitEntry,
+        K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  let h1 := selectedHighEntropyTypeASaturatedExitEntry history
+  exact
+    (typeAExitFourFiniteDescentRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      (K .typeASaturatedExitEntry) (K .typeAExitFourFiniteDescent)
+      (by simp [K_eq_iff])
+      (fun _input fact => fact.down)
+      (fun _input value => ⟨value⟩)).run h1
+      (by simp [selectedHighEntropyTypeASaturatedExitEntry,
+        typeAExitFourFiniteDescentRow, K_eq_iff])
+
+/-- Node `[101]`, saturated-handoff split on the low-entropy visible Type A arm. -/
+noncomputable def selectedLowEntropyTypeASaturatedHandoffSplitDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffVisible)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffSilent)
+      (selectedLowEntropyTypeAExitFourFiniteDescent history) :=
+  typeASaturatedHandoffSplitDichotomy
+    (selectedLowEntropyTypeAExitFourFiniteDescent history)
+    (K .typeASaturatedExitEntry) (K .typeASaturatedHandoffVisible)
+    (K .typeASaturatedHandoffSilent)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [selectedLowEntropyTypeAExitFourFiniteDescent,
+      selectedLowEntropyTypeASaturatedExitEntry, K_eq_iff])
+    (by simp [selectedLowEntropyTypeAExitFourFiniteDescent,
+      selectedLowEntropyTypeASaturatedExitEntry, K_eq_iff])
+
+/-- Node `[101]`, saturated-handoff split on the high-entropy visible Type A arm. -/
+noncomputable def selectedHighEntropyTypeASaturatedHandoffSplitDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
+        K .typeAPortReturn, K .typeASaturatedReceiver,
+        K .typeAReceiverRouting, K .typeALowSurplus, K .negativeSupport,
+        K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
+        K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffVisible)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffSilent)
+      (selectedHighEntropyTypeAExitFourFiniteDescent history) :=
+  typeASaturatedHandoffSplitDichotomy
+    (selectedHighEntropyTypeAExitFourFiniteDescent history)
+    (K .typeASaturatedExitEntry) (K .typeASaturatedHandoffVisible)
+    (K .typeASaturatedHandoffSilent)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [selectedHighEntropyTypeAExitFourFiniteDescent,
+      selectedHighEntropyTypeASaturatedExitEntry, K_eq_iff])
+    (by simp [selectedHighEntropyTypeAExitFourFiniteDescent,
+      selectedHighEntropyTypeASaturatedExitEntry, K_eq_iff])
+
+/-- Node `[101]`, exit-`(4)` split on the low-entropy visible handoff arm. -/
+noncomputable def selectedLowEntropyTypeAVisibleExitFourDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFour)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFourFree)
+      history :=
+  typeASaturatedHandoffVisibleExitFourDichotomy history
+    (K .typeASaturatedHandoffVisible)
+    (K .typeASaturatedHandoffExitFour)
+    (K .typeASaturatedHandoffExitFourFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[101]`, exit-`(4)` split on the low-entropy silent handoff arm. -/
+noncomputable def selectedLowEntropyTypeASilentExitFourDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFour)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFourFree)
+      history :=
+  typeASaturatedHandoffSilentExitFourDichotomy history
+    (K .typeASaturatedHandoffSilent)
+    (K .typeASaturatedHandoffExitFour)
+    (K .typeASaturatedHandoffExitFourFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[101]`, exit-`(4)` split on the high-entropy visible handoff arm. -/
+noncomputable def selectedHighEntropyTypeAVisibleExitFourDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFour)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFourFree)
+      history :=
+  typeASaturatedHandoffVisibleExitFourDichotomy history
+    (K .typeASaturatedHandoffVisible)
+    (K .typeASaturatedHandoffExitFour)
+    (K .typeASaturatedHandoffExitFourFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[101]`, exit-`(4)` split on the high-entropy silent handoff arm. -/
+noncomputable def selectedHighEntropyTypeASilentExitFourDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFour)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeASaturatedHandoffExitFourFree)
+      history :=
+  typeASaturatedHandoffSilentExitFourDichotomy history
+    (K .typeASaturatedHandoffSilent)
+    (K .typeASaturatedHandoffExitFour)
+    (K .typeASaturatedHandoffExitFourFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[103]`, exit-`(5)` split on the low-entropy silent no-exit-`(4)` arm. -/
+noncomputable def selectedLowEntropyTypeASilentExitFiveDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFive)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFiveFree)
+      history :=
+  typeAExitFiveDichotomy history
+    (K .typeASaturatedHandoffExitFourFree)
+    (K .typeAExitFive) (K .typeAExitFiveFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[104]`, closes the low-entropy silent exit-`(5)` arm. -/
+noncomputable def selectedLowEntropyTypeASilentExitFiveCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFive, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .uncompressible) (K .typeAExitFive)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Low-entropy silent Type A continuation after node `[104]`. -/
+noncomputable def selectedLowEntropyTypeASilentExitFiveFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyTypeASilentExitFiveDichotomy history with
+  | .left exitHistory =>
+      exact False.elim
+        (selectedLowEntropyTypeASilentExitFiveCloses exitHistory)
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[105]`, exit-`(6)` split on the low-entropy silent no-exit-`(5)` arm. -/
+noncomputable def selectedLowEntropyTypeASilentExitSixDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSix)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixFree)
+      history :=
+  typeAExitSixDichotomy history
+    (K .typeAExitFiveFree) (K .typeAExitSix) (K .typeAExitSixFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[106]`, scope split on the low-entropy silent exit-`(6)` arm. -/
+noncomputable def selectedLowEntropyTypeASilentExitSixScopeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixProper)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixGlobal)
+      history :=
+  typeAExitSixScopeDichotomy history
+    (K .typeAExitSix) (K .typeAExitSixProper) (K .typeAExitSixGlobal)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[106]`, closes the low-entropy silent proper exit-`(6)` arm. -/
+noncomputable def selectedLowEntropyTypeASilentExitSixProperCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixProper, K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .selection) (K .typeAExitSixProper)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Node `[106]`, closes the low-entropy silent global exit-`(6)` arm. -/
+noncomputable def selectedLowEntropyTypeASilentExitSixGlobalCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixGlobal, K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .selection) (K .typeAExitSixGlobal)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Low-entropy silent Type A continuation after node `[106]`. -/
+noncomputable def selectedLowEntropyTypeASilentExitSixFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyTypeASilentExitSixDichotomy history with
+  | .left exitHistory =>
+      match selectedLowEntropyTypeASilentExitSixScopeDichotomy exitHistory with
+      | .left properHistory =>
+          exact False.elim
+            (selectedLowEntropyTypeASilentExitSixProperCloses properHistory)
+      | .right globalHistory =>
+          exact False.elim
+            (selectedLowEntropyTypeASilentExitSixGlobalCloses globalHistory)
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[107]`, exit-`(7)` split on the low-entropy silent no-exit-`(6)` arm. -/
+noncomputable def selectedLowEntropyTypeASilentExitSevenDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenProduced)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenFree)
+      history :=
+  runTypeAExitSevenDecision (data := spineData) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+
+/-- Node `[108]`, Type B handoff fact on the low-entropy silent exit-`(7)` produced arm. -/
+noncomputable def selectedLowEntropyTypeASilentExitSevenHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenProduced, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  runTypeAExitSevenHandoff (data := spineData) history
+    (by simp [K_eq_iff])
+
+/-- Node `[109]`, route-8 residual fact on the low-entropy silent exit-`(7)` free arm. -/
+noncomputable def selectedLowEntropyTypeASilentRoute8Residual
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenFree, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .route8Residual, K .typeAExitSevenFree,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (route8ResidualRow
+    (K .typeAExitFourFiniteDescent)
+    (K .typeASaturatedHandoffSilent)
+    (K .typeASaturatedHandoffExitFourFree)
+    (K .typeAExitFiveFree)
+    (K .typeAExitSixFree)
+    (K .typeAExitSevenFree)
+    (K .route8Residual)
+    (by simp [K_eq_iff])
+    (fun _input fact => fact.down)
+    (fun _input fact => ⟨fact⟩)).run history
+    (by simp [route8ResidualRow, K_eq_iff])
+
+/-- Node `[110]`, route-8 residual profile on the low-entropy silent free arm. -/
+noncomputable def selectedLowEntropyTypeASilentRoute8ResidualProfile
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .route8Residual, K .typeAExitSevenFree,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .route8ResidualProfile, K .route8Residual,
+        K .typeAExitSevenFree, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (route8ResidualProfileRow (data := spineData)).run history
+    (by simp [K_eq_iff])
+
+/-- Node `[111]`, route-8 global squeeze on the low-entropy silent free arm. -/
+noncomputable def selectedLowEntropyTypeASilentRoute8GlobalSqueeze
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .route8ResidualProfile, K .route8Residual,
+        K .typeAExitSevenFree, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .route8GlobalSqueeze, K .route8ResidualProfile,
+        K .route8Residual, K .typeAExitSevenFree,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (route8GlobalSqueezeRow (data := spineData)).run history
+    (by simp [K_eq_iff])
+
+/-- Node `[103]`, exit-`(5)` split on the low-entropy visible no-exit-`(4)` arm. -/
+noncomputable def selectedLowEntropyTypeAVisibleExitFiveDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFive)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFiveFree)
+      history :=
+  typeAExitFiveDichotomy history
+    (K .typeASaturatedHandoffExitFourFree)
+    (K .typeAExitFive) (K .typeAExitFiveFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Low-entropy visible Type A continuation after node `[104]`. -/
+noncomputable def selectedLowEntropyTypeAVisibleExitFiveFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyTypeAVisibleExitFiveDichotomy history with
+  | .left exitHistory =>
+      let closedHistory :=
+        closeIncompatible exitHistory (K .uncompressible) (K .typeAExitFive)
+          (by simp [K_eq_iff])
+      exact False.elim (closedHistory.elimClosed (by infer_instance))
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[105]`, exit-`(6)` split on the low-entropy visible no-exit-`(5)` arm. -/
+noncomputable def selectedLowEntropyTypeAVisibleExitSixDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSix)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixFree)
+      history :=
+  typeAExitSixDichotomy history
+    (K .typeAExitFiveFree) (K .typeAExitSix) (K .typeAExitSixFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[106]`, scope split on the low-entropy visible exit-`(6)` arm. -/
+noncomputable def selectedLowEntropyTypeAVisibleExitSixScopeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixProper)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixGlobal)
+      history :=
+  typeAExitSixScopeDichotomy history
+    (K .typeAExitSix) (K .typeAExitSixProper) (K .typeAExitSixGlobal)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Low-entropy visible Type A continuation after node `[106]`. -/
+noncomputable def selectedLowEntropyTypeAVisibleExitSixFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyTypeAVisibleExitSixDichotomy history with
+  | .left exitHistory =>
+      match selectedLowEntropyTypeAVisibleExitSixScopeDichotomy exitHistory with
+      | .left properHistory =>
+          let closedHistory :=
+            closeIncompatible properHistory (K .selection)
+              (K .typeAExitSixProper) (by simp [K_eq_iff])
+          exact False.elim (closedHistory.elimClosed (by infer_instance))
+      | .right globalHistory =>
+          let closedHistory :=
+            closeIncompatible globalHistory (K .selection)
+              (K .typeAExitSixGlobal) (by simp [K_eq_iff])
+          exact False.elim (closedHistory.elimClosed (by infer_instance))
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[107]`, exit-`(7)` split on the low-entropy visible no-exit-`(6)` arm. -/
+noncomputable def selectedLowEntropyTypeAVisibleExitSevenDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenProduced)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenFree)
+      history :=
+  runTypeAExitSevenDecision (data := spineData) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+
+/-- Node `[108]`, Type B handoff fact on the low-entropy visible exit-`(7)` produced arm. -/
+noncomputable def selectedLowEntropyTypeAVisibleExitSevenHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenProduced, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  runTypeAExitSevenHandoff (data := spineData) history
+    (by simp [K_eq_iff])
+
+noncomputable def selectedHighEntropyTypeASilentExitFiveDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFive)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFiveFree)
+      history :=
+  typeAExitFiveDichotomy history
+    (K .typeASaturatedHandoffExitFourFree)
+    (K .typeAExitFive) (K .typeAExitFiveFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[104]`, closes the high-entropy silent exit-`(5)` arm. -/
+noncomputable def selectedHighEntropyTypeASilentExitFiveCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFive, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .uncompressible) (K .typeAExitFive)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- High-entropy silent Type A continuation after node `[104]`. -/
+noncomputable def selectedHighEntropyTypeASilentExitFiveFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedHighEntropyTypeASilentExitFiveDichotomy history with
+  | .left exitHistory =>
+      exact False.elim
+        (selectedHighEntropyTypeASilentExitFiveCloses exitHistory)
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[105]`, exit-`(6)` split on the high-entropy silent no-exit-`(5)` arm. -/
+noncomputable def selectedHighEntropyTypeASilentExitSixDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSix)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixFree)
+      history :=
+  typeAExitSixDichotomy history
+    (K .typeAExitFiveFree) (K .typeAExitSix) (K .typeAExitSixFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[106]`, scope split on the high-entropy silent exit-`(6)` arm. -/
+noncomputable def selectedHighEntropyTypeASilentExitSixScopeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixProper)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixGlobal)
+      history :=
+  typeAExitSixScopeDichotomy history
+    (K .typeAExitSix) (K .typeAExitSixProper) (K .typeAExitSixGlobal)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[106]`, closes the high-entropy silent proper exit-`(6)` arm. -/
+noncomputable def selectedHighEntropyTypeASilentExitSixProperCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixProper, K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .selection) (K .typeAExitSixProper)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- Node `[106]`, closes the high-entropy silent global exit-`(6)` arm. -/
+noncomputable def selectedHighEntropyTypeASilentExitSixGlobalCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixGlobal, K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let closedHistory :=
+    closeIncompatible history (K .selection) (K .typeAExitSixGlobal)
+      (by simp [K_eq_iff])
+  exact closedHistory.elimClosed (by infer_instance)
+
+/-- High-entropy silent Type A continuation after node `[106]`. -/
+noncomputable def selectedHighEntropyTypeASilentExitSixFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedHighEntropyTypeASilentExitSixDichotomy history with
+  | .left exitHistory =>
+      match selectedHighEntropyTypeASilentExitSixScopeDichotomy exitHistory with
+      | .left properHistory =>
+          exact False.elim
+            (selectedHighEntropyTypeASilentExitSixProperCloses properHistory)
+      | .right globalHistory =>
+          exact False.elim
+            (selectedHighEntropyTypeASilentExitSixGlobalCloses globalHistory)
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[107]`, exit-`(7)` split on the high-entropy silent no-exit-`(6)` arm. -/
+noncomputable def selectedHighEntropyTypeASilentExitSevenDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenProduced)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenFree)
+      history :=
+  runTypeAExitSevenDecision (data := spineData) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+
+/-- Node `[108]`, Type B handoff fact on the high-entropy silent exit-`(7)` produced arm. -/
+noncomputable def selectedHighEntropyTypeASilentExitSevenHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenProduced, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  runTypeAExitSevenHandoff (data := spineData) history
+    (by simp [K_eq_iff])
+
+/-- Node `[109]`, route-8 residual fact on the high-entropy silent exit-`(7)` free arm. -/
+noncomputable def selectedHighEntropyTypeASilentRoute8Residual
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenFree, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .route8Residual, K .typeAExitSevenFree,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (route8ResidualRow
+    (K .typeAExitFourFiniteDescent)
+    (K .typeASaturatedHandoffSilent)
+    (K .typeASaturatedHandoffExitFourFree)
+    (K .typeAExitFiveFree)
+    (K .typeAExitSixFree)
+    (K .typeAExitSevenFree)
+    (K .route8Residual)
+    (by simp [K_eq_iff])
+    (fun _input fact => fact.down)
+    (fun _input fact => ⟨fact⟩)).run history
+    (by simp [route8ResidualRow, K_eq_iff])
+
+/-- Node `[110]`, route-8 residual profile on the high-entropy silent free arm. -/
+noncomputable def selectedHighEntropyTypeASilentRoute8ResidualProfile
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .route8Residual, K .typeAExitSevenFree,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .route8ResidualProfile, K .route8Residual,
+        K .typeAExitSevenFree, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (route8ResidualProfileRow (data := spineData)).run history
+    (by simp [K_eq_iff])
+
+/-- Node `[111]`, route-8 global squeeze on the high-entropy silent free arm. -/
+noncomputable def selectedHighEntropyTypeASilentRoute8GlobalSqueeze
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .route8ResidualProfile, K .route8Residual,
+        K .typeAExitSevenFree, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .route8GlobalSqueeze, K .route8ResidualProfile,
+        K .route8Residual, K .typeAExitSevenFree,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffSilent, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (route8GlobalSqueezeRow (data := spineData)).run history
+    (by simp [K_eq_iff])
+
+/-- Node `[103]`, exit-`(5)` split on the high-entropy visible no-exit-`(4)` arm. -/
+noncomputable def selectedHighEntropyTypeAVisibleExitFiveDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFive)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitFiveFree)
+      history :=
+  typeAExitFiveDichotomy history
+    (K .typeASaturatedHandoffExitFourFree)
+    (K .typeAExitFive) (K .typeAExitFiveFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- High-entropy visible Type A continuation after node `[104]`. -/
+noncomputable def selectedHighEntropyTypeAVisibleExitFiveFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedHighEntropyTypeAVisibleExitFiveDichotomy history with
+  | .left exitHistory =>
+      let closedHistory :=
+        closeIncompatible exitHistory (K .uncompressible) (K .typeAExitFive)
+          (by simp [K_eq_iff])
+      exact False.elim (closedHistory.elimClosed (by infer_instance))
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[105]`, exit-`(6)` split on the high-entropy visible no-exit-`(5)` arm. -/
+noncomputable def selectedHighEntropyTypeAVisibleExitSixDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSix)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixFree)
+      history :=
+  typeAExitSixDichotomy history
+    (K .typeAExitFiveFree) (K .typeAExitSix) (K .typeAExitSixFree)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- Node `[106]`, scope split on the high-entropy visible exit-`(6)` arm. -/
+noncomputable def selectedHighEntropyTypeAVisibleExitSixScopeDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSix, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixProper)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSixGlobal)
+      history :=
+  typeAExitSixScopeDichotomy history
+    (K .typeAExitSix) (K .typeAExitSixProper) (K .typeAExitSixGlobal)
+    (fun fact => fact.down)
+    (fun value => ⟨value⟩)
+    (fun value => ⟨value⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+
+/-- High-entropy visible Type A continuation after node `[106]`. -/
+noncomputable def selectedHighEntropyTypeAVisibleExitSixFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedHighEntropyTypeAVisibleExitSixDichotomy history with
+  | .left exitHistory =>
+      match selectedHighEntropyTypeAVisibleExitSixScopeDichotomy exitHistory with
+      | .left properHistory =>
+          let closedHistory :=
+            closeIncompatible properHistory (K .selection)
+              (K .typeAExitSixProper) (by simp [K_eq_iff])
+          exact False.elim (closedHistory.elimClosed (by infer_instance))
+      | .right globalHistory =>
+          let closedHistory :=
+            closeIncompatible globalHistory (K .selection)
+              (K .typeAExitSixGlobal) (by simp [K_eq_iff])
+          exact False.elim (closedHistory.elimClosed (by infer_instance))
+  | .right freeHistory =>
+      exact freeHistory
+
+/-- Node `[107]`, exit-`(7)` split on the high-entropy visible no-exit-`(6)` arm. -/
+noncomputable def selectedHighEntropyTypeAVisibleExitSevenDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenProduced)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeAExitSevenFree)
+      history :=
+  runTypeAExitSevenDecision (data := spineData) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+
+/-- Node `[108]`, Type B handoff fact on the high-entropy visible exit-`(7)` produced arm. -/
+noncomputable def selectedHighEntropyTypeAVisibleExitSevenHandoff
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenProduced, K .typeAExitSixFree,
+        K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
+        K .typeAExitSixFree, K .typeAExitFiveFree,
+        K .typeASaturatedHandoffExitFourFree,
+        K .typeASaturatedHandoffVisible, K .typeAExitFourFiniteDescent,
+        K .typeASaturatedExitEntry, K .typeAVisibleEntryClause,
+        K .typeAVisibleEntry, K .typeAPortReturn,
+        K .typeASaturatedReceiver, K .typeAReceiverRouting,
+        K .typeALowSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  runTypeAExitSevenHandoff (data := spineData) history
+    (by simp [K_eq_iff])
+
 
 /-- Node `[68]`, normal form on the low-entropy Type B arm. -/
 noncomputable def selectedLowEntropyTypeBNormalForm
@@ -2827,6 +6599,34 @@ noncomputable def selectedLowEntropyTypeBFanCertificateDichotomy
     (by simp [K_eq_iff])
     (by simp [K_eq_iff])
 
+/-- Nodes `[70]`--`[71]`, certificate split after the low-entropy Type B heavy cap row. -/
+noncomputable def selectedLowEntropyTypeBHeavyFanCertificateDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateMarked)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateResidual)
+      (selectedLowEntropyTypeBHeavyFanCap history) :=
+  selectedLowEntropyTypeBFanCertificateDichotomy
+    (selectedLowEntropyTypeBHeavyFanCap history)
+
 /-- Node `[75]`, bridge mass on the low-entropy fan-certificate residual arm. -/
 noncomputable def selectedLowEntropyTypeBCertificateResidualMass
     {selected : EGInput.{u}}
@@ -2862,7 +6662,7 @@ noncomputable def selectedLowEntropyTypeBCertificateResidualMass
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)
     (K .fanCertificateResidual) (by simp [K_eq_iff])).run
-    history (by simp [bridgeFanMass, K_eq_iff])
+    history (by simp [K_eq_iff])
 
 /-- Node `[72]`, direct-cycle split on the low-entropy Type B heavy marked arm. -/
 noncomputable def selectedLowEntropyTypeBDirectCycleDichotomy
@@ -2922,6 +6722,43 @@ noncomputable def selectedLowEntropyTypeBDirectCycleCloses
       (by simp [K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
+/-- Node `[72]`, low-entropy Type B heavy marked arm reduced to the cycle-free survivor. -/
+noncomputable def selectedLowEntropyTypeBDirectCycleFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyTypeBDirectCycleDichotomy history with
+  | .left cycleHistory =>
+      exact False.elim (selectedLowEntropyTypeBDirectCycleCloses cycleHistory)
+  | .right freeHistory =>
+      exact freeHistory
+
 /-- Node `[72]`, B2 assignment split on the low-entropy Type B heavy path. -/
 noncomputable def selectedLowEntropyTypeBB2AssignmentDichotomy
     {selected : EGInput.{u}}
@@ -2957,6 +6794,36 @@ noncomputable def selectedLowEntropyTypeBB2AssignmentDichotomy
     (fun obstruction => ⟨obstruction⟩)
     (by simp [K_eq_iff])
     (by simp [K_eq_iff])
+
+/-- Node `[72]`, B2 assignment after reducing the low-entropy Type B heavy marked arm. -/
+noncomputable def selectedLowEntropyTypeBB2AssignmentAfterDirectCycleDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBB2Choice)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBOverlapObstruction)
+      (selectedLowEntropyTypeBDirectCycleFree history) :=
+  selectedLowEntropyTypeBB2AssignmentDichotomy
+    (selectedLowEntropyTypeBDirectCycleFree history)
 
 /-- Node `[73]`, bridge mass on the low-entropy Type B heavy overlap-obstruction arm. -/
 noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
@@ -2995,7 +6862,7 @@ noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)
     (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
-    history (by simp [bridgeFanMass, K_eq_iff])
+    history (by simp [K_eq_iff])
 
 /-- Node `[71]`, certificate split on the high-entropy Type B heavy arm. -/
 noncomputable def selectedHighEntropyTypeBFanCertificateDichotomy
@@ -3033,6 +6900,35 @@ noncomputable def selectedHighEntropyTypeBFanCertificateDichotomy
     (by simp [K_eq_iff])
     (by simp [K_eq_iff])
 
+/-- Nodes `[70]`--`[71]`, certificate split after the high-entropy Type B heavy cap row. -/
+noncomputable def selectedHighEntropyTypeBHeavyFanCertificateDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateMarked)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateResidual)
+      (selectedHighEntropyTypeBHeavyFanCap history) :=
+  selectedHighEntropyTypeBFanCertificateDichotomy
+    (selectedHighEntropyTypeBHeavyFanCap history)
+
 /-- Node `[75]`, bridge mass on the high-entropy fan-certificate residual arm. -/
 noncomputable def selectedHighEntropyTypeBCertificateResidualMass
     {selected : EGInput.{u}}
@@ -3069,7 +6965,7 @@ noncomputable def selectedHighEntropyTypeBCertificateResidualMass
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)
     (K .fanCertificateResidual) (by simp [K_eq_iff])).run
-    history (by simp [bridgeFanMass, K_eq_iff])
+    history (by simp [K_eq_iff])
 
 /-- Node `[72]`, direct-cycle split on the high-entropy Type B heavy marked arm. -/
 noncomputable def selectedHighEntropyTypeBDirectCycleDichotomy
@@ -3130,6 +7026,44 @@ noncomputable def selectedHighEntropyTypeBDirectCycleCloses
       (by simp [K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
+/-- Node `[72]`, high-entropy Type B heavy marked arm reduced to the cycle-free survivor. -/
+noncomputable def selectedHighEntropyTypeBDirectCycleFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  match selectedHighEntropyTypeBDirectCycleDichotomy history with
+  | .left cycleHistory =>
+      exact False.elim (selectedHighEntropyTypeBDirectCycleCloses cycleHistory)
+  | .right freeHistory =>
+      exact freeHistory
+
 /-- Node `[72]`, B2 assignment split on the high-entropy Type B heavy path. -/
 noncomputable def selectedHighEntropyTypeBB2AssignmentDichotomy
     {selected : EGInput.{u}}
@@ -3166,6 +7100,36 @@ noncomputable def selectedHighEntropyTypeBB2AssignmentDichotomy
     (fun obstruction => ⟨obstruction⟩)
     (by simp [K_eq_iff])
     (by simp [K_eq_iff])
+
+/-- Node `[72]`, B2 assignment after reducing the high-entropy Type B heavy marked arm. -/
+noncomputable def selectedHighEntropyTypeBB2AssignmentAfterDirectCycleDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBB2Choice)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBOverlapObstruction)
+      (selectedHighEntropyTypeBDirectCycleFree history) :=
+  selectedHighEntropyTypeBB2AssignmentDichotomy
+    (selectedHighEntropyTypeBDirectCycleFree history)
 
 /-- Node `[73]`, bridge mass on the high-entropy Type B heavy overlap-obstruction arm. -/
 noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
@@ -3205,7 +7169,7 @@ noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)
     (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
-    history (by simp [bridgeFanMass, K_eq_iff])
+    history (by simp [K_eq_iff])
 
 /-- Node `[80]`, certificate split on the low-entropy Type B degree-four arm. -/
 noncomputable def selectedLowEntropyDegreeFourFanCertificateDichotomy
@@ -3242,6 +7206,34 @@ noncomputable def selectedLowEntropyDegreeFourFanCertificateDichotomy
     (by simp [K_eq_iff])
     (by simp [K_eq_iff])
 
+/-- Nodes `[78]`--`[80]`, certificate split after the low-entropy degree-four profile row. -/
+noncomputable def selectedLowEntropyDegreeFourProfileFanCertificateDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateMarked)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateResidual)
+      (selectedLowEntropyTypeBDegreeFourProfile history) :=
+  selectedLowEntropyDegreeFourFanCertificateDichotomy
+    (selectedLowEntropyTypeBDegreeFourProfile history)
+
 /-- Node `[84]`, bridge mass on the low-entropy degree-four certificate-residual arm. -/
 noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
     {selected : EGInput.{u}}
@@ -3277,7 +7269,7 @@ noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)
     (K .fanCertificateResidual) (by simp [K_eq_iff])).run
-    history (by simp [bridgeFanMass, K_eq_iff])
+    history (by simp [K_eq_iff])
 
 /-- Node `[81]`, direct-cycle split on the low-entropy Type B degree-four marked arm. -/
 noncomputable def selectedLowEntropyDegreeFourDirectCycleDichotomy
@@ -3337,6 +7329,43 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleCloses
       (by simp [K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
+/-- Node `[81]`, low-entropy degree-four marked arm reduced to the cycle-free survivor. -/
+noncomputable def selectedLowEntropyDegreeFourDirectCycleFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyDegreeFourDirectCycleDichotomy history with
+  | .left cycleHistory =>
+      exact False.elim (selectedLowEntropyDegreeFourDirectCycleCloses cycleHistory)
+  | .right freeHistory =>
+      exact freeHistory
+
 /-- Node `[81]`, B2 assignment split on the low-entropy degree-four path. -/
 noncomputable def selectedLowEntropyDegreeFourB2AssignmentDichotomy
     {selected : EGInput.{u}}
@@ -3372,6 +7401,36 @@ noncomputable def selectedLowEntropyDegreeFourB2AssignmentDichotomy
     (fun obstruction => ⟨obstruction⟩)
     (by simp [K_eq_iff])
     (by simp [K_eq_iff])
+
+/-- Node `[81]`, B2 assignment after reducing the low-entropy degree-four marked arm. -/
+noncomputable def selectedLowEntropyDegreeFourB2AssignmentAfterDirectCycleDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBB2Choice)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBOverlapObstruction)
+      (selectedLowEntropyDegreeFourDirectCycleFree history) :=
+  selectedLowEntropyDegreeFourB2AssignmentDichotomy
+    (selectedLowEntropyDegreeFourDirectCycleFree history)
 
 /-- Node `[83]`, bridge mass on the low-entropy degree-four overlap-obstruction arm. -/
 noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
@@ -3410,7 +7469,7 @@ noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)
     (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
-    history (by simp [bridgeFanMass, K_eq_iff])
+    history (by simp [K_eq_iff])
 
 /-- Node `[80]`, certificate split on the high-entropy Type B degree-four arm. -/
 noncomputable def selectedHighEntropyDegreeFourFanCertificateDichotomy
@@ -3448,6 +7507,35 @@ noncomputable def selectedHighEntropyDegreeFourFanCertificateDichotomy
     (by simp [K_eq_iff])
     (by simp [K_eq_iff])
 
+/-- Nodes `[78]`--`[80]`, certificate split after the high-entropy degree-four profile row. -/
+noncomputable def selectedHighEntropyDegreeFourProfileFanCertificateDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateMarked)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .fanCertificateResidual)
+      (selectedHighEntropyTypeBDegreeFourProfile history) :=
+  selectedHighEntropyDegreeFourFanCertificateDichotomy
+    (selectedHighEntropyTypeBDegreeFourProfile history)
+
 /-- Node `[84]`, bridge mass on the high-entropy degree-four certificate-residual arm. -/
 noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
     {selected : EGInput.{u}}
@@ -3484,7 +7572,7 @@ noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)
     (K .fanCertificateResidual) (by simp [K_eq_iff])).run
-    history (by simp [bridgeFanMass, K_eq_iff])
+    history (by simp [K_eq_iff])
 
 /-- Node `[81]`, direct-cycle split on the high-entropy Type B degree-four marked arm. -/
 noncomputable def selectedHighEntropyDegreeFourDirectCycleDichotomy
@@ -3545,6 +7633,44 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleCloses
       (by simp [K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
+/-- Node `[81]`, high-entropy degree-four marked arm reduced to the cycle-free survivor. -/
+noncomputable def selectedHighEntropyDegreeFourDirectCycleFree
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  match selectedHighEntropyDegreeFourDirectCycleDichotomy history with
+  | .left cycleHistory =>
+      exact False.elim (selectedHighEntropyDegreeFourDirectCycleCloses cycleHistory)
+  | .right freeHistory =>
+      exact freeHistory
+
 /-- Node `[81]`, B2 assignment split on the high-entropy degree-four path. -/
 noncomputable def selectedHighEntropyDegreeFourB2AssignmentDichotomy
     {selected : EGInput.{u}}
@@ -3581,6 +7707,36 @@ noncomputable def selectedHighEntropyDegreeFourB2AssignmentDichotomy
     (fun obstruction => ⟨obstruction⟩)
     (by simp [K_eq_iff])
     (by simp [K_eq_iff])
+
+/-- Node `[81]`, B2 assignment after reducing the high-entropy degree-four marked arm. -/
+noncomputable def selectedHighEntropyDegreeFourB2AssignmentAfterDirectCycleDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    Decision
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBB2Choice)
+      (K (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        .typeBOverlapObstruction)
+      (selectedHighEntropyDegreeFourDirectCycleFree history) :=
+  selectedHighEntropyDegreeFourB2AssignmentDichotomy
+    (selectedHighEntropyDegreeFourDirectCycleFree history)
 
 /-- Node `[83]`, bridge mass on the high-entropy degree-four overlap-obstruction arm. -/
 noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
@@ -3620,7 +7776,7 @@ noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)
     (K .typeBOverlapObstruction) (by simp [K_eq_iff])).run
-    history (by simp [bridgeFanMass, K_eq_iff])
+    history (by simp [K_eq_iff])
 
 /-- Nodes `[74]`--`[76]`, B2-success charge ledger on the low-entropy heavy path. -/
 noncomputable def selectedLowEntropyTypeBB2ExclusionCharge
@@ -3754,6 +7910,47 @@ noncomputable def selectedLowEntropyTypeBExcludedCloses
     closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
       (by simp [typeBExcluded, K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
+
+/-- Node `[76]`, low-entropy heavy B2-success arm reduced to the exclusion residual survivor. -/
+noncomputable def selectedLowEntropyTypeBExclusionResidual
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBExclusionResidual, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyTypeBExclusionDichotomy history with
+  | .left nonnegativeHistory =>
+      exact False.elim (selectedLowEntropyTypeBExcludedCloses nonnegativeHistory)
+  | .right residualHistory =>
+      exact residualHistory
 
 /-- Nodes `[74]`--`[76]`, B2-success charge ledger on the high-entropy heavy path. -/
 noncomputable def selectedHighEntropyTypeBB2ExclusionCharge
@@ -3889,6 +8086,48 @@ noncomputable def selectedHighEntropyTypeBExcludedCloses
       (by simp [typeBExcluded, K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
+/-- Node `[76]`, high-entropy heavy B2-success arm reduced to the exclusion residual survivor. -/
+noncomputable def selectedHighEntropyTypeBExclusionResidual
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBExclusionResidual, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  match selectedHighEntropyTypeBExclusionDichotomy history with
+  | .left nonnegativeHistory =>
+      exact False.elim (selectedHighEntropyTypeBExcludedCloses nonnegativeHistory)
+  | .right residualHistory =>
+      exact residualHistory
+
 /-- Nodes `[82]`--`[85]`, B2-success charge ledger on the low-entropy degree-four path. -/
 noncomputable def selectedLowEntropyDegreeFourB2ExclusionCharge
     {selected : EGInput.{u}}
@@ -4021,6 +8260,48 @@ noncomputable def selectedLowEntropyDegreeFourExcludedCloses
     closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
       (by simp [typeBExcluded, K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
+
+/-- Node `[85]`, low-entropy degree-four B2-success arm reduced to the exclusion residual survivor. -/
+noncomputable def selectedLowEntropyDegreeFourExclusionResidual
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBExclusionResidual, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+  match selectedLowEntropyDegreeFourExclusionDichotomy history with
+  | .left nonnegativeHistory =>
+      exact False.elim
+        (selectedLowEntropyDegreeFourExcludedCloses nonnegativeHistory)
+  | .right residualHistory =>
+      exact residualHistory
 
 /-- Nodes `[82]`--`[85]`, B2-success charge ledger on the high-entropy degree-four path. -/
 noncomputable def selectedHighEntropyDegreeFourB2ExclusionCharge
@@ -4156,31 +8437,532 @@ noncomputable def selectedHighEntropyDegreeFourExcludedCloses
       (by simp [typeBExcluded, K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
-/-- Cold corridor closure, once the selected ledger carries the cold terminal residual. -/
-noncomputable def selectedColdCorridorCloses
+/-- Node `[85]`, high-entropy degree-four B2-success arm reduced to the exclusion residual survivor. -/
+noncomputable def selectedHighEntropyDegreeFourExclusionResidual
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .coldTerminalResidual, K .route8TerminalNoGo, K .typeBExcluded,
-        K .sparsePressureNearCubic, K .spineSurplusEstimate,
-        K .sparseSurplusSurvivor, K .negativeSupport, K .largeBudgetResidual,
-        K .densityCap, K .windowPackageCollided, K .uncompressible,
-        K .selection]) : False := by
-  let closedHistory :=
-    runCold (data := spineData) history
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff])
-  exact closedHistory.elimClosed (by
-    dsimp [coldKeys]
-    infer_instance)
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBExclusionResidual, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] := by
+  match selectedHighEntropyDegreeFourExclusionDichotomy history with
+  | .left nonnegativeHistory =>
+      exact False.elim
+        (selectedHighEntropyDegreeFourExcludedCloses nonnegativeHistory)
+  | .right residualHistory =>
+      exact residualHistory
+
+/-- Node `[76]`, bridge mass on the low-entropy heavy B2 residual arm. -/
+noncomputable def selectedLowEntropyTypeBExclusionResidualMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBExclusionResidual, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBExclusionResidual,
+        K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeBExclusionResidual) (by simp [K_eq_iff])).run
+    history (by simp [K_eq_iff])
+
+/-- Node `[76]`, bridge mass on the high-entropy heavy B2 residual arm. -/
+noncomputable def selectedHighEntropyTypeBExclusionResidualMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBExclusionResidual, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .fanCertificateCap, K .typeBLocalDichotomy,
+        K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBExclusionResidual,
+        K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeBExclusionResidual) (by simp [K_eq_iff])).run
+    history (by simp [K_eq_iff])
+
+/-- Node `[85]`, bridge mass on the low-entropy degree-four B2 residual arm. -/
+noncomputable def selectedLowEntropyDegreeFourExclusionResidualMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBExclusionResidual, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBExclusionResidual,
+        K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeBExclusionResidual) (by simp [K_eq_iff])).run
+    history (by simp [K_eq_iff])
+
+/-- Node `[85]`, bridge mass on the high-entropy degree-four B2 residual arm. -/
+noncomputable def selectedHighEntropyDegreeFourExclusionResidualMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBExclusionResidual, K .typeBExclusionCharge,
+        K .typeBSelectedFanCharge, K .typeBDisjointLedger,
+        K .typeBHybridEntry, K .typeBB2Choice,
+        K .typeBDirectCycleFree, K .fanCertificateMarked,
+        K .typeBDegreeFourProfile, K .fanCertificateCap,
+        K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBExclusionResidual,
+        K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (bridgeFanMass (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .typeBExclusionResidual) (by simp [K_eq_iff])).run
+    history (by simp [K_eq_iff])
+
+/-- Nodes `[74]`--`[76]`, low-entropy heavy B2-success arm through bridge mass. -/
+noncomputable def selectedLowEntropyTypeBExclusionMassAfterDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBExclusionResidual,
+        K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  selectedLowEntropyTypeBExclusionResidualMass
+    (selectedLowEntropyTypeBExclusionResidual history)
+
+/-- Nodes `[74]`--`[76]`, high-entropy heavy B2-success arm through bridge mass. -/
+noncomputable def selectedHighEntropyTypeBExclusionMassAfterDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBExclusionResidual,
+        K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .fanCertificateCap,
+        K .typeBLocalDichotomy, K .typeBHeavyCentre,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  selectedHighEntropyTypeBExclusionResidualMass
+    (selectedHighEntropyTypeBExclusionResidual history)
+
+/-- Nodes `[82]`--`[85]`, low-entropy degree-four B2-success arm through bridge mass. -/
+noncomputable def selectedLowEntropyDegreeFourExclusionMassAfterDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBExclusionResidual,
+        K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .remainderEntropyLow, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  selectedLowEntropyDegreeFourExclusionResidualMass
+    (selectedLowEntropyDegreeFourExclusionResidual history)
+
+/-- Nodes `[82]`--`[85]`, high-entropy degree-four B2-success arm through bridge mass. -/
+noncomputable def selectedHighEntropyDegreeFourExclusionMassAfterDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .typeBBridgeMass, K .typeBExclusionResidual,
+        K .typeBExclusionCharge, K .typeBSelectedFanCharge,
+        K .typeBDisjointLedger, K .typeBHybridEntry,
+        K .typeBB2Choice, K .typeBDirectCycleFree,
+        K .fanCertificateMarked, K .typeBDegreeFourProfile,
+        K .fanCertificateCap, K .typeBDegreeFourCentres,
+        K .highCentreNormalForm, K .typeBHighSurplus,
+        K .negativeSupport, K .netChargeNegative, K .netChargeLocalization,
+        K .netChargeCap, K .netChargeLarge, K .largeBudgetResidual,
+        K .entropyPackageDemand, K .remainderEntropyHigh,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  selectedHighEntropyDegreeFourExclusionResidualMass
+    (selectedHighEntropyDegreeFourExclusionResidual history)
+
+noncomputable def selectedLowEntropyTypeBHeavy_bridgeMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    (K (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      .typeBBridgeMass).At selected := by
+  match selectedLowEntropyTypeBHeavyFanCertificateDichotomy history with
+  | .left markedHistory =>
+      match selectedLowEntropyTypeBB2AssignmentAfterDirectCycleDichotomy markedHistory with
+      | .left choiceHistory =>
+          exact
+            ExactLedger.get
+              (selectedLowEntropyTypeBExclusionMassAfterDichotomy choiceHistory)
+              (K .typeBBridgeMass)
+      | .right obstructionHistory =>
+          exact
+            ExactLedger.get
+              (selectedLowEntropyTypeBOverlapObstructionMass obstructionHistory)
+              (K .typeBBridgeMass)
+  | .right residualHistory =>
+      exact
+        ExactLedger.get
+          (selectedLowEntropyTypeBCertificateResidualMass residualHistory)
+          (K .typeBBridgeMass)
+
+noncomputable def selectedHighEntropyTypeBHeavy_bridgeMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBHeavyCentre, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    (K (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      .typeBBridgeMass).At selected := by
+  match selectedHighEntropyTypeBHeavyFanCertificateDichotomy history with
+  | .left markedHistory =>
+      match selectedHighEntropyTypeBB2AssignmentAfterDirectCycleDichotomy markedHistory with
+      | .left choiceHistory =>
+          exact
+            ExactLedger.get
+              (selectedHighEntropyTypeBExclusionMassAfterDichotomy choiceHistory)
+              (K .typeBBridgeMass)
+      | .right obstructionHistory =>
+          exact
+            ExactLedger.get
+              (selectedHighEntropyTypeBOverlapObstructionMass obstructionHistory)
+              (K .typeBBridgeMass)
+  | .right residualHistory =>
+      exact
+        ExactLedger.get
+          (selectedHighEntropyTypeBCertificateResidualMass residualHistory)
+          (K .typeBBridgeMass)
+
+noncomputable def selectedLowEntropyDegreeFour_bridgeMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .remainderEntropyLow,
+        K .forcedCurvatureCost, K .curvatureFullRank,
+        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    (K (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      .typeBBridgeMass).At selected := by
+  match selectedLowEntropyDegreeFourProfileFanCertificateDichotomy history with
+  | .left markedHistory =>
+      match selectedLowEntropyDegreeFourB2AssignmentAfterDirectCycleDichotomy markedHistory with
+      | .left choiceHistory =>
+          exact
+            ExactLedger.get
+              (selectedLowEntropyDegreeFourExclusionMassAfterDichotomy choiceHistory)
+              (K .typeBBridgeMass)
+      | .right obstructionHistory =>
+          exact
+            ExactLedger.get
+              (selectedLowEntropyDegreeFourOverlapObstructionMass obstructionHistory)
+              (K .typeBBridgeMass)
+  | .right residualHistory =>
+      exact
+        ExactLedger.get
+          (selectedLowEntropyDegreeFourCertificateResidualMass residualHistory)
+          (K .typeBBridgeMass)
+
+noncomputable def selectedHighEntropyDegreeFour_bridgeMass
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .typeBDegreeFourCentres, K .highCentreNormalForm,
+        K .typeBHighSurplus, K .negativeSupport, K .netChargeNegative,
+        K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
+        K .largeBudgetResidual, K .entropyPackageDemand,
+        K .remainderEntropyHigh, K .forcedCurvatureCost,
+        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
+        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .remainderNormalized, K .densityCap, K .barrierCap,
+        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    (K (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)
+      .typeBBridgeMass).At selected := by
+  match selectedHighEntropyDegreeFourProfileFanCertificateDichotomy history with
+  | .left markedHistory =>
+      match selectedHighEntropyDegreeFourB2AssignmentAfterDirectCycleDichotomy markedHistory with
+      | .left choiceHistory =>
+          exact
+            ExactLedger.get
+              (selectedHighEntropyDegreeFourExclusionMassAfterDichotomy choiceHistory)
+              (K .typeBBridgeMass)
+      | .right obstructionHistory =>
+          exact
+            ExactLedger.get
+              (selectedHighEntropyDegreeFourOverlapObstructionMass obstructionHistory)
+              (K .typeBBridgeMass)
+  | .right residualHistory =>
+      exact
+        ExactLedger.get
+          (selectedHighEntropyDegreeFourCertificateResidualMass residualHistory)
+          (K .typeBBridgeMass)
 
 /-- Node `[125]`, appended on the cold corridor prefix before the cold oval. -/
 noncomputable def selectedColdSparseSurplusSurvivor
@@ -4205,38 +8987,51 @@ noncomputable def selectedColdSparseSurplusSurvivor
     (fun _input fact => fact.down.2)
     (fun _input fact => fact.down)
     (fun _input fact => ⟨fact.1, fact.2⟩)).run
-    history (by simp [sparseSurplusSurvivorRow, K_eq_iff])
+    history (by simp [K_eq_iff])
 
-/-- Cold corridor closure after appending node `[125]` on the same ledger. -/
-noncomputable def selectedColdCorridorClosesFromTerminal
+/-- Cold corridor closed ledger after appending node `[125]` on the same ledger. -/
+noncomputable def selectedColdCorridorClosedHistory
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldTerminalResidual, K .route8TerminalNoGo, K .typeBExcluded,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
-        K .windowPackageCollided, K .uncompressible, K .selection]) : False := by
+        K .windowPackageCollided, K .uncompressible, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      (coldKeys (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)
+        [K .sparseSurplusSurvivor, K .coldTerminalResidual,
+          K .route8TerminalNoGo, K .typeBExcluded, K .sparsePressureNearCubic,
+          K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
+          K .densityCap, K .windowPackageCollided, K .uncompressible,
+          K .selection]) := by
   let withSurvivor := selectedColdSparseSurplusSurvivor history
-  let closedHistory :=
+  exact
     runCold (data := spineData) withSurvivor
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff])
-  exact closedHistory.elimClosed (by
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp)
+
+/-- Cold corridor closure after appending node `[125]` on the same ledger. -/
+noncomputable def selectedColdCorridorCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .coldTerminalResidual, K .route8TerminalNoGo, K .typeBExcluded,
+        K .sparsePressureNearCubic, K .spineSurplusEstimate,
+        K .negativeSupport, K .largeBudgetResidual, K .densityCap,
+        K .windowPackageCollided, K .uncompressible, K .selection]) : False :=
+  (selectedColdCorridorClosedHistory history).elimClosed (by
     dsimp [coldKeys]
     infer_instance)
-
-/-- The exact selected-residual closure contract consumed by final assembly. -/
-noncomputable abbrev SelectedResidualCloses : Prop :=
-  ∀ {selected : EGInput.{u}},
-    ExactLedger EGInput.{u} selected [EGSelectionKey] → False
 
 noncomputable def openSelectedCounterexample
     (input : EGInput) (avoids : ¬ Target input.object) :
@@ -4266,8 +9061,10 @@ noncomputable def openSelectedCounterexample
 
 /-- A closed selected residual proves the registered target on every baseline
 object. -/
-theorem target_closure_of_selectedResidualCloses
-    (selectedResidualCloses : SelectedResidualCloses.{u}) :
+theorem target_closure_of_selectedLedgerClosure
+    (selectedLedgerClosure :
+      ∀ {selected : EGInput.{u}},
+        ExactLedger EGInput.{u} selected [EGSelectionKey] → False) :
     ∀ object : Graph.FiniteObject.{u},
       Baseline object → Target object := by
   intro object baseline
@@ -4282,14 +9079,40 @@ theorem target_closure_of_selectedResidualCloses
       simpa [EGInput] using opened.selected
     have history : ExactLedger EGInput.{u} selected [EGSelectionKey] := by
       simpa [selected, EGInput] using opened.history
-    exact (selectedResidualCloses (selected := selected) history).elim
+    exact (selectedLedgerClosure (selected := selected) history).elim
 
 /-- Final public theorem, once the exact-ledger selected residual closure has
 been assembled from the rows. -/
-theorem erdos_64_of_selectedResidualCloses
-    (selectedResidualCloses : SelectedResidualCloses.{u}) :
+theorem erdos_64_of_selectedLedgerClosure
+    (selectedLedgerClosure :
+      ∀ {selected : EGInput.{u}},
+        ExactLedger EGInput.{u} selected [EGSelectionKey] → False) :
     OfficialStatement.{u} :=
   EGTarget.target_to_statement
-    (target_closure_of_selectedResidualCloses selectedResidualCloses)
+    (target_closure_of_selectedLedgerClosure selectedLedgerClosure)
+
+/-- Selected-root closure, assembled directly from the exact ledger rows.
+
+This is intentionally the public assembly pressure point: it carries the root
+selected ledger through the Chapter 1 branch split and must close every
+descendant without an external callback. -/
+theorem selectedLedgerClosure
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) : False := by
+  match selectedSurplusDichotomy history with
+  | .left strictHistory =>
+      match selectedSurplusAboveWindowPackageDichotomy strictHistory with
+      | .left separatedHistory =>
+          exact selectedStrictSeparated_typeBHandoff separatedHistory
+      | .right collidedHistory =>
+          exact selectedColdCorridorCloses collidedHistory
+  | .right nearCubicHistory =>
+      exact selectedColdCorridorCloses nearCubicHistory
+
+/-- Final public theorem. -/
+theorem erdos_64 : OfficialStatement.{u} :=
+  erdos_64_of_selectedLedgerClosure
+    (fun {selected} history =>
+      selectedLedgerClosure (selected := selected) history)
 
 end HypostructureErdos64EG

@@ -28,6 +28,27 @@ structure BranchMetadata where
   rightNote : String := ""
   deriving Inhabited, Repr
 
+theorem notMemberOfNameNotMember
+    {Residual : Type uAmbient}
+    [RefinementSystem.{uAmbient, uBranch} Residual]
+    [system : FactSystem.{uAmbient, uBranch, uKey, uValue} Residual]
+    {key : FactKey Residual} {keys : FactKeys Residual}
+    (absent : system.name key ∉ keys.names) : key ∉ keys := by
+  intro present
+  exact absent (List.mem_map.mpr ⟨key, present, rfl⟩)
+
+theorem disjointOfNameDisjoint
+    {Residual : Type uAmbient}
+    [RefinementSystem.{uAmbient, uBranch} Residual]
+    [system : FactSystem.{uAmbient, uBranch, uKey, uValue} Residual]
+    {left right : FactKeys Residual}
+    (separate : List.Disjoint left.names right.names) :
+    List.Disjoint left right := by
+  intro key inLeft inRight
+  exact separate
+    (List.mem_map.mpr ⟨key, inLeft, rfl⟩)
+    (List.mem_map.mpr ⟨key, inRight, rfl⟩)
+
 private inductive BlueprintBody
     {P : Core.Problem.{uAmbient, uBranch}} (T : Core.Target P)
     [FactSystem.{max uAmbient uBranch, uAmbient, uKey, uValue}
@@ -189,48 +210,52 @@ private def normalizeKeyList (value : Expr) : MetaM Expr := do
         pure type.getAppArgs.back!
   mkListLit elementType keys.toList
 
-private def notMember (key keys : Expr) : MetaM Expr := do
-  mkAppM ``Not #[← mkAppM ``List.Mem #[key, keys]]
-
-private def normalizeSafetyList (keys : Expr) : MetaM Expr := do
-  let elements <- listElements keys
-  let elements <- elements.mapM fun key => withTransparency .all <| whnf key
-  let elementType <- match elements[0]? with
-    | some key => inferType key
-    | none => do
-        let type <- whnf (← inferType keys)
-        pure type.getAppArgs.back!
-  mkListLit elementType elements.toList
-
 private def closureKey (residual : Expr) : MetaM Expr := do
   withTransparency .all <|
     whnf (← mkAppOptM ``FactSystem.closureKey #[some residual, none, none])
 
-private def decideWithKeyEquality (residual keyType proposition : Expr) : MetaM Expr := do
-  let instanceType <- mkAppM ``DecidableEq #[keyType]
-  let instanceValue <- mkAppOptM ``FactSystem.keyDecidableEq
-    #[some residual, none, none]
-  withLocalDecl `_dagKeyDecidableEq .instImplicit instanceType fun localInstance => do
-    let declaration := (← getLCtx).get! localInstance.fvarId!
-    let proof <- withLocalInstances [declaration] <|
-      withTransparency .all <| mkDecideProof proposition
-    pure (mkApp (← mkLambdaFVars #[localInstance] proof) instanceValue)
+private def normalizeNameList (names : Expr) : MetaM Expr := do
+  let elements <- listElements names
+  let elements <- elements.mapM fun name => withTransparency .all <| whnf name
+  mkListLit (mkConst ``Lean.Name) elements.toList
 
-private def proveNotMember (residual key keys : Expr) : MetaM Expr := do
-  let key <- withTransparency .all <| whnf key
-  let keys <- normalizeSafetyList keys
-  decideWithKeyEquality residual (← inferType key) (← notMember key keys)
+private partial def proveNameDisjoint (left right : Expr) : TermElabM Expr := do
+  let left <- whnf left
+  match left.getAppFn.constName? with
+  | some ``List.nil =>
+      let proposition <- mkAppM ``List.Disjoint #[left, right]
+      elabTermEnsuringType (← `(by simp [List.Disjoint])) proposition
+  | some ``List.cons =>
+      let args := left.getAppArgs
+      let head := args[args.size - 2]!
+      let tail := args[args.size - 1]!
+      let absentType <- mkAppM ``Not #[← mkAppM ``List.Mem #[head, right]]
+      let absent <- elabTermEnsuringType (← `(by simp)) absentType
+      let rest <- proveNameDisjoint tail right
+      let conjunction <- mkAppM ``And.intro #[absent, rest]
+      let equivalence <- mkAppOptM ``List.disjoint_cons_left
+        #[some (mkConst ``Lean.Name), some head, some tail, some right]
+      mkAppM ``Iff.mpr #[equivalence, conjunction]
+  | _ => throwError "strategy DAG compiler expected a concrete audit-name list"
 
-private def proveDisjoint (residual left right : Expr) : MetaM Expr := do
-  let left <- normalizeSafetyList left
-  let right <- normalizeSafetyList right
-  let keyType <- match (← listElements left)[0]? with
-    | some key => inferType key
-    | none => do
-        let type <- whnf (← inferType left)
-        pure type.getAppArgs.back!
-  decideWithKeyEquality residual keyType
-    (← mkAppM ``List.Disjoint #[left, right])
+private def proveNotMember (residual key keys : Expr) : TermElabM Expr := do
+  let keyName <- withTransparency .all <| whnf
+    (← mkAppOptM ``FactSystem.name #[some residual, none, none, some key])
+  let keyNames <- normalizeNameList
+    (← mkAppOptM ``FactKeys.names #[some residual, none, none, some keys])
+  let absent <- mkAppM ``Not #[← mkAppM ``List.Mem #[keyName, keyNames]]
+  let proof <- elabTermEnsuringType (← `(by simp)) absent
+  mkAppOptM ``notMemberOfNameNotMember
+    #[some residual, none, none, some key, some keys, some proof]
+
+private def proveDisjoint (residual left right : Expr) : TermElabM Expr := do
+  let leftNames <- normalizeNameList
+    (← mkAppOptM ``FactKeys.names #[some residual, none, none, some left])
+  let rightNames <- normalizeNameList
+    (← mkAppOptM ``FactKeys.names #[some residual, none, none, some right])
+  let proof <- proveNameDisjoint leftNames rightNames
+  mkAppOptM ``disjointOfNameDisjoint
+    #[some residual, none, none, some left, some right, some proof]
 
 private def programType (residual known frontier : Expr) : MetaM Expr :=
   mkAppM ``StrategyProgram #[residual, known, frontier]
@@ -241,7 +266,7 @@ private def singleton (element : Expr) : MetaM Expr := do
 private def emptyFactFrontier (known : Expr) : MetaM Expr := do
   mkListLit (← inferType known) []
 
-private def tryClosing (residual known : Expr) : MetaM (Option Expr) := do
+private def tryClosing (residual known : Expr) : TermElabM (Option Expr) := do
   let empty <- emptyFactFrontier known
   let expected <- programType residual known empty
   try
@@ -271,7 +296,7 @@ private def tryClosing (residual known : Expr) : MetaM (Option Expr) := do
   pure none
 
 private partial def compileTree (residual known : Expr) : AuthoredTree ->
-    MetaM (Expr × Expr)
+    TermElabM (Expr × Expr)
   | .hole => do
       if let some closed <- tryClosing residual known then
         pure (closed, ← emptyFactFrontier known)

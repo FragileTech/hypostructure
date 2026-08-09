@@ -125,8 +125,16 @@ instance : Incompatible (ProblemInput problem) selection isTrue where
   contradiction := fun _input avoids trueFact =>
     avoids.down (Or.inl trueFact.down)
 
+instance : Incompatible (ProblemInput problem) isTrue selection where
+  contradiction := fun _input trueFact avoids =>
+    avoids.down (Or.inl trueFact.down)
+
 instance : Incompatible (ProblemInput problem) selection isFalse where
   contradiction := fun _input avoids falseFact =>
+    avoids.down (Or.inr falseFact.down)
+
+instance : Incompatible (ProblemInput problem) isFalse selection where
+  contradiction := fun _input falseFact avoids =>
     avoids.down (Or.inr falseFact.down)
 
 noncomputable abbrev leftProgram :
