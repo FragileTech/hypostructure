@@ -39,6 +39,7 @@ import Hypostructure.Core.Strategy.AtomicDecision
 import Hypostructure.Core.Strategy.MinimalCounterexampleScope
 import Hypostructure.Core.Strategy.ClosingProgram
 import Hypostructure.Core.Strategy.StrategyProgram
+import Hypostructure.Core.Strategy.Dag
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Strategy.SpineRows
 import Hypostructure.Graph.Strategy.TypeAExitRun
@@ -71,6 +72,7 @@ import Hypostructure.Fixtures.LedgerAutorouting
 import Hypostructure.Fixtures.BranchScopedExactLedger
 import Hypostructure.Fixtures.ClosingProgram
 import Hypostructure.Fixtures.StrategyProgram
+import Hypostructure.Fixtures.Dag
 import Hypostructure.Fixtures.ExactLedgerOpacity
 import Hypostructure.Fixtures.ExactLedgerDuplicateFact
 import Hypostructure.Fixtures.ExactLedgerMissingFact

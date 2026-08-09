@@ -106,6 +106,29 @@ def closeImpossible
     StrategyProgram Residual known [] :=
   ofClosing (ClosingProgram.closeImpossible key closureFresh)
 
+/-- Compiler entry point with an explicit closure-freshness proof. -/
+def closeImpossibleExplicit
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [system : FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    {known : FactKeys Residual} (key : FactKey Residual)
+    [FactKeys.Has key known] [Impossible Residual key]
+    (closureFresh : system.closureKey ∉ known) :
+    StrategyProgram Residual known [] :=
+  ofClosing (ClosingProgram.closeImpossible key closureFresh)
+
+/-- Compiler entry point with an explicit closure-freshness proof. -/
+def closeIncompatibleExplicit
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [system : FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    {known : FactKeys Residual} (left right : FactKey Residual)
+    [FactKeys.Has left known] [FactKeys.Has right known]
+    [Incompatible Residual left right]
+    (closureFresh : system.closureKey ∉ known) :
+    StrategyProgram Residual known [] :=
+  ofClosing (ClosingProgram.closeIncompatible left right closureFresh)
+
 /-- Prepend a trusted atomic CT without changing the unresolved leaves. -/
 def atomic
     {Residual : Type uResidual}
@@ -118,6 +141,21 @@ def atomic
     (knownOpen : system.closureKey ∉ known := by decide)
     (outputsOpen : system.closureKey ∉ ct.manifest.Produces := by decide)
     (fresh : List.Disjoint ct.manifest.Produces known := by decide) :
+    StrategyProgram Residual known frontier :=
+  .mk (.atomic ct knownOpen outputsOpen fresh next.body)
+
+/-- Compiler entry point with all ledger-safety proofs explicit. -/
+def atomicExplicit
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [system : FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    {known : FactKeys Residual} {frontier : List (FactKeys Residual)}
+    (ct : AtomicCT Residual)
+    [FactKeys.Available ct.manifest.Requires known]
+    (next : StrategyProgram Residual (ct.manifest.Produces ++ known) frontier)
+    (knownOpen : system.closureKey ∉ known)
+    (outputsOpen : system.closureKey ∉ ct.manifest.Produces)
+    (fresh : List.Disjoint ct.manifest.Produces known) :
     StrategyProgram Residual known frontier :=
   .mk (.atomic ct knownOpen outputsOpen fresh next.body)
 
@@ -138,6 +176,25 @@ def branch
     (knownOpen : system.closureKey ∉ known := by decide)
     (leftFresh : decision.manifest.left ∉ known := by decide)
     (rightFresh : decision.manifest.right ∉ known := by decide) :
+    StrategyProgram Residual known (leftFrontier ++ rightFrontier) :=
+  .mk (.branch decision knownOpen leftFresh rightFresh left.body right.body)
+
+/-- Compiler entry point with all branch-safety proofs explicit. -/
+def branchExplicit
+    {Residual : Type uResidual}
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [system : FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    {known : FactKeys Residual}
+    {leftFrontier rightFrontier : List (FactKeys Residual)}
+    (decision : AtomicDecision Residual)
+    [FactKeys.Available decision.manifest.Requires known]
+    (left : StrategyProgram Residual
+      (decision.manifest.left :: known) leftFrontier)
+    (right : StrategyProgram Residual
+      (decision.manifest.right :: known) rightFrontier)
+    (knownOpen : system.closureKey ∉ known)
+    (leftFresh : decision.manifest.left ∉ known)
+    (rightFresh : decision.manifest.right ∉ known) :
     StrategyProgram Residual known (leftFrontier ++ rightFrontier) :=
   .mk (.branch decision knownOpen leftFresh rightFresh left.body right.body)
 

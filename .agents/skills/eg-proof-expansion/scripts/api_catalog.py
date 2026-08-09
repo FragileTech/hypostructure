@@ -133,6 +133,8 @@ PROOF_BOUNDARY_FILES = (
     "HypostructureErdos64EG/Problem.lean",
     "proofs/hypostructure_erdos_64_eg/"
     "HypostructureErdos64EG/StrategyDag.lean",
+    "proofs/hypostructure_erdos_64_eg/"
+    "HypostructureErdos64EG/Assembly.lean",
 )
 
 PROOF_TREE = Path("proofs/hypostructure_erdos_64_eg")
@@ -180,18 +182,6 @@ REQUIRED_CANONICAL_DECLARATIONS = {
     "Hypostructure.Core.Strategy.ClosingDag",
     "Hypostructure.Core.Strategy.ClosingDag.ofCounterexampleScope",
     "Hypostructure.Core.Strategy.ClosingDag.statement",
-    "Hypostructure.Core.Strategy.StrategyProgram",
-    "Hypostructure.Core.Strategy.StrategyProgram.defer",
-    "Hypostructure.Core.Strategy.StrategyProgram.ofClosing",
-    "Hypostructure.Core.Strategy.StrategyProgram.closed",
-    "Hypostructure.Core.Strategy.StrategyProgram.atomic",
-    "Hypostructure.Core.Strategy.StrategyProgram.branch",
-    "Hypostructure.Core.Strategy.StrategyProgram.closeIncompatible",
-    "Hypostructure.Core.Strategy.StrategyProgram.closeImpossible",
-    "Hypostructure.Core.Strategy.StrategyProgram.complete",
-    "Hypostructure.Core.Strategy.StrategyDag",
-    "Hypostructure.Core.Strategy.StrategyDag.ofCounterexampleScope",
-    "Hypostructure.Core.Strategy.StrategyDag.complete",
     "Hypostructure.Core.Strategy.RoutedTask.selectFor",
     "Hypostructure.Core.Strategy.RoutedTask.dispatchFor",
 }
