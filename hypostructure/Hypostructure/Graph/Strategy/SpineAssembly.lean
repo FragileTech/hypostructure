@@ -530,6 +530,32 @@ noncomputable instance instIncompatibleWindowPackage :
     rw [Graph.skeletonBudget] at overflowLt
     omega
 
+/-- **The near-cubic surplus route closes against node `[19]`.**
+
+The branch enters the sparse-pressure block from `surplusAbove`, so a later
+`spineSurplusEstimate` is the exact complementary inequality on the same
+selected object.  The contradiction is registered as a framework
+incompatibility between ordinary keys; callers close it with `closeIncompatible`
+on the incoming ledger and no extra carrier. -/
+noncomputable instance instIncompatibleSurplusAboveSpineSurplusEstimate :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .surplusAbove) (K .spineSurplusEstimate) where
+  contradiction := fun residual above estimate => by
+    have lower :
+        data.surplusThreshold residual.object.vertexCount <
+          residual.object.degreeSurplus data.threshold := by
+      change Holds BranchState Presentation presentation data
+        .surplusAbove residual.object
+      exact above.down
+    have upper :
+        residual.object.degreeSurplus data.threshold ≤
+          data.spineScale * Core.ceilSqrt residual.object.vertexCount := by
+      change Holds BranchState Presentation presentation data
+        .spineSurplusEstimate residual.object
+      exact estimate.down
+    exact Nat.not_lt_of_ge (by
+      simpa [Data.surplusThreshold] using upper) lower
+
 /-- The key index at the full-rank residual of node `[34]`, Residual B.  This
 is the index nodes `[47]` onwards extend; it is no longer an exit of the run. -/
 abbrev completedKeys : FactKeys (Input BranchState Presentation presentation data) :=

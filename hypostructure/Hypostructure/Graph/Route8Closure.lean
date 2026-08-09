@@ -150,6 +150,20 @@ theorem collapse_of_alpha_le_one {crossing : Finset entry.Coordinate}
   refine minimality ?_
   rw [entry.retained_sdiff_eq_of_alpha_le_one parity small, restriction]
 
+/-- The entry-level small-core-collapse fact consumed by the ledger. -/
+def SmallCoreCollapseFacts : Prop :=
+  ∀ {crossing : Finset entry.Coordinate} {Alternatives : Prop},
+    (∀ r ∈ crossing, 2 ≤ (entry.car r).card) →
+    (entry.state (entry.retained entry.essentialCore \ crossing) =
+      entry.restriction entry.essentialCore →
+      Alternatives) →
+    entry.alpha ≤ 1 →
+    Alternatives
+
+theorem smallCoreCollapseFacts : entry.SmallCoreCollapseFacts := by
+  intro crossing Alternatives parity minimality small
+  exact entry.collapse_of_alpha_le_one parity minimality small
+
 end Entry
 
 /-! ## The census squeeze -/

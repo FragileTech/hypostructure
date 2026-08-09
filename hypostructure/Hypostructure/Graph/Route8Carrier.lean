@@ -241,6 +241,26 @@ theorem exists_forgotten_coordinate {carrier : Carrier}
     intro same
     exact missing r inCore.1 inCore.2 (same ▸ used)
 
+/-- The selected entry's carrier-core facts: completeness of the canonical
+core, containment in the entry's own supply, and the deletion witness/declared
+forgotten-coordinate clause for every essential carrier. -/
+def CarrierCoreFacts : Prop :=
+  entry.Complete entry.essentialCore ∧
+    entry.essentialCore ⊆ entry.carriers.toFinset ∧
+      ∀ carrier ∈ entry.essentialCore,
+        Response.TargetDefect Target
+          (entry.restriction (entry.essentialCore.erase carrier))
+          (entry.restriction entry.essentialCore) ∧
+        ∃ r ∈ entry.coordinates,
+          entry.car r ⊆ entry.essentialCore ∧ carrier ∈ entry.car r
+
+theorem carrierCoreFacts : entry.CarrierCoreFacts := by
+  dsimp [CarrierCoreFacts]
+  refine ⟨entry.essentialCore_complete, entry.essentialCore_subset_carriers, ?_⟩
+  intro carrier member
+  exact ⟨entry.deletion_targetDefect member,
+    entry.exists_forgotten_coordinate member⟩
+
 end Entry
 
 section IndexedCarrierAccounting

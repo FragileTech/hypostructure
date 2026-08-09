@@ -5848,14 +5848,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let deficit := inputs.get (K .route8LargeBudgetDeficit)
       .cons (key := K .route8CarrierCore)
         ⟨⟨deficit.down, by
-          intro Target Carrier Coordinate carrierDec coordinateDec boundary
-            carrierSupply coordinates car car_subset state
-          letI : DecidableEq Carrier := carrierDec
-          letI : DecidableEq Coordinate := coordinateDec
-          exact (Graph.Route8.carrierCoreFacts (Target := Target)
-            carrierSupply coordinates car car_subset state :
-              Graph.Route8.CarrierCoreFacts (Target := Target)
-                carrierSupply coordinates car car_subset state)⟩⟩ .nil)
+          letI : DecidableEq inputs.current.object.Vertex :=
+            inputs.current.object.vertices.decEq
+          intro presented
+          exact (presented.toEntry
+            (Graph.HasCycleWithLength data.LengthOK)).carrierCoreFacts⟩⟩ .nil)
     0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
@@ -5881,14 +5878,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let core := inputs.get (K .route8CarrierCore)
       .cons (key := K .route8SmallCoreCollapse)
         ⟨⟨core.down, by
-          intro Target Carrier Coordinate carrierDec coordinateDec boundary
-            carrierSupply coordinates car car_subset state
-          letI : DecidableEq Carrier := carrierDec
-          letI : DecidableEq Coordinate := coordinateDec
-          exact (Graph.Route8.smallCoreCollapseFacts (Target := Target)
-            carrierSupply coordinates car car_subset state :
-              Graph.Route8.SmallCoreCollapseFacts (Target := Target)
-                carrierSupply coordinates car car_subset state)⟩⟩ .nil)
+          letI : DecidableEq inputs.current.object.Vertex :=
+            inputs.current.object.vertices.decEq
+          intro presented
+          exact (presented.toEntry
+            (Graph.HasCycleWithLength data.LengthOK)).smallCoreCollapseFacts⟩⟩ .nil)
     0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
@@ -5914,12 +5908,13 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let collapse := inputs.get (K .route8SmallCoreCollapse)
       .cons (key := K .route8TwoCarrierReduction)
         ⟨⟨collapse.down, by
-          intro Carrier carrierDec
-          letI : DecidableEq Carrier := carrierDec
-          exact (Graph.Route8.twoCarrierReductionFacts
-            (Carrier := Carrier) :
-              Graph.Route8.TwoCarrierReductionFacts
-                (Carrier := Carrier))⟩⟩ .nil)
+          letI : DecidableEq inputs.current.object.Vertex :=
+            inputs.current.object.vertices.decEq
+          intro Index indexDec entries core supply core_subset threshold
+            discharge ambient deficit rate
+          letI : DecidableEq Index := indexDec
+          exact Graph.Route8.exists_indexedTwoCarrierCore entries core supply
+            core_subset deficit rate⟩⟩ .nil)
     0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
@@ -5945,14 +5940,15 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let reduction := inputs.get (K .route8TwoCarrierReduction)
       .cons (key := K .route8CarrierDeletionWitnesses)
         ⟨⟨reduction.down, by
-          intro Target Carrier Coordinate carrierDec coordinateDec boundary
-            carrierSupply coordinates car car_subset state
-          letI : DecidableEq Carrier := carrierDec
-          letI : DecidableEq Coordinate := coordinateDec
-          exact (Graph.Route8.twoCarrierDeletionWitnessFacts
-            (Target := Target) carrierSupply coordinates car car_subset state :
-              Graph.Route8.TwoCarrierDeletionWitnessFacts (Target := Target)
-                carrierSupply coordinates car car_subset state)⟩⟩ .nil)
+          letI : DecidableEq inputs.current.object.Vertex :=
+            inputs.current.object.vertices.decEq
+          intro presented Index indexDec entries core threshold index two core_eq
+          letI : DecidableEq Index := indexDec
+          let entry := presented.toEntry (Graph.HasCycleWithLength data.LengthOK)
+          exact Graph.Route8.twoCarrierDeletionWitnesses (Target :=
+            Graph.HasCycleWithLength data.LengthOK) entry.carriers
+            entry.coordinates entry.car entry.car_subset entry.state entries
+            core two core_eq⟩⟩ .nil)
     0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
@@ -5979,21 +5975,22 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let witnesses := inputs.get (K .route8CarrierDeletionWitnesses)
       let budget : Route8PrivateCarrierBudget data inputs.current.object :=
         ⟨witnesses.down, by
-          intro Carrier carrierDec
-          letI : DecidableEq Carrier := carrierDec
-          exact (Graph.Route8.privateCarrierBudgetFacts
-            (Carrier := Carrier) :
-              Graph.Route8.PrivateCarrierBudgetFacts
-                (Carrier := Carrier))⟩
+          letI : DecidableEq inputs.current.object.Vertex :=
+            inputs.current.object.vertices.decEq
+          intro Index indexDec entries core supply core_subset threshold noTwo
+          letI : DecidableEq Index := indexDec
+          exact Graph.Route8.privateCarrierBudget_of_noTwoCarrier entries core
+            supply core_subset noTwo⟩
       .cons (key := K .route8PrivateCarrierBudget) ⟨budget⟩
         (.cons (key := K .route8NoTwoCarrierContradiction)
           ⟨⟨budget, by
-            intro Carrier carrierDec
-            letI : DecidableEq Carrier := carrierDec
-            exact (Graph.Route8.noTwoCarrierContradictionFacts
-              (Carrier := Carrier) :
-                Graph.Route8.NoTwoCarrierContradictionFacts
-                  (Carrier := Carrier))⟩⟩ .nil))
+            letI : DecidableEq inputs.current.object.Vertex :=
+              inputs.current.object.vertices.decEq
+            intro Index indexDec entries core supply core_subset threshold
+              discharge ambient deficit rate noTwo
+            letI : DecidableEq Index := indexDec
+            exact Graph.Route8.noTwoCarrier_contradiction entries core supply
+              core_subset deficit rate noTwo⟩⟩ .nil))
     0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
@@ -6048,14 +6045,17 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let witnesses := inputs.get (K .route8CarrierDeletionWitnesses)
       .cons (key := K .route8TerminalNoGo)
         ⟨⟨pressure.down, witnesses.down, by
-          intro Target Carrier Coordinate carrierDec coordinateDec boundary
-            carrierSupply coordinates car car_subset state
-          letI : DecidableEq Carrier := carrierDec
-          letI : DecidableEq Coordinate := coordinateDec
-          exact (Graph.Route8.terminalTwoCarrierNoGoFacts (Target := Target)
-            carrierSupply coordinates car car_subset state :
-              Graph.Route8.TerminalTwoCarrierNoGoFacts Target carrierSupply
-                coordinates car car_subset state)⟩⟩ .nil)
+          letI : DecidableEq inputs.current.object.Vertex :=
+            inputs.current.object.vertices.decEq
+          intro presented
+          let entry := presented.toEntry (Graph.HasCycleWithLength data.LengthOK)
+          letI : DecidableEq entry.Coordinate := entry.coordinateDecEq
+          exact (Graph.Route8.terminalTwoCarrierNoGoFacts
+            (Target := Graph.HasCycleWithLength data.LengthOK) entry.carriers
+            entry.coordinates entry.car entry.car_subset entry.state :
+              Graph.Route8.TerminalTwoCarrierNoGoFacts
+                (Graph.HasCycleWithLength data.LengthOK) entry.carriers
+                entry.coordinates entry.car entry.car_subset entry.state)⟩⟩ .nil)
     0 0
 
 /-! ## Node `[95]`: exit `(1)`, the Mersenne anchored return

@@ -519,9 +519,10 @@ noncomputable def homogeneousCapsDichotomy
           (Graph.WindowCurvature.Label data.windowOrder)) →
       homogeneousCapsHold.At current)
     (encodePattern :
-      (¬ Graph.HomogeneousCapsHold current.object data.threshold
-        data.windowOrder (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder))) →
+      Graph.HomogeneousBottleneckPatternStatement current.object
+        data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) →
       homogeneousBottleneckPattern.At current)
     (capsFresh : homogeneousCapsHold ∉ known)
     (patternFresh : homogeneousBottleneckPattern ∉ known) :
@@ -536,9 +537,9 @@ noncomputable def homogeneousCapsDichotomy
           (Graph.WindowCurvature.Label data.windowOrder)) then
       .inl (encodeCaps caps)
     else
-      -- The bottleneck arm carries `lem:same-token-bottleneck-routing` at it:
-      -- the pattern, and the exit-or-Type-B reading of its routed germs.
-      .inr (encodePattern caps)
+      .inr (encodePattern
+        (Graph.homogeneousBottleneckPatternStatement_of_not_caps
+          current.object caps))
 
 /-- **Node `[144]`, the near-cubic close.**
 
@@ -655,11 +656,20 @@ hereditary uncompressibility the admissibility clause asks for -- *at the
 ledger's own predicate*, so nothing is re-derived and nothing is parameterised
 into triviality. -/
 @[reducible] noncomputable def bottleneckRoutingRow
-    (selection uncompressible sparseSurplusSurvivor bottleneckRouting :
-      FactKey (Input BranchState Presentation presentation data))
+    (selection uncompressible sparseSurplusSurvivor homogeneousBottleneckPattern
+      bottleneckRouting : FactKey (Input BranchState Presentation presentation data))
     (distinct : selection ≠ uncompressible)
     (selectionNeSurvivor : selection ≠ sparseSurplusSurvivor)
+    (selectionNePattern : selection ≠ homogeneousBottleneckPattern)
     (uncompressibleNeSurvivor : uncompressible ≠ sparseSurplusSurvivor)
+    (uncompressibleNePattern : uncompressible ≠ homogeneousBottleneckPattern)
+    (survivorNePattern : sparseSurplusSurvivor ≠ homogeneousBottleneckPattern)
+    (patternOf : (input : Input BranchState Presentation presentation data) →
+      homogeneousBottleneckPattern.At input →
+      Graph.HomogeneousBottleneckPatternStatement input.object
+        data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)))
     (survivesOf : (input : Input BranchState Presentation presentation data) →
       sparseSurplusSurvivor.At input →
       Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
@@ -684,10 +694,13 @@ into triviality. -/
       bottleneckRouting.At input) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.bottleneckRouting
-    { Requires := [selection, uncompressible, sparseSurplusSurvivor]
+    { Requires :=
+        [selection, uncompressible, sparseSurplusSurvivor,
+          homogeneousBottleneckPattern]
       Produces := [bottleneckRouting]
       requiresUnique := by
-        simp [distinct, selectionNeSurvivor, uncompressibleNeSurvivor]
+        simp [distinct, selectionNeSurvivor, selectionNePattern,
+          uncompressibleNeSurvivor, uncompressibleNePattern, survivorNePattern]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -695,12 +708,17 @@ into triviality. -/
       let uncompressed := uncompressibleOf inputs.current
         (inputs.get uncompressible)
       let survives := survivesOf inputs.current (inputs.get sparseSurplusSurvivor)
+      let pattern :=
+        patternOf inputs.current (inputs.get homogeneousBottleneckPattern)
       .cons (key := bottleneckRouting)
-        (encode inputs.current
-          ⟨Graph.bottleneckRoutingStatement inputs.current.object avoids
-            uncompressed,
-            Graph.typeBHandoffStatement inputs.current.object survives avoids
-              uncompressed⟩)
+        (encode inputs.current (by
+          rcases pattern with ⟨_presentation, _ledger, _token, _tokenMem,
+            _role, _largePattern⟩
+          exact
+            ⟨Graph.bottleneckRoutingStatement inputs.current.object avoids
+                uncompressed,
+              Graph.typeBHandoffStatement inputs.current.object survives avoids
+                uncompressed⟩))
         .nil)
 
 /-! ## Node `[125]`: the survivor of the sparse surplus exits

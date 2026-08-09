@@ -744,6 +744,7 @@ inductive Key where
   | coldHandoffTransfer
   | coldGermExtraction
   | coldGermRouted
+  | coldTerminalResidual
   | coldBranchClosed
   /-- Node `[68]`, the standing law: every high centre of the object has its
   neighbourhood in the normal form of `lem:heavy-neighbourhood-normal-form` --
@@ -1636,74 +1637,91 @@ on top of the selected `[113]` route-`8` residual. -/
 abbrev Route8CarrierCore (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8LargeBudgetDeficit data object ∧
-    ∀ {Target : Graph.FiniteObject.{u} → Prop}
-      {Carrier Coordinate : Type u}
-      [DecidableEq Carrier] [DecidableEq Coordinate]
-      {boundary : Graph.Boundary.{u}}
-      (carrierSupply : Hypostructure.Core.Finite.Enumeration Carrier)
-      (coordinates : Finset Coordinate)
-      (car : Coordinate → Finset Carrier)
-      (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
-      (state : Finset Coordinate → Graph.BoundaryPiece boundary),
-        Graph.Route8.CarrierCoreFacts (Target := Target) carrierSupply
-          coordinates car car_subset state
+    letI : DecidableEq object.Vertex := object.vertices.decEq
+    ∀ presented : Graph.Route8.PresentedEntry object,
+      (presented.toEntry (Graph.HasCycleWithLength data.LengthOK)).CarrierCoreFacts
 
 /-- Nodes `[115]`--`[116]`: the small-core-collapse facts committed after
 `[114]` as an ordinary ledger fact. -/
 abbrev Route8SmallCoreCollapse (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8CarrierCore data object ∧
-    ∀ {Target : Graph.FiniteObject.{u} → Prop}
-      {Carrier Coordinate : Type u}
-      [DecidableEq Carrier] [DecidableEq Coordinate]
-      {boundary : Graph.Boundary.{u}}
-      (carrierSupply : Hypostructure.Core.Finite.Enumeration Carrier)
-      (coordinates : Finset Coordinate)
-      (car : Coordinate → Finset Carrier)
-      (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
-      (state : Finset Coordinate → Graph.BoundaryPiece boundary),
-        Graph.Route8.SmallCoreCollapseFacts (Target := Target) carrierSupply
-          coordinates car car_subset state
+    letI : DecidableEq object.Vertex := object.vertices.decEq
+    ∀ presented : Graph.Route8.PresentedEntry object,
+      (presented.toEntry
+        (Graph.HasCycleWithLength data.LengthOK)).SmallCoreCollapseFacts
 
 /-- Node `[117]`: the selected two-carrier-reduction stage, as an ordinary
 fact over the current route-`8` residual. -/
 abbrev Route8TwoCarrierReduction (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8SmallCoreCollapse data object ∧
-    ∀ {Carrier : Type u} [DecidableEq Carrier],
-      Graph.Route8.TwoCarrierReductionFacts (Carrier := Carrier)
+    letI : DecidableEq object.Vertex := object.vertices.decEq
+    ∀ {Index : Type u} [DecidableEq Index]
+      (entries : Finset Index)
+      (core : Index → Finset (Sym2 object.Vertex))
+      (supply : Finset (Sym2 object.Vertex))
+      (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+      {threshold discharge ambient : Nat},
+        ambient ≤ entries.card + discharge * supply.card →
+        ((threshold + 1) * discharge + 1) * supply.card <
+          (threshold + 1) * ambient →
+        ∃ index ∈ entries,
+          Graph.Route8.IndexedTwoCarrierCore entries core threshold index
 
 /-- Node `[118]`: selected carrier-deletion witnesses, committed after the
 two-carrier stage without a terminal-entry wrapper. -/
 abbrev Route8CarrierDeletionWitnesses (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8TwoCarrierReduction data object ∧
-    ∀ {Target : Graph.FiniteObject.{u} → Prop}
-      {Carrier Coordinate : Type u}
-      [DecidableEq Carrier] [DecidableEq Coordinate]
-      {boundary : Graph.Boundary.{u}}
-      (carrierSupply : Hypostructure.Core.Finite.Enumeration Carrier)
-      (coordinates : Finset Coordinate)
-      (car : Coordinate → Finset Carrier)
-      (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
-      (state : Finset Coordinate → Graph.BoundaryPiece boundary),
-        Graph.Route8.TwoCarrierDeletionWitnessFacts (Target := Target)
-          carrierSupply coordinates car car_subset state
+    letI : DecidableEq object.Vertex := object.vertices.decEq
+    ∀ (presented : Graph.Route8.PresentedEntry object)
+      {Index : Type u} [DecidableEq Index]
+      (entries : Finset Index)
+      (core : Index → Finset (Sym2 object.Vertex))
+      {threshold : Nat} {index : Index},
+        Graph.Route8.IndexedTwoCarrierCore entries core threshold index →
+        core index =
+          (presented.toEntry
+            (Graph.HasCycleWithLength data.LengthOK)).essentialCore →
+        let entry := presented.toEntry (Graph.HasCycleWithLength data.LengthOK)
+        Graph.Route8.TwoCarrierDeletionWitnesses (Target :=
+          Graph.HasCycleWithLength data.LengthOK) entry.carriers
+          entry.coordinates entry.car entry.state entries core threshold index
 
 /-- Nodes `[119]`--`[120]`: the selected private-carrier budget stage on the
 same route-`8` residual. -/
 abbrev Route8PrivateCarrierBudget (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8CarrierDeletionWitnesses data object ∧
-    ∀ {Carrier : Type u} [DecidableEq Carrier],
-      Graph.Route8.PrivateCarrierBudgetFacts (Carrier := Carrier)
+    letI : DecidableEq object.Vertex := object.vertices.decEq
+    ∀ {Index : Type u} [DecidableEq Index]
+      (entries : Finset Index)
+      (core : Index → Finset (Sym2 object.Vertex))
+      (supply : Finset (Sym2 object.Vertex))
+      (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+      {threshold : Nat},
+        (∀ index ∈ entries,
+          ¬ Graph.Route8.IndexedTwoCarrierCore entries core threshold index) →
+        (threshold + 1) * entries.card ≤ supply.card
 
 /-- Nodes `[121]`--`[122]`: the selected no-two-carrier contradiction stage. -/
 abbrev Route8NoTwoCarrierContradiction (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8PrivateCarrierBudget data object ∧
-    ∀ {Carrier : Type u} [DecidableEq Carrier],
-      Graph.Route8.NoTwoCarrierContradictionFacts (Carrier := Carrier)
+    letI : DecidableEq object.Vertex := object.vertices.decEq
+    ∀ {Index : Type u} [DecidableEq Index]
+      (entries : Finset Index)
+      (core : Index → Finset (Sym2 object.Vertex))
+      (supply : Finset (Sym2 object.Vertex))
+      (core_subset : ∀ index ∈ entries, core index ⊆ supply)
+      {threshold discharge ambient : Nat},
+        ambient ≤ entries.card + discharge * supply.card →
+        ((threshold + 1) * discharge + 1) * supply.card <
+          (threshold + 1) * ambient →
+        (∀ index ∈ entries,
+          ¬ Graph.Route8.IndexedTwoCarrierCore entries core threshold index) →
+        False
 
 /-- Node `[123]`: the pressure-descent join fact.
 
@@ -1727,17 +1745,12 @@ abbrev Route8TerminalNoGo (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   Route8PressureDescent data object ∧
     Route8CarrierDeletionWitnesses data object ∧
-    ∀ {Target : Graph.FiniteObject.{u} → Prop}
-      {Carrier Coordinate : Type u}
-      [DecidableEq Carrier] [DecidableEq Coordinate]
-      {boundary : Graph.Boundary.{u}}
-      (carrierSupply : Hypostructure.Core.Finite.Enumeration Carrier)
-      (coordinates : Finset Coordinate)
-      (car : Coordinate → Finset Carrier)
-      (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
-      (state : Finset Coordinate → Graph.BoundaryPiece boundary),
-        Graph.Route8.TerminalTwoCarrierNoGoFacts Target carrierSupply
-          coordinates car car_subset state
+    letI : DecidableEq object.Vertex := object.vertices.decEq
+    ∀ presented : Graph.Route8.PresentedEntry object,
+      let entry := presented.toEntry (Graph.HasCycleWithLength data.LengthOK)
+      Graph.Route8.TerminalTwoCarrierNoGoFacts
+        (Graph.HasCycleWithLength data.LengthOK) entry.carriers
+        entry.coordinates entry.car entry.car_subset entry.state
 
 /-- The value schema of each spine fact, stated of the *object* alone.
 
@@ -2477,6 +2490,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               ¬ Graph.Response.TargetComplete profile
                 (Graph.HasCycleWithLength data.LengthOK)
                 germ.piece germ.canonical
+  | .coldTerminalResidual, object =>
+      Graph.ColdCorridor.TerminalColdResidual data.coldSignature
+        data.threshold data.LengthOK
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object
   | .coldBranchClosed, object =>
       -- `thm:cold-branch-quantitative-closure`, in the form consumed by the
       -- cold oval: after the current residual's length-changing germs and
@@ -4300,11 +4318,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
           (Graph.WindowCurvature.Label data.windowOrder))
   | .homogeneousBottleneckPattern, object =>
-      -- Its complement: the same-token bottleneck, together with
-      -- `thm:homogeneous-overload-geometric-closure`'s first assertion at it --
-      -- `prop:nonnear-cubic-sharp-overload-routing`'s (b) or (c), which is what
-      -- the bottleneck *is*.
-      ¬ Graph.HomogeneousCapsHold object data.threshold data.windowOrder
+      -- Its complement, normalized to the positive same-token bottleneck
+      -- pattern the paper routes at node `[144]`.
+      Graph.HomogeneousBottleneckPatternStatement object data.threshold
+        data.windowOrder
         (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
           (Graph.WindowCurvature.Label data.windowOrder))
   | .bottleneckRouting, object =>
@@ -4427,6 +4444,7 @@ def label : Key → String
   | .coldHandoffTransfer => "coldHandoffTransfer"
   | .coldGermExtraction => "coldGermExtraction"
   | .coldGermRouted => "coldGermRouted"
+  | .coldTerminalResidual => "coldTerminalResidual"
   | .coldBranchClosed => "coldBranchClosed"
   | .highCentreNormalForm => "highCentreNormalForm"
   | .typeBHeavyCentre => "typeBHeavyCentre"
@@ -4595,6 +4613,7 @@ example : label .coldFailureRouting = "coldFailureRouting" := rfl
 example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
 example : label .coldGermExtraction = "coldGermExtraction" := rfl
 example : label .coldGermRouted = "coldGermRouted" := rfl
+example : label .coldTerminalResidual = "coldTerminalResidual" := rfl
 example : label .coldBranchClosed = "coldBranchClosed" := rfl
 example : label .highCentreNormalForm = "highCentreNormalForm" := rfl
 example : label .typeBHeavyCentre = "typeBHeavyCentre" := rfl
@@ -4782,6 +4801,7 @@ def idx : Key → Nat
   | .coldHandoffTransfer => 69
   | .coldGermExtraction => 70
   | .coldGermRouted => 71
+  | .coldTerminalResidual => 177
   | .coldBranchClosed => 176
   | .highCentreNormalForm => 72
   | .typeBHeavyCentre => 73
@@ -4938,6 +4958,7 @@ def ofIdx : Nat → Key
   | 69 => .coldHandoffTransfer
   | 70 => .coldGermExtraction
   | 71 => .coldGermRouted
+  | 177 => .coldTerminalResidual
   | 176 => .coldBranchClosed
   | 72 => .highCentreNormalForm
   | 73 => .typeBHeavyCentre
@@ -5201,6 +5222,9 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermExtraction") 70
   | .coldGermRouted =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermRouted") 71
+  | .coldTerminalResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldTerminalResidual") 177
   | .coldBranchClosed =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldBranchClosed") 176
   | .highCentreNormalForm =>

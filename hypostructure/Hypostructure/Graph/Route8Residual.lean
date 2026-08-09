@@ -1,4 +1,6 @@
+import Hypostructure.Graph.CanonicalSupportSelection
 import Hypostructure.Graph.Route8Closure
+import Hypostructure.Graph.TraceCoordinateSystem
 
 /-!
 # Route-8 presented entries at one object
@@ -236,5 +238,265 @@ noncomputable def toEntry (Target : FiniteObject.{u} → Prop) :
   state := presented.state
 
 end PresentedEntry
+
+/-! ## Trace basins and graph-owned route-8 entries -/
+
+namespace TraceBasin
+
+open TraceCoordinateSystem
+
+attribute [local instance] vertexDecEq
+
+/-- The canonical trace seed of `def:typeA-trace-basin`: the vertex support of
+the selected trace `T_u`, when the route from `load` to `receiver` exists. -/
+noncomputable def traceSeed? (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex) : Option (Finset object.Vertex) :=
+  match object.tracePath? support threshold load receiver with
+  | none => none
+  | some trace => some trace.1.support.toFinset
+
+/-- A candidate basin carries the selected trace and is connected inside the
+ambient object.  The finite declared `u`-supported coordinate family is derived
+from `TraceCoordinateSystem.Base`; no coordinate family is supplied by a caller.
+
+The restriction/equality part of `def:typeA-trace-basin` is recorded by asking
+that every graph-derived `u`-supported coordinate is either carried by the basin
+or is one of the boundary-profile determined coordinates exposed by the
+selected basin boundary.  This is the graph-local predicate consumed by the
+route-8 ledger facts. -/
+def TraceComplete (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex) (basin : Finset object.Vertex) : Prop :=
+  basin ⊆ support ∧
+    (∃ trace : object.graph.Path load receiver,
+      object.tracePath? support threshold load receiver = some trace ∧
+        trace.1.support.toFinset ⊆ basin) ∧
+    SupportComponents.Connected.ConnectedOn object basin ∧
+    ∀ coordinate :
+        TraceCoordinateSystem.Base.Coordinate object support,
+      coordinate ∈ (TraceCoordinateSystem.Base.schedule object support).values →
+        TraceCoordinateSystem.Base.USupported object support threshold receiver
+          load coordinate →
+          TraceCoordinateSystem.Base.declaredSupport object support coordinate ⊆ basin ∨
+            ∃ boundaryVertex ∈
+                Strategy.InterfaceReplacement.SupportAtom.cutBoundary object basin,
+              boundaryVertex ∈
+                TraceCoordinateSystem.Base.declaredSupport object support coordinate
+
+/-- The finite family of trace-complete connected candidate basins. -/
+noncomputable def candidates (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex) : Finset (Finset object.Vertex) := by
+  classical
+  exact support.powerset.filter
+    (TraceComplete object support threshold receiver load)
+
+theorem mem_candidates_iff {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {receiver load : object.Vertex} :
+    basin ∈ candidates object support threshold receiver load ↔
+      TraceComplete object support threshold receiver load basin := by
+  classical
+  simp only [candidates, Finset.mem_filter, Finset.mem_powerset]
+  constructor
+  · exact fun member => member.2
+  · intro complete
+    exact ⟨complete.1, complete⟩
+
+/-- The minimum-cardinality trace-complete basins. -/
+noncomputable def minimalCandidates (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex) : Finset (Finset object.Vertex) := by
+  classical
+  exact (candidates object support threshold receiver load).filter fun basin =>
+    ∀ other ∈ candidates object support threshold receiver load,
+      basin.card ≤ other.card
+
+/-- The trace basin `B_u`: the first minimum trace-complete connected basin in
+the object's finite support order. -/
+noncomputable def select? (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex) : Option (Finset object.Vertex) :=
+  (minimalCandidates object support threshold receiver load).toList.head?
+
+theorem select?_mem_candidates {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {receiver load : object.Vertex}
+    (selected :
+      select? object support threshold receiver load = some basin) :
+    basin ∈ candidates object support threshold receiver load := by
+  classical
+  have member : basin ∈
+      (minimalCandidates object support threshold receiver load).toList :=
+    List.mem_of_mem_head? selected
+  have inMinimal :
+      basin ∈ minimalCandidates object support threshold receiver load := by
+    simpa using member
+  exact (Finset.mem_filter.1 inMinimal).1
+
+theorem select?_traceComplete {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {receiver load : object.Vertex}
+    (selected :
+      select? object support threshold receiver load = some basin) :
+    TraceComplete object support threshold receiver load basin :=
+  mem_candidates_iff.mp (select?_mem_candidates selected)
+
+theorem select?_card_le {object : FiniteObject.{u}}
+    {support basin other : Finset object.Vertex} {threshold : Nat}
+    {receiver load : object.Vertex}
+    (selected :
+      select? object support threshold receiver load = some basin)
+    (candidate :
+      other ∈ candidates object support threshold receiver load) :
+    basin.card ≤ other.card := by
+  classical
+  have member : basin ∈
+      (minimalCandidates object support threshold receiver load).toList :=
+    List.mem_of_mem_head? selected
+  have inMinimal :
+      basin ∈ minimalCandidates object support threshold receiver load := by
+    simpa using member
+  exact (Finset.mem_filter.1 inMinimal).2 other candidate
+
+/-- Selection succeeds as soon as a trace-complete candidate exists. -/
+theorem select?_isSome {object : FiniteObject.{u}}
+    {support : Finset object.Vertex} {threshold : Nat}
+    {receiver load : object.Vertex}
+    (witness :
+      (candidates object support threshold receiver load).Nonempty) :
+    (select? object support threshold receiver load).isSome := by
+  classical
+  obtain ⟨least, member, minimal⟩ :=
+    Finset.exists_min_image
+      (candidates object support threshold receiver load) Finset.card witness
+  have inMinimal :
+      least ∈ minimalCandidates object support threshold receiver load :=
+    Finset.mem_filter.2 ⟨member, minimal⟩
+  have nonempty :
+      (minimalCandidates object support threshold receiver load).toList ≠ [] := by
+    intro empty
+    have : least ∈
+        (minimalCandidates object support threshold receiver load).toList := by
+      simpa using inMinimal
+    rw [empty] at this
+    exact absurd this (List.not_mem_nil)
+  cases list :
+      (minimalCandidates object support threshold receiver load).toList with
+  | nil => exact absurd list nonempty
+  | cons head tail => simp [select?, list]
+
+/-- Alternative (a): a trace-local non-carrier quotient is target-defective. -/
+def TraceLocalTargetDefect (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
+    (basin : Finset object.Vertex) : Prop :=
+  ∃ replacement : BoundaryPiece
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin),
+    replacement.boundaryDegreeProfile =
+        (Strategy.InterfaceReplacement.SupportAtom.piece object basin).boundaryDegreeProfile ∧
+      Response.TargetDefect (HasCycleWithLength LengthOK) replacement
+        (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+
+/-- Alternative (b): a nontrivial target-complete trace-local compression. -/
+def TraceTargetCompleteCompression (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
+    (basin : Finset object.Vertex) : Prop :=
+  ∃ replacement : BoundaryPiece
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin),
+    replacement.boundaryDegreeProfile =
+        (Strategy.InterfaceReplacement.SupportAtom.piece object basin).boundaryDegreeProfile ∧
+      Response.ContextEquivalent (HasCycleWithLength LengthOK) replacement
+        (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+
+/-- Alternative (c): a trace equality delocalizes to a larger support. -/
+def TraceDelocalization (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
+    (basin : Finset object.Vertex) : Prop :=
+  ∃ larger : Finset object.Vertex,
+    basin ⊂ larger ∧
+      larger ⊆ object.vertexFinset ∧
+      SupportComponents.Connected.ConnectedOn object larger
+
+/-- Alternative (d): two outside connector germs have a surviving first
+separator.  The concrete germ schedule is the graph-owned exit-seven schedule;
+the proposition records only the existence of such a survivor for this basin. -/
+def TraceSurvivingSeparator (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
+    (basin : Finset object.Vertex) : Prop :=
+  ∃ separator : object.Vertex,
+    separator ∉ support ∧ threshold < object.degree separator
+
+/-- The selected basin is target-complete-minimal precisely when none of the
+four trace-local failure alternatives of `def:typeA-trace-basin` occurs. -/
+def TargetCompleteMinimal (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
+    (basin : Finset object.Vertex) : Prop :=
+  TraceComplete object support threshold receiver load basin ∧
+    ¬ TraceLocalTargetDefect object support threshold LengthOK receiver load basin ∧
+    ¬ TraceTargetCompleteCompression object support threshold LengthOK receiver load basin ∧
+    ¬ TraceDelocalization object support threshold LengthOK receiver load basin ∧
+    ¬ TraceSurvivingSeparator object support threshold LengthOK receiver load basin
+
+end TraceBasin
+
+namespace PresentedEntry
+
+open TraceCoordinateSystem
+
+/-- Convert a graph-derived D4 target event into the route-8 event shape. -/
+noncomputable def eventOfBase (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (LengthOK : Nat → Prop) :
+    (coordinate : Base.Coordinate object support) →
+      Option (CoordinateEvent object)
+  | .d1 _ => none
+  | .d2ReturnLength _ => none
+  | .d3WindowLabel _ => none
+  | .d4RawCurvature coordinate =>
+      match TraceCoordinateSystem.D4.event? object support LengthOK coordinate with
+      | none => none
+      | some event =>
+          some
+            { base := event.certificate.vertex
+              walk := event.certificate.walk
+              isCycle := event.certificate.isCycle }
+
+/-- The graph-owned presented entry assigned to a selected trace basin.  The
+coordinate family, values, supports and target events are all read from the
+declared trace-coordinate system of the selected support. -/
+noncomputable def ofTraceBasin (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop) : PresentedEntry object where
+  support := support
+  interface := Strategy.InterfaceReplacement.SupportAtom.boundary object basin
+  Coordinate := TraceCoordinateSystem.Base.Coordinate object support
+  coordinateDecEq := TraceCoordinateSystem.Base.coordinateDecEq object support
+  coordinates := (TraceCoordinateSystem.Base.schedule object support).toFinset
+  Value := fun _ => PUnit.{u + 1}
+  value := fun _ => PUnit.unit
+  declaredSupport := TraceCoordinateSystem.Base.declaredSupport object support
+  event? := eventOfBase object support LengthOK
+  state := fun _ =>
+    Strategy.InterfaceReplacement.SupportAtom.piece object basin
+
+end PresentedEntry
+
+namespace TraceBasin
+
+/-- The concrete route-8 entry of `def:typeA-route8-carriers` for the selected
+load/basin. -/
+def Route8Entry (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex) : Prop :=
+  ∃ basin : Finset object.Vertex,
+    select? object support threshold receiver load = some basin ∧
+      TargetCompleteMinimal object support threshold LengthOK receiver load basin
+
+end TraceBasin
 
 end Hypostructure.Graph.Route8

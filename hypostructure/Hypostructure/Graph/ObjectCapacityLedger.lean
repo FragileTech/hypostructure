@@ -645,6 +645,26 @@ def HomogeneousCapsHold (object : FiniteObject.{u}) (threshold order : Nat)
         PatternFamily.IsStar pattern centre ∧
           SameTokenRoutingGerms.patternBound Label ≤ pattern.card)
 
+/-- **Node `[144]`, the bottleneck-pattern arm.**
+
+The literal complement of the fixed homogeneous caps, normalized to the
+positive pattern statement the paper routes: some certified capacity-token
+ledger has a token and role supporting a role-homogeneous same-token
+`L_geom`-matching or `L_geom`-star. -/
+def HomogeneousBottleneckPatternStatement (object : FiniteObject.{u})
+    (threshold order : Nat) (Label : Type) [Fintype Label] : Prop :=
+  ∃ (data : CapacityPresentation.{u} object order)
+      (ledger : ObjectCapacityLedger.{u} object threshold order data)
+      (token : ledger.presented.Token),
+      token ∈ ledger.presented.tokens ∧
+        ∃ role : Role,
+          (∃ pattern ⊆ ledger.presented.roleFibre token role,
+              PatternFamily.IsMatching pattern ∧
+                SameTokenRoutingGerms.patternBound Label ≤ pattern.card) ∨
+            (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
+              PatternFamily.IsStar pattern centre ∧
+                SameTokenRoutingGerms.patternBound Label ≤ pattern.card)
+
 /-- **Node `[144]`, the near-cubic outcome**:
 `cor:homogeneous-same-token-caps-close` at the counted `L_geom`, together with
 `thm:homogeneous-overload-geometric-closure`'s edge-count half.
@@ -836,6 +856,26 @@ theorem homogeneousCapsCloseStatement (object : FiniteObject.{u})
   refine ⟨loads, blocked, surplus, ?_⟩
   rw [slack]
   exact Nat.add_le_add_left surplus _
+
+/-- The failed fixed-cap subbranch is the positive bottleneck-pattern fact. -/
+theorem homogeneousBottleneckPatternStatement_of_not_caps
+    (object : FiniteObject.{u}) {threshold order : Nat} {Label : Type}
+    [Fintype Label]
+    (failure : ¬ HomogeneousCapsHold object threshold order Label) :
+    HomogeneousBottleneckPatternStatement object threshold order Label := by
+  classical
+  by_contra noPattern
+  apply failure
+  intro declared ledger
+  refine ⟨?_, ?_⟩
+  · intro token tokenMem role
+    rintro ⟨pattern, subset, matching, large⟩
+    exact noPattern ⟨declared, ledger, token, tokenMem, role,
+      Or.inl ⟨pattern, subset, matching, large⟩⟩
+  · intro token tokenMem role
+    rintro ⟨centre, pattern, subset, star, large⟩
+    exact noPattern ⟨declared, ledger, token, tokenMem, role,
+      Or.inr ⟨centre, pattern, subset, star, large⟩⟩
 
 /-- **Node `[144]`'s bottleneck arm, proved.**
 

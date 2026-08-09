@@ -7,14 +7,14 @@ import Hypostructure.Graph.Strategy.ColdCorridorRun
 fixture checks the audit shape of a ledger that already carries the cold
 corridor prefix at the spine's *own* vocabulary:
 
-* the index is the incoming one with the fourteen cold facts on top, so every
-  earlier fact of the branch is still in the type;
-* the audit contains those fourteen facts and accounts for every fact with a
+* the index is the incoming one with the fourteen cold facts and the framework
+  closure key on top, so every earlier fact of the branch is still in the type;
+* the audit contains those facts and accounts for every fact with a
   chronological commit.
 
 This fixture audits the prefix at an arbitrary incoming live cold residual.
 Row 61 is audited here as the ordinary ledger fact `coldBranchClosed` on that
-same residual.
+same residual, followed by Core's reserved contradiction entry.
 -/
 
 namespace Hypostructure.Fixtures.ColdCorridorRun
@@ -81,6 +81,15 @@ theorem run_audit_contains_cold_facts
   · exact List.mem_map.mpr ⟨K .coldGermExtraction, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldGermRouted, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldBranchClosed, by simp, rfl⟩
+
+/-- **The cold runner closes by Core's reserved contradiction fact.** -/
+theorem run_audit_contains_closure
+    {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      selected (coldKeys known)) :
+    Core.Residual.closureFactName ∈ (ExactLedger.audit history).facts :=
+  List.mem_map.mpr ⟨closed, by simp [coldKeys], rfl⟩
 
 /-- **Every fact of the cold block is accounted for by a chronological
 commit.** -/

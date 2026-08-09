@@ -11,7 +11,7 @@ of `lem:cold-bounded-germ-trichotomy` and the local cold-oval closure fact.
 
 The block is entered only from a branch cursor whose key index already carries
 the surviving cold prefix: the selected counterexample, uncompressibility, the
-window package and density facts, the large-budget residual, the live
+cold/collided window and density facts, the large-budget residual, the live
 negative-support path, the near-cubic spine estimate, and the Type B/route-8
 closures.  The runner does not reconstruct those facts or store a side object;
 it requires them in `known`, so the same full residual ancestry is retained
@@ -34,16 +34,23 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+noncomputable instance instIncompatibleColdTerminalResidualClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .coldTerminalResidual) (K .coldBranchClosed) where
+  contradiction := fun _input terminal closed =>
+    closed.down terminal.down
+
 /-! ## The ledger prefix, run -/
 
-/-- The key index the ledger carries after the cold corridor block. -/
+/-- The key index the ledger carries after the cold corridor block closes. -/
 abbrev coldKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .coldBranchClosed :: K .coldGermRouted :: K .coldGermExtraction ::
-    K .coldHandoffTransfer :: K .coldFailureRouting :: K .coldFailureHandoff ::
-    K .coldFailureCompression :: K .coldFailureDefect :: K .coldFailureCycle ::
-    K .coldGermSilent :: K .coldGermDistinguished :: K .coldGermRealized ::
+  closed :: K .coldBranchClosed :: K .coldGermRouted ::
+    K .coldGermExtraction :: K .coldHandoffTransfer :: K .coldFailureRouting ::
+    K .coldFailureHandoff :: K .coldFailureCompression ::
+    K .coldFailureDefect :: K .coldFailureCycle :: K .coldGermSilent ::
+    K .coldGermDistinguished :: K .coldGermRealized ::
     K .coldSameInterfaceTable :: K .coldCorridorState :: known
 
 /-- **The cold corridor ledger prefix, run.**
@@ -58,7 +65,7 @@ noncomputable def runCold
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
     [FactKeys.Has (K (data := data) .uncompressible) known]
-    [FactKeys.Has (K (data := data) .windowPackageSeparated) known]
+    [FactKeys.Has (K (data := data) .windowPackageCollided) known]
     [FactKeys.Has (K (data := data) .densityCap) known]
     [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
     [FactKeys.Has (K (data := data) .negativeSupport) known]
@@ -67,6 +74,7 @@ noncomputable def runCold
     [FactKeys.Has (K (data := data) .sparsePressureNearCubic) known]
     [FactKeys.Has (K (data := data) .typeBExcluded) known]
     [FactKeys.Has (K (data := data) .route8TerminalNoGo) known]
+    [FactKeys.Has (K (data := data) .coldTerminalResidual) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
     (stateFresh : K (data := data) .coldCorridorState ∉ known)
@@ -82,7 +90,17 @@ noncomputable def runCold
     (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
     (extractionFresh : K (data := data) .coldGermExtraction ∉ known)
     (routedFresh : K (data := data) .coldGermRouted ∉ known)
-    (closedFresh : K (data := data) .coldBranchClosed ∉ known) :
+    (branchClosedFresh : K (data := data) .coldBranchClosed ∉ known)
+    (closureFresh :
+      closed (BranchState := BranchState) (Presentation := Presentation)
+        (presentation := presentation) (data := data) ∉
+        K .coldBranchClosed :: K .coldGermRouted ::
+          K .coldGermExtraction :: K .coldHandoffTransfer ::
+          K .coldFailureRouting :: K .coldFailureHandoff ::
+          K .coldFailureCompression :: K .coldFailureDefect ::
+          K .coldFailureCycle :: K .coldGermSilent ::
+          K .coldGermDistinguished :: K .coldGermRealized ::
+          K .coldSameInterfaceTable :: K .coldCorridorState :: known) :
     ExactLedger (Input BranchState Presentation presentation data) current
       (coldKeys known) := by
   classical
@@ -178,11 +196,15 @@ noncomputable def runCold
       subst isNew
       revert isOld
       simp [routedFresh])
-  exact (coldBranchClosedRow (data := data)).run afterRouted (by
-    intro key isNew isOld
-    simp only [List.mem_singleton] at isNew
-    subst isNew
-    revert isOld
-    simp [closedFresh])
+  have afterBranchClosed :=
+    (coldBranchClosedRow (data := data)).run afterRouted (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [branchClosedFresh])
+  exact closeIncompatible afterBranchClosed (K .coldTerminalResidual)
+    (K .coldBranchClosed) (by
+      simpa using closureFresh)
 
 end Hypostructure.Graph.Strategy.Spine

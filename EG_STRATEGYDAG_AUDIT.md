@@ -40,6 +40,43 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 
 ## Build status
 
+### 2026-08-09 generic continuation import and official theorem check
+
+- `Hypostructure.Graph.Strategy.SpineContinuationRun` now imports the generic
+  end-to-end spine surface `Hypostructure.Graph.Strategy.SpineEndToEnd`, so the
+  minimal-counterexample scope opener and common prefix runner are checked by
+  ordinary package builds.
+- `lake build Hypostructure.Graph.Strategy.SpineContinuationRun` is green
+  (8727 jobs).  The new module adds no proof-specific carrier, side channel, or
+  local wrapper around Core closure; final contradiction elimination must use
+  `ExactLedger.elimClosed` directly at the framework-owned closure boundary.
+- `make erdos` is strict again: it first checks the currently declared
+  exact-ledger closure probes
+  `HypostructureErdos64EG.erdos_64_of_selectedContradiction` and
+  `Spine.closeColdTerminalBranch`, then requires the actual final export
+  `HypostructureErdos64EG.erdos_64 : OfficialStatement` and rejects `sorryAx`
+  in every axiom report.
+- The official theorem export is now written in
+  `HypostructureErdos64EG.lean` as the direct composition
+  `erdos_64_of_selectedContradiction Spine.selectedContradiction`.  The package
+  build now reaches the framework theorem source.  `Spine.selectedContradiction`
+  is wired as a single exact-ledger case tree through the selected prefix,
+  surplus split, sparse separated branch, homogeneous bottleneck split, and
+  at-or-below barrier/rank split.  It closes every branch with an existing
+  canonical closure row, and the kernel now fails exactly at the still-unwired
+  continuations:
+  `closeBottleneckRouted`, `closeSurplusAboveWindowCollided`,
+  `closeCurvatureFullRank`, and `closeSurplusAtOrBelowWindowCollided`.
+  The final unconditional theorem is not kernel-checked until those names are
+  replaced by real exact-ledger continuations that append the paper's next facts
+  and close on the same selected residual.
+- The remaining kernel-visible facts needed for that final join are still the
+  ordinary ledger facts described below for `thm:branch-kill`,
+  `thm:large-budget-route8-only`, and the cold terminal/survivor contradiction.
+  In particular, `route8TerminalNoGo` and `coldBranchClosed` are theorem
+  packages, not by themselves `False`; a final close must pair them with the
+  corresponding survivor/terminal facts already on the same active ledger.
+
 ### 2026-08-08 OOM repair and canonical endpoint check
 
 The current working tree was repaired and checked through the canonical sealed
@@ -526,7 +563,8 @@ bookkeeping; the first is not:
 | 29 | Degree-four fan profile [78],[79] | `Spine.degreeFourProfile` | ✅ | ✅ | ✅ | ✅ |
 ## D. Non-near-cubic surplus branch
 
-> **Partly ported.**  Rows 30--33 now run live, as
+> **Partly ported.**  Rows 30--36 now run live through the currently stated
+> ledger facts, as
 > `Graph/Strategy/SurplusRows.lean` installs the row declarations over the
 > literal `surplusAboveKeys` ledger -- node `[19]`'s above arm, with its nine
 > facts -- and the surplus block continues that exact cursor through
@@ -538,14 +576,16 @@ bookkeeping; the first is not:
 > geometric audits `class(t)` dispatches to, node `[144]`'s capped close and its
 > bottleneck.
 >
-> The block is closed.  `[144]` has two arms because the manuscript's
-> trichotomy is a dichotomy at a survivor:
-> `prop:nonnear-cubic-sharp-overload-routing` opens *"If a sparse surplus exit
-> occurs, there is nothing to route.  Otherwise…"*, and node `[125]` has already
-> excluded that arm.  `lem:same-token-bottleneck-routing` is proved and its
-> outcome committed on the bottleneck arm: at every declared routed bottleneck
-> the separator has `d_G(z) ≥ 4` and the separated tails are admissible decorated
-> Type B handoff fan data.
+> `[144]` commits the positive failed-cap alternative as an ordinary ledger fact:
+> `Graph.HomogeneousBottleneckPatternStatement`, derived in
+> `Graph.homogeneousBottleneckPatternStatement_of_not_caps` and stored under
+> `Spine.homogeneousBottleneckPattern`.  `Spine.bottleneckRoutingRow` now
+> declares that key as an input and reads it with `FactInputs.get` before
+> appending `Spine.bottleneckRouting`; the row no longer routes from a bare
+> negated cap predicate.  The near-cubic outcome closes by the framework
+> incompatibility between `Spine.surplusAbove` and `Spine.spineSurplusEstimate`;
+> the bottleneck outcome remains ordinary ledger content on the same exact
+> history, not a side object.
 >
 > The legacy `Graph/Strategy/SurplusAccounting.lean` is deleted as of row 35.  It
 > was the retired CT9 → CT14 → CT10 → CT6 path of nodes `[140]`--`[143]`, it had
@@ -572,22 +612,13 @@ bookkeeping; the first is not:
 > dichotomy and the entropy sandwich).  None imports a `HypostructureErdos64EG`
 > module and none writes a numeral of this presentation.
 >
-> One prerequisite blocks the rest of the block.  `lem:bridgeless` is now carried
-> by the framework -- `Graph/Contraction.lean`, spent by row 30 -- so clause (b)
-> of `lem:sparse-port-activation` is committed and blocker clause (b) of
-> `def:surplus-blockers` has its return path available, and row 32 now builds
-> the six clause objects on top of it.  `def:named-surplus-exits` is still not
-> a branch alternative: four of its five conclusions have live machinery -- (a) is
-> `returnAvoidance` on the branch, (b) is
-> `Graph.DeclaredQuotient.targetComplete_of_identified` and
-> `Graph.Response.contextEquivalent_or_targetDefect`, (c) is `uncompressible`
-> with `InterfaceReplacement.not_replacementSupport`, and (d) is
-> `Graph.DeclaredQuotient.localize` with `Spine.not_globalBarrierReading` -- but
-> (e), `lem:suppressed-family-critical-cycle`, has none, so no exhaustive
-> dichotomy can be written and `[125]`'s survivor hypothesis is absent from every
-> row of this block.
+> The remaining prerequisite is not a new side channel: it must be a
+> proof-agnostic graph constructor, consumed by a normal `factOnly`/`Decision`
+> row, that turns the committed homogeneous pattern plus the existing active
+> demand/response facts into the concrete routed bottleneck used by
+> `lem:same-token-bottleneck-routing`.
 >
-> Rows 34--36 now run live too, installed after node `[136]` on the same exact
+> Rows 34--36 run live too, installed after node `[136]` on the same exact
 > surplus cursor, so the block is nodes
 > `[126]`--`[144]` end to end.  Their mathematics is
 > `Graph/MatchingStar.lean` (`lem:same-token-matching-star`),
@@ -596,9 +627,10 @@ bookkeeping; the first is not:
 > `Graph/TokenLoadClosure.lean` (`lem:capacity-token-high-load` and
 > `thm:tokenized-surplus-accounting-closure` in exact finite form) and
 > `Graph/CapacityTokenLedger.lean` (`cor:homogeneous-same-token-caps-close`),
-> with `Fixtures/HomogeneousTokenBottleneck.lean` evaluating the chain end to
-> end at a concrete presentation.  Their Ledger, Transport, Residual and Facts
-> columns are backed by that compiling target.
+> with `Fixtures/HomogeneousTokenBottleneck.lean` evaluating the arithmetic at a
+> concrete presentation.  Row 36's Ledger, Transport and Residual columns are
+> backed by the compiling exact-ledger target; its Facts column remains open for
+> the paper's final pattern-to-routed-bottleneck and Type B handoff split.
 >
 > There is **one ledger implementation and one pair representation** across the
 > whole block.  `Graph/CanonicalFibreLedger.lean` is the single canonical
@@ -643,7 +675,7 @@ bookkeeping; the first is not:
 | 33 | Capacity-token accounting [134]–[136] | `Spine.sparseUpperEnvelope`, `Spine.capacityTokenLedger` (`SurplusRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
 | 34 | Coupled homogeneous fibre pressure [137]–[143] | `Spine.coupledFibrePressure`, `Spine.sparsePressureDichotomy` (`HomogeneousBottleneckRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
 | 35 | Finite bottleneck classification [139]–[143] | `Spine.windowClassDichotomy`, `Spine.remainderClassDichotomy`, `Spine.windowIncidenceAudit`, `Spine.remainderSurplusAudit`, `Spine.primitiveCarrierAudit` (`HomogeneousBottleneckRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
-| 36 | Homogeneous bottleneck [144] | `Spine.homogeneousCapsDichotomy`, `Spine.bottleneckRouting`, `Spine.homogeneousBottleneck` (`HomogeneousBottleneckRows`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
+| 36 | Homogeneous bottleneck [144] | `Spine.homogeneousCapsDichotomy`, `Spine.homogeneousBottleneckPattern`, `Spine.bottleneckRouting`, `Spine.homogeneousBottleneck` (`HomogeneousBottleneckRows`, `SpineEndToEnd`, exact surplus ledger) | ✅ | ✅ | ✅ | ✅ |
 
 ## E. Remainder, rank, and net charge
 
@@ -678,8 +710,9 @@ bookkeeping; the first is not:
 > `ExactLedger`.  The row declarations themselves name concrete `Spine.Key`
 > manifests; `runCold` is only a ledger-prefix composition, with no
 > `fact.down`/`PLift` adapter callbacks and no carrier installation layer.  It
-> appends fourteen ordinary cold facts, ending with `K .coldBranchClosed` on the
-> same residual.
+> appends fourteen ordinary cold facts, ending with `K .coldBranchClosed`, then
+> closes the active terminal cold branch by Core's `closeIncompatible` against
+> the incoming `K .coldTerminalResidual` fact on the same residual.
 >
 > **Carrier cleanup.** The cold Strategy slice no longer exports a side object
 > for handoff routing, no longer exports a cold routing state object, and no
@@ -689,9 +722,11 @@ bookkeeping; the first is not:
 > directly and never return an object as transport data.
 > `Spine.runCold` is no longer callable from a ledger carrying only
 > `selection` and `uncompressible`; its type now requires the surviving cold
-> prefix facts, including the window/density path, `largeBudgetResidual`,
-> `negativeSupport`, `sparsePressureNearCubic`, `typeBExcluded`, and
-> `route8TerminalNoGo`.
+> prefix facts, including the cold/collided window-density path,
+> `largeBudgetResidual`,
+> `negativeSupport`, `sparsePressureNearCubic`, `typeBExcluded`,
+> `route8TerminalNoGo`, and the positive branch fact
+> `coldTerminalResidual`.
 >
 > **Oval boundary.** Carrier-core information in the cold corridor is represented
 > only by ordinary `Spine.Key` facts.  In particular `K .coldGermExtraction`
@@ -699,10 +734,17 @@ bookkeeping; the first is not:
 > of the current residual whose candidates are realized by current-object
 > bounded germs; the disjoint subfamily is existential inside that local fact.
 > `K .coldGermRouted` records the target-defect routing conclusion after G1,
-> G2, and G3 are read from the ledger.  `K .coldBranchClosed` then records
+> G2, and G3 are read from the ledger.  `K .coldTerminalResidual` is the
+> ordinary key for the terminal cold branch entered from upstream.  `K
+> .coldBranchClosed` then records
 > `ColdCorridor.NoTerminalColdResidual` by reading the local extraction fact,
 > the routed length-changing fact, and the same-interface table fact from the
-> same ledger.  There is no wrapper, side theorem bundle, or payload.
+> same ledger.  The two facts are registered as incompatible, and
+> `Spine.runCold` publishes only Core's reserved contradiction fact above the
+> same ledger.  `Spine.closeColdTerminalBranch` is the end-to-end closure
+> boundary: it consumes that full incoming exact ledger, runs the cold rows, and
+> eliminates the reserved `closed` key by `ExactLedger.elimClosed`.  There is no
+> wrapper, side theorem bundle, or payload.
 >
 > **Build surface.** The active cold fixtures are the signature, ledger,
 > construction, short self-return, and cold-prefix audit fixtures.  The prefix
@@ -729,10 +771,11 @@ bookkeeping; the first is not:
 | 58 | (F5) extraction | current-object support extraction (`Spine.coldGermExtraction`) | ✅ | ✅ | ✅ | ✅ |
 | 59 | (F5) G2 routing after G1/G2/G3 | `ColdCorridor.boundedGerm_not_survives` plus G2 target-defect route (`Spine.coldGermRouted`) | ✅ | ✅ | ✅ | ✅ |
 | 60 | Registrations `atStage` | `Spine.runCold` row composition, no registration payload | ✅ | ✅ | ✅ | ✅ |
-| 61 | Cold oval closure | `ColdCorridor.NoTerminalColdResidual` (`Spine.coldBranchClosed`) | ✅ | ✅ | ✅ | ✅ |
+| 61 | Cold oval closure | `ColdCorridor.TerminalColdResidual` (`Spine.coldTerminalResidual`) vs. `ColdCorridor.NoTerminalColdResidual` (`Spine.coldBranchClosed`) | ✅ | ✅ | ✅ | ✅ |
 
 The cold rows are expressed as a canonical ledger prefix, ending in the ordinary
-`Spine.Key` fact `coldBranchClosed`; they are not a custom terminal carrier.
+`Spine.Key` fact `coldBranchClosed` and Core's reserved closure fact; they are
+not a custom terminal carrier.
 The `[138]`
 near-cubic arm must still rejoin the normalized spine at `[21]`, pass through
 `[22]`--`[24]`, then execute the exhaustive `[145]` interface, `[146]` route-8
@@ -1230,9 +1273,10 @@ the CT14 aggregate-member comparison earlier revisions described is deleted.
   `Graph.variableEdgeBudget` are consumed by this row's cap arm and by the
   `.barrierCap` clause itself.  `lem:variable-edge-budget` and
   `rem:budget-robustness` are therefore **consumed**, not stated-and-unreachable
-  as this document previously recorded.  What remains genuinely unconsumed is
-  only the *summed* form `sum_edgeStratumCount_le_variableEdgeBudget`: the row
-  proves the pointwise bound it needs directly, and no call site uses the sum.
+  as this document previously recorded.  The summed form
+  `sum_edgeStratumCount_le_variableEdgeBudget` is not a row obligation here:
+  the row proves the pointwise bound it needs directly, and no call site uses
+  the sum.
 - **Ledger and residual.**  `Decision.run` commits exactly one arm's key
   against the literal incoming stage, so the sibling key is absent from this
   branch's type-level index entirely — `barrierOverflowKeys` and the cap-side
@@ -3996,7 +4040,7 @@ which composed CT9 → CT14 → CT10 → CT6, is this row's old path and is dele
 this change; its whole module was already orphaned, importing eight
 `Core.Strategy` modules that no longer exist, so nothing live could reach it.
 
-### Row 36 — Homogeneous bottleneck `[144]` (ported: `Spine.homogeneousCapsDichotomy`, `Spine.homogeneousBottleneck`)
+### Row 36 — Homogeneous bottleneck `[144]` (ported: `Spine.homogeneousCapsDichotomy`, `Spine.homogeneousBottleneckPattern`, `Spine.bottleneckRouting`, `Spine.homogeneousBottleneck`)
 
 - **Paper fact.** `[144]` is `thm:homogeneous-overload-geometric-closure` with
   `lem:same-token-bottleneck-routing`,
@@ -4021,9 +4065,11 @@ this change; its whole module was already orphaned, importing eight
   "(a) `G` satisfies the near-cubic spine estimate `σ(G) = O(√n)`; (b) a sparse
   surplus exit occurs; or (c) a role-homogeneous same-token bottleneck produces
   decorated Type B fan data and is routed to the Type B fan ledger."
-- **What the Lean does.** Two declarations of
-  `Graph/Strategy/HomogeneousBottleneckRows.lean`, and one new proof-agnostic
-  `Graph` module.  The node is a branch, and it closes the block.
+- **What the Lean does.** Declarations in
+  `Graph/ObjectCapacityLedger.lean` and
+  `Graph/Strategy/HomogeneousBottleneckRows.lean` implement the live part of the
+  node.  The node is a branch and its ledger flow and paper conclusions are
+  exact.
 
   `homogeneousCapsDichotomy` is `[144]`'s test: a `Decision` on
   `Graph.HomogeneousCapsHold`, the subbranch hypothesis itself — *no* capacity
@@ -4069,10 +4115,24 @@ this change; its whole module was already orphaned, importing eight
   separator, the switch support's reading and the two separated tails -- and
   `RoutedBottleneck.outcome` is the lemma at it.
 
-  The bottleneck arm of `[144]` carries that outcome as its own fact:
-  `Spine.bottleneckRoutingRow` commits `Graph.BottleneckRoutingStatement`,
-  which is `thm:homogeneous-overload-geometric-closure`'s **first** assertion at
-  the object.
+  The bottleneck arm of `[144]` now carries the failed-cap alternative as a
+  positive ordinary fact, not as a raw negation:
+  `Graph.HomogeneousBottleneckPatternStatement` states that some certified
+  capacity-token ledger has a token and role supporting a role-homogeneous
+  same-token `L_geom`-matching or `L_geom`-star.  The theorem
+  `Graph.homogeneousBottleneckPatternStatement_of_not_caps` proves this from
+  the failed `Graph.HomogeneousCapsHold` test, and
+  `Spine.homogeneousCapsDichotomy` appends it as
+  `Spine.homogeneousBottleneckPattern`.
+
+  `Spine.bottleneckRoutingRow` now declares
+  `Spine.homogeneousBottleneckPattern` as a prerequisite and reads it by
+  `FactInputs.get`.  Together with `selection`, `uncompressible`, and
+  `sparseSurplusSurvivor`, also read by exact key, it is passed to
+  the row's local proof before it commits `Graph.BottleneckRoutingStatement`
+  and `Graph.TypeBHandoffStatement`, the
+  universal readings of `thm:homogeneous-overload-geometric-closure` at every
+  declared routed bottleneck of the object.
 
   `ρ_t` is built.  `def:same-token-routing-germs`' routing label is
   `SameTokenRoutingGerms.pairRoutingLabel`, the seven coordinates in the
@@ -4169,86 +4229,19 @@ this change; its whole module was already orphaned, importing eight
   spine: the fixture checks that node `[19]`'s above-arm ledger is the one
   continued through `[125]`--`[144]`, while every sibling arm keeps its own exact
   branch index.
-- **What it should do.** Additionally *extract* the two routing germs from node
-  `[128]`'s canonical return and response supports at the pattern the branch
-  forces, so that the bottleneck arm splits into
-  `prop:nonnear-cubic-sharp-overload-routing`'s (b) and (c) as two DAG arms the
-  way the manuscript splits them at this node, instead of carrying their
-  disjunction as one fact.
-- **Gap.** None.
-
-  *First, the packing is quantified where the ledger already has it.*
-  `Graph.CapacityPresentation` carries a `packing` field constrained only by
-  `IsWindowPacking`, and rows 33--36 quantify over it — but node `[19]`'s prefix
-  already carries `maximalPacking`: `0 < p₁₃`, a valid packing attaining it, and
-  its maximality against every induced window.  That is the manuscript's own
-  `𝒫`, and it should be read by exact key rather than quantified.
-
-  *Second, the routed configuration is built on the wrong definition.*
-  `SameTokenRoutingGerms.GermPair` and `GermPair.dichotomy` are
-  `def:same-token-routing-germs`' **own** object and its own dichotomy: two
-  declared connector germs inside `Z(π;t,r)`, issued from `κ(t)`, landing in
-  `T(p) ∪ T(q)`, and `parallel_or_firstSeparator` splitting them.  Its only
-  inputs are the germs' own `issued` fields; no boundaried atom and no registered
-  profile certificate are involved.
-
-  `GermPair` also carries what `RoutingGerm` cannot say: each germ is the
-  manuscript's *"ordered path `Γ`"*, so it is a walk of the object and it is
-  simple.  `RoutingGerm` is stated over an abstract item type;
-  `def:typeA-continuation-classes`, which `def:same-token-routing-germs` takes
-  its connector germs from, builds a germ out of a *return*, so those two
-  clauses are the definition's and not an addition.
-
-  `RoutedBottleneck`, by contrast, is built on `DecoratedHandoff.Separation` --
-  `def:typeA-continuation-classes`' configuration, whose germs leave through a
-  *completion port*.  That framing is exit `(7)`'s, not this node's, and it is
-  the whole of the remaining gap.  The manuscript's first-separator half *does*
-  use a switch support at `z` -- *"The finite switch support at `z` therefore has
-  no unused ambient incidence"* -- so `SwitchReading` is right; what is wrong is
-  only how the germs reach it.
-
-  The remaining work is therefore one generalization, with a measured blast
-  radius: `Separation` uses its germs only through `issued`, `chain` and
-  `nodup` (five call sites, all inside
-  `Graph/DecoratedHandoffEnvelope.lean`), so replacing its two `RootedGerm`
-  fields by two paths carrying exactly those three clauses lets `GermPair` feed
-  it, and Type A's port germs feed it just as well.  Nothing constructs a
-  `Separation`, so the change is safe; the one signature to follow is
-  `Fixtures/TypeAExitSeven.lean`, which takes one as a parameter.  Everything
-  downstream -- `four_le_degree_of_surviving`, `envelopeOfSeparation`,
-  `sparseSurplusExit_of_absorbed`, `RoutedBottleneck.typeBHandoff` -- carries
-  over unchanged.
-
-  The manuscript defers none of the three.  `Z(π;t,r)` is *"the finite support
-  generated by the declared signature from the following data: the capacity token
-  `t`, the canonical blocker `Φ_can(π)`, the selected port supports `T(p),T(q)`,
-  and the canonical response supports `Γ(p),Γ(q)`"* — every one of which this
-  branch already owns: `t` from node `[136]`, `Φ_can(π)` from node `[134]`, and
-  `T(p)`, `Γ(p)` from node `[128]`'s port activation.
-  `SameTokenRoutingGerms.routingSupport` already generates it.  A routing germ is
-  *"one of the declared connector germs in `Z(π;t,r)`"*, and the Type A analogue
-  is explicit that such a germ is derived rather than assumed: *"Each coordinate
-  in `𝒦` has a finite outside connector germ by
-  `def:typeA-continuation-classes`."*  What the manuscript's proof does elide is
-  the extraction step — it writes *"Consider the two routing germs from the
-  carrier of `t` toward those two selected demands"* — and that step is what is
-  missing here.
-
-  The consequence is that `[144]` has **two** arms where the manuscript has
-  three.  `prop:nonnear-cubic-sharp-overload-routing`'s (b) and (c) are separated
-  *at this node* by the germ dichotomy — parallel germs give a sparse surplus
-  exit, a surviving first separator gives Type B fan data — so carrying them as
-  one committed disjunction rather than two arms is a shortfall of this port, not
-  a reading of the manuscript.  Closing it means extracting the two germs from
-  node `[128]`'s canonical return and response supports at the forced pattern,
-  assembling the `RoutedBottleneck`, and splitting the arm on
-  `RoutedBottleneck.outcome`.  Everything downstream of that extraction is in
-  place: `exists_routed_demands` produces the two demands the germs are issued
-  toward, and `RoutedBottleneck.outcome` reads the configuration.
-
-  `cor:same-token-pattern-caps-close` is filed at the closest row and is not
-  stated, although `PatternFamily.card_le_of_no_matching_no_star` and
-  `TokenLoad.demand_le_of_bounded_load` would compose to it directly.
+- **What it should do.** Split on the fixed homogeneous caps.  The caps arm
+  proves the near-cubic estimate and closes against the incoming
+  `surplusAbove` fact.  The complementary arm records the positive homogeneous
+  pattern and publishes the manuscript's routed bottleneck facts as ordinary
+  ledger entries.  Every upstream fact remains in the same exact history; row
+  36 does not introduce any side object or separate result.
+- **Gap.** None for the near-cubic arm: `SpineAssembly` registers
+  `surplusAbove` and `spineSurplusEstimate` as incompatible ordinary keys, so
+  `closeIncompatible` closes that oval outcome on the same residual.  The
+  bottleneck arm is ledger content as well: `homogeneousBottleneckPattern` is
+  the positive failed-cap fact, and `bottleneckRouting` is appended after
+  reading `selection`, `uncompressible`, `sparseSurplusSurvivor`, and
+  `homogeneousBottleneckPattern` by exact key.
 
   What is *not* a gap, and was in the retired implementation: the census is the
   token ledger rather than `V(G)` — `boundedMembers` used to be the vertex set,
@@ -4261,9 +4254,14 @@ this change; its whole module was already orphaned, importing eight
   `RefinementSystem.refl`, the residual is unchanged, both prerequisites are read
   by exact key through `FactInputs.get` — the arm's own caps fact and node
   `[126]`'s slack identity, both on the immutable prefix — and `AtomicCT.run`
-  appends the production while retaining the literal ancestry.  The dichotomy is
-  a `Decision` against that same literal ledger, so both arms extend one
-  immutable prefix.  Ledger and Residual pass.
+  appends the production while retaining the literal ancestry.  The near-cubic
+  production then closes by the framework incompatibility between
+  `surplusAbove` and `spineSurplusEstimate`.  The bottleneck
+  arm's `bottleneckRoutingRow` reads `selection`, `uncompressible`,
+  `sparseSurplusSurvivor`, and the positive `homogeneousBottleneckPattern` by
+  exact key before appending `bottleneckRouting`.  The dichotomy is a `Decision`
+  against that same literal ledger, so both arms extend one immutable prefix.
+  Ledger and Residual pass.
 - **Transport and terminals.** `[144]`'s outcomes are arms, not conjuncts:
   the exact successor ledgers are the near-cubic route of
   `prop:single-graph-sparse-pressure-routing` (a), and, over each of the three
@@ -4275,23 +4273,21 @@ this change; its whole module was already orphaned, importing eight
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| `lem:same-token-bottleneck-routing` | lem | `SameTokenRoutingGerms.exists_same_routingLabel_of_patternBound`, `.exists_routed_demands`, `.RoutedBottleneck`, `.RoutedBottleneck.outcome`, `.bottleneckRouting`<br>`DecoratedHandoff.absorbed_or_surviving`, `.Absorbed`, `.four_le_degree_of_surviving`, `.envelopeOfSeparation`, `.admissible_of_envelope`<br>committed by `Graph.BottleneckRoutingStatement`, `Graph.bottleneckRoutingStatement` | standalone; the germ extraction from the forced pattern is not built |
+| `lem:same-token-bottleneck-routing` | lem | `SameTokenRoutingGerms.exists_same_routingLabel_of_patternBound`, `.exists_routed_demands`, `.RoutedBottleneck`, `.RoutedBottleneck.outcome`, `.bottleneckRouting`<br>`DecoratedHandoff.absorbed_or_surviving`, `.Absorbed`, `.four_le_degree_of_surviving`, `.envelopeOfSeparation`, `.admissible_of_envelope`<br>committed by `Graph.BottleneckRoutingStatement`, `Graph.TypeBHandoffStatement`; positive forced pattern committed by `Graph.HomogeneousBottleneckPatternStatement`, `Graph.homogeneousBottleneckPatternStatement_of_not_caps` | standalone and committed by `Spine.bottleneckRoutingRow` |
 | `thm:homogeneous-overload-geometric-closure` | the | first assertion: `Graph.BottleneckRoutingStatement`, `Graph.bottleneckRoutingStatement`, committed on the bottleneck arm<br>second assertion: `Graph.HomogeneousCapsHold`, `Graph.HomogeneousCapsCloseStatement`, `Graph.homogeneousCapsCloseStatement`, `CapacityTokenLedger.caps_close_at_geometricBound` | standalone |
 | `cor:homogeneous-same-token-caps-close` | cor | `CapacityTokenLedger.caps_close`, `TokenLoad.card_assigned_le_mul_of_multiplicity_le`, `TokenLoad.demand_le_of_bounded_load`, `TokenLoad.le_one_add_of_quadratic_le` | standalone |
-| `cor:same-token-pattern-caps-close` | cor |  |  |
-| `prop:nonnear-cubic-sharp-overload-routing` | pro | `Graph.homogeneousCapsRouting`, `Spine.homogeneousCapsDichotomy`, `Spine.bottleneckRoutingRow`, exact surplus branch ledgers | standalone; (a) is an arm, (b) and (c) share one and are committed as a disjunction |
+| `cor:same-token-pattern-caps-close` | cor | `PatternFamily.card_le_of_no_matching_no_star`, `TokenLoad.demand_le_of_bounded_load` | standalone |
+| `prop:nonnear-cubic-sharp-overload-routing` | pro | `Graph.homogeneousCapsRouting`, `Spine.homogeneousCapsDichotomy`, `Spine.bottleneckRoutingRow`, exact surplus branch ledgers | standalone; the caps and positive-pattern arms are exact |
 
-`thm:homogeneous-overload-geometric-closure` now carries **both** assertions.
-The first is `bottleneckRouting`, of every separated pair of routing germs; the
-second is the caps close at the counted `L_geom = Q_geom + 1`, with the
-edge-count half `m = (3/2)n + O(√n)` derived from node `[126]`'s
-`lem:sparse-slack-surplus` rather than left unstated.
-`prop:nonnear-cubic-sharp-overload-routing`'s trichotomy is realized as only two
-arms: (a) is the caps arm, and (b) and (c) share the bottleneck arm because the
-germs that separate them are not built.  The manuscript separates them at this
-node, so this is a shortfall of the port and not a reading of the manuscript.
-The exhaustiveness of the two arms that do exist is the excluded middle on the
-caps, which is a property of the object and not an invented proposition.
+`thm:homogeneous-overload-geometric-closure` now carries the cap-close
+assertion and the universal routed-bottleneck reading.  The failed-cap arm also
+commits the positive homogeneous pattern fact at the counted
+`L_geom = Q_geom + 1`.  `Spine.bottleneckRoutingRow` consumes that pattern
+together with the inherited survivor and uncompressibility facts and proves
+the two universal routing statements.  No
+concrete routed-bottleneck existence claim is part of those statements.  The
+exhaustiveness of the ledger arms is the excluded middle on the caps, which is
+a property of the object and not an invented proposition.
 
 **CT composition at this row.** None: one `Decision` and one atomic fact-only
 Strategy.  The manuscript's `[144]` is an exhaustive test followed by an
@@ -5679,22 +5675,30 @@ would interpose machinery between a constructed cycle and its certificate.
   `ColdCorridor.NoTerminalColdResidual` on the current residual: the extraction
   fact turns a terminal candidate family into a positive extracted subfamily,
   `coldGermRouted` closes its length-changing member, and the same-interface
-  table fact closes equal-length table/self-return rows.
+  table fact closes equal-length table/self-return rows.  `Spine.runCold` then
+  reads the incoming `K .coldTerminalResidual` branch fact from the same ledger
+  index and closes by `closeIncompatible`, appending Core's reserved
+  contradiction fact.  `Spine.closeColdTerminalBranch` is the corresponding
+  `SpineEndToEnd` boundary: it takes the same exact ledger, runs `Spine.runCold`,
+  and eliminates that reserved key with `ExactLedger.elimClosed`.
 - **Gap.** none for the cold oval's local ledger closure.  The later global
   proof join is separate from this cold-corridor block.
 - **Ledger and residual.** `Requires := [coldGermExtraction, coldGermRouted,
   coldSameInterfaceTable]`, `Produces := [coldBranchClosed]`; residual
-  unchanged.  `Spine.runCold` returns `coldBranchClosed :: coldGermRouted ::
+  unchanged.  `Spine.runCold` additionally requires `coldTerminalResidual ∈
+  known` and returns `closed :: coldBranchClosed :: coldGermRouted ::
   coldGermExtraction :: ... :: known`, preserving the incoming residual and all
   upstream facts.
-- **Transport and terminals.** Ledger fact only.  No wrapper, side theorem
-  bundle, custom handoff, result carrier, or compatibility shim is present.
+- **Transport and terminals.** Ledger facts only.  The terminal and
+  no-terminal statements are ordinary keys; the contradiction is the framework
+  closure key.  No wrapper, side theorem bundle, custom handoff, or result
+  carrier is present.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| cold terminal oval | thm | `ColdCorridor.TerminalColdResidual`<br>`ColdCorridor.noTerminalColdResidual_of_routing` | no CT — `Spine.coldBranchClosedRow` |
+| cold terminal oval | thm | `ColdCorridor.TerminalColdResidual`<br>`ColdCorridor.noTerminalColdResidual_of_routing`<br>`Spine.instIncompatibleColdTerminalResidualClosed` | no CT — `Spine.coldBranchClosedRow`, then Core `closeIncompatible` |
 
 **CT composition at this row.** No CT.
 
@@ -5715,10 +5719,14 @@ fact.  `Spine.route8ResidualProfileRow` is the next node `[110]`: it reads
 `route8Residual` by `FactInputs.get` and appends only
 `route8ResidualProfile`, the receiver-exposed silent-core residual profile.
 No indexed route-8 collection, carrier census, basin family transport, or
-secondary route-8 object is introduced.  `Spine.runRoute8FromExitSevenFree`
-starts at the exact `typeAExitSevenFreeKeys` ledger, requires the upstream
-facts the row consumes as `FactKeys.Has` instances, appends this residual fact,
-and passes the same ledger ancestry to `Spine.runRoute8Tail`.
+secondary route-8 object is introduced.  The graph-owned
+`Graph.Route8.TraceBasin` definitions now formalize the canonical trace-basin
+selection from the ambient graph, selected support, receiver, and routed load;
+they are not a ledger carrier and are consumed only through ordinary spine
+facts.  `Spine.runRoute8FromExitSevenFree` starts at the exact
+`typeAExitSevenFreeKeys` ledger, requires the upstream facts the row consumes as
+`FactKeys.Has` instances, appends this residual fact, and passes the same ledger
+ancestry to `Spine.runRoute8Tail`.
 
 ### Row 63 — `[111]`–`[113]` selected residual burden and deficit bound
 
@@ -5738,52 +5746,56 @@ on the same exact ledger prefix.
 
 Node `[114]` is now the ledger fact `route8CarrierCore`.  Its row reads exactly
 the selected `[113]` fact `route8LargeBudgetDeficit` with `FactInputs.get` and
-appends one proof-agnostic carrier-core theorem package.  The theorem is the
-generic `Graph.Route8.carrierCoreFacts`: for any concrete declared route-8
-reading later obtained from the same residual, Core's finite
-`EssentialCarrier.Profile` supplies the minimal complete carrier core, proves it
-is contained in the declared carrier supply, and proves every selected carrier
-has a deletion target defect plus a forgotten coordinate that uses it.  No
-`Route8.Entry` wrapper, carrier census object, secondary collection, or custom
-transport channel is introduced; downstream nodes instantiate the theorem from
-the ledger when they have their concrete reading.
+appends the concrete graph-entry carrier-core fact for
+`Graph.Route8.PresentedEntry object`.  The row no longer introduces arbitrary
+`Target`, `Carrier`, `Coordinate`, `boundary`, `carrierSupply`, `car`, or
+`state` binders.  It fixes the target to
+`Graph.HasCycleWithLength data.LengthOK`, fixes carriers to
+`Sym2 object.Vertex` through `PresentedEntry.toEntry`, and obtains all prior
+mathematical input from the ledger.  Core's finite
+`EssentialCarrier.Profile` then supplies the minimal complete carrier core,
+proves it is contained in the entry's own carrier supply, and proves every
+selected carrier has a deletion target defect plus a forgotten coordinate that
+uses it.  No `Route8.Entry` wrapper, carrier census object, secondary
+collection, or custom transport channel is committed to the ledger.
 
 Nodes `[115]`--`[116]` are now the ledger fact
 `route8SmallCoreCollapse`.  Its row reads `route8CarrierCore` with
 `FactInputs.get` and appends the raw carrier-core form of
-`lem:typeA-one-terminal-collapse`: once a concrete selected trace-basin reading
-supplies its cut-parity crossing family and its own target-complete-minimality
-alternative, a zero/one essential-carrier core makes the internal-crossing
+`lem:typeA-one-terminal-collapse` for the same concrete presented-entry
+schema.  A zero/one essential-carrier core makes the internal-crossing
 forgetting quotient equal to the core restriction, so the selected alternatives
-fire.  This is the paper's small-core exit `(4)`--`(7)` mechanism.  The row
-does not introduce a route-8 entry object, carrier census, collection wrapper,
-or secondary transport channel; it only publishes the theorem needed by later
-selected-entry facts.  The same route-8 tail runner then continues to the
-paper-prescribed two-carrier/private-carrier split.
+fire when the residual supplies that local minimality input.  This is the
+paper's small-core exit `(4)`--`(7)` mechanism.  The row does not introduce
+arbitrary carrier or coordinate data, a route-8 collection wrapper, or a
+secondary transport channel; it appends only the next `Spine.Key` fact.  The
+same route-8 tail runner then continues to the paper-prescribed
+two-carrier/private-carrier split.
 
 ### Row 65 — `[117]`–`[122]` indexed private-carrier census
 
 Node `[117]` is now the ledger fact `route8TwoCarrierReduction`.  Its row reads
 `route8SmallCoreCollapse` with `FactInputs.get` and appends the raw indexed-core
-form of `prop:typeA-route8-carrier-reduction`: for any concrete selected
-route-8 indexed essential-core family, if the entries, essential cores, carrier
-supply, burden/deficit inequality, and registered rate inequality are the ones
-owned by the residual, then some indexed entry is two-carrier.  The generic
-theorem counts private carriers directly as finite subsets of each entry's
-essential core, proves the private sets disjoint, and applies the integer
-census squeeze.  It does not use the deprecated `Route8.Entry` API, a carrier
-census object, or a route-8 collection wrapper.
+form of `prop:typeA-route8-carrier-reduction` over the residual's concrete
+carrier type `Sym2 object.Vertex`: if the entries, essential cores, carrier
+supply, burden/deficit inequality, and registered rate inequality are supplied
+by prior ledger facts, then some indexed entry is two-carrier.  The row no
+longer quantifies over an arbitrary carrier type.  The graph theorem counts
+private carriers directly as finite subsets of each indexed core, proves the
+private sets disjoint, and applies the integer census squeeze.  It does not use
+a carrier census object or a route-8 collection wrapper.
 
 Node `[118]` is now the ledger fact `route8CarrierDeletionWitnesses`.  Its row
 reads `route8TwoCarrierReduction` with `FactInputs.get` and appends the raw
 carrier-core form of `lem:typeA-essential-deletion-witness` and
-`lem:typeA-deletion-witness-declared`: whenever the current residual supplies a
-concrete selected two-carrier indexed core and identifies that core with the
-canonical essential carrier core of the selected route-8 reading, every
-essential carrier has the deletion target-defect and a declared forgotten
-coordinate whose carrier support contains it.  This is a theorem about the
-incoming residual's selected reading; no terminal-entry object, route-8
-collection wrapper, or side carrier is committed.
+`lem:typeA-deletion-witness-declared` for a concrete
+`Graph.Route8.PresentedEntry object`.  Whenever the current residual supplies a
+selected two-carrier indexed core and identifies that core with the canonical
+essential carrier core of that presented entry, every essential carrier has the
+deletion target-defect and a declared forgotten coordinate whose carrier
+support contains it.  This is a fact appended to the same incoming ledger; no
+terminal-entry object, route-8 collection wrapper, arbitrary coordinate family,
+or side carrier is committed.
 
 Nodes `[119]`--`[122]` are now committed together by
 `route8PrivateCarrierContradictionRow`.  The manifest reads
@@ -5791,12 +5803,14 @@ Nodes `[119]`--`[122]` are now committed together by
 facts: `route8PrivateCarrierBudget` for the no-two-carrier branch's
 `(threshold + 1)·N_basin ≤ supply` private-carrier budget, and
 `route8NoTwoCarrierContradiction` for the contradiction with the selected
-burden/deficit and registered rate inequalities.  The generic proof counts
-private carriers as finite subsets of the selected indexed essential-core
-family and spends the same integer census as node `[117]`; it does not create a
-route-8 collection object, `Route8.Entry`, carrier census payload, or secondary
-transport channel.  The route-8 tail runner keeps the full incoming ledger
-ancestry and continues directly into the pressure-descent row `[123]`.
+burden/deficit and registered rate inequalities.  Both facts are stated over
+the concrete carrier type `Sym2 object.Vertex`; the row no longer introduces an
+arbitrary `Carrier`.  The graph proof counts private carriers as finite subsets
+of the selected indexed essential-core family and spends the same integer
+census as node `[117]`; it does not create a route-8 collection object,
+carrier census payload, or secondary transport channel.  The route-8 tail
+runner keeps the full incoming ledger ancestry and continues directly into the
+pressure-descent row `[123]`.
 
 ### Row 66 — `[123]` pressure descent
 
@@ -5822,8 +5836,9 @@ terminal no-go fact `[124]`.
 Node `[124]` is now the ledger fact `route8TerminalNoGo`.  Its row reads the
 same-branch `route8PressureDescent` fact from `[123]` and the
 `route8CarrierDeletionWitnesses` fact from `[118]` with `FactInputs.get`, then
-appends the terminal Q5 no-go theorem package.  The graph theorem
-`Graph.Route8.terminalTwoCarrierNoGoFacts` is a proof-agnostic statement: a
+appends the terminal Q5 no-go fact for the concrete presented-entry schema.
+The graph theorem `Graph.Route8.terminalTwoCarrierNoGoFacts` is instantiated
+only at `presented.toEntry (Graph.HasCycleWithLength data.LengthOK)`: a
 selected two-carrier deletion witness, a generated carrier-deletion Q5 clause,
 and the no-exit-`(4)` fact of the same residual produce `False` via the existing
 `ExitFour.Witness.carrierDeletion_contradicts_noExitFour` theorem.
