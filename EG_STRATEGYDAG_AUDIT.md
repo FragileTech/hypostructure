@@ -2839,8 +2839,7 @@ branches.
   `[123]`.
 - **What the Lean does.**  The live Type B vocabulary now has ordinary semantic
   keys `typeBSelectedFanCharge`, `typeBExclusionCharge`,
-  `typeBRemainingCoreNonnegative`, `typeBExcluded`, and
-  `typeBExclusionResidual`.  `SpineRows.typeBSelectedFanChargeRow` is a
+  `typeBExcluded`, and `typeBExclusionResidual`.  `SpineRows.typeBSelectedFanChargeRow` is a
   `factOnly` row requiring `fanCertificateMarked`, `typeBHybridEntry`, and
   `typeBDisjointLedger`; its executor reads all three with `FactInputs.get` and
   appends the selected-entry charge fact for the same canonical B2 ledger:
@@ -2849,20 +2848,17 @@ branches.
   then requires `typeBDisjointLedger` and `typeBSelectedFanCharge`, reads both
   with `FactInputs.get`, and appends the B-ledger implication using
   `TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative`.
-  `Spine.typeBExclusionDichotomy` is a `Decision.run` split whose left arm
-  appends `typeBRemainingCoreNonnegative` and whose right arm appends
-  `typeBExclusionResidual`.  `SpineRows.typeBExcludedRow` consumes
-  `typeBExclusionCharge` and `typeBRemainingCoreNonnegative` by
-  `FactInputs.get` and appends `typeBExcluded`.  The closed arm is represented
-  by the framework incompatibility instance between `typeBDisjointLedger` and
-  `typeBExcluded`; there is no Type-B-specific runner, carrier, result wrapper,
-  or side ledger.
+  `Spine.typeBExclusionDichotomy` is a `Decision.run` split whose implementation
+  reads the exact incoming `typeBDisjointLedger`, computes that ledger's
+  remaining-core charge, and either publishes the impossible `typeBExcluded`
+  arm or publishes `typeBExclusionResidual` carrying the same ledger witness.
+  There is no universal remaining-core fact, detached consumer, wrapper, or
+  side ledger.
 - **What it should do.**  This row should append exactly the local selected-entry
-  charge fact, the B-ledger charge implication, the remaining-core alternative,
-  and the clean-arm exclusion fact on the incoming exact ledger.  The surviving
-  arm should carry exactly `typeBExclusionResidual` over the same exact prefix,
-  and the clean arm should close through Core's standard incompatibility after
-  `typeBExcluded` is visible.
+  charge fact, the B-ledger charge implication, and the clean-arm closure fact
+  on the incoming exact ledger.  The surviving arm should carry exactly
+  `typeBExclusionResidual` over the same exact prefix, and the clean arm should
+  close through Core's `Impossible` mechanism.
 - **Gap.**  No row-local gap remains in the generic Type B spine surface.  The
   row consumes the strengthened `typeBDisjointLedger` rather than `typeBB2Choice`,
   as Step 2 spends the full B2 ledger, including B2(d)'s post-ledger core and
@@ -2885,20 +2881,20 @@ branches.
   is a conjunction of the two local halves plus `[123]`, and only the Type B half
   is owned here.
 
-  Step 2's remaining hypotheses — `chosen = ∅` and `PostLedgerCore` — are not
-  assumptions left dangling: they are exactly what the dichotomy branches on, so
-  the alternative in which they fail is a committed fact with its own arm.
-- **Ledger and residual.**  Certified for this row.  The selected-entry charge,
-  charge implication, and excluded rows are fact-only; the remaining-core
-  condition is a normal branch fact produced by `Decision.run`.  All four leave
+  Step 2's remaining hypotheses — `chosen = ∅` and `PostLedgerCore` — are read
+  from the committed disjoint ledger; the dichotomy either closes the exact
+  ledger or stores its negative-charge witness as the residual arm.
+- **Ledger and residual.**  Certified for this row.  The selected-entry charge
+  and charge implication are fact-only; the exclusion decision consumes them
+  from the incoming ledger.  All four leave
   the residual unchanged and append ordinary `Spine.Key` facts to the incoming
   exact prefix.  The heavy and degree-four closed/residual row-28 key indices
   have `ExactLedger.audit_complete` and `ExactLedger.audit_facts_unique`
   witnesses, so the audit proof is read from the ledger itself rather than from
   a hard-coded fact list.
 - **Transport and terminals.**  Certified for this row.  The Type B clean arm
-  has the incompatibility instance needed to append the reserved closure key
-  after `typeBExcluded`; Core owns that closure step.  The surviving arm is the
+  has the `Impossible` instance needed to append the reserved closure key after
+  `typeBExcluded`; Core owns that closure step.  The surviving arm is the
   exact ledger key `typeBExclusionResidual`.  No Type B closure wrapper, custom
   route payload, or side ledger is present.
 
@@ -2909,24 +2905,24 @@ branches.
 | `def:typeB-assigned-ledger`, `(B-ledger)` | def | `TypeBEnvelopeCharge.augmentedLedger`<br>`TypeBEnvelopeCharge.augmentedLedger_add_card_centres`<br>`TypeBEnvelopeCharge.nonNegativeNetCharge_of_augmentedLedger_nonneg` | consumed by `SpineRows.typeBExclusionChargeRow` |
 | `def:typeB-candidate-ledger`, B2(a) | def | `TypeBRefinedSupport.CandidateData`<br>`TypeBRefinedSupport.CandidateData.IsCandidate`<br>`TypeBRefinedSupport.DisjointLedger.entry_isCandidate`<br>`Spine.Key.typeBSelectedFanCharge`<br>`SpineRows.typeBSelectedFanChargeRow` | ordinary ledger fact |
 | `lem:typeB-exclusion` (Step 1 selected-entry charge) | lem | `Spine.Key.typeBSelectedFanCharge`<br>`SpineRows.typeBSelectedFanChargeRow` | ordinary ledger fact, read by Step 2 |
-| `lem:typeB-exclusion` (Step 2) | lem | `TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative`<br>`SpineRows.typeBExclusionChargeRow`<br>`SpineRows.typeBExcludedRow` | ordinary ledger facts |
-| `prop:typeB-bridge-reduction` | pro | `Spine.Key.typeBExclusionCharge`<br>`Spine.Key.typeBRemainingCoreNonnegative`<br>`Spine.Key.typeBExcluded` | ordinary ledger facts |
+| `lem:typeB-exclusion` (Step 2) | lem | `TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative`<br>`SpineRows.typeBExclusionChargeRow`<br>`Spine.typeBExclusionDichotomy` | ordinary ledger facts |
+| `prop:typeB-bridge-reduction` | pro | `Spine.Key.typeBExclusionCharge`<br>`Spine.Key.typeBExcluded` | ordinary ledger facts |
 | `lem:typeB-postledger-core-hygiene` | lem | `TypeBPostLedgerCore.PostLedgerComponent` inside `typeBDisjointLedger` | available through the ledger |
 | `def:typeB-multiclosed-residual` | def | `Spine.Key.typeBExclusionResidual` | no arm of the dichotomy |
-| `thm:branch-kill` (b), Type B | thm | `Spine.typeBExclusionDichotomy`<br>`Spine.Key.typeBExcluded`<br>`Spine.instIncompatibleTypeBExcluded` | clean arm has Core incompatibility; residual arm remains an ordinary decision fact |
+| `thm:branch-kill` (b), Type B | thm | `Spine.typeBExclusionDichotomy`<br>`Spine.Key.typeBExcluded`<br>`Spine.instImpossibleTypeBExcluded` | clean arm is an impossible ledger fact; residual arm remains an ordinary decision fact |
 | `thm:branch-kill` (a), Type A | thm | | |
 
 The Step 1 row does not rebuild the candidate entries already carried by B2; it
 reads the selected ledger through the incoming exact ledger and commits the
 selected-entry charge theorem as an ordinary `Spine.Key` fact.
 
-**CT composition at this row.**  Built.  The row is four framework-owned steps:
+**CT composition at this row.**  Built.  The row is three framework-owned steps:
 one `factOnly` `AtomicStrategy` for `typeBSelectedFanCharge`, one `factOnly`
-`AtomicStrategy` for the charge implication, one `Decision.run` for the
-remaining-core alternative, and one `factOnly` `AtomicStrategy` deriving
-`typeBExcluded` from the two committed facts.  Step 2's aggregation is over the
-assigned centres whose disjointness is B2's own.  The clean arm closes through
-Core after the ordinary `typeBExcluded` row; the no arm remains the ordinary
+`AtomicStrategy` for the charge implication, and one `Decision.run` that reads
+the committed disjoint ledger and publishes either the impossible
+`typeBExcluded` fact or the ledger-backed residual.  Step 2's aggregation is over
+the assigned centres whose disjointness is B2's own.  The clean arm closes through
+Core's impossible-fact path; the no arm remains the ordinary
 `typeBExclusionResidual` key produced by `Decision.run`.
 
 
@@ -5542,12 +5538,13 @@ would interpose machinery between a constructed cycle and its certificate.
 ### Row 57 — (F4) dispatch arm `[156]`
 
 - **Paper fact.** The F4 arm transfers to a support already recorded upstream.
-- **What the Lean does.** `coldHandoffTransferRow` reads `coldFailureHandoff`,
-  `typeBExcluded`, and `route8TerminalNoGo` by exact key and commits the
-  membership theorem for every supplied handoff predicate.  No handoff object is
-  constructed or returned.
+- **What the Lean does.** `coldHandoffTransferRow` reads `coldFailureHandoff`
+  and `route8TerminalNoGo` by exact key and commits the membership theorem for
+  every supplied handoff predicate.  The detached `typeBExcluded`
+  prerequisite has been removed; the Type-B clean arm closes through Core's
+  impossible-fact path.  No handoff object is constructed or returned.
 - **Gap.** none for carrier cleanup.
-- **Ledger and residual.** `Requires := [coldFailureHandoff, typeBExcluded,
+- **Ledger and residual.** `Requires := [coldFailureHandoff,
   route8TerminalNoGo]`, `Produces := [coldHandoffTransfer]`; residual
   unchanged.
 - **Transport and terminals.** Ledger fact only; no terminal.

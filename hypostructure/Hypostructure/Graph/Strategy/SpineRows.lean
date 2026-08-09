@@ -3783,93 +3783,6 @@ the B-ledger implication used by the exclusion dichotomy.
               selectedNonnegative remainingNonnegative))
         .nil)
 
-@[reducible] noncomputable def typeBExcludedRow
-    (typeBExclusionCharge typeBRemainingCoreNonnegative typeBExcluded :
-      FactKey (Input BranchState Presentation presentation data))
-    (requiredUnique :
-      [typeBExclusionCharge, typeBRemainingCoreNonnegative].Nodup)
-    (chargeOf : (input : Input BranchState Presentation presentation data) →
-      typeBExclusionCharge.At input →
-      ∀ packing : Finset (Finset input.object.Vertex),
-        ∀ canonicalPiece :
-            Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
-          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
-              data.threshold data.dischargeScale canonicalPiece,
-            ledger.ExactAugmentedLedgerRefinement →
-              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-                Graph.TypeBRefinedSupport.scaledCoreCharge input.object
-                  data.threshold data.dischargeScale canonicalPiece.vertices
-                  vertex →
-              input.object.NonNegativeNetCharge canonicalPiece.vertices
-                data.threshold data.dischargeScale)
-    (coreOf : (input : Input BranchState Presentation presentation data) →
-      typeBRemainingCoreNonnegative.At input →
-      ∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset input.object.Vertex,
-          input.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ canonicalPiece :
-            Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
-          input.object.NegativeNetCharge canonicalPiece.vertices
-              data.threshold data.dischargeScale →
-          0 < input.object.ambientSurplus canonicalPiece.vertices data.threshold →
-          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
-              data.threshold data.dischargeScale canonicalPiece,
-            ledger.ExactAugmentedLedgerRefinement →
-            (∀ component : Graph.SupportComponents.Connected.Component
-                  input.object ledger.remainingCore,
-                component ∈ Graph.SupportComponents.Connected.order input.object
-                    ledger.remainingCore →
-                  Graph.TypeBPostLedgerCore.PostLedgerComponent
-                    data.typeABPresentation ledger component) →
-            (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-              Graph.TypeBRefinedSupport.scaledCoreCharge input.object
-                data.threshold data.dischargeScale canonicalPiece.vertices
-                vertex)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset input.object.Vertex,
-          input.object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ canonicalPiece :
-            Graph.TypeBRefinedSupport.CanonicalPiece input.object packing,
-          input.object.NegativeNetCharge canonicalPiece.vertices
-              data.threshold data.dischargeScale →
-          0 < input.object.ambientSurplus canonicalPiece.vertices data.threshold →
-          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger input.object
-              data.threshold data.dischargeScale canonicalPiece,
-            ledger.ExactAugmentedLedgerRefinement →
-            (∀ component : Graph.SupportComponents.Connected.Component
-                  input.object ledger.remainingCore,
-                component ∈ Graph.SupportComponents.Connected.order input.object
-                    ledger.remainingCore →
-                  Graph.TypeBPostLedgerCore.PostLedgerComponent
-                    data.typeABPresentation ledger component) →
-            input.object.NonNegativeNetCharge canonicalPiece.vertices
-              data.threshold data.dischargeScale) →
-      typeBExcluded.At input) :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.typeBExcluded
-    { Requires := [typeBExclusionCharge, typeBRemainingCoreNonnegative]
-      Produces := [typeBExcluded]
-      requiresUnique := requiredUnique
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let charge := chargeOf inputs.current (inputs.get typeBExclusionCharge)
-      let core := coreOf inputs.current
-        (inputs.get typeBRemainingCoreNonnegative)
-      .cons (key := typeBExcluded)
-        (encode inputs.current (by
-          intro packing valid maximal canonicalPiece negative surplus ledger exact
-            postLedger
-          exact charge packing canonicalPiece ledger exact
-            (core packing valid maximal canonicalPiece negative surplus ledger
-              exact postLedger)))
-        .nil)
-
 /-! ## Node `[76]`/`[85]`: Type B exclusion split -/
 noncomputable def typeBExclusionDichotomy
     {current : Input BranchState Presentation presentation data}
@@ -3877,14 +3790,25 @@ noncomputable def typeBExclusionDichotomy
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (typeBDisjointLedger typeBRemainingCoreNonnegative
+    (typeBDisjointLedger typeBExclusionCharge typeBExcluded
       typeBExclusionResidual :
       FactKey (Input BranchState Presentation presentation data))
     [Core.Residual.FactKeys.Has typeBDisjointLedger known]
-    (encodeCore :
-      Holds BranchState Presentation presentation data
-        .typeBRemainingCoreNonnegative current.object →
-      typeBRemainingCoreNonnegative.At current)
+    [Core.Residual.FactKeys.Has typeBExclusionCharge known]
+    (chargeOf : typeBExclusionCharge.At current →
+      ∀ packing : Finset (Finset current.object.Vertex),
+        ∀ canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece current.object packing,
+          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger current.object
+              data.threshold data.dischargeScale canonicalPiece,
+            ledger.ExactAugmentedLedgerRefinement →
+              (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
+                Graph.TypeBRefinedSupport.scaledCoreCharge current.object
+                  data.threshold data.dischargeScale canonicalPiece.vertices
+                  vertex →
+              current.object.NonNegativeNetCharge canonicalPiece.vertices
+                data.threshold data.dischargeScale)
+    (encodeClosed : False → typeBExcluded.At current)
     (encodeResidual :
       (∃ packing : Finset (Finset current.object.Vertex),
         current.object.IsWindowPacking data.windowOrder packing ∧
@@ -3932,24 +3856,32 @@ noncomputable def typeBExclusionDichotomy
                           current.object ledger.remainingCore →
                         Graph.TypeBPostLedgerCore.PostLedgerComponent
                           data.typeABPresentation ledger component))
-    (coreFresh : typeBRemainingCoreNonnegative ∉ known)
+    (closedFresh : typeBExcluded ∉ known)
     (residualFresh : typeBExclusionResidual ∉ known) :
-    Decision typeBRemainingCoreNonnegative typeBExclusionResidual previous :=
+    Decision typeBExcluded typeBExclusionResidual previous :=
   Decision.run previous
-    typeBRemainingCoreNonnegative typeBExclusionResidual
+    typeBExcluded typeBExclusionResidual
     `Hypostructure.Graph.Strategy.Spine.typeBExclusionDichotomy
     (by
       classical
-      have := ledgerOf (ExactLedger.get previous typeBDisjointLedger)
-      by_cases clean :
-          Holds BranchState Presentation presentation data
-            .typeBRemainingCoreNonnegative current.object
-      · exact .inl (encodeCore clean)
-      · exact .inr (encodeResidual (by
-          simp only [Holds] at clean
-          push_neg at clean
-          simpa [not_le] using clean)))
-    coreFresh residualFresh
+      apply Classical.choice
+      obtain ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+        ledger, exact, postLedger⟩ :=
+        ledgerOf (ExactLedger.get previous typeBDisjointLedger)
+      let charge := ∑ vertex ∈ ledger.remainingCore,
+        Graph.TypeBRefinedSupport.scaledCoreCharge current.object
+          data.threshold data.dischargeScale canonicalPiece.vertices vertex
+      by_cases clean : (0 : Int) ≤ charge
+      · have nonnegative :=
+          chargeOf (ExactLedger.get previous typeBExclusionCharge)
+            packing canonicalPiece ledger exact clean
+        have contradiction :=
+          (current.object.not_negativeNetCharge_iff canonicalPiece.vertices
+            data.threshold data.dischargeScale).mpr nonnegative negative
+        exact ⟨.inl (encodeClosed contradiction)⟩
+      · exact ⟨.inr (encodeResidual ⟨packing, valid, maximal, canonicalPiece,
+          negative, surplus, ledger, exact, postLedger, by simpa [charge] using clean⟩)⟩)
+    closedFresh residualFresh
 
 /-! ## Node `[88]`: the routing and threshold algebra of a Type A support
 

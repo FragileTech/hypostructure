@@ -847,9 +847,6 @@ inductive Key where
   /-- Node `[76]`/`[85]`: the Type B B-ledger charge implication read from the
   selected disjoint ledger. -/
   | typeBExclusionCharge
-  /-- Node `[76]`/`[85]`, clean arm: the post-B2 remaining core has
-  nonnegative scaled charge. -/
-  | typeBRemainingCoreNonnegative
   /-- Node `[76]`/`[85]`, closed arm: the selected Type B ledger gives
   nonnegative net charge. -/
   | typeBExcluded
@@ -3547,52 +3544,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                   vertex →
               object.NonNegativeNetCharge canonicalPiece.vertices
                 data.threshold data.dischargeScale
-  | .typeBRemainingCoreNonnegative, object =>
-      ∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset object.Vertex,
-          object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ canonicalPiece :
-            Graph.TypeBRefinedSupport.CanonicalPiece object packing,
-          object.NegativeNetCharge canonicalPiece.vertices data.threshold
-              data.dischargeScale →
-          0 < object.ambientSurplus canonicalPiece.vertices data.threshold →
-          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
-              data.threshold data.dischargeScale canonicalPiece,
-            ledger.ExactAugmentedLedgerRefinement →
-            (∀ component : Graph.SupportComponents.Connected.Component
-                  object ledger.remainingCore,
-                component ∈ Graph.SupportComponents.Connected.order object
-                    ledger.remainingCore →
-                  Graph.TypeBPostLedgerCore.PostLedgerComponent
-                    data.typeABPresentation ledger component) →
-            (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-              Graph.TypeBRefinedSupport.scaledCoreCharge object
-                data.threshold data.dischargeScale canonicalPiece.vertices
-                vertex
   | .typeBExcluded, object =>
-      ∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset object.Vertex,
-          object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        ∀ canonicalPiece :
-            Graph.TypeBRefinedSupport.CanonicalPiece object packing,
-          object.NegativeNetCharge canonicalPiece.vertices data.threshold
-              data.dischargeScale →
-          0 < object.ambientSurplus canonicalPiece.vertices data.threshold →
-          ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
-              data.threshold data.dischargeScale canonicalPiece,
-            ledger.ExactAugmentedLedgerRefinement →
-            (∀ component : Graph.SupportComponents.Connected.Component
-                  object ledger.remainingCore,
-                component ∈ Graph.SupportComponents.Connected.order object
-                    ledger.remainingCore →
-                  Graph.TypeBPostLedgerCore.PostLedgerComponent
-                    data.typeABPresentation ledger component) →
-            object.NonNegativeNetCharge canonicalPiece.vertices
-              data.threshold data.dischargeScale
+      False
   | .typeBExclusionResidual, object =>
       ∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
@@ -4604,7 +4557,6 @@ def label : Key → String
   | .typeBExclusionResidualMass => "typeBExclusionResidualMass"
   | .typeBBridgeMass => "typeBBridgeMass"
   | .typeBExclusionCharge => "typeBExclusionCharge"
-  | .typeBRemainingCoreNonnegative => "typeBRemainingCoreNonnegative"
   | .typeBExcluded => "typeBExcluded"
   | .typeBExclusionResidual => "typeBExclusionResidual"
   | .typeAExitFour => "typeAExitFour"
@@ -4785,8 +4737,6 @@ example : label .typeBOverlapObstructionMass = "typeBOverlapObstructionMass" := 
 example : label .typeBExclusionResidualMass = "typeBExclusionResidualMass" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
 example : label .typeBExclusionCharge = "typeBExclusionCharge" := rfl
-example : label .typeBRemainingCoreNonnegative =
-    "typeBRemainingCoreNonnegative" := rfl
 example : label .typeBExcluded = "typeBExcluded" := rfl
 example : label .typeBExclusionResidual = "typeBExclusionResidual" := rfl
 example : label .typeAExitFour = "typeAExitFour" := rfl
@@ -4984,7 +4934,6 @@ def idx : Key → Nat
   | .typeBExclusionResidualMass => 188
   | .typeBBridgeMass => 85
   | .typeBExclusionCharge => 164
-  | .typeBRemainingCoreNonnegative => 165
   | .typeBExcluded => 166
   | .typeBExclusionResidual => 167
   | .typeAExitFour => 94
@@ -5152,7 +5101,6 @@ def ofIdx : Nat → Key
   | 188 => .typeBExclusionResidualMass
   | 85 => .typeBBridgeMass
   | 164 => .typeBExclusionCharge
-  | 165 => .typeBRemainingCoreNonnegative
   | 166 => .typeBExcluded
   | 167 => .typeBExclusionResidual
   | 94 => .typeAExitFour
@@ -5470,9 +5418,6 @@ def name : Key → Lean.Name
   | .typeBExclusionCharge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBExclusionCharge") 164
-  | .typeBRemainingCoreNonnegative =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeBRemainingCoreNonnegative") 165
   | .typeBExcluded =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBExcluded") 166
   | .typeBExclusionResidual =>

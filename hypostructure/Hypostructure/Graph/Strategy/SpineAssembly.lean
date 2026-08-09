@@ -344,15 +344,6 @@ cursor. -/
     (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
 
-@[reducible] noncomputable def typeBExcluded :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeBExcludedRow (K .typeBExclusionCharge)
-    (K .typeBRemainingCoreNonnegative) (K .typeBExcluded)
-    (by simp)
-    (fun _input fact => fact.down)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
-
 end Rows
 
 /-- Nodes `[44]` and `[45]`: the repair identity and the global barrier. -/
@@ -437,17 +428,10 @@ noncomputable instance instIncompatibleDirectCycle :
       (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
         valid present)
 
-noncomputable instance instIncompatibleTypeBExcluded :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .typeBDisjointLedger) (K .typeBExcluded) where
-  contradiction := fun residual ledgerFact excluded => by
-    obtain ⟨packing, valid, maximal, canonicalPiece, negative, positive,
-      ledger, exact, componentFacts, _groupedCoverage⟩ := ledgerFact.down
-    have nonnegative :=
-      excluded.down packing valid maximal canonicalPiece negative positive ledger
-        exact componentFacts
-    exact ((residual.object.not_negativeNetCharge_iff canonicalPiece.vertices
-      data.threshold data.dischargeScale).mpr nonnegative) negative
+noncomputable instance instImpossibleTypeBExcluded :
+    Impossible (Input BranchState Presentation presentation data)
+      (K .typeBExcluded) where
+  contradiction := fun _residual excluded => excluded.down
 
 /-- **The sparse exit arm closes against the surviving sparse-exit ledger.**
 
@@ -946,17 +930,11 @@ abbrev fanExclusionChargeKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBExclusionCharge :: fanSelectedFanChargeKeys known
 
-/-- `[76]`/`[85]`, yes arm: the remaining-core charge is nonnegative. -/
-abbrev fanRemainingCoreNonnegativeKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBRemainingCoreNonnegative :: fanExclusionChargeKeys known
-
 /-- `[76]`/`[85]`, closed arm. -/
 abbrev fanExcludedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .typeBExcluded :: fanRemainingCoreNonnegativeKeys known
+  closed :: K .typeBExcluded :: fanExclusionChargeKeys known
 
 /-- `[76]`/`[85]`, surviving residual arm. -/
 abbrev fanExclusionResidualKeys
@@ -991,10 +969,6 @@ abbrev residualCTypeBDisjointLedgerKeys
 abbrev residualCTypeBExclusionChargeKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanExclusionChargeKeys (residualCTypeBCertificateMarkedKeys known)
-
-abbrev residualCTypeBRemainingCoreNonnegativeKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :=
-  fanRemainingCoreNonnegativeKeys (residualCTypeBCertificateMarkedKeys known)
 
 abbrev residualCTypeBExcludedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
@@ -1035,10 +1009,6 @@ abbrev residualCDegreeFourDisjointLedgerKeys
 abbrev residualCDegreeFourExclusionChargeKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanExclusionChargeKeys (residualCDegreeFourMarkedKeys known)
-
-abbrev residualCDegreeFourRemainingCoreNonnegativeKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :=
-  fanRemainingCoreNonnegativeKeys (residualCDegreeFourMarkedKeys known)
 
 abbrev residualCDegreeFourExcludedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
@@ -1132,11 +1102,6 @@ abbrev typeBExclusionChargeKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeBExclusionChargeKeys remainderEntropyLowKeys
 
-/-- Node `[76]`, yes arm: the B-ledger remaining core is nonnegative. -/
-abbrev typeBRemainingCoreNonnegativeKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  residualCTypeBRemainingCoreNonnegativeKeys remainderEntropyLowKeys
-
 /-- Node `[76]`, closed arm. -/
 abbrev typeBExcludedKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -1156,11 +1121,6 @@ abbrev degreeFourDisjointLedgerKeys :
 abbrev degreeFourExclusionChargeKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCDegreeFourExclusionChargeKeys remainderEntropyLowKeys
-
-/-- Node `[85]`, yes arm: the B-ledger remaining core is nonnegative. -/
-abbrev degreeFourRemainingCoreNonnegativeKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  residualCDegreeFourRemainingCoreNonnegativeKeys remainderEntropyLowKeys
 
 /-- Node `[85]`, closed arm. -/
 abbrev degreeFourExcludedKeys :

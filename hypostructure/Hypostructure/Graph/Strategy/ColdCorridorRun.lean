@@ -90,7 +90,6 @@ noncomputable def runColdBranchClosed
     [FactKeys.Has (K (data := data) .sparseSurplusSurvivor) known]
     [FactKeys.Has (K (data := data) .spineSurplusEstimate) known]
     [FactKeys.Has (K (data := data) .sparsePressureNearCubic) known]
-    [FactKeys.Has (K (data := data) .typeBExcluded) known]
     [FactKeys.Has (K (data := data) .route8TerminalNoGo) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
@@ -277,7 +276,6 @@ noncomputable def runCold
     [FactKeys.Has (K (data := data) .sparseSurplusSurvivor) known]
     [FactKeys.Has (K (data := data) .spineSurplusEstimate) known]
     [FactKeys.Has (K (data := data) .sparsePressureNearCubic) known]
-    [FactKeys.Has (K (data := data) .typeBExcluded) known]
     [FactKeys.Has (K (data := data) .route8TerminalNoGo) known]
     [FactKeys.Has (K (data := data) .coldTerminalResidual) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)

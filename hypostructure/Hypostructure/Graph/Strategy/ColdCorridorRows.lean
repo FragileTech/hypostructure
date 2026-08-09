@@ -482,14 +482,13 @@ arm cannot be discharged by an emptiness manufactured at a call site. -/
 @[reducible] noncomputable def coldHandoffTransferRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldHandoffTransfer
-    { Requires := [K .coldFailureHandoff, K .typeBExcluded,
+    { Requires := [K .coldFailureHandoff,
         K .route8TerminalNoGo]
       Produces := [K .coldHandoffTransfer]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let _typeB := inputs.get (K .typeBExcluded)
       let _route8 := inputs.get (K .route8TerminalNoGo)
       .cons (key := K .coldHandoffTransfer)
         ⟨

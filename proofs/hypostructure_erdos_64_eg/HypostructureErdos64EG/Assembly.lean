@@ -1722,49 +1722,6 @@ noncomputable def selectedStrictSeparated_bottleneckRouting
               (selectedPrimitiveOverloadBottleneckRouting remainderAbsentHistory)
               (K .bottleneckRouting)
 
-theorem selectedStrictSeparated_typeBHandoff
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    Graph.TypeBHandoffStatement selected.object
-      (Graph.MinimumDegreeAtLeast spineData.threshold) spineData.LengthOK
-      spineData.windowOrder :=
-  match selectedStrictSeparatedWindowClassDichotomy history with
-  | .left windowHistory =>
-      selectedWindowOverload_typeBHandoff windowHistory
-  | .right windowAbsentHistory =>
-      match selectedRemainderClassDichotomy windowAbsentHistory with
-      | .left remainderHistory =>
-          selectedRemainderOverload_typeBHandoff remainderHistory
-      | .right remainderAbsentHistory =>
-          selectedPrimitiveOverload_typeBHandoff remainderAbsentHistory
-
-/-- Nodes `[125]`--`[144]`, strict separated surplus branch through Type B
-bridge mass. -/
-noncomputable def selectedStrictSeparated_bridgeMass
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    (K (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      .typeBBridgeMass).At selected := by
-  match selectedStrictSeparatedWindowClassDichotomy history with
-  | .left windowHistory =>
-      exact selectedWindowOverload_bridgeMass windowHistory
-  | .right windowAbsentHistory =>
-      match selectedRemainderClassDichotomy windowAbsentHistory with
-      | .left remainderHistory =>
-          exact selectedRemainderOverload_bridgeMass remainderHistory
-      | .right remainderAbsentHistory =>
-          exact selectedPrimitiveOverload_bridgeMass remainderAbsentHistory
-
 /-- Node `[21]`, on the near-cubic arm of node `[19]`. -/
 noncomputable def selectedWindowPackageDichotomy
     {selected : EGInput.{u}}
@@ -8014,7 +7971,7 @@ noncomputable def selectedLowEntropyTypeBExclusionDichotomy
       (K (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .typeBRemainingCoreNonnegative)
+        .typeBExcluded)
       (K (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
@@ -8022,9 +7979,16 @@ noncomputable def selectedLowEntropyTypeBExclusionDichotomy
       (selectedLowEntropyTypeBB2ExclusionCharge history) :=
   typeBExclusionDichotomy (data := spineData)
     (selectedLowEntropyTypeBB2ExclusionCharge history)
-    (fun core => ⟨core⟩)
+    (K .typeBDisjointLedger) (K .typeBExclusionCharge)
+    (K .typeBExcluded) (K .typeBExclusionResidual)
+    (fun charge => charge.down)
+    (fun contradiction => ⟨False.elim contradiction⟩)
     (fun residual => ⟨residual⟩)
-    (fun ledger => ledger.down)
+    (fun ledger => by
+      obtain ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+        chosen, exact, post, _groupedCoverage⟩ := ledger.down
+      exact ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+        chosen, exact, post⟩)
     (by
       simp [selectedLowEntropyTypeBB2ExclusionCharge, typeBExclusionCharge,
         typeBSelectedFanCharge, disjointPostLedgerComponents, hybridEntry,
@@ -8038,7 +8002,7 @@ noncomputable def selectedLowEntropyTypeBExclusionDichotomy
 noncomputable def selectedLowEntropyTypeBExcludedCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .typeBRemainingCoreNonnegative, K .typeBExclusionCharge,
+      [K .typeBExcluded, K .typeBExclusionCharge,
         K .typeBSelectedFanCharge, K .typeBDisjointLedger,
         K .typeBHybridEntry, K .typeBB2Choice,
         K .typeBDirectCycleFree, K .fanCertificateMarked,
@@ -8054,14 +8018,9 @@ noncomputable def selectedLowEntropyTypeBExcludedCloses
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
-  let excluded :=
-    (typeBExcluded (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [typeBExcluded, K_eq_iff])
   let closedHistory :=
-    closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
-      (by simp [typeBExcluded, K_eq_iff])
+    closeImpossible history (K .typeBExcluded)
+      (by simp [K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
 /-- Node `[76]`, low-entropy heavy B2-success arm reduced to the exclusion residual survivor. -/
@@ -8187,7 +8146,7 @@ noncomputable def selectedHighEntropyTypeBExclusionDichotomy
       (K (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .typeBRemainingCoreNonnegative)
+        .typeBExcluded)
       (K (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
@@ -8195,9 +8154,16 @@ noncomputable def selectedHighEntropyTypeBExclusionDichotomy
       (selectedHighEntropyTypeBB2ExclusionCharge history) :=
   typeBExclusionDichotomy (data := spineData)
     (selectedHighEntropyTypeBB2ExclusionCharge history)
-    (fun core => ⟨core⟩)
+    (K .typeBDisjointLedger) (K .typeBExclusionCharge)
+    (K .typeBExcluded) (K .typeBExclusionResidual)
+    (fun charge => charge.down)
+    (fun contradiction => ⟨False.elim contradiction⟩)
     (fun residual => ⟨residual⟩)
-    (fun ledger => ledger.down)
+    (fun ledger => by
+      obtain ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+        chosen, exact, post, _groupedCoverage⟩ := ledger.down
+      exact ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+        chosen, exact, post⟩)
     (by
       simp [selectedHighEntropyTypeBB2ExclusionCharge, typeBExclusionCharge,
         typeBSelectedFanCharge, disjointPostLedgerComponents, hybridEntry,
@@ -8211,7 +8177,7 @@ noncomputable def selectedHighEntropyTypeBExclusionDichotomy
 noncomputable def selectedHighEntropyTypeBExcludedCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .typeBRemainingCoreNonnegative, K .typeBExclusionCharge,
+      [K .typeBExcluded, K .typeBExclusionCharge,
         K .typeBSelectedFanCharge, K .typeBDisjointLedger,
         K .typeBHybridEntry, K .typeBB2Choice,
         K .typeBDirectCycleFree, K .fanCertificateMarked,
@@ -8228,14 +8194,9 @@ noncomputable def selectedHighEntropyTypeBExcludedCloses
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
-  let excluded :=
-    (typeBExcluded (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [typeBExcluded, K_eq_iff])
   let closedHistory :=
-    closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
-      (by simp [typeBExcluded, K_eq_iff])
+    closeImpossible history (K .typeBExcluded)
+      (by simp [K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
 /-- Node `[76]`, high-entropy heavy B2-success arm reduced to the exclusion residual survivor. -/
@@ -8362,7 +8323,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionDichotomy
       (K (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .typeBRemainingCoreNonnegative)
+        .typeBExcluded)
       (K (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
@@ -8370,9 +8331,16 @@ noncomputable def selectedLowEntropyDegreeFourExclusionDichotomy
       (selectedLowEntropyDegreeFourB2ExclusionCharge history) :=
   typeBExclusionDichotomy (data := spineData)
     (selectedLowEntropyDegreeFourB2ExclusionCharge history)
-    (fun core => ⟨core⟩)
+    (K .typeBDisjointLedger) (K .typeBExclusionCharge)
+    (K .typeBExcluded) (K .typeBExclusionResidual)
+    (fun charge => charge.down)
+    (fun contradiction => ⟨False.elim contradiction⟩)
     (fun residual => ⟨residual⟩)
-    (fun ledger => ledger.down)
+    (fun ledger => by
+      obtain ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+        chosen, exact, post, _groupedCoverage⟩ := ledger.down
+      exact ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+        chosen, exact, post⟩)
     (by
       simp [selectedLowEntropyDegreeFourB2ExclusionCharge,
         typeBExclusionCharge, typeBSelectedFanCharge,
@@ -8386,7 +8354,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionDichotomy
 noncomputable def selectedLowEntropyDegreeFourExcludedCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .typeBRemainingCoreNonnegative, K .typeBExclusionCharge,
+      [K .typeBExcluded, K .typeBExclusionCharge,
         K .typeBSelectedFanCharge, K .typeBDisjointLedger,
         K .typeBHybridEntry, K .typeBB2Choice,
         K .typeBDirectCycleFree, K .fanCertificateMarked,
@@ -8402,14 +8370,9 @@ noncomputable def selectedLowEntropyDegreeFourExcludedCloses
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
-  let excluded :=
-    (typeBExcluded (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [typeBExcluded, K_eq_iff])
   let closedHistory :=
-    closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
-      (by simp [typeBExcluded, K_eq_iff])
+    closeImpossible history (K .typeBExcluded)
+      (by simp [K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
 /-- Node `[85]`, low-entropy degree-four B2-success arm reduced to the exclusion residual survivor. -/
@@ -8536,7 +8499,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionDichotomy
       (K (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .typeBRemainingCoreNonnegative)
+        .typeBExcluded)
       (K (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
@@ -8544,9 +8507,16 @@ noncomputable def selectedHighEntropyDegreeFourExclusionDichotomy
       (selectedHighEntropyDegreeFourB2ExclusionCharge history) :=
   typeBExclusionDichotomy (data := spineData)
     (selectedHighEntropyDegreeFourB2ExclusionCharge history)
-    (fun core => ⟨core⟩)
+    (K .typeBDisjointLedger) (K .typeBExclusionCharge)
+    (K .typeBExcluded) (K .typeBExclusionResidual)
+    (fun charge => charge.down)
+    (fun contradiction => ⟨False.elim contradiction⟩)
     (fun residual => ⟨residual⟩)
-    (fun ledger => ledger.down)
+    (fun ledger => by
+      obtain ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+        chosen, exact, post, _groupedCoverage⟩ := ledger.down
+      exact ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+        chosen, exact, post⟩)
     (by
       simp [selectedHighEntropyDegreeFourB2ExclusionCharge,
         typeBExclusionCharge, typeBSelectedFanCharge,
@@ -8560,7 +8530,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionDichotomy
 noncomputable def selectedHighEntropyDegreeFourExcludedCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .typeBRemainingCoreNonnegative, K .typeBExclusionCharge,
+      [K .typeBExcluded, K .typeBExclusionCharge,
         K .typeBSelectedFanCharge, K .typeBDisjointLedger,
         K .typeBHybridEntry, K .typeBB2Choice,
         K .typeBDirectCycleFree, K .fanCertificateMarked,
@@ -8577,14 +8547,9 @@ noncomputable def selectedHighEntropyDegreeFourExcludedCloses
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
-  let excluded :=
-    (typeBExcluded (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [typeBExcluded, K_eq_iff])
   let closedHistory :=
-    closeIncompatible excluded (K .typeBDisjointLedger) (K .typeBExcluded)
-      (by simp [typeBExcluded, K_eq_iff])
+    closeImpossible history (K .typeBExcluded)
+      (by simp [K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
 /-- Node `[85]`, high-entropy degree-four B2-success arm reduced to the exclusion residual survivor. -/
@@ -9011,13 +8976,13 @@ noncomputable def selectedHighEntropyTypeAUnsaturatedCloses
 noncomputable def selectedColdSparseSurplusSurvivor
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .coldTerminalResidual, K .route8TerminalNoGo, K .typeBExcluded,
+      [K .coldTerminalResidual, K .route8TerminalNoGo,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
         K .windowPackageCollided, K .uncompressible, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .coldTerminalResidual,
-        K .route8TerminalNoGo, K .typeBExcluded, K .sparsePressureNearCubic,
+        K .route8TerminalNoGo, K .sparsePressureNearCubic,
         K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
         K .densityCap, K .windowPackageCollided, K .uncompressible,
         K .selection] :=
@@ -9036,7 +9001,7 @@ noncomputable def selectedColdSparseSurplusSurvivor
 noncomputable def selectedColdCorridorBranchClosedHistory
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .coldTerminalResidual, K .route8TerminalNoGo, K .typeBExcluded,
+      [K .coldTerminalResidual, K .route8TerminalNoGo,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
         K .windowPackageCollided, K .uncompressible, K .selection]) :
@@ -9045,7 +9010,7 @@ noncomputable def selectedColdCorridorBranchClosedHistory
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
         [K .sparseSurplusSurvivor, K .coldTerminalResidual,
-          K .route8TerminalNoGo, K .typeBExcluded, K .sparsePressureNearCubic,
+          K .route8TerminalNoGo, K .sparsePressureNearCubic,
           K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
           K .densityCap, K .windowPackageCollided, K .uncompressible,
           K .selection]) := by
@@ -9067,7 +9032,7 @@ noncomputable def selectedColdCorridorBranchClosedHistory
 noncomputable def selectedColdCorridorClosedHistory
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .coldTerminalResidual, K .route8TerminalNoGo, K .typeBExcluded,
+      [K .coldTerminalResidual, K .route8TerminalNoGo,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
         K .windowPackageCollided, K .uncompressible, K .selection]) :
@@ -9076,7 +9041,7 @@ noncomputable def selectedColdCorridorClosedHistory
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
         [K .sparseSurplusSurvivor, K .coldTerminalResidual,
-          K .route8TerminalNoGo, K .typeBExcluded, K .sparsePressureNearCubic,
+          K .route8TerminalNoGo, K .sparsePressureNearCubic,
           K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
           K .densityCap, K .windowPackageCollided, K .uncompressible,
           K .selection]) := by
@@ -9091,7 +9056,7 @@ noncomputable def selectedColdCorridorClosedHistory
 noncomputable def selectedColdCorridorCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .coldTerminalResidual, K .route8TerminalNoGo, K .typeBExcluded,
+      [K .coldTerminalResidual, K .route8TerminalNoGo,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
         K .windowPackageCollided, K .uncompressible, K .selection]) : False :=
