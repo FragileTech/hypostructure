@@ -1,4 +1,5 @@
 import HypostructureErdos64EG.Problem
+import HypostructureErdos64EG.Assembly
 import Hypostructure.Graph.Strategy.SpineContinuationRun
 
 /-!

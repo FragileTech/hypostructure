@@ -32,7 +32,7 @@ variable [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
 derives from its declared prerequisites. -/
 @[reducible] noncomputable def factOnly
     (id : Lean.Name) (manifest : FactManifest Residual)
-    (derive : (inputs : FactInputs manifest) →
+    (derive : (inputs : FactInputs manifest.toFactRequirements) →
       Core.Residual.FactKeys.Values inputs.current manifest.Produces)
     (checks : Nat := 0) (work : Nat := 0) :
     AtomicStrategy Residual :=

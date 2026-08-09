@@ -15,15 +15,23 @@ open Hypostructure.Core.Residual
 
 universe uResidual uSubject uKey uValue
 
+/-- Closed prerequisite contract shared by atomic CTs and exhaustive
+decisions. -/
+structure FactRequirements
+    (Residual : Type uResidual)
+    [RefinementSystem.{uResidual, uSubject} Residual]
+    [FactSystem.{uResidual, uSubject, uKey, uValue} Residual] where
+  Requires : FactKeys Residual
+  requiresUnique : Requires.Nodup
+
 /-- Closed input/output contract for one CT or Strategy.  Every execution must
 append at least one fact, and neither side may name a key twice. -/
 structure FactManifest
     (Residual : Type uResidual)
     [RefinementSystem.{uResidual, uSubject} Residual]
-    [FactSystem.{uResidual, uSubject, uKey, uValue} Residual] where
-  Requires : FactKeys Residual
+    [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
+    extends FactRequirements Residual where
   Produces : FactKeys Residual
-  requiresUnique : Requires.Nodup
   producesUnique : Produces.Nodup
   producesNonempty : Produces ≠ []
 
@@ -113,10 +121,10 @@ structure FactInputs
     {Residual : Type uResidual}
     [RefinementSystem.{uResidual, uSubject} Residual]
     [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
-    (manifest : FactManifest Residual) where
+    (requirements : FactRequirements Residual) where
   private mk ::
   current : Residual
-  private facts : Core.Residual.FactKeys.Values current manifest.Requires
+  private facts : Core.Residual.FactKeys.Values current requirements.Requires
 
 namespace FactInputs
 
@@ -127,9 +135,9 @@ noncomputable def ofLedger
     [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
     {current : Residual} {known : FactKeys Residual}
     (_authority : FrameworkToken)
-    (manifest : FactManifest Residual)
-    [available : FactKeys.Available manifest.Requires known]
-    (history : ExactLedger Residual current known) : FactInputs manifest :=
+    (requirements : FactRequirements Residual)
+    [available : FactKeys.Available requirements.Requires known]
+    (history : ExactLedger Residual current known) : FactInputs requirements :=
   .mk current (available.values history)
 
 /-- Read one declared prerequisite.  Undeclared keys are rejected during
@@ -138,9 +146,9 @@ noncomputable def get
     {Residual : Type uResidual}
     [RefinementSystem.{uResidual, uSubject} Residual]
     [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
-    {manifest : FactManifest Residual} (inputs : FactInputs manifest)
+    {requirements : FactRequirements Residual} (inputs : FactInputs requirements)
     (key : FactKey Residual)
-    [Core.Residual.FactKeys.Has key manifest.Requires] :
+    [Core.Residual.FactKeys.Has key requirements.Requires] :
     key.At inputs.current :=
   Core.Residual.FactKeys.Values.get key inputs.facts
 

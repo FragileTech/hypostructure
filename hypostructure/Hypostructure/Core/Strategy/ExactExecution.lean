@@ -33,10 +33,10 @@ structure AtomicCT
   private mk ::
   id : Lean.Name
   manifest : FactManifest Residual
-  private next : FactInputs manifest -> Residual
-  private refines : (inputs : FactInputs manifest) ->
+  private next : FactInputs manifest.toFactRequirements -> Residual
+  private refines : (inputs : FactInputs manifest.toFactRequirements) ->
     RefinementSystem.Refines (next inputs) inputs.current
-  private execute : (inputs : FactInputs manifest) ->
+  private execute : (inputs : FactInputs manifest.toFactRequirements) ->
     AtomicResult manifest (next inputs)
 
 namespace AtomicCT
@@ -49,10 +49,10 @@ abbrev create
     [FactSystem.{uResidual, uSubject, uKey, uValue} Residual]
     (_authority : FrameworkToken)
     (id : Lean.Name) (manifest : FactManifest Residual)
-    (next : FactInputs manifest -> Residual)
-    (refines : (inputs : FactInputs manifest) ->
+    (next : FactInputs manifest.toFactRequirements -> Residual)
+    (refines : (inputs : FactInputs manifest.toFactRequirements) ->
       RefinementSystem.Refines (next inputs) inputs.current)
-    (execute : (inputs : FactInputs manifest) ->
+    (execute : (inputs : FactInputs manifest.toFactRequirements) ->
       AtomicResult manifest (next inputs)) : AtomicCT Residual :=
   .mk id manifest next refines execute
 
@@ -67,7 +67,8 @@ noncomputable def outputResidual
     (ct : AtomicCT Residual)
     [FactKeys.Available ct.manifest.Requires known]
     (previous : ExactLedger Residual current known) : Residual :=
-  ct.next (FactInputs.ofLedger exactLedgerInternal% ct.manifest previous)
+  ct.next (FactInputs.ofLedger exactLedgerInternal%
+    ct.manifest.toFactRequirements previous)
 
 /-- Run and atomically append a CT.  Missing requirements fail during
 elaboration.  The result index contains every produced fact followed by every
@@ -83,7 +84,8 @@ noncomputable def run
     (fresh : List.Disjoint ct.manifest.Produces known := by decide) :
     ExactLedger Residual (ct.outputResidual previous)
       (ct.manifest.Produces ++ known) := by
-  let inputs := FactInputs.ofLedger exactLedgerInternal% ct.manifest previous
+  let inputs := FactInputs.ofLedger exactLedgerInternal%
+    ct.manifest.toFactRequirements previous
   let result := ct.execute inputs
   change ExactLedger Residual (ct.next inputs) (ct.manifest.Produces ++ known)
   exact ExactLedger.append exactLedgerInternal% previous

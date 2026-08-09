@@ -40,6 +40,24 @@ Legend: ✅ verified compliant · ❌ verified violation · ⬜ unreviewed
 
 ## Build status
 
+### 2026-08-09 sealed total-closure core
+
+- Core now represents a finite, total strategy as `ClosingProgram known` over
+  the exact branch-local fact index.  Its constructors require trusted atomic
+  CTs or exhaustive binary decisions, and every leaf must close through the
+  reserved closure fact, incompatibility, impossibility, or emptiness.
+- `ClosingDag.statement` is the single global elimination point.  It opens the
+  framework-owned minimal-counterexample scope, interprets both arms of every
+  decision, and derives the registered `Target.Statement` from the locally
+  closed branches.  Applications cannot access the interpreter, scope opener,
+  ledger constructors, decision runner, or private DAG representation.
+- `Hypostructure.Fixtures.ClosingProgram` checks the complete path, including
+  sibling-fact isolation, mandatory decision arms, callback rejection, private
+  constructors, and a final theorem with no `sorryAx`.
+- This phase supplies the problem-agnostic closure machinery only.  The EG
+  `Problem.lean` registration and its typed `StrategyDag.lean` topology still
+  need to be instantiated against this surface before `erdos_64` exists.
+
 ### 2026-08-09 cold endpoint correction and official theorem check
 
 - The cold prefix consumes the surviving upstream ledger and appends the split

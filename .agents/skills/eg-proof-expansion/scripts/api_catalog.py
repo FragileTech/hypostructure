@@ -27,6 +27,10 @@ CANONICAL_MODULES = {
         "Canonical scope initialization",
     "Hypostructure.Core.Strategy.FactOnlyStrategy":
         "Canonical fact-only steps and branch decisions",
+    "Hypostructure.Core.Strategy.AtomicDecision":
+        "Canonical exhaustive decisions",
+    "Hypostructure.Core.Strategy.ClosingProgram":
+        "Sealed total closure",
     "Hypostructure.Graph.Strategy.SpineVocabulary":
         "Minimum-degree cycle spine vocabulary",
     "Hypostructure.Graph.Strategy.SpineRows":
@@ -153,12 +157,27 @@ REQUIRED_CANONICAL_DECLARATIONS = {
     "Hypostructure.Core.Residual.FactKeys",
     "Hypostructure.Core.Residual.FactKeys.Has",
     "Hypostructure.Core.Strategy.FactManifest",
+    "Hypostructure.Core.Strategy.FactRequirements",
     "Hypostructure.Core.Strategy.FactInputs",
     "Hypostructure.Core.Strategy.FactInputs.get",
     "Hypostructure.Core.Strategy.AtomicCT",
     "Hypostructure.Core.Strategy.AtomicCT.outputResidual",
     "Hypostructure.Core.Strategy.AtomicCT.run",
     "Hypostructure.Core.Strategy.AtomicStrategy",
+    "Hypostructure.Core.Strategy.DecisionManifest",
+    "Hypostructure.Core.Strategy.AtomicDecision",
+    "Hypostructure.Core.Strategy.ClosingProgram",
+    "Hypostructure.Core.Strategy.ClosingProgram.closed",
+    "Hypostructure.Core.Strategy.ClosingProgram.atomic",
+    "Hypostructure.Core.Strategy.ClosingProgram.branch",
+    "Hypostructure.Core.Strategy.ClosingProgram.closeIncompatible",
+    "Hypostructure.Core.Strategy.ClosingProgram.closeImpossible",
+    "Hypostructure.Core.Strategy.ClosingProgram.closeIfEmpty",
+    "Hypostructure.Core.Strategy.CounterexampleScope",
+    "Hypostructure.Core.Strategy.CounterexampleScope.selection",
+    "Hypostructure.Core.Strategy.ClosingDag",
+    "Hypostructure.Core.Strategy.ClosingDag.ofCounterexampleScope",
+    "Hypostructure.Core.Strategy.ClosingDag.statement",
     "Hypostructure.Core.Strategy.RoutedTask.selectFor",
     "Hypostructure.Core.Strategy.RoutedTask.dispatchFor",
 }
@@ -172,6 +191,9 @@ FRAMEWORK_ONLY_DECLARATIONS = {
     "Hypostructure.Core.Residual.ExactLedger.publishFact",
     "Hypostructure.Core.Strategy.FactInputs.ofLedger",
     "Hypostructure.Core.Strategy.AtomicCT.create",
+    "Hypostructure.Core.Strategy.AtomicDecision.create",
+    "Hypostructure.Core.Strategy.AtomicDecision.run",
+    "Hypostructure.Core.Strategy.CounterexampleScope.createMinimal",
 }
 
 INTERNAL_PROJECTION_DECLARATIONS = {
@@ -365,6 +387,8 @@ def check_canonical_sources(root: Path) -> None:
         root / "hypostructure/Hypostructure/Core/Residual/ExactLedger.lean",
         root / "hypostructure/Hypostructure/Core/Strategy/FactManifest.lean",
         root / "hypostructure/Hypostructure/Core/Strategy/ExactExecution.lean",
+        root / "hypostructure/Hypostructure/Core/Strategy/AtomicDecision.lean",
+        root / "hypostructure/Hypostructure/Core/Strategy/ClosingProgram.lean",
     )
     forbidden = (
         "Core.Residual.Ledger",

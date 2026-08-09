@@ -118,7 +118,8 @@ theorem closure_marker_stops_selection (impossible : False) :
     RoutedTask.selectFor closed [ready, blocked] = none := by
   exact rfl
 
-noncomputable def inputs := FactInputs.ofLedger exactLedgerInternal% requiresA history
+noncomputable def inputs := FactInputs.ofLedger exactLedgerInternal%
+  requiresA.toFactRequirements history
 
 noncomputable def readDeclared : factA.At inputs.current :=
   inputs.get factA
