@@ -419,8 +419,8 @@ arm cannot be discharged by an emptiness manufactured at a call site. -/
 
 This row commits the local F5 extraction on the current residual.  It reads the
 first-failure dichotomy from `coldFailureRouting`; the extraction itself is over
-vertex supports of the current object, each already realized by a current
-`BoundedGerm`. -/
+actual current-object bounded germs, with overlap tested on their literal
+supports and the disjoint family existentially internal to the fact. -/
 @[reducible] noncomputable def coldGermExtractionRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermExtraction
@@ -431,48 +431,7 @@ vertex supports of the current object, each already realized by a current
         ⟨
           ⟨fun windows component corridor presentation index injective =>
               routing.1 windows component corridor presentation index injective,
-            fun candidates _realizes boundedOverlap => by
-              classical
-              have boundedFilter :
-                  ∀ candidate ∈ candidates,
-                    (candidates.filter fun other =>
-                      ¬ Disjoint candidate other).card ≤
-                      Graph.ColdCorridor.exchangeBound data.coldSignature *
-                        Graph.ColdCorridor.overlapBound data.threshold
-                          data.coldSignature := by
-                intro candidate candidateMem
-                obtain ⟨blockers, _blockersSubset, blockersCard, covers⟩ :=
-                  boundedOverlap candidate candidateMem
-                have filterSubset :
-                    (candidates.filter fun other => ¬ Disjoint candidate other) ⊆
-                      blockers := by
-                  intro other otherMem
-                  exact covers other (Finset.mem_filter.mp otherMem).1
-                    (Finset.mem_filter.mp otherMem).2
-                exact le_trans (Finset.card_le_card filterSubset) blockersCard
-              obtain ⟨disjointFamily, subset, independent, cover⟩ :=
-                Graph.ColdCorridor.coldGermExtraction
-                  (Overlaps := fun left right :
-                      Finset inputs.current.object.Vertex =>
-                    ¬ Disjoint left right)
-                  (symmetric := by
-                    intro left right overlaps rightLeft
-                    exact overlaps rightLeft.symm)
-                  (exchangeBound :=
-                    Graph.ColdCorridor.exchangeBound data.coldSignature)
-                  (overlapBound :=
-                    Graph.ColdCorridor.overlapBound data.threshold
-                      data.coldSignature)
-                  (candidates := candidates)
-                  boundedFilter
-              have cover' :
-                  candidates.card ≤ disjointFamily.card *
-                    Graph.ColdCorridor.extractionDenominator data.threshold
-                      data.coldSignature := by
-                simpa [Graph.ColdCorridor.extractionDenominator] using cover
-              exact ⟨disjointFamily, subset, independent, cover',
-                fun positive =>
-                  Graph.ColdCorridor.coldGerm_nonempty cover' positive⟩⟩⟩
+            Graph.ColdCorridor.coldGermExtractionLocal⟩⟩
         .nil)
 
 /-- **Nodes `[145]`--`[157]`: `thm:cold-branch-quantitative-closure`.**
@@ -501,6 +460,31 @@ ledger; no branch record, terminal payload, or retired routing object is used. -
               germ shorter
           ⟨distinguishing, fun Profile profile =>
             targetDefect germ Profile profile distinguishing⟩⟩
+        .nil)
+
+/-- **Node `[157]`: the cold oval closes on the current residual.**
+
+The final row reads the length-changing route and the finite same-interface
+table by key, and it also reads the local extraction fact that turns a terminal
+candidate family into a positive extracted subfamily.  It does not transport a
+corridor, a germ family, or a side classifier. -/
+@[reducible] noncomputable def coldBranchClosedRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldBranchClosed
+    { Requires := [K .coldGermExtraction, K .coldGermRouted,
+        K .coldSameInterfaceTable]
+      Produces := [K .coldBranchClosed]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let extraction := (inputs.get (K .coldGermExtraction)).down.2
+      let routed := (inputs.get (K .coldGermRouted)).down
+      let table := (inputs.get (K .coldSameInterfaceTable)).down
+      .cons (key := K .coldBranchClosed)
+        ⟨Graph.ColdCorridor.noTerminalColdResidual_of_routing
+          (extraction := extraction) (routed := routed) (table := table.1)
+          (selfReturns := table.2.1)⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

@@ -436,6 +436,234 @@ abbrev typeAExitFourFreeKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitFourFree :: known
 
+/-! ## The route-8 tail, executed on the canonical ledger -/
+
+noncomputable def runTypeAExitSevenDecision
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current (typeAExitSixFreeKeys known))
+    (producedFresh :
+      K (data := data) .typeAExitSevenProduced ∉ typeAExitSixFreeKeys known)
+    (freeFresh :
+      K (data := data) .typeAExitSevenFree ∉ typeAExitSixFreeKeys known) :
+    Decision (K (data := data) .typeAExitSevenProduced)
+      (K (data := data) .typeAExitSevenFree) history := by
+  exact
+    typeAExitSevenDichotomy history
+      (K (data := data) .typeAExitSixFree)
+      (K (data := data) .typeAExitSevenProduced)
+      (K (data := data) .typeAExitSevenFree)
+      (fun free => by
+        obtain ⟨packing, valid, maximal, component, present, negative, zero,
+          receiver, isReceiver, peeled, peeledSubset, saturated, routing,
+          noCompression, noDelocalization⟩ := free.down
+        exact ⟨packing, valid, maximal, component, present, negative, zero,
+          receiver, isReceiver, peeled, peeledSubset, saturated, routing,
+          noCompression, noDelocalization, trivial⟩)
+      (fun produced => ⟨produced⟩)
+      (fun free => ⟨free⟩)
+      producedFresh freeFresh
+
+noncomputable def runTypeAExitSevenHandoff
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .selection) known]
+    [FactKeys.Has (K (data := data) .uncompressible) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current (typeAExitSevenProducedKeys known))
+    (handoffFresh :
+      K (data := data) .typeAExitSevenHandoff ∉
+        typeAExitSevenProducedKeys known) :
+    ExactLedger (Input BranchState Presentation presentation data) current
+      (typeAExitSevenHandoffKeys known) := by
+  classical
+  exact
+    (typeAExitSevenHandoffRow
+      (K (data := data) .selection)
+      (K (data := data) .uncompressible)
+      (K (data := data) .typeAExitSevenProduced)
+      (K (data := data) .typeAExitSevenHandoff)
+      (by simp [K_eq_iff])
+      (fun _input selection => selection.down.1)
+      (fun _input uncompressible => uncompressible.down)
+      (fun _input produced => produced.down)
+      (fun _input handoff => ⟨handoff⟩)).run history (by
+        intro key isNew isOld
+        simp only [List.mem_singleton] at isNew
+        subst isNew
+        revert isOld
+        simp [handoffFresh])
+
+noncomputable def runRoute8Tail
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .route8Residual) known]
+    [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
+    [FactKeys.Has (K (data := data) .typeAVisibleFirstExcess) known]
+    [FactKeys.Has (K (data := data) .typeAExitFourFiniteDescent) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (profileFresh : K (data := data) .route8ResidualProfile ∉ known)
+    (globalFresh : K (data := data) .route8GlobalSqueeze ∉ known)
+    (basinFresh : K (data := data) .route8BasinBurden ∉ known)
+    (deficitFresh : K (data := data) .route8LargeBudgetDeficit ∉ known)
+    (coreFresh : K (data := data) .route8CarrierCore ∉ known)
+    (smallFresh : K (data := data) .route8SmallCoreCollapse ∉ known)
+    (twoFresh : K (data := data) .route8TwoCarrierReduction ∉ known)
+    (witnessesFresh :
+      K (data := data) .route8CarrierDeletionWitnesses ∉ known)
+    (privateFresh : K (data := data) .route8PrivateCarrierBudget ∉ known)
+    (noTwoFresh :
+      K (data := data) .route8NoTwoCarrierContradiction ∉ known)
+    (pressureFresh : K (data := data) .route8PressureDescent ∉ known)
+    (terminalFresh : K (data := data) .route8TerminalNoGo ∉ known) :
+    ExactLedger (Input BranchState Presentation presentation data) current
+      (K .route8TerminalNoGo :: K .route8PressureDescent ::
+        K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction ::
+        K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction ::
+        K .route8SmallCoreCollapse :: K .route8CarrierCore ::
+        K .route8BasinBurden :: K .route8LargeBudgetDeficit ::
+        K .route8GlobalSqueeze :: K .route8ResidualProfile :: known) := by
+  classical
+  have afterProfile :=
+    (route8ResidualProfileRow (data := data)).run history (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [profileFresh])
+  have afterGlobal :=
+    (route8GlobalSqueezeRow (data := data)).run afterProfile (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [K_eq_iff, globalFresh])
+  have afterBurden :=
+    (route8BurdenAndDeficitRow (data := data)).run afterGlobal (by
+      intro key isNew isOld
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at isNew
+      rcases isNew with rfl | rfl
+      · revert isOld
+        simp [K_eq_iff, basinFresh]
+      · revert isOld
+        simp [K_eq_iff, deficitFresh])
+  have afterCore :=
+    (route8CarrierCoreRow (data := data)).run afterBurden (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [K_eq_iff, coreFresh])
+  have afterSmall :=
+    (route8SmallCoreCollapseRow (data := data)).run afterCore (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [K_eq_iff, smallFresh])
+  have afterTwo :=
+    (route8TwoCarrierReductionRow (data := data)).run afterSmall (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [K_eq_iff, twoFresh])
+  have afterWitnesses :=
+    (route8CarrierDeletionWitnessesRow (data := data)).run afterTwo (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [K_eq_iff, witnessesFresh])
+  have afterPrivate :=
+    (route8PrivateCarrierContradictionRow (data := data)).run
+      afterWitnesses (by
+        intro key isNew isOld
+        simp only [List.mem_cons, List.not_mem_nil, or_false] at isNew
+        rcases isNew with rfl | rfl
+        · revert isOld
+          simp [K_eq_iff, privateFresh]
+        · revert isOld
+          simp [K_eq_iff, noTwoFresh])
+  have afterPressure :=
+    (route8PressureDescentRow (data := data)).run afterPrivate (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [K_eq_iff, pressureFresh])
+  exact (route8TerminalNoGoRow (data := data)).run afterPressure (by
+    intro key isNew isOld
+    simp only [List.mem_singleton] at isNew
+    subst isNew
+    revert isOld
+    simp [K_eq_iff, terminalFresh])
+
+noncomputable def runRoute8FromExitSevenFree
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
+    [FactKeys.Has (K (data := data) .typeAVisibleFirstExcess) known]
+    [FactKeys.Has (K (data := data) .typeAExitFourFiniteDescent) known]
+    [FactKeys.Has (K (data := data) .typeASaturatedHandoffSilent) known]
+    [FactKeys.Has (K (data := data) .typeASaturatedHandoffExitFourFree) known]
+    [FactKeys.Has (K (data := data) .typeAExitFiveFree) known]
+    (history : ExactLedger (Input BranchState Presentation presentation data)
+      current (typeAExitSevenFreeKeys known))
+    (residualFresh :
+      K (data := data) .route8Residual ∉ typeAExitSevenFreeKeys known)
+    (profileFresh :
+      K (data := data) .route8ResidualProfile ∉ route8ResidualKeys known)
+    (globalFresh :
+      K (data := data) .route8GlobalSqueeze ∉ route8ResidualKeys known)
+    (basinFresh :
+      K (data := data) .route8BasinBurden ∉ route8ResidualKeys known)
+    (deficitFresh :
+      K (data := data) .route8LargeBudgetDeficit ∉ route8ResidualKeys known)
+    (coreFresh :
+      K (data := data) .route8CarrierCore ∉ route8ResidualKeys known)
+    (smallFresh :
+      K (data := data) .route8SmallCoreCollapse ∉ route8ResidualKeys known)
+    (twoFresh :
+      K (data := data) .route8TwoCarrierReduction ∉ route8ResidualKeys known)
+    (witnessesFresh :
+      K (data := data) .route8CarrierDeletionWitnesses ∉
+        route8ResidualKeys known)
+    (privateFresh :
+      K (data := data) .route8PrivateCarrierBudget ∉ route8ResidualKeys known)
+    (noTwoFresh :
+      K (data := data) .route8NoTwoCarrierContradiction ∉
+        route8ResidualKeys known)
+    (pressureFresh :
+      K (data := data) .route8PressureDescent ∉ route8ResidualKeys known)
+    (terminalFresh :
+      K (data := data) .route8TerminalNoGo ∉ route8ResidualKeys known) :
+    ExactLedger (Input BranchState Presentation presentation data) current
+      (route8TerminalNoGoKeys known) := by
+  classical
+  have afterResidual :=
+    (route8ResidualRow
+      (K (data := data) .typeAExitFourFiniteDescent)
+      (K (data := data) .typeASaturatedHandoffSilent)
+      (K (data := data) .typeASaturatedHandoffExitFourFree)
+      (K (data := data) .typeAExitFiveFree)
+      (K (data := data) .typeAExitSixFree)
+      (K (data := data) .typeAExitSevenFree)
+      (K (data := data) .route8Residual)
+      (by simp [K_eq_iff])
+      (fun _input free => free.down)
+      (fun _input free => ⟨free⟩)).run history (by
+        intro key isNew isOld
+        simp only [List.mem_singleton] at isNew
+        subst isNew
+        revert isOld
+        simp [residualFresh])
+  exact runRoute8Tail (data := data) afterResidual
+    profileFresh globalFresh basinFresh deficitFresh coreFresh smallFresh
+    twoFresh witnessesFresh privateFresh noTwoFresh pressureFresh terminalFresh
+
 /-! ## What the two exits carry -/
 
 theorem exitThreeClosed_audit_accounts_for_every_fact

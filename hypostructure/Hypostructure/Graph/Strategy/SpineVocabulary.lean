@@ -744,6 +744,7 @@ inductive Key where
   | coldHandoffTransfer
   | coldGermExtraction
   | coldGermRouted
+  | coldBranchClosed
   /-- Node `[68]`, the standing law: every high centre of the object has its
   neighbourhood in the normal form of `lem:heavy-neighbourhood-normal-form` --
   cubic neighbours, a matching inside `N_G(h)`, and no common neighbour outside
@@ -2444,10 +2445,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         ∃ support, Handoff support ∧ corridor.head segment ∈ support)
   | .coldGermExtraction, object =>
       -- `lem:cold-germ-extraction`, in ledger form on the current object.  The
-      -- candidate family is a family of vertex supports of this residual, and
-      -- each candidate is required to be realized by an ordinary
-      -- `BoundedGerm` of this same object.  No arbitrary `Germ` type,
-      -- disjoint-family carrier, or theorem bundle is exported.
+      -- candidate family consists of actual bounded germs of this residual, so
+      -- the overlap graph is the one on their literal supports.  No arbitrary
+      -- `Germ` type, support-realization premise, disjoint-family carrier, or
+      -- theorem bundle is exported.
       ((∀ (windows component : Finset object.Vertex)
         (corridor : Graph.ColdCorridor.Corridor object windows component)
         (presentation :
@@ -2458,29 +2459,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               data.coldSignature ∨
             Graph.ColdCorridor.Corridor.RepeatedState corridor presentation
               index) ∧
-        ∀ candidates : Finset (Finset object.Vertex),
-          (∀ support ∈ candidates,
-            ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) object,
-              germ.support = support) →
-          (∀ candidate ∈ candidates,
-            ∃ blockers : Finset (Finset object.Vertex),
-              blockers ⊆ candidates ∧
-                blockers.card ≤
-                  Graph.ColdCorridor.exchangeBound data.coldSignature *
-                    Graph.ColdCorridor.overlapBound data.threshold
-                      data.coldSignature ∧
-                ∀ other ∈ candidates, ¬ Disjoint candidate other →
-                  other ∈ blockers) →
-          ∃ disjointFamily ⊆ candidates,
-            Graph.ColdCorridor.IndependentFor
-                (fun left right : Finset object.Vertex => ¬ Disjoint left right)
-                disjointFamily ∧
-              candidates.card ≤ disjointFamily.card *
-                Graph.ColdCorridor.extractionDenominator data.threshold
-                  data.coldSignature ∧
-              (0 < candidates.card → 0 < disjointFamily.card))
+        Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
+          data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
   | .coldGermRouted, object =>
       -- The length-changing germ conclusion obtained by eliminating G1 and G3
       -- and then reading the G2 route from the ledger.  The fact therefore
@@ -2496,6 +2477,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               ¬ Graph.Response.TargetComplete profile
                 (Graph.HasCycleWithLength data.LengthOK)
                 germ.piece germ.canonical
+  | .coldBranchClosed, object =>
+      -- `thm:cold-branch-quantitative-closure`, in the form consumed by the
+      -- cold oval: after the current residual's length-changing germs and
+      -- same-interface table rows have been routed, no local terminal cold
+      -- pattern remains on this residual.
+      Graph.ColdCorridor.NoTerminalColdResidual data.coldSignature data.threshold
+        data.LengthOK (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object
   | .forcedCurvatureCost, object =>
       -- `cor:forced-curvature-cost` after substituting the exact equality
       -- proved by `lem:full-rank` into node `[30]`'s demand floor.
@@ -4438,6 +4427,7 @@ def label : Key → String
   | .coldHandoffTransfer => "coldHandoffTransfer"
   | .coldGermExtraction => "coldGermExtraction"
   | .coldGermRouted => "coldGermRouted"
+  | .coldBranchClosed => "coldBranchClosed"
   | .highCentreNormalForm => "highCentreNormalForm"
   | .typeBHeavyCentre => "typeBHeavyCentre"
   | .typeBDegreeFourCentres => "typeBDegreeFourCentres"
@@ -4605,6 +4595,7 @@ example : label .coldFailureRouting = "coldFailureRouting" := rfl
 example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
 example : label .coldGermExtraction = "coldGermExtraction" := rfl
 example : label .coldGermRouted = "coldGermRouted" := rfl
+example : label .coldBranchClosed = "coldBranchClosed" := rfl
 example : label .highCentreNormalForm = "highCentreNormalForm" := rfl
 example : label .typeBHeavyCentre = "typeBHeavyCentre" := rfl
 example : label .typeBDegreeFourCentres = "typeBDegreeFourCentres" := rfl
@@ -4791,6 +4782,7 @@ def idx : Key → Nat
   | .coldHandoffTransfer => 69
   | .coldGermExtraction => 70
   | .coldGermRouted => 71
+  | .coldBranchClosed => 176
   | .highCentreNormalForm => 72
   | .typeBHeavyCentre => 73
   | .typeBDegreeFourCentres => 74
@@ -4946,6 +4938,7 @@ def ofIdx : Nat → Key
   | 69 => .coldHandoffTransfer
   | 70 => .coldGermExtraction
   | 71 => .coldGermRouted
+  | 176 => .coldBranchClosed
   | 72 => .highCentreNormalForm
   | 73 => .typeBHeavyCentre
   | 74 => .typeBDegreeFourCentres
@@ -5208,6 +5201,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermExtraction") 70
   | .coldGermRouted =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermRouted") 71
+  | .coldBranchClosed =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldBranchClosed") 176
   | .highCentreNormalForm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "highCentreNormalForm") 72
   | .typeBHeavyCentre =>

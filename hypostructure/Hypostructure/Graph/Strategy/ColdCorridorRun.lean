@@ -7,9 +7,7 @@ import Hypostructure.Graph.Strategy.SpineAssembly
 The rows of `ColdCorridorRows` publish concrete `Spine.Key` facts.  This module
 runs them in the manuscript's order against the one canonical `ExactLedger`,
 from the cut-state of `def:cold-corridor-first-failure` through the three arms
-of `lem:cold-bounded-germ-trichotomy` and the remaining cold-germ routing fact.
-It does not append the framework closure key: oval closure is a later Core
-closure from ordinary facts already visible on the same ledger.
+of `lem:cold-bounded-germ-trichotomy` and the local cold-oval closure fact.
 
 The block is entered only from a branch cursor whose key index already carries
 the surviving cold prefix: the selected counterexample, uncompressibility, the
@@ -42,15 +40,15 @@ variable {data : Data.{u}}
 abbrev coldKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .coldGermRouted :: K .coldGermExtraction :: K .coldHandoffTransfer ::
-    K .coldFailureRouting :: K .coldFailureHandoff :: K .coldFailureCompression ::
-    K .coldFailureDefect :: K .coldFailureCycle :: K .coldGermSilent ::
-    K .coldGermDistinguished :: K .coldGermRealized ::
+  K .coldBranchClosed :: K .coldGermRouted :: K .coldGermExtraction ::
+    K .coldHandoffTransfer :: K .coldFailureRouting :: K .coldFailureHandoff ::
+    K .coldFailureCompression :: K .coldFailureDefect :: K .coldFailureCycle ::
+    K .coldGermSilent :: K .coldGermDistinguished :: K .coldGermRealized ::
     K .coldSameInterfaceTable :: K .coldCorridorState :: known
 
 /-- **The cold corridor ledger prefix, run.**
 
-The thirteen rows are composed by `AtomicCT.run`, which appends each row's declared
+The cold rows are composed by `AtomicCT.run`, which appends each row's declared
 productions to the incoming index while retaining the literal ancestry.  The
 output index is the incoming one with the cold facts on top, so every earlier
 ledger fact remains readable and no cold fact can be read by a branch that did
@@ -64,6 +62,8 @@ noncomputable def runCold
     [FactKeys.Has (K (data := data) .densityCap) known]
     [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
     [FactKeys.Has (K (data := data) .negativeSupport) known]
+    [FactKeys.Has (K (data := data) .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K (data := data) .spineSurplusEstimate) known]
     [FactKeys.Has (K (data := data) .sparsePressureNearCubic) known]
     [FactKeys.Has (K (data := data) .typeBExcluded) known]
     [FactKeys.Has (K (data := data) .route8TerminalNoGo) known]
@@ -81,7 +81,8 @@ noncomputable def runCold
     (routingFresh : K (data := data) .coldFailureRouting ∉ known)
     (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
     (extractionFresh : K (data := data) .coldGermExtraction ∉ known)
-    (routedFresh : K (data := data) .coldGermRouted ∉ known) :
+    (routedFresh : K (data := data) .coldGermRouted ∉ known)
+    (closedFresh : K (data := data) .coldBranchClosed ∉ known) :
     ExactLedger (Input BranchState Presentation presentation data) current
       (coldKeys known) := by
   classical
@@ -170,11 +171,18 @@ noncomputable def runCold
       subst isNew
       revert isOld
       simp [extractionFresh])
-  exact (coldGermRoutedRow (data := data)).run afterExtraction (by
+  have afterRouted :=
+    (coldGermRoutedRow (data := data)).run afterExtraction (by
+      intro key isNew isOld
+      simp only [List.mem_singleton] at isNew
+      subst isNew
+      revert isOld
+      simp [routedFresh])
+  exact (coldBranchClosedRow (data := data)).run afterRouted (by
     intro key isNew isOld
     simp only [List.mem_singleton] at isNew
     subst isNew
     revert isOld
-    simp [routedFresh])
+    simp [closedFresh])
 
 end Hypostructure.Graph.Strategy.Spine

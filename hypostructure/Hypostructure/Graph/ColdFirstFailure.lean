@@ -774,6 +774,46 @@ theorem coldGerm_nonempty {Germ : Type u} [DecidableEq Germ]
   rw [this] at cover
   omega
 
+/-- `lem:cold-germ-extraction`, published as a local current-residual fact.
+
+The reusable greedy lemma above is still quantified over a finite family, but
+this theorem specializes it to bounded cold germs of the current object and
+packages the disjoint family as the existential conclusion of
+`ColdGermExtractionLocal`. -/
+theorem coldGermExtractionLocal {S : DeclaredSignature} {threshold : Nat}
+    {Baseline Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}} :
+    ColdGermExtractionLocal S threshold Baseline Target object := by
+  classical
+  intro candidates candidateFamily
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let Germ := BoundedGerm S Baseline Target object
+  letI : DecidableEq Germ := Classical.decEq Germ
+  rcases candidateFamily with ⟨positive, boundedOverlap⟩
+  obtain ⟨disjointFamily, subset, independent, cover⟩ :=
+    coldGermExtraction
+      (Germ := Germ)
+      (Overlaps := fun left right : Germ =>
+        ¬ Disjoint left.support right.support)
+      (symmetric := by
+        intro left right overlaps rightLeft
+        exact overlaps rightLeft.symm)
+      (exchangeBound := exchangeBound S)
+      (overlapBound := overlapBound threshold S)
+      (candidates := candidates)
+      boundedOverlap
+  have cover' :
+      candidates.card ≤ disjointFamily.card *
+        extractionDenominator threshold S := by
+    simpa [extractionDenominator] using cover
+  have disjointSupports :
+      ∀ left ∈ disjointFamily, ∀ right ∈ disjointFamily, left ≠ right →
+        Disjoint left.support right.support := by
+    intro left leftMember right rightMember different
+    by_contra overlaps
+    exact independent left leftMember right rightMember different overlaps
+  exact ⟨disjointFamily, subset, disjointSupports, cover',
+    coldGerm_nonempty cover' positive⟩
+
 /-- The quantitative chain proving a remaining cold candidate is nonempty. -/
 theorem coldGerm_positive {Germ : Type u} [DecidableEq Germ]
     {candidates disjointFamily : Finset Germ}

@@ -14,11 +14,10 @@ The application is exactly two modules:
   theorem (via `WindowAlgebra`) and the audited finite curvature table (via
   `FiniteChecks.P13Barrier`).  The framework reads them from here and names
   neither.
-* `StrategyDag` -- the authored topology.  Its single endpoint, `strategyDag`,
-  roots Block A on `Graph.Strategy.Spine` at this problem's registered data,
-  with Figure 8's Type A exit list and node `[19]`'s sparse surplus branch
-  attached.  It declares nothing else: the file authors topology, and every
-  statement it needs is the framework's.
+* `StrategyDag` -- the application topology/import surface.  It currently pins
+  the EG problem to the generic spine problem and target predicate by `rfl`.
+  It does not claim a final endpoint until the framework-level cold closure and
+  branch join are present.
 
 `WindowAlgebra` and `FiniteChecks.P13Barrier` are supporting inputs of
 `Problem` rather than entry points, so they are reached through it.

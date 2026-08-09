@@ -1569,4 +1569,137 @@ theorem selfReturn_closed {S : DeclaredSignature} {LengthOK : Nat → Prop}
   ⟨self.surviving avoids,
     row_closed targetInvariant avoids uncompressible self.row⟩
 
+/-! ### Terminal cold residuals
+
+The paper's cold oval has three terminal shapes: a positive family of
+length-changing candidate germs that has not routed to a target defect, an
+equal-length table row that is neither handed off nor distinguishing, and a
+short self-return table row with the same failure.  This predicate names exactly
+those local shapes on the current object; it carries no corridor object or
+history. -/
+
+/-- A current-residual family of candidate cold germs with the paper's overlap
+bound.  The family consists only of actual bounded germs of the current object;
+the overlap graph is read from their literal supports. -/
+def CandidateGermFamily (S : DeclaredSignature) (threshold : Nat)
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
+    (candidates : Finset (BoundedGerm S Baseline Target object)) : Prop :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let Germ := BoundedGerm S Baseline Target object
+  letI : DecidableEq Germ := Classical.decEq Germ
+  0 < candidates.card ∧
+    ∀ candidate ∈ candidates,
+      (candidates.filter fun other : Germ =>
+        ¬ Disjoint candidate.support other.support).card ≤
+          exchangeBound S * overlapBound threshold S
+
+/-- The extracted cold-germ family promised by `lem:cold-germ-extraction` on the
+current residual. -/
+def ExtractedGermFamily (S : DeclaredSignature) (threshold : Nat)
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
+    (candidates disjointFamily :
+      Finset (BoundedGerm S Baseline Target object)) : Prop :=
+  disjointFamily ⊆ candidates ∧
+    (∀ left ∈ disjointFamily, ∀ right ∈ disjointFamily, left ≠ right →
+      Disjoint left.support right.support) ∧
+    candidates.card ≤
+      disjointFamily.card * extractionDenominator threshold S ∧
+    0 < disjointFamily.card
+
+/-- `lem:cold-germ-extraction`, specialized to the current residual's bounded
+cold germs.  The disjoint family is an existential conclusion of the local
+fact, not an input or transport payload. -/
+def ColdGermExtractionLocal (S : DeclaredSignature) (threshold : Nat)
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :
+    Prop :=
+  ∀ candidates : Finset (BoundedGerm S Baseline Target object),
+    CandidateGermFamily S threshold Baseline Target object candidates →
+      ∃ disjointFamily : Finset (BoundedGerm S Baseline Target object),
+        ExtractedGermFamily S threshold Baseline Target object candidates
+          disjointFamily
+
+/-- A candidate family whose members are all still terminal after the
+length-changing trichotomy. -/
+def TerminalLengthChangingFamily (S : DeclaredSignature) (threshold : Nat)
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :
+    Prop :=
+  ∃ candidates : Finset (BoundedGerm S Baseline Target object),
+    CandidateGermFamily S threshold Baseline Target object candidates ∧
+      ∀ germ ∈ candidates, germ.increment < 0 ∧ ¬ germ.Distinguishing
+
+/-- A same-interface table row that has not routed to a handoff or
+distinguishing defect. -/
+def TerminalTableRow (S : DeclaredSignature)
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :
+    Prop :=
+  ∃ Handoff : Finset object.Vertex → Prop,
+    ∃ row : TableRow S Baseline Target object Handoff,
+      ¬ Handoff row.support ∧ ¬ row.Distinguishing
+
+/-- A short self-return table row that has not routed to a handoff or
+distinguishing defect. -/
+def TerminalSelfReturn (S : DeclaredSignature) (LengthOK : Nat → Prop)
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :
+    Prop :=
+  ∃ Handoff : Finset object.Vertex → Prop,
+    ∃ self : SelfReturn S LengthOK Baseline Target object Handoff,
+      ¬ Handoff self.row.support ∧ ¬ self.row.Distinguishing
+
+/-- The local terminal patterns of the cold oval on one residual. -/
+def TerminalColdResidual (S : DeclaredSignature) (threshold : Nat)
+    (LengthOK : Nat → Prop) (Baseline Target : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) : Prop :=
+  TerminalLengthChangingFamily S threshold Baseline Target object ∨
+    TerminalTableRow S Baseline Target object ∨
+      TerminalSelfReturn S LengthOK Baseline Target object
+
+/-- No local terminal cold pattern remains on this residual. -/
+def NoTerminalColdResidual (S : DeclaredSignature) (threshold : Nat)
+    (LengthOK : Nat → Prop) (Baseline Target : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) : Prop :=
+  ¬ TerminalColdResidual S threshold LengthOK Baseline Target object
+
+/-- The cold oval closes once the length-changing germs and the finite
+same-interface table have been routed on the current residual. -/
+theorem noTerminalColdResidual_of_routing {S : DeclaredSignature}
+    {threshold : Nat} {LengthOK : Nat → Prop}
+    {Baseline Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
+    (extraction : ColdGermExtractionLocal S threshold Baseline Target object)
+    (routed :
+      ∀ germ : BoundedGerm S Baseline Target object,
+        germ.increment < 0 →
+          germ.Distinguishing ∧
+            ∀ (Profile : Type)
+              (profile : BoundaryPiece germ.atom.interface → Profile),
+              ¬ Response.TargetComplete profile Target germ.piece germ.canonical)
+    (table :
+      ∀ Handoff : Finset object.Vertex → Prop,
+        ∀ row : TableRow S Baseline Target object Handoff,
+          ¬ row.Realizing ∧ (Handoff row.support ∨ row.Distinguishing))
+    (selfReturns :
+      ∀ Handoff : Finset object.Vertex → Prop,
+        ∀ self : SelfReturn S LengthOK Baseline Target object Handoff,
+          SurvivesSmear LengthOK (S.windowOrder - 1) self.outsideLength ∧
+            ¬ self.row.Realizing ∧
+              (Handoff self.row.support ∨ self.row.Distinguishing)) :
+    NoTerminalColdResidual S threshold LengthOK Baseline Target object := by
+  classical
+  intro terminal
+  rcases terminal with terminalFamily | terminalTable | terminalSelf
+  · rcases terminalFamily with ⟨candidates, candidateFamily, terminal⟩
+    obtain ⟨disjointFamily, extracted⟩ := extraction candidates candidateFamily
+    rcases extracted with ⟨subset, _independent, _cover, positive⟩
+    obtain ⟨germ, memberDisjoint⟩ := Finset.card_pos.mp positive
+    have memberCandidates : germ ∈ candidates := subset memberDisjoint
+    exact (terminal germ memberCandidates).2
+      (routed germ (terminal germ memberCandidates).1).1
+  · rcases terminalTable with ⟨Handoff, row, noHandoff, noDistinguishing⟩
+    rcases (table Handoff row).2 with handoff | distinguishing
+    · exact noHandoff handoff
+    · exact noDistinguishing distinguishing
+  · rcases terminalSelf with ⟨Handoff, self, noHandoff, noDistinguishing⟩
+    rcases (selfReturns Handoff self).2.2 with handoff | distinguishing
+    · exact noHandoff handoff
+    · exact noDistinguishing distinguishing
+
 end Hypostructure.Graph.ColdCorridor

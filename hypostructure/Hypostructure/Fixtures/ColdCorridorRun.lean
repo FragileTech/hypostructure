@@ -7,14 +7,13 @@ import Hypostructure.Graph.Strategy.ColdCorridorRun
 fixture checks the audit shape of a ledger that already carries the cold
 corridor prefix at the spine's *own* vocabulary:
 
-* the index is the incoming one with the thirteen cold facts on top, so every
+* the index is the incoming one with the fourteen cold facts on top, so every
   earlier fact of the branch is still in the type;
-* the audit contains those thirteen facts and accounts for every fact with a
+* the audit contains those fourteen facts and accounts for every fact with a
   chronological commit.
 
-This fixture deliberately does not construct the cold prefix from
-`completedKeys`.  The paper's cold oval is entered on the live cold residual,
-and closure must be added by Core from ordinary ledger facts visible at that
+This fixture audits the prefix at an arbitrary incoming live cold residual.
+Row 61 is audited here as the ordinary ledger fact `coldBranchClosed` on that
 same residual.
 -/
 
@@ -37,7 +36,7 @@ abbrev coldKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   Hypostructure.Graph.Strategy.Spine.coldKeys known
 
-/-- **The thirteen facts of rows 43--61 are all on the ledger after the prefix.**
+/-- **The fourteen facts of rows 43--61 are all on the ledger after the prefix.**
 
 Membership rather than position: later rows may extend this same ledger, and
 this check is about what the cold prefix contributes, so it must not depend on
@@ -61,12 +60,13 @@ theorem run_audit_contains_cold_facts
         (name .coldFailureRouting),
         (name .coldHandoffTransfer),
         (name .coldGermExtraction),
-        (name .coldGermRouted)],
+        (name .coldGermRouted),
+        (name .coldBranchClosed)],
       fact ∈ (ExactLedger.audit history).facts := by
   intro fact member
   simp only [List.mem_cons, List.not_mem_nil, or_false] at member
   rcases member with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl
+    rfl | rfl | rfl | rfl
   · exact List.mem_map.mpr ⟨K .coldCorridorState, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldSameInterfaceTable, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldGermRealized, by simp, rfl⟩
@@ -80,6 +80,7 @@ theorem run_audit_contains_cold_facts
   · exact List.mem_map.mpr ⟨K .coldHandoffTransfer, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldGermExtraction, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldGermRouted, by simp, rfl⟩
+  · exact List.mem_map.mpr ⟨K .coldBranchClosed, by simp, rfl⟩
 
 /-- **Every fact of the cold block is accounted for by a chronological
 commit.** -/

@@ -678,8 +678,8 @@ bookkeeping; the first is not:
 > `ExactLedger`.  The row declarations themselves name concrete `Spine.Key`
 > manifests; `runCold` is only a ledger-prefix composition, with no
 > `fact.down`/`PLift` adapter callbacks and no carrier installation layer.  It
-> appends the thirteen ordinary cold facts and does not append Core's
-> distinguished `closed` key.
+> appends fourteen ordinary cold facts, ending with `K .coldBranchClosed` on the
+> same residual.
 >
 > **Carrier cleanup.** The cold Strategy slice no longer exports a side object
 > for handoff routing, no longer exports a cold routing state object, and no
@@ -697,17 +697,17 @@ bookkeeping; the first is not:
 > only by ordinary `Spine.Key` facts.  In particular `K .coldGermExtraction`
 > now reads the first-failure ledger fact and extracts only from vertex supports
 > of the current residual whose candidates are realized by current-object
-> bounded germs.  `K .coldGermRouted` records the target-defect routing
-> conclusion after G1, G2, and G3 are read from the ledger.  The terminal oval
-> itself must be a Core
-> closure over ledger-visible facts; it is not represented by a wrapper, side
-> theorem bundle, or payload.
+> bounded germs; the disjoint subfamily is existential inside that local fact.
+> `K .coldGermRouted` records the target-defect routing conclusion after G1,
+> G2, and G3 are read from the ledger.  `K .coldBranchClosed` then records
+> `ColdCorridor.NoTerminalColdResidual` by reading the local extraction fact,
+> the routed length-changing fact, and the same-interface table fact from the
+> same ledger.  There is no wrapper, side theorem bundle, or payload.
 >
 > **Build surface.** The active cold fixtures are the signature, ledger,
-> construction, short self-return, and cold-prefix audit fixtures.  No fixture
-> constructs the cold prefix from `completedKeys`; the prefix is audited at
-> whichever full residual ledger actually carries it.  PDE registry material is
-> left untouched.
+> construction, short self-return, and cold-prefix audit fixtures.  The prefix
+> is audited at whichever full residual ledger actually carries it.  PDE
+> registry material is left untouched.
 
 | # | Node / component | Where | Ledger | Transport | Residual | Facts |
 |---|---|---|---|---|---|---|
@@ -729,10 +729,11 @@ bookkeeping; the first is not:
 | 58 | (F5) extraction | current-object support extraction (`Spine.coldGermExtraction`) | ✅ | ✅ | ✅ | ✅ |
 | 59 | (F5) G2 routing after G1/G2/G3 | `ColdCorridor.boundedGerm_not_survives` plus G2 target-defect route (`Spine.coldGermRouted`) | ✅ | ✅ | ✅ | ✅ |
 | 60 | Registrations `atStage` | `Spine.runCold` row composition, no registration payload | ✅ | ✅ | ✅ | ✅ |
-| 61 | Cold oval closure | Core closure over ledger-visible cold facts; no custom carrier | ✅ | ❌ | ✅ | ❌ |
+| 61 | Cold oval closure | `ColdCorridor.NoTerminalColdResidual` (`Spine.coldBranchClosed`) | ✅ | ✅ | ✅ | ✅ |
 
-The cold rows are expressed as a canonical ledger prefix, but they are not a
-custom terminal carrier and do not append Core's `closed` key.  The `[138]`
+The cold rows are expressed as a canonical ledger prefix, ending in the ordinary
+`Spine.Key` fact `coldBranchClosed`; they are not a custom terminal carrier.
+The `[138]`
 near-cubic arm must still rejoin the normalized spine at `[21]`, pass through
 `[22]`--`[24]`, then execute the exhaustive `[145]` interface, `[146]` route-8
 threshold, and `[148]` live-hot split before the cold corridor is the active
@@ -743,9 +744,14 @@ residual.
 > **Ported, on the canonical ledger.**  The legacy `TypeARoute8Closure`,
 > `TypeARoute8Stages` and `TypeARoute8Carriers` are quarantined and were not
 > **Canonical boundary.**  The pure Graph Route 8 carrier, closure, and residual
-> mathematics remains available, but no Strategy row or runner currently enters
-> it.  Nodes `[101]`--`[124]` remain open until the exact selected Type A tuple
-> yields the paper's coordinate-specific Q1--Q4 response family.
+> mathematics is consumed only through ordinary `Spine.Key` facts.  The route-8
+> no arm now has an executable exact-ledger composition:
+> `Spine.runRoute8FromExitSevenFree` commits `[109]` from the selected
+> exit-seven-free cursor, and `Spine.runRoute8Tail` appends `[110]`--`[124]` in
+> manuscript order.  The result is the ordinary fact `route8TerminalNoGo`; it is
+> not a closure key, payload, carrier collection, or route-8 side object.  The
+> remaining terminal gap is the downstream Core closure that will consume the
+> cold corridor facts once Row 61 is finished.
 
 ## H. Rank-drop branch (Part III)
 
@@ -1974,7 +1980,7 @@ response realization exists.
 - **Paper fact.** Exits (1)--(8) are the saturated Type A receiver exits.  Exit (4) is the target-defective quotient exit; its canonical quotient family has Q1--Q4 before the route-8 branch and Q5 only after the selected exit-8 ledger residual supplies the additional Q5 facts.  A member of the pre-route Q1--Q4 family is a genuine boundary-degree-preserving coordinate identification, and exit (4) requires two same-fibre realizations plus a compatible outside context distinguishing their target responses.  In the visible branch of `lem:typeA-unpeeled-visible-routing`, the target-defective quotient's declared routed-load support contains at least one of the four selected visible unpeeled loads.
 - **What the Lean does.** `ExitFour.ReceiverClause` and `ExitFour.ReceiverFamily` retain the four pre-route clause tags, the declared coordinate family, the routed-load coordinate map, the structural generation predicate, and its base/identified subset laws.  Q5 is not included in this pre-route family.  `ExitFour.Witness` records a generated family member, a supported unpeeled load, same-boundary realizations, and a literal `Response.TargetDefect`.  `Spine.typeAExitFourDichotomy` reads the exact `[99]` no-arm fact from the incoming `ExactLedger`, asks only about that selected packing/component/piece/receiver/package, and commits either `typeAExitFour` with a witness supporting one of the package's selected visible loads or `typeAExitFourFree` with the corresponding negation.  `Spine.typeAExitFourPeelingStepRow` reads that committed `typeAExitFour` fact with `FactInputs.get` and appends `typeAExitFourPeeled`, the node `[102]` peeling update.  `Spine.typeAExitFourRetestDichotomy` then reads `typeAExitFourPeeled` and commits either the existing `typeASaturatedExitEntry` fact for the enlarged peeling set or `typeAExitFourReceiverDischarged` with the cleared nonnegative receiver-charge inequality.  `Spine.typeAExitFourFiniteDescentRow` reads the current `typeASaturatedExitEntry` fact and commits `typeAExitFourFiniteDescent`, a finite descent theorem for arbitrary current `P₄(w)`.  `Spine.typeASaturatedHandoffSplitDichotomy` then reads that same exact current `typeASaturatedExitEntry` fact and commits either `typeASaturatedHandoffVisible` with a current `VisibleFourUnpeeledPackage` or `typeASaturatedHandoffSilent` with `SilentUnpeeledExcessAt` for the same current `P₄(w)`.  The corresponding selected exit-`(4)` decisions then commit either `typeASaturatedHandoffExitFour` or `typeASaturatedHandoffExitFourFree`; the free fact is the exact same-residual predecessor for node `[103]`.
 - **What it should do.** Complete the remaining paper saturated-handoff classification by instantiating the committed finite descent with the real terminal alternatives: closed exits (1)--(3), (5), (6), exit-(7) decorated Type B handoff, exit-(8) route-8 residual, or final unsaturated receiver charge.  Repeated exit-(4) facts must stay inside the mathematical peeling certificate; exposed terminal outcomes must be committed once as ledger facts.
-- **Gap.** The `[101]` selected visible decision, `[102]` charge publication, immediate retest, finite arbitrary-peeling descent fact, current-state visible/silent saturated-handoff split, and selected current-state exit-`(4)`/no-exit-`(4)` decisions are present and validated.  The remaining open part is the selected terminal classification after no-exit-`(4)`: exit-(5), exit-(6), exit-(7), exit-(8), or final unsaturated receiver charge.  The deleted `ReceiverFamily.Defective` used `entry.state (base \ identified)` and modeled coordinate identification as deletion from an authored state function; that surrogate remains absent, as required.
+- **Gap.** The `[101]` selected visible decision, `[102]` charge publication, immediate retest, finite arbitrary-peeling descent fact, current-state visible/silent saturated-handoff split, and selected current-state exit-`(4)`/no-exit-`(4)` decisions are present and validated.  Exits `(5)`, `(6)`, `(7)`, and the route-8 no arm are now represented by ordinary ledger decisions/rows downstream; the remaining global gap is not a replacement carrier here but the final branch join after the cold oval closure.  The deleted `ReceiverFamily.Defective` used `entry.state (base \ identified)` and modeled coordinate identification as deletion from an authored state function; that surrogate remains absent, as required.
 - **Ledger and residual.** The visible `[101]` row appends one fact to the existing ledger via Core `Decision.run`; the yes and no arms keep the full prior prefix including `[93]`, `[95]`, `[97]`, and `[99]`.  On the yes arm, `[102]` appends `typeAExitFourPeeled` via `factOnly`/`AtomicCT.run`, while retaining the committed `[101]` witness, and then appends exactly one retest fact by `Decision.run`.  When the retest remains saturated, `typeAExitFourFiniteDescent` is appended by `factOnly`/`AtomicCT.run` on that same ledger, the current saturated handoff split appends exactly one of `typeASaturatedHandoffVisible` or `typeASaturatedHandoffSilent`, and the current selected exit-`(4)` decision appends exactly one of `typeASaturatedHandoffExitFour` or `typeASaturatedHandoffExitFourFree`.  All arms retain the complete incoming residual prefix.
 - **Transport and terminals.** Core owns the history/refinement mechanics: `Decision.run` over exact keys for `[101]`, one `factOnly` commit for `[102]`, one `Decision.run` for the peeled-residual retest, one `factOnly` commit for `typeAExitFourFiniteDescent`, one `Decision.run` for the current-state saturated handoff split, and one `Decision.run` for current exit-`(4)` occurrence.  No branch payload, side channel, wrapper, or custom transport is used.  Terminal facts are not fabricated by this row.
 
@@ -2073,9 +2079,25 @@ the exact `typeAExitSix` ledger.  The scope arms append `closed` through
 ### Row 19 — Exit 7: decorated handoff fan `[107]`
 
 - **Paper fact.** A surviving first separator from the exact selected response data produces the decorated Type B handoff after exits (4)--(6) fail.
-- **Current status.** The Strategy decision over arbitrary supports and its route runner were deleted.  `Graph.DecoratedHandoff` mathematics remains.
-- **Exact missing theorem.** `lem:typeA-continuation-routing`, followed by `lem:typeA-cubic-switch-absorption` and `lem:typeA-high-degree-handoff`, must be instantiated on the same selected receiver/package carried from node `[93]` or `[94]`.
-- **Ledger/Reads/Closed/Full.** All false.
+- **What the Lean does.** `Spine.typeAExitSevenDichotomy` reads the exact
+  `typeAExitSixFree` ledger fact and decides the paper predicate
+  `HandoffProduced` on the same selected packing and support.  The produced arm
+  commits `typeAExitSevenProduced`; the no arm commits `typeAExitSevenFree`.
+  `Spine.typeAExitSevenHandoffRow` then reads `selection`, `uncompressible`,
+  and `typeAExitSevenProduced` with `FactInputs.get`, proves the produced
+  envelope admissible, and appends only `typeAExitSevenHandoff`.
+- **Gap.** None for the row-local facts.  The produced handoff fact is ordinary
+  ledger state; the global proof still needs the later branch join after cold
+  closure.
+- **Ledger and residual.** `Spine.runTypeAExitSevenDecision` runs the decision
+  from `typeAExitSixFreeKeys`.  `Spine.runTypeAExitSevenHandoff` runs the
+  produced-arm handoff commit from `typeAExitSevenProducedKeys`.  Both retain
+  the full incoming residual and append facts monotonically through Core
+  `Decision.run` or `AtomicCT.run`; no support carrier or route payload is
+  introduced.
+- **Transport and terminals.** The no arm is the exact predecessor consumed by
+  `Spine.runRoute8FromExitSevenFree`; the produced arm is a Type B handoff fact,
+  not a terminal.  Terminal dispatch remains a later framework closure/join.
 
 ### Row 20 — Heavy-centre split `[68]` (ported: `Spine.highCentreNormalForm`, `Spine.heavyCentreDichotomy`)
 
@@ -5205,7 +5227,7 @@ no residual to restrict.
   `Graph.ColdCorridor.TableRow S Baseline Target object Handoff` is a row at a
   proper connected support of the object.  It `extends
   ColdCorridor.BoundedGerm S Baseline Target object`, which is
-  `def:cold-bounded-germ` itself and is the carrier Rows 52–54 use for the
+  `def:cold-bounded-germ` itself and is the local germ shape Rows 52–54 use for the
   length-changing germs: `support`/`connected`/`proper` give
   the germ's own boundary piece `Q[x,y]` through
   `Strategy.InterfaceReplacement.SupportAtom.properAtom`, `canonical` is the
@@ -5236,9 +5258,9 @@ no residual to restrict.
   `reconstructionIso`; a row that is neither handed off nor distinguishing is a
   `Strategy.InterfaceReplacement.CompressibleSupport` of its own support, built
   field by field by `TableRow.compressibleSupport_of_not_distinguishing`, which
-  node `[14]` has excluded.  `Handoff` is a *parameter*, an arbitrary predicate
-  on supports supplied by whoever owns the already-closed ledger, never a field
-  a row may choose, so no row escapes by naming its own.
+  node `[14]` has excluded.  `Handoff` is a graph-local support predicate
+  supplied to the row theorem by the already-closed ledger context, never a
+  field a row may choose, so no row escapes by naming its own.
   `ColdCorridor.SelfReturn` is the table's *second* row family, the short
   self-return exceptions.  It carries the outside length `\ell`, the row it
   contributes, and the smear itself — "smearing over the window offsets tests
@@ -5585,11 +5607,12 @@ would interpose machinery between a constructed cycle and its certificate.
   `D_cold = M_cold B_cold + 1`.
 - **What the Lean does.** `coldGermExtractionRow` reads `coldFailureRouting` by
   `FactInputs.get`, republishes the local first-failure dichotomy on the same
-  residual, and commits the greedy extraction only for
-  `Finset (Finset object.Vertex)` candidate supports of the current object.
-  Every candidate support must already be realized by a current-object
-  `ColdCorridor.BoundedGerm`; no arbitrary `Germ` type, disjoint-family carrier,
-  or theorem bundle is exported as the ledger fact.
+  residual, and commits `ColdCorridor.ColdGermExtractionLocal` for the current
+  object's bounded-germ candidate families.  The input family is constrained by
+  `ColdCorridor.CandidateGermFamily`, overlap is tested on literal current
+  supports, and the extracted disjoint subfamily is an existential conclusion
+  of the fact.  No arbitrary `Germ` type, disjoint-family carrier, or theorem
+  bundle is exported as the ledger fact.
 - **Gap.** none for carrier cleanup.
 - **Ledger and residual.** `Requires := [coldFailureRouting]`,
   `Produces := [coldGermExtraction]`; residual unchanged.
@@ -5600,7 +5623,7 @@ would interpose machinery between a constructed cycle and its certificate.
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
 | `lem:cold-corridor-first-failure` (F5 entry) | lem | `ColdCorridor.Corridor.exists_firstFailure` | read from `K .coldFailureRouting` |
-| `lem:cold-germ-extraction` | lem | `ColdCorridor.IndependentFor`<br>`ColdCorridor.coldGermExtraction`<br>`ColdCorridor.coldGerm_nonempty` | no CT — `Spine.coldGermExtractionRow` |
+| `lem:cold-germ-extraction` | lem | `ColdCorridor.CandidateGermFamily`<br>`ColdCorridor.ExtractedGermFamily`<br>`ColdCorridor.ColdGermExtractionLocal`<br>`ColdCorridor.coldGermExtractionLocal` | no CT — `Spine.coldGermExtractionRow` |
 
 **CT composition at this row.** No CT.
 
@@ -5650,33 +5673,30 @@ would interpose machinery between a constructed cycle and its certificate.
 
 - **Paper fact.** The cold branch should terminate at the paper's oval once all
   alternatives have been routed.
-- **What the Lean does.** The current Lean cold runner appends the ordinary
-  cold facts through `K .coldGermRouted` and deliberately stops before the
-  framework closure key.  `K .coldGermRouted` says, on the current object, that
-  every oriented length-changing bounded germ is routed through the
-  target-defect conclusion after G1, G2, and G3 are read from the ledger.  It is
-  not a payload and not a proof-specific result.
-- **What it should do.** The terminal argument must read the specific upstream
-  keys consumed by the paper's oval from the same ledger and append the
-  canonical closure key through `closeIncompatible` or `closeImpossible`.  No
-  hypothesis record, existential branch object, or custom result is allowed at
-  this boundary.
-- **Gap.** The Strategy code no longer exports an illegal carrier terminal.
-  The remaining work is the Core closure step over ledger-visible facts.
-- **Ledger and residual.** The ledger is canonical up to this point; the final
-  append, when implemented, must be `closed :: coldKeys known` on the same
-  residual.
-- **Transport and terminals.** Transport is ledger-only; terminal status is
-  still wrong because the Core closure key is absent.
+- **What the Lean does.** `coldBranchClosedRow` reads `coldGermExtraction`,
+  `coldGermRouted`, and `coldSameInterfaceTable` with `FactInputs.get` and
+  appends the ordinary fact `K .coldBranchClosed`.  The fact is
+  `ColdCorridor.NoTerminalColdResidual` on the current residual: the extraction
+  fact turns a terminal candidate family into a positive extracted subfamily,
+  `coldGermRouted` closes its length-changing member, and the same-interface
+  table fact closes equal-length table/self-return rows.
+- **Gap.** none for the cold oval's local ledger closure.  The later global
+  proof join is separate from this cold-corridor block.
+- **Ledger and residual.** `Requires := [coldGermExtraction, coldGermRouted,
+  coldSameInterfaceTable]`, `Produces := [coldBranchClosed]`; residual
+  unchanged.  `Spine.runCold` returns `coldBranchClosed :: coldGermRouted ::
+  coldGermExtraction :: ... :: known`, preserving the incoming residual and all
+  upstream facts.
+- **Transport and terminals.** Ledger fact only.  No wrapper, side theorem
+  bundle, custom handoff, result carrier, or compatibility shim is present.
 
 **Paper objects at this row.**
 
 | Paper object | Kind | Lean declaration | CT / standalone |
 |---|---|---|---|
-| cold terminal oval | thm | Core closure from the cold ledger facts | should be Core closure API |
+| cold terminal oval | thm | `ColdCorridor.TerminalColdResidual`<br>`ColdCorridor.noTerminalColdResidual_of_routing` | no CT — `Spine.coldBranchClosedRow` |
 
-**CT composition at this row.** No CT should be introduced; the fix should be a
-canonical closure step over the exact ledger.
+**CT composition at this row.** No CT.
 
 ### Trailing note — deleted stale fixtures
 
@@ -5695,10 +5715,10 @@ fact.  `Spine.route8ResidualProfileRow` is the next node `[110]`: it reads
 `route8Residual` by `FactInputs.get` and appends only
 `route8ResidualProfile`, the receiver-exposed silent-core residual profile.
 No indexed route-8 collection, carrier census, basin family transport, or
-secondary route-8 object is introduced.  The remaining mathematical work is to
-derive the later burden/deficit/carrier facts from this profile as separate
-ledger facts.  Ledger/Reads are repaired through `[110]`; Closed/Full remain
-false.
+secondary route-8 object is introduced.  `Spine.runRoute8FromExitSevenFree`
+starts at the exact `typeAExitSevenFreeKeys` ledger, requires the upstream
+facts the row consumes as `FactKeys.Has` instances, appends this residual fact,
+and passes the same ledger ancestry to `Spine.runRoute8Tail`.
 
 ### Row 63 — `[111]`–`[113]` selected residual burden and deficit bound
 
@@ -5711,8 +5731,8 @@ already committed selected silent-excess burden fact `typeAVisibleFirstExcess`,
 then appends both `route8BasinBurden` and `route8LargeBudgetDeficit` in one
 nonempty `factOnly` commit.  No route-8 collection object, carrier package, or
 secondary transport channel is introduced; the full residual prefix remains in
-the `ExactLedger`.  Ledger/Reads are repaired through `[113]`; Closed/Full
-remain false for the later carrier-core and no-go segment.
+the `ExactLedger`.  `Spine.runRoute8Tail` executes these commits after `[110]`
+on the same exact ledger prefix.
 
 ### Row 64 — `[114]`–`[116]` carrier core
 
@@ -5738,8 +5758,7 @@ forgetting quotient equal to the core restriction, so the selected alternatives
 fire.  This is the paper's small-core exit `(4)`--`(7)` mechanism.  The row
 does not introduce a route-8 entry object, carrier census, collection wrapper,
 or secondary transport channel; it only publishes the theorem needed by later
-selected-entry facts.  Ledger/Reads are repaired through `[116]`; the branch is
-not yet terminal because `[117]` still has to consume this fact and commit the
+selected-entry facts.  The same route-8 tail runner then continues to the
 paper-prescribed two-carrier/private-carrier split.
 
 ### Row 65 — `[117]`–`[122]` indexed private-carrier census
@@ -5776,9 +5795,8 @@ burden/deficit and registered rate inequalities.  The generic proof counts
 private carriers as finite subsets of the selected indexed essential-core
 family and spends the same integer census as node `[117]`; it does not create a
 route-8 collection object, `Route8.Entry`, carrier census payload, or secondary
-transport channel.  Ledger/Reads are repaired through `[122]`; Closed/Full
-remain false only because the terminal two-carrier no-go `[123]`--`[124]` is a
-separate row.
+transport channel.  The route-8 tail runner keeps the full incoming ledger
+ancestry and continues directly into the pressure-descent row `[123]`.
 
 ### Row 66 — `[123]` pressure descent
 
@@ -5796,8 +5814,8 @@ to be discharged at `[124]`.
 The row does not create a route-`8` collection, terminal-entry payload, wrapper
 runner, or custom transport.  It only reads previously committed facts from the
 same `ExactLedger` prefix and appends `route8PressureDescent`, preserving the
-full residual ancestry.  Ledger/Reads are repaired through `[123]`; Closed/Full
-remain false until the terminal no-go `[124]` is committed.
+full residual ancestry.  The next commit in `Spine.runRoute8Tail` is the
+terminal no-go fact `[124]`.
 
 ### Row 67 — `[124]` terminal two-carrier no-go
 
@@ -5814,5 +5832,7 @@ The row does not construct a `Route8.Data`, carrier collection, route-8 entry
 payload, custom cursor, wrapper runner, or side channel.  It appends exactly one
 new fact to the existing `ExactLedger` prefix, preserving the full residual
 ancestry from `[109]` through `[123]`.  Ledger/Reads are repaired through
-`[124]`; terminal dispatch remains the framework closure consumer of the
-committed no-go fact rather than a separate transport object.
+`[124]`; `Spine.runRoute8FromExitSevenFree` now provides the executable ledger
+path from the selected no-arm cursor to `route8TerminalNoGoKeys`.  Terminal
+dispatch remains the framework closure consumer of the committed no-go fact
+rather than a separate transport object.

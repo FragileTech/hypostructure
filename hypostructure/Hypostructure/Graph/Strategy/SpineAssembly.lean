@@ -452,6 +452,18 @@ noncomputable instance instIncompatibleTypeBExcluded :
     exact ((residual.object.not_negativeNetCharge_iff canonicalPiece.vertices
       data.threshold data.dischargeScale).mpr nonnegative) negative
 
+/-- **The sparse exit arm closes against the surviving sparse-exit ledger.**
+
+Node `[132]`'s exit arm is the negation of the two clauses node `[125]`
+commits: survival of the named sparse exits and absence of proper-support
+replacement.  Both are ordinary spine facts, so the branch closes by Core's
+`closeIncompatible` whenever both keys are present. -/
+noncomputable instance instIncompatibleSparsePairExit :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .sparseSurplusSurvivor) (K .sparsePairExit) where
+  contradiction := fun _residual survivor exit =>
+    exit.down survivor.down
+
 /-- **The terminal `[37]` is uninhabited**, at the spine's own key.
 
 `not_contextDefect` is the mathematics: an admissible rank quotient is
