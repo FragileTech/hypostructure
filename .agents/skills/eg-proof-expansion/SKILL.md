@@ -1,6 +1,6 @@
 ---
 name: eg-proof-expansion
-description: Develop, repair, or audit nodes in the Erdős–Gyárfás StrategyDag Lean proof. Use whenever Codex is asked to fix, implement, expand, route, or make compliant a node in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean or its supporting declarations, while matching the original paper exactly, using only the canonical ExactLedger and sealed Strategy/CT APIs, removing proof-specific plumbing, and updating EG_STRATEGYDAG_AUDIT.md.
+description: Develop, repair, or audit nodes in the Erdős–Gyárfás StrategyDag Lean proof. Use whenever Codex is asked to fix, implement, expand, route, or make compliant a node in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean or its supporting declarations, while matching the original paper exactly, using only the canonical ExactLedger and sealed Strategy/CT APIs, removing proof-specific plumbing, and synchronizing the label and node tables in Assembly_node_audit.md.
 ---
 
 # EG proof expansion
@@ -17,8 +17,9 @@ Work from the repository root.  Require these live sources:
   statements, hypotheses, alternatives, order, and terminal behavior.
 - Actual Lean declaration types, bodies, fields, call sites, imports, and the
   generated sealed report: sole authority for what the implementation does.
-- `EG_STRATEGYDAG_AUDIT.md`: gap tracker and row template, not mathematical
-  authority.
+- `Assembly_node_audit.md`: sole authority for current Lean implementation
+  status, wiring, ledger compliance, and the next unresolved work. Its two
+  implementation tables are live; its stable rubrics are explanatory.
 
 Treat every docstring, block comment, line comment, metadata note, and old audit
 claim as adversarial.  Never use prose as evidence that a declaration realizes
@@ -39,9 +40,15 @@ plumbing already written directly in `StrategyDag.lean`.
 
 ## Audit the requested row before editing
 
-1. Locate the summary row and the complete `### Row N` section in
-   `EG_STRATEGYDAG_AUDIT.md` from the requested paper node number, StrategyDag
-   vertex, or registration name.
+1. Locate every affected row in both `Assembly_node_audit.md` tables: the
+   `Paper-fact implementation table` by manuscript label and the
+   `Node-by-node table` by diagram node. Run the table checker before relying
+   on either table:
+
+   ```bash
+   python3 .agents/skills/eg-proof-expansion/scripts/audit_tables.py check \
+     --repo-root .
+   ```
 2. Read the manuscript around every label consumed by the row.  Record the
    exact statement, inherited hypotheses, exhaustive alternatives, branch
    order, continuation, and terminals.  Follow referenced proofs far enough to
@@ -53,8 +60,13 @@ plumbing already written directly in `StrategyDag.lean`.
    active residual, complete exact-key list, CT/Strategy manifests, commits,
    routing, and closure facts.  Inspect the generated sealed JSON
    when topology or branch status matters.
-5. Write a private implementation checklist for the four audit columns:
-   Ledger, Transport, Residual, and Facts.  Do not edit a status cell yet.
+5. Write a private checklist for every affected table column. At the label
+   level cover tactic, Lean declaration, partial match, kernel check,
+   residual locality, ledger reads/writes, wiring, legality, and hardcoded
+   facts. At the node level cover implementation, combinator, CT ownership,
+   reachability, wiring, locality, registration, illegal carriers,
+   manuscript difference, kernel check, and manuscript labels. Do not edit a
+   cell before collecting fresh evidence.
 
 The paper strategy is immutable.  Never add, remove, merge, reorder, weaken,
 strengthen, or replace a mathematical alternative.  Correct the Lean topology
@@ -313,34 +325,35 @@ the narrowest EG target that elaborates the repaired row, followed by
 `Official/ClosureProbe.lean` when reachable.  Inspect the regenerated sealed
 report for the literal predecessor, outputs, terminal status, and routing.
 
-A downstream failure does not justify weakening the repaired row.  Record the
-exact new incompatibility in the affected downstream row's existing **Gap**
-bullet and change any invalidated status cell to `❌`; do not repair that node
-unless requested.
+A downstream failure does not justify weakening the repaired row. Correct the
+affected downstream label and node table cells from the observed failure, and
+do not repair that node unless requested.
 
-For the repaired row, rewrite from fresh evidence:
+Whenever a fact is implemented, repaired, weakened, strengthened, rerouted, or
+invalidated, update its paper-label row and every corresponding diagram-node
+row in the same change. Rewrite all affected cells from the current Lean
+types, bodies, exact ledger indices, call graph, and build results; do not only
+flip a status icon. Keep shared labels and shared nodes synchronized in both
+directions. Blank implementation cells remain blank when nothing implements
+the object.
 
-- **Paper fact**
-- **What the Lean does**
-- **What it should do**
-- **Gap**
-- **Ledger and residual**
-- **Transport and terminals**
-- the complete paper-object implementation table
-- **CT composition at this row**
+Do not add a changelog, progress entry, gap narrative, dated snapshot,
+executive-status paragraph, or per-row prose section to
+`Assembly_node_audit.md`. Live status belongs only in the two tables. Update
+the stable rubrics only when a column's meaning changes.
 
-Only after all evidence passes, set Ledger, Transport, Residual, and Facts to
-`✅` in the summary row.  Empty implementation cells must remain empty.  Report
+After the code and both tables agree, run the table checker again. Report
 changed generic APIs, deleted ad hoc declarations, validation commands, and
-any deliberately unfixed downstream failures in the final handoff.
+deliberately unfixed downstream failures in the final handoff.
 
 ## API catalog maintenance
 
-Run the non-mutating drift and canonical-boundary check before starting and
-before finishing:
+Run the non-mutating drift, canonical-boundary, and table-synchronization
+checks before starting and before finishing:
 
 ```bash
 python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py check --repo-root .
+python3 .agents/skills/eg-proof-expansion/scripts/audit_tables.py check --repo-root .
 ```
 
 After intentionally changing the public framework API, refresh and re-check:

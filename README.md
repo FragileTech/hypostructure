@@ -135,7 +135,7 @@ hypostructure/                   the framework (Lean 4, Mathlib)
   scripts/                         the gates
 proofs/hypostructure_erdos_64_eg/  the Erdős–Gyárfás application
 to_formalize/                      manuscripts queued for formalization
-EG_STRATEGYDAG_AUDIT.md            row-by-row port tracker
+Assembly_node_audit.md              synchronized paper-label and diagram-node audit
 LEGACY_REMOVAL_AUDIT.md            record of what the API rewrite retired
 ```
 
@@ -179,29 +179,12 @@ executor, and no ledger operation. `StrategyDag.lean` holds the authored topolog
 
 ### Status
 
-The proof is decomposed into 73 rows across eight blocks, tracked in
-[`EG_STRATEGYDAG_AUDIT.md`](EG_STRATEGYDAG_AUDIT.md). Each row records its paper
-statement, the statement read off the Lean type, the discrepancy between them, its
-ledger traffic, and its transport and terminals, followed by a table pairing every
-manuscript `\label` the row consumes with the declaration whose type states it. A blank
-implementation cell records that nothing in the tree implements the object.
-
-| Block | Rows | Status |
-|---|---|---|
-| A. Entry spine | 1–10 | Ported; compiles on the canonical ledger |
-| B. Type A receiver ladder | 11–19 | Row 11 ported; 12–19 in rebuild |
-| C. Type B fan | 20–29 | Rows 20–25, 29 ported; 26–28 open |
-| D. Non-near-cubic surplus | 30–36 | Groundwork begun |
-| E. Remainder, rank, net charge | 37–42 | Rows 37–38 ported; 39–42 in progress |
-| F. Cold-window corridor | 43–61 | Rows 43–50 ported |
-| G. Route-8 carrier closure | 62–67 | In rebuild |
-| H. Rank-drop branch | 68–73 | In rebuild |
-
-The audit is subject to two standing conventions. A status cell is a claim about code
-as of the last review and is not itself evidence; only a build settles whether a row
-still holds. And docstrings, comments, node metadata, and earlier revisions of the audit
-are treated as unreliable: the admissible evidence for a row is the manuscript together
-with the Lean type, proof body, and registration site.
+Current status is tracked in the two synchronized tables of
+[`Assembly_node_audit.md`](Assembly_node_audit.md): one row per labeled manuscript fact
+and one row per Chapter 1 diagram node. The TeX remains the mathematical authority;
+table cells are updated from live Lean types, bodies, exact ledgers, call-graph wiring,
+and builds. A blank implementation cell means that nothing in the tree implements the
+object.
 
 Every ported row has been checked with `#print axioms` and depends on `propext`,
 `Classical.choice`, and `Quot.sound` alone. There is no `sorryAx`, and no
