@@ -64,20 +64,19 @@ pairwise distinct states.  That pigeonhole is how
 `lem:cold-corridor-first-failure` reaches the repeat subcase of (F5).
 
 The row quantifies over every presentation of the current object's corridor
-segments and stores that theorem together with the incoming failed-package
-witness.  Thus the theorem is available only on the literal cold residual. -/
+segments and stores that theorem on the literal node-`[22]` cold residual. -/
 @[reducible] noncomputable def coldCorridorStateRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldCorridorState
-    { Requires := [K .windowPackageCollided]
+    { Requires := [K .coldWindowLedgerSplit]
       Produces := [K .coldCorridorState]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let collided := (inputs.get (K .windowPackageCollided)).down
+      let _split := (inputs.get (K .coldWindowLedgerSplit)).down
       .cons (key := K .coldCorridorState)
-        ⟨⟨collided, fun presentation' =>
+        ⟨fun presentation' =>
           ⟨fun _left _right same coordinate inside =>
               presentation'.reading_eq_of_state_eq same coordinate inside,
             presentation'.exists_state_eq_of_stateBound_lt,
@@ -86,7 +85,7 @@ witness.  Thus the theorem is available only on the literal cold residual. -/
                   presentation'.contextEquivalent_of_state_eq excluded same,
                 fun same separated =>
                   presentation'.firstFailureResponse_of_not_contextEquivalent same
-                    separated⟩⟩⟩⟩
+                    separated⟩⟩⟩
         .nil)
 
 /-! ## Nodes `[145]`--`[157]`: the same-interface table
@@ -203,20 +202,19 @@ distinguishing context already denies the all-context clause of
 `def:target-complete-quotient`, so the identification fails to be target-complete
 in every immutable profile fibre.
 
-Target-defectiveness is a theorem about the germ's two representatives, but its
-ledger publication reads and retains `windowPackageCollided`, so it cannot be
-used as a detached global theorem. -/
+Target-defectiveness is a theorem about the germ's two representatives.  Its
+ledger publication reads node `[22]`'s cold split, so it cannot be used as a
+detached global theorem. -/
 @[reducible] noncomputable def coldGermDistinguishedRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermDistinguished
-    (rowManifest (K .windowPackageCollided) (K .coldGermDistinguished)
+    (rowManifest (K .coldWindowLedgerSplit) (K .coldGermDistinguished)
       (by simp))
     (fun inputs =>
-      let collided := (inputs.get (K .windowPackageCollided)).down
+      let _split := (inputs.get (K .coldWindowLedgerSplit)).down
       .cons (key := K .coldGermDistinguished)
-        ⟨⟨collided,
-          (fun germ _Profile profile distinguishing =>
-            germ.not_targetComplete_of_distinguishing profile distinguishing)⟩⟩
+        ⟨fun germ _Profile profile distinguishing =>
+          germ.not_targetComplete_of_distinguishing profile distinguishing⟩
         .nil)
 
 /-- **Node `[157]`: the G3 arm, with `lem:cold-increment-arithmetic`.**
@@ -400,22 +398,20 @@ registered baseline and window order. -/
 @[reducible] noncomputable def coldWindowLedgerSplitRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldWindowLedgerSplit
-    { Requires := [K .windowPackageSeparated, K .maximalPacking,
-        K .spineSurplusEstimate, K .sparsePressureNearCubic]
+    { Requires := [K .barrierCap, K .spineSurplusEstimate,
+        K .sparsePressureNearCubic]
       Produces := [K .coldWindowLedgerSplit]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let package := (inputs.get (K .windowPackageSeparated)).down
-      let maximalPacking := (inputs.get (K .maximalPacking)).down
+      let coldArm := (inputs.get (K .barrierCap)).down
       let spine := (inputs.get (K .spineSurplusEstimate)).down
       let nearCubic := (inputs.get (K .sparsePressureNearCubic)).down
-      let packing := Classical.choose maximalPacking.2
-      let packingFacts := Classical.choose_spec maximalPacking.2
       .cons (key := K .coldWindowLedgerSplit)
-        ⟨⟨packing, packingFacts.1, packingFacts.2.1, packingFacts.2.2,
-          package, spine, nearCubic⟩⟩
+        ⟨by
+          rcases coldArm with ⟨packing, hot, cold, split, _cap, _stable⟩
+          exact ⟨⟨packing, hot, cold, split⟩, spine, nearCubic⟩⟩
         .nil)
 
 @[reducible] noncomputable def coldHotFailureMassRow :
@@ -431,10 +427,10 @@ registered baseline and window order. -/
       .cons (key := K .coldHotFailureMass)
         ⟨by
           rcases split with
-            ⟨packing, valid, _maximalCard, _maximal, _failed,
-              coldCount, hotCount, coldEq, hotEq, _partition⟩
-          refine ⟨packing, coldCount, hotCount, valid, coldEq, hotEq, ?_⟩
-          rw [coldEq]
+            ⟨packing, hot, cold, valid, _maximalCard, _maximal,
+              disjoint, partition, hotBound, _spine, _nearCubic⟩
+          refine ⟨packing, hot, cold, valid, disjoint, partition, ?_⟩
+          rw [← partition, Nat.mul_add]
           omega⟩
         .nil)
 
@@ -448,12 +444,12 @@ registered baseline and window order. -/
       .cons (key := K .coldSelectedBranchExcess)
         ⟨by
           rcases mass with
-            ⟨packing, coldCount, _hotCount, valid, coldEq, _hotEq, _mass⟩
-          refine ⟨packing, coldCount,
+            ⟨packing, hot, cold, valid, disjoint, partition, _mass⟩
+          refine ⟨packing, hot, cold,
             Graph.ColdCorridor.branchExcessOf
               (data.threshold * data.windowOrder -
-                2 * (data.windowOrder - 1)) * coldCount,
-            valid, coldEq, rfl⟩⟩
+                2 * (data.windowOrder - 1)) * cold.card,
+            valid, disjoint, partition, rfl⟩⟩
         .nil)
 
 @[reducible] noncomputable def coldAmbientCubicStubExcessRow :
@@ -471,9 +467,10 @@ registered baseline and window order. -/
       let nearCubic := (inputs.get (K .sparsePressureNearCubic)).down
       .cons (key := K .coldAmbientCubicStubExcess)
         ⟨by
-          rcases selected with ⟨packing, coldCount, excess, valid, coldEq, excessEq⟩
-          exact ⟨packing, coldCount, excess, valid, coldEq, excessEq,
-            spine, nearCubic⟩⟩
+          rcases selected with
+            ⟨packing, hot, cold, excess, valid, disjoint, partition, excessEq⟩
+          exact ⟨packing, hot, cold, excess, valid, disjoint, partition,
+            excessEq, spine, nearCubic⟩⟩
         .nil)
 
 /-! ## Nodes `[153]`--`[157]`: the dispatch arms and the branch closure
@@ -542,7 +539,7 @@ ledger; no branch record, terminal payload, or retired routing object is used. -
       producesNonempty := by simp }
     (fun inputs =>
       let notRealizing := (inputs.get (K .coldGermRealized)).down.1
-      let targetDefect := (inputs.get (K .coldGermDistinguished)).down.2
+      let targetDefect := (inputs.get (K .coldGermDistinguished)).down
       let notSilent := (inputs.get (K .coldGermSilent)).down.1
       .cons (key := K .coldGermRouted)
         ⟨fun germ shorter =>

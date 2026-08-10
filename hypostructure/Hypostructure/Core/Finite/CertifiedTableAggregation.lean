@@ -15,6 +15,8 @@ namespace Hypostructure.Core.Finite.CertifiedTableAggregation
 
 open scoped BigOperators
 
+universe u
+
 /-- Product of a finite column. -/
 def product {ι : Type*} [Fintype ι] (column : ι -> Nat) : Nat :=
   ∏ i, column i
@@ -49,6 +51,28 @@ def safeProduct
 def flatProduct
     (table : CertifiedTable profile Length lengthValue relation Index) : Nat :=
   product table.counts.storedFlat
+
+/-- A universe-polymorphic public presentation of one certified finite barrier
+table. Applications provide the semantic table once; generic consumers read
+its complete row carrier, counts, and derived rate without importing
+application code. -/
+structure BarrierPresentation where
+  size : Nat
+  profile : Profile size
+  Length : Type u
+  lengthValue : Length → Nat
+  relation : Length → Fin size → Fin size → Bool
+  Index : Type u
+  indexFintype : Fintype Index
+  table : CertifiedTable profile Length lengthValue relation Index
+  /-- Every certified flat column is nonempty in aggregate. -/
+  flatPositive : by
+    letI := indexFintype
+    exact 0 < flatProduct table
+  /-- The certified safe column dominates the certified flat column. -/
+  improves : by
+    letI := indexFintype
+    exact flatProduct table ≤ safeProduct table
 
 /-- Number of labels, derived from the table's row carrier. -/
 def labelCount
@@ -93,6 +117,15 @@ def binaryRateFloor
   if flatProduct table = 0 then 0
   else Nat.log2 ((safeProduct table - 1) / flatProduct table)
 
+namespace BarrierPresentation
+
+/-- The certified aggregate binary rate exposed by the presentation. -/
+def binaryRateFloor (presentation : BarrierPresentation.{u}) : Nat := by
+  letI := presentation.indexFintype
+  exact CertifiedTableAggregation.binaryRateFloor presentation.table
+
+end BarrierPresentation
+
 /-- **The derived rate really is a rate.**  The table's safe column dominates
 its flat column by at least `2 ^ binaryRateFloor`, so a consumer that needs
 "the rate of this certified table" reads it here rather than restating it.
@@ -116,6 +149,22 @@ theorem two_pow_binaryRateFloor_mul_flatProduct_le
             Nat.pow_log_le_self 2 (Nat.ne_of_gt quotientPos)
       _ ≤ safe - 1 := Nat.div_mul_le_self _ _
       _ ≤ safe := Nat.sub_le _ _
+
+namespace BarrierPresentation
+
+/-- The rate inequality exported by a public barrier presentation.  Consumers
+need no application-owned count lemma: positivity and improvement travel with
+the certified table itself. -/
+theorem two_pow_binaryRateFloor_mul_flatProduct_le
+    (presentation : BarrierPresentation.{u}) : by
+    letI := presentation.indexFintype
+    exact 2 ^ presentation.binaryRateFloor * flatProduct presentation.table ≤
+      safeProduct presentation.table := by
+  letI := presentation.indexFintype
+  exact CertifiedTableAggregation.two_pow_binaryRateFloor_mul_flatProduct_le
+    presentation.table presentation.flatPositive presentation.improves
+
+end BarrierPresentation
 
 /-- **The binary rate one certified row sustains.**
 

@@ -383,8 +383,8 @@ it.  `#print axioms spineData` also reports the `native_decide` axioms of the
 | 6 | Induced-obstruction packing [15]–[17] | `Spine.obstructionPacking` | ✅ | ✅ | ✅ | ✅ |
 | 7 | Exact finite local algebra [18] | `Spine.localAlgebra` | ✅ | ✅ | ✅ | ✅ |
 | 8 | Non-near-cubic surplus split [19] | `Spine.surplusDichotomy` | ✅ | ✅ | ✅ | ✅ |
-| 9 | Near-cubic finite enumeration [21] | `Spine.windowPackageDichotomy`, `Spine.barrierEnumerationDichotomy`; `Graph.FiniteObject.WindowTargetPackage` | ✅ | ✅ | ✅ | ✅ |
-| 10 | Finite window-density budget [22]–[24] | `Spine.densityBudget` | ✅ | ✅ | ✅ | ✅ |
+| 9 | Near-cubic finite enumeration [21] | `Spine.barrierEnumerationDichotomy`; `Graph.FiniteObject.WindowTargetPackage` | ✅ | ✅ | ✅ | ✅ |
+| 10 | Hot/cold package split and finite window-density budget [22]–[24] | `Spine.coldWindowLedgerSplitRow`, `Spine.densityBudget` | ✅ | ✅ | ✅ | ✅ |
 
 **Re-review of block A, against the source.**  Rows 1–10 were re-read
 declaration by declaration against `original_erdos_64_proof.tex`, the Lean
@@ -757,7 +757,7 @@ bookkeeping; the first is not:
 | 48 | (F4) producer | `ColdCorridor.Corridor.FirstFailureHandoff` (`Spine.coldFailureHandoff`) | ✅ | ✅ | ✅ | ✅ |
 | 49 | (F4) membership | `ColdCorridor.Corridor.handoff_mem` (`Spine.coldFailureHandoff`) | ✅ | ✅ | ✅ | ✅ |
 | 50 | First-failure routing | `ColdCorridor.Corridor.exists_firstFailure` (`Spine.coldFailureRouting`) | ✅ | ✅ | ✅ | ✅ |
-| 51 | F5 exchange bound | `ColdCorridor.Corridor.exchange_card_le` (`Spine.coldExchangeBound`) | ✅ | ✅ | ✅ | ✅ |
+| 51 | F5 exchange bound | `ColdCorridor.Corridor.exchange_card_le` (`Spine.coldExchangeBound`) | ✅ | ✅ | ✅ | ❌ |
 | 51a | Hot/cold window split | `ColdCorridor.coldCount_add_hotCount` (`Spine.coldWindowLedgerSplit`) | ✅ | ✅ | ✅ | ✅ |
 | 51b | Hot failure cold mass | `ColdCorridor.hotFailure_coldMass` (`Spine.coldHotFailureMass`) | ✅ | ✅ | ✅ | ✅ |
 | 51c | Selected branch excess | `ColdCorridor.selectedBranchExcess_length` (`Spine.coldSelectedBranchExcess`) | ✅ | ✅ | ✅ | ✅ |
@@ -1217,36 +1217,57 @@ the CT14 aggregate-member comparison earlier revisions described is deleted.
   `lem:near-cubic-budget` (`log₂ C(C(n,2),m) = (3/2) n log₂ n + O(n) +
   O(√n log n)` when `m = (3/2)n + O(√n)`), scoped by
   `rem:near-cubic-budget-scope` and `rem:budget-robustness`.
-- **What the Lean does.**  The node is
-  `Graph.Strategy.Spine.barrierEnumerationDichotomy`
-  (`Graph/Strategy/SpineRows.lean`), a two-arm `Decision` over the canonical
-  ledger — not a CT.  The retired `Core.Strategy.FiniteBarrierEnumeration`
+- **What the Lean does.** Node `[21]` is now the fact-only atomic row
+  `Graph.Strategy.Spine.barrierEnumerationRow`. Its manifest requires the
+  predecessor's `localAlgebra` fact and produces exactly
+  `windowPackageSeparated`; the value of that legacy-named key is now
+  `BarrierEnumerationStatement`, not the later independent-window package.
+  The sealed executor reads `inputs.current` and `inputs.get localAlgebra`,
+  keeps the current residual definitionally unchanged, and derives the two
+  registered rates and the aggregate safe/flat inequality from the public
+  certified table. The retired `Core.Strategy.FiniteBarrierEnumeration`
   module and its `Profile`/`Summary`/`RateLedger` are **deleted**; the finite
-  enumeration itself is now the audited table `FiniteChecks.P13Barrier`,
-  projected into the registered `Spine.Data` as `data.windowRate` and
-  `data.windowOrder` and reaching the node only through those fields.
-  The row branches on the decidable comparison
+  enumeration itself is now the audited table `FiniteChecks.P13Barrier`.
+  `Spine.Data.windowBarrier` exposes its complete semantic relation, all `91`
+  accepted `(a,b)` rows, and both certified count columns through Core's
+  `BarrierPresentation`; `windowRate_eq_barrier` identifies the registered
+  rate with the aggregate floor computed from that table.  The presentation
+  also carries closed proofs that the flat product is positive and that the
+  safe product dominates it, so Core derives
+  `2 ^ windowRate * flatProduct ≤ safeProduct` without an application-owned
+  numeric premise.  `data.windowOrder` remains the registered path order.
+  Node `[22]` remains the separate `barrierEnumerationDichotomy`, branching on
+  the decidable comparison
 
   ```
   if overflow : Graph.skeletonBudget current.object <
       2 ^ (data.windowRate * Graph.dyadicScaleCount current.object *
-        current.object.windowPackingNumber data.windowOrder)
+        hot.card)
   ```
 
-  committing `barrierOverflow` on the strict side and `barrierCap` on the
-  other, with the cap arm's second conjunct proved inline.  Every symbol is an
+  Node `[22]` first reads the selected maximal packing from the literal ledger,
+  defines `hot` by filtering for the singleton `WindowTargetPackage` at the
+  selected-scale rate and `cold` by the complementary filter, and proves the
+  two membership equivalences, disjointness, and exhaustive partition.  It
+  commits that same partition with `barrierOverflow` on the strict side and
+  with `barrierCap` on the other.  Every symbol is an
   observable of the literal active residual object — `skeletonBudget`,
   `dyadicScaleCount`, `windowPackingNumber` — or a registered `Data` field;
   no numeral appears in the row, and `399`/`543958`/`432672`/`111286` occur
   nowhere in it.
-- **What it should do.**  State `lem:p13-window-package`'s demand
-  `c₁₃ · p₁₃ · log₂ n` bits against `lem:skeleton-dominates`' budget
-  `C(C(n,2), m)`, decide the two exhaustive alternatives of node `[22]`, and
-  carry `lem:variable-edge-budget` on the surviving cap arm so the retained
-  bound does not depend on the exact `m`.
-- **Gap.**  None.  The demand exponent is
-  `windowRate · dyadicScaleCount object · windowPackingNumber`, which is the
-  manuscript's `c₁₃ p₁₃ log₂ n`: `windowRate` is a per-window cost *per dyadic
+- **What it should do.** Publish the finite `c_Ω`/`c₁₃` computation as
+  one ordinary fact, then pass that exact ledger to node `[22]`. The later
+  independent multi-scale package must be proved only after its stated
+  sparse-exit and near-cubic hypotheses are present.
+- **Gap.** Node `[21]` itself has no mathematical or residual gap. Existing
+  downstream code still consumes the legacy key as `WindowPackageStatement`;
+  those consumers now fail to elaborate and must be rewired to a distinct
+  later package fact. In particular, the old direct path into node `[22]` must
+  first run `finiteBarrierEnumeration` on its literal predecessor.
+
+  Node `[22]`'s live demand exponent is
+  `windowRate · dyadicScaleCount object · hot.card`, which is the
+  manuscript's `c₁₃ |P_hot| log₂ n`: `windowRate` is a per-window cost *per dyadic
   scale*, so the scale factor is required for the statement to be the paper's.
   It was missing until this change and is now present in all three clauses;
   see the **Fixed and verified** paragraph in Row 10's **Gap** for the
@@ -1278,14 +1299,18 @@ the CT14 aggregate-member comparison earlier revisions described is deleted.
   `sum_edgeStratumCount_le_variableEdgeBudget` is not a row obligation here:
   the row proves the pointwise bound it needs directly, and no call site uses
   the sum.
-- **Ledger and residual.**  `Decision.run` commits exactly one arm's key
-  against the literal incoming stage, so the sibling key is absent from this
+- **Ledger and residual.** `barrierEnumerationRow` uses `factOnly` and
+  `AtomicCT.run`; its output index is exactly
+  `windowPackageSeparated :: known`, and `inputs.current` is unchanged.
+  Node `[22]` then uses `Decision.run` against that literal output, so the
+  sibling key is absent from the selected
   branch's type-level index entirely — `barrierOverflowKeys` and the cap-side
   index are disjoint at `.barrierCap`/`.barrierOverflow`.  The row reads
   `current.object` and publishes through the framework runner; it appends no
   residual change (`Refines` is the identity here, a fact-only step) and drops
-  nothing, so every earlier key remains indexed. The node requires no upstream
-  fact: its demand and budget are both observables of the active object.
+  nothing, so every earlier key remains indexed. The node reads
+  `maximalPacking` through `ExactLedger.get`; its demand and budget remain
+  observables of the active object.
 - **Transport and terminals.**  No EG-specific carrier, executor, or routing.
   The arms are `Decision`'s own two branches, taken at
   the spine assembly. The overflow arm leaves Block A as
@@ -5094,11 +5119,10 @@ rows go through the framework's one `AtomicCT.run` and its one `Decision.run`.
   extraction and closure rows consume the cold bounds through the ledgered
   facts.  **Facts passes.**
 - **Ledger and residual.** `Spine.coldCorridorStateRow` is a `factOnly` atomic
-  Strategy with `Requires := [windowPackageCollided]` and `Produces :=
-  [coldCorridorState]`.  The produced schema retains the literal incoming
-  `¬ WindowPackageStatement` witness together with the local cut-state theorem;
-  it cannot be published on a detached object or before entering the cold
-  package residual.  The
+  Strategy with `Requires := [coldWindowLedgerSplit]` and `Produces :=
+  [coldCorridorState]`.  It reads the hot/cold partition appended at node
+  `[22]`; it cannot be published on a detached object or before entering that
+  literal residual.  The
   committed statement has three clauses: the retention's completeness, the
   `Q_cold` pigeonhole, and *both* directions of the (F2) sentence — the second
   direction was proved but unregistered until the registered-fact review, which
@@ -5446,14 +5470,27 @@ would interpose machinery between a constructed cycle and its certificate.
   `coldExchangeBoundRow`, `coldWindowLedgerSplitRow`,
   `coldHotFailureMassRow`, `coldSelectedBranchExcessRow`, and
   `coldAmbientCubicStubExcessRow`.  Each appends exactly one `Spine.Key` fact.
-  The split row reads `windowPackageCollided`; the hot-failure mass row reads
-  `densityCap`, `spineSurplusEstimate`, and `sparsePressureNearCubic`; and the
+  Node `[22]` now creates the partition itself from the selected maximal
+  packing.  The later split row reads `barrierCap` and forwards that exact
+  partition together with the spine estimate and sparse-pressure facts.  It
+  never substitutes `hot = ∅` and `cold = packing`.  The hot-failure mass row
+  then reads that exact
+  split together with `densityCap`, `spineSurplusEstimate`, and
+  `sparsePressureNearCubic`; and the
   ambient-cubic stub-excess row reads `spineSurplusEstimate` and
   `sparsePressureNearCubic`.  These are ordinary upstream keys, not a cold
   carrier.
-- **Gap.** none for carrier cleanup.
+- **Gap.** The former fabricated partition has been removed.  The first
+  downstream failure is now exposed honestly in `coldHotFailureMassRow`: the
+  manuscript's quantitative hot-failure estimate
+  `windowRate * hot.card ≤ surplusScale * vertexCount` has not yet been
+  derived from the live-package classification.  That next mathematical fact
+  must be implemented before rows `[150]` onward elaborate; it may not be
+  restored by choosing the hot family to be empty.
 - **Ledger and residual.** The full residual remains the same `ExactLedger`
-  cursor.  `coldWindowLedgerSplit` requires `windowPackageCollided`,
+  cursor.  `coldWindowLedgerSplit` requires the node-`[22]` no-arm key
+  `barrierCap`, together with `windowPackageSeparated`, `maximalPacking`,
+  `spineSurplusEstimate`, and `sparsePressureNearCubic`;
   `coldHotFailureMass` requires `coldWindowLedgerSplit`, `densityCap`,
   `spineSurplusEstimate`, and `sparsePressureNearCubic`, and
   `coldAmbientCubicStubExcess` requires `coldSelectedBranchExcess`,
@@ -5491,13 +5528,13 @@ would interpose machinery between a constructed cycle and its certificate.
 
 - **Paper fact.** A distinguishing germ gives a target-incomplete quotient in
   every immutable profile fibre.
-- **What the Lean does.** `coldGermDistinguishedRow` reads
-  `windowPackageCollided` and commits that exact cold-residual witness together
-  with the current-object germ theorem.  `coldGermRoutedRow` projects the germ
-  theorem from this ledger-backed pair.
+- **What the Lean does.** `coldGermDistinguishedRow` reads the exact
+  `coldWindowLedgerSplit` appended at node `[22]` and commits the current-object
+  germ theorem on that same residual.  `coldGermRoutedRow` reads this theorem
+  directly from the ledger.
 - **Gap.** none for carrier cleanup.  This is a semantic fact, not a closure by
   itself.
-- **Ledger and residual.** `Requires := [windowPackageCollided]`, `Produces :=
+- **Ledger and residual.** `Requires := [coldWindowLedgerSplit]`, `Produces :=
   [coldGermDistinguished]`; the step is fact-only and preserves the residual.
 - **Transport and terminals.** No payload and no terminal.
 
@@ -5644,7 +5681,10 @@ would interpose machinery between a constructed cycle and its certificate.
   require an application-owned registration payload.
 - **What the Lean does.** `Spine.runCold` composes the rows directly and
   requires the surviving cold prefix keys in `known`.  Those prefix facts are
-  also consumed at the row that spends them: collided-window input at the split,
+  also consumed at the row that spends them: the node `[22]` split is already
+  present in the incoming `known` list and is read by the cold rows.  Its
+  producer additionally requires `barrierCap`, so the cold corridor can only
+  descend from the no-arm cursor of the framework `Decision` at `[22]`;
   density and near-cubic spine facts at the hot/cubic mass rows, sparse/negative
   and large-budget survivor facts at first-failure routing and branch closure,
   and Type B/route-8 closure facts at the handoff-transfer row.  Each row
@@ -5652,7 +5692,16 @@ would interpose machinery between a constructed cycle and its certificate.
   declared production.  The run file no longer passes `encode`, `fact.down`, or
   `PLift` wrapper callbacks; the row declarations already publish concrete
   `Spine.Key` facts.
-- **Gap.** none for carrier cleanup.
+- **Gap.** The root assembly still needs the positive node-`[21]` package
+  publication wired into the entropy-package continuation. After correcting
+  node `[21]`, its legacy-named `windowPackageSeparated` key carries only the
+  certified finite enumeration. The cold split no longer treats that fact as
+  a `WindowPackageStatement`: it reads the enumeration only to enforce literal
+  ancestry from `[21]`, reads `barrierCap` from `[22]`, and derives its packing
+  and hot/cold arithmetic from the current residual's existing facts. A
+  distinct later package fact is still required by the entropy-package
+  continuation, where the manuscript's discharged sparse exits and
+  near-cubic estimate are available.
 - **Ledger and residual.** One `ExactLedger` is threaded through the block.
 - **Transport and terminals.** No registration object, no side dispatcher.
 
@@ -5678,7 +5727,8 @@ would interpose machinery between a constructed cycle and its certificate.
   coldGermExtraction, coldGermRouted, coldSameInterfaceTable,
   largeBudgetResidual, negativeSupport, sparseSurplusSurvivor]`,
   `Produces := [coldBranchClosed]`; residual
-  unchanged.  `Spine.runCold` requires `K .coldTerminalResidual` in the incoming
+  unchanged.  `Spine.runCold` requires both `K .coldTerminalResidual` and the
+  upstream `K .coldWindowLedgerSplit` in the incoming
   key index and returns `closed :: coldBranchClosed :: coldGermRouted ::
   coldPositiveGerm :: coldGermExtraction :: ... :: known`, preserving the
   incoming residual and all upstream facts.  The fixture

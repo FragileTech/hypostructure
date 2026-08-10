@@ -186,6 +186,19 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
     norm_num
   surplusScale := surplusScaleCoefficient
   windowRate := FiniteChecks.P13Barrier.windowRate
+  windowBarrier :=
+    { size := FiniteChecks.P13Barrier.labelCount
+      profile := FiniteChecks.P13Barrier.semanticProfile
+      Length := Fin 15
+      lengthValue := fun length => length.1
+      relation := fun length =>
+        FiniteChecks.P13Barrier.semanticRelation length.1
+      Index := FiniteChecks.P13Barrier.AcceptedPair
+      indexFintype := inferInstance
+      table := FiniteChecks.P13Barrier.certifiedTable
+      flatPositive := by native_decide
+      improves := by native_decide }
+  windowRate_eq_barrier := rfl
   separatedScaleCount := Nat.log2
   separatedScaleCount_le := fun _size => le_refl _
   separatedScaleCount_eq_log2 := fun _size => rfl
@@ -197,6 +210,9 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
     Hypostructure.Core.Finite.CertifiedTableAggregation.binaryRowRateFloor
       FiniteChecks.P13Barrier.certifiedTable
       ⟨(⟨1, by norm_num⟩, ⟨1, by norm_num⟩), by norm_num⟩
+  curvatureBarrierRow :=
+    ⟨(⟨1, by norm_num⟩, ⟨1, by norm_num⟩), by norm_num⟩
+  curvatureCost_eq_barrierRow := rfl
   entropyDenominator :=
     erdosReceiverLoadProfile.remainderEntropyThresholdDenominator
   entropyDenominator_pos := by norm_num [erdosReceiverLoadProfile]

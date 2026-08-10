@@ -1,4 +1,4 @@
 interface:
   display_name: "EG Proof Expansion"
-  short_description: "Expand EG nodes through canonical ExactLedger Lean"
-  default_prompt: "Use $eg-proof-expansion to make the requested EG StrategyDag node fully paper-compliant using only the canonical ExactLedger and sealed Strategy/CT API."
+  short_description: "Expand EG nodes with the canonical Type A Lean patterns"
+  default_prompt: "Use $eg-proof-expansion to make the requested EG StrategyDag node paper-compliant using only the canonical ExactLedger, sealed Strategy/CT API, and programming patterns established by the Type A branch."

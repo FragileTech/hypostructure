@@ -449,88 +449,114 @@ family, because the exact stratum is one of the family's and the family's own
 union bound dominates it (`sum_edgeStratumCount_le_variableEdgeBudget` is the
 summed form of the same count).  That is what makes the retained cap survive
 `rem:budget-robustness` rather than depending on the exact `m`. -/
+
+/-- Node `[21]`, as one monotone fact step on the literal residual.
+
+The executor reads the predecessor's `localAlgebra` key to enforce the paper
+position, reads the certified table only through `data`, and appends the single
+finite-enumeration fact.  It does not construct the later window package, make
+the node `[22]` decision, or change `inputs.current`. -/
+@[reducible] noncomputable def barrierEnumerationRow
+    (localAlgebra finiteEnumeration :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : localAlgebra ≠ finiteEnumeration)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      BarrierEnumerationStatement data → finiteEnumeration.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.barrierEnumeration
+    (rowManifest localAlgebra finiteEnumeration distinct)
+    (fun inputs =>
+      .cons (key := finiteEnumeration)
+        (encode inputs.current (by
+          have _local := inputs.get localAlgebra
+          let presentation := data.windowBarrier
+          letI := presentation.indexFintype
+          refine ⟨data.windowRate_eq_barrier,
+            data.curvatureCost_eq_barrierRow, ?_⟩
+          rw [data.windowRate_eq_barrier]
+          exact presentation.two_pow_binaryRateFloor_mul_flatProduct_le))
+        .nil)
+
 noncomputable def barrierEnumerationDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (barrierCap barrierOverflow :
+    (maximalPacking barrierCap barrierOverflow :
       FactKey (Input BranchState Presentation presentation data))
+    [Core.Residual.FactKeys.Has maximalPacking known]
+    (packingOf : maximalPacking.At current →
+      ∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+        packing.card = current.object.windowPackingNumber data.windowOrder ∧
+        ∀ support : Finset current.object.Vertex,
+          current.object.InducesWindow data.windowOrder support →
+          ∃ member ∈ packing, ¬ Disjoint support member)
     (encodeCap :
-      (2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
-            current.object.windowPackingNumber data.windowOrder) ≤
+      (∃ packing hot cold : Finset (Finset current.object.Vertex),
+        IsHotColdWindowPartition data current.object packing hot cold ∧
+        2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
+            hot.card) ≤
           Graph.skeletonBudget current.object ∧
         ∀ family : Finset Nat, current.object.edgeCount ∈ family →
           Graph.skeletonBudget current.object ≤
             Graph.variableEdgeBudget current.object.vertexCount family) →
       barrierCap.At current)
     (encodeOverflow :
-      (Graph.skeletonBudget current.object <
+      (∃ packing hot cold : Finset (Finset current.object.Vertex),
+        IsHotColdWindowPartition data current.object packing hot cold ∧
+        Graph.skeletonBudget current.object <
         2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
-          current.object.windowPackingNumber data.windowOrder)) →
+          hot.card)) →
       barrierOverflow.At current)
     (capFresh : barrierCap ∉ known)
     (overflowFresh : barrierOverflow ∉ known) :
     Decision barrierCap barrierOverflow previous :=
-  -- `lem:variable-edge-budget` / `rem:budget-robustness`, quoted from the
-  -- framework module that owns the edge-stratum count.  The row states no
-  -- combinatorics of its own.
+  by
+  classical
+  let maximal := packingOf (ExactLedger.get previous maximalPacking)
+  let packing := Classical.choose maximal
+  let packingFacts := Classical.choose_spec maximal
+  let hot := packing.filter (LiveHotWindow data current.object)
+  let cold := packing.filter (fun window =>
+    ¬ LiveHotWindow data current.object window)
+  let split : IsHotColdWindowPartition data current.object packing hot cold := by
+    refine ⟨packingFacts.1, packingFacts.2.1, packingFacts.2.2, ?_, ?_, ?_, ?_⟩
+    · intro window
+      simp [hot]
+    · intro window
+      simp [cold]
+    · exact Finset.disjoint_left.mpr (by
+        intro window inHot inCold
+        simp only [hot, Finset.mem_filter] at inHot
+        simp only [cold, Finset.mem_filter] at inCold
+        exact inCold.2 inHot.2)
+    · intro window
+      constructor
+      · intro member
+        by_cases live : LiveHotWindow data current.object window
+        · exact Or.inl (by simp [hot, member, live])
+        · exact Or.inr (by simp [cold, member, live])
+      · intro member
+        rcases member with member | member
+        · exact Finset.mem_of_mem_filter _ member
+        · exact Finset.mem_of_mem_filter _ member
   let stable : ∀ family : Finset Nat, current.object.edgeCount ∈ family →
       Graph.skeletonBudget current.object ≤
         Graph.variableEdgeBudget current.object.vertexCount family :=
     fun _family member =>
       Graph.skeletonBudget_le_variableEdgeBudget current.object member
-  Decision.run previous barrierCap barrierOverflow
+  exact Decision.run previous barrierCap barrierOverflow
     `Hypostructure.Graph.Strategy.Spine.finiteBarrierEnumeration
     (if overflow : Graph.skeletonBudget current.object <
         2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
-          current.object.windowPackingNumber data.windowOrder) then
-      .inr (encodeOverflow overflow)
+          hot.card) then
+      .inr (encodeOverflow ⟨packing, hot, cold, split, overflow⟩)
     else
-      .inl (encodeCap ⟨Nat.le_of_not_lt overflow, stable⟩))
+      .inl (encodeCap ⟨packing, hot, cold, split,
+        Nat.le_of_not_lt overflow, stable⟩))
     capFresh overflowFresh
-
-/-! ## Nodes `[21]`--`[22]`: the separation of the window package
-
-`lem:p13-window-package` builds its coordinate family and then *selects*: the
-package "uses `⌊log₂ n⌋ − O(1)` separated dyadic scales", the `O(1)` absorbing
-"endpoint collisions with the finitely many reserved boundary and tie-breaking
-choices inside the canonical packing".
-
-So separation is the property of the surviving coordinates, and the colliding
-ones are discarded.  This diamond is that selection: either the selected
-coordinates are separated and each carries the audited rate — the arm on which
-`lem:independent-target-entropy` applies — or they collide, and the arm leaves
-the block.  Both are retained; nothing about separation is assumed.
-
-The coordinate family is data, so what the arm commits is its existence, exactly
-as node `[17]` commits the packing's. -/
-noncomputable def windowPackageDichotomy
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous :
-      ExactLedger (Input BranchState Presentation presentation data)
-        current known)
-    (windowPackageSeparated windowPackageCollided :
-      FactKey (Input BranchState Presentation presentation data))
-    (encodeSeparated :
-      WindowPackageStatement data current.object →
-      windowPackageSeparated.At current)
-    (encodeCollided :
-      ¬ WindowPackageStatement data current.object →
-      windowPackageCollided.At current)
-    (separatedFresh : windowPackageSeparated ∉ known)
-    (collidedFresh : windowPackageCollided ∉ known) :
-    Decision windowPackageSeparated windowPackageCollided previous :=
-  Decision.run previous windowPackageSeparated windowPackageCollided
-    `Hypostructure.Graph.Strategy.Spine.windowPackageDichotomy
-    (by
-      classical
-      by_cases separated : WindowPackageStatement data current.object
-      · exact .inl (encodeSeparated separated)
-      · exact .inr (encodeCollided separated))
-    separatedFresh collidedFresh
 
 /-! ## Nodes `[22]`--`[24]`: the finite window-density budget
 

@@ -101,6 +101,13 @@ noncomputable def spineTargetInvariant
     (fun _input fact => fact.down.2)
     (fun _input value => ⟨value⟩)
 
+/-- Node `[21]`: publish the certified finite enumeration on the unchanged
+active residual.  The later independent-window package is not encoded here. -/
+@[reducible] noncomputable def finiteBarrierEnumeration :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  barrierEnumerationRow (K .localAlgebra) (K .windowPackageSeparated)
+    (by simp [K_eq_iff]) (fun _input value => ⟨value⟩)
+
 /-- Node `[91]` closes because its nonnegative discharging conclusion is
 incompatible with the retained negative Type A support. -/
 noncomputable instance typeAUnsaturatedDischargeClosed :
@@ -172,7 +179,7 @@ noncomputable instance typeAExitFiveClosed :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   densityBudgetRow (K .barrierCap) (K .surplusAtOrBelow) (K .densityCap)
     (by simp)
-    (fun _input fact => fact.down.1)
+    (fun _input fact => fact.down.2.1)
     (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
 
@@ -477,59 +484,6 @@ noncomputable instance instImpossibleContextDefect :
       (K .contextDefect) where
   contradiction := fun residual value =>
     not_contextDefect (data := data) residual value.down
-
-/-- **The node-`[54]` terminal is uninhabited**, at the spine's own keys.
-
-`lem:p13-window-package`'s separated arm realizes the joint window, remainder and
-forced-curvature package inside the labelled skeletons of the object's own order
-and edge count — `lem:skeleton-dominates` at `𝒢_{n,m}`.  Node `[53]`'s yes arm
-says that package demands strictly more states than there are such skeletons.
-The two cannot both hold, and that is `prop:entropy-high-theta`: the entropy cap
-closes the branch.
-
-Everything past the two committed facts is
-`PackedWindowRealization.SeparatedFamily.card_state_pi_le_skeletonBudget`. -/
-noncomputable instance instIncompatibleEntropyCap :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .windowPackageSeparated) (K .entropyCapActive) where
-  contradiction := fun residual package active => by
-    classical
-    obtain ⟨packing, valid, _attains⟩ :=
-      residual.object.exists_windowPacking_card_eq data.windowOrder
-    obtain ⟨coordinateCount, family, _windowBound, jointBound, slotsFit,
-      poolRoom, _targetPackage, _deficitBound⟩ := package.down packing valid
-    have capped :=
-      family.card_state_pi_le_skeletonBudget residual.object.edgeCount
-        slotsFit poolRoom
-    have overflowLt : Graph.skeletonBudget residual.object <
-        jointPackageDemand data residual.object packing := active.down packing valid
-    rw [Graph.skeletonBudget] at overflowLt
-    omega
-
-/-- **The node-`[23]` terminal is uninhabited**, at the spine's own keys.
-
-The same realization carries the window package on its own.  Node `[22]`'s
-overflow arm says it demands strictly more states than there are skeletons of the
-object's order and edge count, and `lem:skeleton-dominates` at `𝒢_{n,m}` says it
-does not.  That is the manuscript's window-entropy overflow terminal. -/
-noncomputable instance instIncompatibleWindowPackage :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .windowPackageSeparated) (K .barrierOverflow) where
-  contradiction := fun residual package overflow => by
-    classical
-    obtain ⟨packing, valid, _attains⟩ :=
-      residual.object.exists_windowPacking_card_eq data.windowOrder
-    obtain ⟨coordinateCount, family, windowBound, _jointBound, slotsFit,
-      poolRoom, _targetPackage, _deficitBound⟩ := package.down packing valid
-    have capped :=
-      family.card_state_pi_le_skeletonBudget residual.object.edgeCount
-        slotsFit poolRoom
-    have overflowLt : Graph.skeletonBudget residual.object <
-        2 ^ (data.windowRate *
-          data.separatedScaleCount residual.object.vertexCount *
-          residual.object.windowPackingNumber data.windowOrder) := overflow.down
-    rw [Graph.skeletonBudget] at overflowLt
-    omega
 
 /-- **The near-cubic surplus route closes against node `[19]`.**
 
@@ -1278,16 +1232,6 @@ abbrev rankDropClosedKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   closed :: K .repairIdentity :: K .globalBarrier ::
     K .globalDelocalization :: delocalizedSupportKeys
-
-/-- The key index of a ledger that left the block at nodes `[21]`--`[22]` with
-colliding package coordinates: the `O(1)` the manuscript's scale count
-discards. -/
-abbrev windowPackageCollidedKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  [K .windowPackageCollided, K .surplusAtOrBelow, K .localAlgebra,
-    K .maximalPacking, K .uncompressible, K .tightEndpoint,
-    K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-    K .selection]
 
 /-- The key index of a ledger that left the block at node `[19]`. -/
 abbrev surplusAboveKeys :

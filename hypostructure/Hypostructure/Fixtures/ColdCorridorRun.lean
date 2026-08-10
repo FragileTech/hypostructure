@@ -59,20 +59,18 @@ theorem run_audit_contains_cold_facts
         (name .coldFailureHandoff),
         (name .coldFailureRouting),
         (name .coldExchangeBound),
-        (name .coldWindowLedgerSplit),
         (name .coldHotFailureMass),
         (name .coldSelectedBranchExcess),
         (name .coldAmbientCubicStubExcess),
         (name .coldHandoffTransfer),
         (name .coldGermExtraction),
-        (name .coldPositiveGerm),
         (name .coldGermRouted),
         (name .coldBranchClosed)],
       fact ∈ (ExactLedger.audit history).facts := by
   intro fact member
   simp only [List.mem_cons, List.not_mem_nil, or_false] at member
   rcases member with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   · exact List.mem_map.mpr ⟨closed, by simp [coldKeys], rfl⟩
   · exact List.mem_map.mpr ⟨K .coldCorridorState, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldSameInterfaceTable, by simp, rfl⟩
@@ -85,13 +83,11 @@ theorem run_audit_contains_cold_facts
   · exact List.mem_map.mpr ⟨K .coldFailureHandoff, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldFailureRouting, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldExchangeBound, by simp, rfl⟩
-  · exact List.mem_map.mpr ⟨K .coldWindowLedgerSplit, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldHotFailureMass, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldSelectedBranchExcess, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldAmbientCubicStubExcess, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldHandoffTransfer, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldGermExtraction, by simp, rfl⟩
-  · exact List.mem_map.mpr ⟨K .coldPositiveGerm, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldGermRouted, by simp, rfl⟩
   · exact List.mem_map.mpr ⟨K .coldBranchClosed, by simp, rfl⟩
 
@@ -123,7 +119,8 @@ theorem runCold_closure_reason
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
     [FactKeys.Has (K (data := data) .uncompressible) known]
-    [FactKeys.Has (K (data := data) .windowPackageCollided) known]
+    [FactKeys.Has (K (data := data) .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K (data := data) .maximalPacking) known]
     [FactKeys.Has (K (data := data) .densityCap) known]
     [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
     [FactKeys.Has (K (data := data) .negativeSupport) known]
@@ -146,35 +143,24 @@ theorem runCold_closure_reason
     (handoffFresh : K (data := data) .coldFailureHandoff ∉ known)
     (routingFresh : K (data := data) .coldFailureRouting ∉ known)
     (exchangeFresh : K (data := data) .coldExchangeBound ∉ known)
-    (windowSplitFresh : K (data := data) .coldWindowLedgerSplit ∉ known)
     (hotMassFresh : K (data := data) .coldHotFailureMass ∉ known)
     (selectedExcessFresh : K (data := data) .coldSelectedBranchExcess ∉ known)
     (ambientStubFresh : K (data := data) .coldAmbientCubicStubExcess ∉ known)
     (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
     (extractionFresh : K (data := data) .coldGermExtraction ∉ known)
-    (positiveFresh : K (data := data) .coldPositiveGerm ∉ known)
     (routedFresh : K (data := data) .coldGermRouted ∉ known)
     (branchClosedFresh : K (data := data) .coldBranchClosed ∉ known)
     (closureFresh :
       closed (BranchState := BranchState) (Presentation := Presentation)
         (presentation := presentation) (data := data) ∉
-        K .coldBranchClosed :: K .coldGermRouted ::
-          K .coldPositiveGerm :: K .coldGermExtraction ::
-          K .coldHandoffTransfer :: K .coldAmbientCubicStubExcess ::
-          K .coldSelectedBranchExcess :: K .coldHotFailureMass ::
-          K .coldWindowLedgerSplit :: K .coldExchangeBound ::
-          K .coldFailureRouting :: K .coldFailureHandoff ::
-          K .coldFailureCompression :: K .coldFailureDefect ::
-          K .coldFailureCycle :: K .coldGermSilent ::
-          K .coldGermDistinguished :: K .coldGermRealized ::
-          K .coldSameInterfaceTable :: K .coldCorridorState :: known) :
+        coldBranchClosedKeys known) :
     (ExactLedger.get
       (Hypostructure.Graph.Strategy.Spine.runCold
         (data := data) history stateFresh tableFresh realizedFresh
         distinguishedFresh silentFresh cycleFresh defectFresh compressionFresh
-        handoffFresh routingFresh exchangeFresh windowSplitFresh hotMassFresh
+        handoffFresh routingFresh exchangeFresh hotMassFresh
         selectedExcessFresh ambientStubFresh transferFresh extractionFresh
-        positiveFresh routedFresh branchClosedFresh closureFresh)
+        routedFresh branchClosedFresh closureFresh)
       (closed : FactKey (Input BranchState Presentation presentation data))).down.reason =
       AutomaticClosureReason.incompatibleFacts
         (name .coldTerminalResidual) (name .coldBranchClosed) := by

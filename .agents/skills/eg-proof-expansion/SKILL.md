@@ -199,6 +199,58 @@ non-`ExactLedger` type ending in `Ledger` are rejected.
 
 ## Implement through the framework
 
+### Use the Type A branch as the closed programming-pattern allowlist
+
+For implementation shape, the ported Type A receiver-and-exit chain is the
+only precedent.  Copy its patterns from `Graph/Strategy/SpineRows.lean`,
+`Graph/Strategy/TypeAExitRun.lean`, and `Graph/Strategy/SpineAssembly.lean`.
+The mathematical content still comes only from the manuscript; Type A is an
+authority for program structure, not for theorem statements.
+
+New or repaired rows may use only these Type A forms:
+
+- A deterministic fact step is an `@[reducible] noncomputable def` returning
+  `AtomicStrategy`, built with `factOnly`, a literal `FactManifest`, and a
+  sealed executor.  The executor reads `inputs.current` and
+  `inputs.get key`, and returns the exact heterogeneous `.cons ... .nil`
+  production bundle.  Execution is the resulting row's `.run`/
+  `AtomicCT.run` on the literal incoming `ExactLedger`, with an explicit
+  freshness proof.
+- An exhaustive binary paper alternative is a `noncomputable def` returning
+  `Decision yesKey noKey previous`, implemented directly by
+  `Decision.run previous yesKey noKey` and a proof of exactly one sum arm.
+  Its inputs are the literal incoming ledger and `FactKeys.Has` constraints;
+  it reads prerequisites with `ExactLedger.get` only at this framework-owned
+  decision boundary.  The unchosen key must be absent from the chosen arm.
+- A terminal contradiction uses an existing generic framework closure such as
+  `closeIncompatible` on the literal branch ledger.  It may append only the
+  distinguished closure key and may not encode a terminal in a custom result.
+- Composition is a straight-line sequence of typed `have after... := ...`
+  bindings, passing each exact output ledger to the next Type A-form row.  A
+  real split remains a `Decision`; continuation selects its typed arm and does
+  not merge siblings.  Routing uses only `RoutedTask.selectFor` or
+  `RoutedTask.dispatchFor` when key-directed dispatch is actually required.
+- Vocabulary installation is a thin specialization of generic rows at
+  `Spine.K`; key-list aliases are literal cons-lists matching the ledger output
+  index.  Freshness and key distinctness are discharged from the closed
+  vocabulary, following the Type A `K_eq_iff`/finite-key pattern.
+
+No other programming pattern is permitted, even if it is proof-agnostic or
+could be added to the API catalog.  In particular, do not introduce a custom
+runner, recursive interpreter, state machine, callback-driven executor,
+continuation object, branch payload, result wrapper, bespoke inductive
+control type, alternate ledger, reconstructed cursor, sibling merge, direct
+`ExactLedger` mutation, or a helper that hides any of those operations.  Do
+not imitate legacy, quarantined, Type B, or unfinished route-8 plumbing.
+
+Before accepting an edit, identify the concrete Type A declaration whose
+program shape it follows and record that declaration in the private
+implementation checklist.  If no Type A declaration exhibits the required
+shape, stop: the shape is forbidden under this skill.  Do not expand the
+allowlist by adding a new generic API.  The API catalog remains an additional
+closed name allowlist; a symbol must be both catalogued and used in one of the
+Type A forms above.
+
 - Consume the literal active predecessor passed to the node.  Never reconstruct
   a cursor, restart from the root input, or re-quantify a branch fact from the
   ambient graph.

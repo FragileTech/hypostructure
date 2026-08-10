@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **585**.
+Compiled declarations: **591**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 89, **Minimum-degree cycle spine vocabulary** 280, **Sealed total closure** 12.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 90, **Minimum-degree cycle spine vocabulary** 285, **Sealed total closure** 12.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -3115,6 +3115,17 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
+#### `Hypostructure.Graph.Strategy.Spine.BarrierEnumerationStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.ColdAmbientCubicStubExcessStatement`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3281,6 +3292,17 @@ Graph.Strategy.Spine.Data → Graph.ColdCorridor.DeclaredSignature
 ∀ (self : Graph.Strategy.Spine.Data), self.coldSignature.windowOrder = self.windowOrder
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Data.curvatureBarrierRow`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+(self : Graph.Strategy.Spine.Data) → self.windowBarrier.Index
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Data.curvatureCost`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3290,6 +3312,19 @@ Graph.Strategy.Spine.Data → Graph.ColdCorridor.DeclaredSignature
 
 ```lean
 Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.curvatureCost_eq_barrierRow`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data),
+  self.curvatureCost =
+    Core.Finite.CertifiedTableAggregation.binaryRowRateFloor self.windowBarrier.table self.curvatureBarrierRow
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Data.degenerateClosureRejected`
@@ -3441,22 +3476,28 @@ Graph.Strategy.Spine.Data → ℕ
                                         2 * (1 + 2 * Graph.SameTokenBlockerRoles.sameTokenRoleBound) →
                                       ℕ →
                                         (windowRate : ℕ) →
-                                          (separatedScaleCount : ℕ → ℕ) →
-                                            (∀ (size : ℕ), separatedScaleCount size ≤ size.log2) →
-                                              (∀ (size : ℕ), separatedScaleCount size = size.log2) →
-                                                Graph.FiniteObject.netCapWindowCost threshold dischargeScale
-                                                        windowOrder *
-                                                      threshold <
-                                                    2 * windowRate →
-                                                  ℕ →
-                                                    (entropyDenominator : ℕ) →
-                                                      0 < entropyDenominator →
-                                                        (coldSignature : Graph.ColdCorridor.DeclaredSignature) →
-                                                          coldSignature.windowOrder = windowOrder →
-                                                            (bridgeMassFactor : ℕ) →
-                                                              threshold + 2 + dischargeScale ≤
-                                                                  bridgeMassFactor * dischargeScale →
-                                                                Graph.Strategy.Spine.Data
+                                          (windowBarrier : Core.Finite.CertifiedTableAggregation.BarrierPresentation) →
+                                            windowRate = windowBarrier.binaryRateFloor →
+                                              (separatedScaleCount : ℕ → ℕ) →
+                                                (∀ (size : ℕ), separatedScaleCount size ≤ size.log2) →
+                                                  (∀ (size : ℕ), separatedScaleCount size = size.log2) →
+                                                    Graph.FiniteObject.netCapWindowCost threshold dischargeScale
+                                                            windowOrder *
+                                                          threshold <
+                                                        2 * windowRate →
+                                                      (curvatureCost : ℕ) →
+                                                        (curvatureBarrierRow : windowBarrier.Index) →
+                                                          curvatureCost =
+                                                              Core.Finite.CertifiedTableAggregation.binaryRowRateFloor
+                                                                windowBarrier.table curvatureBarrierRow →
+                                                            (entropyDenominator : ℕ) →
+                                                              0 < entropyDenominator →
+                                                                (coldSignature : Graph.ColdCorridor.DeclaredSignature) →
+                                                                  coldSignature.windowOrder = windowOrder →
+                                                                    (bridgeMassFactor : ℕ) →
+                                                                      threshold + 2 + dischargeScale ≤
+                                                                          bridgeMassFactor * dischargeScale →
+                                                                        Graph.Strategy.Spine.Data
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Data.netCapRateSlack`
@@ -3641,6 +3682,17 @@ Graph.Strategy.Spine.Data → ℕ
 Graph.Strategy.Spine.Data → Graph.TypeAB.Presentation
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Data.windowBarrier`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Core.Finite.CertifiedTableAggregation.BarrierPresentation
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Data.windowOrder`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3672,6 +3724,17 @@ Graph.Strategy.Spine.Data → ℕ
 
 ```lean
 Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Data.windowRate_eq_barrier`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ (self : Graph.Strategy.Spine.Data), self.windowRate = self.windowBarrier.binaryRateFloor
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.DeterminationCertificate`
@@ -3902,6 +3965,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.branchDependence`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.branchKillClosed`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5650,17 +5724,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.windowPackageCollided`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.windowPackageSeparated`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6081,6 +6144,27 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
                         barrierOverflow ∉ known → Core.Strategy.Decision barrierCap barrierOverflow previous
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.barrierEnumerationRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (localAlgebra finiteEnumeration :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            localAlgebra ≠ finiteEnumeration →
+              ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                  Graph.Strategy.Spine.BarrierEnumerationStatement data → finiteEnumeration.At input) →
+                Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.boundaryDemandRow`
 
 - Category: Minimum-degree cycle spine rows
@@ -6167,6 +6251,21 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
                                     ¬Graph.Strategy.Spine.DeterminationCertificate data input.object packing narrower) →
                       branchDependence.At input) →
                   Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.branchKillClosedRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.bridgeFanMassRow`
@@ -10964,34 +11063,5 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                   data.windowOrder * packing.card) →
                         windowJoinPressure.At input) →
                     Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.windowPackageDichotomy`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-              (previous :
-                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    current known) →
-                (windowPackageSeparated windowPackageCollided :
-                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                  (Graph.Strategy.Spine.WindowPackageStatement data current.object →
-                      windowPackageSeparated.At current) →
-                    (¬Graph.Strategy.Spine.WindowPackageStatement data current.object →
-                        windowPackageCollided.At current) →
-                      windowPackageSeparated ∉ known →
-                        windowPackageCollided ∉ known →
-                          Core.Strategy.Decision windowPackageSeparated windowPackageCollided previous
 ```
 <!-- END GENERATED API -->

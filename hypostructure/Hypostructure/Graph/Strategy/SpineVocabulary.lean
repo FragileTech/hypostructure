@@ -40,6 +40,7 @@ import Hypostructure.Graph.CurvatureTargetRank
 import Hypostructure.Graph.OneThreeRepair
 import Hypostructure.Graph.WindowCurvatureCode
 import Hypostructure.Core.CeilSqrt
+import Hypostructure.Core.Finite.CertifiedTableAggregation
 import Hypostructure.Graph.SeparatedPackageSkeleton
 import Hypostructure.Graph.WindowTargetPackage
 import Hypostructure.Graph.NetCharge
@@ -245,6 +246,13 @@ structure Data where
   surplusScale : Nat
   /-- The registered per-window barrier rate of the finite enumeration. -/
   windowRate : Nat
+  /-- The complete certified finite barrier table from which `windowRate` is
+  derived.  Generic package construction reads this projection; strategy rows
+  never import an application-owned finite check. -/
+  windowBarrier : Core.Finite.CertifiedTableAggregation.BarrierPresentation
+  /-- The registered rate is exactly the aggregate rate of the public table. -/
+  windowRate_eq_barrier :
+    windowRate = windowBarrier.binaryRateFloor
   /-- The selected dyadic scales of `lem:p13-window-package`. -/
   separatedScaleCount : Nat → Nat
   /-- The selected scales are among the object's own: the discard only loses
@@ -265,6 +273,14 @@ structure Data where
   adds that the closure outside the explicit residuals does not use the exact
   value at all.  So it is a presentation constant, registered here. -/
   curvatureCost : Nat
+  /-- The registered one-step curvature cost is one certified row rate of the
+  same public finite table. -/
+  curvatureBarrierRow : windowBarrier.Index
+  curvatureCost_eq_barrierRow :
+    letI := windowBarrier.indexFintype
+    curvatureCost =
+      Core.Finite.CertifiedTableAggregation.binaryRowRateFloor
+        windowBarrier.table curvatureBarrierRow
   /-- **The `10` of node `[50]`.**  `prop:two-budget` splits on
   `η(R) ≥ (1/10)·log₂ n`, and the denominator is the proof's own threshold
   choice rather than anything measured on a graph.  Node `[50]` compares
@@ -537,11 +553,6 @@ inductive Key where
   applies; the arm where the coordinates collide is the `O(1)` the manuscript's
   scale count discards. -/
   | windowPackageSeparated
-  /-- Nodes `[21]`--`[22]`, the other arm: the selected coordinates collide.  This
-  is the `O(1)` the manuscript's scale count discards — "endpoint collisions with
-  the finitely many reserved boundary and tie-breaking choices inside the
-  canonical packing" — and it leaves the block rather than being assumed away. -/
-  | windowPackageCollided
   /-- Nodes `[47]`--`[48]`: `cor:forced-curvature-cost`.  The full-rank residual
   pays `c_Ω·r_Ω(R) ≥ K_win|R| − o(|R|)`, which is the wedge demand floor of node
   `[30]` with node `[34]`'s rank substituted for its wedge supply and the
@@ -848,9 +859,10 @@ inductive Key where
   extracted into the Type A ledger, the remaining Type B bridge residual mass is
   paid by the assigned high-centre surplus. -/
   | typeBBridgeSublinear
-  /-- `thm:branch-kill`: the large-budget negative support is reduced to the
-  explicit residual ledger, with Type B bridge residual mass already bounded by
-  the bridge-sublinear fact. -/
+  /-- `thm:branch-kill`: outside the explicit residual classes, the
+  large-budget negative-support branch has been closed on the current exact
+  residual.  The explicit Type B bridge and route-`8` continuations remain
+  separate ledger facts. -/
   | branchKillClosed
   /-- Node `[76]`/`[85]`: the Type B B-ledger charge implication read from the
   selected disjoint ledger. -/
@@ -1337,19 +1349,79 @@ def WindowPackageStatement (data : Data.{u})
               object.windowPackingNumber data.windowOrder) ≤
           data.surplusScale * object.vertexCount
 
+/-- Node `[21]`'s finite computation, projected entirely from the registered
+certified table.  This fact contains no graph realization and changes no
+residual: the independent multi-scale package is a later consequence after
+the manuscript's sparse-exit and near-cubic hypotheses are available. -/
+def BarrierEnumerationStatement (data : Data.{u}) : Prop :=
+  let presentation := data.windowBarrier
+  letI := presentation.indexFintype
+  data.windowRate = presentation.binaryRateFloor ∧
+    data.curvatureCost =
+      Core.Finite.CertifiedTableAggregation.binaryRowRateFloor
+        presentation.table data.curvatureBarrierRow ∧
+    2 ^ data.windowRate *
+        Core.Finite.CertifiedTableAggregation.flatProduct presentation.table ≤
+      Core.Finite.CertifiedTableAggregation.safeProduct presentation.table
+
+/-- A packed window is live-hot exactly when its declared singleton window
+package is retained at every selected scale. -/
+def LiveHotWindow (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (window : Finset object.Vertex) : Prop :=
+  object.WindowTargetPackage
+    (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK data.windowOrder
+    {window}
+    (data.windowRate * data.separatedScaleCount object.vertexCount)
+
+/-- The hot/cold partition created at node `[22]`.  Both parts are defined
+inside the selected maximal packing; the equivalences prevent a consumer from
+substituting an arbitrary partition. -/
+def IsHotColdWindowPartition (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (packing hot cold : Finset (Finset object.Vertex)) : Prop :=
+    object.IsWindowPacking data.windowOrder packing ∧
+    packing.card = object.windowPackingNumber data.windowOrder ∧
+    (∀ support : Finset object.Vertex,
+      object.InducesWindow data.windowOrder support →
+        ∃ member ∈ packing, ¬ Disjoint support member) ∧
+    (∀ window, window ∈ hot ↔
+      window ∈ packing ∧ LiveHotWindow data object window) ∧
+    (∀ window, window ∈ cold ↔
+      window ∈ packing ∧ ¬ LiveHotWindow data object window) ∧
+    Disjoint hot cold ∧
+    ∀ window, window ∈ packing ↔ window ∈ hot ∨ window ∈ cold
+
+def HotColdWindowStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing hot cold : Finset (Finset object.Vertex),
+    IsHotColdWindowPartition data object packing hot cold
+
+def BarrierCapStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing hot cold : Finset (Finset object.Vertex),
+    IsHotColdWindowPartition data object packing hot cold ∧
+    2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+          hot.card) ≤
+      Graph.skeletonBudget object ∧
+    ∀ family : Finset Nat, object.edgeCount ∈ family →
+      Graph.skeletonBudget object ≤
+        Graph.variableEdgeBudget object.vertexCount family
+
+def BarrierOverflowStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing hot cold : Finset (Finset object.Vertex),
+    IsHotColdWindowPartition data object packing hot cold ∧
+    Graph.skeletonBudget object <
+      2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+        hot.card)
+
 /-- Node `[145]`: the hot/cold interface on the literal post-spine residual.
 It fixes the maximal packing together with the canonical live window package
 already committed by the predecessor.  Later nodes decide the route-8 and
 live-hot alternatives; this fact performs neither decision. -/
 def ColdWindowLedgerStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-    packing.card = object.windowPackingNumber data.windowOrder ∧
-    (∀ support : Finset object.Vertex,
-      object.InducesWindow data.windowOrder support →
-        ∃ member ∈ packing, ¬ Disjoint support member) ∧
-    WindowPackageStatement data object ∧
+  HotColdWindowStatement data object ∧
     object.degreeSurplus data.threshold ≤
       data.spineScale * Core.ceilSqrt object.vertexCount ∧
     Graph.SparsePressureCapped object data.threshold data.windowOrder
@@ -1359,7 +1431,8 @@ by `[145]` on this residual.  No numerical datum is supplied by a consumer. -/
 def ColdHotFailureMassStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ packing hot cold : Finset (Finset object.Vertex),
-    ColdWindowLedgerStatement data object ∧
+    object.IsWindowPacking data.windowOrder packing ∧
+    Disjoint hot cold ∧ hot.card + cold.card = packing.card ∧
     data.windowRate * packing.card ≤
       data.windowRate * cold.card +
         data.surplusScale * object.vertexCount
@@ -1370,7 +1443,8 @@ with a caller-selected list of stubs. -/
 def ColdSelectedBranchExcessStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ packing hot cold : Finset (Finset object.Vertex), ∃ excess : Nat,
-    ColdWindowLedgerStatement data object ∧
+    object.IsWindowPacking data.windowOrder packing ∧
+    Disjoint hot cold ∧ hot.card + cold.card = packing.card ∧
     excess = Graph.ColdCorridor.branchExcessOf
       (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
         cold.card
@@ -1382,7 +1456,8 @@ ambient-cubic contribution. -/
 def ColdAmbientCubicStubExcessStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ packing hot cold : Finset (Finset object.Vertex), ∃ excess : Nat,
-    ColdWindowLedgerStatement data object ∧
+    object.IsWindowPacking data.windowOrder packing ∧
+    Disjoint hot cold ∧ hot.card + cold.card = packing.card ∧
     excess = Graph.ColdCorridor.branchExcessOf
       (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
         cold.card ∧
@@ -1946,16 +2021,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- manuscript's `c₁₃ p₁₃ log₂ n`.  Dropping the scale factor would state a
       -- demand that grows a whole `log₂ n` slower than the manuscript's, and
       -- node `[24]` would then cap nothing.
-      (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-            object.windowPackingNumber data.windowOrder) ≤
-          Graph.skeletonBudget object ∧
-        ∀ family : Finset Nat, object.edgeCount ∈ family →
-          Graph.skeletonBudget object ≤
-            Graph.variableEdgeBudget object.vertexCount family)
+      BarrierCapStatement data object
   | .barrierOverflow, object =>
-      (Graph.skeletonBudget object <
-        2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-          object.windowPackingNumber data.windowOrder))
+      BarrierOverflowStatement data object
   | .densityCap, object =>
       -- `prop:p13-density`.  Spending the skeleton budget's `m !` against the
       -- packed demand leaves `2·rate·scaleCount·p ≤ (scaleCount + 1)(δn + T(n))`,
@@ -2233,7 +2301,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- (F2), equality of cold corridor states is equality for every
       -- target-response coordinate used by the local replacement".  It holds at
       -- every reading of the corridor's responses, so no carrier travels.
-      ¬ WindowPackageStatement data object ∧
       (∀ presentation : Graph.ColdCorridor.Presentation data.coldSignature object,
         (∀ left right : presentation.Segment,
           presentation.state left = presentation.state right →
@@ -2356,7 +2423,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- for the (F2) discrepancy.  No cycle is claimed: the manuscript is
       -- explicit that G2 distinguishes "without already realizing the cycle in
       -- the current graph", and what the germ is routed to is the defect exit.
-      ¬ WindowPackageStatement data object ∧
       (∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object,
@@ -2522,13 +2588,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .coldAmbientCubicStubExcess, object =>
       ColdAmbientCubicStubExcessStatement data object
   | .windowPackageSeparated, object =>
-      -- `lem:p13-window-package`, including the actual declared target family,
-      -- its support map, full rank, and exact-stratum entropy realization.
-      WindowPackageStatement data object
-  | .windowPackageCollided, object =>
-      -- Nodes `[21]`--`[22]`, the cold arm: the literal negation of the
-      -- complete package, including failure of independent target-testability.
-      ¬ WindowPackageStatement data object
+      BarrierEnumerationStatement data
   | .coldHandoffTransfer, object =>
       -- `lem:cold-corridor-first-failure` (iv), as a ledger transfer.  The
       -- support is already marked by the incoming ledger; this row does not
@@ -3617,7 +3677,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 object.degreeSurplus data.threshold
   | .branchKillClosed, object =>
       LargeBudgetResidual data object ∧
-        (∃ packing : Finset (Finset object.Vertex),
+        ∃ packing : Finset (Finset object.Vertex),
           object.IsWindowPacking data.windowOrder packing ∧
             (∀ window : Finset object.Vertex,
               object.InducesWindow data.windowOrder window →
@@ -3625,9 +3685,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             ∃ component ∈ object.canonicalPieces
                 (object.remainderSupport packing),
               object.NegativeNetCharge
-                (object.pieceSupport (object.remainderSupport packing)
-                  component)
-                data.threshold data.dischargeScale)
+                (object.pieceSupport (object.remainderSupport packing) component)
+                data.threshold data.dischargeScale
   | .typeBExclusionCharge, object =>
       ∀ packing : Finset (Finset object.Vertex),
         ∀ canonicalPiece :
@@ -4586,7 +4645,6 @@ def label : Key → String
   | .coldGermDistinguished => "coldGermDistinguished"
   | .coldGermSilent => "coldGermSilent"
   | .windowPackageSeparated => "windowPackageSeparated"
-  | .windowPackageCollided => "windowPackageCollided"
   | .forcedCurvatureCost => "forcedCurvatureCost"
   | .remainderEntropyHigh => "remainderEntropyHigh"
   | .remainderEntropyLow => "remainderEntropyLow"
@@ -4768,7 +4826,6 @@ example : label .coldGermRealized = "coldGermRealized" := rfl
 example : label .coldGermDistinguished = "coldGermDistinguished" := rfl
 example : label .coldGermSilent = "coldGermSilent" := rfl
 example : label .windowPackageSeparated = "windowPackageSeparated" := rfl
-example : label .windowPackageCollided = "windowPackageCollided" := rfl
 example : label .forcedCurvatureCost = "forcedCurvatureCost" := rfl
 example : label .remainderEntropyHigh = "remainderEntropyHigh" := rfl
 example : label .remainderEntropyLow = "remainderEntropyLow" := rfl
@@ -4970,7 +5027,6 @@ def idx : Key → Nat
   | .coldGermDistinguished => 33
   | .coldGermSilent => 34
   | .windowPackageSeparated => 35
-  | .windowPackageCollided => 36
   | .forcedCurvatureCost => 37
   | .remainderEntropyHigh => 38
   | .remainderEntropyLow => 39
@@ -5145,7 +5201,6 @@ def ofIdx : Nat → Key
   | 33 => .coldGermDistinguished
   | 34 => .coldGermSilent
   | 35 => .windowPackageSeparated
-  | 36 => .windowPackageCollided
   | 37 => .forcedCurvatureCost
   | 38 => .remainderEntropyHigh
   | 39 => .remainderEntropyLow
@@ -5366,8 +5421,6 @@ def name : Key → Lean.Name
   | .windowPackageSeparated =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "windowPackageSeparated") 35
-  | .windowPackageCollided =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "windowPackageCollided") 36
   | .forcedCurvatureCost =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "forcedCurvatureCost") 37
   | .remainderEntropyHigh =>
