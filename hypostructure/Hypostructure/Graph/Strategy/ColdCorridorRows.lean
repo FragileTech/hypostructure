@@ -400,19 +400,22 @@ registered baseline and window order. -/
 @[reducible] noncomputable def coldWindowLedgerSplitRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldWindowLedgerSplit
-    { Requires := [K .windowPackageCollided, K .maximalPacking]
+    { Requires := [K .windowPackageSeparated, K .maximalPacking,
+        K .spineSurplusEstimate, K .sparsePressureNearCubic]
       Produces := [K .coldWindowLedgerSplit]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let collided := (inputs.get (K .windowPackageCollided)).down
+      let package := (inputs.get (K .windowPackageSeparated)).down
       let maximalPacking := (inputs.get (K .maximalPacking)).down
+      let spine := (inputs.get (K .spineSurplusEstimate)).down
+      let nearCubic := (inputs.get (K .sparsePressureNearCubic)).down
       let packing := Classical.choose maximalPacking.2
       let packingFacts := Classical.choose_spec maximalPacking.2
       .cons (key := K .coldWindowLedgerSplit)
         ⟨⟨packing, packingFacts.1, packingFacts.2.1, packingFacts.2.2,
-          collided, packing.card, 0, rfl, rfl, by simp⟩⟩
+          package, spine, nearCubic⟩⟩
         .nil)
 
 @[reducible] noncomputable def coldHotFailureMassRow :

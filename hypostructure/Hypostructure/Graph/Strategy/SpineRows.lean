@@ -3592,6 +3592,32 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def branchKillClosedRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.branchKillClosed
+    { Requires := [K .largeBudgetResidual, K .negativeSupport]
+      Produces := [K .branchKillClosed]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let largeBudget := inputs.get (K .largeBudgetResidual)
+      let negative := inputs.get (K .negativeSupport)
+      .cons (key := K .branchKillClosed)
+        ⟨largeBudget.down, negative.down⟩ .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def fanCertificateResidualMassRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
       (instFactSystem (BranchState := BranchState)
@@ -6239,12 +6265,15 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.largeBudgetRoute8Closed
-    { Requires := [K .route8TerminalResidual, K .route8TerminalNoGo]
+    { Requires := [K .branchKillClosed, K .typeBBridgeSublinear,
+        K .route8TerminalResidual, K .route8TerminalNoGo]
       Produces := [K .largeBudgetRoute8Closed]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
+      let _branchKill := inputs.get (K .branchKillClosed)
+      let _bridgeSublinear := inputs.get (K .typeBBridgeSublinear)
       let terminal := inputs.get (K .route8TerminalResidual)
       let noGo := inputs.get (K .route8TerminalNoGo)
       .cons (key := K .largeBudgetRoute8Closed)

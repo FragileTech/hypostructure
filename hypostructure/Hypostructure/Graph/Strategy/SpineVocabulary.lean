@@ -848,6 +848,10 @@ inductive Key where
   extracted into the Type A ledger, the remaining Type B bridge residual mass is
   paid by the assigned high-centre surplus. -/
   | typeBBridgeSublinear
+  /-- `thm:branch-kill`: the large-budget negative support is reduced to the
+  explicit residual ledger, with Type B bridge residual mass already bounded by
+  the bridge-sublinear fact. -/
+  | branchKillClosed
   /-- Node `[76]`/`[85]`: the Type B B-ledger charge implication read from the
   selected disjoint ledger. -/
   | typeBExclusionCharge
@@ -1333,11 +1337,10 @@ def WindowPackageStatement (data : Data.{u})
               object.windowPackingNumber data.windowOrder) ≤
           data.surplusScale * object.vertexCount
 
-/-- The local `[145]` hot/cold ledger on the current residual.  Its packing is
-the maximal packing already committed for this object, and `packageFailed` is
-the negative arm committed by the immediately preceding package dichotomy.
-The numerical split is therefore stored for this packing only; downstream
-rows do not receive an arbitrary packing or comparison as an argument. -/
+/-- Node `[145]`: the hot/cold interface on the literal post-spine residual.
+It fixes the maximal packing together with the canonical live window package
+already committed by the predecessor.  Later nodes decide the route-8 and
+live-hot alternatives; this fact performs neither decision. -/
 def ColdWindowLedgerStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ packing : Finset (Finset object.Vertex),
@@ -1346,20 +1349,19 @@ def ColdWindowLedgerStatement (data : Data.{u})
     (∀ support : Finset object.Vertex,
       object.InducesWindow data.windowOrder support →
         ∃ member ∈ packing, ¬ Disjoint support member) ∧
-    ¬ WindowPackageStatement data object ∧
-    ∃ coldCount hotCount : Nat,
-      coldCount = packing.card ∧ hotCount = 0 ∧
-        coldCount + hotCount = packing.card
+    WindowPackageStatement data object ∧
+    object.degreeSurplus data.threshold ≤
+      data.spineScale * Core.ceilSqrt object.vertexCount ∧
+    Graph.SparsePressureCapped object data.threshold data.windowOrder
 
 /-- Node `[150]` specialized to the packing and hot/cold counts already stored
 by `[145]` on this residual.  No numerical datum is supplied by a consumer. -/
 def ColdHotFailureMassStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing : Finset (Finset object.Vertex), ∃ coldCount hotCount : Nat,
-    object.IsWindowPacking data.windowOrder packing ∧
-    coldCount = packing.card ∧ hotCount = 0 ∧
+  ∃ packing hot cold : Finset (Finset object.Vertex),
+    ColdWindowLedgerStatement data object ∧
     data.windowRate * packing.card ≤
-      data.windowRate * coldCount +
+      data.windowRate * cold.card +
         data.surplusScale * object.vertexCount
 
 /-- The branch-excess quantity for the exact cold family committed by `[150]`.
@@ -1367,12 +1369,11 @@ The witness is tied to the current object's packing and cannot be instantiated
 with a caller-selected list of stubs. -/
 def ColdSelectedBranchExcessStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing : Finset (Finset object.Vertex), ∃ coldCount excess : Nat,
-    object.IsWindowPacking data.windowOrder packing ∧
-    coldCount = packing.card ∧
+  ∃ packing hot cold : Finset (Finset object.Vertex), ∃ excess : Nat,
+    ColdWindowLedgerStatement data object ∧
     excess = Graph.ColdCorridor.branchExcessOf
       (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
-        coldCount
+        cold.card
 
 /-- Nodes `[151]`--`[152]` on the current near-cubic residual.  It retains the
 same concrete cold family and branch-excess witness while recording the two
@@ -1380,12 +1381,11 @@ incoming near-cubic estimates used to justify that this is the surviving
 ambient-cubic contribution. -/
 def ColdAmbientCubicStubExcessStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing : Finset (Finset object.Vertex), ∃ coldCount excess : Nat,
-    object.IsWindowPacking data.windowOrder packing ∧
-    coldCount = packing.card ∧
+  ∃ packing hot cold : Finset (Finset object.Vertex), ∃ excess : Nat,
+    ColdWindowLedgerStatement data object ∧
     excess = Graph.ColdCorridor.branchExcessOf
       (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
-        coldCount ∧
+        cold.card ∧
     object.degreeSurplus data.threshold ≤
       data.spineScale * Core.ceilSqrt object.vertexCount ∧
     Graph.SparsePressureCapped object data.threshold data.windowOrder
@@ -3615,6 +3615,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 data.dischargeScale route8 +
               data.bridgeMassFactor * data.dischargeScale *
                 object.degreeSurplus data.threshold
+  | .branchKillClosed, object =>
+      LargeBudgetResidual data object ∧
+        (∃ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing ∧
+            (∀ window : Finset object.Vertex,
+              object.InducesWindow data.windowOrder window →
+              ∃ member ∈ packing, ¬ Disjoint window member) ∧
+            ∃ component ∈ object.canonicalPieces
+                (object.remainderSupport packing),
+              object.NegativeNetCharge
+                (object.pieceSupport (object.remainderSupport packing)
+                  component)
+                data.threshold data.dischargeScale)
   | .typeBExclusionCharge, object =>
       ∀ packing : Finset (Finset object.Vertex),
         ∀ canonicalPiece :
@@ -4643,6 +4656,7 @@ def label : Key → String
   | .typeBExclusionResidualMass => "typeBExclusionResidualMass"
   | .typeBBridgeMass => "typeBBridgeMass"
   | .typeBBridgeSublinear => "typeBBridgeSublinear"
+  | .branchKillClosed => "branchKillClosed"
   | .typeBExclusionCharge => "typeBExclusionCharge"
   | .typeBExcluded => "typeBExcluded"
   | .typeBExclusionResidual => "typeBExclusionResidual"
@@ -4825,6 +4839,7 @@ example : label .typeBOverlapObstructionMass = "typeBOverlapObstructionMass" := 
 example : label .typeBExclusionResidualMass = "typeBExclusionResidualMass" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
 example : label .typeBBridgeSublinear = "typeBBridgeSublinear" := rfl
+example : label .branchKillClosed = "branchKillClosed" := rfl
 example : label .typeBExclusionCharge = "typeBExclusionCharge" := rfl
 example : label .typeBExcluded = "typeBExcluded" := rfl
 example : label .typeBExclusionResidual = "typeBExclusionResidual" := rfl
@@ -5025,6 +5040,7 @@ def idx : Key → Nat
   | .typeBExclusionResidualMass => 188
   | .typeBBridgeMass => 85
   | .typeBBridgeSublinear => 189
+  | .branchKillClosed => 191
   | .typeBExclusionCharge => 164
   | .typeBExcluded => 166
   | .typeBExclusionResidual => 167
@@ -5194,6 +5210,7 @@ def ofIdx : Nat → Key
   | 188 => .typeBExclusionResidualMass
   | 85 => .typeBBridgeMass
   | 189 => .typeBBridgeSublinear
+  | 191 => .branchKillClosed
   | 164 => .typeBExclusionCharge
   | 166 => .typeBExcluded
   | 167 => .typeBExclusionResidual
@@ -5513,6 +5530,9 @@ def name : Key → Lean.Name
   | .typeBBridgeSublinear =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBBridgeSublinear") 189
+  | .branchKillClosed =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "branchKillClosed") 191
   | .typeBExclusionCharge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBExclusionCharge") 164

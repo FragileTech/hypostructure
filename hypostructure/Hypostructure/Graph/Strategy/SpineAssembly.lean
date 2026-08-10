@@ -334,6 +334,10 @@ present. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   typeBBridgeSublinearRow
 
+@[reducible] noncomputable def branchKillClosed :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  branchKillClosedRow
+
 @[reducible] noncomputable def largeBudgetRoute8Closed :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   largeBudgetRoute8ClosedRow

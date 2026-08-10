@@ -118,8 +118,6 @@ noncomputable def runColdBranchClosed
     ExactLedger (Input BranchState Presentation presentation data) current
       (coldBranchClosedKeys known) := by
   classical
-  -- The cut-state first: it requires nothing, and the three later cold rows
-  -- read it.
   have afterState :=
     (coldCorridorStateRow (data := data)).run history (by simpa using stateFresh)
   have afterTable :=
