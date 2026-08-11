@@ -23,6 +23,17 @@ The intended editing standard is the one already used for
 local input and output contract, synchronize all views of the routing graph,
 and make the final contradiction visibly follow from the local closures.
 
+Throughout this blueprint, **local** means attached to the fixed hypothetical
+singular point and to the singularity-generated profile currently carried by
+its ancestry ledger.  Coordinate domains such as \(\mathbb R^3\), ancient-time
+intervals, centered hulls, and expanding terminal regions describe the chart
+in which that current profile is analyzed.  Their analytic role is confined to
+that profile and its fixed ledger.  Each norm,
+compactness statement, pressure representative, symmetry criterion, and
+Liouville input must therefore be recorded with its local owner: the incoming
+profile, a realized descendant, a normalized defect-support profile, or a
+finite-shift pullback of the terminal profile.
+
 ---
 
 ## Sources of truth
@@ -56,9 +67,12 @@ and its proof control.  The summary is then synchronized to the theorem.
 
 ## A1. One ancestral ledger and one improving residual obligation
 
-The proof begins with one normalized residual Seregin object exported by the
-setup paper.  Its retained obstruction is positive compact local velocity
-concentration together with its ancestry in the original blow-up sequence.
+Assume a local pointwise Type I singularity and fix the normalized raw Seregin
+profile produced by the setup extraction, together with its ancestry and
+normalization ledger.  The profile carries positive compact local velocity
+concentration.  The setup decomposition either routes it to a direct class,
+which closes locally, or places it in the raw residual class.  Only in the
+second alternative does the residual paper begin its refinement.
 
 The ledger records the successive local states through which that obstruction
 is routed.  At each state, a local theorem closes the component covered by its
@@ -72,14 +86,18 @@ function, to use the same coordinates, or to retain the same representative.
 The invariant is the transported obstruction and its realized connection to
 the original singularity-generated branch.
 
-The ledger is consequently a state-space routing ledger rather than a global
-nested-set subtraction scheme.  The manuscript must not be rewritten in the
-latter form.
+The ledger is consequently a state-space routing ledger for the fixed
+singularity-generated profile, rather than a nested-set subtraction scheme.
+The manuscript must preserve this profile-by-profile routing.
 
 ## A2. Each theorem is local to its state
 
-A local theorem consumes only the hypotheses produced at its current node.  It
-closes only the corresponding local component.  Its conclusion is one of:
+A local theorem consumes only properties already proved for the current
+singularity-generated profile or produced at its current node.  A structural
+criterion such as axisymmetry, relative equilibrium, or stationary-hull
+occurrence selects a state for that profile and belongs only to that state
+interface.  The theorem closes only the selected component.  Its conclusion is
+one of:
 
 - a direct contradiction with the retained obstruction;
 - a realized descendant state;
@@ -88,11 +106,13 @@ closes only the corresponding local component.  Its conclusion is one of:
 - a reduction to an already closed lower state; or
 - a terminal state whose hypotheses have now been produced.
 
-No edit may enlarge a local conclusion into a global estimate.  In particular,
-the proof does not begin with a global \(L^\infty_tL^3_x\) bound, a universal
-Liouville theorem for bounded ancient solutions, or a whole-space
-Coriolis--Leray theorem.  The endpoint sequence-\(L^3\) input is manufactured
-only after the lower residual alternatives have been removed.
+The entry data are exactly the profile-local outputs of the setup extraction:
+the centered equation, local suitability, the pressure atlas, normalization
+data, ancestry, and positive compact velocity concentration.  Later norms or
+mildness properties belong only to the realized profile for which they are
+proved.  In particular, sequence-\(L^3\) is manufactured for a terminally
+indecomposable realized profile after the preceding local alternatives have
+been removed; it is not propagated backward as an entry datum.
 
 ## A3. Classification, routing, reduction, and closure are distinct
 
@@ -108,7 +128,7 @@ The early R2 and R3 propositions are reductions, not terminal closures.  Their
 class-closure corollaries occur only after the terminal stratification theorem
 has been proved.  The revised exposition must keep this distinction visible.
 
-## A4. Descendants carry ancestry, not a global coordinate identity
+## A4. Descendants carry ancestry through changes of local coordinates
 
 Recenterings, time translates, hull limits, blow-downs, normalized support
 profiles, and terminal profiles may change:
@@ -123,19 +143,26 @@ profiles, and terminal profiles may change:
 
 Every proof-relevant descendant must nevertheless satisfy the applicable
 realization or support-transfer theorem.  This is the logical link that returns
-its terminal contradiction to the original residual profile.
+its terminal contradiction to the original singularity-generated raw profile
+along the residual branch.
 
 ## A5. Retained velocity and normalized defect support are different interfaces
 
 A retained descendant carries an inherited positive unit velocity
 concentration bound.  A normalized support profile obtained from a defect
-measure need not carry that same bound.  Its relevance is supplied by positive
-defect support and the support-transfer mechanism.
+measure carries positive defect support and the associated support-transfer
+interface.  It carries inherited positive velocity concentration as well when
+local realization and retention theorems prove that additional fact.  The two
+interfaces are logically independent and may coexist in the same profile
+ledger.
 
 Every diagram, table, and local lemma must identify which of these two
-interfaces it exports.  A support profile may be routed and closed through its
-defect support; it must not be described as though it automatically carried the
-retained velocity lower bound.
+interfaces it exports.  Positive defect support alone does not imply inherited
+positive velocity concentration, and retained velocity concentration alone
+does not supply defect support.  When both are proved, both remain available
+for downstream routing and backward contradiction; construction as a support
+profile never discards a stronger realized-descendant or retained-mass
+interface.
 
 ## A6. Pressure data form a local atlas
 
@@ -157,14 +184,16 @@ pressure--velocity product or local energy inequality legitimate.
 ## A7. The final contradiction is backward assembly
 
 The endpoint contradiction is obtained at a realized local profile.  Its force
-returns through descendant heredity or defect support transfer, through the
-terminal stratification, and finally to the imported residual Seregin object.
+returns through every applicable descendant-heredity and defect-support
+interface, through the terminal stratification, and finally to the original
+singularity-generated raw Seregin profile and its fixed ledger.
 
 The Type I exclusion is then obtained by inserting the companion
 residual-closure theorem into the setup paper's local assembly.  This is an
 unconditional contrapositive for the fixed hypothetical singular profile and
-its ledger; the proof does not propagate one global estimate through every
-state or assume that a residual state exists.
+its ledger.  Every route consumes properties produced for that profile, and
+residual membership is considered only as the hypothetical alternative to be
+closed.
 
 ---
 
@@ -176,11 +205,11 @@ checked against the current theorem bodies before manuscript edits are made.
 
 | Capsule | Mathematical role | Principal source labels | Output or closure |
 |---|---|---|---|
-| R0 | Import the normalized residual Seregin object | `thm:imported-setup-results`, `hyp:base-seregin-hypotheses` | Fixed setup export with retained compact velocity concentration, pressure compatibility, and ancestry |
+| R0 | Fix the normalized raw Seregin profile produced from the hypothetical singular point; enter the residual branch only after the direct setup classes close | `thm:imported-setup-results`, `hyp:base-seregin-hypotheses`, `hyp:previous-nonresidual` | Fixed setup profile with retained compact velocity concentration, pressure compatibility, normalization data, and ancestry |
 | R0b | Realize descendants and transfer support | `def:sequence-realized-residual-object`, `def:retained-vs-support-profile-descendant`, `thm:ancestor-realization-inheritance`, `thm:descendant-heredity` | Proof-relevant descendants remain connected to the original branch |
-| R1 | Axisymmetric bounded-circulation closure | `thm:R1-exclusion` | Direct closure through centered circulation and axis absorption |
-| R2 | Rotational relative-equilibrium reduction | `prop:R2-reduction-to-terminal`, `cor:R2-closure` | Lower closed class or realized terminal concentration profile; final closure after terminal assembly |
-| R3 | Degenerate stationary-hull reduction | `prop:R3-stationary-hull-reduction`, `prop:R3S-R3-terminal-reduction`, `cor:R3-closure` | Lower closed class or realized stationary terminal profile; final closure after terminal assembly |
+| R1 | Close the axisymmetric bounded-circulation state selected for the current profile | `thm:R1-exclusion` | The centered circulation equation and axis absorption place that profile in the previously closed no-swirl state |
+| R2 | Reduce the rotational state selected for the current profile through compact annular Coriolis-flux windows | `prop:R2-reduction-to-terminal`, `cor:R2-closure` | Previously closed local state or realized terminal concentration profile; deferred closure after terminal assembly |
+| R3 | Reduce a retained stationary-hull occurrence of the current profile by scale reselection | `prop:R3-stationary-hull-reduction`, `prop:R3S-R3-terminal-reduction`, `cor:R3-closure` | Previously closed local state or realized stationary terminal profile with the inherited ledger; deferred closure after terminal assembly |
 | R4 | Covariant observer and affine/parasitic quotient | `thm:covariant-observer-calculus`, `thm:affine-normalization-dichotomy`, `thm:oscillatory-entry-normalization` | Affine mode routed to the lower quotient stratum or positive non-affine activity retained |
 | R5a | Recurrent tail-core rigidity | `thm:recurrent-tail-core-rigidity` | Recurrent tail core closed or routed into the terminal alternatives |
 | R5b | Log-diffuse critical tail | `thm:log-diffuse-from-hidden-scale`, `cor:log-diffuse-branch-exclusion` | Log-window support profile routed through hidden-scale and coherent-tail closure |
@@ -190,8 +219,8 @@ checked against the current theorem bodies before manuscript edits are made.
 | R6b | Inactive and nonconcentrating terminal alternatives | `thm:terminal-inactive-exclusion` | Pure local vanishing and pure exterior escape cannot carry the retained obstruction |
 | R6c | Diffuse and mixed compact--diffuse alternatives | `thm:diffuse-defect-compactness`, `thm:diffuse-defect-trichotomy`, `thm:no-mixed-compact-diffuse` | Active, affine, or critical-tail route; mixed remainder excluded |
 | R6d | Separated profiles and descendant chains | `thm:active-path-space-recurrence`, `thm:compact-active-descendant`, `thm:no-finite-separated-profile-family` | Infinite chains and finite separated families excluded |
-| R7 | Terminal indecomposable endpoint | `lem:atomic-sequence-L3`, `thm:mildness-inheritance-main`, `thm:AB-main`, `thm:R4-final-closure` | Sequence-\(L^3\), bounded mild pullback, endpoint Liouville contradiction |
-| Assembly | Close the fixed incoming raw residual profile and supply the exact setup theorem | `prop:setup-residual-handoff-complete`, `thm:terminal-stratification`, `thm:typeI-residual-closure`, `cor:setup-residual-hypothesis-proof` | The literal raw setup residual class is empty |
+| R7 | Terminal indecomposable endpoint for the realized profile | `lem:atomic-sequence-L3`, `thm:mildness-inheritance-main`, `thm:AB-main`, `thm:R4-final-closure` | Terminally produced sequence-\(L^3\), finite-shift mild pullback, and contradiction with that profile's retained local obstruction |
+| Assembly | Fix the setup ledger and a hypothetical incoming \(V\) in its raw residual alternative; close the affine or retained route selected for this \(V\) | `prop:setup-residual-handoff-complete`, `thm:terminal-stratification`, `thm:typeI-residual-closure`, `cor:setup-residual-hypothesis-proof` | The selected \(V\) is impossible; the same pointwise contrapositive establishes raw-residual closure for the fixed ledger |
 
 The capsule identifiers are audit names.  They need not replace the paper's
 class notation or theorem names.
@@ -229,13 +258,14 @@ interfaces in Paper II.
 
 ### Existing route
 
-The setup paper produces a bounded normalized centered ancient Seregin profile,
-local suitability, an admissible pressure atlas, positive compact local velocity
-concentration, the mild identity on its mild stratum, and the removal of the
-earlier non-residual classes.  For an arbitrary hypothetical incoming residual
-profile with this fixed ledger, Paper II closes the affine routing row or the
-retained residual row selected by the exhaustive local routing.  The pointwise
-contradiction proves literal emptiness of the original raw residual class.
+At the fixed local singular point, the setup paper produces a normalized
+centered Seregin profile, local suitability, an admissible pressure atlas,
+positive compact local velocity concentration, the mild identity on the
+profile's mild stratum, and the closure of the earlier states selected for that
+profile.  Fixing a hypothetical incoming residual profile with this ledger,
+Paper II closes the affine routing row or the retained residual row selected by
+the local routing.  This pointwise contradiction proves the raw-residual
+closure for the same fixed ledger.
 
 ### Expository edit
 
@@ -253,11 +283,20 @@ the Type I implication section.  The local implication may verify that a
 physical local pointwise Type I singularity reaches the exported setting, while
 the residual proof itself begins from the export.
 
+The dependency boundary is acyclic.  Local concentration, extraction,
+pressure, raw-hull, mild-stratum, and already closed lower-class results are
+imported premises.  The setup raw-residual closure theorem and the setup final
+regularity assembly are downstream consumers.  They must appear only in the
+return row of the interface table and must never be listed as premises of
+`thm:imported-setup-results` or invoked inside the proof of the companion
+residual closure.
+
 ### Mathematics preserved
 
-- The imported theorem remains an import.
-- The setup residual theorem remains literal emptiness of the residual part of
-  the same raw generated hull; the canonical affine row and retained
+- The preliminary setup theorem package remains an import; the setup
+  raw-residual theorem and final assembly remain downstream consumers.
+- The setup residual theorem remains the raw-residual closure for the same
+  fixed singular-profile ledger; the canonical affine row and retained
   \(\calR^\#(\calS;I,J)\) row are its two exhaustive local routes, not a
   replacement target.
 - The setup-paper labels and the existing public theorem labels remain stable.
@@ -268,6 +307,8 @@ the residual proof itself begins from the export.
 - No locally proved pressure, compactness, or mildness statement is described as
   an unproved setup assumption.
 - No setup result is silently strengthened in Paper II.
+- Neither the setup raw-residual theorem nor the setup final assembly is used as
+  an imported premise of the residual proof.
 
 ## I2. Synchronize the entry map, refined decomposition, and reader guide
 
@@ -355,24 +396,55 @@ expanded consistently.
 
 ### Existing route
 
-- R1 closes directly by the centered angular-circulation equation and
-  axis-absorption argument.
-- R2 uses localized Coriolis flux to produce a lower already closed class or a
-  realized terminal concentration profile.
-- R3 uses stationary-hull realization and scale reselection to produce a lower
-  already closed class or a realized stationary terminal profile.
+- If the current incoming profile is selected into R1, its centered
+  angular-circulation equation and axis condition give the axis-absorption
+  conclusion and route that profile to the previously closed no-swirl state.
+- If it is selected into R2, compactly supported annular Coriolis-flux
+  functionals produce either a previously closed state or a terminal
+  concentration profile realized from the same singular branch.
+- If it is selected into R3, stationary-hull realization and scale reselection
+  produce either a previously closed state or a realized stationary terminal
+  profile carrying the same local ancestry and retained concentration.
 
 ### Expository edit
 
 Place a short interface paragraph immediately before or after each principal
 reduction theorem.  Record:
 
-- the current profile class;
-- the local window and representative;
-- the retained concentration used by the reduction;
+- the fixed incoming singular profile and the state currently selected for it;
+- the centered, physical, hull, or recentered representative used at that
+  state;
+- the working and core windows of each estimate;
+- the selecting property supplied by membership in that state;
+- the retained concentration carried by the ledger, distinguishing whether it
+  is analytically consumed at that step or transported for the later
+  contradiction;
 - the exact output alternatives;
 - the theorem that realizes the descendant;
 - and the later theorem that closes the terminal output.
+
+For R1, bounded centered circulation is the selecting property of the current
+R1 profile.  The circulation equation and the axis condition are the analytic
+inputs; the retained compact velocity obstruction remains attached to the
+fixed profile but is not consumed by the axis-absorption calculation.  The
+contradiction is that the no-swirl output places this same profile in a
+structured state removed before residual entry.  This is a direct local
+closure and creates no descendant.
+
+For R2, the Coriolis term is used only through the compact annular functional
+in `lem:R2-coriolis-flux-localization` and the unit-cylinder concentration
+alternative in `lem:R2-annular-flux-active-concentration`.  A co-rotating
+profile that satisfies the integrable subcase is routed to the setup closure
+because that property has been verified for this profile.  The R2 entry
+contract itself consists of the rotational state and the inherited local
+profile data.  Otherwise the realized retained output is passed to terminal
+stratification.
+
+For R3, the stationary profile must be a hull element realized by scale
+reselection from the fixed singular branch and must carry the retained local
+velocity interface.  The closure consumes this combined realization,
+stationary-hull, and retention contract.  The integrable stationary subcase is
+a verified lower-state route for the selected profile.
 
 For R2 and R3, use the words **reduction** and **deferred closure** consistently.
 The early propositions must not be summarized as though they already used the
@@ -382,16 +454,23 @@ and to the now-available terminal assembly.
 ### Mathematics preserved
 
 - R1 remains a direct local closure.
-- R2 uses no global Coriolis--Leray theorem.
+- R2 consumes only the localized Coriolis-flux identities and the local
+  compactness and concentration data produced for the selected profile.
 - R3 is closed only for stationary-hull elements realized from the original
   branch and carrying the stated concentration interface.
 
 ### Acceptance checks
 
+- Every R1, R2, and R3 interface names the fixed singular-profile ledger to
+  which its current representative belongs.
+- State-selection criteria are not restated as assumptions on the incoming
+  physical solution or on the rest of the setup hull.
+- Every estimate names its local representative and working region.
 - The R2 and R3 reduction statements do not cite their own closure corollaries.
 - The R2 and R3 terminal outputs satisfy the input contract of
   `thm:terminal-stratification`.
-- The lower integrable subcases cite only already available setup closures.
+- The lower integrable subcases are conditional routes for the selected
+  profile and cite only already available setup closures.
 
 ## I4. Consolidate the coordinate, observer, affine, and pressure directories
 
@@ -413,7 +492,7 @@ The paper uses several legitimate local coordinate packages: centered
 translations, covariant spacetime observers, first-generation physical
 recenterings, descendant recenterings, affine-normalized representatives, and
 mesoscopic blow-downs.  Their pressure data form a compatible atlas rather than
-one universal scalar representative.
+a single representative transported through every change of local chart.
 
 ### Expository edit
 
@@ -541,9 +620,13 @@ Insert one dependency diagram or table using the actual proof order:
 \end{gathered}
 \]
 
-For every blow-down or compactification theorem, record whether its descendant
-is a retained velocity profile or a normalized support profile.  State the
-support-transfer or heredity theorem used accordingly.
+For every blow-down or compactification theorem, record separately whether its
+descendant has realized ancestry with retained velocity concentration and
+whether it has positive normalized defect support.  State every applicable
+heredity or support-transfer theorem; if both interfaces are proved, retain
+both in the same singular-profile ledger.  Each compactification is thereby a
+local route for the current realized profile, rather than a statement about an
+ambient class of unrelated solutions.
 
 ### Mathematics preserved
 
@@ -591,9 +674,9 @@ Add an endpoint input-production table:
 | Endpoint hypothesis | Producing result | Earlier alternatives whose absence is used |
 |---|---|---|
 | terminal indecomposability | `prop:no-multi-implies-atomic` | finite separated, chain, diffuse, noncompact, and tail outputs |
-| backward sequence-\(L^3\) | `lem:atomic-sequence-L3` | retained descendants and all residual escape routes removed |
-| bounded mild physical pullback | `thm:mildness-inheritance-main` | affine/parasitic quotient removed and finite shift fixed |
-| nonzero obstruction | retained velocity concentration and ancestry | transported from the original residual branch |
+| backward sequence-\(L^3\) for the terminal profile | `lem:atomic-sequence-L3` | retained descendants and all residual escape routes removed for that profile |
+| bounded mild physical pullback of the terminal profile | `thm:mildness-inheritance-main` | affine/parasitic quotient removed and finite shift fixed |
+| nonzero obstruction | retained velocity concentration and ancestry | transported from the singularity-generated raw profile along the residual branch |
 | zero conclusion | `thm:AB-main` | all preceding endpoint inputs |
 
 The proof of the finite separated-family theorem must continue to use the
@@ -602,9 +685,10 @@ closures, rather than terminal assembly itself.
 
 ### Mathematics preserved
 
-- Sequence-\(L^3\) is a terminal output, not a global premise.
+- Sequence-\(L^3\) is proved at the terminal indecomposable state for the
+  current realized profile and is used only there.
 - The endpoint theorem is applied only to the parasitic-free bounded mild
-  physical pullback after finite shift.
+  physical pullback of that profile after finite shift.
 - The contradiction is with the retained local velocity obstruction.
 
 ### Acceptance checks
@@ -665,8 +749,8 @@ facts, including:
   interfaces remain named;
 - former fourth-paper terminology and the former residual-branch filename are
   absent;
-- the rejected global nested-set formulation is absent from the manuscript and
-  audit documents;
+- the rejected nested-set formulation is absent from the manuscript and audit
+  documents;
 - every final class in the refined decomposition appears in the final assembly.
 
 The checker must avoid encoding incidental line numbers or prose punctuation.
@@ -726,7 +810,8 @@ The checker must avoid encoding incidental line numbers or prose punctuation.
 15. Rebuild the paper and inspect references, warnings, and layout.
 
 This order follows theorem dependencies.  It is not a claim that the proof is a
-linear sequence of globally nested residual sets.
+linear sequence of nested residual sets; every step belongs to the fixed
+singular-profile ledger.
 
 ---
 
@@ -741,12 +826,39 @@ linear sequence of globally nested residual sets.
 
 ## State and obstruction interfaces
 
-- [ ] Every descendant used for closure is realized from the original branch.
-- [ ] Retained velocity descendants and normalized support profiles are never
-      conflated.
-- [ ] Every support-profile contradiction uses a support-transfer theorem.
-- [ ] Every retained-profile contradiction uses the inherited velocity lower
-      bound and descendant heredity.
+- [ ] Every theorem, estimate, compactness passage, and endpoint input names
+      its local owner: the fixed incoming profile, a realized descendant, a
+      normalized support profile, or a finite-shift terminal pullback.
+- [ ] A formula written on a centered, physical, hull, blow-down, or terminal
+      coordinate domain is recorded as a property of that current profile and
+      is never promoted to an assumption on the incoming physical solution or
+      on unrelated profiles in the setup hull.
+- [ ] Every structural property is identified either as a state-selection
+      criterion already verified for the current profile or as an output of a
+      named local producer.
+- [ ] Every conditional lower-state criterion, including the R2 and R3
+      integrable subcases, is used only after it has been verified for the
+      selected profile.
+- [ ] Every auxiliary profile records every connection to the incoming branch
+      that is proved for it: realized ancestry, inherited velocity retention,
+      positive defect support, and the corresponding heredity or
+      support-transfer theorem.
+- [ ] A profile with proved realization and velocity retention keeps that
+      interface even when it is also constructed or used as a normalized
+      defect-support profile.
+- [ ] A profile with only positive defect support is returned through the named
+      support-transfer theorem; retained velocity concentration is not inferred
+      from defect support alone.
+- [ ] When both realized retained mass and positive defect support are proved,
+      both interfaces remain recorded in the same ledger and either or both may
+      carry the terminal contradiction backward.
+- [ ] Retained velocity mass and positive defect support are never conflated as
+      quantities; their simultaneous presence on one profile is recorded
+      rather than suppressed.
+- [ ] Every terminal contradiction identifies the obstruction it uses and the
+      matching return interface: descendant heredity for retained velocity
+      mass, support transfer for defect support, or both when both obstructions
+      participate.
 
 ## Domains, topology, and pressure
 
@@ -789,14 +901,21 @@ A reader should be able to answer yes to each question.
 
 ## Entry and ancestry
 
-- [ ] Is the residual object imported from the setup paper with an exact output
-      tuple?
-- [ ] Is its positive local velocity obstruction fixed at entry?
-- [ ] Is every later profile connected to it by realization, heredity, or
-      support transfer?
+- [ ] Is the normalized raw Seregin profile imported from the setup paper with
+      an exact output tuple and fixed ledger?
+- [ ] Is residual membership invoked only after the direct setup classes have
+      been closed for that profile?
+- [ ] Is its positive local velocity obstruction fixed before residual routing?
+- [ ] Does every later profile record every applicable proved connection to the
+      incoming branch---realization, retained-mass heredity, support transfer,
+      or both interfaces together?
 
 ## Local capsules
 
+- [ ] Does every datum have a named local owner in the fixed
+      singular-profile ledger?
+- [ ] Is each structural criterion used only to select the state of the
+      current profile?
 - [ ] Does every structural theorem state the local hypotheses it consumes?
 - [ ] Does every theorem close only its declared component?
 - [ ] Does failure of a local hypothesis produce a named adjacent state?
@@ -818,8 +937,8 @@ A reader should be able to answer yes to each question.
 - [ ] Do the R2 and R3 closure corollaries use their reductions plus the now
       established terminal theorem?
 - [ ] Does the generic closure exhaust every remaining terminal route?
-- [ ] Does the residual theorem discharge exactly the setup paper's remaining
-      hypothesis?
+- [ ] Does the residual theorem prove exactly the literal raw-residual closure
+      statement imported by the setup paper as a companion theorem?
 
 ---
 
@@ -828,46 +947,81 @@ A reader should be able to answer yes to each question.
 After these edits, the paper should read as the following cohesive argument:
 
 \[
-\text{local pointwise Type I singularity}
+\text{hypothetical local pointwise Type I singularity}
 \longrightarrow
 \text{admissible Seregin extraction}
 \longrightarrow
-\text{one retained residual obligation},
+\text{one normalized raw profile }V_0\text{ with one fixed ledger},
 \]
+
+\[
+V_0\in
+\left(
+\text{direct setup classes}
+\right)
+\cup
+\calR_{\rm setup}(\calS).
+\]
+
+Every direct setup class closes locally.  In the remaining alternative, fix a
+hypothetical
+\(V\in\calR_{\rm setup}(\calS)\) with this same ledger.  The exact handoff gives
+
+\[
+V
+\longrightarrow
+\begin{cases}
+\text{the affine/parasitic route, which is already closed},\\
+\text{a retained canonical representative in }
+\calR^\#(\calS;I_{\rm setup},J_{\rm res}).
+\end{cases}
+\]
+
+The retained alternative is improved through realized local descendants and
+typed defect-support states, with every proved interface retained on each
+auxiliary profile:
 
 \[
 \longrightarrow
-\text{direct lower closures or realized terminal descendants},
-\]
-
-\[
-\longrightarrow
-\text{paired active/residual terminal decomposition},
-\]
-
-\[
+\text{paired active/residual terminal decomposition}
 \longrightarrow
 \text{affine, diffuse, pressure, tail, separated, chain, or atomic state},
 \]
 
 \[
 \longrightarrow
-\text{local closure of every state},
+\text{local closure of the state selected for the current profile},
 \]
 
 \[
 \longrightarrow
-\text{backward contradiction through ancestry},
+\text{backward contradiction through every applicable heredity and/or
+support-transfer interface},
 \]
 
 \[
 \longrightarrow
-\calR^\#(\calS;I,J)=\varnothing,
+\calR^\#(\calS;I_{\rm setup},J_{\rm res})=\varnothing.
 \]
+
+Together with the closed affine route and the exhaustive handoff, this gives
 
 \[
 \longrightarrow
-\text{the setup paper's local Type I exclusion}.
+\calR_{\rm setup}(\calS)
+=
+\calR\bigl(
+\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
+\bigr)
+=\varnothing,
+\]
+
+and therefore
+
+\[
+\text{the hypothetical profile }V_0\text{ cannot exist}
+\longrightarrow
+\text{the setup paper's unconditional local Type I exclusion}.
 \]
 
 The proof remains the same proof.  The completed edits make its local

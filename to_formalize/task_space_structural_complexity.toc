@@ -2,11 +2,12 @@
 \contentsline {section}{\numberline {I.0}Introduction: Static Task Presentations}{13}{section.1.0}%
 \contentsline {paragraph}{Part contract.}{13}{section*.1}%
 \contentsline {subsection}{\numberline {I.0.1}What this paper introduces}{14}{subsection.1.0.1}%
+\contentsline {paragraph}{Uniformity over new high-\(n\) structure.}{15}{section*.2}%
 \contentsline {subsection}{\numberline {I.0.2}Architecture-Independent Capability Analysis}{19}{subsection.1.0.2}%
 \contentsline {subsection}{\numberline {I.0.3}Contributions}{20}{subsection.1.0.3}%
-\contentsline {paragraph}{A. New foundational objects.}{20}{section*.2}%
-\contentsline {paragraph}{B. New theorems enabled by these objects.}{20}{section*.3}%
-\contentsline {paragraph}{C. Standard ingredients used inside the proofs.}{21}{section*.4}%
+\contentsline {paragraph}{A. New foundational objects.}{20}{section*.3}%
+\contentsline {paragraph}{B. New theorems enabled by these objects.}{20}{section*.4}%
+\contentsline {paragraph}{C. Standard ingredients used inside the proofs.}{21}{section*.5}%
 \contentsline {subsection}{\numberline {I.0.4}How to read this paper}{21}{subsection.1.0.4}%
 \contentsline {section}{\numberline {I.1}The Task-Space Signature}{25}{section.1.1}%
 \contentsline {section}{\numberline {I.2}The Observable Algebra}{27}{section.1.2}%
@@ -28,10 +29,10 @@
 \contentsline {subsection}{\numberline {I.11.2}Subset Sum and Exposed Arithmetic}{51}{subsection.1.11.2}%
 \contentsline {section}{\numberline {I.12}Admissible Presentation Equivalence}{51}{section.1.12}%
 \contentsline {section}{\numberline {I.13}Summary of the Static Task Presentation}{52}{section.1.13}%
-\contentsline {paragraph}{Dependency trail.}{53}{section*.24}%
+\contentsline {paragraph}{Dependency trail.}{53}{section*.25}%
 \contentsline {part}{II\hspace {1em}Budget-Admissible Dynamics and Structural Decomposition}{55}{part.2}%
 \contentsline {section}{\numberline {II.0}Introduction: Budget-Admissible Dynamics}{55}{section.2.0}%
-\contentsline {paragraph}{Part contract.}{55}{section*.26}%
+\contentsline {paragraph}{Part contract.}{55}{section*.27}%
 \contentsline {section}{\numberline {II.1}Budget-Admissible Movement and the Search Operator}{56}{section.2.1}%
 \contentsline {section}{\numberline {II.2}The Generator Form and the Positive Maximum Principle}{57}{section.2.2}%
 \contentsline {section}{\numberline {II.3}The Fixed-Space Decomposition}{58}{section.2.3}%
@@ -57,10 +58,10 @@
 \contentsline {subsection}{\numberline {II.13.1}SAT}{102}{subsection.2.13.1}%
 \contentsline {subsection}{\numberline {II.13.2}Subset Sum}{102}{subsection.2.13.2}%
 \contentsline {section}{\numberline {II.14}Summary of the Dynamic Decomposition}{102}{section.2.14}%
-\contentsline {paragraph}{Dependency trail.}{103}{section*.65}%
+\contentsline {paragraph}{Dependency trail.}{103}{section*.66}%
 \contentsline {part}{III\hspace {1em}Spectral Complexity and Saturated Extraction Cost}{105}{part.3}%
 \contentsline {section}{\numberline {III.0}Introduction: Discounted Hitting Functionals and Spectral Cost}{105}{section.3.0}%
-\contentsline {paragraph}{Part contract.}{105}{section*.67}%
+\contentsline {paragraph}{Part contract.}{105}{section*.68}%
 \contentsline {section}{\numberline {III.1}Global Notation and the Saturated Closure}{106}{section.3.1}%
 \contentsline {subsection}{\numberline {III.1.1}Resource-filtered derivation normal form}{111}{subsection.3.1.1}%
 \contentsline {section}{\numberline {III.2}Five-Family Provenance for Represented Evaluators}{112}{section.3.2}%
@@ -144,11 +145,11 @@
 \contentsline {subsection}{\numberline {III.33.2}Relativization, natural proofs, and algebrization}{262}{subsection.3.33.2}%
 \contentsline {section}{\numberline {III.34}Examples: Discounted Hitting for SAT, Subset Sum, and Degree Scans}{264}{section.3.34}%
 \contentsline {section}{\numberline {III.35}Summary: Hardness as Saturated Extraction Cost}{265}{section.3.35}%
-\contentsline {paragraph}{Dependency trail.}{266}{section*.120}%
+\contentsline {paragraph}{Dependency trail.}{266}{section*.121}%
 \contentsline {part}{IV\hspace {1em}Learning and Computability Bounds}{268}{part.4}%
 \contentsline {section}{\numberline {IV.0}Introduction}{268}{section.4.0}%
-\contentsline {paragraph}{Part contract.}{268}{section*.122}%
-\contentsline {paragraph}{Source-resolved convention for Part~IV.}{269}{section*.124}%
+\contentsline {paragraph}{Part contract.}{268}{section*.123}%
+\contentsline {paragraph}{Source-resolved convention for Part~IV.}{269}{section*.125}%
 \contentsline {section}{\numberline {IV.1}The Observable Algebra Is a Reproducing-Kernel Hilbert Space}{270}{section.4.1}%
 \contentsline {section}{\numberline {IV.2}Saturated Cost and Effective Dimension}{272}{section.4.2}%
 \contentsline {section}{\numberline {IV.3}Two-Sided Learning Bounds}{273}{section.4.3}%
@@ -197,10 +198,10 @@
 \contentsline {subsection}{\numberline {IV.17.4}Saturated Typed Errors and Entropy Continuity}{345}{subsection.4.17.4}%
 \contentsline {section}{\numberline {IV.18}Attainable Risk and the Complete Quantitative Learning Decomposition}{349}{section.4.18}%
 \contentsline {section}{\numberline {IV.19}Summary}{351}{section.4.19}%
-\contentsline {paragraph}{Dependency trail.}{351}{section*.162}%
+\contentsline {paragraph}{Dependency trail.}{351}{section*.163}%
 \contentsline {part}{V\hspace {1em}Dynamical-Systems Geometry and Controlled Structural Flow}{356}{part.5}%
 \contentsline {section}{\numberline {V.0}Introduction: Controlled Dynamics in the Saturated Framework}{356}{section.5.0}%
-\contentsline {paragraph}{Part contract.}{356}{section*.164}%
+\contentsline {paragraph}{Part contract.}{356}{section*.165}%
 \contentsline {section}{\numberline {V.1}Represented Controlled Dynamical Systems}{356}{section.5.1}%
 \contentsline {subsection}{\numberline {V.1.1}Noisy execution and partially observed carriers}{358}{subsection.5.1.1}%
 \contentsline {section}{\numberline {V.2}Stochastic POMDP Carriers and Filter Transfer}{362}{section.5.2}%
@@ -256,128 +257,133 @@
 \contentsline {subsection}{\numberline {V.15.3}Canonical finite-precision attention--belief architecture}{479}{subsection.5.15.3}%
 \contentsline {subsection}{\numberline {V.15.4}Empirical Bellman upper certificates}{481}{subsection.5.15.4}%
 \contentsline {subsection}{\numberline {V.15.5}Scale-certified empirical closure of attenuating sources}{482}{subsection.5.15.5}%
-\contentsline {subsubsection}{\numberline {V.15.5.1}Proof-producing verification of structural scaling laws}{486}{subsubsection.5.15.5.1}%
-\contentsline {subsection}{\numberline {V.15.6}Finite-network audit and selection}{489}{subsection.5.15.6}%
-\contentsline {subsection}{\numberline {V.15.7}Empirical structural-channel attribution}{490}{subsection.5.15.7}%
-\contentsline {subsection}{\numberline {V.15.8}Canonical primal--dual learning objective}{492}{subsection.5.15.8}%
-\contentsline {subsection}{\numberline {V.15.9}Certified WAdam optimization}{494}{subsection.5.15.9}%
-\contentsline {subsection}{\numberline {V.15.10}Certified structural bias--variance ledger}{495}{subsection.5.15.10}%
-\contentsline {subsection}{\numberline {V.15.11}Empirical certification of analytical geometry}{498}{subsection.5.15.11}%
-\contentsline {subsection}{\numberline {V.15.12}Empirical certification of exact and quasi-lumpability}{500}{subsection.5.15.12}%
-\contentsline {section}{\numberline {V.16}Black-Box Structural Auditing of Trained Predictors}{504}{section.5.16}%
-\contentsline {subsection}{\numberline {V.16.1}Oracle access and complete audit records}{505}{subsection.5.16.1}%
-\contentsline {subsection}{\numberline {V.16.2}Predictive performance, calibration, and law transfer}{506}{subsection.5.16.2}%
-\contentsline {subsection}{\numberline {V.16.3}Noise identification and clean-risk reconstruction}{507}{subsection.5.16.3}%
-\contentsline {subsection}{\numberline {V.16.4}Behavioral structural channels and interventions}{510}{subsection.5.16.4}%
-\contentsline {subsection}{\numberline {V.16.5}Black-box geometry, alignment, and functional inequalities}{512}{subsection.5.16.5}%
-\contentsline {subsection}{\numberline {V.16.6}Behavioral quotients and residual structure}{513}{subsection.5.16.6}%
-\contentsline {subsection}{\numberline {V.16.7}Master black-box certificate}{514}{subsection.5.16.7}%
-\contentsline {section}{\numberline {V.17}Length-Bounded Levin Search and the Structural Learner}{517}{section.5.17}%
-\contentsline {subsection}{\numberline {V.17.1}Prefix codes and length-bounded saturated profiles}{517}{subsection.5.17.1}%
-\contentsline {subsection}{\numberline {V.17.2}The represented Levin record}{518}{subsection.5.17.2}%
-\contentsline {subsection}{\numberline {V.17.3}Certified relation to the structural learner}{520}{subsection.5.17.3}%
-\contentsline {subsection}{\numberline {V.17.4}Certifiable length and structural advantage}{521}{subsection.5.17.4}%
-\contentsline {subsection}{\numberline {V.17.5}Resource-matched benchmark frontiers}{522}{subsection.5.17.5}%
-\contentsline {subsection}{\numberline {V.17.6}LPN verifier and parameter-explicit specialization}{524}{subsection.5.17.6}%
-\contentsline {section}{\numberline {V.18}Summary of the Dynamical-Systems Geometry}{527}{section.5.18}%
-\contentsline {part}{VI\hspace {1em}Attention as Structural Gradient Flow}{530}{part.6}%
-\contentsline {section}{\numberline {VI.0}Represented Attention Records}{530}{section.6.0}%
-\contentsline {paragraph}{Part contract.}{530}{section*.165}%
-\contentsline {section}{\numberline {VI.1}Gibbs Geometry and Exact Structural Charging}{530}{section.6.1}%
-\contentsline {section}{\numberline {VI.2}Attention Target-Gain Envelope}{532}{section.6.2}%
-\contentsline {section}{\numberline {VI.3}Summary of the Attention Compilation}{535}{section.6.3}%
-\contentsline {part}{VII\hspace {1em}Structural Meta-Complexity and Certificate Minimization}{536}{part.7}%
-\contentsline {section}{\numberline {VII.0}Introduction: Presentation-Relative Meta-Complexity}{536}{section.7.0}%
-\contentsline {paragraph}{Part contract.}{536}{section*.166}%
-\contentsline {section}{\numberline {VII.1}Structural Certificate Meta-Problems}{536}{section.7.1}%
-\contentsline {subsection}{\numberline {VII.1.1}Complete profile data and Pareto feasibility}{536}{subsection.7.1.1}%
-\contentsline {subsection}{\numberline {VII.1.2}Exact generalized inverse}{537}{subsection.7.1.2}%
-\contentsline {section}{\numberline {VII.2}Temporal Meta-Complexity and Accountability}{539}{section.7.2}%
-\contentsline {subsection}{\numberline {VII.2.1}Source, selector, active, and accounting frontiers}{539}{subsection.7.2.1}%
-\contentsline {section}{\numberline {VII.3}Source-Resolved Structural Meta-Complexity}{541}{section.7.3}%
-\contentsline {subsection}{\numberline {VII.3.1}Exact cell frontiers}{541}{subsection.7.3.1}%
-\contentsline {section}{\numberline {VII.4}Representation, Extraction, and Operational Interfaces}{542}{section.7.4}%
-\contentsline {subsection}{\numberline {VII.4.1}Exact denotation and extraction}{542}{subsection.7.4.1}%
-\contentsline {subsection}{\numberline {VII.4.2}Decision, search, certification, and deployment}{542}{subsection.7.4.2}%
-\contentsline {section}{\numberline {VII.5}Classical Representation-Minimization Specializations}{543}{section.7.5}%
-\contentsline {subsection}{\numberline {VII.5.1}Circuit minimization}{543}{subsection.7.5.1}%
-\contentsline {subsection}{\numberline {VII.5.2}Universal programs and time-sensitive costs}{544}{subsection.7.5.2}%
-\contentsline {section}{\numberline {VII.6}Prefix Coding and Structural Incompressibility}{545}{section.7.6}%
-\contentsline {subsection}{\numberline {VII.6.1}Unconditional counting bounds}{545}{subsection.7.6.1}%
-\contentsline {subsection}{\numberline {VII.6.2}Represented coding transfer}{546}{subsection.7.6.2}%
-\contentsline {section}{\numberline {VII.7}Learning, Compression, and Natural Properties}{546}{section.7.7}%
-\contentsline {subsection}{\numberline {VII.7.1}Learned records as feasible meta-certificates}{546}{subsection.7.7.1}%
-\contentsline {section}{\numberline {VII.8}Represented Hardness Magnification}{547}{section.7.8}%
-\contentsline {section}{\numberline {VII.9}Application Interface and Chapter Summary}{549}{section.7.9}%
-\contentsline {part}{VIII\hspace {1em}Resource-Bounded Structural Analysis of LPN}{551}{part.8}%
-\contentsline {section}{\numberline {VIII.0}Application to Learning Parity with Noise}{551}{section.8.0}%
-\contentsline {paragraph}{Part contract.}{551}{section*.167}%
-\contentsline {section}{\numberline {VIII.1}The LPN Task Presentation}{553}{section.8.1}%
-\contentsline {section}{\numberline {VIII.2}Statistical Attacks as Saturated LPN Learning}{554}{section.8.2}%
-\contentsline {subsection}{\numberline {VIII.2.1}Noisy parity as a corrupted binary target}{554}{subsection.8.2.1}%
-\contentsline {subsection}{\numberline {VIII.2.2}Uniform target-alignment bound}{556}{subsection.8.2.2}%
-\contentsline {section}{\numberline {VIII.3}Constant-Noise Spectral Closure Ledger}{561}{section.8.3}%
-\contentsline {section}{\numberline {VIII.4}Candidate Recovery and Prospective Selector Accountability}{566}{section.8.4}%
-\contentsline {section}{\numberline {VIII.5}Public Verification of the LPN Target}{570}{section.8.5}%
-\contentsline {section}{\numberline {VIII.6}Quantitative Noise--Resource Phase Diagram}{572}{section.8.6}%
-\contentsline {subsection}{\numberline {VIII.6.1}Exact finite-budget error enumeration}{572}{subsection.8.6.1}%
-\contentsline {section}{\numberline {VIII.7}Asymptotic, Statistical, and Information Thresholds}{575}{section.8.7}%
-\contentsline {subsection}{\numberline {VIII.7.1}The saturated computational boundary}{579}{subsection.8.7.1}%
-\contentsline {section}{\numberline {VIII.8}Structural Core Reduction for LPN}{581}{section.8.8}%
-\contentsline {subsection}{\numberline {VIII.8.1}Representation and Geometric Source Bounds}{581}{subsection.8.8.1}%
-\contentsline {subsection}{\numberline {VIII.8.2}Capacity and arrival transfer under valid lifts}{582}{subsection.8.8.2}%
-\contentsline {subsection}{\numberline {VIII.8.3}Ambient ancestry and permutation bounds}{585}{subsection.8.8.3}%
-\contentsline {section}{\numberline {VIII.9}Residual Perturbations, Likelihood Quotients, and Direct-Target Obstructions}{588}{section.8.9}%
-\contentsline {subsection}{\numberline {VIII.9.1}Residual Displacement and Simultaneous Separation}{588}{subsection.8.9.1}%
-\contentsline {subsection}{\numberline {VIII.9.2}Base and Lifted Residual Drift}{590}{subsection.8.9.2}%
-\contentsline {subsection}{\numberline {VIII.9.3}Residual Likelihood Quotients and Compact Factorization}{593}{subsection.8.9.3}%
-\contentsline {subsection}{\numberline {VIII.9.4}Direct-Target Perturbation Obstruction}{595}{subsection.8.9.4}%
-\contentsline {section}{\numberline {VIII.10}Public-Ancestry Local Geometry and Gate Evaluation}{597}{section.8.10}%
-\contentsline {subsection}{\numberline {VIII.10.1}Target-edge and ancestry normal forms}{597}{subsection.8.10.1}%
-\contentsline {subsection}{\numberline {VIII.10.2}Identity-supported gate records}{599}{subsection.8.10.2}%
-\contentsline {subsection}{\numberline {VIII.10.3}Parameter-explicit verifier geometry}{602}{subsection.8.10.3}%
-\contentsline {section}{\numberline {VIII.11}Controlled Capacity and Caus Aiming for LPN}{604}{section.8.11}%
-\contentsline {subsection}{\numberline {VIII.11.1}Base-Carrier Capacity and Global Drift}{604}{subsection.8.11.1}%
-\contentsline {subsection}{\numberline {VIII.11.2}Residual Caus Energy and Contact Conversion}{606}{subsection.8.11.2}%
-\contentsline {subsection}{\numberline {VIII.11.3}Noise-Indexed Valid-Lift Interfaces}{610}{subsection.8.11.3}%
-\contentsline {section}{\numberline {VIII.12}Hypercube Functional Geometry and Learned Operators}{612}{section.8.12}%
-\contentsline {subsection}{\numberline {VIII.12.1}Exact hypercube spectrum and functional outputs}{612}{subsection.8.12.1}%
-\contentsline {subsection}{\numberline {VIII.12.2}Capacity, effective dimension, and carrier profile}{614}{subsection.8.12.2}%
-\contentsline {subsection}{\numberline {VIII.12.3}Nonlinear reweighting and learned-operator transfer}{617}{subsection.8.12.3}%
-\contentsline {section}{\numberline {VIII.13}LPN Committors and Dynamical Learning}{619}{section.8.13}%
-\contentsline {subsection}{\numberline {VIII.13.1}Committor and Bellman propagation}{619}{subsection.8.13.1}%
-\contentsline {subsection}{\numberline {VIII.13.2}Safe spectra and dependent-data candidates}{620}{subsection.8.13.2}%
-\contentsline {subsection}{\numberline {VIII.13.3}Complete learning transfer and stress tests}{622}{subsection.8.13.3}%
-\contentsline {subsection}{\numberline {VIII.13.4}Exact BKW traces and resource-matched comparison}{624}{subsection.8.13.4}%
-\contentsline {paragraph}{Reproducible parameter grid.}{630}{section*.172}%
-\contentsline {section}{\numberline {VIII.14}Readout-Agnostic Capacity, Information, and Blackwell Envelopes}{630}{section.8.14}%
-\contentsline {subsection}{\numberline {VIII.14.1}Invariant-law capacity and represented tilts}{632}{subsection.8.14.1}%
-\contentsline {subsection}{\numberline {VIII.14.2}Sequential information contraction for the LPN presentation}{634}{subsection.8.14.2}%
-\contentsline {subsection}{\numberline {VIII.14.3}Blackwell envelopes for LPN pre-hit readouts}{636}{subsection.8.14.3}%
-\contentsline {subsection}{\numberline {VIII.14.4}Sparse-reward observation and transport accounting for LPN}{641}{subsection.8.14.4}%
-\contentsline {section}{\numberline {VIII.15}Optimal Structural Active Sampling for LPN}{643}{section.8.15}%
-\contentsline {subsection}{\numberline {VIII.15.1}Structural Bayesian learning for LPN}{651}{subsection.8.15.1}%
-\contentsline {section}{\numberline {VIII.16}Charged Decoder Geometry and Current Classification}{658}{section.8.16}%
-\contentsline {subsection}{\numberline {VIII.16.1}Post-Output Decoder Geometry and Level Quotients}{658}{subsection.8.16.1}%
-\contentsline {subsection}{\numberline {VIII.16.2}Selected-Current Hodge Classification}{663}{subsection.8.16.2}%
-\contentsline {subsection}{\numberline {VIII.16.3}Geometric-Source Exclusion}{665}{subsection.8.16.3}%
-\contentsline {section}{\numberline {VIII.17}Five-Family Provenance and Algebraic Source Classes}{666}{section.8.17}%
-\contentsline {subsection}{\numberline {VIII.17.1}Additive and Symmetry Sources}{667}{subsection.8.17.1}%
-\contentsline {subsection}{\numberline {VIII.17.2}Multiplicative and Order Sources}{670}{subsection.8.17.2}%
-\contentsline {section}{\numberline {VIII.18}Filtration, Quotient, and Reversible-Coarsening Closure}{671}{section.8.18}%
-\contentsline {section}{\numberline {VIII.19}Residual Ambient Geometry and Five-Family Affordability}{674}{section.8.19}%
-\contentsline {section}{\numberline {VIII.20}First-Hit Accountability and Complete Source Exhaustion}{678}{section.8.20}%
-\contentsline {subsection}{\numberline {VIII.20.1}First-hit accounting and source modes}{678}{subsection.8.20.1}%
-\contentsline {subsection}{\numberline {VIII.20.2}Complete prospective value routing}{680}{subsection.8.20.2}%
-\contentsline {subsection}{\numberline {VIII.20.3}Complete Geom exhaustion and saturated evaluation}{681}{subsection.8.20.3}%
-\contentsline {subsection}{\numberline {VIII.20.4}Selector and valid-Lift consequences}{686}{subsection.8.20.4}%
-\contentsline {section}{\numberline {VIII.21}Exact Reduction of the Saturated LPN Profile}{687}{section.8.21}%
-\contentsline {section}{\numberline {VIII.22}Hardness from the Saturated Prospective Profile}{688}{section.8.22}%
-\contentsline {section}{\numberline {VIII.23}Complexity-Barrier Interpretation for LPN}{694}{section.8.23}%
-\contentsline {subsection}{\numberline {VIII.23.1}Relativization}{694}{subsection.8.23.1}%
-\contentsline {subsection}{\numberline {VIII.23.2}Natural proofs}{694}{subsection.8.23.2}%
-\contentsline {subsection}{\numberline {VIII.23.3}Algebrization}{694}{subsection.8.23.3}%
-\contentsline {subsection}{\numberline {VIII.23.4}Oracle-Blind Family Classification}{695}{subsection.8.23.4}%
-\contentsline {section}{\numberline {VIII.24}Conclusion}{695}{section.8.24}%
-\contentsline {section}{\numberline {A}Index of Notation}{697}{appendix.A}%
-\contentsline {subsection}{\numberline {A.1}Superscript and subscript conventions}{706}{subsection.A.1}%
+\contentsline {subsection}{\numberline {V.15.6}Certificate engineering specification}{486}{subsection.5.15.6}%
+\contentsline {paragraph}{Discovery code.}{486}{section*.166}%
+\contentsline {paragraph}{Proof objects.}{486}{section*.167}%
+\contentsline {paragraph}{Trusted checker.}{486}{section*.168}%
+\contentsline {paragraph}{Uniformity beyond the audited prefix.}{488}{section*.169}%
+\contentsline {subsubsection}{\numberline {V.15.6.1}Proof-producing verification of structural scaling laws}{488}{subsubsection.5.15.6.1}%
+\contentsline {subsection}{\numberline {V.15.7}Finite-network audit and selection}{491}{subsection.5.15.7}%
+\contentsline {subsection}{\numberline {V.15.8}Empirical structural-channel attribution}{492}{subsection.5.15.8}%
+\contentsline {subsection}{\numberline {V.15.9}Canonical primal--dual learning objective}{494}{subsection.5.15.9}%
+\contentsline {subsection}{\numberline {V.15.10}Certified WAdam optimization}{496}{subsection.5.15.10}%
+\contentsline {subsection}{\numberline {V.15.11}Certified structural bias--variance ledger}{498}{subsection.5.15.11}%
+\contentsline {subsection}{\numberline {V.15.12}Empirical certification of analytical geometry}{501}{subsection.5.15.12}%
+\contentsline {subsection}{\numberline {V.15.13}Empirical certification of exact and quasi-lumpability}{503}{subsection.5.15.13}%
+\contentsline {section}{\numberline {V.16}Black-Box Structural Auditing of Trained Predictors}{506}{section.5.16}%
+\contentsline {subsection}{\numberline {V.16.1}Oracle access and complete audit records}{508}{subsection.5.16.1}%
+\contentsline {subsection}{\numberline {V.16.2}Predictive performance, calibration, and law transfer}{509}{subsection.5.16.2}%
+\contentsline {subsection}{\numberline {V.16.3}Noise identification and clean-risk reconstruction}{510}{subsection.5.16.3}%
+\contentsline {subsection}{\numberline {V.16.4}Behavioral structural channels and interventions}{513}{subsection.5.16.4}%
+\contentsline {subsection}{\numberline {V.16.5}Black-box geometry, alignment, and functional inequalities}{515}{subsection.5.16.5}%
+\contentsline {subsection}{\numberline {V.16.6}Behavioral quotients and residual structure}{516}{subsection.5.16.6}%
+\contentsline {subsection}{\numberline {V.16.7}Master black-box certificate}{517}{subsection.5.16.7}%
+\contentsline {section}{\numberline {V.17}Length-Bounded Levin Search and the Structural Learner}{520}{section.5.17}%
+\contentsline {subsection}{\numberline {V.17.1}Prefix codes and length-bounded saturated profiles}{520}{subsection.5.17.1}%
+\contentsline {subsection}{\numberline {V.17.2}The represented Levin record}{521}{subsection.5.17.2}%
+\contentsline {subsection}{\numberline {V.17.3}Certified relation to the structural learner}{523}{subsection.5.17.3}%
+\contentsline {subsection}{\numberline {V.17.4}Certifiable length and structural advantage}{524}{subsection.5.17.4}%
+\contentsline {subsection}{\numberline {V.17.5}Resource-matched benchmark frontiers}{525}{subsection.5.17.5}%
+\contentsline {subsection}{\numberline {V.17.6}LPN verifier and parameter-explicit specialization}{527}{subsection.5.17.6}%
+\contentsline {section}{\numberline {V.18}Summary of the Dynamical-Systems Geometry}{530}{section.5.18}%
+\contentsline {part}{VI\hspace {1em}Attention as Structural Gradient Flow}{533}{part.6}%
+\contentsline {section}{\numberline {VI.0}Represented Attention Records}{533}{section.6.0}%
+\contentsline {paragraph}{Part contract.}{533}{section*.170}%
+\contentsline {section}{\numberline {VI.1}Gibbs Geometry and Exact Structural Charging}{533}{section.6.1}%
+\contentsline {section}{\numberline {VI.2}Attention Target-Gain Envelope}{535}{section.6.2}%
+\contentsline {section}{\numberline {VI.3}Summary of the Attention Compilation}{538}{section.6.3}%
+\contentsline {part}{VII\hspace {1em}Structural Meta-Complexity and Certificate Minimization}{539}{part.7}%
+\contentsline {section}{\numberline {VII.0}Introduction: Presentation-Relative Meta-Complexity}{539}{section.7.0}%
+\contentsline {paragraph}{Part contract.}{539}{section*.171}%
+\contentsline {section}{\numberline {VII.1}Structural Certificate Meta-Problems}{539}{section.7.1}%
+\contentsline {subsection}{\numberline {VII.1.1}Complete profile data and Pareto feasibility}{539}{subsection.7.1.1}%
+\contentsline {subsection}{\numberline {VII.1.2}Exact generalized inverse}{540}{subsection.7.1.2}%
+\contentsline {section}{\numberline {VII.2}Temporal Meta-Complexity and Accountability}{542}{section.7.2}%
+\contentsline {subsection}{\numberline {VII.2.1}Source, selector, active, and accounting frontiers}{542}{subsection.7.2.1}%
+\contentsline {section}{\numberline {VII.3}Source-Resolved Structural Meta-Complexity}{544}{section.7.3}%
+\contentsline {subsection}{\numberline {VII.3.1}Exact cell frontiers}{544}{subsection.7.3.1}%
+\contentsline {section}{\numberline {VII.4}Representation, Extraction, and Operational Interfaces}{545}{section.7.4}%
+\contentsline {subsection}{\numberline {VII.4.1}Exact denotation and extraction}{545}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {VII.4.2}Decision, search, certification, and deployment}{545}{subsection.7.4.2}%
+\contentsline {section}{\numberline {VII.5}Classical Representation-Minimization Specializations}{546}{section.7.5}%
+\contentsline {subsection}{\numberline {VII.5.1}Circuit minimization}{546}{subsection.7.5.1}%
+\contentsline {subsection}{\numberline {VII.5.2}Universal programs and time-sensitive costs}{547}{subsection.7.5.2}%
+\contentsline {section}{\numberline {VII.6}Prefix Coding and Structural Incompressibility}{548}{section.7.6}%
+\contentsline {subsection}{\numberline {VII.6.1}Unconditional counting bounds}{548}{subsection.7.6.1}%
+\contentsline {subsection}{\numberline {VII.6.2}Represented coding transfer}{549}{subsection.7.6.2}%
+\contentsline {section}{\numberline {VII.7}Learning, Compression, and Natural Properties}{549}{section.7.7}%
+\contentsline {subsection}{\numberline {VII.7.1}Learned records as feasible meta-certificates}{549}{subsection.7.7.1}%
+\contentsline {section}{\numberline {VII.8}Represented Hardness Magnification}{550}{section.7.8}%
+\contentsline {section}{\numberline {VII.9}Application Interface and Chapter Summary}{552}{section.7.9}%
+\contentsline {part}{VIII\hspace {1em}Resource-Bounded Structural Analysis of LPN}{554}{part.8}%
+\contentsline {section}{\numberline {VIII.0}Application to Learning Parity with Noise}{554}{section.8.0}%
+\contentsline {paragraph}{Part contract.}{554}{section*.172}%
+\contentsline {section}{\numberline {VIII.1}The LPN Task Presentation}{556}{section.8.1}%
+\contentsline {section}{\numberline {VIII.2}Statistical Attacks as Saturated LPN Learning}{557}{section.8.2}%
+\contentsline {subsection}{\numberline {VIII.2.1}Noisy parity as a corrupted binary target}{557}{subsection.8.2.1}%
+\contentsline {subsection}{\numberline {VIII.2.2}Uniform target-alignment bound}{559}{subsection.8.2.2}%
+\contentsline {section}{\numberline {VIII.3}Constant-Noise Spectral Closure Ledger}{564}{section.8.3}%
+\contentsline {section}{\numberline {VIII.4}Candidate Recovery and Prospective Selector Accountability}{569}{section.8.4}%
+\contentsline {section}{\numberline {VIII.5}Public Verification of the LPN Target}{573}{section.8.5}%
+\contentsline {section}{\numberline {VIII.6}Quantitative Noise--Resource Phase Diagram}{575}{section.8.6}%
+\contentsline {subsection}{\numberline {VIII.6.1}Exact finite-budget error enumeration}{575}{subsection.8.6.1}%
+\contentsline {section}{\numberline {VIII.7}Asymptotic, Statistical, and Information Thresholds}{578}{section.8.7}%
+\contentsline {subsection}{\numberline {VIII.7.1}The saturated computational boundary}{582}{subsection.8.7.1}%
+\contentsline {section}{\numberline {VIII.8}Structural Core Reduction for LPN}{584}{section.8.8}%
+\contentsline {subsection}{\numberline {VIII.8.1}Representation and Geometric Source Bounds}{584}{subsection.8.8.1}%
+\contentsline {subsection}{\numberline {VIII.8.2}Capacity and arrival transfer under valid lifts}{585}{subsection.8.8.2}%
+\contentsline {subsection}{\numberline {VIII.8.3}Ambient ancestry and permutation bounds}{588}{subsection.8.8.3}%
+\contentsline {section}{\numberline {VIII.9}Residual Perturbations, Likelihood Quotients, and Direct-Target Obstructions}{591}{section.8.9}%
+\contentsline {subsection}{\numberline {VIII.9.1}Residual Displacement and Simultaneous Separation}{591}{subsection.8.9.1}%
+\contentsline {subsection}{\numberline {VIII.9.2}Base and Lifted Residual Drift}{593}{subsection.8.9.2}%
+\contentsline {subsection}{\numberline {VIII.9.3}Residual Likelihood Quotients and Compact Factorization}{596}{subsection.8.9.3}%
+\contentsline {subsection}{\numberline {VIII.9.4}Direct-Target Perturbation Obstruction}{598}{subsection.8.9.4}%
+\contentsline {section}{\numberline {VIII.10}Public-Ancestry Local Geometry and Gate Evaluation}{600}{section.8.10}%
+\contentsline {subsection}{\numberline {VIII.10.1}Target-edge and ancestry normal forms}{600}{subsection.8.10.1}%
+\contentsline {subsection}{\numberline {VIII.10.2}Identity-supported gate records}{602}{subsection.8.10.2}%
+\contentsline {subsection}{\numberline {VIII.10.3}Parameter-explicit verifier geometry}{605}{subsection.8.10.3}%
+\contentsline {section}{\numberline {VIII.11}Controlled Capacity and Caus Aiming for LPN}{607}{section.8.11}%
+\contentsline {subsection}{\numberline {VIII.11.1}Base-Carrier Capacity and Global Drift}{607}{subsection.8.11.1}%
+\contentsline {subsection}{\numberline {VIII.11.2}Residual Caus Energy and Contact Conversion}{609}{subsection.8.11.2}%
+\contentsline {subsection}{\numberline {VIII.11.3}Noise-Indexed Valid-Lift Interfaces}{613}{subsection.8.11.3}%
+\contentsline {section}{\numberline {VIII.12}Hypercube Functional Geometry and Learned Operators}{615}{section.8.12}%
+\contentsline {subsection}{\numberline {VIII.12.1}Exact hypercube spectrum and functional outputs}{615}{subsection.8.12.1}%
+\contentsline {subsection}{\numberline {VIII.12.2}Capacity, effective dimension, and carrier profile}{617}{subsection.8.12.2}%
+\contentsline {subsection}{\numberline {VIII.12.3}Nonlinear reweighting and learned-operator transfer}{620}{subsection.8.12.3}%
+\contentsline {section}{\numberline {VIII.13}LPN Committors and Dynamical Learning}{622}{section.8.13}%
+\contentsline {subsection}{\numberline {VIII.13.1}Committor and Bellman propagation}{622}{subsection.8.13.1}%
+\contentsline {subsection}{\numberline {VIII.13.2}Safe spectra and dependent-data candidates}{623}{subsection.8.13.2}%
+\contentsline {subsection}{\numberline {VIII.13.3}Complete learning transfer and stress tests}{625}{subsection.8.13.3}%
+\contentsline {subsection}{\numberline {VIII.13.4}Exact BKW traces and resource-matched comparison}{627}{subsection.8.13.4}%
+\contentsline {paragraph}{Reproducible parameter grid.}{633}{section*.177}%
+\contentsline {section}{\numberline {VIII.14}Readout-Agnostic Capacity, Information, and Blackwell Envelopes}{633}{section.8.14}%
+\contentsline {subsection}{\numberline {VIII.14.1}Invariant-law capacity and represented tilts}{635}{subsection.8.14.1}%
+\contentsline {subsection}{\numberline {VIII.14.2}Sequential information contraction for the LPN presentation}{637}{subsection.8.14.2}%
+\contentsline {subsection}{\numberline {VIII.14.3}Blackwell envelopes for LPN pre-hit readouts}{639}{subsection.8.14.3}%
+\contentsline {subsection}{\numberline {VIII.14.4}Sparse-reward observation and transport accounting for LPN}{644}{subsection.8.14.4}%
+\contentsline {section}{\numberline {VIII.15}Optimal Structural Active Sampling for LPN}{646}{section.8.15}%
+\contentsline {subsection}{\numberline {VIII.15.1}Structural Bayesian learning for LPN}{654}{subsection.8.15.1}%
+\contentsline {section}{\numberline {VIII.16}Charged Decoder Geometry and Current Classification}{661}{section.8.16}%
+\contentsline {subsection}{\numberline {VIII.16.1}Post-Output Decoder Geometry and Level Quotients}{661}{subsection.8.16.1}%
+\contentsline {subsection}{\numberline {VIII.16.2}Selected-Current Hodge Classification}{666}{subsection.8.16.2}%
+\contentsline {subsection}{\numberline {VIII.16.3}Geometric-Source Exclusion}{668}{subsection.8.16.3}%
+\contentsline {section}{\numberline {VIII.17}Five-Family Provenance and Algebraic Source Classes}{669}{section.8.17}%
+\contentsline {subsection}{\numberline {VIII.17.1}Additive and Symmetry Sources}{670}{subsection.8.17.1}%
+\contentsline {subsection}{\numberline {VIII.17.2}Multiplicative and Order Sources}{673}{subsection.8.17.2}%
+\contentsline {section}{\numberline {VIII.18}Filtration, Quotient, and Reversible-Coarsening Closure}{674}{section.8.18}%
+\contentsline {section}{\numberline {VIII.19}Residual Ambient Geometry and Five-Family Affordability}{677}{section.8.19}%
+\contentsline {section}{\numberline {VIII.20}First-Hit Accountability and Complete Source Exhaustion}{681}{section.8.20}%
+\contentsline {subsection}{\numberline {VIII.20.1}First-hit accounting and source modes}{681}{subsection.8.20.1}%
+\contentsline {subsection}{\numberline {VIII.20.2}Complete prospective value routing}{683}{subsection.8.20.2}%
+\contentsline {subsection}{\numberline {VIII.20.3}Complete Geom exhaustion and saturated evaluation}{684}{subsection.8.20.3}%
+\contentsline {subsection}{\numberline {VIII.20.4}Selector and valid-Lift consequences}{689}{subsection.8.20.4}%
+\contentsline {section}{\numberline {VIII.21}Exact Reduction of the Saturated LPN Profile}{690}{section.8.21}%
+\contentsline {section}{\numberline {VIII.22}Hardness from the Saturated Prospective Profile}{691}{section.8.22}%
+\contentsline {section}{\numberline {VIII.23}Complexity-Barrier Interpretation for LPN}{697}{section.8.23}%
+\contentsline {subsection}{\numberline {VIII.23.1}Relativization}{697}{subsection.8.23.1}%
+\contentsline {subsection}{\numberline {VIII.23.2}Natural proofs}{697}{subsection.8.23.2}%
+\contentsline {subsection}{\numberline {VIII.23.3}Algebrization}{697}{subsection.8.23.3}%
+\contentsline {subsection}{\numberline {VIII.23.4}Oracle-Blind Family Classification}{697}{subsection.8.23.4}%
+\contentsline {section}{\numberline {VIII.24}Conclusion}{698}{section.8.24}%
+\contentsline {section}{\numberline {A}Index of Notation}{699}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Superscript and subscript conventions}{709}{subsection.A.1}%

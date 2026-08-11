@@ -82,6 +82,7 @@ residual rather than from a fact. -/
         (show Value BranchState Presentation presentation data
             .sparseSlackSurplus inputs.current from
           ⟨by
+            simp only [Holds]
             unfold Graph.FiniteObject.degreeSurplus
             omega⟩)
         .nil)
@@ -172,8 +173,28 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
             fun adjacent =>
               (object.surplusPortOfMem member).triangle_of_shoulders_adj
                 (shoulders left |>.2 (Or.inl rfl))
-                (shoulders right |>.2 (Or.inr rfl)) adjacent⟩)
+                (shoulders right |>.2 (Or.inr rfl)) adjacent⟩
           ⟩)
+        .nil)
+
+/-- The completed active family, read only from the three incoming facts. -/
+@[reducible] noncomputable def activeSurplusDemandsRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.activeSurplusDemands
+    { Requires := [K .sparseSurplusSurvivor, K .activeSurplusFamily,
+        K .sparsePortActivation]
+      Produces := [K .activeSurplusDemands]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .activeSurplusDemands)
+        (show Value BranchState Presentation presentation data
+            .activeSurplusDemands inputs.current from
+          ⟨Graph.surviving_active_family
+            (inputs.get (K .sparseSurplusSurvivor)).down.1
+            (inputs.get (K .activeSurplusFamily)).down.1
+            (inputs.get (K .sparsePortActivation)).down⟩)
         .nil)
 
 /-! ## Node `[129]`: the active family and baseline demand -/
@@ -188,26 +209,12 @@ independently target-testable; choosing the cubic baseline exponent itself as
 its cardinality gives canonical deficit zero, hence the required linear bound.
 The witness, deficit, and bound are all registered in this node's one paper
 fact. -/
-@[reducible] noncomputable def baselineSpineDemandRow
-    (activeSurplusDemands sparseSurplusSurvivor baselineSpineDemand :
-      FactKey (Input BranchState Presentation presentation data))
-    (activeIs : activeSurplusDemands = K .activeSurplusDemands)
-    (survivorIs : sparseSurplusSurvivor = K .sparseSurplusSurvivor)
-    (baselineIs : baselineSpineDemand = K .baselineSpineDemand)
-    (activeSurvivor : activeSurplusDemands ≠ sparseSurplusSurvivor)
-    (activeBaseline : activeSurplusDemands ≠ baselineSpineDemand)
-    (survivorBaseline : sparseSurplusSurvivor ≠ baselineSpineDemand)
-    (twoLe : 2 ≤ data.threshold) :
+@[reducible] noncomputable def baselineSpineDemandRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  by
-    subst activeSurplusDemands
-    subst sparseSurplusSurvivor
-    subst baselineSpineDemand
-    exact
-      factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
+  factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
         { Requires := [K .activeSurplusDemands, K .sparseSurplusSurvivor]
           Produces := [K .baselineSpineDemand]
-          requiresUnique := by simp [activeSurvivor]
+          requiresUnique := by simp [K_eq_iff]
           producesUnique := by simp
           producesNonempty := by simp }
         (fun inputs =>
@@ -252,7 +259,8 @@ fact. -/
                   (Graph.MinimumDegreeAtLeast data.threshold)
                     (Graph.HasCycleWithLength data.LengthOK)
                     family coordinateSupport)
-                  inputs.current.object.vertexCount twoLe bits testable (by omega)
+                  inputs.current.object.vertexCount
+                  (le_trans (by omega) data.three_le_threshold) bits testable (by omega)
                 refine ⟨(inputs.get (K .activeSurplusDemands)).down,
                   Coordinate, family, coordinateSupport, ?_, ?_⟩
                 · simpa [familyCard] using demand

@@ -430,6 +430,22 @@ this explicit proof certificate.  An accepted certificate would discharge
 the sole remaining certification target internally; no external LPN or
 complexity-theoretic hardness assumption is used.
 
+\paragraph{Uniformity over new high-\(n\) structure.}
+For an accepted proof-producing package, exact finite saturation enumerates
+the complete budgeted structural slice at every size in the audited prefix,
+not the output of one selected optimizer.  Its tail certificate quantifies
+over the complete qualified source cell, and its recurrence cover assigns
+every admissible represented transition in that cell to a verified transition
+map.  A different high-\(n\) regime must therefore enter through a represented
+change of recurrence grammar, acquisition interface, reuse rule, precision,
+or locator.  Such a change has a complete construction and deployment cost;
+the crossing-price certificate excludes it whenever that cost exceeds the
+declared ceiling
+(\cref{def-proof-producing-certificate-package,def-charged-structural-scaling-recurrence-certificate,thm-verified-recurrence-propagation-crossing-exclusion,cor-scaling-breakpoint-structural-price}).
+Every representation constructed by a future admissible algorithm remains in
+the same saturated derivability closure, so the verified source-cell and
+crossing bounds apply to it without naming its architecture in advance.
+
 \begin{center}
 \fbox{%
   \begin{minipage}{0.91\linewidth}
@@ -670,7 +686,7 @@ The static spine is
 \begin{definition}[General intelligent computation relative to a presentation]
 \label{def-general-intelligent-computation}
 
-Fix a presented task family, a declared resource envelope (B), and declared
+Fix a presented task family, a declared resource envelope \(B\), and declared
 observation, memory, action, and oracle interfaces.  A \emph{general
 intelligent computation} in this model is an arbitrary family-uniform,
 presentation-relative represented computation
@@ -860,7 +876,7 @@ finite-prefix checks, and uniform scale propagation form a sufficient
 certificate whose deterministic acceptance discharges that target.  The
 paper proves this discharge implication and specifies every verification
 field; it does not execute the final instantiated certificate analysis
-(\cref{thm-lpn-constant-noise-materialized-spectral-closure,lem-lpn-residual-parity-spectral-fibers,cor-empirical-discovery-deterministic-universal-closure,thm-lpn-proof-grade-empirical-residual-discharge}).
+(\cref{def-proof-producing-certificate-package,thm-lpn-constant-noise-materialized-spectral-closure,lem-lpn-residual-parity-spectral-fibers,cor-empirical-discovery-deterministic-universal-closure,thm-lpn-proof-grade-empirical-residual-discharge}).
 \end{itemize}
 
 \paragraph{C. Standard ingredients used inside the proofs.}
@@ -45187,6 +45203,171 @@ Deterministic verification makes the exported inequalities independent of
 the random search that found them.
 \end{proof}
 
+\subsection{Certificate engineering specification}
+\label{subsec-certificate-engineering-specification}
+
+A proof-producing computation has three logically distinct layers.
+
+\paragraph{Discovery code.}
+Neural training, Bayesian search, symbolic regression, combinatorial search,
+or numerical optimization may propose a factorization, recurrence, enclosure,
+or crossover point.  This code is untrusted for proof validity.  When it is
+part of the computation being analyzed, its construction and execution costs
+remain in the represented resource ledger.
+
+\paragraph{Proof objects.}
+The exported record contains canonical finite data, exact rational values,
+directed-rounding intervals, symbolic identities, coverage witnesses, and
+induction certificates.  It contains no statistical assertion whose validity
+depends on the optimizer, random seed, or failure to discover a counterexample.
+
+\paragraph{Trusted checker.}
+A deterministic parser and verifier checks the canonical encodings, exact
+enumerations, interval inclusions, symbolic steps, and dependency hashes.  The
+final proof term must be accepted by the Lean kernel.  Candidate-generation
+code and the proof-object exporter lie outside this trusted base.
+
+\begin{definition}[Proof-producing certificate package]
+\label{def-proof-producing-certificate-package}
+
+Fix a public presentation, a budget schedule \(B_n\), a finite audited prefix,
+and the qualified saturated source cells to be certified.  A
+\emph{proof-producing certificate package} consists of the following twelve
+machine-checkable fields.  Such a package exists only when Fields 1--3 certify
+that the directly audited presentation and budgeted derivation slices are
+finitely enumerable; otherwise exact finite saturation has not been certified.
+
+\begin{enumerate}[label=\textup{\arabic*.}]
+\item \emph{Presentation and budget encoding.}
+      A canonical serialization of the task presentation, primitive
+      observables, constructor grammar, terminal data, reference laws,
+      admissible oracle contracts, resource monoid, scalarization if used,
+      budget schedule, and all versioned semantics on which the certificate
+      depends.  The checker verifies the serialization and dependency hashes.
+
+\item \emph{Finite-state and full-support enumerator.}
+      For every directly audited size, an exact enumerator for the complete
+      finite state carrier and the full support of each declared finite law,
+      with exact weights, a termination witness, duplicate elimination, and a
+      completeness witness.  The resulting population calculations use
+      \cref{def-computable-observable-audit}; a sampled support list is not an
+      exact enumerator.
+
+\item \emph{Complete admissible derivation slice.}
+      A canonical enumeration of every represented derivation admitted by the
+      declared constructor grammar at cost at most \(B_n\), including generated
+      representations, memory states, oracle calls, precision, verification,
+      and deployment.  The field includes a proof that the enumeration is
+      closed under every affordable constructor and that each omitted branch
+      exceeds the ceiling.  It is an exact finite realization of
+      \cref{def-budgeted-derivability-closure}, not a list of records found by
+      the discovery procedure.
+
+\item \emph{Exact source-cell assignment.}
+      For every derivation in the preceding slice, an authenticated backward
+      ancestry record, temporal source type, support mode, exact provenance
+      signature, and assignment to one qualified source cell.  The checker
+      verifies disjointness, exhaustion, and the source-cover inequality
+      \cref{eq-scale-audit-source-cover}.
+
+\item \emph{Capacity certificate.}
+      Exact or outward-rounded witnesses for the represented carrier,
+      coefficient norm, effective dimension or rank, and the uniform bound
+      \(D_{c,n}\) for every record in each covered cell.
+
+\item \emph{Attenuation and noise-transfer certificate.}
+      A symbolic or interval-verified transfer factor \(a_{c,n}\), including
+      every provenance weight, channel parameter, floor, dependence
+      correction, and noise conversion used to prove the attenuation law.
+
+\item \emph{Error enclosure.}
+      Directed-rounding enclosures for factorization, truncation, tail,
+      discretization, approximation, and arithmetic error, combined into the
+      uniform cellwise quantity \(e_{c,n}\).  Fields 5--7 jointly verify
+      \cref{eq-scale-audit-factorization,eq-scale-audit-capacity-attenuation,eq-scale-audit-error-envelope}.
+
+\item \emph{Recurrence-cover certificate.}
+      A finite represented family of structural transition maps and a proof
+      that every admissible transition of every record in the complete
+      qualified cell follows one of them.  New grammars, acquisition rules,
+      reuse patterns, locators, and precision regimes appear as new represented
+      maps with their complete incremental costs, as required by
+      \cref{def-charged-structural-scaling-recurrence-certificate}.
+
+\item \emph{Interval invariance or symbolic induction certificate.}
+      Base enclosures and exact symbolic or outward-rounded inclusion proofs
+      showing that every transition map preserves the asserted tail envelope,
+      uniformly for all declared sizes beyond the prefix; see
+      \cref{eq-structural-scaling-inductive-enclosure}.
+
+\item \emph{Breakpoint and crossover certificate.}
+      Exact scalar comparisons proving the exponent gap, every claimed
+      crossover inequality, and each crossing-price lower bound used to
+      exclude a different structural regime within \(B_n\); see
+      \cref{thm-verified-recurrence-propagation-crossing-exclusion,cor-scaling-breakpoint-structural-price}.
+
+\item \emph{Direct finite-prefix verification.}
+      Exact symbolic or outward-rounded evaluation of the complete saturated
+      slice at every size not covered by the tail induction.  The checker
+      joins this finite result to the first certified tail size without a gap.
+
+\item \emph{Final theorem object exported to Lean.}
+      A versioned Lean theorem declaration and kernel-checkable proof term whose
+      imported constants and hypotheses encode the accepted contents of Fields
+      1--11 and whose conclusion is the final instantiated saturated-profile or
+      target-performance bound.  A manifest binds the theorem to the content
+      hashes of those fields.  The export log records the Lean version, imported
+      definitions, theorem name, and kernel acceptance result; a generated
+      source file without kernel acceptance does not populate this field.
+\end{enumerate}
+
+The package is \emph{accepted} only when the trusted checker validates Fields
+1--11 and the Lean kernel accepts Field 12.  The present manuscript specifies
+this package and proves the implications used to assemble it.  It does not
+contain an accepted instantiated LPN package.
+
+\end{definition}
+
+\begin{proposition}[Soundness of an accepted certificate package]
+\label{prop-proof-producing-certificate-package-soundness}
+
+An accepted package in the sense of
+\cref{def-proof-producing-certificate-package} supplies a deterministic
+proof-grade audit of its complete declared source cells.  Its final theorem
+object depends only on the encoded presentation, declared resource semantics,
+deterministic proof objects, and trusted checker; the discovery procedure and
+its randomness do not enter the theorem's hypotheses.
+
+\end{proposition}
+
+\begin{proof}
+Fields 1--4 verify the presented finite slices and the source cover.  Fields
+5--7 verify the factorization, capacity--attenuation, and error premises of
+\cref{def-scale-certified-attenuating-source-audit}.  Fields 8 and 9 verify
+the recurrence cover and its uniform induction.  Field 10 supplies the rate
+and crossing exclusions, and Field 11 supplies the remaining finite sizes.
+Thus
+\cref{cor-empirical-discovery-deterministic-universal-closure,thm-verified-recurrence-propagation-crossing-exclusion}
+give the asserted deterministic bound.  Field 12 records the corresponding
+formal theorem and is accepted only after kernel checking.
+\end{proof}
+
+\paragraph{Uniformity beyond the audited prefix.}
+For an accepted package, the directly audited sizes enumerate the complete
+budgeted structural object, while the asymptotic statement ranges over every
+record in the complete qualified source cell.  The recurrence-cover field
+quantifies over every admissible represented transition in that cell, rather
+than continuing one low-dimensional optimizer.  Any new high-\(n\) regime
+therefore requires a represented structural transition.  The complete cost of
+that transition enters its recurrence path, and
+\cref{thm-verified-recurrence-propagation-crossing-exclusion,cor-scaling-breakpoint-structural-price}
+exclude it whenever its verified crossing price exceeds \(B_n\).  Finally,
+every representation constructed by any later budget-admissible algorithm is
+an element of the saturated derivability closure and hence belongs to the same
+source cover.  The accepted certificate is therefore uniform over admissible
+algorithms and sizes, not an extrapolation of the optimizer used during
+discovery.
+
 \subsubsection{Proof-producing verification of structural scaling laws}
 \label{subsubsec-proof-producing-structural-scaling-laws}
 
@@ -51578,10 +51759,11 @@ theorem, and the final obstruction criterion.
   optimized component may propose candidate records; only deterministic exact,
   symbolic, or outward-rounded interval verification enters the proof.  If the
   checker accepts all fields, \cref{eq-lpn-empirical-discharge-final}
-  establishes the residual bound uniformly on the audited scale range and
+  establishes the residual bound uniformly for every \(n\ge n_0\) and
   closes the LPN obstruction at the declared ceiling.  The manuscript proves
-  this verification implication and specifies its fields; it does not execute
-  an instantiated certificate analysis, so the downstream LPN hardness
+  this verification implication and specifies its machine-checkable fields in
+  \cref{subsec-certificate-engineering-specification}; it does not execute an
+  instantiated certificate analysis, so the downstream LPN hardness
   consequences remain conditional on acceptance of that internal certificate.
   \end{minipage}%
 }
@@ -65117,12 +65299,15 @@ compact, dynamically qualified, non-lumpable residual-ancestry ambient
 records, including any polynomial evaluator with an unmaterialized diffuse
 Walsh expansion.
 
-For the proof-producing discharge, see
-\cref{thm-lpn-proof-grade-empirical-residual-discharge}.  The exact
-finite-saturation regime is governed by the finite audits of
-\cref{sec-finite-target-audits}; recurrence and scale certification are
-specified in \cref{def-scale-certified-attenuating-source-audit}; and the
-uniformly propagated conclusion is
+For the proof-producing discharge and its certificate schema, see
+\cref{thm-lpn-proof-grade-empirical-residual-discharge,def-proof-producing-certificate-package}.
+The exact
+finite-population quantities used in the finite-saturation checks are
+evaluated by the finite audits of \cref{sec-finite-target-audits}; complete
+source-cell coverage remains a separate field of the discharge theorem.
+Recurrence and scale certification are specified in
+\cref{def-scale-certified-attenuating-source-audit}, and the uniformly
+propagated conclusion is
 \cref{eq-lpn-empirical-discharge-final}.
 
 \end{certificationtarget}
@@ -65233,11 +65418,13 @@ Consequently the exported certificate discharges
 The proof dependencies are explicit.  Exact source-cell exhaustion is supplied
 by
 \cref{thm-lpn-exact-constant-noise-spectral-perimeter,cor-lpn-residual-ancestry-five-family-geom-classification}.
-The exact finite-saturation and direct finite-prefix fields use complete
-full-support audit data in the sense of
-\cref{def-computable-observable-audit}, with finite-matrix soundness supplied
-by \cref{thm-computable-audit-soundness}; sampled audit data alone do not
-supply this field.  Capacity factorization, attenuation, and error control are
+For each finite slice covered by that exhaustion, the exact finite-saturation
+and direct finite-prefix fields use complete full-support audit data in the
+sense of \cref{def-computable-observable-audit}, with finite-matrix soundness
+supplied by \cref{thm-computable-audit-soundness}.  This numerical audit does
+not by itself establish that the represented slice is complete, and sampled
+audit data alone do not supply either field.  Capacity factorization,
+attenuation, and error control are
 the verified fields of
 \cref{def-scale-certified-attenuating-source-audit,thm-empirical-asymptotic-saturated-source-closure,cor-empirical-discovery-deterministic-universal-closure},
 specialized here by
@@ -65309,8 +65496,7 @@ finite sizes.  Since \(e^{-\lambda_\eta n}=(1-\eta)^n\), the conclusion is
 exactly \cref{eq-lpn-residual-ancestry-attention-bound}.
 \end{proof}
 
-\clearpage
-\begin{figure}[tbp]
+\begin{figure}[b]
 \centering
 \resizebox{.98\linewidth}{!}{%
 \begin{tikzpicture}[fw diagram,node distance=7mm and 9mm]
