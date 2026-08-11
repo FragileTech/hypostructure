@@ -566,6 +566,13 @@ def SparsePressureOverloadInClass (object : FiniteObject.{u})
     (threshold order : Nat) (value : TokenClass) : Prop :=
   OverloadAtClass object threshold order fun class' => class' = value
 
+/-- The concrete overload witness selected upstream has a token outside the
+given class.  This is the negative residual of the paper's class test; it is
+not the stronger assertion that no overload witness exists in that class. -/
+def SparsePressureOverloadOutsideClass (object : FiniteObject.{u})
+    (threshold order : Nat) (value : TokenClass) : Prop :=
+  OverloadAtClass object threshold order fun class' => class' ≠ value
+
 /-- **Nodes `[140]`, `[142]`, `[143]`: the geometric audit of one token class.**
 
 `def:homogeneous-token-charge` fixes what a token may carry without a
@@ -810,29 +817,24 @@ theorem quantitativeOverloadStatement (object : FiniteObject.{u})
   refine le_trans (Nat.mul_le_mul_left share ?_) absorbs
   exact Nat.mul_le_mul_left _ ledger.tokens_card_le
 
-/-- **The two class tests of nodes `[139]` and `[141]` are exhaustive.**
-
-An overload occurs at a token, a token has a class, and there are three classes,
-so failing both tests leaves the primitive-carrier audit `[143]`.  Nothing else
-remains: the manuscript's "according to the class of the token" is a total case
-split on `TokenClass`. -/
+/-- After node `[139]` records that its concrete overload token is not a window
+token, that same witness lies either in the remainder or primitive class. -/
 theorem overloadClassExhaustive (object : FiniteObject.{u}) (threshold order : Nat)
-    (overload : SparsePressureOverloadStatement object threshold order)
-    (notWindow : ¬ SparsePressureOverloadInClass object threshold order
-      .windowIncidence)
-    (notRemainder : ¬ SparsePressureOverloadInClass object threshold order
-      .remainderSurplus) :
-    SparsePressureOverloadInClass object threshold order .primitiveCarrier := by
-  obtain ⟨data, ledger, routingLabelBound, token, role, tokenMem, _, rest⟩ := overload
+    (notWindow : SparsePressureOverloadOutsideClass object threshold order
+      .windowIncidence) :
+    SparsePressureOverloadInClass object threshold order .remainderSurplus ∨
+      SparsePressureOverloadInClass object threshold order .primitiveCarrier := by
+  obtain ⟨data, ledger, routingLabelBound, token, role, tokenMem,
+    outsideWindow, rest⟩ := notWindow
   cases classified : ledger.presented.tokenClass token with
   | windowIncidence =>
-      exact absurd ⟨data, ledger, routingLabelBound, token, role, tokenMem,
-        classified, rest⟩ notWindow
+      exact absurd classified outsideWindow
   | remainderSurplus =>
-      exact absurd ⟨data, ledger, routingLabelBound, token, role, tokenMem,
-        classified, rest⟩ notRemainder
+      exact Or.inl ⟨data, ledger, routingLabelBound, token, role, tokenMem,
+        classified, rest⟩
   | primitiveCarrier =>
-      exact ⟨data, ledger, routingLabelBound, token, role, tokenMem, classified, rest⟩
+      exact Or.inr ⟨data, ledger, routingLabelBound, token, role, tokenMem,
+        classified, rest⟩
 
 /-- **Node `[144]`, proved.**
 

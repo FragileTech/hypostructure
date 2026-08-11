@@ -485,50 +485,79 @@ admissible-branch input.
 \section{Architecture and reading guide for the Type II proof}
 \label{sec:typeII-proof-architecture}
 
-This section records the logical order of the Type II argument.  It is a
-reading guide to the results proved in this manuscript and introduces no new
-hypothesis.  In particular, a branch contract shown in the diagram is used
-only after the preceding test has produced it; failure of that contract is
-sent to the displayed first-failure row.  The retained branches and all named
-first-failure rows are closed before the unconditional results
-\cref{thm:unconditional-no-typeII-discharged,thm:local-typeII-exclusion}
-are invoked.
+This section is an audit guide to the complete branch structure of the local
+Type II argument.  The definitions, statements, and proofs in the remainder
+of the manuscript are the single source of mathematical truth; the diagrams
+only index their logical order and introduce no additional hypothesis or proof
+step.  The initial object is the residual or
+singular profile at a possible terminal singular point.  It is interpreted as
+a physical local Type II germ by
+\cref{def:physical-local-typeII-germ};
+\cref{lem:physical-typeII-germ-concentration-sequence} then supplies the
+positive concentration sequence used by the ordered state-space analysis.
+All compactness, pressure, energy, and profile inputs in the guide are local on
+compact cylinders attached to this incoming germ.  No diagram node assumes a
+whole-space critical norm or any other global estimate.
 
-The first node is the initial analytic interface: a residual or singular
-profile at a possible terminal singular point.  This input is represented by
-the physical local Type II germ of
-\cref{def:physical-local-typeII-germ}; its positive concentration
-sequence is produced by
-\cref{lem:physical-typeII-germ-concentration-sequence}.  Every later
-reference in this section points to a definition, lemma, proposition, theorem,
-corollary, figure, or table in the present manuscript.  The provenance of each
-branch contract is recorded in \cref{subsec:branch-contract-provenance}.
+The diagrams display the live branch, rather than every fact already proved
+about it.  Once a hypothesis has entered the retained-obstruction ledger, it
+remains available after subsequence extraction, reselection, and passage to a
+terminal frame.  Such monotone ledger facts are therefore not represented by
+additional backward arrows.  Rectangles are states or interfaces with one
+incoming and one outgoing branch, diamonds are exhaustive routing tests, and
+ellipses are closed branches.  Node [1] is the unique root.  Every other node
+is reached from [1], and every terminal node is an ellipse.
 
-Rectangles in the diagrams are proved states or interfaces, diamonds are
-exhaustive ordered tests, and ellipses are closed outcomes.  A rectangular
-failure node remains part of the routing ledger until its cited closure is
-applied.  Bracketed integers are unique node numbers.  Continuation arrows use
-those integers rather than repeating a node in a later diagram.
+The shared routing diamond [56] receives the first-failure continuations from
+the earlier parts.  The ordered exhaustion theorem
+\cref{thm:ordered-local-state-space-exhaustion} assigns exactly one first
+failed row to any branch.  Diamond [56] classifies that single row, and Parts
+IV--XII display its rank-decreasing closure.  A theorem that closes several
+cases by an internal alternative is represented by a diamond followed by its
+individual closure leaves.  No closure edge returns to the routing layer.
 
 \subsection{Diagram map}
 \label{subsec:typeII-diagram-map}
+
+The proof-dependency diagram is one logical directed acyclic graph split
+across twelve numbered parts.  Bracketed node numbers are unique and consecutive
+in source order.  An arrow labelled ``continue at [n]'' and the corresponding
+incoming arrow in the later part are the same graph edge.
 
 \begingroup
 \small
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.15}
-\begin{longtable}{@{}C{0.50in}C{0.65in}L{2.15in}L{2.45in}@{}}
-\caption{Map of the three Type II proof-dependency diagrams.}
+\begin{longtable}{@{}C{0.50in}C{0.68in}L{2.15in}L{2.42in}@{}}
+\caption{Map of the twelve numbered parts of the Type II proof-dependency diagram.}
 \label{tab:typeII-proof-diagram-map}\\
 \toprule
-Diagram & Nodes & Question resolved & Principal internal sources \\
+Part & Nodes & Branch resolved & Principal internal sources \\
 \midrule
-1 & [1]--[14] & Does the initial profile close as regular/Type I, or pass the analytic and repaired-chart tests to yield one retained core? &
+I & [1]--[16] & Physical entry, C1 admissibility, repaired representation, unique-core selection, and the retained velocity carrier &
 \cref{def:physical-local-typeII-germ,thm:typeII-analytic-data-exhaustive,thm:repaired-gauge-representation,thm:multibubble} \\
-2 & [15]--[35] & Does the compact core close directly, or pass through the scale and localized-cost routing to a closed outcome? &
-\cref{thm:rough-core,thm:single-core,thm:scale-stratification,thm:cost-divergence-exclusion-discharged} \\
-3 & [36]--[52] & How do terminal-profile and residual exhaustion feed the state-space assembly and unconditional exclusion? &
-\cref{thm:critical-ns-profile-decomposition-discharged,thm:local-residual-exhaustion,thm:state-decomposition,thm:unconditional-no-typeII-discharged} \\
+II & [17]--[41] & Compact estimates, rough-core loss, compact-core dissipation, scale collapse, and the canonical cost channel &
+\cref{thm:rough-core,lem:compact-core-dissipation-dichotomy,thm:scale-stratification,thm:cost-divergence-exclusion-discharged} \\
+III & [42]--[55] & Terminal orbit sampling, compactness alternatives, profile completeness, residual exhaustion, and retained terminal exclusion &
+\cref{thm:representation-gives-terminal-orbit-sampling,thm:terminal-boundedness-alternatives,thm:terminal-windowed-profile-completeness,thm:expanded-terminal-typeII} \\
+IV & [56]--[63] & Classification of the unique first-failure row and dispatch to its closure proof &
+\cref{lem:acyclic-terminal-ledger,def:remaining-named-exits} \\
+V & [64]--[70] & Local regularization and well-founded reselection of a bounded selected window &
+\cref{lem:bounded-window-local-regularization,lem:bounded-window-reselection-well-founded,thm:bounded-selected-window-physical-routing} \\
+VI & [71]--[78] & Unbounded modulation windows and their signed or geometric first-failure rows &
+\cref{lem:modulation-window-bound-or-exit,thm:autonomous-modulation-failure-closed} \\
+VII & [79]--[87] & Bounded modulation-defect alternatives &
+\cref{lem:bounded-modulation-defect-routing,thm:autonomous-modulation-failure-closed} \\
+VIII & [88]--[95] & Canonical versus first-failed noncanonical cost validation &
+\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed} \\
+IX & [96]--[110] & Retained active-core, finite frame reselection, and local critical-mass alternatives &
+\cref{lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} \\
+X & [111]--[116] & Ordered pressure reconstruction, local-source, and velocity-label alternatives &
+\cref{lem:pressure-only-critical-mass-routing,thm:active-core-loss-closed} \\
+XI & [117]--[127] & Well-founded nested pressure-only and diffuse-pressure alternatives &
+\cref{lem:nested-pressure-only-well-founded,lem:diffuse-pressure-only-not-terminal} \\
+XII & [128]--[135] & Critical-tightness and diffuse critical-tail alternatives &
+\cref{lem:critical-tightness-failure-row,lem:diffuse-critical-tail-row-closed} \\
 \bottomrule
 \end{longtable}
 \endgroup
@@ -536,560 +565,1103 @@ Diagram & Nodes & Question resolved & Principal internal sources \\
 \subsection{Proof-dependency diagram}
 \label{subsec:typeII-proof-diagram}
 
-The proof-dependency guide consists of three diagrams.  The first is the
-continuous path from physical entry at [1] through retained-core selection at
-[14]; in particular, the repaired-chart test [8] follows directly below the
-retained analytic data [7].  The second continues from the compact-core tests
-at [15] through the scale and localized-cost closure at [35].  The third
-continues from terminal-profile analysis at [36] through the unconditional
-assembly at [52].  The detailed dependency table following the diagrams
-supplies the exact proof source for every node.
+The twelve parts below form a single flow.  Parts I and II expand the ordered
+local tests in
+\cref{thm:ordered-local-state-space-exhaustion,thm:state-decomposition}.
+The only retained local state not closed in Part II is passed at [41] to the
+terminal analysis in Part III.  All first-failure rows are passed to [56] and
+closed by the explicit alternatives in Parts IV--XII.  The unconditional conclusion is read from the leaves:
+every path from [1] ends at one of the displayed closed ellipses.
 
 \clearpage
 \begin{figure}[p]
 \centering
-\resizebox{!}{0.69\textheight}{%
+\resizebox{!}{0.82\textheight}{%
 \begin{tikzpicture}[
-node distance=0.38cm and 0.78cm,
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=5.15cm,minimum height=0.58cm},
-dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,minimum width=4.85cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.75cm},
+node distance=0.34cm and 0.76cm,
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.85cm,minimum height=0.56cm},
+dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,minimum width=4.65cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.55cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
-\node[box] (n1) {\textbf{[1]}~initial analytic input:\\residual or singular profile at $(x_0,T)$};
-\node[dec, below=of n1] (n2) {\textbf{[2]}~physical local Type II singular germ?};
-\node[term, right=of n2, text width=4.15cm] (n3) {\textbf{[3]}~closed at entry:\\
-$x_0\notin\Sigma(T)$ (regular), or the local Type I bound holds};
-\node[box, below=of n2] (n4) {\textbf{[4]}~positive local Type II CKN concentration sequence};
-\node[dec, below=of n4] (n5) {\textbf{[5]}~ordered C1 analytic-data tests pass?};
-\node[box, right=of n5] (n6) {\textbf{[6]}~first class-incompatible or\\named non-retained row; see [48]};
-\node[box, below=of n5] (n7) {\textbf{[7]}~retained Type II analytic data};
-\node[dec, below=of n7] (n8) {\textbf{[8]}~raw AC chart, repaired gauge,\\and strong-chart entry tests pass?};
-\node[box, right=of n8] (n9) {\textbf{[9]}~first chart or gauge failure;\\named routing row; see [48]};
-\node[box, below=of n8] (n10) {\textbf{[10]}~canonical repaired equation, local pressure atlas,\\and transported suitable local energy inequality};
-\node[dec, below=of n10] (n11) {\textbf{[11]}~retained velocity carrier?};
-\node[box, right=of n11] (n12) {\textbf{[12]}~pressure-only, exterior, or\\loss-of-active-core row; see [48]};
-\node[dec, below=of n11] (n13) {\textbf{[13]}~one unique nondegenerate retained core?};
-\node[term, right=of n13] (n14) {\textbf{[14]}~multibubble, cascade,\\or gauge-degenerate route closed};
-\node[box, below=of n13] (cont) {continue with compact-core tests at \textbf{[15]}};
+\node[box] (n1) {\textbf{[1]}~residual or singular profile at a possible terminal point $(x_0,T)$};
+\node[dec,below=of n1] (n2) {\textbf{[2]}~physical local Type II singular germ?};
+\node[term,right=of n2,text width=3.75cm] (n3) {\textbf{[3]}~regular or local Type I branch closed};
+\node[box,below=of n2] (n4) {\textbf{[4]}~positive local Type II CKN concentration sequence};
+\node[dec,below=of n4] (n5) {\textbf{[5]}~ordered C1 admissibility tests pass?};
+\node[box,right=of n5,text width=4.05cm] (n6) {\textbf{[6]}~class-incompatible or named C1 first-failure row};
+\node[box,below=of n5] (n7) {\textbf{[7]}~retained Type II analytic data};
+\node[dec,below=of n7] (n8) {\textbf{[8]}~repaired representation, gauge, and strong-chart tests pass?};
+\node[box,right=of n8,text width=4.05cm] (n9) {\textbf{[9]}~representation or gauge first-failure row};
+\node[box,below=of n8] (n10) {\textbf{[10]}~canonical represented equation, pressure atlas, and suitable energy};
+\node[dec,below=of n10] (n11) {\textbf{[11]}~one unique nondegenerate core?};
+\node[term,right=of n11,text width=3.75cm] (n12) {\textbf{[12]}~multibubble, cascade, or gauge-degenerate branch closed};
+\node[box,below=of n11] (n13) {\textbf{[13]}~one retained active core};
+\node[dec,below=of n13] (n14) {\textbf{[14]}~retained velocity carrier?};
+\node[box,right=of n14,text width=4.05cm] (n15) {\textbf{[15]}~pressure-only, exterior, or active-core-loss row};
+\node[box,below=of n14] (n16) {\textbf{[16]}~represented retained velocity core on selected windows};
+
 \draw[arrow] (n1)--(n2);
 \draw[arrow] (n2)--node[above]{no}(n3);
 \draw[arrow] (n2)--node[right]{yes}(n4);
 \draw[arrow] (n4)--(n5);
 \draw[arrow] (n5)--node[above]{no}(n6);
 \draw[arrow] (n5)--node[right]{yes}(n7);
+\draw[arrow] (n6.east)--++(0.82,0) node[right]{continue at [56]};
 \draw[arrow] (n7)--(n8);
 \draw[arrow] (n8)--node[above]{no}(n9);
 \draw[arrow] (n8)--node[right]{yes}(n10);
+\draw[arrow] (n9.east)--++(0.82,0) node[right]{continue at [56]};
 \draw[arrow] (n10)--(n11);
 \draw[arrow] (n11)--node[above]{no}(n12);
 \draw[arrow] (n11)--node[right]{yes}(n13);
-\draw[arrow] (n13)--node[above]{no}(n14);
-\draw[arrow] (n13)--node[right]{yes}(cont);
+\draw[arrow] (n13)--(n14);
+\draw[arrow] (n14)--node[above]{no}(n15);
+\draw[arrow] (n14)--node[right]{yes}(n16);
+\draw[arrow] (n15.east)--++(0.82,0) node[right]{continue at [56]};
+\draw[arrow] (n16.south)--++(0,-0.62) node[below]{continue at [17]};
 \end{tikzpicture}%
 }
-\caption[Type II proof-dependency diagram: entry and retained-core selection]{
-Type II proof-dependency diagram from physical entry through retained-core
-selection.  The input node is interpreted by
-\cref{def:physical-local-typeII-germ,lem:physical-typeII-germ-admissible}, and
-\cref{lem:physical-typeII-germ-concentration-sequence} supplies [4].  The
-no-branch at [2] closes at [3]: in the whole-space setting, either
-$x_0\notin\Sigma(T)$ and the point is regular, or the local Type I bound holds,
-which is the Type I outcome of
-\cref{thm:local-typeI-typeII-dichotomy}.  Node [8] follows [7] in the same
-continuous flow and begins the repaired-chart tests.  Node [10] combines the canonical equation
-\cref{thm:canonical-repaired-gauge-equation}, the pressure atlas
-\cref{thm:pressure-decomp}, and suitable-energy transport
-\cref{prop:ren-suitable}.  Failure nodes [9] and [12] remain named rows
-until the assembly layer; [14] is closed by
-\cref{thm:multibubble}.}
-\label{fig:typeII-proof-diagram-entry-retained-core}
+\caption[Proof-dependency diagram, Part I]{Proof-dependency diagram, Part I.
+The physical entry test [2] either closes at [3] or supplies the concentration
+sequence [4].  The ordered tests [5], [8], [11], and [14] follow the order in
+\cref{thm:ordered-local-state-space-exhaustion}.  A successful route reaches
+the retained velocity core [16].  Each first-failure rectangle has one output,
+namely the continuation to the classifier [56].}
+\label{fig:typeII-proof-flow-part-i}
 \end{figure}
+
+\clearpage
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\resizebox{!}{0.78\textheight}{%
+\begin{tikzpicture}[
+node distance=0.34cm and 0.92cm,
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.25cm,minimum height=0.55cm},
+dec/.style={diamond,draw,aspect=2.30,align=center,inner sep=1.3pt,minimum width=4.10cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.15cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[dec] (n17) {\textbf{[17]}~compact upper estimates and pressure stability?};
+\coordinate (in17) at ($(n17.north)+(0,0.72)$);
+\draw[arrow] (in17)--node[right]{from [16]}(n17.north);
+\node[box,right=of n17,text width=3.65cm] (n18) {\textbf{[18]}~compact, pressure, or ambient first-failure row};
+\node[box,below=of n17] (n19) {\textbf{[19]}~retained compact-cylinder estimates};
+\node[dec,below=of n19] (n20) {\textbf{[20]}~local windowed $H^1$ control?};
+\node[term,right=of n20,text width=3.35cm] (n21) {\textbf{[21]}~rough-core/$H^1$-loss branch closed};
+\node[box,below=of n20] (n22) {\textbf{[22]}~represented compact retained core};
+\node[dec,below=of n22] (n23) {\textbf{[23]}~scale-collapse or scale-rigid state?};
+
+\node[dec,below left=0.82cm and 3.25cm of n23] (n24) {\textbf{[24]}~compact-core dissipation alternative?};
+\node[box,below=of n24] (n25) {\textbf{[25]}~vanishing dissipation gives a spatially constant limit};
+\node[dec,below=of n25] (n26) {\textbf{[26]}~is the constant limit zero?};
+\node[term,right=of n26,text width=2.95cm] (n27) {\textbf{[27]}~retained mass contradiction};
+\node[box,left=of n26,text width=3.30cm] (n28) {\textbf{[28]}~nonzero bounded selected-window row};
+\node[box,left=of n24,text width=3.20cm] (n29) {\textbf{[29]}~adjacent first-failure row};
+\node[box,below=of n26] (n30) {\textbf{[30]}~divergent canonical localized cost on the retained core};
+\node[dec,below=of n30] (n31) {\textbf{[31]}~canonical identity-cost channel validated?};
+\node[box,left=of n31,text width=3.20cm] (n32) {\textbf{[32]}~noncanonical carrier or cost-validation row};
+\node[box,below=of n31] (n33) {\textbf{[33]}~corrected monotonicity and exhaustive carrier routing};
+\node[term,below=of n33,text width=3.55cm] (n34) {\textbf{[34]}~carrier routes and cost-divergence branch closed};
+
+\node[dec,below right=0.82cm and 3.25cm of n23] (n35) {\textbf{[35]}~scale-collapse stratification outcome?};
+\node[term,right=of n35,text width=3.10cm] (n36) {\textbf{[36]}~finite signed or absolute scale cost closed};
+\node[dec,below=of n35] (n37) {\textbf{[37]}~thin drift reaches an already closed row?};
+\node[term,right=of n37,text width=3.10cm] (n38) {\textbf{[38]}~closed retained scale row};
+\node[box,below=of n37,text width=3.65cm] (n39) {\textbf{[39]}~autonomous-modulation first-failure row};
+\node[box,below=of n39,text width=3.65cm] (n40) {\textbf{[40]}~compactness-package first-failure row};
+\node[box,below=of n40,text width=3.65cm] (n41) {\textbf{[41]}~retained terminal tail after all earlier local exits};
+
+\draw[arrow] (n17)--node[above]{no}(n18);
+\draw[arrow] (n17)--node[right]{yes}(n19);
+\draw[arrow] (n18.east)--++(0.72,0) node[right]{to [56]};
+\draw[arrow] (n19)--(n20);
+\draw[arrow] (n20)--node[above]{no}(n21);
+\draw[arrow] (n20)--node[right]{yes}(n22);
+\draw[arrow] (n22)--(n23);
+\draw[arrow] (n23.south west)--node[above,sloped]{no}(n24.north east);
+\draw[arrow] (n23.south east)--node[above,sloped]{yes}(n35.north west);
+
+\draw[arrow] (n24)--node[right]{vanishing}(n25);
+\draw[arrow] (n24)--node[above]{adjacent}(n29);
+\coordinate (costturn) at ($(n24.east)+(1.55,0)$);
+\draw[thick] (n24.east)--node[above]{divergent cost}(costturn);
+\draw[arrow] (costturn)|-(n30.east);
+\draw[arrow] (n25)--(n26);
+\draw[arrow] (n26)--node[above]{yes}(n27);
+\draw[arrow] (n26)--node[above]{no}(n28);
+\draw[arrow] (n28.west)--++(-0.58,0) node[left]{to [56]};
+\draw[arrow] (n29.west)--++(-0.58,0) node[left]{to [56]};
+\draw[arrow] (n30)--(n31);
+\draw[arrow] (n31)--node[above]{no}(n32);
+\draw[arrow] (n31)--node[right]{yes}(n33);
+\draw[arrow] (n32.west)--++(-0.58,0) node[left]{to [56]};
+\draw[arrow] (n33)--(n34);
+
+\draw[arrow] (n35)--node[above]{finite cost}(n36);
+\draw[arrow] (n35)--node[right]{thin drift}(n37);
+\coordinate (modturn) at ($(n36.east)+(0.55,0.72)$);
+\coordinate (compactturn) at ($(n36.east)+(0.90,1.00)$);
+\coordinate (terminalturn) at ($(n36.east)+(1.25,1.28)$);
+\draw[thick] (n35.north east)--(modturn);
+\draw[arrow] (modturn)|-node[pos=0.84,above]{modulation}(n39.east);
+\draw[thick] (n35.north east)--(compactturn);
+\draw[arrow] (compactturn)|-node[pos=0.86,above]{compactness failure}(n40.east);
+\draw[thick] (n35.north east)--(terminalturn);
+\draw[arrow] (terminalturn)|-node[pos=0.87,above]{retained terminal}(n41.east);
+\draw[arrow] (n37)--node[above]{yes}(n38);
+\draw[arrow] (n37.west)--++(-0.55,0) node[left]{no: to [56]};
+\draw[arrow] (n39.west)--++(-0.60,0) node[left]{to [56]};
+\draw[arrow] (n40.west)--++(-0.60,0) node[left]{to [56]};
+\draw[arrow] (n41.south)--++(0,-0.58) node[below]{continue at [42]};
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part II]{Proof-dependency diagram, Part II.
+This part continues the retained core [16].  The no-branch of [23] is the
+compact single-core route and is exhausted by the three alternatives at [24].
+The yes-branch is the scale stratification of
+\cref{thm:scale-stratification}.  Finite cost closes at [36]; thin drift either
+reaches the closed state [38] or names a row for [56]; modulation and
+compactness failures also go to [56].  The only surviving residual is the
+retained terminal tail [41].}
+\label{fig:typeII-proof-flow-part-ii}
+\end{figure}
+\end{landscape}
 
 \clearpage
 \begin{figure}[p]
 \centering
-\resizebox{0.98\textwidth}{!}{%
+\resizebox{0.93\linewidth}{!}{%
 \begin{tikzpicture}[
-node distance=0.34cm and 0.68cm,
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.65cm,minimum height=0.56cm},
-dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,minimum width=4.45cm},
+node distance=0.38cm and 0.82cm,
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.85cm,minimum height=0.56cm},
+dec/.style={diamond,draw,aspect=2.42,align=center,inner sep=1.5pt,minimum width=4.65cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.55cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[box] (n42) {\textbf{[42]}~terminal coordinate frames constructed locally from the retained state selection};
+\coordinate (in42) at ($(n42.north)+(0,0.72)$);
+\draw[arrow] (in42)--node[right]{from [41]}(n42.north);
+\node[box,below=of n42] (n43) {\textbf{[43]}~terminal active sequence sampled from the represented orbit};
+\node[dec,below=of n43] (n44) {\textbf{[44]}~local PDE inputs and terminal $L^3$ upper/lower bounds hold?};
+\node[box,right=of n44,text width=4.00cm] (n45) {\textbf{[45]}~terminal compactness first-failure row};
+\node[box,below=of n44] (n46) {\textbf{[46]}~local compact terminal-window hypothesis};
+\node[box,below=of n46] (n47) {\textbf{[47]}~local compact-window profile decomposition, ancestry, and active frames};
+\node[dec,below=of n47] (n48) {\textbf{[48]}~noncomparable active, separated, cascade, or exterior profile?};
+\node[term,right=of n48,text width=3.65cm] (n49) {\textbf{[49]}~structural or exterior branch closed};
+\node[dec,below=of n48] (n50) {\textbf{[50]}~visible residual, critical tail, or pressure defect?};
+\node[box,right=of n50,text width=4.00cm] (n51) {\textbf{[51]}~named residual, tail, or pressure row};
+\node[box,below=of n50] (n52) {\textbf{[52]}~one retained comparable profile with perturbative residual};
+\node[box,below=of n52] (n53) {\textbf{[53]}~critical tightness and local windowed $H^1$ control};
+\node[box,below=of n53] (n54) {\textbf{[54]}~all nine expanded terminal data verified on the retained tail};
+\node[term,below=of n54,text width=4.00cm] (n55) {\textbf{[55]}~retained terminal Type II branch excluded};
+
+\draw[arrow] (n42)--(n43);
+\draw[arrow] (n43)--(n44);
+\draw[arrow] (n44)--node[above]{no}(n45);
+\draw[arrow] (n44)--node[right]{yes}(n46);
+\draw[arrow] (n45.east)--++(0.82,0) node[right]{continue at [56]};
+\draw[arrow] (n46)--(n47);
+\draw[arrow] (n47)--(n48);
+\draw[arrow] (n48)--node[above]{yes}(n49);
+\draw[arrow] (n48)--node[right]{no}(n50);
+\draw[arrow] (n50)--node[above]{yes}(n51);
+\draw[arrow] (n50)--node[right]{no}(n52);
+\draw[arrow] (n51.east)--++(0.82,0) node[right]{continue at [56]};
+\draw[arrow] (n52)--(n53);
+\draw[arrow] (n53)--(n54);
+\draw[arrow] (n54)--(n55);
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part III]{Proof-dependency diagram, Part
+III.  The retained terminal tail [41] supplies the only incoming branch.
+Local state selection constructs the terminal frames at [42], and the repaired
+representation already retained from Part I gives orbit sampling at [43].
+These are forward interfaces, not new alternatives.  The local compactness
+test is [44].  A structural or exterior alternative closes at [49], and a
+visible residual is assigned to one named row at [51].  When neither occurs,
+terminal completeness gives [52], the retained compact tests give [53], all
+nine expanded terminal data hold at [54], and
+\cref{thm:expanded-terminal-typeII} closes the retained branch at [55].}
+\label{fig:typeII-proof-flow-part-iii}
+\end{figure}
+
+\clearpage
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\resizebox{0.82\linewidth}{!}{%
+\begin{tikzpicture}[
+dec/.style={diamond,draw,aspect=2.50,align=center,inner sep=1.8pt,minimum width=5.20cm},
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=3.35cm,minimum height=0.58cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.90cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[dec] (n56) at (0,0) {\textbf{[56]}~which closure class contains the unique first-failure row?};
+\coordinate (in56) at ($(n56.north)+(0,1.15)$);
+\node[align=center,font=\tiny] at ($(n56.north)+(0,0.76)$)
+  {from [6], [9], [15], [18], [28], [29], [32], [37], [39], [40], [45], or [51]};
+\draw[arrow] (in56)--(n56.north);
+
+\node[term,text width=2.45cm] (n57) at (-12.00,-4.00)
+  {\textbf{[57]}~class-incompatible row contradicts physical Type II entry};
+\node[box,text width=2.85cm] (n58) at (-7.20,-3.55)
+  {\textbf{[58]}~the unique earlier row selects its recorded closure theorem};
+\node[term,text width=2.45cm] (n59) at (-7.20,-6.15)
+  {\textbf{[59]}~the selected earlier row is closed};
+\node[box,text width=2.70cm] (n60) at (-2.40,-4.00)
+  {\textbf{[60]}~bounded selected-window row};
+\node[box,text width=2.70cm] (n61) at (2.40,-4.00)
+  {\textbf{[61]}~autonomous-modulation row};
+\node[box,text width=2.70cm] (n62) at (7.20,-4.00)
+  {\textbf{[62]}~noncanonical cost-validation row};
+\node[box,text width=2.70cm] (n63) at (12.00,-4.00)
+  {\textbf{[63]}~active-core ledger family};
+
+\draw[arrow] (n56.west)--node[pos=0.68,above,sloped]{class-incompatible}(n57.north);
+\draw[arrow] (n56.south west)--node[pos=0.63,above,sloped]{earlier row}(n58.north);
+\draw[arrow] (n58)--(n59);
+\draw[arrow] (n56.south)--node[pos=0.70,above,sloped]{bounded window}(n60.north);
+\draw[arrow] (n56.south)--node[pos=0.70,above,sloped]{modulation}(n61.north);
+\draw[arrow] (n56.south east)--node[pos=0.63,above,sloped]{noncanonical cost}(n62.north);
+\draw[arrow] (n56.east)--node[pos=0.68,above,sloped]{active-core family}(n63.north);
+\draw[arrow] (n60.south)--++(0,-0.70) node[below]{continue at [64]};
+\draw[arrow] (n61.south)--++(0,-0.70) node[below]{continue at [71]};
+\draw[arrow] (n62.south)--++(0,-0.70) node[below]{continue at [88]};
+\draw[arrow] (n63.south)--++(0,-0.70) node[below]{continue at [96]};
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part IV]{Proof-dependency diagram, Part IV.
+The incoming arrow is the disjoint union of the first-failure continuations
+listed above [56].  On any run only one such row occurs.  The first two outputs
+are discharged at [57] and [59].  Nodes [60]--[63] are the four rank-$1$ rows
+of \cref{def:remaining-named-exits}; each has one continuation to the part
+that expands its closure theorem.}
+\label{fig:typeII-proof-flow-part-iv}
+\end{figure}
+\end{landscape}
+
+\clearpage
+\begin{figure}[p]
+\centering
+\resizebox{0.96\linewidth}{!}{%
+\begin{tikzpicture}[
+node distance=0.62cm and 0.95cm,
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.20cm,minimum height=0.58cm},
+dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.6pt,minimum width=4.40cm},
 term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.20cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
-\node[dec] (n15) {\textbf{[15]}~compact upper estimates and pressure stability?};
-\node[box, right=of n15] (n16) {\textbf{[16]}~compact-upper, pressure, or\\ambient first-failure row; see [48]};
-\node[dec, below=of n15] (n17) {\textbf{[17]}~local windowed $H^1$ control?};
-\node[term, right=of n17] (n18) {\textbf{[18]}~canonical Caccioppoli routes\\rough-core loss to closed rows};
-\node[box, below=of n17] (n19) {\textbf{[19]}~compact retained core and its dissipation dichotomy};
-\node[dec, below=of n19] (n20) {\textbf{[20]}~vanishing localized dissipation on selected windows?};
-\node[box, left=3.00cm of n20] (n21) {\textbf{[21]}~compactness gives a spatially constant limit};
-\node[dec, below=of n21] (n22) {\textbf{[22]}~is the spatially constant limit zero?};
-\node[term, below=of n22] (n23) {\textbf{[23]}~retained velocity\\mass contradiction};
-\node[box, below=of n23] (n24) {\textbf{[24]}~nonzero bounded selected-window row;\\continue at [48]--[51]};
-\node[box, below=of n20] (n25) {\textbf{[25]}~retained scale/cost path:\\divergent localized cost or scale collapse};
-\node[dec, below=of n25] (n26) {\textbf{[26]}~ordered scale-collapse outcome?};
-\node[term, right=3.00cm of n26] (n27) {\textbf{[27]}~finite signed or\\absolute cost excluded};
-\node[term, below=0.22cm of n27] (n28) {\textbf{[28]}~thin negative\\drift closed};
-\node[box, below=0.22cm of n28] (n29) {\textbf{[29]}~autonomous-modulation\\failure; see [50]};
-\node[term, below=0.22cm of n29] (n30) {\textbf{[30]}~compact scale collapse\\or scale-rigid state closed};
-\node[box, below=of n26] (n31) {\textbf{[31]}~retained compact-cost data and active-window mass floor};
-\node[dec, below=of n31] (n32) {\textbf{[32]}~canonical identity-cost channel validated?};
-\node[box, left=of n32] (n33) {\textbf{[33]}~noncanonical carrier or\\cost-validation row; see [50]};
-\node[box, below=of n32] (n34) {\textbf{[34]}~corrected monotonicity; only $J_1,J_6,J_7$ can remain nonintegrable};
-\node[term, below=of n34] (n35) {\textbf{[35]}~transition/exterior, negative-drift, and positive-scale routes close;\\cost-divergence branch excluded};
-\draw[arrow] (n15)--node[above]{no}(n16);
-\draw[arrow] (n15)--node[right]{yes}(n17);
-\draw[arrow] (n17)--node[above]{no}(n18);
-\draw[arrow] (n17)--node[right]{yes}(n19);
-\draw[arrow] (n19)--(n20);
-\draw[arrow] (n20)--node[above]{yes}(n21);
-\draw[arrow] (n20)--node[right]{no}(n25);
-\draw[arrow] (n21)--(n22);
-\draw[arrow] (n22)--node[right]{yes}(n23);
-\coordinate (constantnonzero) at ($(n22.west)+(-0.45,0)$);
-\draw[thick] (n22.west)--node[above]{no}(constantnonzero);
-\draw[arrow] (constantnonzero)|-(n24.west);
-\draw[arrow] (n25)--(n26);
-\coordinate (scaleout) at ($(n26.east)+(1.55,0)$);
-\draw[thick] (n26.east)--(scaleout);
-\draw[arrow] (scaleout)|-node[pos=0.82,above,font=\tiny]{finite cost}(n27.west);
-\draw[arrow] (scaleout)|-node[pos=0.82,above,font=\tiny]{thin drift}(n28.west);
-\coordinate (route29turn) at (scaleout |- n29.west);
-\coordinate (route30turn) at (scaleout |- n30.west);
-\draw[arrow] (scaleout)|-(n29.west);
-\draw[arrow] (scaleout)|-(n30.west);
-\node[font=\tiny,anchor=south,inner sep=0.5pt]
-  at ($(route29turn)!0.45!(n29.west)$) {modulation};
-\node[font=\tiny,align=center,anchor=south,inner sep=0.5pt]
-  at ($(route30turn)!0.45!(n30.west)$) {compact/\\rigid};
-\draw[arrow] (n26)--node[right]{retained cost}(n31);
-\draw[arrow] (n31)--(n32);
-\draw[arrow] (n32)--node[above]{no}(n33);
-\draw[arrow] (n32)--node[right]{yes}(n34);
-\draw[arrow] (n34)--(n35);
+\node[dec] (n64) {\textbf{[64]}~does positive local CKN concentration survive bounded-window regularization?};
+\coordinate (in64) at ($(n64.north)+(0,0.78)$);
+\draw[arrow] (in64)--node[right]{from [60]}(n64.north);
+\node[term,right=of n64,text width=3.30cm] (n65) {\textbf{[65]}~no surviving CKN signal; local Type I contradiction};
+\node[box,below=of n64] (n66) {\textbf{[66]}~remove the regular portion and reselect the surviving local concentration};
+\node[dec,below=of n66] (n67) {\textbf{[67]}~which well-founded reselection outcome occurs?};
+\node[term,below left=0.90cm and 3.80cm of n67,text width=3.20cm] (n68) {\textbf{[68]}~local regularity below a fixed physical scale};
+\node[term,below=0.90cm of n67,text width=3.20cm] (n69) {\textbf{[69]}~finite reselection reaches its unique named-row closure};
+\node[term,below right=0.90cm and 3.80cm of n67,text width=3.20cm] (n70) {\textbf{[70]}~infinite reselection reaches its unique named-row closure};
+
+\draw[arrow] (n64)--node[above]{no}(n65);
+\draw[arrow] (n64)--node[right]{yes}(n66);
+\draw[arrow] (n66)--(n67);
+\draw[arrow] (n67.south west)--node[above,sloped]{regular}(n68.north);
+\draw[arrow] (n67)--node[right]{finite named row}(n69);
+\draw[arrow] (n67.south east)--node[above,sloped]{infinite named row}(n70.north);
 \end{tikzpicture}%
 }
-\caption[Type II proof-dependency diagram: compact-core and scale-cost closure]{
-Type II proof-dependency diagram from compact-core tests through scale and
-localized-cost closure.  Compact upper estimates and rough-core routing are
-supplied by
-\cref{prop:selected-window-suitable-estimates,thm:canonical-local-caccioppoli,thm:rough-core}.
-At [20], the vanishing-dissipation branch is resolved by
-\cref{thm:single-core}: [23] is a contradiction and [24] enters the
-bounded-window routing.  The complementary branch enters [25] directly.
-The scale alternatives at [26] are those of
-\cref{thm:scale-stratification}; nodes [27], [28], and [30] are closed by
-\cref{thm:scale-cost,thm:thin-negative-drift-closed,thm:compact-scale-collapse-rigidity-discharged,prop:scale-rigidity-discharged}.
-The canonical identity-cost channel is supplied by
-\cref{lem:canonical-identity-cost-available}; the remaining moving
-components are routed by
-\cref{thm:windowwise-routing-gives-stratified-routing} before the
-cost-divergence exclusion is applied.}
-\label{fig:typeII-proof-diagram-compact-core-scale-cost}
+\caption[Proof-dependency diagram, Part V]{Proof-dependency diagram, Part V.
+The bounded selected-window theorem first regularizes the bounded region.  If
+local concentration remains, the well-founded reselection theorem gives
+exactly the three outcomes at [68]--[70].  Each named-row outcome refers to the
+unique first row selected by the ordered ledger, not to an unresolved union of
+rows.}
+\label{fig:typeII-proof-flow-part-v}
 \end{figure}
 
 \clearpage
+\begin{landscape}
 \begin{figure}[p]
 \centering
-\resizebox{0.97\textwidth}{!}{%
+\resizebox{0.97\linewidth}{!}{%
 \begin{tikzpicture}[
-node distance=0.34cm and 0.80cm,
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.75cm,minimum height=0.56cm},
-dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,minimum width=4.55cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.35cm},
-route/.style={rectangle,rounded corners,draw,dashed,align=center,inner sep=3pt,minimum width=3.35cm},
+dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.6pt,minimum width=4.40cm},
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=3.60cm,minimum height=0.58cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.00cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
-\node[box] (n36) {\textbf{[36]}~terminal windows sampled from the represented orbit};
-\node[box, below=of n36] (n37) {\textbf{[37]}~critical profile decomposition, ancestry, and active frames};
-\node[dec, below=of n37] (n38) {\textbf{[38]}~additional active, hidden, separated, cascade, or exterior state?};
-\node[term, right=of n38] (n39) {\textbf{[39]}~structural or exterior\\row closed};
-\node[dec, below=of n38] (n40) {\textbf{[40]}~visible residual, critical-tail, or pressure defect?};
-\node[box, right=of n40] (n41) {\textbf{[41]}~local residual or tail routing\\produces a named rank-$1$ row};
-\node[box, below=of n40] (n42) {\textbf{[42]}~retained comparable profile; residual is perturbative};
-\node[box, below=of n42] (n43) {\textbf{[43]}~critical tightness, windowed $H^1$, and terminal compactness};
-\node[box, below=of n43] (n44) {\textbf{[44]}~expanded terminal wrapper and\\terminal-exclusion result available to the assembly};
-\node[box, below=of n44] (n45) {\textbf{[45]}~ordered local state-space exhaustion and five-state decomposition};
-\node[dec, below=of n45] (n46) {\textbf{[46]}~retained state rather than a first-failure row?};
-\node[term, left=of n46] (n47) {\textbf{[47]}~retained state eliminated\\by structural or terminal closure};
-\node[dec, below=of n46] (n48) {\textbf{[48]}~one of the four remaining rank-$1$ rows?};
-\node[term, left=of n48] (n49) {\textbf{[49]}~earlier local or\\ambient row closed};
-\node[box, below=of n48] (n50) {\textbf{[50]}~bounded window; autonomous modulation;\\noncanonical cost; or loss of retained active core};
-\node[route, right=1.10cm of n50] (from29) {continuation from [29]:\\autonomous-modulation failure};
-\node[term, below=of n50] (n51) {\textbf{[51]}~listed closure theorem lowers rank $1\to0$};
-\node[term, below=of n51] (n52) {\textbf{[52]}~no physical local Type II germ;\\the local Type II alternative is excluded};
-\draw[arrow] (n36)--(n37);
-\draw[arrow] (n37)--(n38);
-\draw[arrow] (n38)--node[above]{yes}(n39);
-\draw[arrow] (n38)--node[right]{no}(n40);
-\draw[arrow] (n40)--node[above]{yes}(n41);
-\draw[arrow] (n40)--node[right]{no}(n42);
-\coordinate (residualroute) at ($(n41.east)+(0.65,0)$);
-\draw[thick] (n41.east)--(residualroute);
-\draw[arrow] (residualroute)|-node[pos=0.90,above,font=\tiny]{named row}(n48.east);
-\draw[arrow] (n42)--(n43);
-\draw[arrow] (n43)--(n44);
-\draw[arrow] (n44)--node[right]{assembly}(n45);
-\draw[arrow] (n45)--(n46);
-\draw[arrow] (n46)--node[above]{yes}(n47);
-\draw[arrow] (n46)--node[right]{no}(n48);
-\draw[arrow] (n48)--node[above]{no}(n49);
-\draw[arrow] (n48)--node[right]{yes}(n50);
-\draw[arrow] (from29)--(n50);
-\draw[arrow] (n50)--(n51);
-\coordinate (closedassembly) at ($(n52.west)+(-0.60,0)$);
-\draw[thick] (n47.west)--++(-0.85,0) |-(closedassembly);
-\draw[thick] (n49.west)--++(-0.40,0) |-(closedassembly);
-\draw[arrow] (closedassembly)--(n52.west);
-\draw[arrow] (n51)--(n52);
+\node[dec] (n71) at (0,0) {\textbf{[71]}~are the modulation integrals uniformly bounded on every selected window?};
+\coordinate (in71) at ($(n71.north)+(0,0.92)$);
+\draw[arrow] (in71)--node[right]{from [61]}(n71.north);
+\node[dec] (n72) at (-6.30,-3.00) {\textbf{[72]}~which unbounded signed or geometric component is detected?};
+\node[box,text width=3.25cm] (n78) at (6.30,-3.00) {\textbf{[78]}~bounded modulation windows};
+
+\node[term,text width=2.55cm] (n73) at (-12.60,-6.60) {\textbf{[73]}~negative scale-drift row closed};
+\node[term,text width=2.55cm] (n74) at (-9.45,-6.60) {\textbf{[74]}~positive scale-shell row closed};
+\node[term,text width=2.55cm] (n75) at (-6.30,-6.60) {\textbf{[75]}~modulation-driven recentering row closed};
+\node[term,text width=2.55cm] (n76) at (-3.15,-6.60) {\textbf{[76]}~repaired-gauge failure row closed};
+\node[term,text width=2.55cm] (n77) at (0,-6.60) {\textbf{[77]}~exterior modulation row closed};
+
+\draw[arrow] (n71.south west)--node[above,sloped]{no}(n72.north);
+\draw[arrow] (n71.south east)--node[above,sloped]{yes}(n78.north);
+\draw[arrow] (n72.west)--node[above,sloped]{negative drift}(n73.north);
+\draw[arrow] (n72.south west)--node[above,sloped]{positive shell}(n74.north);
+\draw[arrow] (n72.south)--node[right]{translation}(n75.north);
+\draw[arrow] (n72.south east)--node[above,sloped]{chart failure}(n76.north);
+\draw[arrow] (n72.east)--node[above,sloped]{exterior}(n77.north);
+\draw[arrow] (n78.south)--++(0,-0.70) node[below]{continue at [79]};
 \end{tikzpicture}%
 }
-\caption[Type II proof-dependency diagram: terminal profiles and unconditional assembly]{Type II
-proof-dependency diagram from terminal profiles and residual exhaustion through
-the unconditional assembly.  The critical profile package is discharged by
-\cref{thm:critical-ns-profile-decomposition-discharged}; visible
-residuals are routed by
-\cref{thm:local-residual-exhaustion}, and the named row at [41] enters
-the rank-$1$ ledger test at [48].  On the retained comparable
-class, the compact tests and expanded wrapper
-\cref{thm:retained-compact-tests-closed,cor:expanded-terminal-wrapper-discharged}
-give the terminal exclusion at [44], which supplies the terminal closure used
-at [45].  The retained alternatives are listed in
-\cref{thm:state-decomposition} and eliminated by
-\cref{prop:state-elimination} together with the terminal wrapper.  The
-four rows at [50] are exactly the canonical ledger
-\cref{def:remaining-named-exits}; the unnumbered connector into [50]
-records the autonomous-modulation row from [29].  Their closure sources give [51] by
-\cref{cor:remaining-named-exits-closed}.  Thus [52] is the
-unconditional conclusion
-\cref{thm:unconditional-no-typeII-discharged,thm:local-typeII-exclusion}.}
-\label{fig:typeII-proof-diagram-terminal-assembly}
+\caption[Proof-dependency diagram, Part VI]{Proof-dependency diagram, Part VI.
+The first dichotomy in the autonomous-modulation closure theorem is bounded
+versus unbounded window integrals.  In the unbounded case, the signed and
+geometric stratification produces the five individually displayed closed rows.
+The bounded case continues at [79].}
+\label{fig:typeII-proof-flow-part-vi}
 \end{figure}
+\end{landscape}
+
+\clearpage
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\resizebox{0.97\linewidth}{!}{%
+\begin{tikzpicture}[
+dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.6pt,minimum width=4.40cm},
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=3.50cm,minimum height=0.58cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.00cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[dec] (n79) at (0,0) {\textbf{[79]}~which bounded modulation-defect outcome occurs?};
+\coordinate (in79) at ($(n79.north)+(0,0.92)$);
+\draw[arrow] (in79)--node[right]{from [78]}(n79.north);
+\node[term,text width=3.05cm] (n80) at (-7.00,-3.30) {\textbf{[80]}~constant-coefficient limit contradicts alternative (v)};
+\node[term,text width=3.05cm] (n81) at (0,-3.30) {\textbf{[81]}~perturbative defect has the same autonomous limit};
+\node[dec] (n82) at (7.00,-3.30) {\textbf{[82]}~which visible nonperturbative component remains?};
+
+\node[term,text width=2.55cm] (n83) at (-0.50,-7.00) {\textbf{[83]}~visible negative scale-drift row closed};
+\node[term,text width=2.55cm] (n84) at (3.20,-7.00) {\textbf{[84]}~visible positive scale-shell row closed};
+\node[term,text width=2.55cm] (n85) at (6.90,-7.00) {\textbf{[85]}~visible recentering row closed};
+\node[term,text width=2.55cm] (n86) at (10.60,-7.00) {\textbf{[86]}~visible repaired-gauge row closed};
+\node[box,text width=2.85cm] (n87) at (14.30,-7.00) {\textbf{[87]}~visible loss of selected active core};
+
+\draw[arrow] (n79.south west)--node[above,sloped]{constant}(n80.north);
+\draw[arrow] (n79)--node[right]{perturbative}(n81);
+\draw[arrow] (n79.south east)--node[above,sloped]{visible defect}(n82.north);
+\draw[arrow] (n82.west)--node[above,sloped]{negative drift}(n83.north);
+\draw[arrow] (n82.south west)--node[above,sloped]{positive shell}(n84.north);
+\draw[arrow] (n82.south)--node[right]{translation}(n85.north);
+\draw[arrow] (n82.south east)--node[above,sloped]{chart failure}(n86.north);
+\draw[arrow] (n82.east)--node[above,sloped]{mass-floor loss}(n87.north);
+\draw[arrow] (n87.south)--++(0,-0.62) node[below]{continue at [96]};
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part VII]{Proof-dependency diagram, Part VII.
+The bounded-defect routing lemma gives exactly the three outcomes at [80]--[82].
+The constant and perturbative outcomes contradict the defining failure in the
+autonomous-modulation alternative.  A visible defect is split into its signed,
+translation, chart, or active-core component before closure.}
+\label{fig:typeII-proof-flow-part-vii}
+\end{figure}
+\end{landscape}
+
+\clearpage
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\resizebox{0.96\linewidth}{!}{%
+\begin{tikzpicture}[
+dec/.style={diamond,draw,aspect=2.40,align=center,inner sep=1.6pt,minimum width=4.50cm},
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=3.70cm,minimum height=0.58cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.10cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[dec] (n88) at (0,0) {\textbf{[88]}~do all ordered validation tests pass?};
+\coordinate (in88) at ($(n88.north)+(0,0.92)$);
+\draw[arrow] (in88)--node[right]{from [62]}(n88.north);
+\node[box,text width=3.30cm] (n89) at (-5.30,-3.20) {\textbf{[89]}~comparable-cost compatibility identifies the canonical channel};
+\node[dec] (n91) at (5.30,-3.20) {\textbf{[91]}~which first-failure layer is selected?};
+\node[term,text width=3.05cm] (n90) at (-5.30,-6.70) {\textbf{[90]}~canonical retained cost-divergence exclusion};
+\node[term,text width=2.75cm] (n92) at (0.70,-6.70) {\textbf{[92]}~class-side first failure closed};
+\node[term,text width=2.75cm] (n93) at (4.20,-6.70) {\textbf{[93]}~state-decomposition first failure closed};
+\node[term,text width=2.75cm] (n94) at (7.70,-6.70) {\textbf{[94]}~modulation-integrability first failure closed by Parts VI--VII};
+\node[term,text width=2.75cm] (n95) at (11.20,-6.70) {\textbf{[95]}~irreducible cost-side first failure closed};
+
+\draw[arrow] (n88.south west)--node[above,sloped]{yes}(n89.north);
+\draw[arrow] (n89)--(n90);
+\draw[arrow] (n88.south east)--node[above,sloped]{no}(n91.north);
+\draw[arrow] (n91.west)--node[above,sloped]{class side}(n92.north);
+\draw[arrow] (n91.south west)--node[above,sloped]{state layer}(n93.north);
+\draw[arrow] (n91.south east)--node[above,sloped]{modulation}(n94.north);
+\draw[arrow] (n91.east)--node[above,sloped]{cost side}(n95.north);
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part VIII]{Proof-dependency diagram, Part VIII.
+The noncanonical-cost theorem first asks whether all ordered validation tests
+pass.  Passing identifies the canonical identity-cost channel and gives [90].
+Failure selects exactly one first-failure layer at [91]; the four displayed
+leaves use the closure theorem belonging to that layer.}
+\label{fig:typeII-proof-flow-part-viii}
+\end{figure}
+\end{landscape}
+
+\clearpage
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\resizebox{0.97\linewidth}{!}{%
+\begin{tikzpicture}[
+dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.20cm},
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=3.55cm,minimum height=0.58cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.75cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[dec] (n96) at (0,0) {\textbf{[96]}~which member of the final active-core ledger family occurs?};
+\coordinate (in96) at ($(n96.north)+(0,0.92)$);
+\draw[arrow] (in96)--node[right]{from [63] or [87]}(n96.north);
+\node[dec] (n97) at (-9.00,-4.00) {\textbf{[97]}~which local critical-mass outcome occurs?};
+\node[term,text width=2.65cm] (n98) at (-15.00,-8.00) {\textbf{[98]}~positive finite mass contradicts the loss-row classification};
+\node[box,text width=3.15cm] (n99) at (-9.00,-8.00) {\textbf{[99]}~discard this floor-failing candidate and exhaust the finite local frame list};
+\node[dec] (n100) at (-9.00,-12.00) {\textbf{[100]}~what remains after finite ordered frame reselection?};
+\node[dec] (n101) at (-9.00,-16.00) {\textbf{[101]}~if no velocity frame remains, what carries the original CKN signal?};
+\node[term,text width=2.65cm] (n102) at (-9.00,-20.00) {\textbf{[102]}~all smaller cylinders are subthreshold; singular CKN concentration is contradicted};
+\node[dec] (n103) at (-3.00,-8.00) {\textbf{[103]}~which upper-bound failure label is first?};
+\node[term,text width=2.40cm] (n104) at (-5.00,-13.00) {\textbf{[104]}~same-frame critical-mass face is nonretained};
+\node[term,text width=2.40cm] (n105) at (-1.00,-13.00) {\textbf{[105]}~comparable finite-mass class grouped};
+\node[term,text width=2.40cm] (n106) at (3.00,-13.00) {\textbf{[106]}~multibubble row closed};
+\node[term,text width=2.40cm] (n107) at (7.00,-13.00) {\textbf{[107]}~multicore row closed};
+\node[term,text width=2.40cm] (n108) at (11.00,-13.00) {\textbf{[108]}~cascade row closed};
+\node[term,text width=2.40cm] (n109) at (15.00,-13.00) {\textbf{[109]}~rough-core row closed};
+\node[term,text width=2.65cm] (n110) at (18.00,-8.00) {\textbf{[110]}~pressure/exterior active-profile row closed};
+
+\draw[arrow] (n96.south west)--node[above,sloped]{active-core loss}(n97.north);
+\draw[arrow] (n96.west)--++(-1.60,0) node[left]{pressure only: continue at [111]};
+\draw[arrow] (n96.south)--++(0,-2.00) node[below]{nested pressure: continue at [117]};
+\draw[arrow] (n96.east)--++(1.60,0) node[right]{critical tightness: continue at [128]};
+\draw[arrow] (n96.south east)--node[above,sloped]{exterior}(n110.north);
+\draw[arrow] (n97.south west)--node[above,sloped]{positive finite}(n98.north);
+\draw[arrow] (n97)--node[right]{floor fails}(n99.north);
+\draw[arrow] (n97.south east)--node[above,sloped]{upper bound fails}(n103.north);
+\draw[arrow] (n99)--(n100);
+\draw[arrow] (n100.west) to[out=180,in=-70] node[below,sloped]{positive finite}(n98.south);
+\draw[arrow] (n100.east) to[out=0,in=-110] node[below,sloped]{upper bound fails}(n103.south);
+\draw[arrow] (n100)--node[right]{no velocity frame}(n101.north);
+\draw[arrow] (n101.west)--++(-1.55,0) node[left]{pressure only: continue at [111]};
+\draw[arrow] (n101.south west)--++(-1.25,-0.80) node[left]{exterior: to [110]};
+\draw[arrow] (n101.south east)--++(1.25,-0.80) node[right]{rough core: to [109]};
+\draw[arrow] (n101)--node[right]{regular/subthreshold}(n102.north);
+\draw[arrow] (n103.south west)--node[above,sloped]{adjacent face}(n104.north);
+\draw[arrow] (n103.south)--node[left]{comparable}(n105.north);
+\draw[arrow] (n103.south east)--node[above,sloped]{multibubble}(n106.north);
+\draw[arrow] (n103.east) to[out=-25,in=110] node[above,sloped]{multicore}(n107.north);
+\draw[arrow] (n103.east) to[out=-12,in=130] node[above,sloped]{cascade}(n108.north);
+\draw[arrow] (n103.east) to[out=-3,in=150] node[above,sloped]{rough core}(n109.north);
+\draw[arrow] (n103.east)--node[above]{exterior}(n110.west);
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part IX]{Proof-dependency diagram, Part IX.
+The final ledger family is divided at [96].  The retained active-core branch
+uses the local critical-mass trichotomy [97].  When the activity floor fails,
+[99] exhausts the finite local frame list supplied by
+\cref{lem:retained-frame-maximality}; [100] records the first surviving
+outcome.  If no velocity frame remains, [101] displays the four possibilities
+used in the proof of \cref{thm:active-core-loss-closed}.  The upper-bound
+alternative is split at [103] into the individual labels of
+\cref{lem:terminal-local-critical-mass-routing}.  Pressure-only, nested
+pressure, and critical-tightness rows continue to their separate parts.}
+\label{fig:typeII-proof-flow-part-ix}
+\end{figure}
+\end{landscape}
+
+\clearpage
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\resizebox{0.93\linewidth}{!}{%
+\begin{tikzpicture}[
+dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.25cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.85cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[dec] (n110) at (0,0) {\textbf{[110]}~which local pressure-source outcome occurs?};
+\coordinate (in110) at ($(n110.north)+(0,0.92)$);
+\draw[arrow] (in110)--node[right]{from [96] or [101]}(n110.north);
+\node[term,text width=2.80cm] (n111) at (-8.00,-4.00) {\textbf{[111]}~localized velocity-stress source is regular};
+\node[dec] (n112) at (0,-4.00) {\textbf{[112]}~which velocity-supported label is selected?};
+\node[term,text width=2.80cm] (n113) at (8.00,-4.00) {\textbf{[113]}~pressure reconstruction first failure closed};
+
+\draw[arrow] (n110.south west)--node[above,sloped]{regular source}(n111.north);
+\draw[arrow] (n110)--node[right]{velocity label}(n112.north);
+\draw[arrow] (n110.east)--++(1.45,0) node[right]{harmonic remainder: to [109]};
+\draw[arrow] (n110.south east)--node[above,sloped]{reconstruction fails}(n113.north);
+\draw[arrow] (n112.south west)--++(-3.60,-2.60) node[left]{comparable: to [105]};
+\draw[arrow] (n112.south west)--++(-2.15,-3.60) node[left]{multibubble: to [106]};
+\draw[arrow] (n112.south)--++(0,-4.20) node[below]{multicore: to [106]};
+\draw[arrow] (n112.south east)--++(2.15,-3.60) node[right]{cascade: to [107]};
+\draw[arrow] (n112.south east)--++(3.60,-2.60) node[right]{rough core: to [108]};
+\draw[arrow] (n112.east)--++(4.30,-1.55) node[right]{exterior: to [109]};
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part X]{Proof-dependency diagram, Part X.
+The pressure-only branch of [96] is expanded by
+\cref{lem:pressure-only-critical-mass-routing}.  A velocity-supported label is
+classified at [112] and sent to the individual retained, structural, rough, or
+exterior closures already displayed in Part IX.}
+\label{fig:typeII-proof-flow-part-x}
+\end{figure}
+\end{landscape}
+
+\clearpage
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\resizebox{0.93\linewidth}{!}{%
+\begin{tikzpicture}[
+dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.25cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.85cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[dec] (n114) at (0,0) {\textbf{[114]}~which well-founded nested pressure-only row occurs?};
+\coordinate (in114) at ($(n114.north)+(0,0.92)$);
+\draw[arrow] (in114)--node[right]{from [96]}(n114.north);
+\node[term,text width=2.70cm] (n115) at (-10.00,-5.00) {\textbf{[115]}~far-field harmonic pressure-tail row closed};
+\node[dec] (n116) at (-3.00,-5.00) {\textbf{[116]}~which same-point nested row occurs?};
+\node[term,text width=2.70cm] (n117) at (-3.00,-10.00) {\textbf{[117]}~pressure scale-collapse row closed};
+\node[dec] (n118) at (8.00,-5.00) {\textbf{[118]}~which diffuse pressure-defect outcome occurs?};
+\node[term,text width=2.55cm] (n119) at (2.00,-10.00) {\textbf{[119]}~constant harmonic pressure removed by gauge};
+\node[dec] (n120) at (8.00,-10.00) {\textbf{[120]}~is the affine harmonic pressure absorbed?};
+\node[term,text width=2.55cm] (n121) at (6.00,-14.00) {\textbf{[121]}~affine pressure absorbed by accelerating rebasement};
+\node[term,text width=2.55cm] (n122) at (10.00,-14.00) {\textbf{[122]}~affine-pressure modulation failure closed by Parts VI--VII};
+\node[term,text width=2.55cm] (n123) at (14.00,-10.00) {\textbf{[123]}~the unique visible diffuse residual row is closed};
+
+\draw[arrow] (n114.west)--++(-1.65,0) node[left]{velocity stress: to [112]};
+\draw[arrow] (n114.south west)--node[above,sloped]{harmonic tail}(n115.north);
+\draw[arrow] (n114)--node[left]{same-point nesting}(n116.north);
+\draw[arrow] (n114.east)--++(1.65,0) node[right]{gauge failure: to [113]};
+\draw[arrow] (n114.south east)--node[above,sloped]{diffuse defect}(n118.north);
+\draw[arrow] (n116.west)--++(-1.55,0) node[left]{cascade: to [107]};
+\draw[arrow] (n116)--node[right]{scale collapse}(n117.north);
+\draw[arrow] (n118.east)--++(2.10,0) node[right]{atomic velocity support: to [112]};
+\draw[arrow] (n118.north east)--++(1.35,1.35) node[right]{non-affine harmonic: to [115]};
+\draw[arrow] (n118.south west)--node[above,sloped]{constant harmonic}(n119.north);
+\draw[arrow] (n118)--node[right]{affine harmonic}(n120.north);
+\draw[arrow] (n118.south east)--node[above,sloped]{visible diffuse residual}(n123.north);
+\draw[arrow] (n120.south west)--node[above,sloped]{yes}(n121.north);
+\draw[arrow] (n120.south east)--node[above,sloped]{no}(n122.north);
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part XI]{Proof-dependency diagram, Part XI.
+The five rows of \cref{lem:nested-pressure-only-well-founded} are explicit at
+[114].  The same-point row splits at [116], while the diffuse row is expanded
+by the atomic/diffuse and harmonic-pressure alternatives at [118] and [120].}
+\label{fig:typeII-proof-flow-part-xi}
+\end{figure}
+\end{landscape}
+
+\clearpage
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\resizebox{0.93\linewidth}{!}{%
+\begin{tikzpicture}[
+dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.30cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.90cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[dec] (n124) at (0,0) {\textbf{[124]}~which critical-tightness failure row occurs?};
+\coordinate (in124) at ($(n124.north)+(0,0.92)$);
+\draw[arrow] (in124)--node[right]{from [96]}(n124.north);
+\node[dec] (n125) at (-6.00,-6.00) {\textbf{[125]}~which compact-package failure occurs?};
+\node[term,text width=2.70cm] (n126) at (-6.00,-11.00) {\textbf{[126]}~selected compact-package first failure closed};
+\node[dec] (n127) at (6.00,-6.00) {\textbf{[127]}~which diffuse critical-tail outcome occurs?};
+\node[term,text width=2.70cm] (n128) at (1.00,-11.00) {\textbf{[128]}~the unique lower named failure row is closed};
+\node[term,text width=2.70cm] (n129) at (6.00,-11.00) {\textbf{[129]}~atomic carrier contradicts the diffuse alternative};
+\node[term,text width=2.70cm] (n130) at (11.00,-11.00) {\textbf{[130]}~the unique diffuse residual row is closed};
+
+\draw[arrow] (n124.west)--++(-2.00,0) node[left]{same-point cascade: to [107]};
+\draw[arrow] (n124.south west)--++(-3.80,-2.55) node[left]{separated exterior: to [109]};
+\draw[arrow] (n124.south east)--++(3.80,-2.55) node[right]{escaping exterior: to [109]};
+\draw[arrow] (n124.east)--++(2.00,0) node[right]{pressure/gauge: to [113]};
+\draw[arrow] (n124.south)--node[above,sloped]{compact package}(n125.north);
+\draw[arrow] (n124.south)--node[above,sloped]{diffuse tail}(n127.north);
+\draw[arrow] (n125.west)--++(-1.55,0) node[left]{rough core: to [108]};
+\draw[arrow] (n125.south west)--node[above,sloped]{local energy}(n126.north west);
+\draw[arrow] (n125.south east)--node[above,sloped]{compact upper}(n126.north east);
+\draw[arrow] (n127.south west)--node[above,sloped]{lower named face}(n128.north);
+\draw[arrow] (n127)--node[right]{atomic activity}(n129.north);
+\draw[arrow] (n127.south east)--node[above,sloped]{diffuse residual}(n130.north);
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part XII]{Proof-dependency diagram, Part XII.
+The six alternatives of \cref{lem:critical-tightness-failure-row} leave [124]
+on separate edges.  The compact-package and diffuse-tail cases are further
+split at [125] and [127].  Nodes [128]--[130] are the three outcomes used in
+the proof of \cref{lem:diffuse-critical-tail-row-closed}.}
+\label{fig:typeII-proof-flow-part-xii}
+\end{figure}
+\end{landscape}
 
 \clearpage
 
-\subsection{Detailed dependency table}
+\subsection{Node-by-node audit table}
 \label{subsec:typeII-detailed-dependency}
 
-The following table gives the proof source and logical payload of every
-numbered diagram node.  The source column contains only labels from this
-manuscript.  The input column records the obstruction that must still be
-carried at that node; the last column records either the next retained state or
-the first named failure route.
+The table identifies the result in the body of the paper that justifies every
+diagram node.  Its arrows record the live case split.  Hypotheses established
+at an earlier node remain available through the monotone ledger summarized in
+\cref{tab:typeII-retained-obstruction-ledger}.
 
 \begin{landscape}
 \begingroup
 \scriptsize
-\setlength{\tabcolsep}{2.5pt}
-\renewcommand{\arraystretch}{1.13}
-\begin{longtable}{@{}C{0.72cm}L{3.20cm}L{5.15cm}L{4.50cm}L{5.45cm}@{}}
-\caption{Node-by-node dependency table for the Type II proof.}
-\label{tab:typeII-proof-dependency}\\
+\setlength{\tabcolsep}{2.7pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}C{0.72cm}L{4.35cm}L{7.35cm}L{6.05cm}@{}}
+\caption{Node-by-node audit ledger for the Type II proof-dependency diagram.}
+\label{tab:typeII-proof-node-ledger}\\
 \toprule
-Node & State or ordered test & Internal proof source & Input carried & Output or first-failure route \\
+Node & State or exhaustive test & Source in the proof & Successor or closure \\
 \midrule
 \endfirsthead
-\multicolumn{5}{c}{\tablename\ \thetable\ continued}\\
+\multicolumn{4}{c}{\tablename\ \thetable\ continued}\\
 \toprule
-Node & State or ordered test & Internal proof source & Input carried & Output or first-failure route \\
+Node & State or exhaustive test & Source in the proof & Successor or closure \\
 \midrule
 \endhead
 \midrule
-\multicolumn{5}{r}{Continued on next page}\\
+\multicolumn{4}{r}{Continued on next page}\\
 \endfoot
 \bottomrule
 \endlastfoot
 
-[1] & Upstream residual or singular profile at a possible terminal point &
-\cref{def:physical-local-typeII-germ,lem:physical-typeII-germ-admissible} &
-Local suitable Navier--Stokes germ, terminal point, and pressure modulo functions of time &
-Interpret the upstream object through the physical Type II interface and test [2] \\
+[1] & Residual or singular profile at a possible terminal point &
+\cref{def:physical-local-typeII-germ,lem:physical-typeII-germ-admissible} & Test the physical entry at [2] \\
 
 [2] & Physical local Type II germ test &
-\cref{def:physical-local-typeII-germ,thm:local-typeI-typeII-dichotomy} &
-Singularity, failure of the local Type I bound, and interior cylinders &
-Yes gives [4]; no gives the closed regular/Type I outcome [3] \\
+\cref{def:physical-local-typeII-germ,thm:local-typeI-typeII-dichotomy} & Yes gives [4]; no closes at [3] \\
 
-[3] & Closed regular/Type I outcome &
-\cref{def:physical-local-typeII-germ,thm:local-typeI-typeII-dichotomy} &
-Negation of the Type II germ test; interiority is automatic in the whole-space setting &
-If $x_0\notin\Sigma(T)$, the point is regular; if $x_0\in\Sigma(T)$, the local Type I bound holds, so the initial branch is complete \\
+[3] & Regular or local Type I closure &
+\cref{thm:local-typeI-typeII-dichotomy} & Terminal entry branch \\
 
-[4] & Positive local Type II CKN concentration sequence &
-\cref{lem:physical-typeII-germ-concentration-sequence,def:local-typeII-sequence} &
-A fixed positive scale-invariant velocity--pressure concentration on shrinking cylinders &
-Run the ordered analytic-data tests at [5] \\
+[4] & Positive CKN concentration sequence &
+\cref{lem:physical-typeII-germ-concentration-sequence,def:local-typeII-sequence} & Run the ordered C1 test [5] \\
 
-[5] & C1 analytic-data exhaustion &
-\cref{def:c1-typeII-analytic-data,thm:typeII-analytic-data-exhaustive} &
-Positive Type II concentration and admissible local branch ancestry &
-All data give [7]; the first failed test gives [6] \\
+[5] & C1 admissibility test &
+\cref{thm:typeII-analytic-data-exhaustive,thm:ordered-local-state-space-exhaustion} & Pass gives [7]; first failure gives [6] \\
 
-[6] & First class-incompatible or named non-retained row &
-\cref{thm:typeII-analytic-data-exhaustive,lem:no-extra-outside-class-row} &
-The first failed C1 datum, with its original concentration ancestry &
-Class-incompatible rows contradict the physical Type II definition; named rows continue to [48] \\
+[6] & C1 first-failure row &
+\cref{lem:no-extra-outside-class-row,cor:covered-class-entry-discharged} & Continue to the classifier [56] \\
 
-[7] & Retained Type II analytic package &
-\cref{thm:physical-typeII-covered-entry,cor:covered-class-entry-discharged} &
-Concentration, local scale-center data, and retained local profile data &
-Enter the ordered representation tests at [8] \\
+[7] & Retained analytic data &
+\cref{thm:physical-typeII-covered-entry,cor:covered-class-entry-discharged} & Test representation at [8] \\
 
-[8] & Raw AC chart, repaired gauge, and strong-chart test &
-\cref{cor:c2r-ordered-classification,lem:strong-gauge-chart-entry-test} &
-Retained analytic data on buffered compact windows &
-Successful chart and gauge give [10]; their first failure gives [9] \\
+[8] & Repaired representation and strong-chart test &
+\cref{cor:c2r-ordered-classification,lem:strong-gauge-chart-entry-test} & Pass gives [10]; first failure gives [9] \\
 
-[9] & Chart or repaired-gauge first failure &
-\cref{cor:c2-ordered-representation,cor:c2r-ordered-classification,lem:scale-rigid-degenerate-jacobian} &
-The retained concentration and the first failed representation datum &
-Route to the representation, multibubble, cascade, or scale-rigid rows and then to [48] \\
+[9] & Representation or gauge first failure &
+\cref{cor:c2-ordered-representation,cor:c2r-ordered-classification} & Continue to [56] \\
 
-[10] & Canonical represented local equation, pressure atlas, and suitable structure &
-\cref{thm:canonical-repaired-gauge-equation,thm:pressure-decomp,prop:ren-suitable} &
-The canonical chart of \cref{def:canonical-chart-notation} on a buffered compact cylinder &
-The selected branch is a suitable local represented Navier--Stokes branch; test the carrier at [11] \\
+[10] & Canonical represented local equation, pressure atlas, and suitability &
+\cref{thm:canonical-repaired-gauge-equation,thm:pressure-decomp,prop:ren-suitable} & Test core uniqueness at [11] \\
 
-[11] & Retained velocity-carrier test &
-\cref{lem:pressure-only-critical-mass-routing} &
-Positive CKN signal and the localized pressure decomposition &
-A velocity carrier gives [13]; pressure-only or carrier loss gives [12] \\
+[11] & Unique nondegenerate core test &
+\cref{thm:repaired-gauge-representation,thm:multibubble} & Yes gives [13]; no closes at [12] \\
 
-[12] & Pressure-only, exterior, or loss-of-active-core row &
-\cref{lem:pressure-only-critical-mass-routing,cor:exterior-concentration-exit-discharged} &
-The positive local signal together with its velocity-source/harmonic-pressure split &
-Enter the active-core-loss or exterior ledger at [48] \\
+[12] & Multibubble, cascade, or gauge-degenerate closure &
+\cref{thm:multibubble} & Terminal structural branch \\
 
-[13] & Unique nondegenerate retained-core test &
-\cref{thm:repaired-gauge-representation,thm:multibubble} &
-A represented velocity carrier with retained local mass &
-One core continues at [15]; competing cores or chart degeneracy give [14] \\
+[13] & One retained active core &
+\cref{thm:core-retention,lem:retained-frame-maximality} & Test the velocity carrier at [14] \\
 
-[14] & Multibubble, cascade, or gauge-degenerate closure &
-\cref{thm:multibubble} &
-Multiple active frames, separated scales or centers, or failed core uniqueness &
-The structural branch is closed or routed to an already closed scale-rigid state \\
+[14] & Retained velocity-carrier test &
+\cref{lem:pressure-only-critical-mass-routing} & Yes gives [16]; no gives [15] \\
 
-[15] & Compact upper-estimate and pressure-stability test &
-\cref{prop:selected-window-suitable-estimates,thm:pressure-decomp} &
-One nondegenerate retained core on buffered selected windows &
-The compact package gives [17]; its first failure gives [16] \\
+[15] & Pressure-only, exterior, or active-core-loss row &
+\cref{lem:pressure-only-critical-mass-routing,cor:exterior-concentration-exit-discharged} & Continue to [56] \\
 
-[16] & Compact-upper, pressure, or ambient first-failure row &
-\cref{thm:ordered-local-state-space-exhaustion,cor:ambient-adjacent-wrapper-discharged} &
-The retained signal and the first failed compact-cylinder estimate &
-Route to the relevant ambient or named local row at [48] \\
+[16] & Represented retained velocity core &
+\cref{thm:core-retention,prop:selected-window-suitable-estimates} & Continue to [17] \\
 
-[17] & Local windowed $H^1$ test &
-\cref{thm:canonical-local-caccioppoli,thm:rough-core} &
-Finite outer compact-cylinder velocity--pressure control &
-Inner $H^1$ control gives [19]; failure gives [18] \\
+[17] & Compact upper-estimate and pressure-stability test &
+\cref{prop:selected-window-suitable-estimates,thm:pressure-decomp} & Pass gives [19]; failure gives [18] \\
 
-[18] & Rough-core Caccioppoli rerouting &
-\cref{thm:canonical-local-caccioppoli,thm:rough-core} &
-Loss of inner gradient control while retained concentration persists &
-Failure of the enclosing compact controls returns to multibubble or an ambient compactness row \\
+[18] & Compact, pressure, or ambient first failure &
+\cref{thm:ordered-local-state-space-exhaustion,cor:ambient-adjacent-wrapper-discharged} & Continue to [56] \\
 
-[19] & Compact retained core and dissipation dichotomy &
-\cref{lem:compact-core-dissipation-dichotomy} &
-Positive velocity core, compact upper bounds, local pressure control, and windowed $H^1$ &
-Test vanishing localized dissipation at [20] \\
+[19] & Retained compact-cylinder estimates &
+\cref{prop:selected-window-suitable-estimates} & Test windowed $H^1$ at [20] \\
 
-[20] & Vanishing-dissipation test &
-\cref{lem:compact-core-dissipation-dichotomy} &
-The compact retained core of [19] &
-Vanishing windows give [21]; the divergent retained-cost branch continues at [25] \\
+[20] & Local windowed $H^1$ test &
+\cref{thm:canonical-local-caccioppoli,thm:rough-core} & Pass gives [22]; failure closes at [21] \\
 
-[21] & Spatially constant compact limit &
-\cref{thm:single-core-criterion,thm:single-core} &
-Strong local compactness and vanishing localized dissipation &
-The limit has zero spatial gradient; test its value at [22] \\
+[21] & Rough-core/$H^1$-loss closure &
+\cref{thm:rough-core,prop:state-elimination} & Terminal rough-core branch \\
 
-[22] & Zero-versus-nonzero constant-limit test &
-\cref{thm:single-core} &
-A spatially constant selected-window limit and the retained mass floor &
-Zero gives [23]; nonzero gives the bounded-window row [24] \\
+[22] & Represented compact retained core &
+\cref{lem:compact-core-dissipation-dichotomy,thm:state-decomposition} & Test the scale state at [23] \\
 
-[23] & Retained velocity-mass contradiction &
-\cref{thm:single-core} &
-Strong local $L^3$ convergence to zero and a fixed positive retained mass floor &
-The vanishing-dissipation compact single-core branch is closed \\
+[23] & Compact-core versus scale-collapse/scale-rigid test &
+\cref{thm:state-decomposition,thm:scale-stratification} & No gives [24]; yes gives [35] \\
 
-[24] & Nonzero bounded selected-window row &
-\cref{lem:scale-rigid-bounded-limit-exit,thm:bounded-selected-window-physical-routing} &
-A bounded nonzero local limit carrying the selected-window signal &
-Leave the strict retained row and enter the final bounded-window ledger at [48]--[51] \\
+[24] & Compact-core dissipation alternatives &
+\cref{lem:compact-core-dissipation-dichotomy} & Vanishing gives [25], adjacent gives [29], divergent cost gives [30] \\
 
-[25] & Retained scale/cost continuation &
-\cref{lem:compact-core-dissipation-dichotomy,thm:scale-stratification} &
-Either divergent localized core cost or a selected scale-collapse branch &
-Run the ordered scale-collapse and retained-cost tests at [26] \\
+[25] & Spatially constant compact limit &
+\cref{thm:single-core-criterion,thm:single-core} & Test its value at [26] \\
 
-[26] & Ordered scale-collapse stratification &
-\cref{thm:scale-stratification} &
-Nonvanishing selected core and its scale-center dynamics &
-Produce exactly one of [27]--[31] \\
+[26] & Zero-versus-nonzero constant test &
+\cref{thm:single-core} & Zero closes at [27]; nonzero gives [28] \\
 
-[27] & Finite signed or absolute scale cost &
-\cref{thm:scale-cost} &
-Scale collapse with retained core and finite compatible cost &
-Finite cost contradicts the retained core; branch closed \\
+[27] & Retained mass contradiction &
+\cref{thm:single-core} & Terminal compact single-core branch \\
 
-[28] & Thin negative-drift state &
-\cref{thm:thin-negative-drift-closed} &
-Diffuse negative-scale occupation blocks after the thick-window tests fail &
-Return to a thick-window row, another named row, or a closed retained state \\
+[28] & Nonzero bounded selected-window row &
+\cref{lem:scale-rigid-bounded-limit-exit,thm:bounded-selected-window-physical-routing} & Continue to [56] \\
 
-[29] & Autonomous-modulation failure &
-\cref{thm:autonomous-modulation-failure-closed} &
-Failure of the autonomous modulation limit on the selected scale-collapse path &
-Record the autonomous-modulation row and close it through [50]--[51] \\
+[29] & Adjacent compact-core first failure &
+\cref{lem:compact-core-dissipation-dichotomy,cor:ambient-adjacent-wrapper-discharged} & Continue to [56] \\
 
-[30] & Compact scale-collapse or scale-rigid state &
-\cref{thm:compact-scale-collapse-rigidity-discharged,prop:scale-rigidity-discharged} &
-A retained compact scale-collapse state or scale-rigid terminal profile &
-Reduce to a bounded-window or compact single-core state, or close directly \\
+[30] & Divergent canonical localized cost &
+\cref{thm:c3-local-retained-mass-cost-divergence} & Validate the canonical channel at [31] \\
 
-[31] & Retained compact-cost data and active-window floor &
-\cref{thm:retained-compact-tests-closed,lem:c5-uniform-retained-active-window-mass} &
-Retained compact tests, positive active-window mass, and locally well-posed cost &
-Validate the canonical identity-cost channel at [32] \\
+[31] & Canonical identity-cost validation &
+\cref{lem:canonical-identity-cost-available,lem:no-unrecorded-cost-escape} & Pass gives [33]; failure gives [32] \\
 
-[32] & Canonical identity-cost validation &
-\cref{lem:canonical-identity-cost-available,lem:no-unrecorded-cost-escape} &
-Compact Type II data and the canonical localized Navier--Stokes cost &
-The canonical channel gives [34]; a noncanonical first failure gives [33] \\
+[32] & Noncanonical carrier or cost-validation row &
+\cref{thm:noncanonical-cost-routing-closed} & Continue to [56] \\
 
-[33] & Noncanonical carrier or cost-validation row &
-\cref{thm:noncanonical-cost-routing-closed} &
-The first failed comparison, carrier, or validation test &
-Return to the canonical channel or enter the rank-$1$ row at [50] \\
+[33] & Corrected monotonicity and carrier routing &
+\cref{thm:windowwise-routing-gives-stratified-routing} & Apply the carrier closures at [34] \\
 
-[34] & Corrected monotonicity and $J_1,J_6,J_7$ routing &
-\cref{thm:windowwise-routing-gives-stratified-routing,thm:cost-divergence-exclusion-discharged} &
-Divergent compatible localized cost on the canonical moving schedule &
-Summable terms contradict divergence; a nonsummable term is one of the three named carriers \\
+[34] & Cost-divergence closure &
+\cref{thm:cost-divergence-exclusion-discharged,cor:cost-divergence-exclusion-unconditional} & Terminal retained-cost branch \\
 
-[35] & Carrier closures and cost-divergence exclusion &
-\cref{thm:windowwise-routing-gives-stratified-routing,thm:cost-divergence-exclusion-discharged} &
-A normalized transition/exterior, negative-drift, or positive-scale carrier &
-The carrier enters a closed exterior, drift, or scale-rigid row; no retained cost branch remains \\
+[35] & Scale-collapse stratification &
+\cref{thm:scale-stratification} & Produces exactly one of [36]--[41] \\
 
-[36] & Terminal windows sampled from the represented orbit &
-\cref{thm:representation-gives-terminal-orbit-sampling} &
-The canonical represented orbit and its retained selected-window ancestry &
-Construct the terminal active-frame data at [37] \\
+[36] & Finite signed or absolute scale-cost closure &
+\cref{thm:scale-cost} & Terminal finite-cost branch \\
 
-[37] & Critical profile decomposition, ancestry, and active frames &
-\cref{thm:critical-ns-profile-decomposition-discharged,thm:terminal-windowed-profile-completeness} &
-Local finite critical mass on compact terminal windows &
-Extract all active profiles and test nonretained terminal states at [38] \\
+[37] & Thin-drift routing test &
+\cref{thm:thin-negative-drift-closed} & Closed retained row gives [38]; another named row goes to [56] \\
 
-[38] & Additional active, hidden, separated, cascade, or exterior-state test &
-\cref{thm:terminal-windowed-profile-completeness,thm:exterior-stratification} &
-The complete terminal profile family and retained ancestry &
-An additional state gives [39]; otherwise test the residual at [40] \\
+[38] & Already closed retained scale row &
+\cref{thm:thin-negative-drift-closed,thm:compact-scale-collapse-rigidity-discharged} & Terminal thin-drift route \\
 
-[39] & Structural or exterior terminal closure &
-\cref{thm:multibubble,cor:exterior-concentration-exit-discharged} &
-A separated, cascade, hidden-profile, or physically exterior label &
-Close the label by the structural or exterior theorem \\
+[39] & Autonomous-modulation first failure &
+\cref{thm:autonomous-modulation-failure-closed} & Continue to [56] \\
 
-[40] & Visible residual, critical-tail, or pressure-defect test &
-\cref{thm:local-residual-exhaustion,thm:terminal-adjacent-label-routing} &
-The retained component and augmented residual occupation coordinates &
-A visible defect gives [41]; absence of every defect gives [42] \\
+[40] & Compactness-package first failure &
+\cref{thm:selected-compactness-failure-routed} & Continue to [56] \\
 
-[41] & Named residual, tail, or pressure row &
-\cref{thm:local-residual-exhaustion,lem:diffuse-critical-tail-row-closed} &
-A nonzero residual coordinate, diffuse tail, or pressure-only diagnostic &
-Assign the first named row and continue to [48] \\
+[41] & Retained terminal tail after all earlier local exits &
+\cref{thm:ordered-local-state-space-exhaustion,thm:expanded-terminal-data-branchwise} & Construct its terminal frames at [42] \\
 
-[42] & Retained comparable profile with perturbative residual &
-\cref{thm:critical-ns-profile-decomposition-discharged,thm:terminal-critical-local-compactness} &
-One retained comparable class, vanishing residual stress, and inherited pressure gauge &
-Verify the remaining compact terminal data at [43] \\
+[42] & Terminal coordinate frames constructed locally from retained state selection &
+\cref{thm:terminal-coordinate-frame-construction-profile-selection} & Apply orbit sampling at [43] \\
 
-[43] & Critical tightness, windowed $H^1$, and terminal compactness &
-\cref{thm:retained-compact-tests-closed,cor:expanded-terminal-wrapper-discharged} &
-The retained comparable terminal state and its local compact-window bounds &
-Produce the expanded terminal data and continue to [44] \\
+[43] & Terminal active sequence sampled from the represented orbit &
+\cref{thm:representation-gives-terminal-orbit-sampling} & Run the local compactness alternatives at [44] \\
 
-[44] & Expanded terminal Type II exclusion &
-\cref{thm:expanded-terminal-typeII,cor:expanded-terminal-wrapper-discharged} &
-All nine expanded terminal data on the retained tail &
-No retained terminal Type II branch remains \\
+[44] & Local PDE and terminal $L^3$ bounds test &
+\cref{thm:terminal-boundedness-alternatives} & Pass gives [46]; failure gives [45] \\
 
-[45] & Ordered state-space exhaustion and five-state decomposition &
-\cref{thm:ordered-local-state-space-exhaustion,thm:state-decomposition} &
-A positive local Type II concentration sequence with first-failure ordering &
-Exactly one retained state or one named first-failure row occurs \\
+[45] & Terminal compactness first-failure row &
+\cref{thm:terminal-boundedness-alternatives,lem:terminal-local-critical-mass-routing} & Continue to [56] \\
 
-[46] & Retained-state test &
-\cref{thm:state-decomposition} &
-The unique outcome of the ordered exhaustion &
-A retained state gives [47]; a failed local row gives [48] \\
+[46] & Local compact terminal-window hypothesis &
+\cref{thm:bounded-terminal-sequences-from-l3} & Extract the complete profile family at [47] \\
 
-[47] & Retained-state elimination &
-\cref{prop:state-elimination,thm:expanded-terminal-typeII} &
-One of the five retained states, with the hypotheses produced by its route &
-The appropriate structural, cost, or terminal theorem closes the retained state \\
+[47] & Local compact-window profile decomposition, ancestry, and active frames &
+\cref{thm:critical-ns-profile-decomposition-discharged,thm:terminal-windowed-profile-completeness} & Test additional profiles at [48] \\
 
-[48] & Test for membership in the final rank-$1$ ledger &
-\cref{cor:ambient-adjacent-wrapper-discharged,def:remaining-named-exits} &
-A first named local or ambient failure row &
-Rows closed earlier give [49]; one of the final four gives [50] \\
+[48] & Noncomparable active, separated, cascade, or exterior profile test &
+\cref{thm:terminal-windowed-profile-completeness,thm:exterior-stratification} & Yes closes at [49]; no gives [50] \\
 
-[49] & Earlier local or ambient row closed &
-\cref{prop:state-elimination,cor:ambient-adjacent-wrapper-discharged} &
-A named row outside the final four-row ledger &
-The row reaches a regular/removable or previously closed structural state \\
+[49] & Structural or exterior closure &
+\cref{thm:multibubble,cor:exterior-concentration-exit-discharged} & Terminal profile branch \\
 
-[50] & Four remaining rank-$1$ rows &
-\cref{def:remaining-named-exits} &
-Bounded-window, autonomous-modulation, noncanonical-cost, or active-core-loss data &
-Apply the closure source displayed in the canonical ledger \\
+[50] & Residual, critical-tail, or pressure-defect test &
+\cref{thm:local-residual-exhaustion,thm:terminal-adjacent-label-routing} & Defect gives [51]; otherwise [52] \\
 
-[51] & Rank-decreasing final closure &
-\cref{lem:acyclic-terminal-ledger,cor:remaining-named-exits-closed} &
-One canonical rank-$1$ exit and its row-specific closure theorem &
-The row reaches rank $0$ and cannot return to the routing layer \\
+[51] & Named residual, tail, or pressure row &
+\cref{thm:local-residual-exhaustion,lem:diffuse-critical-tail-row-closed} & Continue to [56] \\
 
-[52] & Unconditional local Type II exclusion &
-\cref{thm:unconditional-no-typeII-discharged,thm:local-typeII-exclusion} &
-Closure of every retained state and every named first-failure row &
-No physical local Type II germ, hence no local Type II singular point, remains \\
+[52] & Retained comparable profile with perturbative residual &
+\cref{thm:terminal-windowed-profile-completeness,thm:terminal-critical-local-compactness} & Apply the retained compact tests at [53] \\
+
+[53] & Critical tightness and local windowed $H^1$ control &
+\cref{thm:retained-compact-tests-closed} & Verify the expanded terminal data at [54] \\
+
+[54] & All nine expanded terminal data on the retained tail &
+\cref{def:expanded-terminal-data,thm:expanded-terminal-data-branchwise} & Apply the terminal exclusion at [55] \\
+
+[55] & Retained terminal Type II exclusion &
+\cref{thm:expanded-terminal-typeII,cor:expanded-terminal-wrapper-discharged} & Terminal retained branch \\
+
+[56] & Unique first-failure closure classifier &
+\cref{cor:covered-class-entry-discharged,lem:acyclic-terminal-ledger,def:remaining-named-exits} & Exactly one closure class [57], [58], or [60]--[63] \\
+
+[57] & Class-incompatible closure &
+\cref{lem:physical-typeII-germ-admissible,lem:no-extra-outside-class-row} & Terminal contradiction to physical Type II entry \\
+
+[58] & Deterministic lookup of an earlier row's recorded closure theorem &
+\cref{prop:state-elimination,cor:ambient-adjacent-wrapper-discharged} & Apply that theorem at [59] \\
+
+[59] & Closure of the uniquely selected earlier row &
+\cref{prop:state-elimination,cor:ambient-adjacent-wrapper-discharged} & Terminal previously closed row \\
+
+[60] & Bounded selected-window row &
+\cref{thm:bounded-selected-window-physical-routing} & Continue to its alternatives at [64] \\
+
+[61] & Autonomous-modulation row &
+\cref{thm:autonomous-modulation-failure-closed} & Continue to the window-integral test [71] \\
+
+[62] & Noncanonical cost-validation row &
+\cref{thm:noncanonical-cost-routing-closed} & Continue to the validation test [88] \\
+
+[63] & Final active-core ledger family &
+\cref{def:remaining-named-exits,thm:active-core-loss-closed} & Continue to the family classifier [96] \\
+
+[64] & Survival of positive local CKN concentration after bounded-window regularization &
+\cref{lem:bounded-window-local-regularization,thm:bounded-selected-window-physical-routing} & No closes at [65]; yes gives [66] \\
+
+[65] & No surviving local CKN signal &
+\cref{lem:bounded-window-local-regularization,thm:bounded-selected-window-physical-routing} & Terminal local Type I contradiction \\
+
+[66] & Removal of the regular portion and local reselection &
+\cref{lem:bounded-window-local-regularization,lem:bounded-window-reselection-well-founded} & Test the reselection outcome at [67] \\
+
+[67] & Well-founded bounded-window reselection outcome &
+\cref{lem:bounded-window-reselection-well-founded} & Exactly one of [68]--[70] \\
+
+[68] & Local regularity below a fixed physical scale &
+\cref{lem:bounded-window-reselection-well-founded} & Terminal regular branch \\
+
+[69] & Finite reselection reaches its unique named row &
+\cref{lem:bounded-window-reselection-well-founded,thm:bounded-selected-window-physical-routing} & Terminal through that row's recorded closure \\
+
+[70] & Infinite reselection reaches its unique named row &
+\cref{lem:bounded-window-reselection-well-founded,lem:diffuse-reselection-tree-row-closed,thm:bounded-selected-window-physical-routing} & Terminal through that row's recorded closure \\
+
+[71] & Bounded-versus-unbounded modulation-window test &
+\cref{lem:modulation-window-bound-or-exit,thm:autonomous-modulation-failure-closed} & Unbounded gives [72]; bounded gives [78] \\
+
+[72] & Unbounded signed or geometric modulation component &
+\cref{lem:modulation-window-bound-or-exit,thm:autonomous-modulation-failure-closed} & Exactly one closure [73]--[77] \\
+
+[73] & Negative scale-drift closure &
+\cref{thm:thin-negative-drift-closed} & Terminal modulation row \\
+
+[74] & Positive scale-shell closure &
+\cref{cor:windowwise-positive-scale-routing-holds} & Terminal modulation row \\
+
+[75] & Modulation-driven recentering closure &
+\cref{def:stratified-moving-carrier-routing,cor:ambient-adjacent-wrapper-discharged} & Terminal modulation row \\
+
+[76] & Repaired-gauge first-failure closure &
+\cref{cor:c2-ordered-representation,cor:c2r-ordered-classification} & Terminal representation row \\
+
+[77] & Exterior modulation closure &
+\cref{cor:exterior-concentration-exit-discharged} & Terminal exterior row \\
+
+[78] & Bounded modulation windows &
+\cref{lem:modulation-window-bound-or-exit} & Continue to the bounded-defect alternatives [79] \\
+
+[79] & Bounded modulation-defect outcome &
+\cref{lem:bounded-modulation-defect-routing,thm:autonomous-modulation-failure-closed} & Constant gives [80], perturbative gives [81], visible gives [82] \\
+
+[80] & Constant-coefficient autonomous limit &
+\cref{lem:bounded-modulation-defect-routing,thm:scale-collapse-stratification} & Terminal contradiction to alternative \textup{(v)} \\
+
+[81] & Perturbative modulation defect &
+\cref{lem:bounded-modulation-defect-routing,thm:autonomous-modulation-failure-closed} & Terminal through the same autonomous-limit contradiction \\
+
+[82] & Visible nonperturbative modulation component &
+\cref{lem:bounded-modulation-defect-routing} & Exactly one of [83]--[87] \\
+
+[83] & Visible negative scale-drift closure &
+\cref{thm:thin-negative-drift-closed} & Terminal modulation row \\
+
+[84] & Visible positive scale-shell closure &
+\cref{cor:windowwise-positive-scale-routing-holds} & Terminal modulation row \\
+
+[85] & Visible recentering closure &
+\cref{def:stratified-moving-carrier-routing,cor:ambient-adjacent-wrapper-discharged} & Terminal modulation row \\
+
+[86] & Visible repaired-gauge closure &
+\cref{cor:c2-ordered-representation,cor:c2r-ordered-classification} & Terminal representation row \\
+
+[87] & Visible loss of the selected active core &
+\cref{lem:bounded-modulation-defect-routing} & Continue to [96] \\
+
+[88] & Ordered noncanonical cost-validation test &
+\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed} & Pass gives [89]; first failure gives [91] \\
+
+[89] & Comparable-cost identification with the canonical identity channel &
+\cref{lem:comparable-cost-compatibility,lem:canonical-cost-channel-available} & Apply the retained exclusion at [90] \\
+
+[90] & Canonical retained cost-divergence exclusion &
+\cref{cor:retained-stratum-cost-exclusion} & Terminal cost row \\
+
+[91] & First-failure layer in noncanonical validation &
+\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed} & Exactly one of [92]--[95] \\
+
+[92] & Class-side first failure &
+\cref{cor:covered-class-entry-discharged,cor:c2r-ordered-classification} & Terminal earlier closure \\
+
+[93] & State-decomposition or compact-test first failure &
+\cref{prop:state-elimination,cor:ambient-adjacent-wrapper-discharged} & Terminal earlier closure \\
+
+[94] & Modulation-integrability first failure &
+\cref{thm:autonomous-modulation-failure-closed} & Terminal by the alternatives [71]--[87] \\
+
+[95] & Irreducible cost-side first failure &
+\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed} & Terminal by the canonical-channel rule \\
+
+[96] & Final active-core ledger family classifier &
+\cref{def:remaining-named-exits,thm:active-core-loss-closed,lem:critical-tightness-failure-row} & Active loss gives [97], pressure gives [110], nested pressure gives [114], critical tightness gives [124], exterior gives [109] \\
+
+[97] & Local critical-mass outcome &
+\cref{lem:terminal-local-critical-mass-routing} & Positive finite gives [98], floor failure gives [99], upper failure gives [103] \\
+
+[98] & Positive finite local critical mass &
+\cref{lem:terminal-local-critical-mass-routing} & Terminal contradiction to the loss-row classification \\
+
+[99] & Removal of an activity-floor-failing candidate &
+\cref{lem:retained-frame-maximality,thm:active-core-loss-closed} & Exhaust the remaining finite local frame list at [100] \\
+
+[100] & Outcome after finite ordered frame reselection &
+\cref{lem:retained-frame-maximality,lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} & Positive finite gives [98], upper failure gives [103], no velocity frame gives [101] \\
+
+[101] & Carrier of the original CKN signal when no velocity frame remains &
+\cref{thm:active-core-loss-closed} & Pressure gives [110], exterior gives [109], rough core gives [108], subthreshold regularity gives [102] \\
+
+[102] & All smaller admissible cylinders below the CKN threshold &
+\cref{thm:terminal-ckn-regularity,thm:active-core-loss-closed} & Terminal contradiction to singular CKN concentration \\
+
+[103] & First label produced by local critical-mass upper-bound failure &
+\cref{lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} & Exactly one closure [104]--[109] \\
+
+[104] & Same-frame critical-mass adjacent face &
+\cref{lem:terminal-local-critical-mass-routing} & Terminal nonretained label \\
+
+[105] & Comparable finite-mass class &
+\cref{lem:retained-frame-maximality} & Terminal by prior grouping into the retained class \\
+
+[106] & Nonunique-core structural row &
+\cref{thm:multibubble,thm:single-core} & Terminal structural closure \\
+
+[107] & Cascade row &
+\cref{thm:multibubble,thm:scale-cost,cor:multi-removal} & Terminal cascade closure \\
+
+[108] & Rough-core row &
+\cref{thm:rough-core,prop:state-elimination} & Terminal rough-core closure \\
+
+[109] & Exterior active-profile row &
+\cref{cor:exterior-concentration-exit-discharged} & Terminal exterior closure \\
+
+[110] & Local pressure-source outcome &
+\cref{lem:pressure-only-critical-mass-routing,thm:active-core-loss-closed} & Regular gives [111], velocity-supported gives [112], harmonic gives [109], reconstruction failure gives [113] \\
+
+[111] & Regular localized velocity-stress source &
+\cref{lem:pressure-only-critical-mass-routing} & Terminal regular absorption \\
+
+[112] & Velocity-supported pressure label &
+\cref{lem:pressure-only-critical-mass-routing,lem:retained-frame-maximality} & Comparable gives [105]; otherwise one of [106]--[109] \\
+
+[113] & Pressure reconstruction first failure &
+\cref{thm:pressure-decomp,cor:c2r-ordered-classification} & Terminal representation closure \\
+
+[114] & Well-founded nested pressure-only classifier &
+\cref{lem:nested-pressure-only-well-founded} & Velocity gives [112], harmonic tail gives [115], gauge gives [113], same-point gives [116], diffuse gives [118] \\
+
+[115] & Far-field harmonic pressure-tail row &
+\cref{lem:harmonic-cross-pressure-routing,lem:diffuse-pressure-only-not-terminal} & Terminal pressure-tail closure \\
+
+[116] & Same-point nested pressure classifier &
+\cref{lem:nested-pressure-only-well-founded} & Cascade gives [107]; scale collapse gives [117] \\
+
+[117] & Pressure scale-collapse row &
+\cref{thm:scale-cost,thm:compact-scale-collapse-rigidity-discharged} & Terminal scale closure \\
+
+[118] & Diffuse pressure-defect outcome &
+\cref{lem:diffuse-pressure-only-not-terminal} & Exactly one of [112], [115], [119], [120], or [123] \\
+
+[119] & Constant harmonic pressure &
+\cref{lem:diffuse-pressure-only-not-terminal} & Terminal removal by the pressure gauge \\
+
+[120] & Affine harmonic pressure absorption test &
+\cref{lem:affine-harmonic-pressure-absorption,lem:diffuse-pressure-only-not-terminal} & Absorbed gives [121]; failure gives [122] \\
+
+[121] & Affine pressure absorbed by accelerating rebasement &
+\cref{lem:affine-harmonic-pressure-absorption} & Terminal pressure closure \\
+
+[122] & Affine-pressure modulation failure &
+\cref{lem:affine-harmonic-pressure-absorption,thm:autonomous-modulation-failure-closed} & Terminal by the alternatives [71]--[87] \\
+
+[123] & Visible diffuse pressure residual &
+\cref{lem:diffuse-pressure-only-not-terminal,thm:local-residual-exhaustion} & Terminal through its unique named-row closure \\
+
+[124] & Critical-tightness first-row classifier &
+\cref{lem:critical-tightness-failure-row} & Cascade gives [107], exterior gives [109], pressure gives [113], compact failure gives [125], diffuse gives [127] \\
+
+[125] & Compact-package first-failure classifier &
+\cref{lem:critical-tightness-failure-row} & Rough core gives [108]; local-energy or compact-upper failure gives [126] \\
+
+[126] & Selected compact-package first failure &
+\cref{thm:selected-compactness-failure-routed,cor:ambient-adjacent-wrapper-discharged} & Terminal compact closure \\
+
+[127] & Diffuse critical-tail outcome &
+\cref{lem:diffuse-critical-tail-row-closed} & Lower named face gives [128], atomic activity gives [129], diffuse residual gives [130] \\
+
+[128] & First lower named failure face &
+\cref{lem:diffuse-critical-tail-row-closed} & Terminal through its recorded closure \\
+
+[129] & Atomic carrier in the diffuse-tail case &
+\cref{thm:logarithmic-tail-support-transfer,lem:diffuse-critical-tail-row-closed} & Terminal contradiction to the diffuse alternative \\
+
+[130] & Visible diffuse critical-tail residual &
+\cref{thm:local-residual-exhaustion,lem:diffuse-critical-tail-row-closed} & Terminal through its unique named-row closure \\
 
 \end{longtable}
 \endgroup
 \end{landscape}
 
-\subsection{Retained-obstruction ledger}
+\subsection{Monotone retained-obstruction ledger}
 \label{subsec:typeII-retained-obstruction-ledger}
 
-The proof transports a small number of invariants through every subsequence,
-reselection, and terminal extraction.  A route may change the scale-center
-description of the branch, but it may not discard the corresponding retained
-obstruction.  The table records where each invariant is established and how a
-failure is handled.
+The arrows need not repeat hypotheses already established upstream.  The
+following ledger records the standing data carried through every subsequence,
+window reselection, and terminal extraction.  A failure of a ledger entry is
+itself a first-failure row and therefore follows the unique route to [56].
 
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.15}
-\begin{longtable}{@{}L{1.15in}L{1.35in}L{2.00in}L{1.40in}@{}}
-\caption{Invariants transported through the Type II proof.}
+\begin{longtable}{@{}L{1.25in}L{1.55in}L{1.78in}L{1.38in}@{}}
+\caption{Monotone invariants carried by the Type II proof.}
 \label{tab:typeII-retained-obstruction-ledger}\\
 \toprule
-Invariant & Established by & Transported through & Failure or terminal use \\
+Invariant & Established by & Retained through & Failure or terminal use \\
 \midrule
 \endfirsthead
 \toprule
-Invariant & Established by & Transported through & Failure or terminal use \\
+Invariant & Established by & Retained through & Failure or terminal use \\
 \midrule
 \endhead
 \bottomrule
@@ -1097,128 +1669,136 @@ Invariant & Established by & Transported through & Failure or terminal use \\
 
 Physical Type II status &
 \cref{def:physical-local-typeII-germ,lem:physical-typeII-germ-admissible} &
-Covered entry and the ordered C1 tests [1]--[7] &
-A class-incompatible row contradicts the defining status \\
+Covered entry and ordered C1 tests [1]--[7] &
+Class-incompatible failure closes at [57] \\
 
 Positive local critical signal &
 \cref{lem:physical-typeII-germ-concentration-sequence,thm:active-profile-mass-floor} &
-Core selection, compactness, scale collapse, and terminal profile extraction &
-The zero compact limit contradicts this signal at [23]; loss of the signal is the active-core row \\
+Core selection, scale analysis, terminal profiles, and the final ledger [4]--[130] &
+The zero limit closes at [27]; loss of the selected signal is classified at [96]--[113] \\
 
 Buffered locality and suitable energy &
 \cref{prop:compact-support-transport,prop:ren-suitable} &
-Every working/core restriction $Q_{2R,I}\to Q_{R,I}$ &
-Domain, local-energy, or compact-upper failure is named before any inner estimate is used \\
+Every compact-cylinder restriction after [10] &
+The first domain, energy, or compact-upper failure goes to [56] \\
 
 Pressure representative &
 \cref{thm:pressure-decomp} &
-Compactness, Caccioppoli, terminal decoupling, and residual exhaustion &
-Harmonic, reconstruction, or pressure-only failure enters the pressure/exterior ledger \\
+Carrier selection, compactness, Caccioppoli, and residual exhaustion &
+Pressure-only rows are expanded at [110]--[123], and reconstruction failure closes at [113] \\
 
 Retained ancestry &
 \cref{lem:retained-frame-maximality,thm:terminal-windowed-profile-completeness} &
-Same-point grouping, terminal descendants, and augmented residual coordinates &
-A noncomparable descendant is assigned to a separated, cascade, exterior, or residual row \\
+Core selection, terminal descendants, and residual coordinates &
+Noncomparable descendants close at [49], [59], or [106]--[109] \\
 
 Canonical chart and modulation convention &
 \cref{def:canonical-chart-notation,thm:canonical-repaired-gauge-equation} &
-Scale cost, corrected monotonicity, carrier extraction, and terminal sampling &
-The first chart, gauge, or modulation failure is recorded at [9], [29], or [33] \\
+Scale cost, carrier extraction, and terminal sampling &
+The first chart, modulation, or cost failure closes through [56] \\
 
 First-failure order and rank &
 \cref{thm:ordered-local-state-space-exhaustion,lem:acyclic-terminal-ledger} &
-All routing stages [5]--[51] &
-Every route stops at one first named row; final closure strictly lowers rank $1\to0$ \\
+Every routing test [5]--[130] &
+Exactly one named row occurs, and every displayed ellipse is terminal \\
 
 \end{longtable}
 \endgroup
 
-\subsection{Branch-closure ledger}
+\subsection{Branch-closure audit ledger}
 \label{subsec:typeII-branch-closure-ledger}
 
-The retained alternatives in
-\cref{thm:state-decomposition} and the four final named exits in
-\cref{def:remaining-named-exits} form the complete terminal ledger.
-The first five rows below are retained states.  The last four rows are named
-first failures that remain at rank $1$ until their displayed closure source is
-applied.
+The retained alternatives of
+\cref{thm:state-decomposition} and the first-failure alternatives of
+\cref{def:remaining-named-exits} are exhausted by the following rows.  The
+closure column cites the result in the body of the paper; the final column
+identifies the corresponding terminal ellipse.  There is no common assembly
+node after these ellipses.
 
 \begin{landscape}
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.16}
-\begin{longtable}{@{}L{4.1cm}C{1.4cm}L{8.2cm}L{5.8cm}@{}}
-\caption{Complete closure ledger for retained Type II states and final named exits.}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}L{4.15cm}C{2.15cm}L{8.25cm}L{4.70cm}@{}}
+\caption{Closure audit for every terminal class in the Type II diagram.}
 \label{tab:typeII-branch-closure-ledger}\\
 \toprule
-State or exit & Diagram nodes & Closure source & Closure output \\
+State or exit & Diagram route & Closure source & Terminal output \\
 \midrule
 \endfirsthead
 \toprule
-State or exit & Diagram nodes & Closure source & Closure output \\
+State or exit & Diagram route & Closure source & Terminal output \\
 \midrule
 \endhead
 \bottomrule
 \endfoot
 
-Represented compact single core &
-[15]--[24] &
-\cref{thm:single-core,thm:cost-divergence-exclusion-discharged} &
-Vanishing dissipation contradicts retained mass; divergent localized cost enters a closed carrier route \\
+Regular or local Type I entry & [2]--[3] &
+\cref{thm:local-typeI-typeII-dichotomy} & [3] \\
 
-Multibubble, cascade, or gauge degeneracy &
-[13]--[14], [38]--[39] &
-\cref{thm:multibubble} &
-The active splitting or degenerate-core state is excluded or reduced to a closed scale-rigid state \\
+Multibubble, cascade, or gauge degeneracy & [11]--[12] &
+\cref{thm:multibubble} & [12] \\
 
-Loss of local windowed $H^1$ control &
-[17]--[18] &
-\cref{thm:canonical-local-caccioppoli,thm:rough-core} &
-Roughness forces an enclosing compact-cylinder failure and returns to a closed structural or ambient row \\
+Loss of local windowed $H^1$ control & [20]--[21] &
+\cref{thm:canonical-local-caccioppoli,thm:rough-core,prop:state-elimination} & [21] \\
 
-Finite-cost scale collapse &
-[26]--[27] &
-\cref{thm:scale-cost} &
-Finite compatible scale cost is inconsistent with the retained nonzero core \\
+Compact single core with vanishing dissipation & [24]--[27] &
+\cref{thm:single-core} & [27] \\
 
-Retained compact scale collapse or scale rigidity &
-[26], [30] &
-\cref{thm:compact-scale-collapse-rigidity-discharged,prop:scale-rigidity-discharged} &
-The state reduces to a bounded-window or compact single-core row, or is excluded directly \\
+Compact single core with divergent retained cost & [30]--[34] &
+\cref{thm:windowwise-routing-gives-stratified-routing,thm:cost-divergence-exclusion-discharged} & [34] \\
 
-Bounded selected-window limit &
-[24], [50]--[51] &
-\cref{lem:bounded-window-vmo-pressure,lem:bounded-window-reselection-well-founded,thm:bounded-selected-window-physical-routing} &
-Rank $1\to0$: regular/removable, no surviving concentration, or a previously closed named row \\
+Finite signed or absolute scale cost & [35]--[36] &
+\cref{thm:scale-cost} & [36] \\
 
-Autonomous-modulation failure or modulation-driven recentering &
-[29], [50]--[51] &
-\cref{thm:autonomous-modulation-failure-closed} &
-Rank $1\to0$: a local carrier row, pressure/gauge row, or closed compact-scale state \\
+Thin drift reaching an already closed retained state & [35], [37]--[38] &
+\cref{thm:thin-negative-drift-closed,thm:compact-scale-collapse-rigidity-discharged} & [38] \\
 
-Noncanonical carrier or cost-validation failure &
-[33], [50]--[51] &
-\cref{thm:noncanonical-cost-routing-closed} &
-Rank $1\to0$: comparison with the canonical identity-cost channel or a closed cost-side row \\
+Structural or exterior terminal profile & [48]--[49] &
+\cref{thm:multibubble,cor:exterior-concentration-exit-discharged} & [49] \\
 
-Loss of retained active core, including pressure-only and critical-tail behavior &
-[12], [41], [50]--[51] &
-\cref{thm:active-core-loss-closed,lem:diffuse-pressure-only-not-terminal,lem:diffuse-critical-tail-row-closed} &
-Rank $1\to0$: regular/exterior, retained comparable, or another previously closed state \\
+Retained comparable terminal profile & [52]--[55] &
+\cref{thm:expanded-terminal-data-branchwise,thm:expanded-terminal-typeII} & [55] \\
+
+Class-incompatible first failure & [6], [56]--[57] &
+\cref{lem:physical-typeII-germ-admissible,lem:no-extra-outside-class-row} & [57] \\
+
+Earlier local or ambient first failure & [56], [58]--[59] &
+\cref{prop:state-elimination,cor:ambient-adjacent-wrapper-discharged} & [59] \\
+
+Bounded selected-window limit & [28], [56], [60], [64]--[70] &
+\cref{lem:bounded-window-vmo-pressure,lem:bounded-window-reselection-well-founded,thm:bounded-selected-window-physical-routing} & [65], [68]--[70] \\
+
+Autonomous-modulation failure & [39], [56], [61], [71]--[87] &
+\cref{lem:modulation-window-bound-or-exit,lem:bounded-modulation-defect-routing,thm:autonomous-modulation-failure-closed} & [73]--[77], [80]--[81], [83]--[86]; [87] continues to [96] \\
+
+Noncanonical carrier or cost-validation failure & [32], [56], [62], [88]--[95] &
+\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed} & [90], [92]--[95] \\
+
+Loss of the retained active core & [15], [45], [51], [56], [63], [96]--[113] &
+\cref{lem:retained-frame-maximality,lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} & [98], [102], [104]--[111], [113] \\
+
+Nested pressure-only behavior & [114]--[123] &
+\cref{lem:nested-pressure-only-well-founded,lem:diffuse-pressure-only-not-terminal} & [105]--[109], [112]--[113], [115], [117], [119], [121]--[123] \\
+
+Critical-tightness and diffuse-tail failure & [124]--[130] &
+\cref{lem:critical-tightness-failure-row,lem:diffuse-critical-tail-row-closed} & [107]--[109], [113], [126], [128]--[130] \\
 
 \end{longtable}
 \endgroup
 \end{landscape}
 
-The closure outputs in
-\cref{tab:typeII-branch-closure-ledger} feed the common terminal node [52].
-Thus the diagram records the same unconditional conclusion as the formal
-assembly: every retained state is impossible and every named first-failure row
-has a rank-decreasing closure.
+Every path from [1] therefore terminates at one of the earlier leaves
+[3], [12], [21], [27], [34], [36], [38], [49], [55], or at one of
+[57], [59], [65], [68]--[70], [73]--[77], [80]--[81], [83]--[86],
+[90], [92]--[95], [98], [102], [104]--[111], [113], [115], [117],
+[119], [121]--[123], [126], or [128]--[130].
+This leaf exhaustion is the diagrammatic audit of
+\cref{thm:unconditional-no-typeII-discharged,thm:local-typeII-exclusion}.
+The unconditional conclusion is not used to justify any earlier node.
 
 \clearpage
-
 \section{Local Single-Core Criterion}\label{sec:single-core-criterion}
 
 \subsection{Setup and definitions}

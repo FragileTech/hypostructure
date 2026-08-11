@@ -3,44 +3,44 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: task_space_structural_complexity.aux
 The style file: plainnat.bst
 Database file #1: task_space_structural_complexity.bib
-You've used 80 entries,
+You've used 91 entries,
             2773 wiz_defined-function locations,
-            1215 strings with 20515 characters,
-and the built_in function-call counts, 37848 in all, are:
-= -- 3638
-> -- 1746
-< -- 81
-+ -- 602
-- -- 522
-* -- 2983
-:= -- 5708
-add.period$ -- 325
-call.type$ -- 80
-change.case$ -- 406
-chr.to.int$ -- 80
-cite$ -- 160
-duplicate$ -- 1802
-empty$ -- 3225
-format.name$ -- 650
-if$ -- 8081
+            1289 strings with 22256 characters,
+and the built_in function-call counts, 42607 in all, are:
+= -- 4103
+> -- 1931
+< -- 92
++ -- 667
+- -- 576
+* -- 3347
+:= -- 6427
+add.period$ -- 367
+call.type$ -- 91
+change.case$ -- 457
+chr.to.int$ -- 91
+cite$ -- 182
+duplicate$ -- 2028
+empty$ -- 3659
+format.name$ -- 725
+if$ -- 9092
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 84
-newline$ -- 483
-num.names$ -- 320
-pop$ -- 754
+missing$ -- 95
+newline$ -- 547
+num.names$ -- 364
+pop$ -- 843
 preamble$ -- 1
-purify$ -- 334
+purify$ -- 374
 quote$ -- 0
-skip$ -- 1371
+skip$ -- 1541
 stack$ -- 0
-substring$ -- 1722
-swap$ -- 259
-text.length$ -- 27
+substring$ -- 1968
+swap$ -- 278
+text.length$ -- 28
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 820
+type$ -- 936
 warning$ -- 0
-while$ -- 374
+while$ -- 426
 width$ -- 0
-write$ -- 1208
+write$ -- 1369

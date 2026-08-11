@@ -4439,8 +4439,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       object.degreeSurplus data.threshold ≤
         data.spineScale * Core.ceilSqrt object.vertexCount
   | .sparsePressureNearCubic, object =>
-      -- `prop:single-graph-sparse-pressure-routing` (a).
-      Graph.SparsePressureCapped object data.threshold data.windowOrder
+      object.degreeSurplus data.threshold ≤
+        data.spineScale * Core.ceilSqrt object.vertexCount
   | .sparsePressureOverload, object =>
       -- `prop:single-graph-sparse-pressure-routing` (b) with
       -- `cor:coupled-single-graph-overload-budget`.
@@ -4451,16 +4451,17 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         .windowIncidence
   | .windowClassAbsent, object =>
       -- Node `[139]`, no.
-      ¬ Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
+      Graph.SparsePressureOverloadOutsideClass object data.threshold data.windowOrder
         .windowIncidence
   | .remainderClassOverload, object =>
       -- Node `[141]`, yes: the overload occurs at a remainder-surplus token.
       Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
         .remainderSurplus
   | .remainderClassAbsent, object =>
-      -- Node `[141]`, no.
-      ¬ Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
-        .remainderSurplus
+      -- Node `[141]`, no: after the inherited non-window residual, the same
+      -- selected overload token is necessarily primitive.
+      Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
+        .primitiveCarrier
   | .windowIncidenceAudit, object =>
       -- Node `[140]`.
       Graph.ClassAuditStatement object data.threshold data.windowOrder

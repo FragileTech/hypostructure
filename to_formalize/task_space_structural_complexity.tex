@@ -445,6 +445,9 @@ declared ceiling
 Every representation constructed by a future admissible algorithm remains in
 the same saturated derivability closure, so the verified source-cell and
 crossing bounds apply to it without naming its architecture in advance.
+Prospective-selector and universal accountability then transfer the certified
+profile bound to the success of every such computation
+(\cref{thm-prospective-selector-accountability,thm-universal-saturated-profile-accountability}).
 
 \begin{center}
 \fbox{%
@@ -768,6 +771,136 @@ language and universal quantitative machinery for analyzing general
 intelligent computation; it does not construct an AGI system or assert that
 the engineering problem of AGI has been solved.
 
+\subsection{Relation to adjacent frameworks}
+\label{subsec-related-framework-comparison}
+
+The framework combines ingredients that also occur separately in complexity
+theory, statistics, learning, control, causality, provenance, and program
+semantics.  \Cref{tab-related-framework-feature-matrix} compares the canonical
+mathematical object in representative primary sources from each area.  A
+checkmark means that the feature is native to that object; a triangle means
+that a restricted analogue is present after fixing a model, grammar,
+hypothesis class, protocol class, proof system, policy class, or programming
+language; and a dash means that the feature is not carried by that canonical
+object.  The entries concern the cited objects, not every extension developed
+in the corresponding research area.
+
+\begin{table}[p]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3.2pt}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.285\linewidth}
+                *{9}{>{\centering\arraybackslash}p{0.045\linewidth}}@{}}
+\toprule
+Canonical framework object
+& AI & PR & Sat & RV & TG & TT & SR & LC & UA \\
+\midrule
+Implicit computational complexity
+\citep{BellantoniCook1992}
+& \(\checkmark\) & -- & \(\triangle\) & \(\triangle\) & -- & -- & -- & -- & -- \\
+Algorithmic statistics and Kolmogorov structure functions
+\citep{VereshchaginVitanyi2004}
+& \(\checkmark\) & \(\triangle\) & \(\triangle\) & -- & \(\triangle\) & -- & -- & -- & -- \\
+MCSP, MKTP, and representation metacomplexity
+\citep{AllenderGrochowVanMelkebeekMooreMorgan2017,LiuPass2020}
+& \(\checkmark\) & \(\triangle\) & \(\triangle\) & \(\triangle\) & \(\checkmark\) & -- & -- & -- & -- \\
+Resource-bounded measure
+\citep{Lutz1990}
+& \(\checkmark\) & -- & -- & \(\triangle\) & -- & -- & -- & -- & -- \\
+Interactive information complexity
+\citep{Braverman2015}
+& \(\checkmark\) & \(\triangle\) & \(\triangle\) & \(\triangle\) & \(\checkmark\) & \(\triangle\) & -- & -- & \(\triangle\) \\
+Computational sufficiency
+\citep{Vu2018}
+& \(\checkmark\) & \(\checkmark\) & \(\triangle\) & -- & \(\checkmark\) & -- & -- & -- & -- \\
+Cook--Reckhow proof complexity
+\citep{CookReckhow1979}
+& \(\triangle\) & \(\triangle\) & \(\triangle\) & -- & \(\checkmark\) & -- & -- & -- & -- \\
+Statistical and sequential learning theory
+\citep{VapnikChervonenkis1971,BartlettMendelson2002,RakhlinSridharanTewari2015}
+& \(\triangle\) & \(\triangle\) & \(\triangle\) & -- & \(\checkmark\) & \(\triangle\) & -- & \(\triangle\) & \(\triangle\) \\
+Dynamic programming, control, and reinforcement learning
+\citep{Bellman1957,Puterman1994,SuttonBarto2018}
+& \(\triangle\) & \(\checkmark\) & \(\triangle\) & -- & \(\checkmark\) & \(\checkmark\) & -- & \(\checkmark\) & \(\triangle\) \\
+Causal models and provenance semirings
+\citep{Pearl1995,GreenKarvounarakisTannen2007}
+& \(\triangle\) & \(\checkmark\) & -- & -- & \(\triangle\) & \(\triangle\) & \(\checkmark\) & -- & -- \\
+Resource-aware program semantics
+\citep{Atkey2011}
+& \(\triangle\) & \(\triangle\) & -- & \(\triangle\) & -- & \(\triangle\) & -- & -- & -- \\
+Presentation-relative structural complexity (this paper)
+& \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\begin{minipage}{0.96\linewidth}
+\raggedright
+\textbf{Columns.}
+AI: the object is defined independently of a chosen algorithm;
+PR: presentation-relative object;
+Sat: saturation over admissible representations;
+RV: complete resource vector;
+TG: target-specific coordinate;
+TT: temporal availability is typed;
+SR: structural source or ancestry is retained;
+LC: learning and control share one object;
+UA: a universal success-accountability implication.
+Symbols: \(\checkmark\), native; \(\triangle\), restricted analogue or
+available only after fixing an additional class/interface; --, absent from
+the cited canonical object.
+\end{minipage}
+\caption{Feature comparison with adjacent canonical frameworks.  The table
+compares the data retained by one mathematical object, rather than whether an
+area contains a theorem mentioning the feature.  Individual ingredients in
+the final row have substantial prior theories; the distinction is their joint
+attachment to the same cost-, source-, time-, and target-resolved saturated
+record.}
+\label{tab-related-framework-feature-matrix}
+\end{table}
+
+Implicit computational complexity characterizes resource classes through
+restricted recursion, logic, or typing rather than an externally written time
+bound; its canonical object is a function algebra or derivation system, not a
+task-indexed target-gain profile.  Algorithmic statistics minimizes model
+complexity and data-to-model discrepancy for an individual string, while
+MCSP and MKTP minimize exact circuit or program descriptions in a fixed
+grammar.  Resource-bounded measure equips a complexity class with an internal
+measure through resource-bounded martingales.  These theories supply genuine
+algorithm-independent or representation-minimizing objects, but their
+canonical records do not jointly retain target use, temporal availability,
+source ancestry, and a complete construction-to-deployment resource vector.
+
+Information complexity minimizes information revealed by protocols computing
+a declared function, and therefore has target, transcript, and success-error
+analogues.  Computational sufficiency asks for reductions through which every
+procedure in a declared collection factors.  Cook--Reckhow proof complexity
+compares proof lengths and simulations relative to a proof system.  Each is a
+precise universalization over its declared protocol, procedure, or proof
+class; the triangle entries record this restricted quantification rather than
+an absence of universality.
+
+Statistical learning theory gives uniform risk bounds over a declared
+hypothesis class, and sequential variants retain filtration order.  Dynamic
+programming and reinforcement learning optimize target-directed performance
+over policies in a presented controlled model.  Causal models encode
+intervention semantics, while provenance semirings retain algebraic input
+ancestry through a query.  Resource-aware program logics attach consumable
+resources to operational program states and prove sound cost bounds.  The
+present framework uses these roles together: the admissible representation is
+generated from the public presentation, its exact structural ancestry and
+temporal type remain attached, every construction and deployment cost is
+retained, and universal accountability converts the saturated target profile
+into a bound for every admissible computation.
+
+Under the column definitions in
+\cref{tab-related-framework-feature-matrix}, none of the cited canonical
+objects has all nine features natively.  This is a claim about their
+conjunction in one object.  It does not claim priority for representation
+minimization, resource semantics, provenance, learning bounds, Bellman
+recursions, information cost, or any other individual ingredient.
+
 \subsection{Contributions}\label{subsec-contributions}
 
 The contributions form three levels.  The first consists of the framework's
@@ -897,6 +1030,138 @@ architecture that assigns complete cost, provenance, temporal availability,
 source type, and deployment semantics before compiling them into universal
 capability bounds.
 
+\clearpage
+\subsection{Executive theorem map}\label{subsec-executive-theorem-map}
+
+Items~1--7 below form the structural spine.  Item~8 is its source-resolved
+learning compilation, Item~9 is its inverse-capability branch, and
+Items~10--11 are the proof-producing certification and LPN application
+branch.  Items~1 and~2 are the two faces of the same bridge: operational
+embedding constructs the kernel, while encoding adequacy identifies exactly
+which embedded kernels represent computations in the declared budget class.
+
+\begingroup
+\footnotesize
+\setlength{\abovedisplayskip}{0.25em}
+\setlength{\belowdisplayskip}{0.25em}
+\begin{enumerate}[label=\textbf{\arabic*.},leftmargin=2.2em,itemsep=0.25em,
+                  topsep=0.3em,parsep=0pt]
+
+\item \textbf{Encoding adequacy.}
+A budget-complete presentation identifies its budget-admissible operational
+rules exactly with its budget-admissible embedded generators:
+\(\displaystyle
+  \substack{M\text{ is admissible}\\\text{in }\mathcal B}
+  \Longleftrightarrow
+  \substack{L_M^{[H]}\text{ is represented}\\
+            \text{admissibly in }\mathcal B}
+\)
+(\hyperref[thm-encoding-adequacy]{Encoding adequacy}).
+
+\item \textbf{Algorithm-to-kernel embedding.}
+Every represented finite-budget computation has an exact clocked Markov or
+sub-Markov realization with generator
+\(\displaystyle L_M^{[H]}=\rho(P_M^{[H]}-I)\)
+(\hyperref[thm-algorithm-kernel-embedding]{Operational computation embedding}).
+
+\item \textbf{Channel and residual exhaustiveness.}
+Every represented finite generator is exhausted by the five structural
+projections and their orthogonal residual complement:
+\(\displaystyle
+  L=L^{\Geom}+L^{\Caus}+L^{\Abs}+L^{\Lift}+L^{\Bdry}+L^{\Res}
+\)
+(\hyperref[thm-channel-exhaustiveness]{Component exhaustiveness}).
+
+\item \textbf{Budgeted derivability and saturation.}
+The smallest represented constructor-and-computation grammar produces nested
+saturated budget slices:
+\(\displaystyle
+  B_1\preceq B_2
+  \Longrightarrow
+  \mathcal D_{n,\le B_1}\subseteq\mathcal D_{n,\le B_2}
+\)
+(\hyperref[lem-derivability-well-posed]{Well-posedness of the derivability filtration}).
+
+\item \textbf{Affordable-algebra structural charging.}
+For every positive-utility terminal-compatible exact quotient, the complete
+affordable conditional-algebra frontier conserves target visibility as
+\(\displaystyle
+  V_I(q_{\widehat\rho})
+  =\sum_{\ell=1}^{|\Gamma|}
+    \operatorname{ch}_I(E_{\widehat\rho,\Gamma,\ell})
+\)
+(\hyperref[thm-exact-affordable-algebra-structural-charging]{Exact affordable-algebra structural charging}).
+
+\item \textbf{Temporal source/accounting separation.}
+Whenever two legal continuations share a surviving prefix but have different
+first-hit labels, the completed quotient cannot be a source at that prefix:
+\(\displaystyle
+  \operatorname{pref}_t(\omega)=\operatorname{pref}_t(\omega'),\quad
+  q_{\mathcal A}(\omega)\ne q_{\mathcal A}(\omega')
+  \Longrightarrow
+  \nexists f_t:\ q_{\mathcal A}=f_t\circ\operatorname{pref}_t
+\)
+(\hyperref[cor-first-hit-accounting-not-source]{Retrospective first-hit quotients are accounting records}).
+
+\item \textbf{Universal prospective accountability.}
+Every improvement over the declared neutral baseline is carried by a
+represented pre-hit selector at the complete enlarged budget:
+\(\displaystyle
+  \Pr\{\tau\le H\}
+  \le \operatorname{Enum}_{\nu}(\mathcal A,H)
+     +H\operatorname{Sel}^{\mathrm{sat}}_n(\Psi(B,n))
+\)
+(\hyperref[thm-prospective-selector-accountability]{Prospective selector accountability}).
+
+\item \textbf{Source-resolved learning compilation.}
+For losses in \([-1,1]\), exact ancestry cells retain their individual
+statistical capacity and pay explicitly for source selection through
+\(\displaystyle
+  \widehat{\mathfrak R}_S\!\left(\bigcup_{\alpha\in\mathfrak A_{\rm learn}}
+  \mathcal H_\alpha(B,m)\right)
+  \le \max_\alpha\widehat{\mathfrak R}_S(\mathcal H_\alpha(B,m))
+  +\sqrt{2\log|\mathfrak A_{\rm learn}|/m}
+\)
+(\hyperref[thm-source-resolved-saturated-learning-compilation]{Source-resolved compilation of saturated learning}).
+
+\item \textbf{Structural meta-frontier inversion.}
+The strict Pareto frontier is the exact generalized inverse of the saturated
+capability profile:
+\(\displaystyle
+  P_{\mathfrak D,n}^{\mathrm{sat}}(B)>\theta
+  \Longleftrightarrow
+  B\in\mathfrak P_{\mathfrak D,n}^{>}(\theta)
+\)
+(\hyperref[thm-strict-meta-profile-generalized-inverse]{Strict meta-frontier as the exact generalized inverse}).
+
+\item \textbf{Proof-producing scale certification.}
+Deterministic acceptance of the complete proof-grade scale audit and a
+verified finite prefix propagates the residual-ancestry envelope to every
+record in the saturated cell at every later size:
+\(\displaystyle
+  G_{X,b,\mathfrak M,n}^{\mathrm{src,sat}}(B_n)
+  \le(1-\eta)^n\quad(n\ge n_0)
+\)
+(\hyperref[thm-lpn-proof-grade-empirical-residual-discharge]{Proof-grade empirical discharge}).
+
+\item \textbf{LPN instantiation.}
+Substitution of the certified complete source envelope into prospective
+accountability bounds every computation in the declared LPN execution class by
+\begin{equation*}
+\begin{aligned}
+\operatorname{Succ}_{\mathfrak M,n,\eta}(\mathcal B_C)
+\le{}&H_C\bigl(2^{1-n}+(1-\eta)^n\bigr)\\[-1mm]
+&+\varepsilon_{\mathrm{rig}}(n,m)
++e^{-mD_{\mathrm{Ber}}(\tau\Vert\eta)}\\[-1mm]
+&+(2^n-1)2^{-m(1-H_2(\tau))}
+\end{aligned}
+\end{equation*}
+(\hyperref[thm-lpn-one-way]{Admissible-oracle hardness of search-LPN}).
+
+\end{enumerate}
+\endgroup
+\clearpage
+
 \subsection{How to read this paper}\label{subsec-reading-guide}
 
 The manuscript has a three-part structural spine followed by learning,
@@ -984,13 +1249,14 @@ with optimal acquisition on its saturated transfer class
 (\cref{cor-bayesian-posterior-attention-flow,thm-joint-compact-latent-attention-acquisition}).
 
 \item[\PartVII: structural meta-complexity.]
-The complete prospective records are indexed by the Pareto cost required to
-cross a target-gain threshold.  The strict structural meta-frontier is the
-exact generalized inverse of the saturated profile in
+This part develops the full inverse capability theory of the saturated
+profile.  Complete prospective records are indexed by the Pareto resource
+vectors at which a target-gain threshold is crossed.  The strict structural
+meta-frontier is the exact generalized inverse of the saturated profile in
 \cref{thm-strict-meta-profile-generalized-inverse}.  The part separates
 representation, extraction, decision, search, certification, and prospective
-deployment; recovers circuit and program minimization as typed
-specializations; and derives the meta-accountability implication in
+deployment; recovers circuit and program minimization as typed projections;
+and derives the meta-accountability implication in
 \cref{thm-structural-meta-accountability}.
 
 \item[\PartVIII: LPN.]
@@ -45227,6 +45493,16 @@ enumerations, interval inclusions, symbolic steps, and dependency hashes.  The
 final proof term must be accepted by the Lean kernel.  Candidate-generation
 code and the proof-object exporter lie outside this trusted base.
 
+\paragraph{Certified object.}
+The theorem certified by this pipeline concerns the complete saturated source
+profile at the declared resource ceiling.  The learned model is used only to
+propose proof objects; it neither restricts the certified source cell nor
+appears in the final profile bound.  Exact finite saturation supplies the
+finite prefix, while the verified recurrence cover and invariant enclosure
+supply the tail.  Accordingly, acceptance is a deterministic proof of the
+exported structural inequality, not a statistical generalization claim about
+the discovery computation.
+
 \begin{definition}[Proof-producing certificate package]
 \label{def-proof-producing-certificate-package}
 
@@ -45266,24 +45542,31 @@ finitely enumerable; otherwise exact finite saturation has not been certified.
 \item \emph{Exact source-cell assignment.}
       For every derivation in the preceding slice, an authenticated backward
       ancestry record, temporal source type, support mode, exact provenance
-      signature, and assignment to one qualified source cell.  The checker
-      verifies disjointness, exhaustion, and the source-cover inequality
-      \cref{eq-scale-audit-source-cover}.
+      signature, and assignment to one qualified source cell.  The field also
+      contains the instantiated source-exhaustion proof identifying those
+      cells with the complete qualified saturated record class.  The checker
+      verifies the finite assignments, disjointness, exhaustion, and the
+      source-cover inequality \cref{eq-scale-audit-source-cover}.
 
 \item \emph{Capacity certificate.}
       Exact or outward-rounded witnesses for the represented carrier,
       coefficient norm, effective dimension or rank, and the uniform bound
-      \(D_{c,n}\) for every record in each covered cell.
+      \(D_{c,n}\) for every record in each covered cell, together with the
+      verified base and scale relations used in
+      \cref{eq-scale-audit-base-upper-bounds,eq-scale-audit-capacity-recurrence}.
 
 \item \emph{Attenuation and noise-transfer certificate.}
       A symbolic or interval-verified transfer factor \(a_{c,n}\), including
       every provenance weight, channel parameter, floor, dependence
-      correction, and noise conversion used to prove the attenuation law.
+      correction, and noise conversion used to prove the attenuation law and
+      its verified scale relation
+      \cref{eq-scale-audit-attenuation-recurrence}.
 
 \item \emph{Error enclosure.}
       Directed-rounding enclosures for factorization, truncation, tail,
       discretization, approximation, and arithmetic error, combined into the
-      uniform cellwise quantity \(e_{c,n}\).  Fields 5--7 jointly verify
+      uniform cellwise quantity \(e_{c,n}\), including its verified scale
+      envelope \cref{eq-scale-audit-error-envelope}.  Fields 5--7 jointly verify
       \cref{eq-scale-audit-factorization,eq-scale-audit-capacity-attenuation,eq-scale-audit-error-envelope}.
 
 \item \emph{Recurrence-cover certificate.}
@@ -45336,20 +45619,29 @@ An accepted package in the sense of
 proof-grade audit of its complete declared source cells.  Its final theorem
 object depends only on the encoded presentation, declared resource semantics,
 deterministic proof objects, and trusted checker; the discovery procedure and
-its randomness do not enter the theorem's hypotheses.
+its randomness do not enter the theorem's hypotheses.  When the exported
+conclusion bounds the saturated prospective source profile, prospective
+selector accountability and universal saturated-profile accountability apply
+that same bound simultaneously to every computation in the declared
+admissible class.
 
 \end{proposition}
 
 \begin{proof}
-Fields 1--4 verify the presented finite slices and the source cover.  Fields
-5--7 verify the factorization, capacity--attenuation, and error premises of
+Fields 1--3 verify the presented finite slices.  Field 4 attaches those
+slices to the framework's exhaustive saturated source cover.  Fields 5--7
+verify the factorization, base bounds, capacity and attenuation recurrences,
+and error envelope of
 \cref{def-scale-certified-attenuating-source-audit}.  Fields 8 and 9 verify
-the recurrence cover and its uniform induction.  Field 10 supplies the rate
-and crossing exclusions, and Field 11 supplies the remaining finite sizes.
+the complete recurrence cover and its invariant tail enclosure.  Field 10
+supplies the rate, breakpoint, and crossing checks, and Field 11 supplies the
+remaining finite sizes.
 Thus
 \cref{cor-empirical-discovery-deterministic-universal-closure,thm-verified-recurrence-propagation-crossing-exclusion}
 give the asserted deterministic bound.  Field 12 records the corresponding
-formal theorem and is accepted only after kernel checking.
+formal theorem and is accepted only after kernel checking.  Finally,
+\cref{thm-prospective-selector-accountability,thm-universal-saturated-profile-accountability}
+transfer an exported saturated-profile bound to every admissible computation.
 \end{proof}
 
 \paragraph{Uniformity beyond the audited prefix.}
@@ -45366,7 +45658,9 @@ every representation constructed by any later budget-admissible algorithm is
 an element of the saturated derivability closure and hence belongs to the same
 source cover.  The accepted certificate is therefore uniform over admissible
 algorithms and sizes, not an extrapolation of the optimizer used during
-discovery.
+discovery.  Its conversion to a target-performance bound is the universal
+accountability step
+(\cref{thm-prospective-selector-accountability,thm-universal-saturated-profile-accountability}).
 
 \subsubsection{Proof-producing verification of structural scaling laws}
 \label{subsubsec-proof-producing-structural-scaling-laws}
@@ -50175,10 +50469,10 @@ are
 \cref{thm-canonical-loss-saturated-arrival-calibration,thm-complete-certified-bias-variance-decomposition}.
 
 \clearpage
-\part{Structural Meta-Complexity and Certificate Minimization}
+\part{Structural Meta-Complexity as Inverse Capability Theory}
 \label{part:structural-metacomplexity}\setcounter{section}{-1}
 
-\section{Introduction: Presentation-Relative Meta-Complexity}
+\section{Introduction: Inverse Capability Frontiers}
 \label{sec-structural-metacomplexity-introduction}
 
 \paragraph{Part contract.}
@@ -50190,31 +50484,53 @@ the exact source-cell decomposition of
 \cref{thm-universal-state-coefficient-source-decomposition}, and the
 length-bounded universal record of
 \cref{def-canonical-complete-active-record-code,thm-length-bounded-levin-realization}.
-\emph{Output:} an exact Pareto meta-frontier for the cost of crossing a
-target-gain threshold, its generalized-inverse relation with saturated
-profiles, typed decision/search/certification/deployment interfaces,
+\emph{Output:} a full inverse capability theory: the exact Pareto resource
+frontier at which a saturated target-gain profile crosses a threshold, its
+generalized-inverse relation with the forward capability profile, typed
+decision/search/certification/deployment interfaces,
 representation-minimization specializations, and a represented
 hardness-magnification rule.
 \emph{First pass:} read
 \cref{def-strict-structural-meta-frontier,thm-strict-meta-profile-generalized-inverse,thm-structural-meta-accountability,thm-source-cell-meta-complexity-exhaustion,thm-represented-profile-magnification}.
 
-Meta-complexity asks for the resources required to recognize, construct, or
-certify a low-complexity representation.  Circuit minimization and
-resource-bounded Kolmogorov complexity are classical instances of this
-question \citep{AllenderGrochowVanMelkebeekMooreMorgan2017,LiuPass2020}.
-The presentation-relative version developed here uses the complete structural
-records already defined in \PartIII and \PartV.  Its threshold object is the least
-saturated resource at which one prospective record attains a prescribed
-target gain.  Description length, construction, data access, retained state,
-evaluation, qualification, and deployment remain separate coordinates of the
-same cost vector.
+Structural meta-complexity is the inverse capability theory of the saturated
+profile.  For a complete datum \(\mathfrak D_n\), the forward profile
+\(P_{\mathfrak D,n}^{\mathrm{sat}}(B)\) asks for the greatest certified
+target gain attainable below the resource vector \(B\).  Its strict inverse
+capability region is
+\begin{equation}
+\label{eq-intro-inverse-capability-frontier}
+\mathfrak P_{\mathfrak D,n}^{>}(\theta)
+=
+\left\{B:P_{\mathfrak D,n}^{\mathrm{sat}}(B)>\theta\right\}.
+\end{equation}
+Its Pareto-minimal elements are therefore exactly the least incomparable
+resource vectors at which the saturated capability crosses \(\theta\).  The
+identity in \cref{eq-intro-inverse-capability-frontier} is proved in
+\cref{thm-strict-meta-profile-generalized-inverse}; strict thresholds make the
+inverse exact without a compactness or attainment convention.
 
-The resulting meta-problem is an inverse description of the saturated
-profile.  The profile asks for the largest certified gain below a budget; the
-meta-frontier asks for the budgets at which a certified gain threshold is
-crossed.  Strict thresholds give an exact inverse without a compactness or
-attainment convention.  Scalar threshold costs are obtained only after the
-same admissible scalarization used by
+The frontier ranges over the complete structural records already defined in
+\PartIII and \PartV.  Each record retains the public presentation, exact
+structural source, construction and extraction history, temporal availability,
+qualification and certification data, decision or search interface when
+present, and deployed use.  Description length, data acquisition, total work,
+precision, retained state, peak memory, verification, and deployment remain
+coordinates of the same resource vector.  The inverse theory consequently
+answers a capability question rather than only a representation-length
+question: which complete resource vectors make a specified target gain
+attainable?
+
+Circuit minimization and resource-bounded program minimization are typed
+specializations \citep{AllenderGrochowVanMelkebeekMooreMorgan2017,LiuPass2020}.
+They restrict the complete record grammar to circuit or universal-program
+evaluators, restrict the gain or feasibility coordinate to exact denotation,
+and then project the complete Pareto vector to gate count or a declared
+program-cost scalarization.  Classical metacomplexity is thus recovered as a
+narrow projection of the inverse capability frontier, while the general
+frontier retains source, construction, extraction, temporal, certification,
+interface, and deployment coordinates.  Scalar threshold costs are formed
+only after an admissible scalarization such as those of
 \cref{def-degree-invariant,def-alignment-complexity} has been fixed.
 
 \section{Structural Certificate Meta-Problems}
@@ -50296,7 +50612,7 @@ denotation.
 \label{def-strict-structural-meta-frontier}
 
 For a complete datum \(\mathfrak D_n=(\mathscr R_n,g_n)\) and
-\(0\le\theta<1\), define its strict Pareto feasibility region by
+\(\theta\ge0\), define its strict Pareto feasibility region by
 \begin{equation}
 \label{eq-strict-structural-meta-frontier}
 \mathfrak P_{\mathfrak D,n}^{>} (\theta)
@@ -50329,8 +50645,8 @@ P_{\mathfrak D,n,\kappa}^{\mathrm{sat}}(b)
 g_n(R).
 \end{equation}
 
-The non-strict feasible region \(\mathfrak P^{\ge}_{\mathfrak D,n}(\theta)\)
-and its scalar threshold cost
+For \(0\le\theta\le1\), the non-strict feasible region
+\(\mathfrak P^{\ge}_{\mathfrak D,n}(\theta)\) and its scalar threshold cost
 \begin{equation}
 \label{eq-nonstrict-scalar-structural-meta-complexity}
 \operatorname{SMC}_{\mathfrak D,n,\kappa}^{\ge}(\theta)
@@ -50354,7 +50670,7 @@ non-strict regions record attained certificate thresholds.
 \label{thm-strict-meta-profile-generalized-inverse}
 
 For every complete saturated meta-profile datum, budget \(B\), and
-\(0\le\theta<1\),
+\(\theta\ge0\),
 \begin{equation}
 \label{eq-exact-strict-profile-frontier-inverse}
 P_{\mathfrak D,n}^{\mathrm{sat}}(B)>\theta
@@ -50485,8 +50801,12 @@ master datum
 \(\mathfrak U_n^{\mathrm{src,sat}}\).  Under the attained non-strict
 convention, write
 \(\operatorname{SMC}_{\mathrm{src},n,\kappa}^{\ge}(\theta)\) for its
-least scalar cost at visibility at least \(\theta\), and define the typed
-prospective threshold
+least scalar cost at visibility at least \(\theta\).  For \(b\ge0\), let
+\(I_{n,\kappa}^{\mathrm{src,sat}}(b)\) denote the existing two-coordinate
+prospective profile \(I_n^{\mathrm{src,sat}}\), with each of its two defining
+suprema restricted to complete prospective records \(R\) satisfying
+\(\operatorname{Cost}_{\mathrm{sat},n}^{\kappa}(R)\le b\).  Define the
+typed prospective threshold
 \begin{equation}
 \label{eq-prospective-source-threshold-cost}
 B_{\eta}^{*,\mathrm{src}}(n)
@@ -51015,6 +51335,16 @@ evaluation, respectively.
 
 \section{Classical Representation-Minimization Specializations}
 \label{sec-classical-metacomplexity-specializations}
+
+The specializations in this section restrict the general inverse capability
+datum in two steps.  First, the admissible record grammar is reduced to one
+representation language, such as Boolean circuits or programs for a declared
+universal interpreter.  Second, the target coordinate is reduced to exact
+denotation of the presented object, after which gate count or program cost is
+read from the complete resource vector.  The resulting minimization problems
+retain their standard meanings, while their construction, extraction,
+verification, evaluation, and deployment costs remain available in the
+unprojected structural frontier.
 
 \subsection{Circuit minimization}
 \label{subsec-circuit-minimization-specialization}
@@ -51704,13 +52034,17 @@ magnification & represented profile compiler &
 \end{tabular}
 \end{center}
 
-The meta-frontier is a reindexing of complete represented records by the
-least resources needed to cross a numerical threshold.  Its universal
-computational consequence is
-\cref{thm-structural-meta-accountability}; its source decomposition is
-\cref{thm-source-cell-meta-complexity-exhaustion}.  Classical meta-complexity
-appears through exact-denotation grammars, while target-directed structural
-meta-complexity retains temporal availability, qualification, and deployment.
+The structural meta-frontier is the full Pareto inverse of the saturated
+capability profile: it records the least complete resource vectors at which a
+target-gain threshold becomes attainable.  Its universal computational
+consequence is \cref{thm-structural-meta-accountability}; its exact source
+decomposition is \cref{thm-source-cell-meta-complexity-exhaustion}.  The
+frontier retains presentation, source, construction, extraction, temporal
+availability, certification, operational interface, deployment, and the
+complete resource vector.  Circuit and program minimization arise by
+restricting the record grammar to exact-denotation evaluators and projecting
+that vector to their classical cost coordinate
+(\cref{thm-circuit-minimization-specialization,thm-program-minimization-specialization}).
 
 \clearpage
 \part{Resource-Bounded Structural Analysis of LPN}\label{part:lpn}\setcounter{section}{-1}

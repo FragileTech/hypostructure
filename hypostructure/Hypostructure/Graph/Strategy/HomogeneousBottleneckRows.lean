@@ -12,6 +12,52 @@ universe u v
 variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
+
+/-- Classify the concrete overload witness already carried by the incoming
+ledger according to whether its token lies in the window-incidence class. -/
+noncomputable def windowOverloadClassDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    [FactKeys.Has (K .sparsePressureOverload) known]
+    (windowFresh : K .windowClassOverload ∉ known)
+    (outsideFresh : K .windowClassAbsent ∉ known) :
+    Decision (K .windowClassOverload) (K .windowClassAbsent) previous :=
+  Decision.run previous (K .windowClassOverload) (K .windowClassAbsent)
+    `Hypostructure.Graph.Strategy.Spine.windowOverloadClassDichotomy
+    (Classical.choice (show Nonempty
+        ((K .windowClassOverload).At current ⊕
+          (K .windowClassAbsent).At current) from by
+      obtain ⟨declared, ledger, routingLabelBound, token, role, tokenMem,
+        _selected, rest⟩ := (previous.get (K .sparsePressureOverload)).down
+      cases classified : ledger.presented.tokenClass token with
+      | windowIncidence =>
+          exact ⟨.inl ⟨declared, ledger, routingLabelBound, token, role,
+            tokenMem, classified, rest⟩⟩
+      | remainderSurplus =>
+          exact ⟨.inr ⟨declared, ledger, routingLabelBound, token, role,
+            tokenMem, by simpa [classified], rest⟩⟩
+      | primitiveCarrier =>
+          exact ⟨.inr ⟨declared, ledger, routingLabelBound, token, role,
+            tokenMem, by simpa [classified], rest⟩⟩))
+    windowFresh outsideFresh
+
+@[reducible] noncomputable def pressureSpineSurplusEstimateRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pressureSpineSurplusEstimate
+    { Requires := [K .sparsePressureNearCubic]
+      Produces := [K .spineSurplusEstimate]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .spineSurplusEstimate)
+        (show Value BranchState Presentation presentation data
+            .spineSurplusEstimate inputs.current from
+          ⟨(inputs.get (K .sparsePressureNearCubic)).down⟩)
+        .nil)
+
 @[reducible] noncomputable def sparseSurplusSurvivorRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseSurplusSurvivor

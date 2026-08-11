@@ -7,8 +7,8 @@ This document specifies presentation and interface edits for
 airtight.  The edits preserve its theorem statements, hypotheses, conclusions,
 local estimates, dependency order, and contradiction strategy.
 
-The objective is to make the existing proof easy to audit as one local
-state-space argument.  A reader should be able to identify, at every stage,
+The objective is to make the existing proof easy to audit as one fixed-profile
+routing argument.  A reader should be able to identify, at every stage,
 
 1. the current residual state;
 2. the local data available in that state;
@@ -31,8 +31,55 @@ in which that current profile is analyzed.  Their analytic role is confined to
 that profile and its fixed ledger.  Each norm,
 compactness statement, pressure representative, symmetry criterion, and
 Liouville input must therefore be recorded with its local owner: the incoming
-profile, a realized descendant, a normalized defect-support profile, or a
+profile, a realized descendant, a normalized measure on a selected defect
+window, a support point produced from that measure by a named theorem, or a
 finite-shift pullback of the terminal profile.
+
+### Non-negotiable editorial scope
+
+This blueprint authorizes exposition and interface edits only.  It does not
+authorize a change of theorem hypotheses, conclusions, proof strategy, or
+dependency order.  An implementation may clarify a bridge, state the exact
+input and output of a routing lemma, add a directory or table, or correct a
+minor mismatch between the prose and the proof-bearing source.  It may not
+replace a proof-bearing construction by a different argument.
+
+Before any item is implemented, it must pass all three checks below.
+
+1. **Proof check.**  The proposed wording is a direct restatement of existing
+   definitions, lemmas, and theorem dependencies.
+2. **Owner check.**  Each datum belongs to the fixed singular point, the
+   selected rescaling sequence, the extracted centered profile, or a named
+   realized descendant or selected defect window in that profile's ledger.
+3. **Dependency check.**  A routing or assembly theorem appears as a premise
+   only after its hypotheses have been produced; later closures appear only as
+   downstream consumers.
+
+The following requests are prohibited throughout the blueprint.
+
+1. Replacing the fixed raw hull by a newly defined residual state space.
+2. Assuming that a residual profile exists.  Residual existence is used only
+   through the contrapositive: surviving positive mass on the selected windows
+   produces the next realized datum by the cited compactness or support
+   theorem.
+3. Assigning the mild identity outside the selected mild branch, or
+   transporting mildness without the named inheritance theorem.
+4. Assigning retained velocity mass to a descendant without the applicable
+   realization, semicontinuity, and heredity statements.
+5. Transporting one pressure representative through unrelated recenterings or
+   blow-downs.  Each local window uses its own compatible representative and
+   gauge.
+6. Treating the R2 or R3 sequence-\(L^3\) subcases as entry assumptions.  They
+   are conditional routes used only after verification for the current
+   realized profile.
+7. Using the setup residual theorem or the final assembly as a premise of the
+   residual closure that supplies them.
+
+Local concentration remains attached to the fixed singular point.  Extraction
+and no-escape remain attached to the selected rescaling sequence.  Boundedness
+and suitability belong to the extracted centered profile.  Mildness,
+sequence-\(L^3\), and finite-shift mildness enter only when their named local
+producer has established them for the realized profile under consideration.
 
 ---
 
@@ -86,7 +133,7 @@ function, to use the same coordinates, or to retain the same representative.
 The invariant is the transported obstruction and its realized connection to
 the original singularity-generated branch.
 
-The ledger is consequently a state-space routing ledger for the fixed
+The ledger is consequently a routing ledger for the fixed
 singularity-generated profile, rather than a nested-set subtraction scheme.
 The manuscript must preserve this profile-by-profile routing.
 
@@ -130,8 +177,9 @@ has been proved.  The revised exposition must keep this distinction visible.
 
 ## A4. Descendants carry ancestry through changes of local coordinates
 
-Recenterings, time translates, hull limits, blow-downs, normalized support
-profiles, and terminal profiles may change:
+Recenterings, time translates, hull limits, blow-downs, normalized defect
+windows, support points produced by named theorems, and terminal profiles may
+change:
 
 - center and scale;
 - spacetime window;
@@ -149,20 +197,19 @@ along the residual branch.
 ## A5. Retained velocity and normalized defect support are different interfaces
 
 A retained descendant carries an inherited positive unit velocity
-concentration bound.  A normalized support profile obtained from a defect
-measure carries positive defect support and the associated support-transfer
-interface.  It carries inherited positive velocity concentration as well when
-local realization and retention theorems prove that additional fact.  The two
-interfaces are logically independent and may coexist in the same profile
-ledger.
+concentration bound only after the named realization and retention statements
+have proved it.  A normalized restriction of a selected defect measure carries
+positive defect mass on that window.  A support point becomes available only
+after the cited weak compactness and support-transfer statement has produced
+one from those normalized restrictions.  Positive velocity retention is then
+available only when a separate local realization theorem proves it.
 
-Every diagram, table, and local lemma must identify which of these two
-interfaces it exports.  Positive defect support alone does not imply inherited
+Every diagram, table, and local lemma must identify the interface actually
+produced at that node.  Positive defect support alone does not imply inherited
 positive velocity concentration, and retained velocity concentration alone
-does not supply defect support.  When both are proved, both remain available
-for downstream routing and backward contradiction; construction as a support
-profile never discards a stronger realized-descendant or retained-mass
-interface.
+does not supply defect support.  When both have been proved for the same
+realized datum, both remain available for downstream routing and backward
+contradiction.
 
 ## A6. Pressure data form a local atlas
 
@@ -212,10 +259,10 @@ checked against the current theorem bodies before manuscript edits are made.
 | R3 | Reduce a retained stationary-hull occurrence of the current profile by scale reselection | `prop:R3-stationary-hull-reduction`, `prop:R3S-R3-terminal-reduction`, `cor:R3-closure` | Previously closed local state or realized stationary terminal profile with the inherited ledger; deferred closure after terminal assembly |
 | R4 | Covariant observer and affine/parasitic quotient | `thm:covariant-observer-calculus`, `thm:affine-normalization-dichotomy`, `thm:oscillatory-entry-normalization` | Affine mode routed to the lower quotient stratum or positive non-affine activity retained |
 | R5a | Recurrent tail-core rigidity | `thm:recurrent-tail-core-rigidity` | Recurrent tail core closed or routed into the terminal alternatives |
-| R5b | Log-diffuse critical tail | `thm:log-diffuse-from-hidden-scale`, `cor:log-diffuse-branch-exclusion` | Log-window support profile routed through hidden-scale and coherent-tail closure |
+| R5b | Log-diffuse critical tail | `thm:log-diffuse-from-hidden-scale`, `cor:log-diffuse-branch-exclusion` | Selected log-window defect datum routed through its named support-transfer, hidden-scale, and coherent-tail interfaces |
 | R5c | Young/variance critical-tail defect | `thm:first-bad-mesoscopic-reduction`, `thm:no-hidden-scale-variance-realized-defects`, `cor:young-branch-exclusion` | Variance defect eliminated by minimal mesoscopic reduction |
 | R5d | Coherent homogeneous, log-periodic, or aperiodic tail | `thm:bounded-origin-realization-coherent-tails`, `cor:coherent-critical-tail-branch-closure` | Coherent tail excluded by bounded-origin realization and log-hull rigidity |
-| R6a | Paired terminal concentration extraction | `thm:terminal-exhaustion-main` | Compact active profiles plus the residual measure on expanding terminal regions |
+| R6a | Paired terminal concentration extraction | `thm:terminal-exhaustion-main` | Realized compact profiles and concentration-deleted residual measures produced from the same selected terminal sequence and diagonal protocol |
 | R6b | Inactive and nonconcentrating terminal alternatives | `thm:terminal-inactive-exclusion` | Pure local vanishing and pure exterior escape cannot carry the retained obstruction |
 | R6c | Diffuse and mixed compact--diffuse alternatives | `thm:diffuse-defect-compactness`, `thm:diffuse-defect-trichotomy`, `thm:no-mixed-compact-diffuse` | Active, affine, or critical-tail route; mixed remainder excluded |
 | R6d | Separated profiles and descendant chains | `thm:active-path-space-recurrence`, `thm:compact-active-descendant`, `thm:no-finite-separated-profile-family` | Infinite chains and finite separated families excluded |
@@ -474,6 +521,19 @@ and to the now-available terminal assembly.
 
 ## I4. Consolidate the coordinate, observer, affine, and pressure directories
 
+**Implementation status:** complete.
+
+The manuscript now contains the consolidated local directory
+`tab:local-coordinate-pressure-directory`. Its rows distinguish the root
+centered chart, ordinary local pressure charts, exact covariant observers,
+first-generation physical recenterings, realized normalized descendants,
+affine-normalized representatives, and minimal mesoscopic blow-downs. Each
+row specifies its local owner, domain, velocity map, pressure representative
+or quotient, convergence topology, enabled local input, and named output or
+failure route. The paragraph following the table also types every threshold
+by its domain and records that compactness, retained mass, mildness, and
+sequence-\(L^3\) enter only through their cited local interfaces.
+
 ### Source anchors
 
 - `sec:shared-notation`
@@ -529,59 +589,136 @@ must remain separate and be labeled by role.
 
 ## I5. Make the paired terminal extraction interface explicit
 
+**Implementation status:** complete.
+
+The manuscript now contains
+`tab:selected-terminal-output-directory` immediately after the proof of
+`thm:terminal-exhaustion-main`.  The directory is instantiated to the terminal
+sequence and diagonal subsequence selected from the fixed singular-profile
+ledger.  It distinguishes the realized compact profile, vanishing residual,
+diffuse measure data, pressure/noncompact route, and selected critical-tail
+window.  Only the compact row produces a profile, and that row cites the
+velocity, compactness, realization, semicontinuity, and heredity interfaces
+that certify it.  The final column records downstream consumers and supplies no
+premise to the paired decomposition.
+
 ### Source anchors
 
 - `def:terminal-measures`
+- `thm:maximal-active-family`
+- `def:active-removed-residual-measure`
+- `lem:compact-window-expanding-region-protocol`
+- `lem:compact-subthreshold-regular-residual`
 - `lem:gauge-compatibility`
 - `lem:no-pressure-only-retained-profile`
 - `lem:first-generation-local-window-compactness`
 - `lem:ancient-profile-covariant-compactness`
 - `lem:retained-recentering-alternatives`
 - `thm:terminal-exhaustion-main`
+
+The following labels are downstream consumers, not premises of the paired
+decomposition:
+
 - `thm:terminal-inactive-exclusion`
+- `thm:diffuse-defect-compactness`
+- `thm:diffuse-defect-trichotomy`
+- `thm:no-mixed-compact-diffuse`
+- the named pressure/noncompact and critical-tail routing theorems
 
 ### Existing route
 
-The terminal protocol extracts active concentration profiles and, on the same
-expanding regions, retains the residual measure left after their neighborhoods
-are removed.  The two outputs are paired parts of one local decomposition.
+Fix the terminal sequence selected from the singular-profile ledger.  The
+local concentration-set extraction and expanding-region protocol choose one
+diagonal subsequence.  On that subsequence, the active loci
+\(A_{n,m}^{\eta}\) and the concentration-deleted restrictions
+
+\[
+\mu_n\lfloor
+\bigl(E_n^{(j)}\setminus U_\rho(A_{n,m}^{\eta})\bigr)
+\]
+
+are formed from the same chartwise raw measure, threshold, deletion radius,
+and selected terminal region.  A compact profile exists only when positive
+velocity concentration and the applicable local compactness theorem produce
+it.  A residual restriction is measure data; it is not declared to be an
+ancient profile.
 
 ### Expository edit
 
-Add a terminal-output table listing:
+After `thm:terminal-exhaustion-main`, add a terminal-output directory for this
+selected terminal sequence.  Its final column lists later consumers and is not
+used in the proof of the paired decomposition.
 
-| Output | Retention mechanism | Topology/representative | Next route |
+| Selected output datum | Exact local certification | Object produced at this stage | Downstream route only |
 |---|---|---|---|
-| compact active descendant | positive unit velocity concentration | local Seregin/covariant compactness | descendant, separated-family, chain, or atomic analysis |
-| diffuse residual measure | positive normalized defect support | observer compactification and support transfer | diffuse trichotomy |
-| pressure/noncompact alternative | failure of the required local atlas or compactness | named local failure state | pressure, affine, diffuse, or critical-tail route |
-| critical-tail window | positive critical tail observable | log-annular or Young compactification | R5b--R5d |
-| inactive/radiative alternative | local vanishing or sole exterior escape | local exclusion theorem | direct closure as sole carrier |
+| compact retained profile | a selected observer sequence has a positive unit velocity threshold and satisfies the applicable first-generation local-window or descendant covariant compactness contract | a realized bounded suitable profile with the pressure gauges attached to its local charts; descendant retention additionally cites realization, semicontinuity, and heredity | descendant, separated-family, chain, or atomic analysis |
+| vanishing residual | the concentration-deleted restrictions tend to zero in the selected compact-window and expanding-region protocol | no residual profile | `thm:terminal-inactive-exclusion` may later use this only as a sole-carrier exclusion for the selected extraction |
+| diffuse residual measure | positive concentration-deleted mass escapes the compact observer exhaustion while every selected unit window is subthreshold | normalized restrictions and, after subsequence extraction, a weak-* probability measure on the fixed observer compactification \(\overline Z\); no ancient solution is asserted | diffuse routing; compact--diffuse coexistence remains recorded until `thm:no-mixed-compact-diffuse` is available |
+| pressure/noncompact alternative | a selected residual recentering loses the local Seregin compactness or the chartwise pressure-gauge control required on its own windows | a named failure alternative, not a retained profile | the named pressure, affine, diffuse, or critical-tail routing theorem |
+| critical-tail window | no selected unit observer carries the retained velocity threshold, no local compactness failure occurs, and positive residual mass first appears on a selected annular or logarithmic scale | a normalized selected window or defect datum; no Young, log-diffuse, or coherent profile is asserted at this stage | critical-tail extraction followed by the dependency order recorded in I6 |
 
-The table must state that concentration-set removal and residual-measure
-formation occur on the same selected terminal regions.
+Record separately that the compact subthreshold regular residual is removed by
+`lem:compact-subthreshold-regular-residual` before the surviving output rows
+are used.  Each pressure entry names the representative and time gauge valid
+on its selected local window.  No pressure representative is transported to a
+different recentering or blow-down without the corresponding chartwise
+compatibility statement.
 
 ### Mathematics preserved
 
-- Pure radiative alternatives are used only as sole-source exclusions.
-- Coexistence is handled by the mixed compact--diffuse theorem.
+- The table is an interface summary of the existing paired decomposition; it
+  introduces no new object, hypothesis, compactness assertion, or route.
+- Local vanishing and exterior escape are used only as sole-carrier exclusions
+  for the retained compact obstruction of the selected extraction.
+- A diffuse remainder may coexist with a compact retained profile at the
+  decomposition stage.  That particular coexistence is handled only later by
+  `thm:no-mixed-compact-diffuse`.
 - Pressure-only activity never substitutes for retained velocity concentration.
+- Mildness, sequence-\(L^3\), finite-shift mildness, the setup residual theorem,
+  and final assembly do not occur among the inputs to this interface.
 
 ### Acceptance checks
 
 - Every output of `thm:terminal-exhaustion-main` has a named downstream route.
-- Compact and diffuse outputs are not formed from unrelated subsequences or
-  regions without a diagonal realization statement.
-- Every nonzero defect state has the support-transfer statement required for
-  backward contradiction.
+- The active locus and every residual restriction use the same selected
+  terminal sequence, diagonal subsequence, threshold, deletion radius, and
+  named terminal region.
+- A compact retained profile is recorded only after positive velocity
+  concentration and the applicable local compactness contract have produced
+  it.
+- A diffuse output is recorded first as normalized measure data on the fixed
+  observer compactification.  If later exclusions leave positive mass on the
+  selected windows, the cited support theorem produces a support point outside
+  those exclusions.  This is a contrapositive and never an existence
+  assumption.
+- Each descendant carrying retained mass cites its realization,
+  semicontinuity, and heredity interfaces.
+- Each pressure-dependent row uses the representative belonging to its own
+  local chart.
+- Downstream closure and assembly theorems occur only in the route column and
+  are not premises of the paired decomposition.
 
 ## I6. Display the true critical-tail dependency order
+
+**Implementation status:** complete.  The manuscript now contains
+`tab:critical-tail-local-dependency-directory`.  It is a directory of the
+existing theorem interfaces, not an additional argument.  Its rows are
+instantiated only for the current pre-quotient profile, the current realized
+coherent tail, the selected first-bad scale, the selected tight annular
+blow-down, or the selected normalized log windows.  The actual pressure used
+in the first-bad local energy inequality and the later affine-quotient pressure
+are cited separately.  The terminal stratification and generic closure occur
+only in the consumer column.  No theorem statement, proof body, profile class,
+or proof order was changed.
 
 ### Source anchors
 
 - `thm:diffuse-defect-compactness`
-- `thm:diffuse-defect-compactification-construction`
+- `lem:diffuse-defect-support-transfer`
 - `thm:diffuse-defect-trichotomy`
+- `thm:oscillatory-entry-normalization`
+- `lem:actual-pressure-minimal-scale-energy`
+- `lem:first-bad-pressure-compactness`
 - `thm:first-bad-mesoscopic-reduction`
 - `thm:no-hidden-scale-variance-realized-defects`
 - `cor:young-branch-exclusion`
@@ -596,8 +733,10 @@ formation occur on the same selected terminal regions.
 The coherent critical-tail alternatives are closed independently by
 bounded-origin realization and log-hull rigidity.  Minimal mesoscopic reduction
 then eliminates hidden-scale variance.  The Young branch follows from that
-variance exclusion.  The log-diffuse branch uses log-window support profiles,
-hidden-scale exclusion, and the already closed coherent alternatives.
+variance exclusion.  The log-diffuse branch begins with the normalized data on
+the selected log windows; its support point is used only after the named local
+support theorem has produced it.  The branch then uses hidden-scale exclusion
+and the already closed coherent alternatives.
 
 ### Expository edit
 
@@ -620,13 +759,17 @@ Insert one dependency diagram or table using the actual proof order:
 \end{gathered}
 \]
 
-For every blow-down or compactification theorem, record separately whether its
-descendant has realized ancestry with retained velocity concentration and
-whether it has positive normalized defect support.  State every applicable
-heredity or support-transfer theorem; if both interfaces are proved, retain
-both in the same singular-profile ledger.  Each compactification is thereby a
-local route for the current realized profile, rather than a statement about an
-ambient class of unrelated solutions.
+For each selected blow-down or normalized defect window, record separately
+which interfaces have already been proved: realized ancestry, retained
+velocity concentration, positive normalized defect mass, and a support point
+produced by a named theorem.  Cite the applicable heredity or support-transfer
+statement.  When two interfaces have been proved for the same realized datum,
+retain both in the singular-profile ledger.
+
+This item adds only a dependency diagram or table.  It does not request a new
+compactification, profile class, state space, theorem, or hypothesis.  A later
+closure appears as a consumer of the selected local output and never as a
+premise of the theorem producing that output.
 
 ### Mathematics preserved
 
@@ -635,6 +778,8 @@ ambient class of unrelated solutions.
   being identified as the same state.
 - The variance Liouville theorem is used only after the local blow-down and
   pressure interfaces have produced its hypotheses.
+- Each row is instantiated to the current realized profile or selected defect
+  window in the fixed ledger.
 
 ### Acceptance checks
 
@@ -645,60 +790,154 @@ ambient class of unrelated solutions.
 
 ## I7. Expose how the endpoint hypotheses are manufactured
 
+**Implementation status:** complete.  The manuscript now contains
+`tab:atomic-endpoint-input-production` and
+`tab:terminal-indecomposable-production`.  The first table records the
+conditional endpoint argument for the current realized indecomposable profile;
+the second records the independent routing which produces indecomposability for
+the remaining selected single profile.  Retained concentration, sequence-\(L^3\),
+finite-shift mildness, and endpoint vanishing are assigned to their exact
+selected owners.  Pressure remains attached to the chart in which each routing
+step is performed.  The implementation changes no theorem statement, proof
+body, profile class, hypothesis, or proof order.
+
 ### Source anchors
 
 - `def:finite-separated-profile-family`
 - `def:atomic-terminal-profile`
-- `prop:no-multi-implies-atomic`
+- `lem:descendant-to-separated-family`
 - `lem:atomic-sequence-L3`
-- `thm:descendant-heredity`
-- `thm:active-path-space-recurrence`
-- `thm:compact-active-descendant`
-- `thm:no-finite-separated-profile-family`
+- `prop:bounded-mild-stability`
 - `thm:mildness-inheritance-main`
 - `thm:AB-main`
 - `lem:no-atomic-active`
+- `thm:ancestor-realization-inheritance`
+- `lem:diagonal-lifting-descendants`
+- `thm:descendant-heredity`
+- `lem:no-pressure-only-retained-profile`
+- `lem:finite-successor-alternatives`
+- `lem:no-inactive-successor`
+- `thm:active-path-space-recurrence`
+- `thm:compact-active-descendant`
+- `lem:finite-graph-cycle`
+- `thm:no-finite-separated-profile-family`
+- `prop:no-multi-implies-atomic`
+- `thm:terminal-stratification`
 
 ### Existing route
 
-A retained compact descendant is iterated within the realized normalized
-profile class.  It produces a finite separated family, an infinite descendant
-chain, a diffuse/noncompact/tail exit, or a single terminally indecomposable
-profile.  Only the last state receives the backward sequence-\(L^3\) estimate
-and parasitic-free mild pullback required by the endpoint theorem.
+There are two distinct theorem-production phases.
+
+First, the atomic endpoint argument is conditional.  If the current realized
+terminal profile is terminally indecomposable, then
+`lem:atomic-sequence-L3` produces its backward sequence-\(L^3\) bound.
+`thm:mildness-inheritance-main` either routes that profile to the
+affine/parasitic lower state or produces the bounded mild physical pullback of
+the same profile after a fixed finite terminal shift.  Critical scaling carries
+the selected sequence-\(L^3\) bound to that shifted pullback.  `thm:AB-main`
+then makes the shifted pullback zero, and `lem:no-atomic-active` transports this
+conclusion back to the current centered profile and contradicts its retained
+local velocity concentration.
+
+Second, the terminal routing uses the already proved no-atomic result and the
+independent no-infinite-chain result to exclude a finite separated family.
+Only after that exclusion does the deferred proof of
+`prop:no-multi-implies-atomic` show that the remaining selected single profile
+is terminally indecomposable.  The conditional atomic exclusion then applies
+to that profile.  Thus `prop:no-multi-implies-atomic` is not a premise of the
+earlier proof of `lem:no-atomic-active`.
 
 ### Expository edit
 
-Add an endpoint input-production table:
+Add an endpoint input-production directory with two visibly separated parts.
+Every row is conditional on the current profile having reached the state named
+in its first column.
 
-| Endpoint hypothesis | Producing result | Earlier alternatives whose absence is used |
-|---|---|---|
-| terminal indecomposability | `prop:no-multi-implies-atomic` | finite separated, chain, diffuse, noncompact, and tail outputs |
-| backward sequence-\(L^3\) for the terminal profile | `lem:atomic-sequence-L3` | retained descendants and all residual escape routes removed for that profile |
-| bounded mild physical pullback of the terminal profile | `thm:mildness-inheritance-main` | affine/parasitic quotient removed and finite shift fixed |
-| nonzero obstruction | retained velocity concentration and ancestry | transported from the singularity-generated raw profile along the residual branch |
-| zero conclusion | `thm:AB-main` | all preceding endpoint inputs |
+#### Part A: conditional atomic exclusion
 
-The proof of the finite separated-family theorem must continue to use the
-finite directed successor graph and the independent no-infinite-chain/no-atomic
-closures, rather than terminal assembly itself.
+| Selected owner | Existing producer and exact prerequisite | Produced fact for that owner | Later consumer only |
+|---|---|---|---|
+| current realized terminal profile \(U\) with retained local velocity concentration | `thm:ancestor-realization-inheritance` at the root and `thm:descendant-heredity` at each realized descendant step | retained nonzero velocity concentration for this \(U\) | final contradiction in `lem:no-atomic-active` |
+| the same \(U\), after terminal indecomposability has been established or assumed conditionally | `lem:atomic-sequence-L3`; its hypotheses are affine-normalized membership in the realized terminal class, retained local velocity concentration, and terminal indecomposability | a selected sequence \(\tau_k\to-\infty\) with \(\sup_k\|U(\tau_k)\|_{L^3}<\infty\) | `lem:no-atomic-active` |
+| the same \(U\) on the non-affine branch | `thm:mildness-inheritance-main`, through `prop:bounded-mild-stability`, after the affine/parasitic alternative has been routed for this profile | for each fixed \(T<0\), the selected physical pullback \(u^T\) is a bounded mild ancient solution | `thm:AB-main`, only after the sequence input has also been transported |
+| the selected \((U,\tau_k)\) and a fixed \(T<0\) | the critical scaling calculation in `lem:no-atomic-active`, with \(t_k=-e^{-\tau_k}\) and \(s_k=t_k-T\) | \(s_k\to-\infty\) and \(\|u^T(s_k)\|_{L^3}=\|U(\tau_k)\|_{L^3}\) | `thm:AB-main` |
+| the selected bounded mild pullback \(u^T\) carrying that sequence | `thm:AB-main` | \(u^T\equiv0\) | the pullback step in `lem:no-atomic-active` |
+| the current centered profile \(U\) | `lem:no-atomic-active`, using arbitrary finite \(T\) and the preceding output | \(U\equiv0\), contradicting the retained local velocity concentration of this same \(U\) | finite separated-family exclusion and terminal routing |
+
+The sequence-\(L^3\) row records a conclusion of
+`lem:atomic-sequence-L3`, not an entry condition on an R2 or R3 profile.  The
+mild row records only alternative (ii) of
+`thm:mildness-inheritance-main`; alternative (i) is routed to the
+affine/parasitic lower state.  The endpoint theorem acts on the selected
+finite-shift pullback \(u^T\), not directly on every centered profile.
+
+The endpoint directory carries no pressure representative from one recentering
+to another.  Pressure-loss cases occurring in `lem:atomic-sequence-L3` retain
+the representative supplied for their own local chart and are routed through
+`lem:no-pressure-only-retained-profile`.  Pressure is not an additional
+endpoint hypothesis.
+
+#### Part B: production of the terminal indecomposable state
+
+Record the following theorem order separately:
+
+| Selected input | Existing producer | Produced local conclusion | Later consumer only |
+|---|---|---|---|
+| an infinite retained descendant chain realized through the named lifting and heredity interfaces | `thm:compact-active-descendant` | that selected chain is excluded | `thm:no-finite-separated-profile-family` and terminal routing |
+| a selected finite separated family | `lem:finite-successor-alternatives`, `lem:no-inactive-successor`, and `lem:finite-graph-cycle`, followed by the already proved `lem:no-atomic-active` and `thm:compact-active-descendant` | that selected finite family is excluded by `thm:no-finite-separated-profile-family` | `prop:no-multi-implies-atomic` and terminal routing |
+| the remaining selected single retained profile, after finite separated, mixed compact--diffuse, and routed noncompact alternatives have been excluded for that profile | `prop:no-multi-implies-atomic`; a retained concentrating tail limit would give a finite two-profile family by `lem:descendant-to-separated-family` | terminal indecomposability of this selected profile | the already proved conditional exclusion `lem:no-atomic-active` |
+| the selected terminal extraction after every preceding route has been resolved | `thm:terminal-stratification` | terminal exhaustion | downstream residual closure and final assembly only |
+
+The finite separated-family theorem continues to use its finite directed
+successor graph and the independent no-infinite-chain and no-atomic results.
+Neither `prop:no-multi-implies-atomic` nor `thm:terminal-stratification` is a
+premise of that theorem.  The table records no assertion that an atomic or
+residual profile exists: each atomic row is a conditional route for the
+current profile selected by the terminal extraction.
 
 ### Mathematics preserved
 
-- Sequence-\(L^3\) is proved at the terminal indecomposable state for the
-  current realized profile and is used only there.
-- The endpoint theorem is applied only to the parasitic-free bounded mild
-  physical pullback of that profile after finite shift.
-- The contradiction is with the retained local velocity obstruction.
+- `lem:no-atomic-active` is proved conditionally from the definition of
+  terminal indecomposability and does not use
+  `prop:no-multi-implies-atomic`.
+- `thm:no-finite-separated-profile-family` uses the independent no-atomic and
+  no-infinite-chain conclusions.  The deferred proof of
+  `prop:no-multi-implies-atomic` occurs afterward.
+- Sequence-\(L^3\) is produced only for the current realized terminally
+  indecomposable profile.
+- Finite-shift mildness is produced only for that profile after the named
+  inheritance theorem selects its non-affine branch.
+- The endpoint theorem is applied only to the selected finite-shift pullback
+  carrying the transported sequence-\(L^3\) bound.
+- The zero conclusion is returned to the same centered profile and conflicts
+  with the retained local velocity concentration carried by its cited
+  realization and heredity chain.
+- R2, R3, the setup residual theorem, and final assembly are downstream
+  consumers.  They supply no premise to either part of the directory.
 
 ### Acceptance checks
 
-- The endpoint theorem is absent from all upstream compactness and
-  classification lemmas except where the source already proves the atomic
-  contradiction.
-- The finite separated-family and infinite-chain exclusions do not use
-  `thm:terminal-stratification`.
-- The terminal dependency table remains acyclic.
+- Every row is instantiated to the current realized profile, selected sequence,
+  fixed finite shift, or selected descendant chain.
+- Every retained velocity statement cites the realization and heredity
+  interface which supplies it; no unrelated descendant receives retained mass.
+- The mild identity appears only after
+  `thm:mildness-inheritance-main` has selected the non-affine alternative for
+  the current profile.
+- Each pressure-dependent routing step uses the representative belonging to
+  its own local chart.
+- Sequence-\(L^3\) is absent from the R2 and R3 entry hypotheses and appears
+  only as the output of `lem:atomic-sequence-L3` for the realized terminal
+  profile.
+- `thm:AB-main` is absent from upstream compactness, classification,
+  recurrence, and finite-graph arguments.
+- `thm:no-finite-separated-profile-family` uses neither
+  `prop:no-multi-implies-atomic` nor `thm:terminal-stratification`.
+- `thm:terminal-stratification`, the setup residual theorem, and final assembly
+  occur only as downstream consumers.
+- The edit adds only an endpoint dependency directory.  It changes no proof
+  body, theorem statement, profile class, state space, hypothesis, or proof
+  order.
 
 ## I8. Synchronize final assembly, auxiliary views, and static checks
 
@@ -745,7 +984,8 @@ facts, including:
 - all local `\Cref` targets exist;
 - the R2/R3 reduction labels precede their closure corollaries;
 - the terminal dependency table contains the protected acyclic rows;
-- the pressure-atlas, retained-descendant, support-profile, and endpoint
+- the pressure-atlas, retained-descendant, selected-defect-window,
+  support-transfer, and endpoint
   interfaces remain named;
 - former fourth-paper terminology and the former residual-branch filename are
   absent;
@@ -828,7 +1068,8 @@ singular-profile ledger.
 
 - [ ] Every theorem, estimate, compactness passage, and endpoint input names
       its local owner: the fixed incoming profile, a realized descendant, a
-      normalized support profile, or a finite-shift terminal pullback.
+      normalized measure on a selected defect window, a support point already
+      produced by a named theorem, or a finite-shift terminal pullback.
 - [ ] A formula written on a centered, physical, hull, blow-down, or terminal
       coordinate domain is recorded as a property of that current profile and
       is never promoted to an assumption on the incoming physical solution or
@@ -839,26 +1080,26 @@ singular-profile ledger.
 - [ ] Every conditional lower-state criterion, including the R2 and R3
       integrable subcases, is used only after it has been verified for the
       selected profile.
-- [ ] Every auxiliary profile records every connection to the incoming branch
-      that is proved for it: realized ancestry, inherited velocity retention,
-      positive defect support, and the corresponding heredity or
-      support-transfer theorem.
+- [ ] Every auxiliary profile or selected defect datum records each connection
+      to the incoming branch that has been proved for it: realized ancestry,
+      inherited velocity retention, positive defect mass, and the
+      corresponding heredity or support-transfer theorem.
 - [ ] A profile with proved realization and velocity retention keeps that
-      interface even when it is also constructed or used as a normalized
-      defect-support profile.
-- [ ] A profile with only positive defect support is returned through the named
-      support-transfer theorem; retained velocity concentration is not inferred
-      from defect support alone.
-- [ ] When both realized retained mass and positive defect support are proved,
-      both interfaces remain recorded in the same ledger and either or both may
-      carry the terminal contradiction backward.
-- [ ] Retained velocity mass and positive defect support are never conflated as
-      quantities; their simultaneous presence on one profile is recorded
-      rather than suppressed.
+      interface when the same ledger also records normalized defect data.
+- [ ] Normalized defect data with only positive mass are returned through the
+      named support-transfer theorem; retained velocity concentration is not
+      inferred from defect mass alone.
+- [ ] When realized retained mass, positive defect mass, and a produced support
+      point are available for the same datum, the proved interfaces remain
+      recorded in the same ledger and may carry the terminal contradiction
+      backward.
+- [ ] Retained velocity mass and positive defect mass are never conflated as
+      quantities; both are recorded when the named local producers establish
+      them for the same realized datum.
 - [ ] Every terminal contradiction identifies the obstruction it uses and the
       matching return interface: descendant heredity for retained velocity
-      mass, support transfer for defect support, or both when both obstructions
-      participate.
+      mass, support transfer for a produced support point, or both when both
+      obstructions participate.
 
 ## Domains, topology, and pressure
 
@@ -978,8 +1219,8 @@ V
 \]
 
 The retained alternative is improved through realized local descendants and
-typed defect-support states, with every proved interface retained on each
-auxiliary profile:
+selected defect-window data, with each proved interface retained on the datum
+for which it was established:
 
 \[
 \longrightarrow
@@ -1024,6 +1265,6 @@ and therefore
 \text{the setup paper's unconditional local Type I exclusion}.
 \]
 
-The proof remains the same proof.  The completed edits make its local
-state-space refinement, routing interfaces, pressure atlas, obstruction
+The proof remains the same proof.  The completed edits make its fixed-profile
+refinement, routing interfaces, pressure atlas, obstruction
 transport, and final assembly visible at the points where a reader needs them.

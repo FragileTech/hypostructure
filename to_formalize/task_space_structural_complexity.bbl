@@ -1,4 +1,4 @@
-\begin{thebibliography}{80}
+\begin{thebibliography}{91}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -45,6 +45,13 @@ Bengt Aspvall, Michael~F. Plass, and Robert~E. Tarjan.
   121--123, 1979.
 \newblock \doi{10.1016/0020-0190(79)90002-4}.
 
+\bibitem[Atkey(2011)]{Atkey2011}
+Robert Atkey.
+\newblock Amortised resource analysis with separation logic.
+\newblock \emph{Logical Methods in Computer Science}, 7\penalty0
+  (2:17):\penalty0 1--33, 2011.
+\newblock \doi{10.2168/LMCS-7(2:17)2011}.
+
 \bibitem[Baker et~al.(1975)Baker, Gill, and Solovay]{BakerGillSolovay1975}
 Theodore~P. Baker, John Gill, and Robert Solovay.
 \newblock Relativizations of the $\mathcal{P}=?\mathcal{NP}$ question.
@@ -74,6 +81,12 @@ Peter~L. Bartlett, Dylan~J. Foster, and Matus~J. Telgarsky.
 \newblock Spectrally-normalized margin bounds for neural networks.
 \newblock In \emph{Advances in Neural Information Processing Systems 30}, pages
   6240--6249, 2017.
+
+\bibitem[Bellantoni and Cook(1992)]{BellantoniCook1992}
+Stephen Bellantoni and Stephen~A. Cook.
+\newblock A new recursion-theoretic characterization of the polytime functions.
+\newblock \emph{Computational Complexity}, 2:\penalty0 97--110, 1992.
+\newblock \doi{10.1007/BF01201998}.
 
 \bibitem[Bellman(1957)]{Bellman1957}
 Richard Bellman.
@@ -122,6 +135,13 @@ Sonia Bogos, Florian Tram\`er, and Serge Vaudenay.
   analysis.
 \newblock Cryptology ePrint Archive, Paper 2015/049, 2015.
 \newblock URL \url{https://eprint.iacr.org/2015/049}.
+
+\bibitem[Braverman(2015)]{Braverman2015}
+Mark Braverman.
+\newblock Interactive information complexity.
+\newblock \emph{SIAM Journal on Computing}, 44\penalty0 (6):\penalty0
+  1698--1739, 2015.
+\newblock \doi{10.1137/130938517}.
 
 \bibitem[Buchholz(1994)]{Buchholz1994}
 Peter Buchholz.
@@ -178,6 +198,13 @@ Stephen~A. Cook.
 \newblock In \emph{Proceedings of the Third Annual ACM Symposium on Theory of
   Computing}, pages 151--158. ACM, 1971.
 \newblock \doi{10.1145/800157.805047}.
+
+\bibitem[Cook and Reckhow(1979)]{CookReckhow1979}
+Stephen~A. Cook and Robert~A. Reckhow.
+\newblock The relative efficiency of propositional proof systems.
+\newblock \emph{The Journal of Symbolic Logic}, 44\penalty0 (1):\penalty0
+  36--50, 1979.
+\newblock \doi{10.2307/2273702}.
 
 \bibitem[Courr{\`e}ge(1965--1966)]{Courrege1965}
 Philippe Courr{\`e}ge.
@@ -268,6 +295,14 @@ Oded Goldreich and Leonid~A. Levin.
 \newblock In \emph{Proceedings of the Twenty-First Annual ACM Symposium on
   Theory of Computing}, pages 25--32. ACM, 1989.
 \newblock \doi{10.1145/73007.73010}.
+
+\bibitem[Green et~al.(2007)Green, Karvounarakis, and
+  Tannen]{GreenKarvounarakisTannen2007}
+Todd~J. Green, Grigoris Karvounarakis, and Val Tannen.
+\newblock Provenance semirings.
+\newblock In \emph{Proceedings of the Twenty-Sixth {ACM} {SIGMOD-SIGACT-SIGART}
+  Symposium on Principles of Database Systems}, pages 31--40, 2007.
+\newblock \doi{10.1145/1265530.1265535}.
 
 \bibitem[Gross(1975)]{Gross1975}
 Leonard Gross.
@@ -394,6 +429,13 @@ Yanyi Liu and Rafael Pass.
   Science}, pages 1243--1254, 2020.
 \newblock \doi{10.1109/FOCS46700.2020.00118}.
 
+\bibitem[Lutz(1990)]{Lutz1990}
+Jack~H. Lutz.
+\newblock Category and measure in complexity classes.
+\newblock \emph{SIAM Journal on Computing}, 19\penalty0 (6):\penalty0
+  1100--1131, 1990.
+\newblock \doi{10.1137/0219076}.
+
 \bibitem[Lyubashevsky(2005)]{Lyubashevsky2005}
 Vadim Lyubashevsky.
 \newblock The parity problem in the presence of noise, decoding random linear
@@ -497,6 +539,12 @@ Daniel Paulin.
   1--32, 2015.
 \newblock \doi{10.1214/EJP.v20-4039}.
 
+\bibitem[Pearl(1995)]{Pearl1995}
+Judea Pearl.
+\newblock Causal diagrams for empirical research.
+\newblock \emph{Biometrika}, 82\penalty0 (4):\penalty0 669--688, 1995.
+\newblock \doi{10.1093/biomet/82.4.669}.
+
 \bibitem[Puterman(1994)]{Puterman1994}
 Martin~L. Puterman.
 \newblock \emph{Markov Decision Processes: Discrete Stochastic Dynamic
@@ -549,6 +597,11 @@ Yevgeny Seldin, Fran\c{c}ois Laviolette, Nicol\`o Cesa-Bianchi, John
   (12):\penalty0 7086--7093, 2012.
 \newblock \doi{10.1109/TIT.2012.2214217}.
 
+\bibitem[Sutton and Barto(2018)]{SuttonBarto2018}
+Richard~S. Sutton and Andrew~G. Barto.
+\newblock \emph{Reinforcement Learning: An Introduction}.
+\newblock MIT Press, Cambridge, MA, 2 edition, 2018.
+
 \bibitem[Trefethen(2019)]{Trefethen2019}
 Lloyd~N. Trefethen.
 \newblock \emph{Approximation Theory and Approximation Practice}.
@@ -562,12 +615,27 @@ Joel~A. Tropp.
   389--434, 2012.
 \newblock \doi{10.1007/s10208-011-9099-z}.
 
+\bibitem[Vapnik and Chervonenkis(1971)]{VapnikChervonenkis1971}
+Vladimir~N. Vapnik and Alexey~Ya. Chervonenkis.
+\newblock On the uniform convergence of relative frequencies of events to their
+  probabilities.
+\newblock \emph{Theory of Probability and Its Applications}, 16\penalty0
+  (2):\penalty0 264--280, 1971.
+\newblock \doi{10.1137/1116025}.
+
 \bibitem[Varshamov(1957)]{Varshamov1957}
 Rom~R. Varshamov.
 \newblock Estimate of the number of signals in error correcting codes.
 \newblock \emph{Doklady Akademii Nauk SSSR}, 117\penalty0 (5):\penalty0
   739--741, 1957.
 \newblock URL \url{https://www.mathnet.ru/eng/dan22571}.
+
+\bibitem[Vereshchagin and Vit\'anyi(2004)]{VereshchaginVitanyi2004}
+Nikolai~K. Vereshchagin and Paul M.~B. Vit\'anyi.
+\newblock Kolmogorov's structure functions and model selection.
+\newblock \emph{IEEE Transactions on Information Theory}, 50\penalty0
+  (12):\penalty0 3265--3290, 2004.
+\newblock \doi{10.1109/TIT.2004.838346}.
 
 \bibitem[Villani(2009)]{Villani2009}
 C\'edric Villani.
@@ -576,6 +644,11 @@ C\'edric Villani.
 \newblock American Mathematical Society, 2009.
 \newblock \doi{10.1090/S0065-9266-09-00567-5}.
 \newblock no. 950.
+
+\bibitem[Vu(2018)]{Vu2018}
+Vincent~Q. Vu.
+\newblock Group invariance and computational sufficiency, 2018.
+\newblock URL \url{https://arxiv.org/abs/1807.05985}.
 
 \bibitem[Walsh(1923)]{Walsh1923}
 J.~L. Walsh.
