@@ -74,6 +74,221 @@ universe u v
 
 /-! ## The dependence dichotomy -/
 
+/-- The active-family certificate determines the concrete response activation
+used by `def:sparse-pair-response`.  The obstruction coordinates are empty at
+construction time: clauses (d)--(f) are populated only by a failed quotient or
+suppression later in the argument. -/
+theorem existsPairResponseActivation
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold) :
+    Nonempty (object.DemandActivation (object.PairCoordinate)
+      (object.PairCoordinate)) := by
+  classical
+  let supportOf := fun demand : object.Vertex × object.Vertex =>
+    if member : demand ∈ object.excessPorts threshold then
+      let port := object.surplusPortOfMem member
+      if shoulders : ∃ left right : object.Vertex,
+          (∀ vertex : object.Vertex,
+            vertex ∈ port.shoulders ↔ (vertex = left ∨ vertex = right)) ∧
+            left ≠ right then
+        let left := shoulders.choose
+        let right := shoulders.choose_spec.choose
+        let description := shoulders.choose_spec.choose_spec.1
+        let distinct := shoulders.choose_spec.choose_spec.2
+        let activated := active.activated demand member left right description distinct
+        port.declaredSupport activated.1 activated.2.1
+      else ∅
+    else ∅
+  let returnOf := fun demand : object.Vertex × object.Vertex =>
+    if member : demand ∈ object.excessPorts threshold then
+      let port := object.surplusPortOfMem member
+      if shoulders : ∃ left right : object.Vertex,
+          (∀ vertex : object.Vertex,
+            vertex ∈ port.shoulders ↔ (vertex = left ∨ vertex = right)) ∧
+            left ≠ right then
+        let left := shoulders.choose
+        let right := shoulders.choose_spec.choose
+        let description := shoulders.choose_spec.choose_spec.1
+        let distinct := shoulders.choose_spec.choose_spec.2
+        let activated := active.activated demand member left right description distinct
+        port.returnSupport activated.1
+      else ∅
+    else ∅
+  let bufferOf := fun demand : object.Vertex × object.Vertex =>
+    if member : demand ∈ object.excessPorts threshold then
+      (object.surplusPortOfMem member).support
+    else ∅
+  exact ⟨{
+    declaredSupport := supportOf
+    returnSupport := returnOf
+    localBuffer := bufferOf
+    profileObstructions := fun _ => ∅
+    responseObstructions := fun _ => ∅
+    chordObstructions := fun _ => ∅ }⟩
+
+/-- A response activation whose existence is proved from the active-family
+fact. -/
+noncomputable def pairResponseActivation
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold) :
+    object.DemandActivation (object.PairCoordinate) (object.PairCoordinate) :=
+  Classical.choice (existsPairResponseActivation active)
+
+/-- A concrete type-(d) or type-(e) obstruction carried by some pair in
+`Π`.  The three alternatives are exactly the corresponding cases in the proof
+of `lem:sparse-pair-dependence-exit`: a boundary-profile separation, a
+target-response separation, or a target-complete proper-support replacement.
+The attempted quotient and its witnesses are retained, so this is a certified
+blocker rather than a Boolean classification. -/
+def HasSparsePairDEBlocker
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex))) : Prop :=
+  let family := activation.pairFamily pairs
+  let coordinateSupport : object.PairCoordinate → Finset object.Vertex := by
+    letI := object.vertices.decEq
+    exact DeclaredSignature.Coordinate.support
+  ∃ pair ∈ pairs,
+    (∃ attempt : AttemptedQuotient Baseline
+          (Graph.HasCycleWithLength LengthOK) object family coordinateSupport,
+        ∃ left right, attempt.Identifies left right ∧
+          left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
+      (∃ attempt : AttemptedQuotient Baseline
+          (Graph.HasCycleWithLength LengthOK) object family coordinateSupport,
+        ∃ left right, attempt.Identifies left right ∧
+          Response.TargetDefect (Graph.HasCycleWithLength LengthOK) left right) ∨
+      (∃ attempt : AttemptedQuotient Baseline
+          (Graph.HasCycleWithLength LengthOK) object family coordinateSupport,
+        ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK) object
+          attempt.support)
+
+/-- The declared coordinate used to record the certified pair obstruction. -/
+noncomputable def sparsePairDECoordinate
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+    (certificate : HasSparsePairDEBlocker
+      (Baseline := Baseline) (LengthOK := LengthOK) activation pairs) :
+    object.PairCoordinate :=
+  FiniteObject.DemandActivation.pairCoordinate certificate.choose
+    ((activation.pairSupport certificate.choose).getD ∅)
+
+/-- Install the certified type-(d)/(e) obstruction into the same concrete
+activation used to define the pair-response family. -/
+noncomputable def recordSparsePairDEBlocker
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+    (certificate : HasSparsePairDEBlocker
+      (Baseline := Baseline) (LengthOK := LengthOK) activation pairs) :
+    object.DemandActivation (object.PairCoordinate) Chord := by
+  classical
+  let pair := certificate.choose
+  let coordinate := sparsePairDECoordinate activation pairs certificate
+  let profileCase : Prop :=
+    ∃ attempt : AttemptedQuotient Baseline
+        (Graph.HasCycleWithLength LengthOK) object
+        (activation.pairFamily pairs) (by
+          letI := object.vertices.decEq
+          exact DeclaredSignature.Coordinate.support),
+      ∃ left right, attempt.Identifies left right ∧
+        left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile
+  exact {
+    declaredSupport := activation.declaredSupport
+    returnSupport := activation.returnSupport
+    localBuffer := activation.localBuffer
+    profileObstructions := fun candidate =>
+      if candidate = pair ∧ profileCase then {coordinate} else ∅
+    responseObstructions := fun candidate =>
+      if candidate = pair ∧ ¬ profileCase then {coordinate} else ∅
+    chordObstructions := activation.chordObstructions }
+
+theorem recordedSparsePairDEBlocker_nonempty
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+    (certificate : HasSparsePairDEBlocker
+      (Baseline := Baseline) (LengthOK := LengthOK) activation pairs) :
+    ∃ pair ∈ pairs,
+      ((recordSparsePairDEBlocker activation pairs certificate).blockers pair).Nonempty := by
+  classical
+  let pair := certificate.choose
+  have pairMem := certificate.choose_spec.1
+  let coordinate := sparsePairDECoordinate activation pairs certificate
+  let profileCase : Prop :=
+    ∃ attempt : AttemptedQuotient Baseline
+        (Graph.HasCycleWithLength LengthOK) object
+        (activation.pairFamily pairs) (by
+          letI := object.vertices.decEq
+          exact DeclaredSignature.Coordinate.support),
+      ∃ left right, attempt.Identifies left right ∧
+        left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile
+  refine ⟨pair, pairMem, ?_⟩
+  by_cases profile : profileCase
+  · exact ((recordSparsePairDEBlocker activation pairs certificate).exists_blocks_iff_blockers_nonempty pair).mp
+      ⟨.boundaryProfile,
+        (recordSparsePairDEBlocker activation pairs certificate).blocks_boundaryProfile
+          (coordinate := coordinate)
+          (by
+            simp [recordSparsePairDEBlocker, pair, profileCase, profile]
+            dsimp [coordinate, pair])⟩
+  · exact ((recordSparsePairDEBlocker activation pairs certificate).exists_blocks_iff_blockers_nonempty pair).mp
+      ⟨.targetResponse,
+        (recordSparsePairDEBlocker activation pairs certificate).blocks_targetResponse
+          (coordinate := coordinate)
+          (by
+            simp [recordSparsePairDEBlocker, pair, profileCase, profile]
+            dsimp [coordinate, pair])⟩
+
+/-- **`lem:sparse-pair-dependence-exit`.**
+
+For the concrete response family `ℛ_Π`, failure to survive its declared
+admissible quotient system produces exactly one of the paper's outcomes: a
+sparse surplus exit, or a certified type-(d)/(e) blocker on a member of `Π`.
+The four cases and their order are inherited directly from
+`AttemptedQuotient.route`. -/
+theorem sparsePairDependence_exit_or_blocker
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+    (attempt :
+      let family := activation.pairFamily pairs
+      let coordinateSupport : object.PairCoordinate → Finset object.Vertex := by
+        letI := object.vertices.decEq
+        exact DeclaredSignature.Coordinate.support
+      AttemptedQuotient Baseline (Graph.HasCycleWithLength LengthOK) object
+        family coordinateSupport)
+    (reducing :
+      let family := activation.pairFamily pairs
+      ¬ Set.InjOn attempt.label ↑family) :
+    SparseSurplusExit Baseline (Graph.HasCycleWithLength LengthOK) LengthOK object ∨
+      HasSparsePairDEBlocker (Baseline := Baseline) (LengthOK := LengthOK)
+        activation pairs := by
+  classical
+  let family := activation.pairFamily pairs
+  let coordinateSupport : object.PairCoordinate → Finset object.Vertex := by
+    letI := object.vertices.decEq
+    exact DeclaredSignature.Coordinate.support
+  have pairExists : pairs.Nonempty := by
+    by_contra empty
+    rw [Finset.not_nonempty_iff_eq_empty] at empty
+    subst pairs
+    exact reducing (by simp [FiniteObject.DemandActivation.pairFamily])
+  obtain ⟨pair, pairMem⟩ := pairExists
+  rcases attempt.route reducing with profiles | defect | replacement |
+      ⟨representative, smaller, baseline, transfer⟩
+  · exact Or.inr ⟨pair, pairMem, Or.inl ⟨attempt, profiles⟩⟩
+  · exact Or.inr ⟨pair, pairMem, Or.inr (Or.inl ⟨attempt, defect⟩)⟩
+  · exact Or.inr ⟨pair, pairMem, Or.inr (Or.inr ⟨attempt, replacement⟩)⟩
+  · exact Or.inl (.delocalization representative smaller baseline transfer)
+
 /-- **`lem:sparse-pair-dependence-exit` and `lem:mixed-sparse-spine-dependence`,
 at a survivor.**
 

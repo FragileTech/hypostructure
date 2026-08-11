@@ -4,6 +4,8 @@
 \usepackage{amsmath,amssymb,amsthm,mathrsfs,mathtools}
 \usepackage{enumitem}
 \usepackage{microtype}
+\usepackage{array,longtable,pdflscape}
+\usepackage{xurl}
 \usepackage{hyperref}
 \usepackage{aliascnt}
 \usepackage[nameinlink,capitalize]{cleveref}
@@ -61,6 +63,7 @@
 \newcommand{\nn}{\nabla}
 \newcommand{\tr}{\mathrm{tr}}
 \newcommand{\fint}{\mathop{\ooalign{\(\int\)\cr\hidewidth\(-\)\hidewidth\cr}}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \title[Type II Regularity]{Type II Regularity for Navier--Stokes}
 \author{Guillem Duran Ballester}
@@ -179,6 +182,289 @@ exit.  In the final assembly, the remaining named exits are then closed by
 their own local routing arguments, giving the stated no-local-Type-II
 conclusion without importing global critical estimates.
 
+\begin{definition}[Canonical chart notation]
+\label{def:canonical-chart-notation}
+The paper uses the following notation for every concentration chart and its
+repaired gauge:
+\[
+\begin{array}{c|l}
+t & \text{physical time},\\
+\rho & \text{raw renormalized time},\\
+\tau & \text{final repaired time},\\
+x_c(t),\lambda(t) & \text{raw concentration center and scale},\\
+U(y,\rho),Q(y,\rho) & \text{raw profile and pressure},\\
+\mu(\tau),q(\tau) & \text{repaired-gauge scale and translation},\\
+\Lambda=\lambda\mu & \text{final physical scale},\\
+X=x_c+\lambda q & \text{final physical center},\\
+V(Y,\tau),P(Y,\tau) & \text{final repaired profile and pressure},\\
+a=\partial_\tau\log\Lambda & \text{final logarithmic scale velocity},\\
+b=\Lambda^{-1}X_\tau & \text{final normalized center velocity}.
+\end{array}
+\]
+In the two composite identities, \(x_c\) and \(\lambda\) are evaluated at
+the physical time corresponding to \(\rho(\tau)\).  Thus the final time and
+field conventions are
+\[
+  \frac{d\tau}{dt}=\Lambda^{-2},\qquad
+  x=X+\Lambda Y,\qquad
+  u=\Lambda^{-1}V,\qquad
+  p=\Lambda^{-2}P+c(t).
+\]
+These conventions are fixed throughout the manuscript.
+\end{definition}
+
+\subsection{Imported-output provenance and ownership}
+\label{subsec:imported-output-provenance}
+
+The manuscript is a consolidated source: the local proof capsules denoted by
+the prefixes \texttt{paper1}, \dots, \texttt{paper10} occur in this file.
+Consequently, the source-file column below records
+\nolinkurl{type_II_regularity.tex} together with the exact producer labels.
+The status ``proved here'' means that the displayed output is established by
+those producer statements.  The status ``admissible-branch input'' means that
+the row is a positive contract defining the branch on which the subsequent
+implication is applied.  Such a row is never presented as an existence
+theorem: its failure is sent to the named output in the tenth column.  The
+status ``imported'' is reserved for an external state-space theorem whose
+statement is not reproduced in this consolidated file.  No state-space row in
+the present ledger has that status.  Classical tools such as the
+Caffarelli--Kohn--Nirenberg criterion, Calder\'on--Zygmund estimates, and the
+Aubin--Lions--Simon compactness theorem are cited at their individual uses;
+they do not supply any of the chart, gauge, pressure-atlas, or terminal-state
+tuples recorded here.
+
+For a compact interval \(I\), write
+
+\[
+  Q_{R,I}:=B_R\times I.
+\]
+
+Every working/core entry \(Q_{2R,I}\to Q_{R,I}\) includes a strict spatial
+buffer; whenever a temporal cutoff is used, its support is compactly contained
+in the displayed working interval.  Thus the window column records the actual
+locality of the corresponding interface rather than a whole-space assertion.
+
+\begin{landscape}
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{1.5pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{longtable}{@{}L{1.35cm}L{1.45cm}L{2.20cm}L{2.80cm}L{2.20cm}L{1.70cm}L{1.90cm}L{1.80cm}L{1.60cm}L{2.40cm}L{1.45cm}@{}}
+\caption{Provenance ledger for concentration, chart, gauge, pressure, and terminal-profile interfaces.}
+\label{tab:imported-output-provenance}\\
+\hline
+Interface & Source file & Exact producer label(s) & Exact output tuple & Target label(s) & Windows & Convergence or regularity topology & Pressure representative & Retained obstruction & Named failure output & Status \\
+\hline
+\endfirsthead
+\multicolumn{11}{c}{\tablename\ \thetable\ continued}\\
+\hline
+Interface & Source file & Exact producer label(s) & Exact output tuple & Target label(s) & Windows & Convergence or regularity topology & Pressure representative & Retained obstruction & Named failure output & Status \\
+\hline
+\endhead
+\hline
+\multicolumn{11}{r}{Continued on next page}\\
+\endfoot
+\hline
+\endlastfoot
+
+CKN entry and Type I/II split
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper1:thm:paper0-dichotomy}; \nolinkurl{paper6:thm:paper0}
+& \((x_0,T,r_n,\eta)\), \(r_n\downarrow0\), \(C((x_0,T),r_n)+D((x_0,T),r_n)\ge\eta\), and the exclusive local Type I/Type II alternative
+& \nolinkurl{paper1:prop:paper0-typeII-reduction}; \nolinkurl{paper6a:lem:typeII-concentration-extraction-routes}
+& physical \(Q_{r_n}(x_0,T)\); fixed selected windows after parabolic rescaling
+& scale-invariant \(L^3_{x,t}\times L^{3/2}_{x,t}\) quantities
+& \(p-(p)_{B_{r_n}(x_0)}(t)\)
+& positive CKN mass and failure of the local Type I bound
+& empty singular set or local Type I: \nolinkurl{paper6a:lem:typeII-concentration-extraction-routes}, cases (b),(c)
+& proved here
+\\ \hline
+
+Retained velocity floor
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper8:thm:active-profile-mass-floor}; \nolinkurl{paper6:lem:pressure-only-critical-mass-routing}
+& \((Q_{R,I},\varepsilon_{\rm loc})\); spacetime \(L^3\)-mass at least \(\varepsilon_{\rm loc}^3\) and local \(L^\infty_I L^3\)-limsup at least \(\varepsilon_{\rm loc}\); inverse rescaling gives \(C((x_0,T),\rho_n)\ge\eta_v>0\) on the retained velocity subbranch
+& \nolinkurl{paper1:def:single-core-branch}; \nolinkurl{paper5:lem:selected-window-mass-floor}; \nolinkurl{lem:c5-uniform-retained-active-window-mass}
+& detecting \(Q_{2R,I}\to Q_{R,I}\); shrinking physical cylinders under the inverse chart
+& local spacetime \(L^3\) and local \(L^\infty_I L^3\)
+& pressure is used only through the localized source and harmonic remainder
+& positive velocity, rather than pressure-only, concentration
+& regular/bounded-window, pressure/exterior, or loss-of-active-core rows: \nolinkurl{paper6:thm:active-core-loss-closed}
+& proved here
+\\ \hline
+
+Raw AC chart contract
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper6a:def:ac-initial-concentration-chart}; \nolinkurl{def:c2r-minimal-representation-data}, item (i)
+& \((x_c,\lambda,\rho,U,Q)\), with \(x_c,\lambda,\rho\) AC, \(\rho_t=\lambda^{-2}\), and the exact velocity and pressure pullbacks
+& \nolinkurl{paper6a:lem:initial-renormalized-equation}; \nolinkurl{paper6a:thm:ac-repaired-gauge-consequences}; \nolinkurl{thm:c2r-minimal-representation}
+& each compact raw \(y\)-window contained in the physical domain
+& \(AC_{\rm loc}\) chart; distributional chain rule on compact sets
+& \(p=\lambda^{-2}Q+c(t)\), so \(Q\) is modulo functions of \(\rho\)
+& selected Type II core and its positive CKN signal
+& chart extraction, profile, or domain failure: \nolinkurl{def:c2r-minimal-failures}, item (i); \nolinkurl{def:c1-exhaustion-failures}, items (iii),(iv)
+& admissible-branch input
+\\ \hline
+
+Raw-chart consequences
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper6a:lem:initial-renormalized-equation}; \nolinkurl{paper6a:lem:pressure-reconstruction-under-charts}; \nolinkurl{paper6a:lem:critical-lp-scaling}
+& distributional raw equation with \(A=\partial_\rho\log\lambda\), \(B=\lambda^{-1}\partial_\rho x_c\); pressure Poisson equation; critical \(L^3\)-invariance
+& \nolinkurl{paper6a:thm:ac-repaired-gauge-consequences}; \nolinkurl{lem:c2r-chart-raw-orbit}; \nolinkurl{lem:c2r-pressure-pullback}
+& compact raw \(y\)-sets
+& distributions; local \(L^3\) scaling identity
+& \(Q\) modulo functions of \(\rho\)
+& the raw chart contract in the preceding row
+& failure of AC or the chain-rule domain is failure of the preceding chart contract
+& proved here
+\\ \hline
+
+AC repaired-gauge path contract
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper6a:def:ac-repaired-gauge-path}; \nolinkurl{def:c2r-minimal-representation-data}, item (ii)
+& \((\mu,q,\tau,V,P)\), with \(\rho_\tau=\mu^2\), \(V(Y,\tau)=\mu U(\mu Y+q,\rho)\), \(P(Y,\tau)=\mu^2Q(\mu Y+q,\rho)\), and all gauge constraints
+& \nolinkurl{paper6a:lem:repaired-physical-chart}; \nolinkurl{paper6a:lem:repaired-modulation-coefficients}; \nolinkurl{paper6a:thm:canonical-repaired-gauge-equation}
+& compact final windows whose pullbacks remain inside the raw chart
+& \(\mu,q,\rho\in AC_{\rm loc}\), \(\mu>0\)
+& \(P\) modulo functions of \(\tau\)
+& repaired scale and centering constraints on the retained core
+& no AC gauge solve: \nolinkurl{def:c2r-minimal-failures}, item (ii); strong-chart or Jacobian failure: \nolinkurl{paper2:lem:strong-gauge-chart-entry-test}
+& admissible-branch input
+\\ \hline
+
+Gauge transversality and consequences
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper2:prop:full-jacobian}; \nolinkurl{paper2:thm:quant-jac}; \nolinkurl{paper6a:thm:ac-repaired-gauge-consequences}
+& invertible corrected Jacobian on the retained chart; \((\Lambda,X)\in W^{1,1}_{\rm loc}\), \(a,b\in L^1_{\rm loc}\); final represented equation and \(d\tau/dt=\Lambda^{-2}\)
+& \nolinkurl{paper2:thm:A}; \nolinkurl{paper2:thm:C}; \nolinkurl{thm:c2r-minimal-representation}
+& \(Q_{2R,I}\to Q_{R,I}\), with the chart buffer of \nolinkurl{paper2:prop:domain}
+& uniform compact-window chart convergence as in \nolinkurl{paper2:prop:stability}
+& \(p=\Lambda^{-2}P+c(t)\), \(P\) modulo functions of \(\tau\)
+& invertible single-core gauge
+& gauge degeneracy, multibubble/cascade, scale-rigid reselection, or strong-chart/annular admissibility loss: \nolinkurl{paper3:lem:scale-rigid-degenerate-jacobian}
+& proved here on the retained chart
+\\ \hline
+
+Local pressure atlas
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper2:thm:pressure-decomp}; \nolinkurl{paper1:lem:pressure-stability}; \nolinkurl{paper8:lem:harmonic-cross-pressure-routing}
+& \(P=P_{\rm loc}+H+c_I(\tau)\), \(-\Delta P_{\rm loc}=\partial_i\partial_j(\zeta V_iV_j)\), \(H\) harmonic and mean-zero; \(P_{\rm loc}\in L^{3/2}\), \(H\in L^q\) on inner balls
+& \nolinkurl{paper1:prop:compactness}; \nolinkurl{paper8:lem:terminal-pressure-decoupling}; \nolinkurl{lem:c5-retained-upper-estimates-aubin-lions}
+& \(B_{2R}\supset\supp\zeta\), decomposition on \(B_R\), estimates on \(B_r\Subset B_R\)
+& strong \(L^{3/2}_{\rm loc}\) stability for \(P_{\rm loc}\) under strong \(L^3\) velocity convergence; weak \(L^{3/2}_{\rm loc}\) for full normalized pressure
+& spatial mean on the working ball plus an allowed function of time
+& velocity-source pressure separated from the harmonic tail
+& pressure reconstruction/gauge failure, exterior pressure, or pressure-only retained signal: \nolinkurl{paper6:lem:pressure-only-critical-mass-routing}
+& proved here
+\\ \hline
+
+Terminal decomposition contract
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper3:def:admissible-terminal}; \nolinkurl{paper6a:def:critical-ns-profile-decomposition-local}, item (i); \nolinkurl{paper8:def:active-critical-profile-data}
+& active classes \((\mathcal A_j,\lambda_j^n,x_j^n,I_j,W_j^n)\) and \(V_n=U_n+S_n\), with parameter grouping and compact-window suitable bounds
+& \nolinkurl{paper3:thm:terminal-decoupling}; \nolinkurl{paper6a:thm:critical-ns-profile-decomposition-discharged}; \nolinkurl{paper8:thm:terminal-nonlinear-decoupling}
+& every \(Q_{2R,I}\to Q_{R,I}\)
+& local \(L^\infty_I L^3\cap L^\infty_I L^2\cap L^2_IH^1\); residual measures and occu\-pation coordinates when componentwise time compactness is absent
+& \(P_n-(P_n)_{B_{2R}}(\tau)\in L^{3/2}(Q_{2R,I})\)
+& active mass floor of each retained ancestor
+& critical-mass loss, parameter-tail/exterior, hidden-profile, diffuse-tail, or profile-completeness row: \nolinkurl{paper6a:thm:terminal-adjacent-label-routing}
+& admissible-branch input
+\\ \hline
+
+Terminal ancestry and grouping
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper6a:lem:retained-frame-maximality}; \nolinkurl{paper8:def:terminal-active-frame}; \nolinkurl{paper6a:thm:terminal-coordinate-frame-construction-profile-selection}
+& for every descendant: physical concentration point, scale-center parameters, comparable compound ancestor, retained component \(U_n\), and residual \(S_n\)
+& \nolinkurl{paper8:thm:terminal-windowed-profile-completeness}; \nolinkurl{paper8:lem:terminal-velocity-decoupling}
+& fixed compact terminal frame and its buffered working cylinder
+& convergence or escape of relative scale-center parameters; local state-space topology
+& pressure representative inherited from the terminal pressure atlas
+& ancestry of every retained active mass carrier
+& comparable descendants are absorbed; separated, cascade, exterior, or unclassified residuals enter \nolinkurl{paper6a:thm:local-residual-exhaustion}
+& proved here
+\\ \hline
+
+Terminal residual completeness
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{paper6a:thm:local-residual-exhaustion}; \nolinkurl{paper6a:thm:critical-ns-profile-decomposition-discharged}
+& either a visible residual receives a named first row or belongs to the retained comparable class; on the retained branch \(S_n\to0\) in \(L^\infty(I;L^3(B_R))\), with vanishing stress, pressure, and residual errors in the terminal topology
+& \nolinkurl{paper8:thm:terminal-windowed-profile-completeness}; \nolinkurl{paper8:thm:terminal-nonlinear-decoupling}; \nolinkurl{paper6a:thm:terminal-critical-local-compactness}
+& \(Q_{2R,I}\to Q_{R,I}\)
+& \(S_n\to0\) in local \(L^\infty_I L^3\); stress in \(L^1_I L^2\); pressure gradient and equation error in \(L^1_IH^{-1}\)
+& cross pressure modulo spatial means; harmonic failure routed separately
+& nonzero residual or retained descendant ancestry
+& named adjacent row, diffuse tail, exterior row, or retained comparable grouping: \nolinkurl{paper6a:thm:terminal-adjacent-label-routing}; \nolinkurl{paper9:lem:diffuse-critical-tail-row-closed}
+& proved here
+\\
+\end{longtable}
+\endgroup
+\end{landscape}
+
+\begin{proposition}[Imported-output discharge and failure routing]
+\label{paper0:prop:imported-output-discharge}
+Every use of a branch contract in
+\cref{tab:imported-output-provenance} has one of the following two forms:
+either the contract is produced by the cited proved-here row, or its first
+failure is assigned to the named output in the same ledger row.  In
+particular, the raw AC chart, the AC repaired-gauge path, and the admissible
+terminal decomposition are not asserted to exist by their definitions.
+No final unconditional theorem uses any of those three contracts without the
+corresponding first-failure alternative.
+\end{proposition}
+
+\begin{proof}
+For concentration entry,
+\cref{paper1:thm:paper0-dichotomy,paper6a:lem:typeII-concentration-extraction-routes}
+produce the physical CKN sequence and the exclusive Type I/Type II split.  On
+the retained active subbranch,
+\cref{paper8:thm:active-profile-mass-floor,paper6:lem:pressure-only-critical-mass-routing}
+either produce a velocity carrier, whose inverse parabolic rescaling is the
+stated positive \(C\)-floor, or assign the signal to the regular,
+pressure/exterior, or loss-of-active-core row.
+
+The raw chart and gauge-path rows are definitions of the positive
+representation contract.  Once they hold, the distributional equations,
+pressure pullback, final chart, and modulation coefficients follow from
+\cref{paper6a:lem:initial-renormalized-equation,paper6a:lem:repaired-physical-chart,paper6a:lem:repaired-modulation-coefficients,paper6a:thm:canonical-repaired-gauge-equation,paper6a:lem:pressure-reconstruction-under-charts}.
+If either contract is absent, the first failure is exactly one of
+\cref{def:c2r-minimal-failures};
+\cref{cor:c2r-ordered-classification} retains that failure as the chart or
+gauge alternative instead of invoking the representation conclusion.
+Corrected Jacobian transversality on the retained strong chart is proved by
+\cref{paper2:prop:full-jacobian,paper2:thm:quant-jac}; failure of that test is
+routed by
+\cref{paper2:lem:strong-gauge-chart-entry-test,paper3:lem:scale-rigid-degenerate-jacobian}.
+
+The pressure interface is analytic rather than definitional:
+\cref{paper2:thm:pressure-decomp} constructs the localized
+Calder\'on--Zygmund part and the mean-zero harmonic remainder, while
+\cref{paper1:lem:pressure-stability} states exactly the strong topology
+available for the localized part.  A nonvanishing harmonic remainder or an
+unavailable reconstruction is assigned by
+\cref{paper8:lem:harmonic-cross-pressure-routing,paper6:lem:pressure-only-critical-mass-routing}
+to the pressure/exterior or pressure-reconstruction row.
+
+Finally, the initial terminal splitting and its pointwise critical bounds are
+the admissible-family contract of
+\cref{paper3:def:admissible-terminal,paper6a:def:critical-ns-profile-decomposition-local}.
+The ancestry and grouping rules are proved in
+\cref{paper6a:lem:retained-frame-maximality,paper6a:thm:terminal-coordinate-frame-construction-profile-selection}.
+The residual is then either visible in the augmented local coordinates and
+routed by \cref{paper6a:thm:local-residual-exhaustion}, or it converges to zero
+by \cref{paper6a:thm:critical-ns-profile-decomposition-discharged}.  Thus the
+terminal completeness conclusion is proved here and is not part of the input
+contract.
+
+At the assembly level, the preceding first failures enter covered local
+state-space rows by
+\cref{paper6:cor:covered-class-entry-discharged,paper6a:cor:expanded-terminal-wrapper-discharged}.
+Their remaining closures are supplied by
+\cref{paper6:cor:remaining-named-exits-closed} before
+\cref{paper6:thm:unconditional-no-typeII-discharged} is invoked.  Hence the
+unconditional conclusion does not depend on an interface marked only as an
+admissible-branch input.
+\end{proof}
+
 \clearpage
 
 \section{Local Single-Core Criterion}\label{sec:single-core-criterion}
@@ -246,13 +532,11 @@ Fix radii \(0<r_*<R_*\), constants \(M<\infty\), \(\eta_0>0\), and a sequence
 of represented local rescalings \((V_n,P_n,a_n,b_n)\) on \(Q_{R_*}\).  The
 sequence is a compact single-core vanishing-dissipation branch if:
 \begin{enumerate}[label=\textup{(\roman*)}]
-\item each \((V_n,P_n)\) is suitable on \(Q_{R_*}\) and solves the represented
-      Navier--Stokes equation
-      \begin{equation}\label{paper1:eq:represented-ns}
-      \partial_s V_n+(V_n\cdot\nabla)V_n+\nabla P_n
-      =\nu\Delta V_n+a_n(s)(V_n+y\cdot\nabla V_n)+b_n(s)\cdot\nabla V_n,
-      \qquad \nabla\cdot V_n=0;
-      \end{equation}
+\item each \((V_n,P_n)\) is suitable on \(Q_{R_*}\) and solves the canonical
+      represented Navier--Stokes equation
+      \eqref{paper6a:eq:canonical-repaired-gauge-equation}, with
+      \((\tau,Y,V,P,a,b)\) renamed as
+      \((s,y,V_n,P_n,a_n,b_n)\);
 \item the compact-cylinder suitable estimates are uniformly bounded:
       \[
       A_{V_n}(R_*)+E_{V_n}(R_*)+C_{V_n}(R_*)+D_{P_n}(R_*)\le M;
@@ -266,7 +550,7 @@ sequence is a compact single-core vanishing-dissipation branch if:
       row; it is routed to the harmonic/exterior-pressure alternative.
 \item the localized scale and center are nondegenerate for the selected core,
       so the representation theorem gives the variables in
-      \eqref{paper1:eq:represented-ns};
+      \eqref{paper6a:eq:canonical-repaired-gauge-equation};
 \item the modulation coefficients are uniformly bounded on the selected cylinder:
       \[
       \|a_n\|_{L^\infty(-R_*^2,0)}+\|b_n\|_{L^\infty(-R_*^2,0)}\le M;
@@ -362,7 +646,8 @@ bounded-window physical routing theorem.
 \begin{proposition}[Local representation input]\label{paper1:prop:representation-input}
 For a nondegenerate selected single core, the local scale-translation
 construction gives represented variables \((V_n,P_n,a_n,b_n)\) satisfying
-\eqref{paper1:eq:represented-ns} on compact cylinders.  Failure of the localized
+\eqref{paper6a:eq:canonical-repaired-gauge-equation} on compact cylinders.
+Failure of the localized
 nondegeneracy condition is a multibubble, cascade, or gauge-degenerate
 alternative, not a compact single-core branch.
 \end{proposition}
@@ -406,59 +691,6 @@ precisely the multibubble, cascade, and gauge-degenerate rows, so the failure
 cannot be part of the compact single-core branch.
 \end{proof}
 
-\begin{proposition}[Local pressure decomposition]
-\label{paper1:prop:pressure-reconstruction}
-For every \(B_r\Subset B_R\), the represented pressure decomposes as
-\[
-  P_n=P_{{\rm loc},n}+H_n,
-  \qquad
-  -\Delta P_{{\rm loc},n}=\partial_i\partial_j(\zeta V_{n,i}V_{n,j}),
-\]
-where \(\zeta\in C_c^\infty(B_R)\) equals one on \(B_r\), and \(H_n\) is
-harmonic in \(B_r\).  The local part satisfies the Calder\'on--Zygmund bound
-\cite{CalderonZygmund1952,Stein1970}
-\[
-  \|P_{{\rm loc},n}\|_{L^{3/2}(B_R)}
-  \le C\|V_n\|_{L^3(B_R)}^2
-\]
-for a.e. time. The harmonic part is controlled only by the local pressure norm,
-modulo spatial means; no vanishing of the harmonic part follows from
-\(V_n\to0\) without an additional pressure-row hypothesis.
-\end{proposition}
-\begin{proof}
-Fix a time for which \(V_n(\cdot,s)\in L^3(B_R)\) and
-\(P_n(\cdot,s)\in L^{3/2}(B_R)\).  Let
-\[
-  P_{{\rm loc},n}
-  =
-  (-\Delta)^{-1}\partial_i\partial_j(\zeta V_{n,i}V_{n,j})
-\]
-in \(\mathbb R^3\), with the Newtonian potential normalized modulo constants.
-Since \(\zeta V_{n,i}V_{n,j}\in L^{3/2}(\mathbb R^3)\), the Calderon--Zygmund
-inequality gives
-\[
-  \|P_{{\rm loc},n}\|_{L^{3/2}(\mathbb R^3)}
-  \le C\|V_n\|_{L^3(B_R)}^2,
-\]
-and hence the stated bound on \(B_R\).
-\par
-Taking the divergence of the represented equation and using
-\(\nabla\cdot V_n=0\) gives
-\[
-  -\Delta P_n=\partial_i\partial_j(V_{n,i}V_{n,j})
-\]
-in distributions, modulo functions of time.  Since \(\zeta\equiv1\) on \(B_r\),
-\[
-  -\Delta(P_n-P_{{\rm loc},n})=0
-  \qquad\text{in }B_r .
-\]
-Thus \(H_n:=P_n-P_{{\rm loc},n}\) is harmonic in \(B_r\).  The pressure is only
-defined up to functions of time, so this decomposition is understood with the
-same spatial-mean normalization used in the CKN pressure quantity.  The harmonic
-term is therefore controlled through the local pressure oscillation, not through
-the velocity alone.
-\end{proof}
-
 \begin{lemma}[Localization of pressure oscillation bounds]\label{paper1:lem:D-localization}
 Let \(0<r<R\), and let \(q\in L^{3/2}(Q_R)\).  Then
 \[
@@ -498,7 +730,8 @@ Integrating over \((-r^2,0)\) and using \(Q_r\subset Q_R\),
 \subsection{Compactness and localized pressure compactness}
 
 \begin{proposition}[Compactness on selected windows]\label{paper1:prop:compactness}
-Let \((V_n,P_n)\) be suitable on \(Q_{R_*}\), solve \eqref{paper1:eq:represented-ns}, and satisfy
+Let \((V_n,P_n)\) be suitable on \(Q_{R_*}\), solve
+\eqref{paper6a:eq:canonical-repaired-gauge-equation}, and satisfy
 \[
   A_{V_n}(R_*)+E_{V_n}(R_*)+C_{V_n}(R_*)+D_{P_n}(R_*)\le M,
 \]
@@ -541,7 +774,8 @@ We claim that \(\partial_sV_n\) is uniformly bounded in
 \[
   L^1(-r_1^2,0;H^{-m}(B_{r_1})).
 \]
-Let \(\varphi\in H^m_0(B_{r_1})\).  Pairing \eqref{paper1:eq:represented-ns} with
+Let \(\varphi\in H^m_0(B_{r_1})\).  Pairing
+\eqref{paper6a:eq:canonical-repaired-gauge-equation} with
 \(\varphi\), integrating by parts in space where needed, and using the
 embedding above gives
 \[
@@ -698,14 +932,15 @@ in the sense of distributions.
 The uniform \(L^\infty\) bounds on \(a_n\) and \(b_n\) enter the compactness
 argument in exactly two places.  First, they give the negative Sobolev
 time-derivative bound for the three lower-order modulation terms in
-\eqref{paper1:eq:represented-ns}.  Second, after subsequential weak-* convergence of
+\eqref{paper6a:eq:canonical-repaired-gauge-equation}.  Second, after
+subsequential weak-* convergence of
 \(a_n,b_n\), they allow the modulation terms to pass to the distributional
 limit once \(V_n\to V\) strongly in \(L^2_{\rm loc}\).
 \end{remark}
 
 \begin{lemma}[Stability of the localized pressure part]\label{paper1:lem:pressure-stability}
 Let \(V_n\to V\) strongly in \(L^3(Q_R)\), and use the pressure decomposition
-of \cref{paper1:prop:pressure-reconstruction}.  Then for every \(r<R\),
+of \cref{paper2:thm:pressure-decomp}.  Then for every \(r<R\),
 \[
   P_{{\rm loc},n}\to P_{\rm loc}
   \quad\text{strongly in }L^{3/2}(Q_r),
@@ -860,7 +1095,7 @@ selected-window branch.  Physical local Type II germs are then routed by
 
 \begin{theorem}[Local single-core Type II criterion]\label{paper1:thm:single-core-criterion}
 Under the analytic inputs
-\cref{paper1:prop:paper0-typeII-reduction,paper1:prop:representation-input,paper1:prop:pressure-reconstruction},
+\cref{paper1:prop:paper0-typeII-reduction,paper1:prop:representation-input,paper2:thm:pressure-decomp},
 a compact single-core vanishing-dissipation branch in the sense of
 \cref{paper1:def:single-core-branch} cannot be a local Type II sequence.
 \end{theorem}
@@ -1107,133 +1342,23 @@ Hence \(u(x,t)=\Lambda_{\rm pre}(\tau)^{-1}V_{\rm pre}(Y,\tau)\) and
 \(p(x,t)=\Lambda_{\rm pre}(\tau)^{-2}P_{\rm pre}(Y,\tau)\) under \(\Phi_{\rm pre}\).
 \end{definition}
 
-\subsection{Exact renormalized change of variables}\label{paper2:sec:change}
+\subsection{Canonical renormalized change of variables}\label{paper2:sec:change}
 
-Define renormalized fields on \(Q_{2R}^*\) by
+The preliminary-frame and gauge-solvability arguments below use the canonical
+notation of \cref{def:canonical-chart-notation}.  The exact chain rule and the
+represented Navier--Stokes equation are proved only once, in
+\cref{paper6a:lem:canonical-final-change-identities,paper6a:thm:canonical-repaired-gauge-equation}.
+All later local energy, pressure, compactness, cost, and carrier arguments use
+that same final equation.  The role of the present section is therefore only
+to construct the repaired path and verify that it enters the hypotheses of the
+canonical absolutely continuous chart theorem.
+For the repaired path constructed below we write
 \[
-Y=\frac{x-X(\tau)}{\Lambda(\tau)},\qquad
-u(x,t)=\Lambda(\tau)^{-1}V(Y,\tau),\qquad
-p(x,t)=\Lambda(\tau)^{-2}P(Y,\tau),
+  \Phi(\tau,Y):=(X(\tau)+\Lambda(\tau)Y,t(\tau)),
+  \qquad \frac{dt}{d\tau}=\Lambda(\tau)^2,
 \]
-where \(dt/d\tau=\Lambda(\tau)^2\), \(X:\,I_*\to\RR^3\), \(\Lambda:\,I_*\to(0,\infty)\),
-and \(\Lambda,X\in AC(I_*)\).
-Write
-\[
-a(\tau):=\frac{\Lambda'(\tau)}{\Lambda(\tau)},\qquad
-b(\tau):=\frac{X'(\tau)}{\Lambda(\tau)}.
-\]
-
-\begin{lemma}[Exact differential identities]\label{paper2:lem:change-id}
-For smooth data and fixed \((x,t)\), the chain rule gives
-\[
-\partial_t u
-=\Lambda^{-3}\left(\partial_\tau V-(b+aY)\cdot\nabla_Y V-aV\right),
-\]
-\[
-\nn_x u=\Lambda^{-2}\nn_Y V,\qquad \Delta_x u=\Lambda^{-3}\Delta_Y V,\qquad
-\nn_x p=\Lambda^{-3}\nn_Y P.
-\]
-In particular
-\[
-\nn_x\cdot u=\Lambda^{-2}\nn_Y\cdot V.
-\]
-\end{lemma}
-\begin{proof}
-For fixed \((x,t)\), \(\tau=\tau(t)\) and \(Y=(x-X(\tau))/\Lambda(\tau)\).
-Differentiate
-\[
-u(x,t)=\Lambda(\tau)^{-1}V\bigl(Y,\tau\bigr)
-\]
-in \(t\):
-\[
-\partial_t u
-=-\frac{\Lambda'}{\Lambda^2}V
-+\frac1\Lambda\partial_\tau V\,\frac{d\tau}{dt}
-+\frac1\Lambda\nabla_YV\cdot\frac{dY}{dt}.
-\]
-Since \(d\tau/dt=\Lambda^{-2}\) and
-\[
-Y_\tau=-\Lambda^{-1}X'-\frac{\Lambda'}{\Lambda}Y,\qquad
-\frac{dY}{dt}=Y_\tau\,\frac{d\tau}{dt},
-\]
-therefore
-\[
-\partial_tu
-=\Lambda^{-3}\left(\partial_\tau V-
-\left(\frac{X'}{\Lambda}+\frac{\Lambda'}{\Lambda}Y\right)\cdot\nabla_YV
--\frac{\Lambda'}{\Lambda}V\right)
-=\Lambda^{-3}\left(\partial_\tau V-(b+aY)\cdot\nabla_YV-aV\right).
-\]
-For spatial derivatives, \(Y=(x-X)/\Lambda\) gives \(\nabla_xY=\Lambda^{-1}I\), hence
-\[
-\nabla_xu=\Lambda^{-2}\nabla_YV,\qquad
-\Delta_xu=\Lambda^{-3}\Delta_YV.
-\]
-Similarly \(p(x,t)=\Lambda^{-2}P(Y,\tau)\) yields
-\[
-\nabla_x p=\Lambda^{-3}\nabla_YP.
-\]
-Taking divergence of \(u=\Lambda^{-1}V\) gives
-\[
-\nabla_x\cdot u=\Lambda^{-2}\nabla_Y\cdot V.
-\]
-\end{proof}
-
-\begin{theorem}[Renormalized Navier--Stokes equation]\label{paper2:thm:ren-NS}
-Assume \(u,p\) solve
-\[
-\partial_t u+(u\cdot\nn_x)u+\nn_x p-\nu\Delta_xu=0,\qquad \nn_x\cdot u=0
-\]
-in distributions. Under the transformation above, \(V,P\) satisfy, on the image
-renormalized cylinder, the exact equation
-\[
-\partial_\tau V+(V\cdot\nn)V+\nn P
-=\nu\Delta V
-+a(\tau)\bigl(V+Y\cdot\nn V\bigr)+b(\tau)\cdot\nn V,\qquad \nn\cdot V=0,
-\]
-with the convention fixed by
-\[
-a=\frac{\Lambda'}{\Lambda},\qquad b=\frac{X'}{\Lambda}.
-\]
-Conversely, any \(V,P\) satisfying this equation pull back to a distributional
-solution \(u,p\) of Navier--Stokes on the physical image.
-\end{theorem}
-\begin{proof}
-To avoid hidden regularity loss, first write the physical equation tested against
-\(\Phi\in C_c^\infty\) in the physical cylinder and then use the smooth pull-back formula
-(an approximation argument gives distributions). By Lemma~\ref{paper2:lem:change-id},
-\[
-\partial_tu+\bigl(u\cdot\nabla_x\bigr)u+\nabla_xp-\nu\Delta_xu=0
-\]
-becomes
-\[
-\Lambda^{-3}\!\left(\partial_\tau V-(b+aY)\cdot\nabla V-aV\right)
-+\Lambda^{-3}(V\cdot\nabla)V
-+\Lambda^{-3}\nabla P
--\Lambda^{-3}\nu\Delta V=0.
-\]
-Multiplying by \(\Lambda^3\) gives
-\[
-\partial_\tau V+(V\cdot\nabla)V+\nabla P
-=
-\nu\Delta V
-+a\bigl(V+Y\cdot\nabla V\bigr)+b\cdot\nabla V.
-\]
-The divergence condition is
-\[
-\nabla_x\cdot u=\Lambda^{-2}\nabla\cdot V=0
-\quad\Longrightarrow\quad
-\nabla\cdot V=0.
-\]
-Conversely, assume \((V,P)\) solve this equation on the renormalized cylinder.
-Set \(u,p\) by the same change-of-variables map.
-Then the preceding identities run in reverse and give
- \[
-\partial_t u+(u\cdot\nabla_x)u+\nabla_xp-\nu\Delta_xu=0,\qquad
-\nabla_x\cdot u=0
-\]
-in \(\mathcal D'\) on the physical image.
-\end{proof}
+so all domain and support statements in this section refer to the same final
+chart.
 
 \subsection{Domain localization and support}\label{paper2:sec:domains}
 
@@ -1374,7 +1499,7 @@ R_{\rm ph}(\tau,R):=\Lambda_{\max}R+\Delta_X(\tau,R).
 
 \begin{proposition}[Cylinder comparison on compact windows]\label{paper2:prop:local-transfer}
 Assume \(\Lambda_{\min}\le \Lambda\le \Lambda_{\max}\) and formulas of
-Lemma~\ref{paper2:lem:change-id}.
+\Cref{paper6a:lem:canonical-final-change-identities}.
 Then for every \(\tau\in I_*\), \(R>0\),
 \[
 A_V(\tau,R)\le \Lambda_{\min}^{-1}A_u(J_\tau^{-}(R),R_{\rm ph}(\tau,R)),
@@ -1998,7 +2123,7 @@ representation theorem.
 \subsection{Pressure transport and decomposition}\label{paper2:sec:pressure}
 \begin{lemma}[Renormalized pressure equation]\label{paper2:lem:pressure-eq}
 If \(V,P\) satisfy the renormalized Navier--Stokes equation in
-Theorem~\ref{paper2:thm:ren-NS}, then
+\Cref{paper6a:thm:canonical-repaired-gauge-equation}, then
 \[
 -\Delta P=\partial_i\partial_j(V_iV_j)\qquad\text{in }\mathcal D'(Q_{2R}^*).
 \]
@@ -2025,29 +2150,39 @@ and \(\nn\cdot\Delta V=\Delta(\nn\cdot V)=0\), the following identity holds in \
 Hence \(-\Delta P=\partial_i\partial_j(V_iV_j)\) on \(Q_{2R}^*\).
 \end{proof}
 
-\begin{theorem}[Localized pressure decomposition]\label{paper2:thm:pressure-decomp}
-Let \(\zeta\in C_c^\infty(B_{2R})\), \(\zeta\equiv1\) on \(B_R\), and assume
-\(V\in L^1_{\mathrm{loc}}(I_*;L^3(B_{2R}))\), \(P\in L^1_{\mathrm{loc}}(I_*;L^{3/2}(B_{2R}))\).
+\begin{theorem}[Canonical localized pressure decomposition]
+\label{paper2:thm:pressure-decomp}
+Let \(0<r<R\), let \(\zeta\in C_c^\infty(B_R)\) satisfy
+\(\zeta\equiv1\) on \(B_r\), and assume
+\[
+  V\in L^2_{\mathrm{loc}}(I_*;L^3(B_R)),\qquad
+  P\in L^1_{\mathrm{loc}}(I_*;L^{3/2}(B_R)).
+\]
 For a.e. \(\tau\in I_*\) there exists
 \[
 P(\cdot,\tau)=P_{\rm loc}(\cdot,\tau)+H(\cdot,\tau)
 \]
-on \(B_R\) such that
+on \(B_r\) such that
 \[
 \begin{cases}
 -\Delta P_{\rm loc}(\cdot,\tau)=\partial_i\partial_j\bigl(\zeta V_iV_j\bigr),\\
--\Delta H(\cdot,\tau)=0\ \text{on }B_R,\quad
-\fint_{B_R}H(\cdot,\tau)\,dY=0.
+-\Delta H(\cdot,\tau)=0\ \text{on }B_r,\quad
+\fint_{B_r}H(\cdot,\tau)\,dY=0.
 \end{cases}
 \]
 Moreover
 \[
-\|P_{\rm loc}(\tau)\|_{L^{3/2}(B_R)}
-\lesssim \|V(\tau)\|_{L^3(B_{2R})}^2,\qquad
-\|H(\tau)\|_{L^q(B_r)}\lesssim_{q,R,r}
-\|P(\tau)\|_{L^{3/2}(B_{2R})}+\|V(\tau)\|_{L^3(B_{2R})}^2
+\|P_{\rm loc}(\tau)\|_{L^{3/2}(\mathbb R^3)}
+\lesssim \|V(\tau)\|_{L^3(B_R)}^2,
 \]
-for each \(1\le q<\infty\) and each \(0<r<R\), with constants depending only on \(R\), \(r\), and \(q\).
+and, for each \(1\le q<\infty\) and \(0<r'<r\),
+\[
+\|H(\tau)\|_{L^q(B_{r'})}\lesssim_{q,R,r,r'}
+\|P(\tau)\|_{L^{3/2}(B_R)}+\|V(\tau)\|_{L^3(B_R)}^2.
+\]
+Thus the source-generated pressure and the harmonic component are recorded
+separately; no convergence or vanishing of \(H\) follows from velocity
+convergence alone.
 \end{theorem}
 
 \begin{proof}
@@ -2056,38 +2191,52 @@ For fixed \(\tau\), set
 P_{\rm loc}= \mathcal R_i\mathcal R_j(\zeta V_iV_j),\qquad
 H:=P-P_{\rm loc}.
 \]
-\(\zeta V_iV_j\in L^{1}_{\mathrm{loc}}(I_*;L^{3/2}(B_{2R}))\), so the Calderón--Zygmund
+\(\zeta V_iV_j\in
+L^{1}_{\mathrm{loc}}(I_*;L^{3/2}(\mathbb R^3))\), so the Calderón--Zygmund
 operator \(f\mapsto \mathcal R_i\mathcal R_j f\) gives
 \[
 P_{\rm loc}(\cdot,\tau)=\mathcal R_i\mathcal R_j(\zeta V_iV_j)(\cdot,\tau),
 \qquad
-\|P_{\rm loc}(\tau)\|_{L^{3/2}(B_R)}
-\lesssim \|V(\tau)\|_{L^3(B_{2R})}^2.
+\|P_{\rm loc}(\tau)\|_{L^{3/2}(\mathbb R^3)}
+\lesssim \|V(\tau)\|_{L^3(B_R)}^2.
 \]
 Because \(\mathcal R_i\mathcal R_j\) is linear bounded on \(L^{3/2}\),
 \[
-P_{\rm loc}\in L^{1}_{\mathrm{loc}}(I_*;L^{3/2}(B_R)).
+P_{\rm loc}\in
+L^{1}_{\mathrm{loc}}(I_*;L^{3/2}(\mathbb R^3)).
 \]
-Since \(-\Delta P_{\rm loc}=\partial_i\partial_j(\zeta V_iV_j)\) and \(\zeta\equiv1\) on \(B_R\),
+Since \(-\Delta P_{\rm loc}=\partial_i\partial_j(\zeta V_iV_j)\) and
+\(\zeta\equiv1\) on \(B_r\),
  \[
 -\Delta H(\cdot,\tau)
-=\partial_i\partial_j\bigl((1-\zeta)V_iV_j\bigr)=0 \quad\text{in }B_R,
+\;=\partial_i\partial_j\bigl((1-\zeta)V_iV_j\bigr)=0
+\quad\text{in }B_r,
 \]
-so \(H(\cdot,\tau)\) is harmonic on \(B_R\). Imposing \(\fint_{B_R}H=0\) fixes the
+so \(H(\cdot,\tau)\) is harmonic on \(B_r\). Imposing
+\(\fint_{B_r}H=0\) fixes the
 time-dependent additive constant uniquely in each time slice.
-For \(q\in[1,\infty)\) and \(0<r<R\), harmonicity and local
+For \(q\in[1,\infty)\) and \(0<r'<r\), harmonicity and local
 \(L^p\)-to-\(L^q\) interior estimates imply
 \[
-\|H(\tau)\|_{L^q(B_r)}\lesssim_{q,R,r}\|H(\tau)\|_{L^{3/2}(B_R)}.
+\|H(\tau)\|_{L^q(B_{r'})}
+\lesssim_{q,r,r'}\|H(\tau)\|_{L^{3/2}(B_r)}.
 \]
-Finally, \(\|H(\tau)\|_{L^{3/2}(B_R)}\le \|P(\tau)\|_{L^{3/2}(B_R)}+\|P_{\rm loc}(\tau)\|_{L^{3/2}(B_R)}\),
-giving the announced bound in terms of \(P\) and \(V\).
+Finally,
+\[
+  \|H(\tau)\|_{L^{3/2}(B_r)}
+  \le \|P(\tau)\|_{L^{3/2}(B_R)}
+     +\|P_{\rm loc}(\tau)\|_{L^{3/2}(\mathbb R^3)},
+\]
+which gives the announced bound.
 \end{proof}
 \begin{remark}[Measurability and normalization]\label{paper2:rem:pressure-time}
-If \(V,P\) are measurable in \(\tau\), then \(\tau\mapsto P_{\rm loc}(\cdot,\tau)\)
-is measurable in \(L^{3/2}(B_R)\) by boundedness of \(\mathcal R_i\mathcal R_j\), hence
-\(\tau\mapsto H(\cdot,\tau)\) is measurable in each \(L^q(B_r)\), \(0<r<R\).
-The normalization \(\fint_{B_R}H(\cdot,\tau)\,dY=0\) fixes the time-dependent additive constant
+If \(V,P\) are measurable in \(\tau\), then
+\(\tau\mapsto P_{\rm loc}(\cdot,\tau)\) is measurable in
+\(L^{3/2}(\mathbb R^3)\) by boundedness of
+\(\mathcal R_i\mathcal R_j\), hence
+\(\tau\mapsto H(\cdot,\tau)\) is measurable in each \(L^q(B_{r'})\),
+\(0<r'<r\).  The normalization
+\(\fint_{B_r}H(\cdot,\tau)\,dY=0\) fixes the time-dependent additive constant
 in \(H\) uniquely for each \(\tau\), and therefore the decomposition is a legitimate
 renormalized pressure splitting.
 \end{remark}
@@ -2435,7 +2584,8 @@ V^{(n_j)}\rightharpoonup V\ \text{in }L^2_{\rm loc}(I_*;H^1_{\rm loc}).
 By Calderón--Zygmund and Theorem~\ref{paper2:thm:pressure-decomp}, \(P^{(n_j)}\rightharpoonup P\) in
 \(L^{3/2}_{\rm loc}(Q_R^*)\), and with normalized pressure split \(P=P_{\rm loc}+H\),
 the same for \(P_{\rm loc}\) and \(H\). Passing to limits in
-\(\mathcal F(1,0;V^{(n)}(\tau))=0\), Theorem~\ref{paper2:thm:ren-NS}, and the linear modulation system
+\(\mathcal F(1,0;V^{(n)}(\tau))=0\),
+\cref{paper6a:thm:canonical-repaired-gauge-equation}, and the linear modulation system
 yields the corresponding limit constraints and equations.
 
 \end{proof}
@@ -2491,7 +2641,8 @@ selection is quantitatively nondegenerate in the sense of
 Proposition~\ref{paper2:thm:quant-jac} and satisfies the
 modulation-differentiability row of \cref{paper2:def:mod-diff-row}.
 Then \((V,P)\) satisfies the renormalized Navier--Stokes
-equation with the logarithmic coefficient convention of Theorem~\ref{paper2:thm:ren-NS}; there is a
+equation with the logarithmic coefficient convention of
+\cref{paper6a:thm:canonical-repaired-gauge-equation}; there is a
 decomposition \(P=P_{\rm loc}+H\) on \(Q_R^*\) as in
 Theorem~\ref{paper2:thm:pressure-decomp}; and \((a,b)\) is the unique solution of
 \[
@@ -2503,7 +2654,8 @@ with bounds \(|(a,b)|\le K|\mathcal R|\), where \(K\) depends on
 \end{theorem}
 
 \begin{proof}
-Equation and coefficient convention are inherited directly from Theorem~\ref{paper2:thm:ren-NS} applied to
+Equation and coefficient convention are inherited directly from
+\cref{paper6a:thm:canonical-repaired-gauge-equation} applied to
 \((\Lambda,X)\) from Theorem~\ref{paper2:thm:A} and the definition of \(V\).
 By Theorem~\ref{paper2:thm:pressure-decomp} applied at each time slice, the decomposition on \(Q_R^J\)
 is defined and unique once \(\fint_{B_R}H=0\) is imposed.
@@ -2540,7 +2692,8 @@ the branch is assigned to the representation alternative as in
 
 \begin{proof}
 From Theorem~\ref{paper2:thm:A} and the choice of \(J\subset I_*\), all quantities are defined on \(Q_{2R}^J\).
-Items (1) and (2) are Theorems~\ref{paper2:thm:ren-NS} and~\ref{paper2:thm:repaired-existence};
+Items (1) and (2) are
+\cref{paper6a:thm:canonical-repaired-gauge-equation,paper2:thm:repaired-existence};
 item (3) is Theorem~\ref{paper2:thm:mod-sys} together with the inverse bound from
 Proposition~\ref{paper2:thm:quant-jac}; item (4) is Theorem~\ref{paper2:thm:pressure-decomp};
 item (5) is Proposition~\ref{paper2:prop:ren-suitable}; item (6) is
@@ -2573,11 +2726,17 @@ compact single-core finite-cost Type II branch with positive local CKN
 concentration, nondegenerate scale-center selection, pressure reconstruction,
 bounded compact-cylinder suitable estimates, bounded modulation, and vanishing
 localized dissipation is excluded.
-\item From \cref{sec:repaired-gauge-construction}, the renormalized equation \cref{paper2:thm:ren-NS}, pressure decomposition \cref{paper2:thm:pressure-decomp}, modulation system \cref{paper2:thm:mod-sys}, and repaired-gauge representation \cref{paper2:thm:A,paper2:thm:B,paper2:thm:C}: the renormalized equation,
+\item From \cref{sec:repaired-gauge-construction}, the canonical renormalized
+equation \cref{paper6a:thm:canonical-repaired-gauge-equation}, pressure
+decomposition \cref{paper2:thm:pressure-decomp}, modulation system
+\cref{paper2:thm:mod-sys}, and repaired-gauge representation
+\cref{paper2:thm:A,paper2:thm:B,paper2:thm:C}: the renormalized equation,
 pressure decomposition modulo functions of time, bounded modulation
 coefficients, renormalized suitable structure, and stability of these structures
 under subsequences.
-\item From \cref{sec:rough-core-exclusion}, the compact-cylinder Caccioppoli estimate \cref{paper4:thm:caccioppoli} and rough-core exclusion \cref{paper4:cor:rough-core}.
+\item From \cref{sec:rough-core-exclusion}, the canonical compact-cylinder
+Caccioppoli estimate \cref{paper6a:thm:canonical-local-caccioppoli} and
+rough-core exclusion \cref{paper4:cor:rough-core}.
 \item From \cref{sec:scale-collapse-cost}, the collapse cost exclusion \cref{paper5:thm:collapse-core-floor,paper5:thm:cost-exclusion} and autonomous reduced-limit theorem \cref{paper5:thm:autonomous-limit} for scale-rigid or scale-collapsing branches.
 \end{enumerate}
 
@@ -4003,7 +4162,8 @@ After passing to a subsequence:
       weakly-\(*\) in \(L^\infty(-R_*^2,0)\), with
       \(\|a_*\|_\infty+\|b_*\|_\infty\le M\);
 \item the limit \((V_*,P_*,a_*,b_*)\) is a suitable weak solution of the
-      represented Navier--Stokes equation \eqref{paper1:eq:represented-ns} on
+      represented Navier--Stokes equation
+      \eqref{paper6a:eq:canonical-repaired-gauge-equation} on
       \(Q_\rho\), with \(V_*\in L^3(Q_\rho)\cap L^2_tH^1_x(Q_\rho)\).
 \end{enumerate}
 This lemma is only a compactness and stability statement.  It does not assert
@@ -4017,7 +4177,8 @@ in \(L^3(Q_\rho)\) (from \(C_{V_n}(R_*)\)), in \(L^2_t H^1_x(Q_\rho)\) (from
 \(A_{V_n}(R_*)+E_{V_n}(R_*)\)), and in \(L^\infty_t L^2_x(Q_\rho)\) (from
 \(A_{V_n}(R_*)\)).  Banach--Alaoglu yields the weak limits in
 \(L^3(Q_\rho)\) and \(L^2_t H^1_x(Q_\rho)\) along a subsequence.  The
-represented Navier--Stokes equation \eqref{paper1:eq:represented-ns} bounds
+represented Navier--Stokes equation
+\eqref{paper6a:eq:canonical-repaired-gauge-equation} bounds
 \(\partial_s V_n\) in \(L^{4/3}_t H^{-1}_x(Q_\rho)\) by Sobolev product
 estimates on the bounded cylinder, since each term on the right-hand side is
 controlled by \(A_{V_n}(R_*)\), \(E_{V_n}(R_*)\), \(C_{V_n}(R_*)\),
@@ -4102,7 +4263,8 @@ The identities
 a=\frac{\Lambda'}{\Lambda},\qquad b=\frac{X'}{\Lambda}
 \]
 are part of the exact repaired change of variables in
-\cref{paper2:lem:change-id,paper2:thm:A,paper2:thm:C}. Hence, for
+\cref{paper6a:lem:canonical-final-change-identities,paper2:thm:A,paper2:thm:C}.
+Hence, for
 \(|s-s_0|\le4r^2\),
 \[
   \left|\log\frac{\Lambda(s)}{\Lambda_0}\right|
@@ -5188,14 +5350,9 @@ state-space analysis.
 \begin{proposition}[Renormalized local energy inequality]\label{paper4:prop:renormalized-local-energy-inequality}
 Let $(V,P,a,b)$ be defined on a compact renormalized cylinder
 $Q_{2R,J}:=B_{2R}\times J$, where $J\subset\mathbb R$ is a bounded interval.
-Assume
-\begin{equation}\label{paper4:eq:renorm-ns}
-\partial_\tau V+(V\cdot\nabla)V+\nabla P-\nu\Delta V
-= a(\tau)V+a(\tau)(y\cdot\nabla V)+b(\tau)\cdot\nabla V,
-\qquad
-\nabla\cdot V=0,
-\end{equation}
-with $\nu>0$, $\nabla\cdot V=0$, and $a,b\in L^\infty(J)$. For every
+Assume the canonical represented equation
+\eqref{paper6a:eq:canonical-repaired-gauge-equation}, with \(Y\) denoted by
+\(y\), and assume $\nu>0$ and $a,b\in L^\infty(J)$. For every
 nonnegative $\phi\in C_c^\infty(Q_{2R,J})$ and every $\tau_1<\tau_2$ in $J$,
 \begin{equation}\label{paper4:eq:local-energy}
 \begin{aligned}
@@ -5234,12 +5391,13 @@ standard reformulation used in the theory of suitable weak solutions
 \cite{CaffarelliKohnNirenberg1982,Lin1998}.  The compact-window
 representation theorem \cref{paper2:thm:C} provides the cylinder
 \(Q_{2R,J}=B_{2R}\times J\) and the divergence-free renormalized equation
-\eqref{paper4:eq:renorm-ns}, while
+\eqref{paper6a:eq:canonical-repaired-gauge-equation}, while
 \cref{paper2:thm:pressure-decomp} supplies the localized pressure
 decomposition with the mean-normalized pressure on compact balls.  Identifying
 the modulation coefficients \(a=\tilde a\) and \(b=\tilde b\) of
 \cref{paper2:prop:ren-suitable} with those of
-\eqref{paper4:eq:renorm-ns} and grouping the renormalized error terms exactly
+\eqref{paper6a:eq:canonical-repaired-gauge-equation} and grouping the
+renormalized error terms exactly
 as in \eqref{paper4:eq:local-energy} yields the stated inequality.
 \end{proof}
 
@@ -5317,7 +5475,8 @@ integrating in time gives the last assertion.
 
 \subsection{Compact-cylinder Caccioppoli estimate}
 
-\begin{theorem}[Compact-cylinder Caccioppoli estimate]\label{paper4:thm:caccioppoli}
+\begin{lemma}[Buffered cutoff estimate from the local energy inequality]
+\label{paper4:lem:buffered-caccioppoli-cutoff}
 Let $R>0$, let $J\subset\mathbb R$ be a bounded open interval, and let
 $J'\Subset J$ be a compact subinterval. Assume
 \cref{paper4:prop:renormalized-local-energy-inequality} on $Q_{2R,J}$ and assume
@@ -5338,7 +5497,7 @@ such that
 \]
 The estimate is outer-to-inner: all right-hand quantities are measured on
 $B_{2R}\times J$, while the conclusion is on $B_R\times J'$.
-\end{theorem}
+\end{lemma}
 
 \begin{proof}
 \textbf{Step 1: localized cut-off and the two energy inequalities.}
@@ -5562,13 +5721,16 @@ $\mathcal C_J(2R)+\mathcal D_J(2R)<\infty$. Then
 \[
 \mathcal A_{J'}(R)+\mathcal H_{J'}(R)<\infty.
 \]
-More quantitatively, the bound is the one in \cref{paper4:thm:caccioppoli}. If an
+More quantitatively, the bound is the one in
+\cref{paper6a:thm:canonical-local-caccioppoli}. If an
 argument uses pressure means on a smaller ball, \cref{paper4:lem:pressure-means}
 converts those normalizations to the outer-ball normalization above.
 \end{corollary}
 
 \begin{proof}
-The estimate follows from \cref{paper4:thm:caccioppoli}. The comparison of pressure normalizations follows from
+The estimate follows from
+\cref{paper6a:thm:canonical-local-caccioppoli}. The comparison of pressure
+normalizations follows from
 \cref{paper4:lem:pressure-means}.
 \end{proof}
 
@@ -5594,7 +5756,8 @@ modulation hypotheses hold,
 \end{corollary}
 
 \begin{proof}
-The direct implication is the gradient part of \cref{paper4:thm:caccioppoli}. The
+The direct implication is the gradient part of
+\cref{paper6a:thm:canonical-local-caccioppoli}. The
 last assertion is its contrapositive with the same outer-to-inner geometry:
 finite outer $\mathcal C+\mathcal D$ on $Q_{2R,J}$ forces finite inner
 $\mathcal H$ on $Q_{R,J'}$.
@@ -5621,7 +5784,8 @@ $J'\Subset J$.
 using \cref{paper4:lem:pressure-means}.
 \item Failure of local windowed $H^1$ control on an inner compact cylinder
 forces failure of the compact-cylinder $\mathcal C+\mathcal D$ bounds on each
-larger enclosing cylinder to which \cref{paper4:thm:caccioppoli} applies.
+larger enclosing cylinder to which
+\cref{paper6a:thm:canonical-local-caccioppoli} applies.
 \end{enumerate}
 
 \clearpage
@@ -6135,7 +6299,8 @@ Let \((\tau_n)\) be a thick autonomous-window sequence and set
 \]
 Assume that the repaired-gauge representation of \cref{paper2:thm:C}, the
 localized pressure decomposition of \cref{paper2:thm:pressure-decomp}, and the
-compact-cylinder Caccioppoli estimate \cref{paper4:thm:caccioppoli} are
+canonical compact-cylinder Caccioppoli estimate
+\cref{paper6a:thm:canonical-local-caccioppoli} are
 available on the selected windows.  Assume also that the ordered local
 validation has not entered a local-energy, pressure-reconstruction, or
 rough-core failure row on these windows.  Then, after passing to a subsequence,
@@ -9380,6 +9545,103 @@ remaining ways in which this scale-component estimate can fail.
 
 \subsection{Navier--Stokes Cost-Divergence Exclusion}
 
+\begin{definition}[Cost phases and dependency rank]
+\label{paper7:def:cost-phase-order}
+The cost argument is divided into the following phases:
+\begin{enumerate}[label=\textup{(P\arabic*)},start=0]
+\item retained local equation, energy, pressure, modulation, cutoff, and buffer
+data;
+\item measurability and finite-window integrability of the localized cost;
+\item definition and elementary comparison of the canonical signed and
+nonnegative costs;
+\item fixed- and moving-cutoff local energy identities and their decomposition
+into the components \(J_1,\ldots,J_7\);
+\item finite-error selection or normalized occupation-state extraction for a
+nonsummable component;
+\item routing of the resulting carrier certificates to previously declared
+local states;
+\item contradiction between a divergent validated cost and the alternatives
+closed in the preceding phases;
+\item final validation of the completed chain.
+\end{enumerate}
+A proof-bearing cost statement has dependency rank \((k,r)\), where \(k\) is
+its cost phase and \(r\in\mathbb N\) orders statements within that phase.  It
+may use statements of smaller lexicographic rank only.  Definitions may be
+cited at the phase in which their data first become available.  In particular,
+no statement in phases \(0\)--\(5\) may use a cost-divergence contradiction or
+the final validation ledger.
+
+The assignments used below are summarized here.  Each row lists the principal
+labels; intermediate elementary lemmas inherit the phase of the row in which
+they occur.
+\begin{center}
+\small
+\begin{tabular}{p{0.29\textwidth}p{0.08\textwidth}p{0.25\textwidth}p{0.25\textwidth}}
+Statement & Phase & May use & Must not use \\
+\hline
+local state-data production & \(0\) & represented suitable equation & any cost or carrier conclusion \\
+\cref{paper7:lem:local-cost-well-posed,paper7:cor:compact-window-data-cost-well-posed}
+  & \(1\) & phase \(0\) & carrier routing or cost divergence \\
+\cref{paper7:lem:canonical-cost-compatibility,paper7:lem:comparable-cost-compatibility}
+  & \(2\) & phases \(0\)--\(1\) & carrier closure or divergence \\
+\cref{paper7:lem:suitable-energy-gives-carrier-subidentities}
+  & \(3\) & phases \(0\)--\(2\) & carrier routing or divergence \\
+normalized carrier extraction and finite-error selection
+  & \(4\) & phases \(0\)--\(3\) & final cost contradiction \\
+windowwise and ambient carrier routing
+  & \(5\) & phases \(0\)--\(4\) and earlier state closures & cost divergence \\
+\cref{paper7:thm:local-cost-to-exclusion,paper6a:thm:cost-divergence-exclusion-discharged}
+  & \(6\) & phases \(0\)--\(5\) & final assembly \\
+\cref{paper7:lem:no-unrecorded-cost-escape,paper7:prop:local-cost-exclusion-data-verification,paper6a:lem:cost-divergence-closure-order}
+  & \(7\) & phases \(0\)--\(6\) & itself \\
+\end{tabular}
+\end{center}
+\end{definition}
+
+\begin{definition}[Retained local cost state data]
+\label{paper7:def:retained-local-cost-state-data}
+Let \(I=[\alpha,\beta]\), let \(0<R_0<R_1<\infty\), and let
+\((V,P,a,b)\) be a repaired-gauge branch on \(B_{R_1}\times I\).  Its
+\emph{retained local cost state data} on the core \(B_{R_0}\times I\) consist
+of:
+\begin{enumerate}[label=\textup{(D\arabic*)}]
+\item the represented distributional Navier--Stokes equation and the suitable
+local energy inequality on the working cylinder \(B_{R_1}\times I\);
+\item
+\[
+ V\in L^\infty(I;L^2(B_{R_1}))\cap L^2(I;H^1(B_{R_1}));
+\]
+\item the pressure representative
+\[
+ P-(P)_{B_{R_1}}\in L^{3/2}(I\times B_{R_1}),
+ \qquad
+ (P)_{B_{R_1}}(\tau)=\frac1{|B_{R_1}|}\int_{B_{R_1}}P(y,\tau)\,dy;
+\]
+\item \(a,b\in L^1(I)\);
+\item a nonnegative spatial cutoff
+\(\phi_{R_0}\in C_c^\infty(B_{R_1})\), equal to one on \(B_{R_0}\), and,
+whenever a time-localized identity is used, a temporal cutoff supported
+strictly inside the working time interval and equal to one on the core time
+interval.
+\end{enumerate}
+These are phase \(0\) data.  Their definition contains no cost-divergence or
+carrier assertion.
+\end{definition}
+
+\begin{definition}[Pre-divergence validation rows]
+\label{paper7:def:predivergence-validation-rows}
+Before cost divergence is tested, a branch is checked in the following order:
+Type II analytic and exhaustion data; represented repaired-gauge and pressure
+data; compact single-core retention; finite local critical mass and critical
+tightness; local \(H^1\) control; the retained local cost state data of
+\cref{paper7:def:retained-local-cost-state-data}; cost well-posedness and
+comparison; the fixed or moving local energy identity; finite-error selection
+or normalized component extraction; and carrier routing.  The first failed row
+is recorded as its corresponding named local state.  This definition fixes the
+label order used in phases \(0\)--\(5\); it neither assumes nor proves cost
+divergence.
+\end{definition}
+
 \begin{definition}[Type II exclusion conclusion]\label{paper7:def:cost-exclusion-conclusion}
 For a renormalized Type II solution, the exclusion conclusion means that after
 the active supercritical scaling condition and the compact cost-divergence
@@ -9389,7 +9651,7 @@ only states that the solution satisfies the compact Type II cost-divergence
 criterion.
 \end{definition}
 
-\begin{definition}[Local cost-to-exclusion data]
+\begin{definition}[CostPhase 6: local cost-to-exclusion data]
 \label{paper7:def:local-cost-to-exclusion-data}
 Let \(\omega\) be a repaired-gauge Navier--Stokes Type II branch on a terminal
 renormalized tail \([\tau_0,\infty)\).  Local cost-to-exclusion data for the
@@ -9421,7 +9683,7 @@ validated by the compact criterion, provided that the same cost is controlled
 by the corrected localized energy inequality on the terminal tail.
 \end{definition}
 
-\begin{definition}[Energy-controlled validated cost]
+\begin{definition}[CostPhase 2: energy-controlled validated cost]
 \label{paper7:def:energy-controlled-validated-cost}
 Let \((V,P,a,b)\) be a repaired-gauge branch and let
 \[
@@ -9445,7 +9707,7 @@ needed for a corrected localized energy inequality controlling
 \(\tilde{\mathfrak D}_{R_0}\) to also control the validated cost.
 \end{definition}
 
-\begin{definition}[Local monotonicity carrier for a validated cost]
+\begin{definition}[CostPhase 5: local monotonicity carrier for a validated cost]
 \label{paper7:def:local-monotonicity-carrier}
 Let \(\omega\) be a repaired-gauge Navier--Stokes Type II branch on a terminal
 renormalized tail \([\tau_0,\infty)\), and let
@@ -9480,7 +9742,7 @@ cost, a moving-cutoff identity cost, or another localized cost with an explicit
 terminal comparison to the validated compact cost.
 \end{definition}
 
-\begin{lemma}[Monotonicity carrier gives local cost-to-exclusion data]
+\begin{lemma}[CostPhase 6: monotonicity carrier gives local cost-to-exclusion data]
 \label{paper7:lem:monotonicity-carrier-gives-cost-to-exclusion-data}
 Let \(\omega\) be a repaired-gauge Navier--Stokes Type II branch.  Assume that
 the validated compact cost \(\mathfrak C_{\rm II}^{NS}\) is nonnegative,
@@ -9523,7 +9785,7 @@ in distributions.  Thus
 The divergent-cost item is the validated compact cost-divergence conclusion.
 \end{proof}
 
-\begin{lemma}[Fixed-cutoff monotonicity gives local cost-to-exclusion data]
+\begin{lemma}[CostPhase 6: fixed-cutoff monotonicity gives local cost-to-exclusion data]
 \label{paper7:lem:fixed-monotonicity-gives-cost-to-exclusion-data}
 Let \(\omega\) be represented on a terminal tail by a repaired-gauge
 Navier--Stokes branch \((V,P,a,b)\).  Let \(\phi_{R_0}\) be the cutoff used in
@@ -9608,7 +9870,7 @@ The divergent-cost item is exactly the validated compact cost-divergence
 conclusion.  Hence all local cost-to-exclusion data hold.
 \end{proof}
 
-\begin{lemma}[Moving-cutoff monotonicity gives local cost-to-exclusion data]
+\begin{lemma}[CostPhase 6: moving-cutoff monotonicity gives local cost-to-exclusion data]
 \label{paper7:lem:moving-monotonicity-gives-cost-to-exclusion-data}
 Let \(\omega\) be represented on a terminal tail by a repaired-gauge
 Navier--Stokes branch \((V,P,a,b)\), and let
@@ -9686,7 +9948,7 @@ validated compact cost, with \(c_A=1/2\), \(C_A=C_m\), and
 claimed local cost-to-exclusion data.
 \end{proof}
 
-\begin{lemma}[Corrected monotonicity bounds the validated cost]
+\begin{lemma}[CostPhase 6: corrected monotonicity bounds the validated cost]
 \label{paper7:lem:corrected-monotonicity-bounds-cost}
 Let \(\omega\) carry local cost-to-exclusion data in the sense of
 \cref{paper7:def:local-cost-to-exclusion-data}, except do not assume the
@@ -9720,7 +9982,7 @@ The right-hand side is finite and independent of \(T\).  Letting
 the claim.
 \end{proof}
 
-\begin{theorem}[Local Navier--Stokes cost-to-exclusion theorem]
+\begin{theorem}[CostPhase 6: local Navier--Stokes cost-to-exclusion theorem]
 \label{paper7:thm:local-cost-to-exclusion}
 Let \(\omega\) be a renormalized Navier--Stokes Type II branch on a retained
 terminal compact stratum.  If \(\omega\) has active supercritical scaling, the
@@ -9751,7 +10013,7 @@ This contradicts the validated compact cost-divergence conclusion.  Hence the
 branch cannot remain in the Type II class under consideration.
 \end{proof}
 
-\begin{definition}[Pointwise cost-divergence exclusion data]\label{paper7:def:cost-exclusion-data}
+\begin{definition}[CostPhase 7: pointwise cost-divergence exclusion data]\label{paper7:def:cost-exclusion-data}
 For a renormalized Type II solution \(\omega\), the pointwise
 cost-divergence exclusion data are available when the following local analytic
 statements hold:
@@ -9787,7 +10049,7 @@ localized energy identities are stronger sufficient inputs through
 \end{enumerate}
 \end{definition}
 
-\begin{lemma}[Canonical cost compatibility]
+\begin{lemma}[CostPhase 2: canonical cost compatibility]
 \label{paper7:lem:canonical-cost-compatibility}
 Let \(\omega\) be represented on a terminal tail by a repaired-gauge
 Navier--Stokes branch \((V,P,a,b)\).  Assume that the localized identity cost
@@ -9808,7 +10070,7 @@ is a valid Type II scale-exclusion cost, the comparison holds with
 \[
   c_0=1,\qquad \tau_1=\tau_0,
 \]
-and the validated compact cost-divergence conclusion for \(\omega\) is the
+and any later compact cost-divergence assertion for \(\omega\) is exactly the
 identity-cost divergence statement
 \[
   \int_{\tau_0}^{\infty}
@@ -9843,7 +10105,7 @@ divergence of the active compact cost is precisely divergence of
 canonical case of \cref{lem:c4-identity-cost,thm:c4-cost-comparison}.
 \end{proof}
 
-\begin{lemma}[Comparable cost compatibility]
+\begin{lemma}[CostPhase 2: comparable cost compatibility]
 \label{paper7:lem:comparable-cost-compatibility}
 Let \(\omega\) be represented on a terminal tail by a repaired-gauge
 Navier--Stokes branch \((V,P,a,b)\).  Let
@@ -9889,7 +10151,7 @@ this terminal tail; this is a cost-comparison failure, not a new unlabelled
 Type II branch.
 \end{proof}
 
-\begin{lemma}[Local cost well-posedness]
+\begin{lemma}[CostPhase 1: local cost well-posedness]
 \label{paper7:lem:local-cost-well-posed}
 Let \((V,P,a,b)\) be a repaired-gauge branch on a finite renormalized interval
 \(I=[\alpha,\beta]\), and let \(\phi_{R_0}\in C_c^\infty(B_{R_0})\),
@@ -9956,7 +10218,7 @@ for a.e. \(\tau\in I\), reducing to the previous case.  Thus both summands are
 integrable on \(I\).
 \end{proof}
 
-\begin{lemma}[Local modulation integrability from absolutely continuous repaired gauges]
+\begin{lemma}[CostPhase 0: local modulation integrability from absolutely continuous repaired gauges]
 \label{paper7:lem:local-modulation-integrability}
 Let \(u,p\) be a Navier--Stokes solution on a terminal physical time interval,
 and let \((V,P)\) be its repaired-gauge renormalization on a terminal
@@ -9998,38 +10260,48 @@ missing input as a representation, repaired-gauge, or modulation-integrability
 failure.
 \end{proof}
 
-\begin{lemma}[Local state data give local \(L^2\) windows]
+\begin{proposition}[CostPhase 0: upstream production of compact-window state data]
 \label{paper7:lem:local-state-data-local-l2}
-Let \((V,P,a,b)\) be a repaired-gauge Type II branch on a terminal tail.
-Fix \(R_0<\infty\) and a unit terminal window \(I_n\).  Suppose the retained
-local suitable-energy data on the compact repaired-gauge cylinder supply
+Let
 \[
-  \operatorname*{ess\,sup}_{\tau\in I_n}
-  \|V(\tau)\|_{L^2(B_{R_0})}<\infty,
+ V_n(y,s)=V(y,\tau_n+s),\qquad
+ P_n(y,s)=P(y,\tau_n+s),\qquad s\in(0,T),
 \]
-Then
+be a selected repaired-gauge window satisfying the hypotheses of
+\cref{paper5:prop:selected-window-suitable-estimates}.  Assume also that the
+represented equation and suitable local energy inequality hold on the working
+selected cylinder.  Fix
+\(0<R_0<R_1<\infty\).  Then
 \[
-  \operatorname*{ess\,sup}_{\tau\in I_n}
-  \|V(\tau)\|_{L^2(B_{R_0})}
+\begin{aligned}
+&V_n\in L^\infty(0,T;L^2(B_{R_1}))
+       \cap L^2(0,T;H^1(B_{R_1})),\\
+&P_n-(P_n)_{B_{R_1}}\in L^{3/2}((0,T)\times B_{R_1}).
+\end{aligned}
 \]
-is finite.  Thus the local \(L^2\)-input required for the finite-window
-identity cost is available on every retained compact cylinder from local
-suitable-energy data alone.  Failure of local \(L^2\) control on the selected
-compact cylinder is recorded by the ordered local validation as a local-energy
-or rough-core exit.
-\end{lemma}
+If the selected chart and repaired-gauge path are absolutely continuous on
+this window, then \(a,b\in L^1(\tau_n,\tau_n+T)\).  Hence, after choosing the
+spatial and temporal buffers in
+\cref{paper7:def:retained-local-cost-state-data}, the selected window carries
+all phase \(0\) retained local cost state data.  No cost-validation, carrier,
+or cost-divergence statement is used.
+\end{proposition}
 
 \begin{proof}
-The displayed local \(L^\infty_\tau L^2_y(B_{R_0})\) bound is precisely the
-compact-cylinder local-energy component of the retained state data.  Hence the
-claimed finiteness is immediate.  If that local \(L^2\) control were absent,
-the ordered validation would stop at the local-energy or rough-core row before
-any compact cost is evaluated.  Therefore the compact-cost channel never uses
-the later compact-cost validation layer to manufacture the needed local \(L^2\)
-input; the input is already part of the retained local state data.
+\Cref{paper5:prop:selected-window-suitable-estimates}, applied with
+\(K=B_{R_1}\), gives the displayed velocity bounds and the mean-subtracted
+pressure bound.  Absolute continuity of the chart and repaired gauge gives
+\(a,b\in L^1\) by
+\cref{paper7:lem:local-modulation-integrability}.  The additional hypothesis
+supplies the represented equation and suitable local energy inequality.
+Finally choose
+\(\phi_{R_0}\in C_c^\infty(B_{R_1})\), equal to one on \(B_{R_0}\), and a
+temporal cutoff inside the selected working interval.  These are precisely
+items \textup{(D1)}--\textup{(D5)} of
+\cref{paper7:def:retained-local-cost-state-data}.
 \end{proof}
 
-\begin{corollary}[Compact-window data give cost well-posedness]
+\begin{corollary}[CostPhase 1: compact-window data give cost well-posedness]
 \label{paper7:cor:compact-window-data-cost-well-posed}
 Let \((V,P,a,b)\) be a repaired-gauge branch on a terminal tail.  Fix
 \(R_0<\infty\).  Suppose that, for every unit terminal window
@@ -10037,37 +10309,33 @@ Let \((V,P,a,b)\) be a repaired-gauge branch on a terminal tail.  Fix
   I_n=[\tau_0+n,\tau_0+n+1],
   \qquad n\in\mathbb N,
 \]
-the branch has local windowed \(H^1(B_{R_0})\) control and satisfies one of
-the local \(L^2\)-window hypotheses of
-\cref{paper7:lem:local-state-data-local-l2}.  Suppose also that the local
-modulation-integrability conclusion of
-\cref{paper7:lem:local-modulation-integrability} holds.  Then
+there is \(R_1>R_0\) for which the branch carries the retained local cost
+state data of \cref{paper7:def:retained-local-cost-state-data} on
+\(B_{R_0}\times I_n\).  Then
 \(\tilde{\mathfrak D}_{R_0}\) is a measurable nonnegative cost, integrable
-on each \(I_n\).  If the branch also has the identity cost or an explicitly
-comparable localized cost, then the compact Type II cost criterion can be
-evaluated on every retained terminal window.
+on each \(I_n\).  Thus the canonical identity cost is well posed on every
+retained terminal window; its selection or comparison with another cost is a
+separate phase \(2\) step.
 \par
-Failure of the conclusion is exactly one of the local failures in the
-hypotheses: compact-cylinder \(L^2\) control, windowed \(H^1\) control,
-modulation-integrability, or cost-comparison failure.
+Failure of the conclusion is exactly one of the phase \(0\) state-data
+failures.  Cost comparison is tested only after this conclusion has been
+established.
 \end{corollary}
 
 \begin{proof}
-\Cref{paper7:lem:local-state-data-local-l2} supplies the
-\(L^\infty(I_n;L^2(B_{R_0}))\) input on every unit window, and
-\cref{paper7:lem:local-modulation-integrability} supplies \(a\in L^1(I_n)\).
-The assumed windowed \(H^1(B_{R_0})\) control gives
+\Cref{paper7:def:retained-local-cost-state-data}\textup{(D2)} supplies
+\(L^\infty(I_n;L^2(B_{R_1}))\) and
 \[
-  V\in L^2(I_n;H^1(B_{R_0})).
+  V\in L^2(I_n;H^1(B_{R_1})),
 \]
-Thus the hypotheses of \cref{paper7:lem:local-cost-well-posed} hold on each
-\(I_n\).  The identity-cost case is then covered by
-\cref{paper7:lem:canonical-cost-compatibility}; the explicitly comparable case
-is covered by \cref{paper7:lem:comparable-cost-compatibility}.  Hence the
-criterion is locally meaningful on every retained terminal window.  Conversely,
-if the conclusion fails before criterion evaluation, at least one of the listed
-local inputs is absent; by the ordered stratification, that absence is recorded
-as the corresponding local alternative.
+while item \textup{(D4)} supplies \(a\in L^1(I_n)\).  Restriction from
+\(B_{R_1}\) to \(B_{R_0}\) gives the hypotheses of
+\cref{paper7:lem:local-cost-well-posed} on each
+\(I_n\), which proves the asserted phase \(1\) well-posedness.  Conversely, if
+the conclusion fails before cost selection, at least one phase \(0\)
+input is absent; by
+\cref{paper7:def:predivergence-validation-rows}, that absence is recorded as
+the corresponding local alternative before any cost divergence is tested.
 \end{proof}
 
 \begin{proposition}[Active scaling stability criterion]
@@ -10124,7 +10392,7 @@ scaling is stable through the listed operations exactly on the local stratum on
 which those operations are admissible.
 \end{proof}
 
-\begin{lemma}[No unrecorded exit from compact cost divergence]
+\begin{lemma}[CostPhase 7: final compact-cost validation ledger]
 \label{paper7:lem:no-unrecorded-cost-escape}
 Let \(\omega\) be an admissible local Type II branch with active supercritical
 scaling on a terminal tail.  Before declaring that a continuation lies in the
@@ -10164,6 +10432,8 @@ cost, or failure of compact cost divergence for the validated cost.
 Thus a renormalized continuation preserving active scaling and validated compact
 cost divergence cannot leave the compact cost-divergence regime without being
 recorded by the local compactness stratification.
+This is a final audit of phases \(0\)--\(6\).  It does not supply the local
+state data, define the cost, construct a carrier, or prove cost divergence.
 \end{lemma}
 
 \begin{proof}
@@ -10236,49 +10506,50 @@ regime.
 Therefore there is no unrecorded exit.
 \end{proof}
 
-\begin{theorem}[Carrier validation alternative on the retained compact stratum]
+\begin{theorem}[CostPhase 5: carrier validation alternative on the retained compact stratum]
 \label{paper7:thm:carrier-validation-retained-stratum}
 Let \(\omega\) be an admissible local Type II branch with active supercritical
-scaling.  Suppose that the ordered validation tests in
-\cref{paper7:lem:no-unrecorded-cost-escape} have reached the retained compact
-single-core branch, that cost well-posedness and cost compatibility have
-passed, and that the validated compact cost-divergence conclusion holds.  Then
+scaling.  Suppose that the pre-divergence rows of
+\cref{paper7:def:predivergence-validation-rows} have reached the retained
+compact single-core branch and that cost well-posedness and cost compatibility
+have passed.  Then
 exactly one of the following alternatives occurs:
 \begin{enumerate}[label=\textup{(\roman*)}]
 \item the validated compact cost admits local monotonicity-carrier data in the
 sense of \cref{paper7:def:local-monotonicity-carrier};
-\item the branch leaves the retained compact cost-divergence stratum through
+\item the branch leaves the retained compact pre-divergence channel through
 the first failed carrier-validation test: carrier-subidentity failure, finite
 fixed-cutoff error failure, summable moving-annulus error failure, or
 carrier-comparison failure for the validated cost.
 \end{enumerate}
-Consequently, on the retained compact cost-divergence stratum, where the
+Consequently, on the retained compact carrier channel, where the
 adjacent carrier-failure alternatives are not part of the stratum, the
 validated compact cost admits local monotonicity-carrier data.
+This alternative is independent of whether the selected cost later has finite
+or infinite tail integral.
 \end{theorem}
 
 \begin{proof}
 After the branch has passed the Type II analytic, representation,
 compactness, retained finite critical mass, critical-tightness, local windowed \(H^1\),
 modulation, cost well-posedness, and cost-compatibility tests, the next ordered
-test in \cref{paper7:lem:no-unrecorded-cost-escape} is precisely the
+test in \cref{paper7:def:predivergence-validation-rows} is precisely the
 local monotonicity-carrier test for the validated compact cost.  If this test
 passes, alternative \textup{(i)} holds.  If it fails, the first failed input is
-recorded as one of the named adjacent carrier failures listed in
-\cref{paper7:lem:no-unrecorded-cost-escape}: failure of the carrier
+recorded as one of the named adjacent carrier failures in that definition:
+failure of the carrier
 subidentity, failure of the fixed finite-error condition, failure of the moving
 finite-error condition through the summable moving-annulus test, or failure of
 the carrier comparison for the validated cost.  The ordered first-failure
 convention makes the two alternatives disjoint and exhaustive.
 \par
-By definition, the retained compact cost-divergence stratum keeps only the
+By definition, the retained compact carrier channel keeps only the
 branch for which all preceding compact tests and the carrier-validation test
-have passed before the validated compact cost-divergence conclusion is
-attached.  Therefore a branch that remains in this stratum cannot realize one
+have passed.  Therefore a branch that remains in this channel cannot realize one
 of the carrier-failure alternatives, and the local monotonicity carrier exists.
 \end{proof}
 
-\begin{proposition}[Local verification of the cost-exclusion data]
+\begin{proposition}[CostPhase 7: local verification of the cost-exclusion data]
 \label{paper7:prop:local-cost-exclusion-data-verification}
 On a retained terminal branch in the compact Type II cost-divergence stratum,
 the pointwise data of \cref{paper7:def:cost-exclusion-data} are local
@@ -10292,8 +10563,10 @@ exterior-tightness, scale-collapse, scale-rigid, critical-mass, or local
 \item admits a scale-admissible repaired-gauge representation on retained
 windows from absolutely continuous local scale-center and repaired-gauge data;
 \item has the retained finite critical-mass window, critical tightness at the
-retained scale, local windowed \(H^1\) control, active supercritical scaling,
-and the compact cost-divergence conclusion for the validated cost;
+retained scale, the retained local cost state data of
+\cref{paper7:def:retained-local-cost-state-data} on every cost window, active
+supercritical scaling, and the compact cost-divergence conclusion for the
+validated cost;
 \item uses either the canonical identity cost
 \(\tilde{\mathfrak D}_{R_0}\) or an explicitly comparable localized cost;
 \item remains in the retained compact cost-divergence stratum after the
@@ -10311,9 +10584,11 @@ exterior concentration are being assumed.
 \begin{proof}
 Class membership is the retained local Type II analytic-data alternative after
 the ordered exhaustion and representation tests have passed.
-The local inputs needed to evaluate the compact cost are available by
-\cref{paper7:lem:local-modulation-integrability,paper7:lem:local-state-data-local-l2}
-and \cref{paper7:cor:compact-window-data-cost-well-posed}.  Cost compatibility
+The phase \(0\) inputs needed to evaluate the compact cost are assumed in
+\cref{paper7:def:retained-local-cost-state-data}; their standard
+selected-window producer is
+\cref{paper7:lem:local-state-data-local-l2}.  Phase \(1\) well-posedness is
+\cref{paper7:cor:compact-window-data-cost-well-posed}.  Cost compatibility
 then follows from
 \cref{paper7:lem:canonical-cost-compatibility} in the identity-cost case and
 from \cref{paper7:lem:comparable-cost-compatibility} in the explicitly
@@ -10488,16 +10763,17 @@ verified on this retained stratum.  Applying
 \cref{paper7:thm:pointwise-cost-exclusion} gives the exclusion conclusion.
 \end{proof}
 
-\begin{definition}[Adjacent-stratum closure for the compact-cost regime]
+\begin{definition}[CostPhase 5: pre-divergence adjacent-stratum closure]
 \label{paper7:def:compact-cost-adjacent-closure}
 The compact-cost regime has adjacent-stratum closure if every named adjacent
 alternative produced by
-\cref{paper7:lem:no-unrecorded-cost-escape} for a branch with active
-supercritical scaling and validated compact Type II cost divergence has its own
+\cref{paper7:def:predivergence-validation-rows} for a branch with active
+supercritical scaling has its own
 stratum-local argument giving the same Type II exclusion conclusion, either
 directly or by placing the branch in a named non-compact-cost
 alternative whose closure theorem already gives the Type II exclusion
-conclusion.
+conclusion.  Neither the definition nor any phase \(5\) proof of this property
+may use divergence of the selected cost.
 \end{definition}
 
 \begin{corollary}[Uniform Navier--Stokes cost-divergence exclusion]
@@ -10561,12 +10837,12 @@ validated compact cost admits local monotonicity-carrier data, and then
 local cost-to-exclusion data.
 \end{proof}
 
-\begin{definition}[Pre-carrier validated compact-cost regime]
+\begin{definition}[CostPhase 2: pre-divergence carrier channel]
 \label{paper7:def:precarrier-validated-compact-channel}
-A renormalized Type II branch lies in the pre-carrier validated compact-cost
-regime if, on a terminal tail, it has active supercritical scaling and the
-validated compact Type II cost-divergence conclusion, and the ordered validation
-tests of \cref{paper7:lem:no-unrecorded-cost-escape} have passed through the
+A renormalized Type II branch lies in the pre-divergence carrier channel if,
+on a terminal tail, it has active supercritical scaling and the
+pre-divergence rows of
+\cref{paper7:def:predivergence-validation-rows} have passed through the
 following stages:
 \begin{enumerate}[label=\textup{(\roman*)}]
 \item the Type II analytic data and ordered exhaustion tests;
@@ -10578,22 +10854,22 @@ finite-cost scale-collapse, or scale-rigid residual alternative;
 \item the retained finite critical-mass window, namely the compact-window
 finite critical-mass input supplied by
 \cref{paper6a:lem:terminal-local-critical-mass-routing};
-\item critical tightness at the retained scale and local windowed \(H^1\)
-control;
-\item local modulation integrability, local cost well-posedness, and
-compatibility of the chosen compact Type II cost with the validated
-Navier--Stokes cost.
+\item critical tightness at the retained scale and the retained local cost
+state data of \cref{paper7:def:retained-local-cost-state-data} on each
+selected cost window;
+\item local cost well-posedness and compatibility of the chosen compact Type II
+cost with the Navier--Stokes identity cost.
 \end{enumerate}
-This regime deliberately stops immediately before local monotonicity-carrier
-validation.  Thus it contains all compact-cost interface data needed to ask for
-the fixed-cutoff or moving-cutoff carrier estimates, but it does not assert
-that those estimates have already been proved.
+This channel stops immediately before the local energy identity, finite-error,
+and carrier-routing phases.  It contains the interface data needed to construct
+the fixed- or moving-cutoff carrier, but it asserts neither carrier completion
+nor divergence of the selected cost.
 The finite critical-mass row is read locally in the final no-Type-II assembly:
 failure of compact-window lower or upper critical mass is routed by the local
 terminal critical-mass and exterior/state-space alternatives.
 \end{definition}
 
-\begin{definition}[Fixed and moving carrier subidentities]
+\begin{definition}[CostPhase 3: fixed and moving carrier subidentities]
 \label{paper7:def:carrier-subidentities}
 For the fixed cutoff \(\phi_{R_0}\), the fixed carrier subidentity is the
 distributional estimate
@@ -10619,7 +10895,7 @@ subidentity is the one-sided estimate needed for corrected monotonicity; an
 exact localized energy identity is sufficient but not necessary.
 \end{definition}
 
-\begin{lemma}[Suitable local energy gives carrier subidentities]
+\begin{lemma}[CostPhase 3: suitable local energy gives carrier subidentities]
 \label{paper7:lem:suitable-energy-gives-carrier-subidentities}
 Assume the repaired-gauge representation of a pre-carrier branch includes the
 local suitable energy inequality on compact renormalized cylinders.  Then the
@@ -10711,11 +10987,11 @@ the terminal tail: for some \(C_m<\infty\),
 \end{enumerate}
 \end{definition}
 
-\begin{theorem}[Non-carrier adjacent exits are identified before carrier validation]
+\begin{theorem}[CostPhase 5: non-carrier adjacent exits are identified before carrier validation]
 \label{paper7:thm:noncarrier-exits-route}
 Let \(\omega\) be an admissible local Type II branch with active supercritical
-scaling and validated compact Type II cost divergence.  Apply the ordered tests
-of \cref{paper7:lem:no-unrecorded-cost-escape}.  If a first failed test exists
+scaling.  Apply the pre-divergence rows of
+\cref{paper7:def:predivergence-validation-rows}.  If a first failed test exists
 and is not one of the carrier-validation failures
 \[
   \text{carrier subidentity},\quad
@@ -10745,14 +11021,14 @@ branch.
 \end{theorem}
 
 \begin{proof}
-The validation procedure in
-\cref{paper7:lem:no-unrecorded-cost-escape} is ordered.  The
+The procedure in
+\cref{paper7:def:predivergence-validation-rows} is ordered.  The
 pre-carrier regime is the set of branches for which all tests before
 local monotonicity-carrier validation have passed.  Therefore any first failure
 before the carrier-validation row prevents membership in
 \cref{paper7:def:precarrier-validated-compact-channel}.
 \par
-The same lemma lists every possible first failure before carrier validation:
+The same definition lists every possible first failure before carrier validation:
 the exhaustion failures are those of
 \cref{def:c1-exhaustion-failures}; representation and repaired-gauge failures
 are those of
@@ -10773,52 +11049,53 @@ the named stratum, then the branch is handled there.  It is therefore not a
 branch remaining to be treated by the retained compact-cost localized-energy argument.
 \end{proof}
 
-\begin{theorem}[Pre-carrier reduction to carrier validation]
+\begin{theorem}[CostPhase 5: pre-carrier reduction to carrier validation]
 \label{paper7:thm:precarrier-reduces-to-carrier}
 Let \(\omega\) be in the pre-carrier validated compact-cost regime.  Then
 exactly one of the following alternatives occurs:
 \begin{enumerate}[label=\textup{(\roman*)}]
 \item the validated compact cost admits local monotonicity-carrier data in the
 sense of \cref{paper7:def:local-monotonicity-carrier};
-\item the branch exits the retained compact cost-divergence stratum through the
+\item the branch exits the retained compact carrier channel through the
 first failed carrier-validation test: carrier-subidentity failure,
 fixed-cutoff finite-error failure, moving-annulus summability failure, or
 carrier-comparison failure for the validated cost.
 \end{enumerate}
-If the first alternative occurs, \(\omega\) is excluded by the retained
-compact-cost argument.
+The first alternative is a carrier certificate.  It yields exclusion only
+after a phase \(6\) cost-divergence statement for the same cost is supplied.
 \end{theorem}
 
 \begin{proof}
-By definition of the pre-carrier regime, every ordered validation test before
-carrier validation has passed, and the validated compact cost-divergence
-conclusion is already present.  Thus the next unresolved row in
-\cref{paper7:lem:no-unrecorded-cost-escape} is precisely the local
+By definition of the pre-carrier channel, every ordered test before carrier
+validation has passed.  Thus the next unresolved row in
+\cref{paper7:def:predivergence-validation-rows} is precisely the local
 monotonicity-carrier row.  Applying
 \cref{paper7:thm:carrier-validation-retained-stratum} gives the two
 alternatives listed in the statement, and the first-failure convention makes
 them disjoint.
 \par
-If the carrier exists, then
-\cref{paper7:lem:monotonicity-carrier-gives-cost-to-exclusion-data} gives the
-local cost-to-exclusion data, and
-\cref{paper7:thm:local-cost-to-exclusion} excludes the branch.  Equivalently,
-the same conclusion is
-\cref{paper7:cor:retained-stratum-cost-exclusion}.
+If the carrier exists, its data are retained for the later phase \(6\)
+implication.  No tail-divergence assertion has been used in the present phase.
 \end{proof}
 
-\begin{theorem}[Fixed-cutoff carrier closure]
+\begin{theorem}[CostPhase 6: fixed-cutoff carrier closure]
 \label{paper7:thm:fixed-carrier-closure}
 Let \(\omega\) be in the pre-carrier validated compact-cost regime.  If
 \(\omega\) satisfies the fixed-cutoff localized-energy closure criterion of
-\cref{paper7:def:fixed-carrier-closure-package}, then \(\omega\) is excluded
+\cref{paper7:def:fixed-carrier-closure-package} and
+\[
+  \int_{\tau_0}^{\infty}
+  \mathfrak C_{\rm II}^{NS}(\tau)\,d\tau=\infty,
+\]
+then \(\omega\) is excluded
 from the Type II class under consideration.
 \end{theorem}
 
 \begin{proof}
-The pre-carrier regime supplies active supercritical scaling, local
-well-posedness and compatibility of the validated compact cost, and the
-validated compact cost-divergence conclusion.  The fixed-cutoff localized-energy criterion
+The pre-carrier channel supplies active supercritical scaling and local
+well-posedness and compatibility of the validated compact cost.  Cost
+divergence is the additional phase \(6\) hypothesis of this theorem.  The
+fixed-cutoff localized-energy criterion
 supplies finite initial localized energy, the fixed carrier subidentity, finite
 fixed-cutoff error, and energy-control comparison of the validated cost with
 \(\tilde{\mathfrak D}_{R_0}\).  Let \(C_1,\tau_1\) be the constants in that
@@ -10845,24 +11122,30 @@ Together with the validated compact cost-divergence conclusion, these are the
 local cost-to-exclusion data with
 \(\mathcal D_\omega=\mathfrak C_{\rm II}^{NS}\).  Equivalently, the fixed
 criterion is a successful carrier-validation row.  Since all pre-carrier tests
-and the validated compact cost-divergence conclusion are already present,
+and the stated compact cost-divergence conclusion are present,
 \(\omega\) is on the retained compact cost-divergence stratum after carrier
 validation.  Applying \cref{paper7:thm:local-cost-to-exclusion} gives the Type
 II exclusion conclusion.
 \end{proof}
 
-\begin{theorem}[Moving-cutoff carrier closure]
+\begin{theorem}[CostPhase 6: moving-cutoff carrier closure]
 \label{paper7:thm:moving-carrier-closure}
 Let \(\omega\) be in the pre-carrier validated compact-cost regime.  If
 \(\omega\) satisfies the moving-cutoff localized-energy closure criterion of
-\cref{paper7:def:moving-carrier-closure-package}, then \(\omega\) is excluded
+\cref{paper7:def:moving-carrier-closure-package} and
+\[
+  \int_{\tau_0}^{\infty}
+  \mathfrak C_{\rm II}^{NS}(\tau)\,d\tau=\infty,
+\]
+then \(\omega\) is excluded
 from the Type II class under consideration.
 \end{theorem}
 
 \begin{proof}
-The pre-carrier regime supplies active supercritical scaling, local
-well-posedness and compatibility of the validated compact cost, and the
-validated compact cost-divergence conclusion.  The moving-cutoff carrier
+The pre-carrier channel supplies active supercritical scaling and local
+well-posedness and compatibility of the validated compact cost.  Cost
+divergence is the additional phase \(6\) hypothesis of this theorem.  The
+moving-cutoff carrier
 criterion supplies the finite initial moving localized energy, the
 moving carrier subidentity, summable moving-annulus errors, and
 the terminal comparison
@@ -10892,7 +11175,7 @@ Together with the validated compact cost-divergence conclusion, these are the
 local cost-to-exclusion data with
 \(\mathcal D_\omega=\mathfrak C_{\rm II}^{NS}\).  Equivalently, the moving
 criterion is a successful carrier-validation row.  Since all pre-carrier tests
-and the validated compact cost-divergence conclusion are already present,
+and the stated compact cost-divergence conclusion are present,
 \(\omega\) is on the retained compact cost-divergence stratum after carrier
 validation.  Applying \cref{paper7:thm:local-cost-to-exclusion} excludes the
 branch.
@@ -11167,15 +11450,14 @@ subidentity in the second.  These are exactly the two alternatives in
 \cref{paper7:def:finite-error-carrier-selection}.
 \end{proof}
 
-\begin{theorem}[Carrier completion reduced to finite-error selection]
+\begin{theorem}[CostPhase 5: carrier completion reduced to finite-error selection]
 \label{paper7:thm:carrier-completion-reduced-to-finite-error}
 Assume the pre-carrier validated compact-cost regime has finite-error carrier
 selection in the sense of
 \cref{paper7:def:finite-error-carrier-selection}.  Then every branch in the
 pre-carrier regime whose validated compact cost is energy-controlled by the
-fixed identity cost satisfies the fixed-cutoff or moving-cutoff carrier closure
-criterion.  Consequently that branch is excluded from the Type II class under
-consideration.
+fixed identity cost satisfies the fixed-cutoff or moving-cutoff carrier
+criterion.  No cost-divergence conclusion is used here.
 \end{theorem}
 
 \begin{proof}
@@ -11189,7 +11471,7 @@ If the fixed alternative in
 \cref{paper7:def:finite-error-carrier-selection} holds, then the fixed
 carrier subidentity and the finite \(B_{R_0}\)-tail are precisely the two
 remaining clauses of the fixed-cutoff localized-energy closure criterion.  Hence
-\cref{paper7:thm:fixed-carrier-closure} excludes the branch.
+the fixed-cutoff criterion holds.
 \par
 If the moving alternative holds, the summable moving-annulus condition gives
 \[
@@ -11202,18 +11484,24 @@ energy-control comparison give the moving carrier comparison by
 initial moving energy from
 \cref{paper7:lem:precarrier-finite-local-energy}, these are exactly the moving
 localized-energy closure criterion.  Therefore
-\cref{paper7:thm:moving-carrier-closure} excludes the branch.
+the moving-cutoff criterion holds.
 \par
 The two alternatives in finite-error carrier selection exhaust the branch, so
-the claimed fixed-or-moving carrier completion and exclusion follow.
+the claimed fixed-or-moving carrier completion follows.
 \end{proof}
 
-\begin{theorem}[Localized-energy criterion closes the pre-carrier regime]
+\begin{theorem}[CostPhase 6: localized-energy criterion closes the pre-carrier regime]
 \label{paper7:thm:carrier-package-closes-precarrier}
 Let \(\omega\) be in the pre-carrier validated compact-cost regime.  If
 \(\omega\) satisfies either the fixed-cutoff localized-energy closure criterion of
 \cref{paper7:def:fixed-carrier-closure-package} or the moving-cutoff
-localized-energy closure criterion of \cref{paper7:def:moving-carrier-closure-package}, then
+localized-energy closure criterion of
+\cref{paper7:def:moving-carrier-closure-package}, and if
+\[
+  \int_{\tau_0}^{\infty}
+  \mathfrak C_{\rm II}^{NS}(\tau)\,d\tau=\infty,
+\]
+then
 \(\omega\) is excluded from the Type II class under consideration.
 \end{theorem}
 
@@ -11274,7 +11562,7 @@ finite-error selection into finite-error carrier selection.  Then
 carrier-estimate completion.
 \end{proof}
 
-\begin{theorem}[Adjacent closure reduced to carrier-estimate completion]
+\begin{theorem}[CostPhase 5: adjacent closure reduced to carrier-estimate completion]
 \label{paper7:thm:adjacent-closure-reduced-to-carrier-completion}
 Assume the non-carrier adjacent strata listed in
 \cref{paper7:thm:noncarrier-exits-route} are closed by their corresponding
@@ -11286,14 +11574,8 @@ has adjacent-stratum closure in the sense of
 \end{theorem}
 
 \begin{proof}
-Let \(\omega\) be a branch with active supercritical scaling and validated
-compact Type II cost divergence that does not remain in the retained compact
-cost-divergence stratum.  By
-\cref{paper7:thm:classwise-retained-compact-coverage}, \(\omega\) enters one
-of the named adjacent strata produced by
-\cref{paper7:lem:no-unrecorded-cost-escape}.
-\par
-If the adjacent stratum is non-carrier, then
+Let \(\omega\) enter a named adjacent stratum in the pre-divergence order
+\cref{paper7:def:predivergence-validation-rows}.  If it is non-carrier, then
 \cref{paper7:thm:noncarrier-exits-route} identifies it with one of the
 previously named exhaustion, representation, compactness, critical-mass,
 compact-test, modulation, cost-well-posedness, or cost-compatibility strata.
@@ -11301,15 +11583,16 @@ By the first hypothesis of the present theorem, that stratum is closed by its
 own local argument, so the Type II exclusion conclusion holds there, or the
 branch is assigned to a previously closed non-compact-cost alternative.
 \par
-It remains to consider a branch that reaches the pre-carrier regime.  By
-carrier-estimate completion, after restriction to a later tail if needed, it
-satisfies either the fixed-cutoff or moving-cutoff localized-energy closure criterion.  In
-the fixed or moving case,
-\cref{paper7:thm:carrier-package-closes-precarrier} gives the Type II
-exclusion conclusion.  Thus every named adjacent stratum arising from the
-compact-cost regime has a local exclusion or an assignment to a previously closed
-alternative, which is exactly
-\cref{paper7:def:compact-cost-adjacent-closure}.
+It remains to consider a purported carrier-validation failure after the branch
+has reached the pre-carrier channel.  Carrier-estimate completion supplies
+either the fixed- or moving-cutoff criterion.  Each criterion contains the
+corresponding carrier subidentity, finite-error condition, finite initial
+localized energy, and carrier comparison, so the carrier-validation row
+passes.  This contradicts the assertion that its first failed row is a
+carrier-validation failure.  Hence no carrier failure remains unresolved.
+Together with the preceding non-carrier closures, this is precisely
+\cref{paper7:def:compact-cost-adjacent-closure}.  The proof has not tested the
+tail integral of the cost.
 \end{proof}
 
 \begin{definition}[Stratified moving-carrier alternative]
@@ -11424,7 +11707,7 @@ For such a family, let \(J_1,\ldots,J_7\) denote the seven moving carrier
 components of \cref{paper7:def:componentwise-annular-finite-error}.
 \end{definition}
 
-\begin{lemma}[A successful moving test family gives moving carrier closure]
+\begin{lemma}[CostPhase 5: a successful moving test family gives a moving carrier certificate]
 \label{paper7:lem:successful-moving-test-family}
 Assume repaired-gauge suitable local energy gives the moving carrier
 subidentity in the sense of
@@ -11439,8 +11722,8 @@ that, for some \(\tau_1\ge\tau_0\),
 \]
 then \(\omega\) satisfies the moving-cutoff localized-energy closure criterion of
 \cref{paper7:def:moving-carrier-closure-package} after restriction to the later
-tail \([\tau_1,\infty)\).  In particular, \(\omega\) is excluded by
-\cref{paper7:thm:moving-carrier-closure}.
+tail \([\tau_1,\infty)\).  This conclusion is a carrier certificate and does
+not assert cost divergence or exclusion.
 \end{lemma}
 
 \begin{proof}
@@ -11456,8 +11739,7 @@ localized energy on the pre-carrier regime is automatic by
 \cref{paper7:lem:precarrier-finite-local-energy}, and the moving carrier
 comparison is automatic by
 \cref{paper7:lem:nested-moving-carrier-comparison}.  These are exactly the
-clauses of \cref{paper7:def:moving-carrier-closure-package}.  Therefore
-\cref{paper7:thm:moving-carrier-closure} excludes \(\omega\).
+clauses of \cref{paper7:def:moving-carrier-closure-package}.
 \end{proof}
 
 \begin{lemma}[Retained pressure tails vanish on windowwise annuli]
@@ -11582,7 +11864,7 @@ The sequence may also be chosen so that every finite-valued moving radius
 \begin{proof}
 Since \(\omega\) lies in the pre-carrier validated compact-cost regime, the
 critical-tightness test and the modulation-integrability test in
-\cref{paper7:lem:no-unrecorded-cost-escape} have already passed.  Thus
+\cref{paper7:def:predivergence-validation-rows} have already passed.  Thus
 \cref{paper7:def:critical-tightness} holds and
 \cref{paper7:lem:local-modulation-integrability} gives
 \[
@@ -11827,8 +12109,8 @@ hold for the canonical windowwise moving family of
 convert arbitrary nonintegrability into a false persistent unit-window lower
 bound.  Instead it uses the local compactness interpretation of a failed carrier
 component: the nonintegrable component defines normalized carrier blocks; each
-block is then labelled by the ordered first-failure stratification already used
-in \cref{paper7:lem:no-unrecorded-cost-escape}.
+block is then labelled by the pre-divergence first-failure order
+\cref{paper7:def:predivergence-validation-rows}.
 
 \begin{definition}[Normalized carrier blocks for a failed component]
 \label{paper7:def:normalized-carrier-blocks}
@@ -11859,8 +12141,8 @@ density.  Push
 \(\mu_m\) forward by this local-data map and pass, on every compact cylinder
 and then diagonally, to a weak-\(*\) limit of probability measures on this
 metrizable local state space.  Any such limit is a \(J_i\)-occupation state.  Its
-label row is the first closed stratum met by its support in the ordered
-validation procedure of \cref{paper7:lem:no-unrecorded-cost-escape}, with the
+label row is the first closed stratum met by its support in the pre-divergence
+procedure of \cref{paper7:def:predivergence-validation-rows}, with the
 carrier row refined by the active component \(J_i\).  If several named
 diagnostics are met at the same row, they are read as the declared label
 cluster for that row.
@@ -11870,7 +12152,7 @@ cluster for that row.
 \label{paper7:lem:closed-carrier-diagnostics}
 On the local state space of
 \cref{paper7:def:normalized-carrier-blocks}, each row of the ordered
-validation procedure in \cref{paper7:lem:no-unrecorded-cost-escape} is
+procedure in \cref{paper7:def:predivergence-validation-rows} is
 represented by a closed diagnostic set, after grouping diagnostics that are
 declared to belong to the same row.  The component-refined carrier diagnostic
 for \(J_i\), \(i\in\{1,7\}\), is also closed on normalized \(J_i\)-carrier
@@ -11920,7 +12202,7 @@ Let \(i\in\{1,7\}\).  Every normalized \(J_i\)-carrier block sequence for a
 pre-carrier branch has a subsequential \(J_i\)-occupation state in the sense of
 \cref{paper7:def:normalized-carrier-blocks}.  The state has a unique first
 label row in the finite ordered list of
-\cref{paper7:lem:no-unrecorded-cost-escape}.  If no non-carrier label occurs
+\cref{paper7:def:predivergence-validation-rows}.  If no non-carrier label occurs
 before carrier validation, then the first carrier label is the
 component-refined \(J_i\)-moving-annulus summability failure.
 \end{lemma}
@@ -12074,7 +12356,7 @@ the retained branch.  By
 sets in the occupation-measure compactification.  Hence if one fails in the carrier
 limit, the failure is exactly a loss of retained compactness, exterior
 concentration/multicore escape, or local windowed \(H^1\)-loss by the ordered
-classification in \cref{paper7:lem:no-unrecorded-cost-escape}.  Those are
+classification in \cref{paper7:def:predivergence-validation-rows}.  Those are
 exterior/leakage labels.
 \par
 It remains to identify the first carrier label when all earlier rows remain
@@ -12277,7 +12559,8 @@ scale-drift branch, or by the scale-rigid residual branch excluded in
 \begin{proof}
 Occupation-state extraction is
 \cref{paper7:lem:nonintegrable-component-certificate} with \(g=J_7\).
-The ordered first-failure map of \cref{paper7:lem:no-unrecorded-cost-escape}
+The ordered first-failure map of
+\cref{paper7:def:predivergence-validation-rows}
 first removes exterior loss, critical-tightness failure, local \(H^1\)-loss,
 and modulation-driven recentering.  The scale decomposition then separates
 the favorable negative scale-drift obstruction, already assigned to Section~6,
@@ -12358,7 +12641,7 @@ bounds; diffuse tails are retained as normalized occupation states and classifie
 the local ordered stratification.
 \end{remark}
 
-\begin{theorem}[Canonical windowwise family reduces the alternatives to transition, positive scale, and negative drift]
+\begin{theorem}[CostPhase 5: canonical windowwise carrier routing]
 \label{paper7:thm:windowwise-routing-gives-stratified-routing}
 Assume every branch in the pre-carrier validated compact-cost regime uses a
 validated compact cost that is energy-controlled by the fixed identity cost.
@@ -12413,7 +12696,7 @@ Therefore one of the alternatives in
 \cref{paper7:def:stratified-moving-carrier-routing} always holds.
 \end{proof}
 
-\begin{corollary}[Adjacent closure reduced to windowwise transition and positive-scale alternative]
+\begin{corollary}[CostPhase 5: adjacent closure reduced to windowwise carrier routing]
 \label{paper7:cor:adjacent-closure-reduced-to-windowwise-routing}
 Assume the non-carrier adjacent strata listed in
 \cref{paper7:thm:noncarrier-exits-route} are closed by their corresponding
@@ -12435,27 +12718,24 @@ compact-cost regime has adjacent-stratum closure in the sense of
 \end{corollary}
 
 \begin{proof}
-Let \(\omega\) be a branch with active supercritical scaling and validated
-compact Type II cost divergence.  By
-\cref{paper7:thm:classwise-retained-compact-coverage}, either \(\omega\)
-remains in the retained compact stratum or it enters one of the named adjacent
-strata.  The retained compact stratum is excluded by
-\cref{paper7:cor:retained-stratum-cost-exclusion}.  If \(\omega\) enters a
-non-carrier adjacent stratum before the pre-carrier regime, the first
-closure condition closes it by \cref{paper7:thm:noncarrier-exits-route}.  It remains
-to consider a branch in the pre-carrier validated compact-cost regime.
+Let \(\omega\) enter a named adjacent row in the pre-divergence order
+\cref{paper7:def:predivergence-validation-rows}.  If the row occurs before
+the pre-carrier channel, it is a non-carrier row and is closed by the first
+hypothesis together with \cref{paper7:thm:noncarrier-exits-route}.  It remains
+to consider a purported carrier-validation failure after \(\omega\) has
+entered the pre-carrier channel.
 \Cref{paper7:thm:windowwise-routing-gives-stratified-routing} gives one of
 the alternatives in \cref{paper7:def:stratified-moving-carrier-routing}.
-Alternatives \textup{(i)} and \textup{(ii)} are excluded by the fixed and
-moving carrier closure theorems
-\cref{paper7:thm:fixed-carrier-closure,paper7:thm:moving-carrier-closure}.
+Alternatives \textup{(i)} and \textup{(ii)} supply the fixed- or moving-cutoff
+carrier criterion, respectively.  In either case the carrier-validation row
+passes, contradicting the assumption that this row is the first failure.
 The remaining alternatives are precisely the exterior concentration, local
 windowed \(H^1\)-loss, modulation-driven recentering, scale-rigid residual,
 positive-scale, or negative scale-drift branches listed in the hypotheses of
 this corollary, hence are closed by their assigned local arguments.  Therefore
-every compact-cost branch is either excluded on the retained stratum or closed
-in a named adjacent branch, which is
-\cref{paper7:def:compact-cost-adjacent-closure}.
+every named adjacent row has been closed, which is
+\cref{paper7:def:compact-cost-adjacent-closure}.  No divergence statement or
+cost-divergence exclusion theorem has been used.
 \end{proof}
 
 \begin{lemma}[Ambient non-carrier exits close by ordered local routing]
@@ -12470,8 +12750,8 @@ ambient carrier/terminal assembly.
 \end{lemma}
 
 \begin{proof}
-The ordered validation in
-\cref{paper7:lem:no-unrecorded-cost-escape,paper7:thm:noncarrier-exits-route}
+The pre-divergence validation in
+\cref{paper7:def:predivergence-validation-rows,paper7:thm:noncarrier-exits-route}
 lists the possible non-carrier first failures.  We check them in that order.
 Exhaustion failures are routed by
 \cref{paper6a:thm:typeII-analytic-data-exhaustive}; the only alternatives not
@@ -12624,9 +12904,9 @@ state becomes scale-rigid, it is excluded by
 routed local scale-collapse branch and not a hidden input.
 \end{proof}
 
-\begin{theorem}[Ambient adjacent closure for physical Type II branches]
+\begin{theorem}[CostPhase 5: ambient adjacent closure for physical Type II branches]
 \label{paper7:thm:ambient-adjacent-closure-branchwise}
-Every physical local Type II branch which reaches the compact-cost validation
+Every physical local Type II branch which reaches the pre-divergence carrier
 layer satisfies adjacent-stratum closure for the compact-cost regime in the
 sense of \cref{paper7:def:compact-cost-adjacent-closure}.  Equivalently, the
 hypotheses of
@@ -12656,13 +12936,15 @@ alternative required by
 All hypotheses of
 \cref{paper7:cor:adjacent-closure-reduced-to-windowwise-routing} are therefore
 verified branchwise.  Applying that corollary gives compact-cost
-adjacent-stratum closure.
+adjacent-stratum closure.  Each cited input is a phase \(0\)--\(5\) routing
+statement or an earlier state-closure theorem; no cost-divergence exclusion is
+used.
 \end{proof}
 
-\begin{corollary}[Ambient adjacent wrapper discharged]
+\begin{corollary}[CostPhase 5: ambient adjacent wrapper discharged]
 \label{paper7:cor:ambient-adjacent-wrapper-discharged}
-The ambient adjacent-stratum closure and carrier-applicability obligation for
-the canonical retained compact-cost branch is discharged by local state-space
+The pre-divergence adjacent-stratum closure and carrier-applicability
+obligation for the canonical retained compact-cost branch is discharged by local state-space
 stratification and the canonical windowwise carrier package.  Nonretained first
 failures are not removed by this corollary alone; they are assigned to the named
 exit rows recorded in the final assembly.
@@ -12672,7 +12954,8 @@ exit rows recorded in the final assembly.
 This is \cref{paper7:thm:ambient-adjacent-closure-branchwise}.
 \end{proof}
 
-\begin{remark}[Cost divergence on the retained compact stratum]
+\begin{remark}[CostPhase 6: cost divergence on the retained compact stratum]
+\label{paper7:rem:retained-cost-divergence-phase6}
 The compact Type II cost argument gives infinite localized renormalization cost
 under the compact PDE hypotheses.  Passing from that cost divergence to
 exclusion from the Type II class uses the corrected localized energy inequality
@@ -17291,7 +17574,7 @@ and case \textup{(D1)} must hold; that is, at least one of \(J_1,J_6,J_7\)
 fails to be in \(L^1\) on every later tail.
 \end{proof}
 
-\begin{theorem}[Cost-divergence exclusion on the canonical windowwise schedule]
+\begin{theorem}[CostPhase 6: cost-divergence exclusion on the canonical windowwise schedule]
 \label{paper6a:thm:cost-divergence-exclusion-discharged}
 Fix the canonical windowwise moving family of
 \cref{paper7:lem:windowwise-shell-pressure-translation} on the pre-carrier
@@ -17360,7 +17643,7 @@ schedule under premises \textup{(R1)} and \textup{(R2)}; the next corollary
 verifies these premises on the physical local Type II branch.
 \end{proof}
 
-\begin{corollary}[Cost-divergence exclusion holds under the same hypothesis set as adjacent closure]
+\begin{corollary}[CostPhase 6: unconditional physical cost-divergence exclusion]
 \label{paper6a:cor:cost-divergence-exclusion-unconditional}
 The hypotheses \textup{(R1)}--\textup{(R2)} of
 \cref{paper6a:thm:cost-divergence-exclusion-discharged} on the canonical
@@ -17382,11 +17665,7 @@ adjacent closure is established by
 \end{corollary}
 
 \begin{proof}
-The dependency order is fixed in
-\cref{paper6a:lem:cost-divergence-closure-order}: windowwise routing and
-ambient adjacent closure are verified before the cost-divergence theorem is
-used.
-The windowwise transition/leakage alternative
+The phase \(5\) windowwise transition/leakage alternative
 \cref{paper7:cor:windowwise-transition-routing-holds} and windowwise
 positive-scale alternative
 \cref{paper7:cor:windowwise-positive-scale-routing-holds} are unconditional
@@ -17434,7 +17713,7 @@ argument that is already used to close adjacent strata in
 \cref{paper7:cor:adjacent-closure-reduced-to-windowwise-routing}.
 \end{remark}
 
-\begin{lemma}[Acyclic order for cost-divergence closure]
+\begin{lemma}[CostPhase 7: acyclic order for cost-divergence closure]
 \label{paper6a:lem:cost-divergence-closure-order}
 In the physical local Type II assembly, the cost-divergence closure is used only
 after the local carrier and adjacent-routing rows have been verified.  The
@@ -17457,9 +17736,8 @@ retained branch with divergent validated localized cost;
 rows have been routed or closed.
 \end{enumerate}
 No statement in \textup{(i)}--\textup{(iv)} invokes
-\cref{paper6a:thm:cost-divergence-exclusion-discharged},
-\cref{paper6a:cor:cost-divergence-exclusion-unconditional}, or the final
-retained Type II closure theorem.
+the cost-divergence exclusion step or the final retained Type II closure
+theorem.
 \end{lemma}
 
 \begin{proof}
@@ -17698,6 +17976,61 @@ and similarly
 \]
 \end{proof}
 
+\begin{lemma}[Canonical final-chart differential identities]
+\label{paper6a:lem:canonical-final-change-identities}
+Let \(X,\Lambda\in AC_{\mathrm{loc}}(I)\), with \(\Lambda>0\), and let
+\[
+  \frac{d\tau}{dt}=\Lambda(\tau)^{-2},\qquad
+  Y=\frac{x-X(\tau)}{\Lambda(\tau)},\qquad
+  u=\Lambda^{-1}V,\qquad p=\Lambda^{-2}P+c(t).
+\]
+Set \(a=\partial_\tau\log\Lambda\) and
+\(b=\Lambda^{-1}X_\tau\).  For smooth fields, at fixed \((x,t)\),
+\[
+  \partial_tu
+  =\Lambda^{-3}\bigl(\partial_\tau V-(b+aY)\cdot\nabla_YV-aV\bigr),
+\]
+\[
+  \nabla_xu=\Lambda^{-2}\nabla_YV,\qquad
+  \Delta_xu=\Lambda^{-3}\Delta_YV,\qquad
+  \nabla_xp=\Lambda^{-3}\nabla_YP,
+\]
+and
+\[
+  \nabla_x\cdot u=\Lambda^{-2}\nabla_Y\cdot V.
+\]
+The same identities hold distributionally for absolutely continuous charts
+after testing on compact subsets of the chart image.
+\end{lemma}
+
+\begin{proof}
+At fixed \(x\),
+\[
+  Y_\tau=-\Lambda^{-1}X_\tau
+  -\frac{\Lambda_\tau}{\Lambda}Y=-(b+aY),
+  \qquad \tau_t=\Lambda^{-2}.
+\]
+Consequently
+\[
+\begin{aligned}
+  \partial_tu
+  &=\tau_t\,\partial_\tau\!\left(\Lambda^{-1}V(Y,\tau)\right)\\
+  &=\Lambda^{-3}
+    \bigl(\partial_\tau V-(b+aY)\cdot\nabla_YV-aV\bigr).
+\end{aligned}
+\]
+Since \(\nabla_xY=\Lambda^{-1}I\), the spatial derivative, Laplacian,
+pressure-gradient, and divergence identities follow directly.  The term
+\(c(t)\) disappears under the spatial gradient.  For an absolutely continuous
+chart these calculations are justified in distributions by pulling back a
+compactly supported smooth test function, approximating the chart parameters
+by smooth absolutely continuous approximants on the compact time interval,
+and passing to the limit.  The chart derivatives converge in \(L^1\), while
+\(\Lambda\) and \(\Lambda^{-1}\) converge uniformly there; hence every term in
+the displayed identities converges in the corresponding distributional
+pairing.
+\end{proof}
+
 \begin{lemma}[Modulation coefficients in repaired gauge]
 \label{paper6a:lem:repaired-modulation-coefficients}
 Define
@@ -17773,106 +18106,43 @@ compact window.  Likewise, since \(\mu\) is bounded away from zero,
 so the \(B\)-term in \(b\) is locally integrable.
 \end{proof}
 
-\begin{lemma}[Renormalized equation in repaired gauge]
-\label{paper6a:lem:repaired-gauge-equation}
-The final variables \(V,P\) satisfy
-\[
+\begin{theorem}[Canonical renormalized equation in the repaired gauge]
+\label{paper6a:thm:canonical-repaired-gauge-equation}
+Let \(X,\Lambda,V,P\) be a final chart satisfying the hypotheses of
+\cref{paper6a:lem:canonical-final-change-identities}.  If \(u,p\) solve the
+Navier--Stokes equations distributionally on the physical image, then \(V,P\)
+satisfy
+\begin{equation}\label{paper6a:eq:canonical-repaired-gauge-equation}
   \partial_\tau V+(V\cdot\nabla)V+\nabla P
   =
   \nu\Delta V+a(\tau)(V+Y\cdot\nabla V)+b(\tau)\cdot\nabla V,
   \qquad
   \nabla\cdot V=0
-\]
-distributionally on compact \(Y\)-sets.
-\end{lemma}
+\end{equation}
+distributionally on compact \(Y\)-sets.  Conversely, every distributional
+solution of this displayed equation pulls back through the same chart to a
+distributional Navier--Stokes solution on the physical image.  In particular,
+the conclusion applies to the two-stage absolutely continuous chart of
+\cref{paper6a:def:ac-initial-concentration-chart,paper6a:def:ac-repaired-gauge-path},
+with \(a,b\) given by
+\cref{paper6a:lem:repaired-modulation-coefficients}.
+\end{theorem}
 
 \begin{proof}
-It suffices to compute in the smooth case and then pass to distributions by
-testing against compactly supported functions.  Set
+By \cref{paper6a:lem:canonical-final-change-identities}, every term in the
+physical equation has the common factor \(\Lambda^{-3}\).  Removing that
+factor gives
 \[
-  z=\mu Y+q.
+  \partial_\tau V+(V\cdot\nabla)V+\nabla P
+  =\nu\Delta V+a(V+Y\cdot\nabla V)+b\cdot\nabla V.
 \]
-Since \(V(Y,\tau)=\mu U(z,\rho(\tau))\) and
-\(\rho_\tau=\mu^2\), the spatial derivatives are
-\[
-  \nabla_YV=\mu^2\nabla_zU,\qquad
-  \Delta_YV=\mu^3\Delta_zU,
-\]
-\[
-  (V\cdot\nabla_Y)V=\mu^3(U\cdot\nabla_z)U,
-  \qquad
-  \nabla_YP=\mu^3\nabla_zQ.
-\]
-Differentiation in \(\tau\) gives
-\[
-\begin{aligned}
-  V_\tau
-  &=
-  \mu_\tau U
-  +\mu\mu^2U_\rho
-  +\mu(\mu_\tau Y+q_\tau)\cdot\nabla_zU .
-\end{aligned}
-\]
-Using the initial renormalized equation,
-\[
-  U_\rho
-  =
-  \nu\Delta_zU-(U\cdot\nabla_z)U-\nabla_zQ
-  +A(U+z\cdot\nabla_zU)+B\cdot\nabla_zU,
-\]
-we obtain
-\[
-\begin{aligned}
-&V_\tau+(V\cdot\nabla_Y)V+\nabla_YP-\nu\Delta_YV \\
-&\quad =
-\mu_\tau U
-{}+\mu^3A(U+z\cdot\nabla_zU)
-{}+\mu^3B\cdot\nabla_zU
-{}+\mu(\mu_\tau Y+q_\tau)\cdot\nabla_zU .
-\end{aligned}
-\]
-Now
-\[
-  U=\mu^{-1}V,
-  \qquad
-  \nabla_zU=\mu^{-2}\nabla_YV,
-  \qquad
-  z=\mu Y+q.
-\]
-Therefore
-\[
-\begin{aligned}
-\mu_\tau U+\mu^3A U
-&=
-\left(\frac{\mu_\tau}{\mu}+\mu^2A\right)V,\\
-\mu^3A\,z\cdot\nabla_zU
-{}+\mu(\mu_\tau Y+q_\tau)\cdot\nabla_zU
-&=
-\left(\mu^2A+\frac{\mu_\tau}{\mu}\right)Y\cdot\nabla_YV
-{}+\left(\mu Aq+\frac{q_\tau}{\mu}\right)\cdot\nabla_YV,\\
-\mu^3B\cdot\nabla_zU
-&=
-\mu B\cdot\nabla_YV .
-\end{aligned}
-\]
-Combining these identities, the coefficient multiplying
-\[
-  V+Y\cdot\nabla_YV
-\]
-is
-\[
-  \frac{\mu_\tau}{\mu}+\mu^2A,
-\]
-and the coefficient multiplying \(\nabla_YV\) is
-\[
-  \mu B+\mu Aq+\frac{q_\tau}{\mu}.
-\]
-By Lemma~\ref{paper6a:lem:repaired-modulation-coefficients} these coefficients are
-\(a\) and \(b\).  Hence the displayed repaired-gauge equation holds in the
-distributional sense on compact \(Y\)-sets.  Incompressibility follows from
-\[
-  \nabla_Y\cdot V=\mu^2\nabla_z\cdot U=0.
-\]
+The divergence identity in the same lemma gives \(\nabla\cdot V=0\).  The
+argument is distributional because the identities there were proved by test
+function pullback.  Running those identities in reverse proves the converse.
+For the two-stage chart, \cref{paper6a:lem:repaired-physical-chart} supplies the
+final physical representation and
+\cref{paper6a:lem:repaired-modulation-coefficients} identifies its coefficients
+with the displayed \(a,b\).
 \end{proof}
 
 \begin{lemma}[Pressure reconstruction under the charts]
@@ -18009,8 +18279,8 @@ Lemma~\ref{paper6a:lem:ac-chart-regularity}.
 \begin{proof}
 Lemma~\ref{paper6a:lem:initial-renormalized-equation} gives the initial
 renormalized equation.
-Lemmas~\ref{paper6a:lem:repaired-physical-chart}
-and~\ref{paper6a:lem:repaired-gauge-equation}
+Lemma~\ref{paper6a:lem:repaired-physical-chart} and
+\cref{paper6a:thm:canonical-repaired-gauge-equation}
 give the final chart and the final repaired-gauge equation with the stated
 coefficients.  Lemma~\ref{paper6a:lem:pressure-reconstruction-under-charts} gives
 pressure reconstruction modulo functions of time.
@@ -18263,14 +18533,56 @@ Since the chart and gauge parameters are absolutely continuous on compact
 windows, these coefficients are locally integrable.
 \end{proof}
 
-\begin{theorem}[Local Caccioppoli estimate for repaired gauges]
-\label{paper6a:thm:ac-local-caccioppoli}
+\begin{theorem}[Canonical local Caccioppoli estimate for repaired gauges]
+\label{paper6a:thm:canonical-local-caccioppoli}
 Every suitable repaired-gauge Type II branch satisfies the local renormalized
-Caccioppoli estimate on each compact repaired-gauge cylinder.  The constants
-may depend on the cylinder, the cutoff, and local upper and lower bounds for
-the chart.  No local Caffarelli--Kohn--Nirenberg smallness, global windowed
-\(H^1\), critical \(L^3\)-norm, tightness, bounded modulation, finite energy at
-infinity, or whole-space compactness conclusion is asserted.
+Caccioppoli estimate on each compact repaired-gauge cylinder.  More precisely,
+let \(I'\Subset I\), \(0<r<R\), and choose
+\(\eta\in C_c^\infty(I)\), \(\zeta\in C_c^\infty(B_R)\), with
+\[
+  0\leq\eta,\zeta\leq1,\qquad
+  \eta=1\ \text{on }I',\qquad \zeta=1\ \text{on }B_r .
+\]
+Then
+\begin{equation}\label{paper6a:eq:canonical-local-caccioppoli}
+\begin{aligned}
+&\operatorname*{ess\,sup}_{\tau\in I'}
+  \int_{B_r}\frac{|V(\tau)|^2}{2}\,dY
+  +\nu\int_{I'}\int_{B_r}|\nabla V|^2\,dY\,d\tau \\
+&\le C
+\int_I\int_{B_R}\frac{|V|^2}{2}
+   \left(|\eta'|\zeta^2+\nu\eta|\Delta(\zeta^2)|\right)\,dY\,d\tau \\
+&\quad
++C\int_I\int_{B_R}
+   \left(\frac{|V|^2}{2}
+   +|P-(P)_{B_R}(\tau)|\right)
+   |V|\,\eta|\nabla(\zeta^2)|\,dY\,d\tau\\
+&\quad
++C\int_I |a(\tau)|
+  \int_{B_R}\frac{|V|^2}{2}\eta
+    \left(\zeta^2+|Y|\,|\nabla(\zeta^2)|\right)\,dY\,d\tau\\
+&\quad
++C\int_I |b(\tau)|
+  \int_{B_R}\frac{|V|^2}{2}\eta|\nabla(\zeta^2)|\,dY\,d\tau .
+\end{aligned}
+\end{equation}
+Here \(C\) is absolute.  In the bounded-modulation regime, if
+\cref{paper4:prop:renormalized-local-energy-inequality} holds on
+\(Q_{2R,J}\), \(J'\Subset J\), \(a,b\in L^\infty(J)\), and
+\(\mathcal C_J(2R)+\mathcal D_J(2R)<\infty\), then
+\[
+  \mathcal A_{J'}(R)+\mathcal H_{J'}(R)
+  \leq C_*
+  \bigl(1+\mathcal C_J(2R)+\mathcal D_J(2R)\bigr),
+\]
+where
+\[
+ C_*=C_*\!\left(R,|J|,\nu,\|a\|_{L^\infty(J)},
+ \|b\|_{L^\infty(J)},\operatorname{dist}(J',\partial J)\right).
+\]
+No local Caffarelli--Kohn--Nirenberg smallness, global windowed \(H^1\),
+critical \(L^3\)-norm, tightness, finite energy at infinity, or whole-space
+compactness conclusion is asserted.
 \end{theorem}
 
 \begin{proof}
@@ -18295,28 +18607,14 @@ Let \(I=(\tau_1,\tau_2)\), let \(I'\Subset I\), and let
 Lemma~\ref{paper6a:lem:ac-pullback-local-energy} on \((\tau_1,\sigma)\) and
 then taking the essential supremum over \(\sigma\in I'\) controls the endpoint
 term.  Applying the same inequality on the full interval \(I\) controls the
-dissipation term.  Adding the two estimates gives
+dissipation term.  A function of \(\tau\) may be subtracted from \(P\), since
 \[
-\begin{aligned}
-&\operatorname*{ess\,sup}_{\tau\in I'}
-  \int_{B_r}\frac{|V(\tau)|^2}{2}\,dY
-  +\nu\int_{I'}\int_{B_r}|\nabla V|^2\,dY\,d\tau \\
-&\le C
-\int_I\int_{B_R}\frac{|V|^2}{2}
-   \left(|\eta'|\zeta^2+\nu\eta|\Delta(\zeta^2)|\right)\,dY\,d\tau \\
-&\quad
-+C\int_I\int_{B_R}
-   \left(\frac{|V|^2}{2}+|P|\right)|V|\,\eta|\nabla(\zeta^2)|\,dY\,d\tau\\
-&\quad
-+C\int_I |a(\tau)|
-  \int_{B_R}\frac{|V|^2}{2}\eta
-    \left(\zeta^2+|Y|\,|\nabla(\zeta^2)|\right)\,dY\,d\tau\\
-&\quad
-+C\int_I |b(\tau)|
-  \int_{B_R}\frac{|V|^2}{2}\eta|\nabla(\zeta^2)|\,dY\,d\tau .
-\end{aligned}
+  \int_{B_R} (P)_{B_R}(\tau)V\cdot\nabla(\zeta^2)\,dY=0
 \]
-Here \(C\) is an absolute constant.  Since the cutoff derivatives are bounded
+by incompressibility and the compact support of \(\zeta\).  Adding the two
+estimates therefore gives exactly
+\eqref{paper6a:eq:canonical-local-caccioppoli}.  Since the cutoff derivatives
+are bounded
 by constants depending only on \(I,I',r,R\), this is the local Caccioppoli
 estimate on the compact renormalized cylinder.
 
@@ -18349,6 +18647,13 @@ is locally essentially bounded; therefore the scale and translation modulation
 terms in the pulled-back local energy inequality are integrable on the same
 compact cylinder.  This proves the local Caccioppoli estimate, but not a
 global windowed \(H^1\) or critical \(L^3\)-norm bound.
+
+Under the additional bounded-modulation and finite
+\(\mathcal C+\mathcal D\) hypotheses in the statement,
+\cref{paper4:lem:buffered-caccioppoli-cutoff} applies to the same canonical
+local energy inequality and gives the displayed quantitative
+\(\mathcal A+\mathcal H\) estimate, with precisely the stated dependence of
+the constant.
 \end{proof}
 
 \begin{corollary}[No separate Caccioppoli obstruction for suitable absolutely continuous branches]
@@ -18364,7 +18669,7 @@ invoked.
 \end{corollary}
 
 \begin{proof}
-Theorem~\ref{paper6a:thm:ac-local-caccioppoli} gives local Caccioppoli
+\Cref{paper6a:thm:canonical-local-caccioppoli} gives local Caccioppoli
 regularity.  Theorem~\ref{paper6a:thm:ac-repaired-gauge-consequences} gives
 pressure reconstruction and the final modulation coefficients from the
 final chart and absolutely continuous gauge path.  Thus the listed
@@ -20463,7 +20768,7 @@ the local energy bound
   \sup_{\tau\in I_n^*}\int_{B_{4R}}|V(y,\tau)|^2\,dy\le E_{2,4R},
 \]
 and the local Caccioppoli estimate of
-\cref{paper6a:thm:ac-local-caccioppoli}.  Then
+\cref{paper6a:thm:canonical-local-caccioppoli}.  Then
 \[
   \int_{I_n}\int_{B_R}|\nabla V|^2\,dy\,d\tau
   \le
@@ -21115,8 +21420,7 @@ scale-collapse drift obstruction and does not have persistent fixed-length
 negative-drift windows, then the branch either enters one of the other named
 local exit rows, or it enters an already closed retained row.  Consequently
 the row ``thin drift or negative scale-drift without thick autonomous
-windows'' may be removed from
-\cref{paper6:def:remaining-named-exits}.
+windows'' is not an unresolved entry in the later remaining-exit ledger.
 \end{theorem}
 
 \begin{proof}
@@ -21253,7 +21557,8 @@ selected-window subsequence has a nonzero bounded selected-window limit on
 any compact cylinder; \cref{paper1:prop:representation-input} supplies
 represented variables \((V_n,P_n,a_n,b_n)\) on compact cylinders satisfying
 the represented Navier--Stokes equation
-\eqref{paper1:eq:represented-ns}; the represented selected windows form a
+\eqref{paper6a:eq:canonical-repaired-gauge-equation}; the represented selected
+windows form a
 local Type II sequence in the sense of \cref{paper1:def:typeII}, providing
 the local profile data of
 \cref{def:c1-typeII-analytic-data}\,\textup{(iii)};
@@ -21294,7 +21599,8 @@ nonzero bounded selected-window limits, it is a local Type II sequence in the
 sense of
 \cref{paper1:def:typeII}.  \Cref{paper1:prop:representation-input} then
 supplies the represented variables \((V_n,P_n,a_n,b_n)\) on compact
-cylinders satisfying \eqref{paper1:eq:represented-ns}; this is the local
+cylinders satisfying
+\eqref{paper6a:eq:canonical-repaired-gauge-equation}; this is the local
 profile datum of \cref{def:c1-typeII-analytic-data}\,\textup{(iii)}.
 
 In case \textup{(b)}, failure of localized nondegeneracy is, by the second
@@ -21885,7 +22191,7 @@ with the absolutely continuous chart consequences
 fails, that failure is the representation alternative and not a retained
 terminal branch.  The local Caccioppoli/windowed regularity input is supplied
 by
-\cref{paper6a:thm:ac-local-caccioppoli,paper6a:cor:no-independent-caccioppoli-obstruction-ac-suitable}
+\cref{paper6a:thm:canonical-local-caccioppoli,paper6a:cor:no-independent-caccioppoli-obstruction-ac-suitable}
 on suitable repaired-gauge branches, with retained windowed control supplied
 by \cref{paper6a:thm:retained-compact-tests-closed}.  Finally, compact
 scale-collapse routing is exactly
@@ -23416,87 +23722,73 @@ outputs only as named ledger rows and explicitly defers their closure to the
 remaining-exit closure layer.  This is exactly the asserted acyclic ordering.
 \end{proof}
 
+\begin{definition}[Canonical final named-exit ledger]
+\label{paper6:def:remaining-named-exits}
+The present retained-state assembly does not count a first-failure row as
+closed merely because it has been named.  Rank \(1\) denotes an unresolved
+named exit at the terminal-routing stage, while rank \(0\) denotes a row
+already discharged to a regular/removable or previously closed structural
+state.  The following table is the single final ledger; each displayed
+closure edge strictly decreases rank.
+
+\begin{center}
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}L{1.55in}L{0.42in}L{3.25in}L{0.70in}@{}}
+\hline
+Named exit & Rank & Closure source & Target rank\\
+\hline
+% R13-LEDGER-EDGE bounded-window 1 0 paper6:thm:bounded-selected-window-physical-routing
+Bounded selected-window limit
+& \(1\)
+& \cref{paper3:lem:bounded-window-vmo-pressure,paper10:lem:bounded-window-reselection-well-founded,paper6:thm:bounded-selected-window-physical-routing}
+& \(0\)\\
+% R13-LEDGER-EDGE autonomous-modulation 1 0 paper6:thm:autonomous-modulation-failure-closed
+Autonomous-modulation failure or modulation-driven recentering
+& \(1\)
+& \cref{paper6:thm:autonomous-modulation-failure-closed}
+& \(0\)\\
+% R13-LEDGER-EDGE noncanonical-cost 1 0 paper6:thm:noncanonical-cost-routing-closed
+Noncanonical carrier or cost-validation failure
+& \(1\)
+& \cref{paper6:thm:noncanonical-cost-routing-closed}
+& \(0\)\\
+% R13-LEDGER-EDGE active-core-loss 1 0 paper6:thm:active-core-loss-closed
+Loss of a retained active core, including pressure-only, critical-tail, and
+nested exterior-pressure behavior
+& \(1\)
+& \cref{paper6:thm:active-core-loss-closed,paper8:lem:nested-pressure-only-well-founded,paper8:lem:diffuse-pressure-only-not-terminal,paper9:lem:critical-tightness-failure-row,paper9:lem:diffuse-critical-tail-row-closed}
+& \(0\)\\
+\hline
+\end{tabular}
+\end{center}
+
+The noncanonical-cost row is tested before the identity-cost channel of
+\cref{paper6:lem:canonical-cost-channel-available} is invoked.  All local rows
+not displayed in the table have already been discharged by
+\cref{paper6:prop:state-elimination,paper7:cor:ambient-adjacent-wrapper-discharged}.
+By \cref{paper6:lem:acyclic-terminal-ledger}, the four rank-\(1\) rows are
+recorded in the routing layer only by name; their listed closure sources are
+invoked only in \cref{paper6:subsec:remaining-exit-closures}.  This ledger
+controls \cref{paper6:thm:unconditional-no-typeII}, and its unconditional
+upgrade is \cref{paper6:thm:unconditional-no-typeII-discharged}.
+\end{definition}
+
 \begin{corollary}[All four remaining named exit rows are closed]
 \label{paper6:cor:remaining-named-exits-closed}
-The four rows listed in \cref{paper6:def:remaining-named-exits} are all
-closed adjacent rows: the bounded-window row by
-\cref{paper3:lem:bounded-window-vmo-pressure,paper10:lem:bounded-window-reselection-well-founded,paper6:thm:bounded-selected-window-physical-routing};
-the autonomous-modulation row by
-\cref{paper6:thm:autonomous-modulation-failure-closed}; the noncanonical
-carrier/cost-validation row by
-\cref{paper6:thm:noncanonical-cost-routing-closed}; and the loss-of-active-core
-row, including pressure-only critical-mass detection, by
-\cref{paper6:thm:active-core-loss-closed,paper8:lem:nested-pressure-only-well-founded,paper8:lem:diffuse-pressure-only-not-terminal,paper9:lem:critical-tightness-failure-row,paper9:lem:diffuse-critical-tail-row-closed}.
+Every rank-\(1\) row in the canonical ledger
+\cref{paper6:def:remaining-named-exits} is carried by its displayed closure
+source to a rank-\(0\) row.  Hence all four remaining named exits are closed
+adjacent rows.
 \end{corollary}
 
 \begin{proof}
-Direct application of the bounded-window, autonomous-modulation, noncanonical
-cost-routing, active-core-loss, critical-tail, and nested pressure-only
-closure theorems cited in the statement.
+Apply the closure source in each row of
+\cref{paper6:def:remaining-named-exits}.  Each target has rank \(0\), and
+\cref{paper6:lem:acyclic-terminal-ledger} prevents any of these closure edges
+from returning to a rank-\(1\) routing state.
 \end{proof}
-
-\begin{definition}[Remaining named exit rows]
-\label{paper6:def:remaining-named-exits}
-The present retained-state assembly does not count a first-failure row as
-closed merely because it has been named.  The ledger rows outside the retained
-closure theorem before the closure subsection is applied are:
-\begin{enumerate}[label=\textup{(\roman*)}]
-\item a bounded selected-window limit producing a bounded local profile on a
-fixed physical window, before the physical routing theorem is applied;
-its closure uses
-\cref{paper3:lem:bounded-window-vmo-pressure,paper10:lem:bounded-window-reselection-well-founded};
-\item autonomous-modulation failure or modulation-driven recentering;
-\item carrier or cost-validation failure outside the canonical retained
-identity-cost channel, including noncanonical cost-comparison failures before
-the canonical channel of \cref{paper6:lem:canonical-cost-channel-available} is
-invoked;
-\item loss of a retained active core, including pressure-only critical-mass
-detection, unless the pressure/exterior routing theorem places it in one of the
-closed structural rows listed below.  This row also absorbs critical-tightness
-failure and diffuse critical-tail behavior through
-\cref{paper9:lem:critical-tightness-failure-row,paper9:lem:diffuse-critical-tail-row-closed},
-and nested exterior pressure-only behavior through
-\cref{paper8:lem:nested-pressure-only-well-founded,paper8:lem:diffuse-pressure-only-not-terminal}.
-\end{enumerate}
-The closed rows are not in this list.  They are finite scale cost, finite
-absolute scale cost, thin negative drift as an independent terminal row,
-compactness failure on selected scale-collapse windows as an independent
-terminal row,
-compact single-core vanishing dissipation, multibubble, cascade,
-gauge-degenerate behavior, scale-rigid residual behavior, the retained compact
-scale-collapse state, exterior concentration and noncompact exterior
-concentration as independent terminal rows, and the retained canonical
-compact-cost branch.  Thin
-negative drift is closed by
-\cref{paper6a:thm:thin-negative-drift-closed}; selected compactness failure is
-routed by \cref{paper5:thm:selected-compactness-failure-routed}; exterior
-concentration is routed by
-\cref{paper8:cor:exterior-concentration-exit-discharged}; the other closed
-rows are
-closed by the theorems cited in \cref{paper6:prop:state-elimination} and in the
-ambient compact-cost package.
-
-By \cref{paper6:lem:acyclic-terminal-ledger}, these rows are recorded in the
-terminal routing layer only by name.  Their actual closure is invoked only in
-the present subsection.
-
-\medskip
-The four rows \textup{(i)}, \textup{(ii)}, \textup{(iii)}, \textup{(iv)} listed above are
-closed adjacent rows, by the closure theorems of
-\cref{paper6:subsec:remaining-exit-closures}: the bounded-window row by
-\cref{paper3:lem:bounded-window-vmo-pressure,paper10:lem:bounded-window-reselection-well-founded,paper6:thm:bounded-selected-window-physical-routing}; the autonomous-modulation row
-by \cref{paper6:thm:autonomous-modulation-failure-closed}; the
-noncanonical carrier/cost-validation row by
-\cref{paper6:thm:noncanonical-cost-routing-closed}; and the
-loss-of-active-core row, including pressure-only critical-mass
-detection, by \cref{paper6:thm:active-core-loss-closed} together with the
-critical-tail and nested pressure-only closures
-\cref{paper9:lem:critical-tightness-failure-row,paper9:lem:diffuse-critical-tail-row-closed,paper8:lem:nested-pressure-only-well-founded,paper8:lem:diffuse-pressure-only-not-terminal}.  This is
-summarised in \cref{paper6:cor:remaining-named-exits-closed}.  The list is
-the controlling ledger for
-\cref{paper6:thm:unconditional-no-typeII}; the unconditional upgrade is recorded in
-\cref{paper6:thm:unconditional-no-typeII-discharged}.
-\end{definition}
 
 \begin{theorem}[Retained Type II closure with named-exit ledger]
 \label{paper6:thm:unconditional-no-typeII}

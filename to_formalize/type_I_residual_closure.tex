@@ -19,9 +19,9 @@
   linkcolor=blue,
   citecolor=blue,
   urlcolor=blue,
-  pdftitle={Local Exclusion of Residual Type I Navier-Stokes Seregin Limits},
+  pdftitle={Residual Type I Seregin Profiles for the Navier-Stokes Equations: Decomposition and Exclusion},
   pdfauthor={Guillem Duran Ballester},
-  pdfsubject={Navier-Stokes Type I singularities and Seregin limits},
+  pdfsubject={Ordered decomposition and exclusion of residual Type I Navier-Stokes Seregin profiles},
   pdfkeywords={Navier-Stokes equations, Type I singularities, ancient solutions, Seregin limits, Liouville theorems, local concentration}
 }
 
@@ -151,8 +151,9 @@
 }
 \makeatother
 
-\title[Residual Type I Seregin limit exclusion]
-{Local Exclusion of Residual Type I Navier--Stokes Seregin Limits}
+\title[Residual Type I Seregin Profiles]
+{Residual Type I Seregin Profiles for the Navier--Stokes Equations:
+Decomposition and Exclusion}
 
 \author{Guillem Duran Ballester}
 \date{}
@@ -392,7 +393,7 @@ Below, the phrase ``by the imported setup results'' means that the terminal
 profile is bounded, locally suitable, pressure-normalized by the setup pressure
 atlas, parasitic-free modulo the affine class, and mild after finite terminal
 shift, with the exact imported labels listed in
-\Cref{thm:imported-setup-results}.  Paper~IV proves only the residual closure
+\Cref{thm:imported-setup-results}.  Paper~II proves only the residual closure
 \(\calR^\#(\calS;I,J)=\varnothing\).
 \end{remark}
 
@@ -775,12 +776,12 @@ affine/parasitic quotient stratum.  Consequently
 \textup{Deferred.}  The proof is given in
 \Cref{sec:final-assembly}, after the terminal decomposition theorem and the
 exclusion of all reduced cases.  The dependency order is recorded in
-\Cref{tab:paperIV-dependency-order}.
+\Cref{tab:typeI-dependency-order}.
 \end{proof}
 
 \begin{longtable}{@{}L{0.24\textwidth}L{0.45\textwidth}L{0.23\textwidth}@{}}
 \caption{Dependency table for the residual closure proof.}
-\label{tab:paperIV-dependency-order}\\
+\label{tab:typeI-dependency-order}\\
 \hline
 \textbf{Result} & \textbf{Uses} & \textbf{Does not use}\\
 \hline
@@ -795,7 +796,7 @@ Imported setup results &
 Setup paper only: local concentration, local Type~I implication, normalized
 Seregin extraction, pressure atlas, lower classes, mildness, and conditional
 final assembly. &
-Paper~IV residual closure.\\
+Paper~II residual closure.\\
 R1 axisymmetric closure &
 Centered circulation equation, axis regularity, killed-strip comparison, and
 setup lower classes. &
@@ -1454,7 +1455,7 @@ pointwise Type~I terminal singularity satisfies
 
 \begin{proof}
 This theorem is imported verbatim from the companion setup paper; see
-\Cref{thm:imported-setup-results}\,(2).  Paper~IV does not reprove the
+\Cref{thm:imported-setup-results}\,(2).  Paper~II does not reprove the
 weak-Serrin-to-local-Type~I estimate or the terminal no-escape estimate.  Its
 only role here is to place first-generation terminal sequences inside the
 admissible local-window class and to supply the local energy, pressure, and
@@ -1804,7 +1805,7 @@ completed case closures give a contradiction.  Equivalently, in the local
 Type~I/local Type~II dichotomy of the setup paper, every finite-energy
 singular point belongs to the local Type~II alternative.  The conclusion is
 the joint output of the two-paper chain; it is not asserted as a hidden
-hypothesis inside Paper~IV alone.
+hypothesis inside Paper~II alone.
 \end{corollary}
 
 \begin{proof}
@@ -2361,7 +2362,7 @@ disturb earlier choices.
 
 \begin{longtable}{@{}L{0.28\textwidth}L{0.66\textwidth}@{}}
 \caption{Glossary of residual symbols.}
-\label{tab:paperIV-glossary}\\
+\label{tab:typeI-glossary}\\
 \hline
 \textbf{Symbol} & \textbf{Meaning}\\
 \hline
@@ -4348,7 +4349,7 @@ canonical parasitic-free representative or assigned to \(\Caff\).
 \end{definition}
 
 \begin{lemma}[Pressure atlas compatibility]
-\label{lem:paperIV-pressure-atlas-compatibility}
+\label{lem:typeI-pressure-atlas-compatibility}
 Let \(Q,Q'\) be overlapping local cylinders in a normalized Seregin extraction.
 Before affine quotienting, admissible pressure representatives satisfy
 \[
@@ -12568,21 +12569,21 @@ hypothesis from the ordered decomposition and the individual branch closures;
 it does not assume an independent contradiction for the residual export.
 \end{proof}
 
-\begin{theorem}[Paper IV residual closure]
-\label{thm:paperIV-residual-closure}
+\begin{theorem}[Type I residual closure]
+\label{thm:typeI-residual-closure}
 For every normalized Seregin collection \(\calS\) satisfying the imported setup
 admissibility hypotheses,
 \[
    \calR^\#(\calS;I,J)=\varnothing .
 \]
-Equivalently, Paper~IV proves exactly the missing setup hypothesis
+Equivalently, Paper~II proves exactly the missing setup hypothesis
 that this residual class is empty.
 \end{theorem}
 
 \begin{proof}
 This is the conclusion of \Cref{thm:refined-residual-closure}, proved in the
 preceding final assembly.  The statement is repeated here to separate the output
-of Paper~IV from the final consequence imported from the setup paper.
+of Paper~II from the final consequence imported from the setup paper.
 \end{proof}
 
 \begin{corollary}[Verification of the setup residual hypothesis]
@@ -12595,7 +12596,7 @@ The residual-class hypothesis
 By \Cref{thm:imported-setup-results}, the setup residual hypothesis is
 the assertion that the retained residual class
 \(\calR^\#(\calS;I,J)\) is empty after the lower setup classes are removed.
-This is \Cref{thm:paperIV-residual-closure}.
+This is \Cref{thm:typeI-residual-closure}.
 \end{proof}
 
 \begin{corollary}[Local pointwise Type-I exclusion from the two-paper chain]
@@ -12643,7 +12644,7 @@ after residual closure is the Albritton--Barker endpoint Liouville theorem
 weak-Serrin Type~I estimate
 \Cref{thm:AB-weak-serrin-typeI-estimate,thm:local-typeI-terminal-energy-estimates}
 upgrades the local pointwise Type~I envelope to terminal velocity
-no-escape; this is an entry implication, optional inside Paper~IV in the sense
+no-escape; this is an entry implication, optional inside Paper~II in the sense
 of \Cref{sec:local-typeI-implication}.  Second, in
 \Cref{lem:no-atomic-active}, the endpoint ancient Liouville theorem is applied
 to a parasitic-free bounded mild physical pullback that carries a backward
@@ -12666,7 +12667,7 @@ realization \Cref{thm:bounded-origin-realization-coherent-tails}.
 
 The imported setup results displayed in \Cref{thm:imported-setup-results} are
 cited by their companion-paper theorem numbers.  This table records the same
-dictionary in one place so that Paper~IV can be read using the public theorem
+dictionary in one place so that Paper~II can be read using the public theorem
 numbering and the imported statements displayed here.
 \begingroup
 \scriptsize
@@ -12700,7 +12701,7 @@ normalized collection.\\
 paper.\\
 \end{longtable}
 \endgroup
-Paper~IV uses these results only through the imported theorem statements and
+Paper~II uses these results only through the imported theorem statements and
 the companion-paper numbering displayed in this appendix.
 
 \section{Generator calculus on compact recurrent cores}

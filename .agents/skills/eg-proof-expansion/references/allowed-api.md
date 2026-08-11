@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **591**.
+Compiled declarations: **597**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 90, **Minimum-degree cycle spine vocabulary** 285, **Sealed total closure** 12.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 91, **Minimum-degree cycle spine vocabulary** 290, **Sealed total closure** 12.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -3115,6 +3115,17 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
+#### `Hypostructure.Graph.Strategy.Spine.BarrierCapStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.BarrierEnumerationStatement`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3124,6 +3135,17 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
 
 ```lean
 Graph.Strategy.Spine.Data → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.BarrierOverflowStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.ColdAmbientCubicStubExcessStatement`
@@ -3149,17 +3171,6 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.ColdFailureRoutingStatement`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.ColdHotFailureMassStatement`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `definition`
@@ -3796,6 +3807,17 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
     Presentation → Graph.Strategy.Spine.Data → Graph.Strategy.Spine.Key → Graph.FiniteObject → Prop
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.HotColdWindowStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Identified`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3821,6 +3843,19 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
 
 ```lean
 (Graph.FiniteObject → Type v) → (Presentation : Type) → Presentation → Graph.Strategy.Spine.Data → Type (max (u + 1) v)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.IsHotColdWindowPartition`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data →
+  (object : Graph.FiniteObject) →
+    Finset (Finset object.Vertex) → Finset (Finset object.Vertex) → Finset (Finset object.Vertex) → Prop
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.K`
@@ -4162,17 +4197,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.coldHotFailureMass`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldPositiveGerm`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4295,6 +4319,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.densityCap`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.dependentPairFamily`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4449,6 +4484,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.homogeneousCapsHold`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.hotColdPartition`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5746,6 +5792,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.LiveHotWindow`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset object.Vertex → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Route8BasinBurden`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6122,26 +6179,47 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
               (previous :
                   Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                     current known) →
-                (barrierCap barrierOverflow :
+                (maximalPacking barrierCap barrierOverflow :
                     Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                  ((2 ^
-                            (data.windowRate *
-                                data.separatedScaleCount (Graph.FiniteObject.vertexCount current.object) *
-                              Graph.FiniteObject.windowPackingNumber current.object data.windowOrder) ≤
-                          Graph.skeletonBudget current.object ∧
-                        ∀ (family : Finset ℕ),
-                          Graph.FiniteObject.edgeCount current.object ∈ family →
-                            Graph.skeletonBudget current.object ≤
-                              Graph.variableEdgeBudget (Graph.FiniteObject.vertexCount current.object) family) →
-                      barrierCap.At current) →
-                    (Graph.skeletonBudget current.object <
-                          2 ^
-                            (data.windowRate *
-                                data.separatedScaleCount (Graph.FiniteObject.vertexCount current.object) *
-                              Graph.FiniteObject.windowPackingNumber current.object data.windowOrder) →
-                        barrierOverflow.At current) →
-                      barrierCap ∉ known →
-                        barrierOverflow ∉ known → Core.Strategy.Decision barrierCap barrierOverflow previous
+                  [Core.Residual.FactKeys.Has maximalPacking known] →
+                    (∀ (a : maximalPacking.At current),
+                        ∃ packing,
+                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                            packing.card = Graph.FiniteObject.windowPackingNumber current.object data.windowOrder ∧
+                              ∀ (support : Finset current.object.Vertex),
+                                Graph.FiniteObject.InducesWindow current.object data.windowOrder support →
+                                  ∃ member ∈ packing, ¬Disjoint support member) →
+                      ((∃ packing,
+                            Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                              packing.card = Graph.FiniteObject.windowPackingNumber current.object data.windowOrder ∧
+                                (∀ (support : Finset current.object.Vertex),
+                                    Graph.FiniteObject.InducesWindow current.object data.windowOrder support →
+                                      ∃ member ∈ packing, ¬Disjoint support member) ∧
+                                  2 ^
+                                        (data.windowRate *
+                                            data.separatedScaleCount (Graph.FiniteObject.vertexCount current.object) *
+                                          packing.card) ≤
+                                      Graph.skeletonBudget current.object ∧
+                                    ∀ (family : Finset ℕ),
+                                      Graph.FiniteObject.edgeCount current.object ∈ family →
+                                        Graph.skeletonBudget current.object ≤
+                                          Graph.variableEdgeBudget (Graph.FiniteObject.vertexCount current.object)
+                                            family) →
+                          barrierCap.At current) →
+                        ((∃ packing,
+                              Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
+                                packing.card = Graph.FiniteObject.windowPackingNumber current.object data.windowOrder ∧
+                                  (∀ (support : Finset current.object.Vertex),
+                                      Graph.FiniteObject.InducesWindow current.object data.windowOrder support →
+                                        ∃ member ∈ packing, ¬Disjoint support member) ∧
+                                    Graph.skeletonBudget current.object <
+                                      2 ^
+                                        (data.windowRate *
+                                            data.separatedScaleCount (Graph.FiniteObject.vertexCount current.object) *
+                                          packing.card)) →
+                            barrierOverflow.At current) →
+                          barrierCap ∉ known →
+                            barrierOverflow ∉ known → Core.Strategy.Decision barrierCap barrierOverflow previous
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.barrierEnumerationRow`
@@ -6155,14 +6233,8 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (localAlgebra finiteEnumeration :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            localAlgebra ≠ finiteEnumeration →
-              ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                  Graph.Strategy.Spine.BarrierEnumerationStatement data → finiteEnumeration.At input) →
-                Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.boundaryDemandRow`
@@ -7447,6 +7519,21 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset object.Ve
                     Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.hotColdPartitionRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.hybridEntryRow`
 
 - Category: Minimum-degree cycle spine rows
@@ -7721,19 +7808,8 @@ Graph.Strategy.Spine.Key → String
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (localAlgebra :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                ((Graph.WindowCurvature.legalCodeList data.windowOrder).length =
-                      (Graph.WindowCurvature.Labels data.windowOrder).card ∧
-                    ∀ (source middle target : Graph.WindowCurvature.Label data.windowOrder),
-                      Graph.WindowCurvature.curvatureTwo source middle target = true ↔
-                        Graph.WindowCurvature.Safe 1 source middle ∧
-                          Graph.WindowCurvature.Safe 1 middle target ∧ ¬Graph.WindowCurvature.Safe 2 source target) →
-                  localAlgebra.At input) →
-              Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.lowEntropyLargeBudgetRow`

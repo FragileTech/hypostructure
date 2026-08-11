@@ -297,4 +297,108 @@ fact. -/
                   simp [bits, Graph.spineDeficit]⟩)
             .nil)
 
+/-! ## Node `[132]`: route the dependent pair family -/
+
+/-- Node `[130]`: construct the full response family from the active-family
+fact on the literal `[129]` ledger, then retain exactly the paper's independent
+or dependent arm. -/
+noncomputable def pairResponseIndependenceDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    [FactKeys.Has (K .activeSurplusDemands) known]
+    (independentFresh : K .independentPairFamily ∉ known)
+    (dependentFresh : K .dependentPairFamily ∉ known) :
+    Decision (K .independentPairFamily) (K .dependentPairFamily) previous :=
+  Decision.run previous (K .independentPairFamily) (K .dependentPairFamily)
+    `Hypostructure.Graph.Strategy.Spine.pairResponseIndependenceDichotomy
+    (Classical.choice (show Nonempty
+        ((K .independentPairFamily).At current ⊕
+          (K .dependentPairFamily).At current) from by
+      let active := (previous.get (K .activeSurplusDemands)).down
+      let activation := Graph.pairResponseActivation active
+      let pairs := current.object.portPairSchedule data.threshold
+      let family := activation.pairFamily pairs
+      let coordinateSupport : current.object.PairCoordinate →
+          Finset current.object.Vertex := by
+        letI := current.object.vertices.decEq
+        exact Graph.DeclaredSignature.Coordinate.support
+      by_cases independent : ∀ attempt : Graph.AttemptedQuotient
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) current.object family
+          coordinateSupport,
+          Set.InjOn attempt.label ↑family
+      · exact ⟨.inl ⟨active, independent⟩⟩
+      · push_neg at independent
+        exact ⟨.inr ⟨active, independent⟩⟩))
+    independentFresh dependentFresh
+
+/-- `lem:sparse-pair-dependence-exit` on the literal residual produced by
+node `[130]`.  The attempted quotient and its failure of injectivity are read
+from that residual's exact ledger.  The two conclusions are distinct decision
+arms, and `Decision.run` preserves the complete incoming ancestry on either
+arm. -/
+noncomputable def blockedPairRoutingDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    [FactKeys.Has (K .dependentPairFamily) known]
+    (exitFresh : K .sparsePairExit ∉ known)
+    (blockerFresh : K .canonicalBlockerRoute ∉ known) :
+    Decision (K .sparsePairExit) (K .canonicalBlockerRoute) previous :=
+  Decision.run previous (K .sparsePairExit) (K .canonicalBlockerRoute)
+    `Hypostructure.Graph.Strategy.Spine.blockedPairRoutingDichotomy
+    (Classical.choice (show Nonempty
+        ((K .sparsePairExit).At current ⊕
+          (K .canonicalBlockerRoute).At current) from by
+      obtain ⟨active, attempt, reducing⟩ :=
+        (previous.get (K .dependentPairFamily)).down
+      let activation := Graph.pairResponseActivation active
+      let pairs := current.object.portPairSchedule data.threshold
+      rcases Graph.sparsePairDependence_exit_or_blocker activation pairs attempt
+          reducing with exit | blocker
+      · exact ⟨.inl ⟨exit⟩⟩
+      · exact ⟨.inr ⟨current.object.PairCoordinate,
+          current.object.PairCoordinate, activation, pairs, rfl, blocker⟩⟩))
+    exitFresh blockerFresh
+
+/-! ## Node `[134]`: canonical blocker ledger -/
+
+/-- The canonical blocker ledger on the literal blocker residual of `[132]`.
+The executor records that certified type-(d)/(e) obstruction in the same
+activation, then publishes the full-pair count, the blocked/free partition,
+the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
+@[reducible] noncomputable def canonicalPairLedgerRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.canonicalPairLedger
+    { Requires := [K .canonicalBlockerRoute]
+      Produces := [K .canonicalPairLedger]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .canonicalPairLedger)
+        (show Value BranchState Presentation presentation data
+            .canonicalPairLedger inputs.current from
+          ⟨by
+            obtain ⟨Coordinate, Chord, activation, pairs, pairsEq, certificate⟩ :=
+              (inputs.get (K .canonicalBlockerRoute)).down
+            let recorded := Graph.recordSparsePairDEBlocker activation pairs certificate
+            have baseline : ∀ vertex : inputs.current.object.Vertex,
+                data.threshold ≤ inputs.current.object.degree vertex :=
+              fun vertex => le_trans inputs.current.baseline
+                (inputs.current.object.minDegree_le_degree vertex)
+            refine ⟨Coordinate, Chord, activation, pairs, certificate, pairsEq,
+              ?_, ?_, ?_, ?_⟩
+            · rw [pairsEq]
+              exact inputs.current.object.card_portPairSchedule baseline
+            · simpa [pairsEq, recorded] using
+                recorded.card_chargedPairs_add_card_freePairs data.threshold
+            · exact recorded.card_chargedPairs_eq_sum_multiplicity data.threshold
+            · exact Graph.recordedSparsePairDEBlocker_nonempty activation pairs
+                certificate⟩)
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

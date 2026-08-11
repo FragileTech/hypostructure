@@ -1146,6 +1146,12 @@ inductive Key where
   The witnesses are derived from `LiveHotWindow` on the incoming residual;
   they are not supplied as routing data. -/
   | hotColdPartition
+  /-- Node `[130]`, blocked/dependent arm: a concrete `Π`, its declared
+  response family `ℛ_Π`, and the rank-reducing attempted quotient consumed by
+  node `[132]`. -/
+  | dependentPairFamily
+  /-- Node `[130]`, independent arm for the same concrete full response family. -/
+  | independentPairFamily
   deriving DecidableEq
 
 /-- **`𝒲₂(R)`**: the raw internal length-two curvature tests carried by the
@@ -4321,95 +4327,70 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             Graph.spineDeficit object.vertexCount data.threshold family.card ≤
               data.surplusScale * object.vertexCount)
   | .canonicalPairLedger, object =>
-      -- `def:sparse-pair-response`, `def:surplus-blockers` instantiated,
-      -- `def:canonical-blocker-ledger` and its no-overcount identity at that
-      -- instantiation, and the concrete mixed spine/free-pair package counted
-      -- by `prop:sparse-entropy-sandwich-with-blockers`.
-      --
-      -- `lem:sparse-pair-dependence-exit` is *not* here: it is a disjunction
-      -- about the object -- an exit or a blocker -- and it is node `[132]`'s
-      -- own branch, whose two arms are `sparsePairExit` and
-      -- `canonicalBlockerRoute` below.
-      ((object.portPairSchedule data.threshold).card =
-          (object.degreeSurplus data.threshold).choose 2 ∧
-        (∀ Coordinate Chord : Type u,
-          ∀ activation :
-            Graph.FiniteObject.DemandActivation object Coordinate Chord,
-            ((activation.chargedPairs data.threshold).card +
-                  (activation.freePairs data.threshold).card =
-                (object.portPairSchedule data.threshold).card ∧
-              (activation.chargedPairs data.threshold).card =
-                Graph.SameTokenBlockerRoles.canonicalBlockerOrder.toFinset.sum
-                  (activation.multiplicity data.threshold) ∧
-              ∀ pair : Finset (object.Vertex × object.Vertex),
-                (∃ kind, activation.Blocks kind pair) ↔
-                  (activation.blockers pair).Nonempty) ∧
-            (∀ pair : Finset (object.Vertex × object.Vertex),
-              ∀ support : Finset object.Vertex,
-                activation.pairSupport pair = some support →
-                  activation.pairSeed pair ⊆ support ∧
-                    Graph.SupportComponents.Connected.ConnectedOn object support ∧
-                    (∀ other : Finset object.Vertex,
-                      activation.pairSeed pair ⊆ other →
-                      Graph.SupportComponents.Connected.ConnectedOn object other →
-                        support.card ≤ other.card) ∧
-                    ∀ vertex : object.Vertex,
-                      vertex ∈
-                          Graph.FiniteObject.DemandActivation.pairBoundary object
-                            support ↔
-                        vertex ∈ support ∧
-                          ∃ neighbor, object.graph.Adj vertex neighbor ∧
-                            neighbor ∉ support) ∧
-            ∀ family : Finset (Finset (object.Vertex × object.Vertex)),
-              (activation.pairFamily family).card = family.card) ∧
-        ∀ baseline : object.BaselineWindowDemand
-            (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-            data.threshold data.windowOrder data.surplusScale,
-          ∀ Coordinate Chord : Type u,
-            ∀ activation :
-              Graph.FiniteObject.DemandActivation object Coordinate Chord,
-              object.MixedSpinePairDemand
-                (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-                data.threshold data.windowOrder data.surplusScale
-                baseline activation)
+      ∃ (Coordinate Chord : Type u)
+        (activation : object.DemandActivation Coordinate Chord)
+        (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+        (certificate : Graph.HasSparsePairDEBlocker
+          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+          (LengthOK := data.LengthOK) activation pairs),
+        pairs = object.portPairSchedule data.threshold ∧
+          pairs.card = (object.degreeSurplus data.threshold).choose 2 ∧
+          let recorded := Graph.recordSparsePairDEBlocker activation pairs certificate
+          (recorded.chargedPairs data.threshold).card +
+                (recorded.freePairs data.threshold).card = pairs.card ∧
+            (recorded.chargedPairs data.threshold).card =
+              Graph.SameTokenBlockerRoles.canonicalBlockerOrder.toFinset.sum
+                (recorded.multiplicity data.threshold) ∧
+            ∃ pair ∈ pairs, (recorded.blockers pair).Nonempty
   | .sparsePairExit, object =>
-      -- Node `[132]`, exit arm: the first alternative of
-      -- `lem:sparse-pair-dependence-exit`.  Both refutations its proof spends
-      -- are exits in the manuscript's sense -- the delocalization exit of
-      -- `def:named-surplus-exits` and `lem:replacement`'s proper-support
-      -- obstruction -- so the arm is the negation of node `[125]`'s conjunction.
-      ¬ (Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∧
-        ∀ support : Finset object.Vertex,
-          ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object support)
+      Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
   | .canonicalBlockerRoute, object =>
-      -- Node `[132]`, blocker arm: the second alternative of
-      -- `lem:sparse-pair-dependence-exit`, together with
-      -- `lem:mixed-sparse-spine-dependence` and
-      -- `prop:sparse-pair-independence-dichotomy`.  The exit alternative is the
-      -- arm not taken, so it is discharged by the branch: nothing is left as a
-      -- hypothesis of the committed statement.
-      ∀ Coordinate : Type u, ∀ family : Finset Coordinate,
-        ∀ coordinateSupport : Coordinate → Finset object.Vertex,
-          (∀ attempt :
-              Graph.AttemptedQuotient
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) object family
-                coordinateSupport,
-              ¬ Set.InjOn attempt.label ↑family →
-                (∃ left right, attempt.Identifies left right ∧
-                    left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
-                  (∃ left right, attempt.Identifies left right ∧
-                    Graph.Response.TargetDefect
-                      (Graph.HasCycleWithLength data.LengthOK) left right)) ∧
-            Core.TargetRank.targetRank
-                (Graph.FiniteObject.declaredQuotientSystem
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) object family
-                  coordinateSupport) =
-              family.card
+      ∃ (Coordinate Chord : Type u)
+        (activation : object.DemandActivation Coordinate Chord)
+        (pairs : Finset (Finset (object.Vertex × object.Vertex))),
+        pairs = object.portPairSchedule data.threshold ∧
+          Graph.HasSparsePairDEBlocker
+            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+            (LengthOK := data.LengthOK) activation pairs
+  | .dependentPairFamily, object =>
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        let activation := Graph.pairResponseActivation active
+        let pairs := object.portPairSchedule data.threshold
+        ∃ attempt :
+            let family := activation.pairFamily pairs
+            let coordinateSupport : object.PairCoordinate →
+                Finset object.Vertex := by
+              letI := object.vertices.decEq
+              exact Graph.DeclaredSignature.Coordinate.support
+            Graph.AttemptedQuotient
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) object family
+              coordinateSupport,
+            let family := activation.pairFamily pairs
+            ¬ Set.InjOn attempt.label ↑family
+  | .independentPairFamily, object =>
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        let activation := Graph.pairResponseActivation active
+        let pairs := object.portPairSchedule data.threshold
+        ∀ attempt :
+            let family := activation.pairFamily pairs
+            let coordinateSupport : object.PairCoordinate →
+                Finset object.Vertex := by
+              letI := object.vertices.decEq
+              exact Graph.DeclaredSignature.Coordinate.support
+            Graph.AttemptedQuotient
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) object family
+              coordinateSupport,
+          let family := activation.pairFamily pairs
+          Set.InjOn attempt.label ↑family
   | .sparseUpperEnvelope, object =>
       -- `lem:sparse-upper-envelope`: `m + 2 ≤ (δ − 1)·n`, the manuscript's
       -- `m ≤ 2n − 2` at its own `δ = 3`.
@@ -4731,6 +4712,8 @@ def label : Key → String
   | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
   | .activeSurplusDemands => "activeSurplusDemands"
   | .hotColdPartition => "hotColdPartition"
+  | .dependentPairFamily => "dependentPairFamily"
+  | .independentPairFamily => "independentPairFamily"
 
 /-! ### Label pins
 
@@ -4925,6 +4908,8 @@ example : label .typeBHandoff = "typeBHandoff" := rfl
 example : label .homogeneousBottleneck = "homogeneousBottleneck" := rfl
 example : label .sparseSurplusSurvivor = "sparseSurplusSurvivor" := rfl
 example : label .activeSurplusDemands = "activeSurplusDemands" := rfl
+example : label .dependentPairFamily = "dependentPairFamily" := rfl
+example : label .independentPairFamily = "independentPairFamily" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -5110,6 +5095,8 @@ def idx : Key → Nat
   | .sparseSurplusSurvivor => 119
   | .activeSurplusDemands => 120
   | .hotColdPartition => 200
+  | .dependentPairFamily => 201
+  | .independentPairFamily => 202
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -5284,6 +5271,8 @@ def ofIdx : Nat → Key
   | 127 => .sparsePressureNearCubic
   | 128 => .sparsePressureOverload
   | 200 => .hotColdPartition
+  | 201 => .dependentPairFamily
+  | 202 => .independentPairFamily
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -5690,6 +5679,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "activeSurplusDemands") 120
   | .hotColdPartition =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "hotColdPartition") 200
+  | .dependentPairFamily =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "dependentPairFamily") 201
+  | .independentPairFamily =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "independentPairFamily") 202
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

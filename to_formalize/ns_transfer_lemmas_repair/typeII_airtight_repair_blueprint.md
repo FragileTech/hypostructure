@@ -31,8 +31,7 @@ The global no-Type-II conclusion is **not** expected to come from any single glo
 Accordingly, this blueprint does **not** ask a local theorem to prove a global property. It asks that every capsule have an exact local input contract, a correct local calculation, an exact topology and pressure representative, a transported obstruction, and explicit failure routes.
 
 The manuscript already states this philosophy in its abstract and introduction.
-The remaining corrections below put cost validation in a strict phase order,
-record imported-output ownership, and consolidate duplicated proof-bearing
+The remaining correction below consolidates duplicated proof-bearing
 conventions.
 
 ---
@@ -40,17 +39,16 @@ conventions.
 ## Remaining repair packages
 
 The manuscript already contains the coordinate, domain-buffer, gauge,
-pressure, bounded-window, parameter-chart, dependency-direction, and
-upper-estimate repairs formerly listed as R1--R10.  The remaining work is:
+pressure, bounded-window, parameter-chart, dependency-direction,
+upper-estimate, cost-phase, and imported-output provenance repairs formerly
+listed as R1--R12.  The remaining work is:
 
 | Package | Nature | Severity | New deep PDE theorem? |
 |---|---|---:|---:|
-| R11 | Cost well-posedness and validation phase order | Medium acyclicity | No |
-| R12 | Imported-output provenance ledger | High auditability | No |
 | R13 | Remove superseded duplicate conventions and add static checks | High consolidation | No |
 
-These are interface, dependency, provenance, and consolidation repairs.  They
-do not call for a new global analytic theorem.
+This is a consolidation repair.  It does not call for a new global analytic
+theorem.
 
 ---
 
@@ -108,234 +106,6 @@ The repairs below therefore never replace the state-space proof by a global esti
 ---
 
 # Part II. Detailed repair packages
-
-# R11. Put cost well-posedness, carrier routing, and validation in a strict phase order
-
-## Current source anchors
-
-- local cost well-posedness currently near line 9798;
-- `paper7:lem:local-state-data-local-l2`, currently near line 9908;
-- cost validation and carrier package immediately following that block;
-- the explicit cost-divergence dependency-order lemma currently near line 17343.
-
-## Problem
-
-The manuscript's intended order is largely correct, but some theorem statements and cross-references make it look as though:
-
-- a validation theorem supplies data needed to define the cost;
-- a local \(L^2\) lemma assumes and concludes the same fact;
-- carrier closure and cost divergence justify one another.
-
-This should be eliminated syntactically.
-
-## Define explicit phases
-
-Assign every cost/carrier theorem a `CostPhase`.
-
-### Phase 0. Retained local data
-
-Inputs already produced upstream:
-
-- represented suitable equation;
-- local \(L^\infty L^2\) and \(L^2H^1\);
-- pressure representative;
-- modulation \(L^1\) or stronger local control;
-- working/core cutoffs and buffers.
-
-### Phase 1. Cost well-posedness
-
-Prove every integrand is measurable and locally integrable. No cost divergence or carrier theorem is invoked.
-
-### Phase 2. Canonical identity cost
-
-Define the canonical signed and absolute costs and prove elementary comparisons.
-
-### Phase 3. Fixed and moving cutoff identities
-
-Derive the exact local energy/cost identity and decompose the error into canonical components \(J_1,\dots,J_7\).
-
-### Phase 4. Finite-error or normalized occupation routing
-
-For each component:
-
-- summable error: perturbative closure;
-- nonsummable error: normalize blocks and produce the corresponding occupation state.
-
-### Phase 5. Carrier certificates
-
-Route \(J_1\), \(J_6\), \(J_7\) and the other components to their already declared local states.
-
-### Phase 6. Divergent validated cost contradiction
-
-Only now may the cost-divergence theorem use the prior carrier closures.
-
-### Phase 7. Final validation ledger
-
-The validation theorem checks that the candidate used the canonical cost and that all prior phases were satisfied. It does not prove any Phase 0--6 input.
-
-## Specific edit to `paper7:lem:local-state-data-local-l2`
-
-Delete it as a theorem if it is tautological. Replace it by either:
-
-- a definition of `LocalStateData` collecting Phase 0 inputs; or
-- a proposition citing `paper5:prop:selected-window-suitable-estimates` as the
-  actual producer of local \(L^2\) data.
-
-It must not cite a later no-unrecorded-exit or cost-divergence theorem.
-
-## Acyclicity table
-
-Add a table:
-
-| Theorem label | Phase | May use | Must not use |
-|---|---:|---|---|
-| cost measurability | 1 | Phase 0 | carrier or divergence |
-| moving identity | 3 | 0--2 | carrier closure |
-| normalized carrier extraction | 4 | 0--3 | final cost contradiction |
-| carrier routing | 5 | 0--4 and earlier state closures | cost divergence |
-| cost divergence exclusion | 6 | 0--5 | final assembly |
-| validation ledger | 7 | 0--6 | itself |
-
-## Acceptance tests
-
-1. Automatic dependency graph has no cycle.
-2. No theorem invokes a theorem with an equal or later phase except an explicitly rank-decreasing reduction.
-3. The local energy identity is valid before any conclusion about divergence.
-
----
-
-# R12. Add a precise imported-output provenance ledger
-
-## Why this is essential
-
-Several statements previously classified as “missing theorems” are not supposed to be proved in this manuscript. They are inputs inherited from the companion papers or are positive contracts defining the retained admissible branch. The paper becomes airtight only if this ownership is visible at every use.
-
-The local architecture permits imports. It does not permit an import to be represented as though its hypotheses were proved by a definition in the current paper.
-
-## Required ledger columns
-
-Add near the beginning of the paper a longtable with:
-
-1. interface name;
-2. source file;
-3. exact source theorem/lemma label;
-4. exact output tuple;
-5. target theorem label in the Type II paper;
-6. local working and core windows;
-7. convergence topology;
-8. pressure representative;
-9. retained obstruction;
-10. named failure output if the import is unavailable;
-11. status: imported, proved here, or admissible-branch input.
-
-## Required imported interfaces
-
-At minimum list:
-
-### Concentration entry
-
-Output:
-
-\[
-C((x_0,T),r_n)\ge\eta_v>0
-\]
-
-along shrinking physical cylinders, plus the physical Type I/Type II dichotomy.
-
-Target:
-
-- physical Type II entry;
-- selected retained-core construction;
-- retained velocity-floor statements.
-
-### Raw AC concentration chart
-
-Output:
-
-\[
-(x_c,\lambda,\rho,U,Q)
-\]
-
-with exact AC and distributional chain-rule data.
-
-Failure output:
-
-- chart extraction;
-- scale route;
-- profile completeness;
-- domain failure.
-
-### AC repaired-gauge solve
-
-Output:
-
-\[
-(\mu,q,\tau,V,P)
-\]
-
-with \(\rho_\tau=\mu^2\), gauge constraints, and corrected Jacobian transversality.
-
-Failure output:
-
-- gauge degeneracy;
-- multibubble;
-- cascade;
-- scale rigidity;
-- annular core loss.
-
-### Pressure atlas
-
-Output:
-
-- localized Calderón--Zygmund part;
-- harmonic remainder;
-- mean/time gauge;
-- compactness topology.
-
-Failure output:
-
-- pressure reconstruction;
-- exterior pressure;
-- pressure-only retained state.
-
-### Terminal active-profile decomposition
-
-Output:
-
-- retained nonlinear component \(U_n\);
-- residual \(S_n\);
-- parameter orthogonality/grouping data;
-- topology in which the residual is small or visible;
-- ancestry of each terminal descendant.
-
-Failure output:
-
-- hidden profile;
-- diffuse tail;
-- exterior;
-- profile completeness.
-
-## Replace circular-looking “assumptions supply assumptions” statements
-
-A statement of the form
-
-> the admissible assumptions assign the four representation assumptions, hence the representation assumptions hold
-
-is logically valid only as a class definition, not as an analytic theorem. Label it explicitly as:
-
-- a definition of the admissible represented class; or
-- an import discharge proposition whose proof is a list of source labels.
-
-Do not give it the rhetorical status of a new analytic theorem.
-
-## Acceptance tests
-
-1. Every imported noun in a theorem proof has a source label.
-2. Every target input is literally contained in the source output, including topology and pressure gauge.
-3. Every missing import has a named outgoing state.
-4. No final theorem depends on an interface marked merely “assumed” unless the theorem is explicitly conditional on the admissible class.
-
----
 
 # R13. Consolidate the paper and eliminate superseded duplicate proof-bearing blocks
 
@@ -404,20 +174,7 @@ Also check:
 
 # Part III. Recommended edit order
 
-## Stage 1. Order cost validation
-
-1. Apply R11 phase numbering.
-2. Delete or reclassify tautological local-data lemmas.
-3. Topologically sort the cost and carrier subgraphs.
-
-## Stage 2. Record ownership of imported outputs
-
-1. Complete the R12 provenance ledger.
-2. Check that each source output matches its target input in window, topology,
-   pressure gauge, and retained obstruction.
-3. Give every unavailable import a named outgoing state.
-
-## Stage 3. Consolidate and run static checks
+## Stage 1. Consolidate and run static checks
 
 1. Apply R13 to remove superseded duplicate proof-bearing blocks.
 2. Point downstream theorems to the canonical chart, Caccioppoli, pressure, and
@@ -435,12 +192,6 @@ A referee should be able to answer **yes** to every item below.
 - [ ] Every terminal profile is inherited or constructed by a named theorem.
 - [ ] Ancestry and retained obstruction are recorded for every descendant.
 
-## Dependency order
-
-- [ ] Cost well-posedness precedes carrier routing and cost divergence.
-- [ ] The closure dependency graph is acyclic or has an explicit strict rank.
-- [ ] Final assembly is not used in any theorem that supplies its own hypotheses.
-
 ## Imports and final closure
 
 - [ ] Every import has a source label and exact output tuple.
@@ -455,9 +206,8 @@ A referee should be able to answer **yes** to every item below.
 
 These remaining edits preserve the paper's central idea: the proof is a
 repeated local operation, not a search for one miraculous global estimate.
-They make parameter escape explicit, orient the remaining dependencies, expose
-the ownership of imported data, and consolidate duplicated proof-bearing
-interfaces.
+They expose the ownership of imported data and consolidate duplicated
+proof-bearing interfaces.
 
 After the edits, the main proof should read as follows:
 

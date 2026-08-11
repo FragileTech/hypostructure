@@ -227,15 +227,16 @@ promotion, and certified reduction to previously discharged obstructions.
 **Combinatorics.** `original_erdos_64_proof.tex`, whose current Lean application exports
 the end-to-end theorem described above.
 
-**Navier–Stokes.** Four manuscripts forming a chain in which each discharges a hypothesis
-named by its predecessor.
+**Navier–Stokes.** Three proof manuscripts form a dependency chain in which each
+discharges a branch left by its predecessor. A separate entropy companion organizes
+the state space supplied by that three-paper chain.
 
 - `proof_setup.tex` establishes the local pointwise Type I reduction: Seregin
   extraction, the raw generated state space, and exclusion of the small-amplitude,
   stationary $L^3$, uniformly $L^3$-tight, and structure-and-decay classes. Its Type I
   contradiction rests on one named residual-class hypothesis, `p1:hyp:no-remainder`,
   which the paper states explicitly.
-- `paperIV_residual_branch.tex` proves that hypothesis. An ordered residual
+- `type_I_residual_closure.tex` proves that hypothesis. An ordered residual
   decomposition, centered angular-circulation absorption, a minimal mesoscopic-scale
   rigidity theorem, and an endpoint sequence-$L^3$ Liouville argument for bounded mild
   ancient solutions yield the refined residual closure; inserted into the setup paper's
@@ -269,13 +270,14 @@ canonical ledger. The immediate items are:
    outside the live build closure; its parabolic atlases, localization, vorticity, and
    Navier–Stokes model are porting reference, to be reconstructed on the canonical API
    as the Erdős–Gyárfás rows are, rather than re-imported.
-4. Port the Navier–Stokes chain in dependency order: `proof_setup`,
-   `paperIV_residual_branch`, `type_II_regularity`, `ns_perelman`. The chain is itself an
-   instance of the structure the ledger records. The setup paper names a residual-class
-   hypothesis and promotes it; Paper IV discharges it and commits the corresponding
-   fact; the final assembly reads that fact back. Under formalization the discharge
-   becomes a key in the branch index, present or absent, and is checked at elaboration
-   rather than traced by hand across manuscripts.
+4. Port the three-paper Navier–Stokes chain in dependency order: `proof_setup`,
+   `type_I_residual_closure`, and `type_II_regularity`; treat `ns_perelman` afterward as
+   the entropy companion. The proof chain is itself an instance of the structure the
+   ledger records. The setup paper names a residual-class hypothesis and promotes it;
+   Paper II discharges it and commits the corresponding fact; the final assembly reads
+   that fact back. Under formalization the discharge becomes a key in the branch index,
+   present or absent, and is checked at elaboration rather than traced by hand across
+   manuscripts.
 
 No schedule is claimed. What formalization adds is not qualification of the results but
 a mechanical record of their use: which branch each theorem closes, and which facts were

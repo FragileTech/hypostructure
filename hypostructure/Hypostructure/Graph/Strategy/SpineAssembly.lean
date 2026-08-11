@@ -476,7 +476,7 @@ noncomputable instance instIncompatibleSparsePairExit :
     Incompatible (Input BranchState Presentation presentation data)
       (K .sparseSurplusSurvivor) (K .sparsePairExit) where
   contradiction := fun _residual survivor exit =>
-    exit.down survivor.down
+    survivor.down.1 exit.down
 
 /-- **The terminal `[37]` is uninhabited**, at the spine's own key.
 

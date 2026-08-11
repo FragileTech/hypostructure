@@ -205,11 +205,27 @@ noncomputable def selectedBaselineSpineDemand
     (le_trans (by omega) spineData.three_le_threshold)).run history (by
       simp [baselineSpineDemandRow, K_eq_iff])
 
+/-- Node `[130]`: the full pair-response family, split into the paper's
+independent and dependent residuals on the literal `[129]` ledger. -/
+noncomputable def selectedPairResponseIndependenceDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor, K .surplusAbove,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
+        K .returnAvoidance, K .selection]) :
+    Decision (K .independentPairFamily) (K .dependentPairFamily) history :=
+  pairResponseIndependenceDichotomy (data := spineData) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+
 /-- Node `[132]`, the sparse-pair routing split after baseline demand. -/
 noncomputable def selectedBlockedPairRoutingDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .activeSurplusDemands,
+      [K .dependentPairFamily, K .baselineSpineDemand,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
@@ -227,13 +243,13 @@ noncomputable def selectedBlockedPairRoutingDichotomy
         .canonicalBlockerRoute)
       history :=
   blockedPairRoutingDichotomy (data := spineData) history
-    (K .sparsePairExit) (K .canonicalBlockerRoute)
-    (fun exit => ⟨exit⟩)
+    (by simp [K_eq_iff]) (by simp [K_eq_iff])
 /-- Node `[133]`, sparse-pair exit closes against the survivor fact. -/
 noncomputable def selectedSparsePairExitCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .sparsePairExit, K .activeSurplusDemands,
+      [K .sparsePairExit, K .dependentPairFamily, K .baselineSpineDemand,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
@@ -249,7 +265,8 @@ noncomputable def selectedSparsePairExitCloses
 noncomputable def selectedCanonicalPairFacts
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .canonicalBlockerRoute,
+      [K .canonicalBlockerRoute, K .dependentPairFamily,
+        K .baselineSpineDemand,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
@@ -258,6 +275,7 @@ noncomputable def selectedCanonicalPairFacts
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .canonicalPairLedger, K .canonicalBlockerRoute,
+        K .dependentPairFamily, K .baselineSpineDemand,
         K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
@@ -268,20 +286,7 @@ noncomputable def selectedCanonicalPairFacts
   exact
     (canonicalPairLedgerRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      (K .activeSurplusFamily) (K .sparseSlackSurplus)
-      (K .surplusAbove)       (K .canonicalBlockerRoute) (K .canonicalPairLedger)
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp)
-      (fun _input fact => fact.down)
-      (fun _input fact => fact.down)
-      (fun _input fact Coordinate family coordinateSupport =>
-        (fact.down Coordinate family coordinateSupport).2)
-      (fun _input fact => ⟨fact⟩)).run history (by
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
         simp [canonicalPairLedgerRow, K_eq_iff])
 
 /-- Nodes `[135]` and `[136]`, sparse envelope and capacity-token ledger. -/

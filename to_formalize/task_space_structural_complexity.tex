@@ -144,13 +144,13 @@
 }
 
 \title{Presentation-Relative Structural Complexity:\\
-Operator Dynamics, Learning, Controlled Systems, Meta-Complexity, and LPN}
+Quantitative Limits for General Intelligent Computation}
 \author{Guillem Duran Ballester\\
 \href{mailto:guillem@fragile.tech}{\texttt{guillem@fragile.tech}}}
 \date{}
 
 \hypersetup{
-  pdftitle={Presentation-Relative Structural Complexity},
+  pdftitle={Presentation-Relative Structural Complexity: Quantitative Limits for General Intelligent Computation},
   pdfauthor={Guillem Duran Ballester}
 }
 
@@ -190,6 +190,33 @@ relative to the declared presentation and its resource-saturated constructor
 closure.
 \end{abstract}
 
+\begin{center}
+\fbox{%
+  \begin{minipage}{0.91\linewidth}
+  \centering
+  \textbf{Universal capability bound.}
+  For every declared task presentation \(\mathfrak M\), scale \(n\), and
+  resource budget \(B\), the framework has the schematic form
+  \[
+  \operatorname{Performance}_{\mathfrak M,n}(B)
+  \;\le\;
+  \operatorname{Overhead}(B,n)\,
+  \operatorname{SaturatedProfile}_{\mathfrak M,n}
+  \bigl(\Psi(B,n)\bigr).
+  \]
+  Here the left-hand side is optimized over every admissible algorithm in the
+  declared resource class.  The right-hand side depends only on the task
+  presentation and the cost-filtered closure of all structure derivable from
+  it.  Consequently, the bound applies to arbitrary architectures without
+  enumerating them or anticipating how they represent, search, learn, remember,
+  attend, or control.  Advice, target information unavailable through the
+  declared presentation, structures above the transformed budget
+  \(\Psi(B,n)\), and enriched interfaces are assigned to distinct accounting
+  classes rather than included in the saturated profile without charge.
+  \end{minipage}%
+}
+\end{center}
+
 \tableofcontents
 
 \clearpage
@@ -206,12 +233,47 @@ Presentations}\label{sec-static-introduction}
 \emph{First pass:} the examples and audit procedures may be skimmed after the
 definitions they illustrate.
 
-The complexity of a problem depends first on the information supplied by
-its presentation. Across theoretical computer science, optimization,
-machine learning, and control, this information comprises a state space,
-an observable interface, and terminal criteria distinguishing success
-from failure. The corresponding terminology differs across fields, but
-the underlying measurable structure is common.
+Most performance analyses begin with a chosen computational method.  They
+inspect its states, representations, and transitions, then derive a bound for
+that method:
+\[
+\text{choose an algorithm}
+\;\longrightarrow\;
+\text{analyze its computation}
+\;\longrightarrow\;
+\text{bound its performance}.
+\]
+Such a bound is tied to the analyzed design.  A different architecture,
+representation, search rule, or controller requires a new analysis unless the
+argument identifies an invariant shared by the entire admissible resource
+class.
+
+This paper begins instead with the information and operations supplied by the
+task.  Across theoretical computer science, optimization, machine learning,
+and control, these data comprise a state space, a public observable interface,
+admissible constructors, resource accounting, and terminal criteria
+distinguishing success from failure.  The analysis follows the reverse order:
+\[
+\begin{gathered}
+\text{specify the public task presentation}
+\;\longrightarrow\;
+\text{close all affordable structure}\\[2pt]
+\longrightarrow\;
+\text{measure the saturated target-relevant profile}
+\;\longrightarrow\;
+\text{bound every admissible computation}.
+\end{gathered}
+\]
+The resulting bound is architecture-independent within the declared
+presentation and resource class.  A future algorithm, architecture, learned
+representation, search procedure, memory system, attention mechanism, or
+controller cannot evade the analysis because its design was not anticipated.
+Every admissible target-relevant quotient, feature map, potential, kernel,
+observable, policy, or value representation that it constructs at runtime
+re-enters the same saturated closure at its complete representation and
+computation cost.  The saturated profile therefore measures the capability
+available from the presentation, rather than the capability of a preferred
+algorithm.
 
 \subsection{What this paper introduces}\label{subsec-overview-general}
 
@@ -356,94 +418,130 @@ The static spine is
 
 \subsection{Contributions}\label{subsec-contributions}
 
-The main contributions are organized by the dependency chain used in the
-proofs. Each item is stated first in classical language and then keyed
-to the framework results that prove it.
+The contributions form three levels.  The first consists of the framework's
+new mathematical objects.  The second contains the theorems made possible by
+those objects.  The third records the established analytic ingredients used
+inside the proofs.
 
-\begin{enumerate}[label=\textup{C\arabic*.}]
-\item \emph{A machine-free presentation of problems.} A task-space
-signature separates complete states, public observables, the
-state-to-state relation slot, and terminal data, giving a common
-measurable core for decision, optimization, learning, and control
-problems (\cref{def-task-space-signature,def-observable-algebra}).
-\item \emph{An exhaustive generator decomposition.} Every represented
-positive sub-Markov operator splits into a reversible part, a directed
-drift, a lumpability quotient, a valid lift, and a boundary/killing
-part, plus a residual with no structural provenance; each component has
-an explicit normal form
-(\cref{thm-channel-exhaustiveness,thm-exhaustive-geom-normal-form,thm-exhaustive-lift-normal-form,thm-exhaustive-bdry-normal-form,thm-exhaustive-residual-normal-form}).
-\item \emph{A cost filtration on the observable algebra.} Derivability
-closure and saturated representation cost assign to every publicly
-constructible object the least budget at which its complete derivation
-exists, so that all bounds are stated against available structure rather
-than a machine model
+\paragraph{A. New foundational objects.}
+
+\begin{itemize}
+\item \emph{Task presentations as machine-independent computational objects.}
+A task-space signature separates complete states, public observables,
+state-to-state structure, admissible constructors, resource accounting, and
+terminal data
+(\cref{def-task-space-signature,def-observable-algebra}).
+
+\item \emph{Budgeted derivability and saturated represented closure.}
+Budgeted derivability closes the declared presentation under oracle-free
+constructors and represented computations, while saturated representation
+cost records the least complete budget of each derived object
 (\cref{def-budgeted-derivability-closure,def-saturated-representation-degree}).
-\item \emph{A quantitative backward cut.} Each terminal quotient factors
-through a charged joint frontier, localizing where discounted target
-mass can enter
-(\cref{thm-quantitative-backward-source-factorization}).
-\item \emph{Provenance normal forms and exact charging.} The
-five-family provenance normal form accounts for every qualified
-quotient, and an exact state--coefficient reindexing classifies the
-saturated prospective source profile
-(\cref{thm-five-family-abs-provenance,thm-exact-affordable-algebra-structural-charging,thm-universal-state-coefficient-source-decomposition}).
-\item \emph{First-hit accountability.} An exact first-hit decomposition
-converts represented finite-horizon success probability into saturated
-quotient visibility, the inequality on which all hardness statements
-rest
-(\cref{lem:exact-affordable-first-hit,thm-universal-saturated-profile-accountability}).
-\item \emph{Learning bounds from the same ledger.} Read as a
-reproducing-kernel object, the saturated filtration yields operator,
-kernel, and effective-dimension generalization bounds, including
-two-sided bounds under label corruption and dependent sampling
-(\cref{thm-fixed-operator-rademacher-bound,thm-krr-effective-dimension-bound}).
-\item \emph{Certificates for controlled systems.} Every represented
-controlled Markov system has an exhaustive selected-generator
-decomposition and a coordinatewise certificate for arrival, reach--avoid
-probabilities, mixing, hitting times, Bellman loss, and learned control
-(\cref{thm-controlled-policy-channel-decomposition,thm-universal-dynamical-certificate}).
-\item \emph{Attention as a Gibbs selector.} Softmax normalization
-satisfies exact Kullback--Leibler and Fisher--Rao identities, and every
-score, value, head, mask, residual path, and selector of an attention
-layer is compiled into the structural ledger with its source and cost
-(\cref{thm-attention-gibbs-gradient-flow,thm-attention-structural-source-compilation,thm-attention-target-gain-envelope}).
-Optimal structural Bayesian extraction equals the saturated
-represented-computation ceiling and has explicit source, channel, noise,
-drift, lift, boundary, and Bellman coordinates
-(\cref{thm-optimal-structural-extraction-saturated-ceiling,cor-noise-sample-target-size-optimal-extraction}).
-Compact latent beliefs refine this ceiling by code capacity and
-sufficiency defect, and represented attention realizes the exact
-Bayesian Fisher flow and optimal bounded-branch acquisition at the
-corresponding compiled ceiling
-(\cref{thm-compact-latent-information-sufficiency,thm-optimal-compact-latent-acquisition,cor-bayesian-posterior-attention-flow,thm-joint-compact-latent-attention-acquisition}).
-\item \emph{Structural meta-complexity.} Strict Pareto frontiers record the
-least complete resource vectors at which prospective certificates cross a
-declared gain threshold.  These frontiers are exact generalized inverses of
-the corresponding saturated profiles, admit the exact source-cell
-decomposition, and specialize to circuit and universal-program minimization
-under typed representation grammars
-(\cref{thm-strict-meta-profile-generalized-inverse,thm-source-cell-meta-complexity-exhaustion,thm-circuit-minimization-specialization,thm-program-minimization-specialization}).
-\item \emph{Application to Learning Parity with Noise.} The exact quotient
-and quotient-supported geometric exhaustion, together with the constant-noise
-spectral perimeter, isolates a single residual-ancestry numerical premise.  At fixed positive
-noise, the charged aligned-coset calculation exponentially suppresses every
-materialized located spectrum, and the residual-parity rank test shows that
-its natural fibers either fail terminal compatibility or are
-identity-equivalent
-(\cref{thm-lpn-constant-noise-materialized-spectral-closure,lem-lpn-residual-parity-spectral-fibers}).
-Under the remaining compact non-lumpable ambient bound, the complete
-saturated coordinate is at most \(2^{-n}+(1-\eta)^n\), prospective selector
-accountability yields the fixed-noise hardness theorem, and the prefix-search
-reduction gives \(P\ne NP\)
-(\cref{thm-lpn-saturated-floor,thm-lpn-one-way,cor-lpn-p-not-equal-np}).
-The framework empirical machinery gives a proof-grade discharge protocol for
-that sole premise: an empirical learner proposes the source factorization,
-and verification proves its exhaustive coverage, capacity,
-noise attenuation, error, scale law, crossover, and finite prefix, where the
-crossover and prefix checks are finite computations and the scale-law
-bounds are symbolic uniform-in-\(n\) obligations
-(\cref{cor-empirical-discovery-deterministic-universal-closure,thm-lpn-proof-grade-empirical-residual-discharge}).
-\end{enumerate}
+
+\item \emph{Typed structural channels.}
+The channels \(\Geom,\Caus,\Abs,\Lift,\Bdry\), and \(\Res\) carry cost,
+provenance, qualification, target-use, and residual semantics in addition to
+their operator-theoretic coordinates
+(\cref{def-admissible-channel-representatives,def-hodge-channel-split,def-abs-lift-split}).
+
+\item \emph{Affordable conditional-algebra frontiers.}
+An affordable frontier records the represented backward slice, its nested
+conditional algebras, complete carrier cost, and contextual target charges
+(\cref{def-affordable-conditional-algebra-frontier}).
+
+\item \emph{Prospective source and retrospective accounting types.}
+The framework distinguishes structure available when a transition is chosen
+from terminal-compatible records constructed after the trajectory is
+complete
+(\cref{def-pre-hit-temporally-admissible-source,cor-first-hit-accounting-not-source}).
+
+\item \emph{Algorithm-independent saturated capability profiles.}
+The master and channelwise profiles optimize over every qualified represented
+structure generated within budget, including structures constructed at
+runtime
+(\cref{def-extraction-functional,def-saturated-representation-degree}).
+
+\item \emph{Structural meta-frontiers.}
+Strict Pareto frontiers are generalized inverses of saturated profiles over
+complete resource vectors and retain their temporal and source types
+(\cref{def-strict-structural-meta-frontier,def-temporally-typed-structural-meta-frontiers}).
+
+\item \emph{Source-resolved saturated learning ledgers.}
+Learning records retain the exact structural source cell, statistical
+capacity, information, noise, selection, dynamics, and deployment costs
+(\cref{def-complete-source-resolved-learning-ledger}).
+\end{itemize}
+
+\paragraph{B. New theorems enabled by these objects.}
+
+\begin{itemize}
+\item \emph{Exhaustive channels and exact structural-charge conservation.}
+Every represented positive sub-Markov operator has the exhaustive channel
+decomposition and explicit normal forms, while every affordable frontier
+satisfies an exact Pythagorean charge identity
+(\cref{thm-channel-exhaustiveness,thm-exhaustive-geom-normal-form,thm-exhaustive-lift-normal-form,thm-exhaustive-bdry-normal-form,thm-exhaustive-residual-normal-form,thm-exact-affordable-algebra-structural-charging}).
+
+\item \emph{Universal algorithm accountability.}
+The quantitative backward cut and exact first-hit ledger bound every
+budget-admissible computation by the corresponding saturated profile
+(\cref{thm-quantitative-backward-source-factorization,lem:exact-affordable-first-hit,thm-universal-saturated-profile-accountability,thm-prospective-selector-accountability}).
+
+\item \emph{No-retrospective-source and no-uncharged-value principles.}
+Completed first-hit labels enter prospective profiles only through an
+independent pre-action representation at complete cost, and represented value
+cannot amplify prospective target gain without a charged source
+(\cref{cor-no-retrospective-first-hit-source-loophole,thm-no-uncharged-prospective-value-amplification}).
+
+\item \emph{Source-cell exhaustion.}
+The five-family provenance normal form and the exact
+state--coefficient classification exhaust the prospective source cells and
+their meta-frontiers
+(\cref{thm-five-family-abs-provenance,thm-universal-state-coefficient-source-decomposition,thm-source-cell-meta-complexity-exhaustion}).
+
+\item \emph{Source-resolved Rademacher and PAC--Bayes compilation.}
+The learning ledger gives cellwise Rademacher union and PAC--Bayes mixture
+bounds, together with operator, effective-dimension, label-noise, and
+dependent-sampling consequences
+(\cref{thm-source-resolved-saturated-learning-compilation,thm-fixed-operator-rademacher-bound,thm-krr-effective-dimension-bound}).
+
+\item \emph{Controlled-system, attention, and compact-belief compilation.}
+Selected generators, Bellman and reach--avoid quantities, attention records,
+and compact latent beliefs compile into the same source- and cost-resolved
+capability ledger
+(\cref{thm-controlled-policy-channel-decomposition,thm-universal-dynamical-certificate,thm-attention-structural-source-compilation,thm-attention-target-gain-envelope,thm-compact-latent-information-sufficiency,thm-joint-compact-latent-attention-acquisition}).
+
+\item \emph{Explicit statistical, computational, and information noise
+thresholds.}
+The source-resolved ledger separates the sample, represented-computation, and
+information limits and compares their phase transitions
+(\cref{thm-three-noise-threshold-comparison,thm-dynamical-noise-three-thresholds}).
+
+\item \emph{Proof-producing finite-to-asymptotic saturation certificates.}
+For the LPN application, exact quotient and geometric exhaustion isolates one
+residual-ancestry certification target.  Exact enumeration, deterministic
+verification, symbolic inequalities, outward-rounded interval bounds,
+finite-prefix checks, and uniform scale propagation discharge that target
+under the stated certificate conditions
+(\cref{thm-lpn-constant-noise-materialized-spectral-closure,lem-lpn-residual-parity-spectral-fibers,cor-empirical-discovery-deterministic-universal-closure,thm-lpn-proof-grade-empirical-residual-discharge}).
+\end{itemize}
+
+\paragraph{C. Standard ingredients used inside the proofs.}
+
+\begin{itemize}
+\item Markov and sub-Markov kernels, generators, and killed resolvents;
+\item Dirichlet forms, reversible operators, and Hodge projection;
+\item conditional expectation and projection Pythagoras;
+\item lumpability, quotient operators, and state augmentation;
+\item Rademacher complexity, PAC--Bayes inequalities, effective dimension,
+and concentration bounds;
+\item Bellman equations, Bayesian identities, and Gibbs selectors; and
+\item interval arithmetic, finite enumeration, and induction.
+\end{itemize}
+
+These established ingredients serve inside a presentation-relative
+architecture that assigns complete cost, provenance, temporal availability,
+source type, and deployment semantics before compiling them into universal
+capability bounds.
 
 \subsection{How to read this paper}\label{subsec-reading-guide}
 
