@@ -360,8 +360,7 @@ noncomputable def blockedPairRoutingDichotomy
       rcases Graph.sparsePairDependence_exit_or_blocker activation pairs attempt
           reducing with exit | blocker
       · exact ⟨.inl ⟨exit⟩⟩
-      · exact ⟨.inr ⟨current.object.PairCoordinate,
-          current.object.PairCoordinate, activation, pairs, rfl, blocker⟩⟩))
+      · exact ⟨.inr ⟨active, blocker⟩⟩))
     exitFresh blockerFresh
 
 /-! ## Node `[134]`: canonical blocker ledger -/
@@ -383,23 +382,138 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
         (show Value BranchState Presentation presentation data
             .canonicalPairLedger inputs.current from
           ⟨by
-            obtain ⟨Coordinate, Chord, activation, pairs, pairsEq, certificate⟩ :=
+            obtain ⟨active, certificate⟩ :=
               (inputs.get (K .canonicalBlockerRoute)).down
+            let activation := Graph.pairResponseActivation active
+            let pairs := inputs.current.object.portPairSchedule data.threshold
             let recorded := Graph.recordSparsePairDEBlocker activation pairs certificate
             have baseline : ∀ vertex : inputs.current.object.Vertex,
                 data.threshold ≤ inputs.current.object.degree vertex :=
               fun vertex => le_trans inputs.current.baseline
                 (inputs.current.object.minDegree_le_degree vertex)
-            refine ⟨Coordinate, Chord, activation, pairs, certificate, pairsEq,
+            refine ⟨active, certificate, rfl,
               ?_, ?_, ?_, ?_, ?_⟩
-            · rw [pairsEq]
-              exact inputs.current.object.card_portPairSchedule baseline
-            · simpa [pairsEq, recorded] using
+            · exact inputs.current.object.card_portPairSchedule baseline
+            · simpa [recorded] using
                 recorded.card_blockedPairs_add_card_unblockedPairs data.threshold
             · exact recorded.card_canonicalIncidenceLedger data.threshold
             · exact recorded.card_blockedPairs_eq_sum_blockerMultiplicity data.threshold
             · exact Graph.recordedSparsePairDEBlocker_nonempty activation pairs
                 certificate⟩)
+        .nil)
+
+/-! ## Node `[135]`: exact window-join pressure -/
+
+@[reducible] noncomputable def exactWindowJoinPressureRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.exactWindowJoinPressure
+    { Requires := [K .maximalPacking, K .noProperBaseline,
+        K .tightEndpoint, K .surplusAbove]
+      Produces := [K .sparseUpperEnvelope]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .sparseUpperEnvelope)
+        (show Value BranchState Presentation presentation data
+            .sparseUpperEnvelope inputs.current from
+          ⟨by
+            have baseline : ∀ vertex : inputs.current.object.Vertex,
+                data.threshold ≤ inputs.current.object.degree vertex :=
+              fun vertex => le_trans inputs.current.baseline
+                (inputs.current.object.minDegree_le_degree vertex)
+            have surplusPositive :
+                0 < inputs.current.object.degreeSurplus data.threshold :=
+              lt_of_le_of_lt (Nat.zero_le _)
+                (inputs.get (K .surplusAbove)).down
+            have edgePositive : 0 < inputs.current.object.edgeCount :=
+              inputs.current.object.edgeCount_pos_of_degreeSurplus_pos
+                surplusPositive
+            have envelope := inputs.current.object.edgeCount_add_two_le
+              data.three_le_threshold
+              (inputs.get (K .noProperBaseline)).down
+              (inputs.get (K .tightEndpoint)).down edgePositive
+            obtain ⟨_, packing, valid, maximal, _⟩ :=
+              (inputs.get (K .maximalPacking)).down
+            exact ⟨envelope, packing, valid, maximal,
+              inputs.current.object.exact_window_join_identity valid baseline⟩⟩)
+        .nil)
+
+/-! ## Node `[136]`: capacity-token ledger -/
+
+@[reducible] noncomputable def capacityTokenLedgerRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
+    { Requires := [K .canonicalPairLedger, K .sparseUpperEnvelope]
+      Produces := [K .capacityTokenLedger]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .capacityTokenLedger)
+        (show Value BranchState Presentation presentation data
+            .capacityTokenLedger inputs.current from
+          ⟨by
+            obtain ⟨active, certificate, _pairsEq, scheduleCard,
+                _partition, _incidence, _multiplicity, _blocked⟩ :=
+              (inputs.get (K .canonicalPairLedger)).down
+            obtain ⟨envelope, packing, valid, maximal, _joinIdentity⟩ :=
+              (inputs.get (K .sparseUpperEnvelope)).down
+            let activation := Graph.recordSparsePairDEBlocker
+              (Graph.pairResponseActivation active)
+              (inputs.current.object.portPairSchedule data.threshold) certificate
+            have pairCard : certificate.choose.card = 2 :=
+              Graph.card_of_mem_portPairSchedule inputs.current.object data.threshold
+                certificate.choose_spec.1
+            have pairNonempty : certificate.choose.Nonempty :=
+              Finset.card_pos.mp (by omega : 0 < certificate.choose.card)
+            let port := pairNonempty.choose
+            let presentation : inputs.current.object.CarrierPresentation
+                inputs.current.object.PairCoordinate
+                inputs.current.object.PairCoordinate := {
+              coordinateSupport := by
+                letI := inputs.current.object.vertices.decEq
+                exact Graph.DeclaredSignature.Coordinate.support
+              chordEnds := fun _ => (port.1, port.1)
+              chordPort := fun _ => port }
+            have baseline : ∀ vertex : inputs.current.object.Vertex,
+                data.threshold ≤ inputs.current.object.degree vertex :=
+              fun vertex => le_trans inputs.current.baseline
+                (inputs.current.object.minDegree_le_degree vertex)
+            have handshake : data.threshold * inputs.current.object.vertexCount ≤
+                2 * inputs.current.object.edgeCount :=
+              Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
+                inputs.current.object data.threshold baseline
+            refine ⟨inputs.current.object.PairCoordinate,
+              inputs.current.object.PairCoordinate, activation, presentation,
+              packing, valid, maximal, ⟨?_, ?_⟩, ?_⟩
+            · exact inputs.current.object.card_primitiveCarrier baseline
+            · exact inputs.current.object.card_primitiveCarrier_le baseline
+                data.three_le_threshold handshake envelope
+            · refine ⟨inputs.current.object.card_capacityTokens_add_internalMass
+                  valid baseline, ?_, ?_, ?_, ?_, ?_⟩
+              · exact inputs.current.object.card_capacityTokens_le valid baseline
+                  data.three_le_threshold handshake envelope data.windowOrder_pos
+                  data.joinSlack
+              · intro pair token charged
+                exact Graph.FiniteObject.capacityCharge_mem_capacityTokens
+                  activation presentation data.threshold packing charged
+              · rw [← Graph.FiniteObject.capacityTokenOrder_toFinset
+                    (object := inputs.current.object) (threshold := data.threshold)
+                    (packing := packing)]
+                exact Graph.FiniteObject.card_chargedPairs_eq_sum_load
+                  activation presentation data.threshold packing
+              · intro blocked carried
+                exact Graph.FiniteObject.chargedPairs_eq_of_blocked
+                  activation presentation data.threshold packing blocked carried
+              · intro token
+                exact ⟨Graph.FiniteObject.tokenFibre_subset activation presentation
+                    data.threshold packing token,
+                  fun pair member =>
+                    Graph.FiniteObject.card_of_mem_tokenFibre activation presentation
+                      data.threshold packing member,
+                  Graph.FiniteObject.card_tokenFibre_eq_pairMultiplicity activation
+                    presentation data.threshold packing token⟩⟩)
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

@@ -289,56 +289,66 @@ noncomputable def selectedCanonicalPairFacts
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
         simp [canonicalPairLedgerRow, K_eq_iff])
 
-/-- Nodes `[135]` and `[136]`, sparse envelope and capacity-token ledger. -/
-noncomputable def selectedCapacityTokenFacts
+/-- Node `[135]`, exact window-join pressure on the literal `[134]` residual. -/
+noncomputable def selectedExactWindowJoinPressure
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .canonicalBlockerRoute,
+      [K .canonicalPairLedger, K .canonicalBlockerRoute,
+        K .dependentPairFamily, K .baselineSpineDemand,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor,
+        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .sparseUpperEnvelope, K .canonicalPairLedger,
+        K .canonicalBlockerRoute, K .dependentPairFamily,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (exactWindowJoinPressureRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
+      simp [exactWindowJoinPressureRow, K_eq_iff])
+
+/-- Node `[136]`, capacity tokens on the literal `[135]` residual. -/
+noncomputable def selectedCapacityTokenLedger
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .sparseUpperEnvelope, K .canonicalPairLedger,
+        K .canonicalBlockerRoute, K .dependentPairFamily,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .sparseUpperEnvelope, K .capacityTokenLedger,
+      [K .capacityTokenLedger, K .sparseUpperEnvelope,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra,
+        K .dependentPairFamily, K .baselineSpineDemand,
+        K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] := by
-  let afterPairs := selectedCanonicalPairFacts history
-  exact
-    (capacityTokenLedgerRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      (K .canonicalPairLedger)       (K .noProperBaseline) (K .tightEndpoint) (K .surplusAbove)
-      (K .sparseUpperEnvelope) (K .capacityTokenLedger)
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff])
-      (fun _input fact => fact.down.1)
-      (fun _input fact => fact.down.1)
-      (fun _input fact => fact.down.2.2)
-      (fun _input fact => fact.down)
-      (fun _input fact => fact.down)
-      (fun _input fact => fact.down)
-      (fun _input fact => ⟨fact⟩)
-      (fun _input fact => ⟨fact⟩)).run afterPairs (by
-        simp [capacityTokenLedgerRow, selectedCanonicalPairFacts, K_eq_iff])
+        K .selection] :=
+  (capacityTokenLedgerRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
+      simp [capacityTokenLedgerRow, K_eq_iff])
 
 /-- Node `[137]`, coupled role-fibre partition and pressure facts. -/
 noncomputable def selectedCoupledFibrePressure
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .canonicalBlockerRoute,
-        K .activeSurplusDemands, K .sparsePortActivation,
+      [K .sparseUpperEnvelope, K .canonicalPairLedger,
+        K .canonicalBlockerRoute, K .dependentPairFamily,
+        K .baselineSpineDemand, K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
@@ -355,7 +365,7 @@ noncomputable def selectedCoupledFibrePressure
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
-  let afterTokens := selectedCapacityTokenFacts history
+  let afterTokens := selectedCapacityTokenLedger history
   exact
     (coupledFibrePressureRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -368,7 +378,7 @@ noncomputable def selectedCoupledFibrePressure
         ⟨((fact.down.2.1 declared).some).ledger⟩)
       (fun _input fact => ⟨fact⟩)
       (fun _input fact => ⟨fact⟩)).run afterTokens (by
-        simp [coupledFibrePressureRow, selectedCapacityTokenFacts, K_eq_iff])
+        simp [coupledFibrePressureRow, selectedCapacityTokenLedger, K_eq_iff])
 
 /-- Node `[137]`, sparse-pressure routing after the coupled pressure row. -/
 noncomputable def selectedSparsePressureDichotomy

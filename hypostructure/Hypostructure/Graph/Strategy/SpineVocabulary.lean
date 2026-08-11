@@ -4327,12 +4327,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             Graph.spineDeficit object.vertexCount data.threshold family.card ≤
               data.surplusScale * object.vertexCount)
   | .canonicalPairLedger, object =>
-      ∃ (Coordinate Chord : Type u)
-        (activation : object.DemandActivation Coordinate Chord)
-        (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+      ∃ (active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold)
         (certificate : Graph.HasSparsePairDEBlocker
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK) activation pairs),
+          (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
+            (object.portPairSchedule data.threshold)),
+        let activation := Graph.pairResponseActivation active
+        let pairs := object.portPairSchedule data.threshold
         pairs = object.portPairSchedule data.threshold ∧
           pairs.card = (object.degreeSurplus data.threshold).choose 2 ∧
           let recorded := Graph.recordSparsePairDEBlocker activation pairs certificate
@@ -4348,13 +4352,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
   | .canonicalBlockerRoute, object =>
-      ∃ (Coordinate Chord : Type u)
-        (activation : object.DemandActivation Coordinate Chord)
-        (pairs : Finset (Finset (object.Vertex × object.Vertex))),
-        pairs = object.portPairSchedule data.threshold ∧
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
           Graph.HasSparsePairDEBlocker
             (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK) activation pairs
+            (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
+              (object.portPairSchedule data.threshold)
   | .dependentPairFamily, object =>
       ∃ active : Graph.ActiveSurplusDemands
           (Graph.MinimumDegreeAtLeast data.threshold)
@@ -4394,37 +4399,30 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           let family := activation.pairFamily pairs
           Set.InjOn attempt.label ↑family
   | .sparseUpperEnvelope, object =>
-      -- `lem:sparse-upper-envelope`: `m + 2 ≤ (δ − 1)·n`, the manuscript's
-      -- `m ≤ 2n − 2` at its own `δ = 3`.
-      (object.edgeCount + 2 ≤ (data.threshold - 1) * object.vertexCount)
+      (object.edgeCount + 2 ≤ (data.threshold - 1) * object.vertexCount) ∧
+        ∃ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing ∧
+            packing.card = object.windowPackingNumber data.windowOrder ∧
+            (object.windowRemainderIncidences packing).card +
+                (2 * (data.windowOrder - 1) * packing.card +
+                  (object.crossWindowIncidences packing).card) =
+              data.threshold * (data.windowOrder * packing.card) +
+                object.ambientSurplus (object.windowSupport packing)
+                  data.threshold
   | .capacityTokenLedger, object =>
-      -- `lem:primitive-carrier-supply` in both displayed forms, and
-      -- `def:capacity-token-ledger` with `lem:capacity-token-supply`,
-      -- `lem:token-ledger-no-overcount` and `def:same-token-patterns`, at the
-      -- object's own token universe and its own four-case charge.  Both
-      -- displayed supply bounds are unconditional: the sparse upper envelope is
-      -- the node's own read and the join comparison is registered.
-      (((object.primitiveCarrier data.threshold).card =
-            object.vertexCount + 2 * object.edgeCount +
-              object.degreeSurplus data.threshold ∧
-          (object.primitiveCarrier data.threshold).card ≤
-            object.primitiveCarrierSupply data.threshold) ∧
-        Graph.FiniteObject.CapacityTokenLedgerStatement object data.threshold
-          data.windowOrder) ∧
-        -- The object *has* a capacity-token ledger at **every** declared
-        -- presentation: `𝔗_cap` with `Θ_cap`, node `[130]`'s pair count,
-        -- `𝔗_cap ≠ ∅`, `lem:capacity-token-supply`'s supply bound and the
-        -- free-side sandwich.  Nothing is selected here -- the packing, the
-        -- activation, the carrier presentation and the role reading are
-        -- quantified -- so the commitment is a property of the object rather
-        -- than of a choice, and nodes `[137]`--`[144]` read this and nothing
-        -- else about the token universe.
-        ((∀ declared : Graph.CapacityPresentation object data.windowOrder,
-          Nonempty (Graph.CertifiedObjectCapacityLedger object data.threshold
-            data.windowOrder data.surplusScale declared)) ∧
-          Nonempty (Σ declared : Graph.CapacityPresentation object data.windowOrder,
-            Graph.CertifiedObjectCapacityLedger object data.threshold
-              data.windowOrder data.surplusScale declared))
+      ∃ (Coordinate Chord : Type u)
+        (activation : object.DemandActivation Coordinate Chord)
+        (presentation : object.CarrierPresentation Coordinate Chord)
+        (packing : Finset (Finset object.Vertex)),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          ((object.primitiveCarrier data.threshold).card =
+              object.vertexCount + 2 * object.edgeCount +
+                object.degreeSurplus data.threshold ∧
+            (object.primitiveCarrier data.threshold).card ≤
+              object.primitiveCarrierSupply data.threshold) ∧
+          Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement object
+            data.threshold data.windowOrder activation presentation packing
   | .roleFibrePartition, object =>
       -- `lem:exact-surplus-pair-charge-partition` with the classwise and
       -- subtype budgets, at the object's own capacity-token ledger.

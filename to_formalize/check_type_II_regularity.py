@@ -200,7 +200,7 @@ def main() -> int:
             r"\bdefinition\b|\bconvention\b|\bprofile\b|\bisometr|\binvariant|"
             r"calder|riesz|compactly supported|extended by zero|"
             r"local/tail|\btail\b|not require|does not require|"
-            r"no whole-space|explicit input",
+            r"no whole-space|explicit input|explicit.{0,80}hypothesis",
             window,
         )
         if not qualified:

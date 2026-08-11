@@ -629,13 +629,11 @@ one -- and the declared coordinate and shoulder-chord presentation of
 `lem:capacity-token-supply`, `lem:token-ledger-no-overcount` and
 `def:same-token-patterns`, at the object's own token universe and its own
 four-case charge. -/
-def CapacityTokenLedgerStatement (object : FiniteObject.{u}) (threshold order : Nat) :
-    Prop :=
-  ∀ (packing : Finset (Finset object.Vertex)),
-    object.IsWindowPacking order packing →
-    ∀ (Coordinate Chord : Type u)
-      (activation : DemandActivation object Coordinate Chord)
-      (presentation : CarrierPresentation object Coordinate Chord),
+def ConcreteCapacityTokenLedgerStatement (object : FiniteObject.{u})
+    (threshold order : Nat) {Coordinate Chord : Type u}
+    (activation : DemandActivation object Coordinate Chord)
+    (presentation : CarrierPresentation object Coordinate Chord)
+    (packing : Finset (Finset object.Vertex)) : Prop :=
       -- `lem:capacity-token-supply`, exact:
       -- `|𝔗_cap| + 2(order−1)p = |𝔘_sp(G)| + δ·order·p + σ(G)`.
       ((object.capacityTokens threshold packing).card +
@@ -684,36 +682,6 @@ def CapacityTokenLedgerStatement (object : FiniteObject.{u}) (threshold order : 
                 (capacityTokenOrder object threshold packing)
                 (Charges activation presentation threshold packing)
                 (decidableCharges activation presentation threshold packing) token)
-
-/-- **Nodes `[134]`--`[136]`, proved.**  Every clause is one of the theorems
-above; nothing is assumed about the object beyond the standing baseline, the
-registered `3 ≤ δ` and `0 < order`, and the handshake the baseline gives. -/
-theorem capacityTokenLedgerStatement (object : FiniteObject.{u}) {threshold order : Nat}
-    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
-    (three : 3 ≤ threshold) (orderPos : 0 < order)
-    (handshake : threshold * object.vertexCount ≤ 2 * object.edgeCount)
-    (envelope : object.edgeCount + 2 ≤ (threshold - 1) * object.vertexCount)
-    (joinSlack : threshold * order + 2 ≤ 4 * order) :
-    CapacityTokenLedgerStatement object threshold order := by
-  intro packing valid _Coordinate _Chord activation presentation
-  refine ⟨object.card_capacityTokens_add_internalMass valid baseline, ?_, ?_, ?_, ?_, ?_⟩
-  · exact object.card_capacityTokens_le valid baseline three handshake envelope
-      orderPos joinSlack
-  · intro pair token charged
-    exact capacityCharge_mem_capacityTokens activation presentation threshold packing
-      charged
-  · rw [← capacityTokenOrder_toFinset (object := object) (threshold := threshold)
-      (packing := packing)]
-    exact card_chargedPairs_eq_sum_load activation presentation threshold packing
-  · intro blocked carried
-    exact chargedPairs_eq_of_blocked activation presentation threshold packing blocked
-      carried
-  · intro token
-    exact ⟨tokenFibre_subset activation presentation threshold packing token,
-      fun pair member =>
-        card_of_mem_tokenFibre activation presentation threshold packing member,
-      card_tokenFibre_eq_pairMultiplicity activation presentation threshold packing
-        token⟩
 
 end FiniteObject
 

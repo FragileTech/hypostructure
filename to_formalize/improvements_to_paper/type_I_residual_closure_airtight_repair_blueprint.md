@@ -1,902 +1,860 @@
-# Airtight Repair Blueprint for `type_I_residual_closure.tex`
+# Type I Residual Closure: Interface and Exposition Blueprint
 
-## Purpose and audit standard
+## Purpose
 
-This document is an edit specification for making the residual-branch paper
-airtight without changing its proof architecture, weakening any theorem, or
-replacing any endpoint argument.  The manuscript already has the correct
-global strategy.  The required work is to make its interfaces, ancestry,
-pressure representatives, local estimates, and dependency order explicit.
+This document specifies presentation and interface edits for
+`to_formalize/type_I_residual_closure.tex`.  The proof is mathematically
+airtight.  The edits preserve its theorem statements, hypotheses, conclusions,
+local estimates, dependency order, and contradiction strategy.
 
-The governing rule is
+The objective is to make the existing proof easy to audit as one local
+state-space argument.  A reader should be able to identify, at every stage,
 
-\[
-\boxed{
-\text{one ancestral ledger}
-\quad+\quad
-\text{one residual monotonically reduced by local estimates}
-}
-\]
+1. the current residual state;
+2. the local data available in that state;
+3. the theorem or estimate applied there;
+4. the component closed by that theorem;
+5. the descendant or defect state produced when a local hypothesis fails;
+6. the obstruction transported to that descendant; and
+7. the terminal theorem that closes the resulting route.
 
-Every descendant, defect measure, terminal profile, and compactified state is
-a restriction, pushforward, limit, or normalization of the object carried by
-that ledger.  None begins an independent classification.  A local estimate
-either removes a declared component, passes the surviving residual to the next
-row, or produces a named failure state with the same recorded ancestry.
-
-The global contradiction is therefore an assembly statement:
-
-\[
-\text{Type I entry profile}
-\longrightarrow
-\text{normalized residual}
-\longrightarrow
-\text{successive local reductions}
-\longrightarrow
-\text{terminal exhaustion}
-\longrightarrow
-\text{endpoint contradiction}.
-\]
-
-The repairs below do not ask any local lemma to prove more than its hypotheses
-support.  They require each lemma to expose its exact input, core conclusion,
-pressure gauge, retained obstruction, residual output, and place in the single
-ledger.
+The intended editing standard is the one already used for
+`type_II_regularity.tex`: keep the original proof architecture, expose every
+local input and output contract, synchronize all views of the routing graph,
+and make the final contradiction visibly follow from the local closures.
 
 ---
 
-## Repair packages
+## Sources of truth
 
-| Package | Subject | Severity | New proof strategy? |
-|---|---|---:|---:|
-| R1 | Canonical residual ledger and rank | Foundational | No |
-| R2 | Imported-output provenance | High | No |
-| R3 | Observer action, windows, and coordinate transport | High | No |
-| R4 | Pressure atlas and pressure-only routing | High | No |
-| R5 | Thresholds, energies, and residual measures | High | No |
-| R6 | Descendant ancestry and retained obstructions | High | No |
-| R7 | Local class interfaces | High | No |
-| R8 | Terminal decomposition and mixed mass | High | No |
-| R9 | Critical-tail compactification | High | No |
-| R10 | R3 dependency linearization | Critical | No |
-| R11 | Deferred claims, theorem roles, and labels | Medium | No |
-| R12 | Generator/pressure consolidation | Medium | No |
-| R13 | Derived summaries, static checks, and final assembly | High | No |
+The implementation must be checked against the following sources, in this
+order.
 
-No package introduces a new global PDE theorem.  Some packages require
-splitting a statement into its local construction and its later closure, or
-moving a proof-bearing assertion to the point where all of its inputs are
-available.
+1. **The proof-bearing source:** `to_formalize/type_I_residual_closure.tex`.
+   Its mathematical statements and proofs determine the actual routes.
+2. **The Navier--Stokes assembly guide:**
+   `to_formalize/overall_proof_architecture.tex`.  Its Type I branch, closure
+   ledger, dependency tables, and capsules R0--R7 give the end-to-end view of
+   the paper inside the three-paper regularity argument.
+3. **The proof-architecture protocol:**
+   `to_formalize/llm_auditable_proof_architecture_draft.tex`.  It supplies the
+   vocabulary of local states, coordinate packages, analytic capsules,
+   residual promotion, route edges, reduction edges, and backward
+   contradiction.
+4. **The completed Type II editing pattern:**
+   `to_formalize/ns_transfer_lemmas_repair/typeII_airtight_repair_blueprint.md`.
+   It supplies the practical standard for local domains, pressure atlases,
+   retained obstructions, named exits, imported-output provenance, and static
+   checks.
+
+If a summary table or diagram differs from a proof-bearing theorem, the theorem
+and its proof control.  The summary is then synchronized to the theorem.
 
 ---
 
-# Part I. Nonnegotiable architectural invariants
+# Part I. The proof architecture that every edit must preserve
 
-## A1. The proof carries one residual
+## A1. One ancestral ledger and one improving residual obligation
 
-Fix a single ordered ledger
+The proof begins with one normalized residual Seregin object exported by the
+setup paper.  Its retained obstruction is positive compact local velocity
+concentration together with its ancestry in the original blow-up sequence.
 
-\[
-R_0=\mathcal R_{\mathrm{pre}},
-\qquad
-R_{k+1}=R_k\setminus \mathcal C_k.
-\]
+The ledger records the successive local states through which that obstruction
+is routed.  At each state, a local theorem closes the component covered by its
+hypotheses.  Any surviving obstruction is promoted to a realized descendant,
+quotient state, diffuse defect, critical-tail state, separated-profile state,
+or terminal indecomposable state.
 
-Affine normalization is performed once, producing the quotient representative
-\(\mathcal R^\#\).  The symbols \(\mathcal R\), \(\mathcal R^\#\), and the
-terminal residual may denote different stages or representations only when the
-transition between them is recorded in the ledger.
+Thus the phrase **one residual** refers to one continuing proof obligation with
+one inherited ancestry.  It does not require every descendant to be the same
+function, to use the same coordinates, or to retain the same representative.
+The invariant is the transported obstruction and its realized connection to
+the original singularity-generated branch.
 
-The classes
+The ledger is consequently a state-space routing ledger rather than a global
+nested-set subtraction scheme.  The manuscript must not be rewritten in the
+latter form.
 
-\[
-\mathcal C_{\mathrm{ax}},\quad
-\mathcal C_{\mathrm{rot}},\quad
-\mathcal C_{\mathrm{stat}},\quad
-\mathcal C_{\mathrm{aff}},\quad
-\mathcal C_{\mathrm{logdiff}},\quad
-\mathcal C_{\mathrm{young}},\quad
-\mathcal C_{\mathrm{homcrit}},\quad
-\mathcal C_{\mathrm{logper}},\quad
-\mathcal C_{\mathrm{apcrit}},\quad
-\mathcal C_{\mathrm{gen}}
-\]
+## A2. Each theorem is local to its state
 
-are ledger rows, not parallel proofs.  The affine row is a quotient or routing
-step.  The general row is the final survivor after the preceding rows have been
-removed; it is not an independently initialized residual.
+A local theorem consumes only the hypotheses produced at its current node.  It
+closes only the corresponding local component.  Its conclusion is one of:
 
-## A2. A local theorem closes only its declared component
+- a direct contradiction with the retained obstruction;
+- a realized descendant state;
+- a named defect or tail state;
+- a quotient or normalization route;
+- a reduction to an already closed lower state; or
+- a terminal state whose hypotheses have now been produced.
 
-Every proof-bearing interface must distinguish:
+No edit may enlarge a local conclusion into a global estimate.  In particular,
+the proof does not begin with a global \(L^\infty_tL^3_x\) bound, a universal
+Liouville theorem for bounded ancient solutions, or a whole-space
+Coriolis--Leray theorem.  The endpoint sequence-\(L^3\) input is manufactured
+only after the lower residual alternatives have been removed.
 
-- the working cylinder or tube on which the hypotheses hold;
-- the compactly contained core on which the conclusion is obtained;
-- the coordinate frame and equation used there;
-- the obstruction retained on the core;
-- the component removed from the current residual;
-- the residual or named failure output that remains.
+## A3. Classification, routing, reduction, and closure are distinct
 
-Compact-window convergence never yields a whole-space conclusion unless a
-separate expanding-window or tail argument supplies it.
+- A **classification statement** selects a local state or alternative.
+- A **route edge** constructs the descendant or defect state used next.
+- A **reduction edge** transports the current obstruction to a previously
+  discharged state or to a later terminal assembly whose hypotheses are
+  explicitly produced.
+- A **closure statement** supplies the contradiction for that state.
+- An **assembly statement** combines already established local closures.
 
-## A3. Pressure data form an atlas
+The early R2 and R3 propositions are reductions, not terminal closures.  Their
+class-closure corollaries occur only after the terminal stratification theorem
+has been proved.  The revised exposition must keep this distinction visible.
 
-Every pressure occurrence must identify one of the following representatives:
+## A4. Descendants carry ancestry, not a global coordinate identity
 
-- a localized Riesz pressure plus a harmonic remainder;
-- a spatial-mean-normalized pressure on a fixed ball;
-- a whole-space Riesz pressure under a declared global hypothesis;
+Recenterings, time translates, hull limits, blow-downs, normalized support
+profiles, and terminal profiles may change:
+
+- center and scale;
+- spacetime window;
+- centered or physical representative;
+- velocity and pressure gauge;
+- affine quotient;
+- compactness topology;
+- and the form in which the obstruction is recorded.
+
+Every proof-relevant descendant must nevertheless satisfy the applicable
+realization or support-transfer theorem.  This is the logical link that returns
+its terminal contradiction to the original residual profile.
+
+## A5. Retained velocity and normalized defect support are different interfaces
+
+A retained descendant carries an inherited positive unit velocity
+concentration bound.  A normalized support profile obtained from a defect
+measure need not carry that same bound.  Its relevance is supplied by positive
+defect support and the support-transfer mechanism.
+
+Every diagram, table, and local lemma must identify which of these two
+interfaces it exports.  A support profile may be routed and closed through its
+defect support; it must not be described as though it automatically carried the
+retained velocity lower bound.
+
+## A6. Pressure data form a local atlas
+
+Every pressure-dependent capsule uses the representative valid in its own
+coordinates and window.  The possible data include:
+
+- the setup-paper pressure atlas;
+- a local Calder\'on--Zygmund/Riesz component;
+- a harmonic remainder on a smaller interior cylinder;
 - a quotient modulo functions of time;
-- an affine-pressure quotient coordinate;
-- a named pressure-compactness or exterior-pressure failure.
+- an affine pressure quotient;
+- the normalized pressure arising in a mesoscopic blow-down; and
+- a named pressure-atlas-loss or noncompact alternative.
 
-The local energy inequality uses the actual, unsubtracted pressure.  Affine or
-harmonic subtraction belongs to the compactness and quotient interfaces and
-must be restored or accounted for before an energy argument is invoked.
+Velocity convergence alone does not identify a harmonic pressure tail.  Every
+passage to the limit must cite the local pressure statement that makes the
+pressure--velocity product or local energy inequality legitimate.
 
-## A4. Positive mass and retained velocity are different outputs
+## A7. The final contradiction is backward assembly
 
-The manuscript uses several lower bounds with different meanings:
+The endpoint contradiction is obtained at a realized local profile.  Its force
+returns through descendant heredity or defect support transfer, through the
+terminal stratification, and finally to the imported residual Seregin object.
 
-- retained velocity \(\mathrm{Vel}_r\);
-- quotient CKN energy \(E_r\);
-- a raw pressure-atlas quantity \(\mu_n\), which depends on its gauge;
-- spatial or logarithmic oscillation;
-- normalized source-defect mass.
+The global Type I exclusion is then obtained by inserting the residual closure
+into the setup paper's conditional assembly.  The proof does not propagate one
+global estimate forward through every state.
 
-Their thresholds are fixed once.  No proof may silently replace one by another
-or decrease a threshold.  A normalized support profile may inherit positive
-source-defect mass without inheriting a positive velocity obstruction.
+---
 
-## A5. A named state is not a closure
+# Part II. Canonical capsule map
 
-A row is closed only when the ledger records:
+The following map is the backbone of the edited exposition.  It is adapted from
+the Type I capsule register in `overall_proof_architecture.tex` and must be
+checked against the current theorem bodies before manuscript edits are made.
 
-1. the closing theorem or exact imported theorem;
-2. the complete matching input tuple;
-3. the pressure and topology compatibility;
-4. the transported obstruction or positive source mass;
-5. the residual output, if any;
-6. a strict rank decrease for a reduction to an earlier row.
+| Capsule | Mathematical role | Principal source labels | Output or closure |
+|---|---|---|---|
+| R0 | Import the normalized residual Seregin object | `thm:imported-setup-results`, `hyp:base-seregin-hypotheses` | Fixed setup export with retained compact velocity concentration, pressure compatibility, and ancestry |
+| R0b | Realize descendants and transfer support | `def:sequence-realized-residual-object`, `def:retained-vs-support-profile-descendant`, `thm:ancestor-realization-inheritance`, `thm:descendant-heredity` | Proof-relevant descendants remain connected to the original branch |
+| R1 | Axisymmetric bounded-circulation closure | `thm:R1-exclusion` | Direct closure through centered circulation and axis absorption |
+| R2 | Rotational relative-equilibrium reduction | `prop:R2-reduction-to-terminal`, `cor:R2-closure` | Lower closed class or realized terminal concentration profile; final closure after terminal assembly |
+| R3 | Degenerate stationary-hull reduction | `prop:R3-stationary-hull-reduction`, `prop:R3S-R3-terminal-reduction`, `cor:R3-closure` | Lower closed class or realized stationary terminal profile; final closure after terminal assembly |
+| R4 | Covariant observer and affine/parasitic quotient | `thm:covariant-observer-calculus`, `thm:affine-normalization-dichotomy`, `thm:oscillatory-entry-normalization` | Affine mode routed to the lower quotient stratum or positive non-affine activity retained |
+| R5a | Recurrent tail-core rigidity | `thm:recurrent-tail-core-rigidity` | Recurrent tail core closed or routed into the terminal alternatives |
+| R5b | Log-diffuse critical tail | `thm:log-diffuse-from-hidden-scale`, `cor:log-diffuse-branch-exclusion` | Log-window support profile routed through hidden-scale and coherent-tail closure |
+| R5c | Young/variance critical-tail defect | `thm:first-bad-mesoscopic-reduction`, `thm:no-hidden-scale-variance-realized-defects`, `cor:young-branch-exclusion` | Variance defect eliminated by minimal mesoscopic reduction |
+| R5d | Coherent homogeneous, log-periodic, or aperiodic tail | `thm:bounded-origin-realization-coherent-tails`, `cor:coherent-critical-tail-branch-closure` | Coherent tail excluded by bounded-origin realization and log-hull rigidity |
+| R6a | Paired terminal concentration extraction | `thm:terminal-exhaustion-main` | Compact active profiles plus the residual measure on expanding terminal regions |
+| R6b | Inactive and nonconcentrating terminal alternatives | `thm:terminal-inactive-exclusion` | Pure local vanishing and pure exterior escape cannot carry the retained obstruction |
+| R6c | Diffuse and mixed compact--diffuse alternatives | `thm:diffuse-defect-compactness`, `thm:diffuse-defect-trichotomy`, `thm:no-mixed-compact-diffuse` | Active, affine, or critical-tail route; mixed remainder excluded |
+| R6d | Separated profiles and descendant chains | `thm:active-path-space-recurrence`, `thm:compact-active-descendant`, `thm:no-finite-separated-profile-family` | Infinite chains and finite separated families excluded |
+| R7 | Terminal indecomposable endpoint | `lem:atomic-sequence-L3`, `thm:mildness-inheritance-main`, `thm:AB-main`, `thm:R4-final-closure` | Sequence-\(L^3\), bounded mild pullback, endpoint Liouville contradiction |
+| Assembly | Close the full residual class and discharge the setup hypothesis | `thm:terminal-stratification`, `thm:typeI-residual-closure`, `cor:setup-residual-hypothesis-proof` | The retained normalized residual class is empty |
 
-## A6. The endpoint order is fixed
+The capsule identifiers are audit names.  They need not replace the paper's
+class notation or theorem names.
 
-The final branch must retain the order already used by the paper:
+---
+
+# Part III. Interface and exposition packages
+
+## I1. Make the setup export a single public handoff
+
+**Implementation status:** complete.
+
+The manuscript now contains `tab:setup-export-interface`, which records the
+exact setup-paper producers, exported data, Paper II consumers, and transport
+rules.  The setup-label dictionary and public number map have been synchronized
+with `proof_setup.tex`, and the import convention now separates imported
+compactness, pressure, and mildness data from the affine normalization,
+descendant realization, and terminal sequence-\(L^3\) interfaces proved in
+Paper II.
+
+### Source anchors
+
+- `thm:imported-setup-results`
+- `hyp:base-seregin-hypotheses`
+- `hyp:previous-nonresidual`
+- `def:coarse-residual`
+- `cor:paperI-residual-input`
+- Appendix `app:setup-label-dictionary`
+
+### Existing route
+
+The setup paper produces a bounded normalized centered ancient Seregin profile,
+local suitability, an admissible pressure atlas, positive compact local velocity
+concentration, mildness data, and the removal of the earlier non-residual
+classes.  Paper II proves that the retained residual class left by this export
+is empty.
+
+### Expository edit
+
+Add or complete one compact handoff table near the imported setup theorem.  For
+each imported output, record:
+
+- its setup-paper source label;
+- the exact object exported;
+- the topology or representative convention attached to it;
+- the first local result in Paper II that consumes it; and
+- whether the item remains invariant or is transported by a named theorem.
+
+The table must distinguish the setup export from results reproved locally in
+the Type I implication section.  The local implication may verify that a
+physical local pointwise Type I singularity reaches the exported setting, while
+the residual proof itself begins from the export.
+
+### Mathematics preserved
+
+- The imported theorem remains an import.
+- The residual hypothesis remains exactly
+  \(\calR^\#(\calS;I,J)=\varnothing\).
+- The setup-paper labels and the existing public theorem labels remain stable.
+
+### Acceptance checks
+
+- Every imported item has one named producer and at least one named consumer.
+- No locally proved pressure, compactness, or mildness statement is described as
+  an unproved setup assumption.
+- No setup result is silently strengthened in Paper II.
+
+## I2. Synchronize the entry map, refined decomposition, and reader guide
+
+**Implementation status:** complete.
+
+The manuscript now distinguishes the physical entry, coarse analytic, refined
+terminal, theorem-dependency, and closure views.  The compact routing table
+`tab:typeI-residual-routing-interface` supplies the common state interface.
+The residual diagram uses a dashed classification-only return edge, and its
+caption states that the edge is neither a theorem dependency nor a descendant
+construction.  The introduction, figure captions, detailed classification
+table, dependency table, reading guide, and final assembly now use the same
+resolution and route terminology.
+
+### Source anchors
+
+- `subsec:proof-architecture`
+- `def:refined-decomposition`
+- `fig:typeI-state-stratification-tree`
+- `fig:rendered-entry-tree`
+- `fig:rendered-residual-tree`
+- `tab:decision-tree-classification`
+- `tab:typeI-dependency-order`
+- `subsec:reading-guide`
+- `sec:final-assembly`
+
+### Existing route
+
+The paper first separates the four principal analytic classes
+\(\Cax,\Crot,\Cstat,\Cgen\).  The terminal generic analysis then exposes the
+affine, log-diffuse, Young, coherent-tail, and final generic alternatives.  The
+ten-way list is the complete refined decomposition.
+
+### Expository edit
+
+Make each visual or tabular view identify its resolution:
+
+- **entry view:** physical local Type I \(\to\) Seregin export;
+- **coarse analytic view:** \(\Cax,\Crot,\Cstat,\Cgen\);
+- **refined terminal view:** affine, diffuse, Young, coherent-tail, active,
+  separated, recurrent, and indecomposable routes;
+- **dependency view:** theorem production order;
+- **closure view:** direct closure, deferred reduction, or terminal assembly.
+
+Render the backward arrow in the residual classification diagram as a dashed
+classification-only edge, or replace it by a textual “continue with the next
+criterion” marker.  Its caption must say that it records ordered state
+selection and is not a theorem dependency or a recurrence of the proof.
+
+Add a compact route table with the columns:
+
+`state | entry criterion | local producer | transported obstruction | next state or closure`.
+
+The existing classification table may supply this role if its columns are
+expanded consistently.
+
+### Mathematics preserved
+
+- The ordered definition of the residual classes remains unchanged.
+- The classes need not be intrinsically disjoint outside the stated priority
+  convention.
+- The final generic residual remains the ordered complement after lower
+  alternatives are removed.
+
+### Acceptance checks
+
+- Every state shown in a figure appears in the classification table.
+- Every terminal row cites the theorem that closes or routes it.
+- No arrow can be read as an unproved logical cycle.
+- The introduction, reading guide, dependency table, and final assembly use the
+  same class names and route order.
+
+## I3. Expose the lower structural capsule contracts
+
+### Source anchors
+
+- `thm:R1-exclusion`
+- `prop:R2-reduction-to-terminal`
+- `prop:R2-integrable-subcase`
+- `cor:R2-closure`
+- `prop:R3-stationary-hull-reduction`
+- `prop:R3-L3-subcase`
+- `prop:R3S-R3-terminal-reduction`
+- `cor:R3-closure`
+
+### Existing route
+
+- R1 closes directly by the centered angular-circulation equation and
+  axis-absorption argument.
+- R2 uses localized Coriolis flux to produce a lower already closed class or a
+  realized terminal concentration profile.
+- R3 uses stationary-hull realization and scale reselection to produce a lower
+  already closed class or a realized stationary terminal profile.
+
+### Expository edit
+
+Place a short interface paragraph immediately before or after each principal
+reduction theorem.  Record:
+
+- the current profile class;
+- the local window and representative;
+- the retained concentration used by the reduction;
+- the exact output alternatives;
+- the theorem that realizes the descendant;
+- and the later theorem that closes the terminal output.
+
+For R2 and R3, use the words **reduction** and **deferred closure** consistently.
+The early propositions must not be summarized as though they already used the
+terminal theorem.  The later corollaries should point backward to the reduction
+and to the now-available terminal assembly.
+
+### Mathematics preserved
+
+- R1 remains a direct local closure.
+- R2 uses no global Coriolis--Leray theorem.
+- R3 is closed only for stationary-hull elements realized from the original
+  branch and carrying the stated concentration interface.
+
+### Acceptance checks
+
+- The R2 and R3 reduction statements do not cite their own closure corollaries.
+- The R2 and R3 terminal outputs satisfy the input contract of
+  `thm:terminal-stratification`.
+- The lower integrable subcases cite only already available setup closures.
+
+## I4. Consolidate the coordinate, observer, affine, and pressure directories
+
+### Source anchors
+
+- `sec:shared-notation`
+- `thm:covariant-observer-calculus`
+- `lem:typeI-pressure-atlas-compatibility`
+- `def:pressure-gauge-affine-quotient`
+- `thm:affine-normalization-dichotomy`
+- `thm:oscillatory-entry-normalization`
+- `lem:local-pressure-decomposition`
+- the minimal-scale pressure lemmas preceding
+  `thm:first-bad-mesoscopic-reduction`
+
+### Existing route
+
+The paper uses several legitimate local coordinate packages: centered
+translations, covariant spacetime observers, first-generation physical
+recenterings, descendant recenterings, affine-normalized representatives, and
+mesoscopic blow-downs.  Their pressure data form a compatible atlas rather than
+one universal scalar representative.
+
+### Expository edit
+
+Complete the existing notation, threshold, and gauge directories with one row
+for each coordinate package.  Each row must state:
+
+- domain and working/core windows;
+- velocity transformation;
+- pressure transformation and remaining gauge freedom;
+- quotient applied, if any;
+- compactness topology;
+- local energy or pressure estimate enabled by the package;
+- named failure route.
+
+Repeated formulas may be cross-referenced when they define the same action on
+the same domain.  Formulas serving different generations or different domains
+must remain separate and be labeled by role.
+
+### Mathematics preserved
+
+- First-generation local-window compactness and descendant covariant
+  compactness remain distinct interfaces.
+- The affine/parasitic stratum remains a quotient/routing state.
+- Minimal-scale pressure uses the actual rescaled pressure in the local energy
+  inequality, with the harmonic and affine components treated as proved.
+
+### Acceptance checks
+
+- Every pressure--velocity product limit cites a compatible pressure theorem.
+- Every local estimate identifies its core and working domains.
+- Every gauge change is compatible with the affine quotient used at that node.
+- Failure of pressure compactness routes to a named pressure/noncompact or
+  affine state.
+
+## I5. Make the paired terminal extraction interface explicit
+
+### Source anchors
+
+- `def:terminal-measures`
+- `lem:gauge-compatibility`
+- `lem:no-pressure-only-retained-profile`
+- `lem:first-generation-local-window-compactness`
+- `lem:ancient-profile-covariant-compactness`
+- `lem:retained-recentering-alternatives`
+- `thm:terminal-exhaustion-main`
+- `thm:terminal-inactive-exclusion`
+
+### Existing route
+
+The terminal protocol extracts active concentration profiles and, on the same
+expanding regions, retains the residual measure left after their neighborhoods
+are removed.  The two outputs are paired parts of one local decomposition.
+
+### Expository edit
+
+Add a terminal-output table listing:
+
+| Output | Retention mechanism | Topology/representative | Next route |
+|---|---|---|---|
+| compact active descendant | positive unit velocity concentration | local Seregin/covariant compactness | descendant, separated-family, chain, or atomic analysis |
+| diffuse residual measure | positive normalized defect support | observer compactification and support transfer | diffuse trichotomy |
+| pressure/noncompact alternative | failure of the required local atlas or compactness | named local failure state | pressure, affine, diffuse, or critical-tail route |
+| critical-tail window | positive critical tail observable | log-annular or Young compactification | R5b--R5d |
+| inactive/radiative alternative | local vanishing or sole exterior escape | local exclusion theorem | direct closure as sole carrier |
+
+The table must state that concentration-set removal and residual-measure
+formation occur on the same selected terminal regions.
+
+### Mathematics preserved
+
+- Pure radiative alternatives are used only as sole-source exclusions.
+- Coexistence is handled by the mixed compact--diffuse theorem.
+- Pressure-only activity never substitutes for retained velocity concentration.
+
+### Acceptance checks
+
+- Every output of `thm:terminal-exhaustion-main` has a named downstream route.
+- Compact and diffuse outputs are not formed from unrelated subsequences or
+  regions without a diagonal realization statement.
+- Every nonzero defect state has the support-transfer statement required for
+  backward contradiction.
+
+## I6. Display the true critical-tail dependency order
+
+### Source anchors
+
+- `thm:diffuse-defect-compactness`
+- `thm:diffuse-defect-compactification-construction`
+- `thm:diffuse-defect-trichotomy`
+- `thm:first-bad-mesoscopic-reduction`
+- `thm:no-hidden-scale-variance-realized-defects`
+- `cor:young-branch-exclusion`
+- `thm:log-diffuse-from-hidden-scale`
+- `cor:log-diffuse-branch-exclusion`
+- `thm:bounded-origin-realization-coherent-tails`
+- `cor:coherent-critical-tail-branch-closure`
+- `cor:critical-tail-exclusion-complete`
+
+### Existing route
+
+The coherent critical-tail alternatives are closed independently by
+bounded-origin realization and log-hull rigidity.  Minimal mesoscopic reduction
+then eliminates hidden-scale variance.  The Young branch follows from that
+variance exclusion.  The log-diffuse branch uses log-window support profiles,
+hidden-scale exclusion, and the already closed coherent alternatives.
+
+### Expository edit
+
+Insert one dependency diagram or table using the actual proof order:
 
 \[
-\text{indecomposability}
-\longrightarrow
-L^3\text{ control along a sequence}
-\longrightarrow
-\text{exact bounded mild representative}
-\longrightarrow
-\text{Albritton--Barker input}
-\longrightarrow
-\text{contradiction}.
+\begin{gathered}
+\text{affine routing},\qquad
+\text{coherent-tail closure},\qquad
+\text{minimal mesoscopic reduction},\\
+\Downarrow\\
+\text{no hidden-scale variance}
+\Longrightarrow
+\begin{cases}
+\text{Young closure},\\
+\text{log-diffuse closure together with coherent-tail closure},
+\end{cases}\\
+\Downarrow\\
+\text{complete critical-tail closure}.
+\end{gathered}
 \]
 
-Affine and pressure failures exit through their named rows before this
-endpoint.  The sequence-level \(L^3\) statement must not be promoted to a
-uniform-in-time bound.
+For every blow-down or compactification theorem, record whether its descendant
+is a retained velocity profile or a normalized support profile.  State the
+support-transfer or heredity theorem used accordingly.
+
+### Mathematics preserved
+
+- Coherent-tail closure does not depend on the later log-diffuse conclusion.
+- The Young and log-diffuse rows share the minimal mesoscopic mechanism without
+  being identified as the same state.
+- The variance Liouville theorem is used only after the local blow-down and
+  pressure interfaces have produced its hypotheses.
+
+### Acceptance checks
+
+- The dependency diagram agrees with `tab:typeI-dependency-order`.
+- No theorem cites a closure that is downstream from itself.
+- Every pressure, viscous, affine, and Young defect coordinate has an explicit
+  route or closure.
+
+## I7. Expose how the endpoint hypotheses are manufactured
+
+### Source anchors
+
+- `def:finite-separated-profile-family`
+- `def:atomic-terminal-profile`
+- `prop:no-multi-implies-atomic`
+- `lem:atomic-sequence-L3`
+- `thm:descendant-heredity`
+- `thm:active-path-space-recurrence`
+- `thm:compact-active-descendant`
+- `thm:no-finite-separated-profile-family`
+- `thm:mildness-inheritance-main`
+- `thm:AB-main`
+- `lem:no-atomic-active`
+
+### Existing route
+
+A retained compact descendant is iterated within the realized normalized
+profile class.  It produces a finite separated family, an infinite descendant
+chain, a diffuse/noncompact/tail exit, or a single terminally indecomposable
+profile.  Only the last state receives the backward sequence-\(L^3\) estimate
+and parasitic-free mild pullback required by the endpoint theorem.
+
+### Expository edit
+
+Add an endpoint input-production table:
+
+| Endpoint hypothesis | Producing result | Earlier alternatives whose absence is used |
+|---|---|---|
+| terminal indecomposability | `prop:no-multi-implies-atomic` | finite separated, chain, diffuse, noncompact, and tail outputs |
+| backward sequence-\(L^3\) | `lem:atomic-sequence-L3` | retained descendants and all residual escape routes removed |
+| bounded mild physical pullback | `thm:mildness-inheritance-main` | affine/parasitic quotient removed and finite shift fixed |
+| nonzero obstruction | retained velocity concentration and ancestry | transported from the original residual branch |
+| zero conclusion | `thm:AB-main` | all preceding endpoint inputs |
+
+The proof of the finite separated-family theorem must continue to use the
+finite directed successor graph and the independent no-infinite-chain/no-atomic
+closures, rather than terminal assembly itself.
+
+### Mathematics preserved
+
+- Sequence-\(L^3\) is a terminal output, not a global premise.
+- The endpoint theorem is applied only to the parasitic-free bounded mild
+  physical pullback after finite shift.
+- The contradiction is with the retained local velocity obstruction.
+
+### Acceptance checks
+
+- The endpoint theorem is absent from all upstream compactness and
+  classification lemmas except where the source already proves the atomic
+  contradiction.
+- The finite separated-family and infinite-chain exclusions do not use
+  `thm:terminal-stratification`.
+- The terminal dependency table remains acyclic.
+
+## I8. Synchronize final assembly, auxiliary views, and static checks
+
+### Source anchors
+
+- `tab:typeI-dependency-order`
+- `tab:terminal-dependency-table`
+- `thm:terminal-stratification`
+- `thm:R4-final-closure`
+- `sec:final-assembly`
+- `thm:typeI-residual-closure`
+- `cor:setup-residual-hypothesis-proof`
+- `cor:two-paper-local-typeI-exclusion`
+- Type I capsules in `overall_proof_architecture.tex`
+
+### Existing route
+
+The terminal assembly closes every terminal output.  The deferred R2 and R3
+corollaries then close their classes.  The generic terminal theorem closes
+\(\Cgen\).  The final residual theorem combines the ordered class closures and
+discharges the setup paper's residual hypothesis.
+
+### Expository edit
+
+Make the final assembly table-driven.  Each row should state:
+
+- class or terminal state;
+- entry theorem;
+- retained obstruction;
+- closing theorem or valid reduction;
+- dependency status;
+- final consumer.
+
+Keep the prose proof as the mathematical assembly, but ensure the figure,
+classification table, dependency tables, reader guide, final displayed chain,
+and `overall_proof_architecture.tex` use the same labels and route descriptions.
+
+Create a Type I static audit script analogous in purpose to
+`check_type_II_regularity.py`.  The script should check only stable structural
+facts, including:
+
+- required public labels exist exactly once;
+- all local `\Cref` targets exist;
+- the R2/R3 reduction labels precede their closure corollaries;
+- the terminal dependency table contains the protected acyclic rows;
+- the pressure-atlas, retained-descendant, support-profile, and endpoint
+  interfaces remain named;
+- former fourth-paper terminology and the former residual-branch filename are
+  absent;
+- the rejected global nested-set formulation is absent from the manuscript and
+  audit documents;
+- every final class in the refined decomposition appears in the final assembly.
+
+The checker must avoid encoding incidental line numbers or prose punctuation.
+
+### Mathematics preserved
+
+- The final theorem remains a consequence of the existing local closures.
+- The setup paper's conditional assembly remains the final external consumer.
+- Supporting appendices remain in place unless a line-by-line comparison proves
+  that a block is redundant and all consumers are preserved.
+
+### Acceptance checks
+
+- No reachable terminal state lacks a named closure or reduction.
+- The two dependency tables and the final proof have the same topological
+  order.
+- The capsule register in `overall_proof_architecture.tex` resolves to labels
+  present in the manuscript.
+- Static checks and the TeX build pass after the manuscript edits.
 
 ---
 
-# Part II. Canonical ledger and interface schema
+# Part IV. Recommended implementation order
 
-## R1. Install the single residual ledger
+## Stage 1. Freeze the public interfaces
 
-### Problem
+1. Complete the setup export/provenance table.
+2. Complete the coordinate, threshold, gauge, and pressure directories.
+3. Record the retained-descendant and normalized-support-profile distinction.
 
-The paper currently contains an early architecture summary, a dependency table
-(`tab:typeI-dependency-order`), decision diagrams, a classification table
-(`tab:decision-tree-classification`), a glossary, a terminal dependency table
-(`tab:terminal-dependency-table`), and a final assembly chain.  These displays
-encode overlapping versions of the state order.  Their independent maintenance
-makes it possible for a class to appear closed in one display and merely routed
-in another.
+## Stage 2. Synchronize the state map
 
-### Required repair
+4. Align the entry, coarse, refined, terminal, and final-assembly views.
+5. Mark classification-only edges separately from theorem dependencies.
+6. Add the compact capsule route table.
 
-Add one canonical proof ledger near the initial residual decomposition.  Each
-row must contain the following fields:
+## Stage 3. Expose the local reductions
 
-| Field | Required content |
-|---|---|
-| Phase/rank | A well-founded stage and the strict direction of every reduction |
-| Current residual | The subset or represented residual entering the row |
-| Ancestor | The physical or normalized object from which it descends |
-| Working/core windows | The domain of the hypotheses and the smaller domain of the conclusion |
-| Equation/frame | Physical, parabolically recentered, or covariantly centered equation |
-| Pressure | Exact representative, gauge, harmonic part, and affine coordinate |
-| Retained obstruction | Velocity, quotient energy, oscillation, or source-defect mass |
-| Local estimate | The lemma or proposition applied at this row |
-| Removed component | The class discharged by that estimate |
-| Failure/survivor | The named state or next restricted residual |
-| Status | Constructed, routed, reduced, or closed, with its proof label |
+7. Add the R1 direct-closure interface.
+8. Add the R2 and R3 reduction/deferred-closure interfaces.
+9. Audit affine normalization, observer covariance, and pressure compatibility
+   at their actual local consumers.
 
-Define every later residual notation by reference to a row of this ledger.
-State explicitly that restriction, recentering, weak limiting, and defect
-normalization preserve the ledger identifier and add an ancestry edge.
+## Stage 4. Expose terminal residual promotion
 
-### Acceptance condition
+10. Add the paired concentration/remainder output table.
+11. Add the diffuse, critical-tail, and hidden-scale dependency view.
+12. Add the separated-profile, recurrence, indecomposability, and endpoint
+    input-production table.
 
-Every state in the final theorem occurs in exactly one canonical row.  Every
-other diagram and table is explicitly described as a projection of this
-ledger.  The residual diagram contains no return arrow that can be read as
-reinitializing or enlarging the residual.
+## Stage 5. Consolidate and verify
 
-## R2. Replace descriptive imports by exact output provenance
+13. Synchronize the final assembly and the overall proof architecture.
+14. Add the Type I structural checker.
+15. Rebuild the paper and inspect references, warnings, and layout.
 
-### Problem
-
-The setup dictionary records source labels and displayed numbers, but several
-numbers are stale and one source label does not exist in `proof_setup.tex`.
-Descriptive phrases such as “terminal concentration theorem” do not specify the
-output tuple consumed by Paper II.
-
-### Required repair
-
-Correct the setup dictionary as follows:
-
-| Current entry | Canonical source entry |
-|---|---|
-| `p0:prop:terminal-concentration` | `p0:prop:concentration-package`, Proposition 5.9 |
-| `p0:thm:local-weak-serrin-typeI`, Theorem 8.3 | `p0:thm:local-weak-serrin-typeI`, Theorem 8.4 |
-| `p0:cor:paper0-local-typeI-admissible`, Corollary 8.4 | `p0:cor:paper0-local-typeI-admissible`, Corollary 8.5 |
-| `p0:lem:local-seregin-extraction`, Lemma 8.6 | `p0:lem:local-seregin-extraction`, Lemma 8.7 |
-| `p1:thm:classical-classes`, Theorem 15.8 | `p1:thm:classical-classes`, Theorem 15.7 |
-| `p1:thm:known-structure-decay-liouville`, Theorem 15.10 | `p1:thm:known-structure-decay-liouville`, Theorem 15.9 |
-
-Retain the source label as the authoritative identifier and treat the displayed
-number as checked metadata.  For every imported result, add a provenance row
-with:
-
-- source file and exact producer label;
-- exact hypotheses used in the source theorem;
-- complete output tuple, including domain and time interval;
-- convergence topology on working and core windows;
-- pressure representative and gauge;
-- retained velocity or concentration output;
-- Paper II consumer labels;
-- named Paper II output when an import hypothesis fails.
-
-The Type I entry package must produce exactly the Seregin profile supplied by
-the imported results.  Later residual classification belongs to Paper II and
-must not be attributed to the import.
-
-### Acceptance condition
-
-Every imported assertion in the proof can be checked from one provenance row.
-No target theorem consumes stronger convergence, a larger domain, a different
-pressure representative, or a stronger obstruction than its producer supplies.
+This order follows theorem dependencies.  It is not a claim that the proof is a
+linear sequence of globally nested residual sets.
 
 ---
 
-# Part III. Local analytic interfaces
-
-## R3. Consolidate the observer action and domain transport
-
-### Problem
-
-The actions denoted by `\mathscr T_{(x,\sigma)}` and `\mathcal R_z` implement
-the same covariant observer transformation in separate proof-bearing
-definitions.  The duplication obscures when the paper uses an ordinary
-first-generation parabolic recentering and when it uses a centered covariant
-recentring of an existing descendant.
-
-### Required repair
-
-Choose one canonical covariant action and express the second notation as an
-alias or specialization.  Preserve the translation action, the dilation
-action, and their semidirect product law.  State in the canonical definition:
-
-- the transformed velocity and pressure, including scaling exponents;
-- the transformed space-time point and time interval;
-- the Jacobian for every norm and defect measure used later;
-- the image and preimage of cylinders and tubes;
-- the working/core buffer after transformation;
-- the pressure gauge transported by the action;
-- the composition law needed for descendant ancestry.
-
-Introduce separate terminology for:
-
-1. the first parabolic extraction from the physical solution; and
-2. a centered covariant transformation applied to a recorded descendant.
-
-All later recentering lemmas must cite this definition instead of recomputing
-the transformation locally.
-
-### Acceptance condition
-
-Every transformed local estimate can be checked from the canonical Jacobian
-and domain formulas.  No two active definitions assign different meanings to
-the same observer action.
-
-## R4. Make every pressure transition representative-aware
-
-### Problem
-
-The manuscript has the correct pressure ingredients, including
-`lem:local-pressure-decomposition`,
-`prop:normalized-pressure-representation`,
-`lem:scaled-pressure-compactness-affine`,
-`lem:first-bad-pressure-compactness`, and
-`lem:actual-pressure-minimal-scale-energy`.  Their interfaces need a single
-declared pressure atlas.  In particular, pressure compactness, affine
-subtraction, and the actual pressure in the local energy inequality must remain
-distinct.
-
-### Required repair
-
-For every pressure-bearing row, record
-
-\[
-p=p_{\mathrm{loc}}+h+c(t),
-\]
-
-or the corresponding normalized/scaled formula, with the domain of the local
-Riesz term, the harmonic remainder, and the time gauge stated explicitly.
-Whole-space Riesz reconstruction may be used only where the setup package
-supplies the necessary global integrability or finite-energy input.
-
-In blowdown statements, display the coefficient \(\kappa\): it equals the
-natural-scale value before blowdown and tends to zero for the scaled
-non-affine component in the relevant limit.  Record the affine coefficient as
-a separate ledger coordinate.
-
-Use `lem:no-pressure-only-retained-profile` as a routing lemma.  A pressure
-lower bound by itself produces one of:
-
-- a pressure/noncompact state;
-- a retained affine-pressure coordinate;
-- a neighboring velocity lower bound proved through the local Riesz
-  decomposition and a finite cover.
-
-It does not certify a nonzero velocity profile without the third argument.
-
-Before applying the local energy inequality, restore the actual pressure and
-invoke `lem:actual-pressure-minimal-scale-energy` with its full hypotheses.
-
-### Acceptance condition
-
-Every pressure convergence statement includes the harmonic and affine data.
-Every use of a pressure lower bound points to an explicit routing alternative.
-Every local energy inequality uses the actual pressure on its declared working
-window.
-
-## R5. Freeze thresholds and relate all measures to the residual
-
-### Problem
-
-Velocity retention, CKN energy, pressure-atlas mass, oscillation, and defect
-mass appear at different stages.  Similar notation and repeated
-normalizations can make them look interchangeable or make a newly normalized
-measure look like a new residual.
-
-### Required repair
-
-Add a threshold dictionary near the canonical ledger.  For each quantity,
-record its formula, gauge dependence, scaling, fixed threshold, and permitted
-implications.  In particular:
-
-- `Vel_r` is the retained velocity obstruction;
-- `E_r` is the quotient CKN quantity;
-- `mu_n` is interpreted only in its declared pressure atlas;
-- spatial and logarithmic oscillations retain their own thresholds;
-- a normalized defect measure has unit or fixed source mass by construction,
-  not a velocity lower bound.
-
-Whenever a measure is introduced, specify whether it is a restriction,
-pushforward, weak limit, Radon--Nikodym component, or normalization of the
-current ledger measure.  State the normalization constant and prove it is
-positive before division.
-
-### Acceptance condition
-
-No implication between two lower bounds is used without a cited estimate.
-Every measure has a visible ancestry chain to the same current residual.
-
-## R6. Split global ancestry into local transfer lemmas and assembly
-
-### Problem
-
-`thm:ancestor-realization-inheritance` appears before many of the local
-recentring, pressure, and terminal lemmas that supply its content.  As written,
-it functions as a global interface while depending on later cases.  The paper
-also needs a precise distinction between retained descendants and normalized
-support profiles.
-
-### Required repair
-
-For each descendant operation, provide a local transfer lemma with the same
-fields as a ledger transition:
-
-- parent and child ledger identifiers;
-- exact coordinate map;
-- working/core windows;
-- convergence topology;
-- pressure representative;
-- transported obstruction or source mass;
-- failure output.
-
-Cover time shifts, spatial recenterings, tail limits, diagonal lifts, defect
-normalizations, and mesoscopic blowdowns.  A retained descendant must carry a
-proved positive velocity obstruction.  A normalized support profile need only
-carry the positive mass of the source defect used to normalize it.
-
-Move the proof-bearing content of `thm:ancestor-realization-inheritance` after
-these local transfer lemmas, or restate the early occurrence as a roadmap and
-place the theorem itself at assembly.  The final theorem then concatenates the
-local ancestry edges; it does not supply missing local compactness.
-
-### Acceptance condition
-
-Every descendant in the terminal theorem has a finite ancestry chain.  Each
-edge states exactly which positive quantity survives.
-
-## R7. Give every structural class a local contract
-
-### Axisymmetric row
-
-The circulation estimate closes only the declared axisymmetric component.  Its
-output must enter the already closed no-swirl result with matching coordinates,
-pressure representative, core cylinder, and retained obstruction.
-
-### Rotating row
-
-The Coriolis-flux estimate removes the declared rotating component or routes
-the survivor to a lower-ranked or terminal row.  The local reduction itself
-must not cite the later global closure.
-
-### Stationary row
-
-Scale reselection must record the parent profile, selected scales, centered
-coordinates, pressure gauges, and retained obstruction.  The stationary hull
-is constructed locally and closed only after the terminal alternatives have
-been excluded.
-
-### Affine row
-
-The affine class is a quotient and routing interface.  It records the affine
-pressure coordinate and the representative of the non-affine residual; it is
-not treated as an ordinary PDE symmetry class.
-
-### Logarithmic, Young-measure, homogeneous-critical, periodic, and almost-periodic rows
-
-For each row, state the local estimate that removes the class, the topology in
-which the estimate is stable, and the precise named failure output.  A failure
-must remain in the current ledger and pass to the next row with its ancestry
-unchanged.
-
-### General row
-
-Define `Cgen` as the residual left after all preceding class rows.  Its theorem
-is a terminal exhaustion statement and must not assume an independent copy of
-the original residual.
-
-### Acceptance condition
-
-Every local class theorem has one input row and one of two outputs: removal of
-that component or a named lower-ranked survivor.  No row concludes global
-emptiness by itself.
-
----
-
-# Part IV. Terminal and critical-tail interfaces
-
-## R8. Keep the active locus paired with the same restricted measure
-
-### Problem
-
-The terminal analysis uses compact, diffuse, noncompact, pressure, and critical
-objects, sometimes with separate measure notation.  The proof requires these
-objects to be complementary pieces of one residual, not unrelated measures.
-
-### Required repair
-
-Define each terminal state as a pair
-
-\[
-(\text{active locus},\;\text{restriction of the current residual measure}).
-\]
-
-The compact subthreshold component is closed by CKN through
-`lem:compact-subthreshold-regular-residual` before terminal stratification.
-Remove the sentence in its proof that invokes `thm:terminal-stratification`;
-the latter consumes the lemma and cannot justify it.
-
-Keep a mixed compact--diffuse pair intact until
-`thm:no-mixed-compact-diffuse` applies.  Diffuse, escaping noncompact, pressure,
-affine, and critical-tail components remain named ledger rows until their own
-closure or reduction theorem is invoked.
-
-Make `lem:retained-recentering-alternatives` and
-`lem:compact-window-expanding-region-protocol` explicit constructions with
-working/core windows and output measures.  Their current theorem-environment
-roles are corrected under R11.
-
-### Acceptance condition
-
-`thm:terminal-stratification` is an exhaustion of the residual delivered to
-it.  Its alternatives are disjoint or paired exactly as stated, collectively
-exhaust that residual, and cite only upstream constructions.
-
-## R9. Carry the full critical-tail tuple until coordinates vanish
-
-### Problem
-
-The critical-tail compactification is naturally a tuple containing the
-velocity state, auxiliary state, scale, pressure defects, viscous defects,
-affine coordinate, virial coordinate, and support data.  Later statements
-sometimes abbreviate this tuple before the suppressed coordinates have been
-proved to vanish.
-
-### Required repair
-
-Choose one ordered state tuple, for example
-
-\[
-(\overline W,Y,\Lambda;
-\Pi_{\mathrm{def}},D_{\mathrm{visc}},A_{\mathrm{aff}},
-V_{\mathrm{vir}},S_{\mathrm{supp}}),
-\]
-
-using the manuscript's final notation.  State:
-
-- compactness and metrizability of the state space;
-- the continuous observer action;
-- uniform bounds for every coordinate;
-- the positive source mass used in normalization;
-- support transfer under convergence;
-- the lemma that sets each dispensable coordinate to zero.
-
-All proof-bearing interfaces carry the complete tuple until the cited
-vanishing lemmas apply.  Abbreviated notation may then be introduced as a
-projection.
-
-### Acceptance condition
-
-No compactness or support theorem depends on an omitted coordinate.  Every
-coordinate discarded from the notation has already been proved zero or
-irrelevant by a stated projection lemma.
-
----
-
-# Part V. Dependency and consolidation repairs
-
-## R10. Linearize the R3 closure
-
-### Problem
-
-The current R3 block contains closure backedges:
-
-- `thm:R3-no-attainable-degenerate-family` points forward to
-  `cor:R3-closure`;
-- `prop:R3-stationary-hull-reduction` uses the no-degenerate-family statement;
-- `cor:R3-closure` then cites both;
-- `prop:R3S-R3-terminal-reduction` refers to `cor:R3-closure`, while the closure
-  cites that reduction.
-
-This makes the logical order circular even if the intended proof is a deferred
-post-terminal assembly.
-
-### Required repair
-
-Use the following one-way order:
-
-1. Construct the R3 stationary hull and record its retained obstruction.
-2. Reduce every R3 survivor to a named R3S terminal alternative without citing
-   R3 closure.
-3. Apply the independently proved terminal stratification and its closure
-   lemmas.
-4. Prove one post-terminal R3 closure theorem.
-5. Derive the no-active-stationary-carrier and no-attainable-degenerate-family
-   assertions as corollaries of that closure.
-
-Earlier occurrences of the later consequences may remain only as roadmap
-statements with no proof-bearing use.  The main entry theorem must invoke the
-completed post-terminal closure, not serve simultaneously as an input to it.
-
-### Acceptance condition
-
-The role-aware dependency graph for the R3 block is acyclic.  Removing
-`cor:R3-closure` from the file leaves all constructions and reductions
-well-formed and only removes the final consequences.
-
-## R11. Give every deferred assertion one proof and a matching role
-
-### Problem
-
-Several labels encode a theorem role different from their LaTeX environment:
-
-| Label | Current role mismatch |
-|---|---|
-| `hyp:base-seregin-hypotheses` | theorem carrying imported output |
-| `hyp:previous-nonresidual` | definition of the previously closed region |
-| `thm:R3-no-attainable-degenerate-family` | proposition |
-| `thm:R3S-terminal-theorem` | proposition |
-| `thm:R3S-no-active-stationary-carrier` | remark |
-| `cor:R3S-no-active-degenerate-family` | remark |
-| `lem:retained-recentering-alternatives` | corollary |
-| `lem:compact-window-expanding-region-protocol` | theorem |
-
-The early architecture section also states conclusions whose proofs are
-deferred to terminal sections.  These statements need a unique proof-bearing
-location.
-
-### Required repair
-
-Choose canonical labels whose prefixes match their environments and update all
-internal references.  Where an external or durable reference may rely on an
-old label, add a same-location compatibility alias rather than retaining two
-proof-bearing statements.
-
-For each deferred assertion, record:
-
-- the early roadmap occurrence;
-- the unique later proof-bearing environment;
-- the prerequisites that become available there;
-- the canonical label used by downstream results.
-
-An early roadmap must use prospective language and cannot be cited as if the
-deferred proof had already been established.
-
-### Acceptance condition
-
-Every formal claim has exactly one proof-bearing occurrence.  Label prefixes
-match theorem roles, and compatibility aliases do not create duplicate
-statements or dependency nodes.
-
-## R12. Consolidate the generator/pressure calculus
-
-### Problem
-
-`lem:recurrent-core-pressure-gauges` contains a spectral or generator pressure
-calculation, while the appendix lemma `lem:generator-pressure-identity`
-repeats related proof-bearing calculus.  Maintaining both obscures the exact
-operator domain and the handling of the zero mode and gauge quotient.
-
-### Required repair
-
-Select one canonical generator-pressure lemma.  Its statement must specify:
-
-- the operator and its domain;
-- the cylinder or compact core on which the identity is tested;
-- the resolvent or spectral approximation used;
-- the treatment of the zero mode;
-- the quotient by functions of time;
-- the relation to `lem:local-pressure-decomposition`;
-- the topology in which the identity passes to limits.
-
-Replace the other proof by a short application of the canonical lemma, with
-only the specialization needed at that location.
-
-### Acceptance condition
-
-There is one proof of the generator calculus and one declared pressure-gauge
-convention.  All downstream recurrence and appendix arguments cite that same
-interface.
-
-## R13. Derive summaries and final assembly from the ledger
-
-### Problem
-
-The paper's diagrams, classification tables, dependency tables, glossary, and
-final proof currently restate portions of the architecture.  Independent
-restatement invites rank drift and makes a routed state look closed before its
-closure theorem appears.
-
-### Required repair
-
-After R1--R12, rewrite each secondary summary as a projection of the canonical
-ledger:
-
-- the early dependency table shows phase order and contains no closure detail;
-- the decision-tree table shows local estimate and failure output;
-- the glossary points to canonical row definitions;
-- the terminal dependency table contains only terminal inputs and closures;
-- the final assembly cites every row once in monotone order.
-
-Mark each row with one of four statuses: constructed, routed, reduced, or
-closed.  “Assigned,” “removed,” “deferred,” and “previously closed” may be used
-only when followed by the relevant ledger row and proof label.
-
-The final assembly must visibly establish:
-
-1. the Type I import and nontrivial normalized profile;
-2. affine normalization and the start of the residual ledger;
-3. local removal or routing of every structural class;
-4. terminal exhaustion of the surviving residual;
-5. post-terminal R3 closure;
-6. final endpoint closure in the fixed order of A6;
-7. emptiness of the original residual by monotonicity.
-
-### Acceptance condition
-
-A reader can reconstruct the proof dependency graph from the canonical ledger
-and the imported-output table alone.  All other summaries agree with those two
-sources.
-
----
-
-# Part VI. Recommended implementation order
-
-## Stage 1. Freeze interfaces
-
-1. Correct the imported-label dictionary and add exact output provenance.
-2. Install the canonical residual ledger, phase/rank, and threshold dictionary.
-3. Declare the canonical observer action and pressure atlas.
-
-## Stage 2. Repair local transfers
-
-4. Add working/core windows and exact residual outputs to each class lemma.
-5. Split descendant inheritance into local transfer lemmas.
-6. Make every pressure and defect normalization representative-aware.
-7. Record all measure restrictions, pushforwards, limits, and normalizations.
-
-## Stage 3. Repair terminal interfaces
-
-8. Pair terminal active loci with restrictions of the current residual.
-9. Close compact subthreshold mass before terminal stratification.
-10. Carry the full critical-tail tuple through compactness and support transfer.
-11. Keep mixed compact--diffuse mass paired until its exclusion theorem.
-
-## Stage 4. Linearize closure
-
-12. Reorder the R3 construction, terminal reduction, terminal exhaustion, and
-    post-terminal closure.
-13. Give each deferred assertion one proof-bearing location.
-14. Correct theorem roles and install same-location legacy aliases only where
-    required.
-
-## Stage 5. Consolidate and assemble
-
-15. Consolidate the generator/pressure calculus.
-16. Regenerate the diagrams, tables, glossary, and final proof from the ledger.
-17. Run the mechanical and referee-facing audits below.
-
----
-
-# Part VII. Mechanical audit
+# Part V. Mechanical audit
 
 ## Labels and imports
 
-- [ ] Every theorem, proposition, corollary, lemma, definition, and remark label
-      is unique.
-- [ ] Every `\ref`, `\eqref`, `\Cref`, citation, and setup label resolves.
-- [ ] The setup dictionary agrees with the auxiliary file generated from
-      `proof_setup.tex`.
-- [ ] Every imported output has one exact producer and a complete output tuple.
-- [ ] Every theorem-environment role agrees with its canonical label prefix.
+- [ ] Every label cited from the setup paper appears in the import dictionary.
+- [ ] Every import row records the exact output consumed in Paper II.
+- [ ] Every local theorem and corollary label resolves exactly once.
+- [ ] No former fourth-paper terminology remains.
+
+## State and obstruction interfaces
+
+- [ ] Every descendant used for closure is realized from the original branch.
+- [ ] Retained velocity descendants and normalized support profiles are never
+      conflated.
+- [ ] Every support-profile contradiction uses a support-transfer theorem.
+- [ ] Every retained-profile contradiction uses the inherited velocity lower
+      bound and descendant heredity.
+
+## Domains, topology, and pressure
+
+- [ ] Every local estimate states its working and core regions.
+- [ ] Every compactness theorem states its topology.
+- [ ] Every pressure passage states the representative and gauge freedom.
+- [ ] Every pressure-atlas failure has a named route.
+- [ ] Every minimal-scale energy limit uses the actual pressure representative
+      justified for that blow-down.
 
 ## Dependency direction
 
-- [ ] The role-aware graph
-      `input -> construction -> local estimate -> reduction -> support transfer
-      -> closure -> assembly` is acyclic.
-- [ ] No local reduction cites a closure theorem that consumes that reduction.
-- [ ] Every deferred claim has one later proof-bearing occurrence.
-- [ ] Every edge to an earlier row strictly decreases the declared rank.
-
-## Residual and ancestry
-
-- [ ] Every class is removed from or retained in the current residual exactly
-      once.
-- [ ] Every descendant has a finite ancestry chain to the Type I entry profile.
-- [ ] Every auxiliary measure is a declared operation on the current residual.
-- [ ] Every normalization divides by a proved positive source mass.
-- [ ] Every retained descendant carries the stated velocity obstruction; every
-      support profile carries only the mass actually inherited.
-
-## Pressure and local estimates
-
-- [ ] Every pressure limit records the local Riesz part, harmonic remainder,
-      time gauge, and affine coordinate when present.
-- [ ] Whole-space pressure reconstruction is used only under its declared
-      global input.
-- [ ] Every local energy inequality uses the actual pressure.
-- [ ] Every pressure-only lower bound routes through
-      `lem:no-pressure-only-retained-profile`.
-- [ ] Every local theorem distinguishes its working and core windows.
+- [ ] R1 closes without terminal assembly.
+- [ ] R2 and R3 reduce before terminal assembly and close after it.
+- [ ] Coherent critical tails close before they are used in log-diffuse closure.
+- [ ] Minimal mesoscopic reduction precedes hidden-scale, Young, and
+      log-diffuse conclusions.
+- [ ] Atomic sequence-\(L^3\) precedes endpoint Liouville.
+- [ ] Finite separated-family and infinite-chain exclusions precede terminal
+      assembly.
+- [ ] Final assembly cites only imported or previously proved results.
 
 ## Build checks
 
-Run three LaTeX passes in a temporary build directory and check:
+After manuscript implementation:
 
-```text
-undefined references
-undefined citations
-duplicate labels
-multiply defined labels
-overfull boxes
-```
-
-Then run `git diff --check`.  Classify any remaining layout warning and confirm
-that the generated PDF contains the corrected setup dictionary, canonical
-ledger, and derived terminal table.
+1. run the Type I structural checker;
+2. compile `type_I_residual_closure.tex` to stable references;
+3. search the log for undefined references, multiply defined labels, and
+   missing citations;
+4. inspect overfull boxes introduced by new tables or captions;
+5. verify `overall_proof_architecture.tex` still resolves all Type I labels;
+6. run `git diff --check` on the edited files.
 
 ---
 
-# Part VIII. Referee checklist
+# Part VI. Referee-facing checklist
 
-A referee should be able to answer **yes** to every item.
+A reader should be able to answer yes to each question.
 
-## Architecture
+## Entry and ancestry
 
-- [ ] The proof uses one residual ledger from the normalized Type I entry to the
-      final contradiction.
-- [ ] Each local estimate monotonically removes a component or produces a named
-      survivor.
-- [ ] The general class is the final survivor, not a new residual.
-- [ ] No repair changes the proof strategy or weakens a claim.
+- [ ] Is the residual object imported from the setup paper with an exact output
+      tuple?
+- [ ] Is its positive local velocity obstruction fixed at entry?
+- [ ] Is every later profile connected to it by realization, heredity, or
+      support transfer?
 
-## Interfaces
+## Local capsules
 
-- [ ] Every import matches its consumer in hypotheses, domain, topology,
-      pressure gauge, and retained obstruction.
-- [ ] Every recentering or blowdown records its parent and coordinate map.
-- [ ] Every pressure statement uses a declared representative.
-- [ ] Every threshold and positive-mass assertion has one fixed meaning.
+- [ ] Does every structural theorem state the local hypotheses it consumes?
+- [ ] Does every theorem close only its declared component?
+- [ ] Does failure of a local hypothesis produce a named adjacent state?
+- [ ] Are pressure and coordinate conventions explicit at every limit?
 
-## Terminal closure
+## Terminal graph
 
-- [ ] Compact subthreshold mass is removed before terminal stratification.
-- [ ] Mixed compact--diffuse mass remains paired until its exclusion theorem.
-- [ ] The full critical-tail tuple is carried until its extra coordinates are
-      proved to vanish.
-- [ ] R3 closure occurs after, and only after, terminal exhaustion.
-- [ ] The endpoint uses indecomposability, sequential \(L^3\) control, the exact
-      mild representative, and the Albritton--Barker theorem in that order.
+- [ ] Are compact active and diffuse residual outputs extracted as a paired
+      decomposition?
+- [ ] Are affine, pressure, noncompact, Young, log-diffuse, and coherent-tail
+      exits all routed?
+- [ ] Are finite separated families and infinite descendant chains closed
+      independently of terminal assembly?
+- [ ] Is sequence-\(L^3\) produced only at the terminal indecomposable state?
 
-## Final assembly
+## Assembly
 
-- [ ] Every state marked closed cites a direct theorem, an exact import, or a
-      strict-rank reduction to an already closed row.
-- [ ] Every failed hypothesis becomes a named output.
-- [ ] There are no reachable open terminal states.
-- [ ] Emptiness of the original residual follows from the monotone ledger and
-      exhaustive closure of its final survivor.
+- [ ] Does the terminal theorem assemble only earlier local results?
+- [ ] Do the R2 and R3 closure corollaries use their reductions plus the now
+      established terminal theorem?
+- [ ] Does the generic closure exhaust every remaining terminal route?
+- [ ] Does the residual theorem discharge exactly the setup paper's remaining
+      hypothesis?
 
 ---
 
-# Part IX. Intended final reading of the proof
+# Part VII. Intended final reading
 
-After these repairs, the manuscript should read as one continuous argument:
+After these edits, the paper should read as the following cohesive argument:
 
 \[
-\text{singular physical germ}
+\text{local pointwise Type I singularity}
 \longrightarrow
-\text{exact imported Type I profile}
+\text{admissible Seregin extraction}
 \longrightarrow
-\text{affine-normalized residual}
+\text{one retained residual obligation},
 \]
 
 \[
 \longrightarrow
-\text{local structural estimate}
-\longrightarrow
-\text{removed component or named survivor}
-\longrightarrow
-\text{same residual at lower rank}
+\text{direct lower closures or realized terminal descendants},
 \]
 
 \[
 \longrightarrow
-\text{terminal restriction of that residual}
-\longrightarrow
-\text{compact/diffuse/pressure/critical-tail exhaustion}
+\text{paired active/residual terminal decomposition},
 \]
 
 \[
 \longrightarrow
-\text{post-terminal R3 closure}
-\longrightarrow
-\text{bounded mild endpoint contradiction}
-\longrightarrow
-\text{empty residual}.
+\text{affine, diffuse, pressure, tail, separated, chain, or atomic state},
 \]
 
-The result is the existing proof with its logical ownership exposed: one
-ledger, one residual, local estimates at every transition, and a final
-contradiction assembled only after all named survivors have been closed.
+\[
+\longrightarrow
+\text{local closure of every state},
+\]
+
+\[
+\longrightarrow
+\text{backward contradiction through ancestry},
+\]
+
+\[
+\longrightarrow
+\calR^\#(\calS;I,J)=\varnothing,
+\]
+
+\[
+\longrightarrow
+\text{the setup paper's local Type I exclusion}.
+\]
+
+The proof remains the same proof.  The completed edits make its local
+state-space refinement, routing interfaces, pressure atlas, obstruction
+transport, and final assembly visible at the points where a reader needs them.

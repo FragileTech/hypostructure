@@ -159,41 +159,38 @@ Quantitative Limits for General Intelligent Computation}
 \maketitle
 
 \begin{abstract}
-We develop a presentation-relative framework for structural complexity.  A
-task presentation specifies its public observables, terminal data, admissible
-constructors, and resource accounting; the resulting saturated profile records
-the strongest target-aligned structure derivable within a budget.  We prove an
-exhaustive decomposition of represented dynamics into geometric, directed,
-quotient, lifted-state, boundary, and residual components.  A quantitative
-backward cut and structural-charge identity assign every prospective
-target-bearing record to its represented source, while temporal accountability
-separates structure available before a transition from retrospective
-first-hit records.  This yields resource bounds from the saturated profile
-without enumerating computation procedures.
+Can the capabilities of an arbitrary intelligent system be bounded without
+fixing its architecture?  We develop a presentation-relative theory that
+replaces algorithm-specific analysis with a saturated structural profile: the
+strongest target-relevant structure that any resource-bounded computation can
+construct from the public observables, constructors, terminal data, and cost
+model of a task.  Universal accountability theorems convert this profile into
+quantitative performance bounds that hold simultaneously for every admissible
+algorithm, including architectures and runtime-generated representations not
+anticipated in advance.
 
-The same calculus gives source-resolved learning bounds, controlled-system and
-Bellman certificates, attention and compact-belief compilations, black-box
-model audits, and a structural meta-complexity frontier.  We also give a
-proof-grade empirical pipeline: learned certificates provide candidate
-factorizations, while exact or interval verification establishes exhaustive
-source coverage, capacity, attenuation, error, and scale propagation.
+The framework unifies represented geometry, abstraction, learned features,
+information acquisition, memory, Bayesian inference, control, reinforcement
+learning, and attention within a common cost-, provenance-, temporal-,
+source-, and noise-aware ledger.  It separates prospective sources from
+retrospective explanations and charges generated representations at their
+complete saturated cost.  Source-resolved Rademacher, sequential Rademacher,
+PAC--Bayes, and effective-dimension bounds keep statistical capacity,
+structural ancestry, noise contraction, construction cost, and deployment
+attached to the same computation.  The resulting statistical, computational,
+and information-theoretic noise thresholds quantify transitions among
+learnable, resource-limited, and information-limited regimes.
 
-For random binary learning parity with noise, the quotient and
-quotient-supported geometric exhaustion, together with a constant-noise
-spectral analysis, exponentially suppresses every explicitly materialized
-located spectral block and isolates one compact residual-ancestry source
-coordinate as the sole remaining certification obligation.  The verification
-theorem proves that an accepted proof-grade certificate---comprising exact
-source coverage, capacity, attenuation, error, finite-prefix, and uniform
-scale-propagation fields---discharges this coordinate and bounds the complete
-saturated value by \(2^{-n}+(1-\eta)^n\).  This manuscript specifies and proves
-the discharge mechanism but does not execute the final instantiated
-certificate analysis.  Its LPN hardness consequences are therefore
-conditional, in the present version, on acceptance of that internal
-certificate rather than on an imported complexity-theoretic assumption.
-Verifying such a certificate would discharge the remaining premise and make
-those consequences unconditional relative to the declared presentation and
-its resource-saturated constructor closure.
+Universal quantification over the declared resource class gives precise
+architecture-independent bounds on learning, reasoning, control, and
+target-directed performance for increasingly general intelligent systems,
+including artificial general intelligence.  As a proof-producing stress
+test, the LPN specialization isolates one compact
+residual-ancestry certification target and proves that a deterministically
+accepted finite-to-asymptotic certificate discharges it.  The instantiated
+certificate analysis is not executed here, so the current LPN hardness
+consequences remain conditional on this internal certificate; verifying it
+would make them unconditional relative to the declared presentation.
 \end{abstract}
 
 \begin{center}
@@ -271,15 +268,36 @@ distinguishing success from failure.  The analysis follows the reverse order:
 \end{gathered}
 \]
 The resulting bound is architecture-independent within the declared
-presentation and resource class.  A future algorithm, architecture, learned
-representation, search procedure, memory system, attention mechanism, or
-controller cannot evade the analysis because its design was not anticipated.
-Every admissible target-relevant quotient, feature map, potential, kernel,
-observable, policy, or value representation that it constructs at runtime
-re-enters the same saturated closure at its complete representation and
-computation cost.  The saturated profile therefore measures the capability
-available from the presentation, rather than the capability of a preferred
-algorithm.
+presentation and resource class.  Its defining closure property is summarized
+in the following budget-level statement.
+
+\begin{center}
+\fbox{%
+  \begin{minipage}{0.91\linewidth}
+  \raggedright
+  \textbf{Saturation in one paragraph.}
+  At budget \(B\), saturation closes the public presentation under every
+  admissible oracle-free constructor and represented computation whose
+  complete derivation is admissible at \(B\); it does not select a preferred
+  algorithm.  If an algorithm generates a quotient, feature map, potential,
+  kernel, controller, value representation, or target-aligned observable at
+  runtime, the complete generated record re-enters the same closure with its
+  derivation and admissible budget set.  Under scalar cost accounting, it
+  first appears at its least saturated representation cost and remains outside
+  the budget-\(B\) slice while that cost exceeds \(B\).  For a partially
+  ordered resource budget, it contributes precisely at the budgets in its
+  represented admissible budget set.  The resulting profile is therefore
+  intrinsic to the presentation and budget, rather than to the method that
+  discovered the representation.
+  \end{minipage}%
+}
+\end{center}
+
+The exact eight-state calculation in
+\cref{ex-eight-state-affordable-algebra} instantiates this closure at a
+finite budget: it lists the entire affordable quotient slice, computes every
+conditional-algebra increment, and turns their conserved charge into a bound
+for every admissible transition rule in the example.
 
 \subsection{What this paper introduces}\label{subsec-overview-general}
 
@@ -15319,10 +15337,260 @@ the transfer class under finite sums, maxima, and multiplication by
 
 \end{proof}
 
+\begin{example}[An exact eight-state affordable algebra]
+\label{ex-eight-state-affordable-algebra}
+
+We give a complete finite calculation of the objects in
+\cref{def:affordable-frontier-contextual-charge,thm-exact-affordable-algebra-structural-charging}.
+The carrier is
+
+\[
+\Omega=\{0,1\}^3,
+\qquad x=(c,u,v),
+\qquad \mu_\Omega=\operatorname{Unif}(\Omega),
+\]
+
+with target and failure sectors
+
+\[
+T=\{111\},
+\qquad
+F=\{100,101,110\}.
+\]
+
+Thus the states with \(c=1\) are terminal; \(111\) is success and the
+other three are failure.  The public state observables are the three bit
+reads \(c,u,v\), and the terminal verifier is
+\(t(c,u,v)=cuv=\mathbf 1_T(c,u,v)\).  The legal initialization is
+
+\[
+\mu_0=\operatorname{Unif}\{000,001,010\}.
+\]
+
+The single toy presentation declares exactly three admissible one-step
+transition records, indexed by \(p\in\{0,\tfrac12,1\}\).  They are
+
+\begin{equation}
+\label{eq-eight-state-kernel}
+\begin{array}{c|cccc}
+x&000&001&010&011\\ \hline
+K_p(x,\cdot)&\delta_{100}&\delta_{101}
+&p\delta_{111}+(1-p)\delta_{110}&\delta_{110},
+\end{array}
+\qquad
+K_p(x,\cdot)=\delta_x\quad(c=1).
+\end{equation}
+
+The finite code for \(p\) is part of this transition record.  Every
+terminal state reachable from the support of \(\mu_0\) is reached after
+exactly one transition.
+
+\medskip\noindent\textbf{Grammar, budget, and complete slice.}
+Fix the following finite constructor grammar.  It may read any of
+\(c,u,v\), form ordered tuples of distinct coordinate reads by binary joins,
+apply the downstream verifier \(t\), and attach one of the three records
+\(K_p\) together with the displayed initialization, reference law, and
+discount normalization.  The verifier is a downstream terminal operation:
+the grammar does not feed \(t\) back into an upstream tuple constructor.
+The declared scalar cost ledger for the complete three-coordinate quotient
+record is
+
+\begin{center}
+\begin{tabular}{@{}lr@{}}
+\toprule
+charged field & cost\\
+\midrule
+primitive reads \(c,u,v\) & \(3\)\\
+two nontrivial tuple joins & \(2\)\\
+target and terminal readout & \(1\)\\
+kernel/clock, initialization, reference law, and discount record & \(2\)\\
+represented fibers and exact-intertwining verification & \(1\)\\
+\midrule
+complete carrier cost \(B_0\) & \(9\)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+These are declared representation costs, not operation counts inferred
+after the calculation.  In particular, the finite \(p\)-code is included in
+the transition row, as is the one-step clock needed for the displayed hitting
+functional.  Every contextual extension below retains the complete carrier
+and therefore has cost \(D=9\), rather than the marginal unit cost of the
+newly distinguished read.  At budget \(B_0\), the grammar admits no iteration,
+additional clock extension, feedback of the verifier into a tuple, or other
+quotient constructor; each omitted opcode is assigned declared cost greater
+than \(B_0\).
+
+For each of the three transition records, the affordable quotient-output
+slice at \(B_0=9\), modulo equality of the induced partitions, consists of
+the constant map, the verifier partition, the coordinate reads and their
+proper coordinate tuples, and the full tuple
+
+\[
+q=(c,u,v):\Omega\longrightarrow\{0,1\}^3.
+\]
+
+This list exhausts the affordable derivation slice.  Every derivation attaches
+one of the three \(K_p\) records to a constant, a verifier output, a coordinate
+read, or an ordered binary join of distinct coordinate reads.  Different
+orders for the same coordinate subset induce the same partition and hence
+the same projection and terminal-compatibility test.  The constant fails the
+nontriviality condition.  The verifier partition has zero qualified utility:
+although it separates \(T\), its zero-cell combines \(F\) with nonterminal
+states and hence does not represent the failure sector.  Every proper
+coordinate tuple also fails terminal compatibility.  Indeed, for the three
+two-coordinate tuples, respectively,
+
+\[
+(c,u):110\sim111,
+\qquad
+(c,v):101\sim111,
+\qquad
+(u,v):011\sim111,
+\]
+
+and deleting another coordinate cannot repair the failure.  The full tuple
+\(q\) is the identity partition, so its fibers are represented and both
+terminal sectors are unions of fibers.  If \(\bar K_p\) denotes the induced
+quotient kernel, then \(K_pU_q=U_q\bar K_p\) holds exactly.  The quotient
+strictly refines the verifier partition.  Write \(q_p\) for the complete
+quotient record obtained by attaching \(K_p\) to this map.  Consequently
+\(q_p\) is the sole potentially positive-utility quotient record for each
+\(p\), with positive utility at \(p=\tfrac12,1\); at \(p=0\) the same exact
+quotient map has utility zero.
+
+\medskip\noindent\textbf{Backward cut and conditional algebras.}
+Choose the ordered backward cut
+
+\[
+\Gamma=(c,u,v),
+\qquad
+J_0=*,\quad J_1=c,\quad J_2=(c,u),\quad
+J_3=(c,u,v)=q.
+\]
+
+This cut separates every state-dependent path from the public reads to the
+terminal quotient.  The kernel, normalization, terminal cells, fiber records,
+and exact-intertwining check remain in the downstream carrier.  In the state
+order \(000,001,010,011,100,101,110,111\), the centered target contrast and
+its successive conditional expectations are
+
+\begin{align}
+y&=\mathbf 1_T-\mu_\Omega(T)
+=\frac18(-1,-1,-1,-1,-1,-1,-1,7),
+\label{eq-eight-state-projections-a}\\
+P_{J_1}y&=\frac18(-1,-1,-1,-1,1,1,1,1),\notag\\
+P_{J_2}y&=\frac18(-1,-1,-1,-1,-1,-1,3,3),\notag\\
+P_{J_3}y&=y.\notag
+\end{align}
+
+With the \(L^2(\mu_\Omega)\) norm,
+
+\begin{equation}
+\label{eq-eight-state-projection-norms}
+\|y\|_2^2=\frac7{64},
+\qquad
+\|P_{J_1}y\|_2^2=\frac1{64},
+\qquad
+\|P_{J_2}y\|_2^2=\frac3{64},
+\end{equation}
+
+and orthogonality of the conditional increments gives
+
+\begin{equation}
+\label{eq-eight-state-increment-norms}
+\bigl\|(P_{J_1}-P_{J_0})y\bigr\|_2^2=\frac1{64},
+\quad
+\bigl\|(P_{J_2}-P_{J_1})y\bigr\|_2^2=\frac2{64},
+\quad
+\bigl\|(P_{J_3}-P_{J_2})y\bigr\|_2^2=\frac4{64}.
+\end{equation}
+
+The normalized projection increments are therefore
+\(1/7,2/7,4/7\), whose sum is one.
+
+\medskip\noindent\textbf{Utility, charges, and the rule-uniform bound.}
+For an arbitrary admissible \(K_p\), the one-step success probability is
+
+\begin{equation}
+\label{eq-eight-state-success}
+\alpha_p=\Pr_{\mu_0}\{\tau_T\le1\}=\frac p3.
+\end{equation}
+
+Take \(\lambda=1\).  Since success can occur only on the first transition,
+the uniformized target functional in
+\eqref{eq:first-hit-uniformization} is
+\(A_T^q=\alpha_p/(1+\lambda)=p/6\).  The quotient uses the canonical
+pushforward comparison, so \(C_q=1\), and hence
+
+\[
+A_q=\min\{1,\lambda C_q^{-1}A_T^q\}=\frac p6,
+\qquad
+V(q_p)=A_q\frac{\|P_qy\|_2^2}{\|y\|_2^2}=\frac p6.
+\]
+
+Writing \(E_\ell\) for the complete contextual carrier with
+\(J_{\ell-1}\subset J_\ell\) distinguished, the three charges are exactly
+
+\begin{equation}
+\label{eq-eight-state-contextual-charges}
+\begin{aligned}
+\operatorname{ch}(E_1)&=\frac p6\frac17=\frac p{42},\\
+\operatorname{ch}(E_2)&=\frac p6\frac27=\frac p{21},\\
+\operatorname{ch}(E_3)&=\frac p6\frac47=\frac{2p}{21}.
+\end{aligned}
+\end{equation}
+
+Thus the theorem's remainder vanishes and its charge-conservation identity
+is visible numerically:
+
+\begin{equation}
+\label{eq-eight-state-charge-conservation}
+\sum_{\ell=1}^3\operatorname{ch}(E_\ell)
+=\frac p{42}+\frac p{21}+\frac{2p}{21}
+=\frac p6
+=V(q_p).
+\end{equation}
+
+Let \(m^{\mathrm{sat}}\) denote the saturated profile of this single toy
+presentation.  Its supremum ranges over the three admissible \(K_p\) records.
+Because the exhaustive affordable slice has no other positive-utility
+quotient,
+
+\begin{equation}
+\label{eq-eight-state-saturated-profile}
+m^{\mathrm{sat}}(B_0)
+=\max_{p\in\{0,\frac12,1\}}V(q_p)
+=\frac16.
+\end{equation}
+
+Combining \eqref{eq-eight-state-success} and
+\eqref{eq-eight-state-charge-conservation} yields, simultaneously for every
+admissible transition rule \(K_p\), the exact class bound
+
+\begin{equation}
+\label{eq-eight-state-rule-bound}
+\Pr_{\mu_0}\{\tau_T\le1\}
+=2V(q_p)
+=2\sum_{\ell=1}^3\operatorname{ch}(E_\ell)
+\le 2m^{\mathrm{sat}}(B_0)
+=\frac13,
+\end{equation}
+
+with equality for \(K_1\).  By comparison, applying the generic universal
+accountability estimate \eqref{eq-pointwise-algorithm-profile-bound} with
+\(H=1\) and a declared first-hit compilation ceiling \(B_{\mathcal A}=B_0\)
+gives the valid but coarser bound \(\alpha_p\le e/6\).  The sharper
+\(1/3\) above comes from evaluating the entire finite affordable algebra and
+its exact conditional charges, rather than replacing the one-step discount
+by the universal \(e^{-1}\) lower bound.
+
+\end{example}
+
 \Cref{fig-contextual-charge} records the charge identity in
 \Cref{thm-exact-affordable-algebra-structural-charging}.
 
-\begin{figure}[tbp]
+\begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[fw diagram]
   \node[fw box,minimum width=1.3cm] (j0) at (-5.2,0.6) {\(J_0\)};

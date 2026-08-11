@@ -124,10 +124,10 @@
 \makeatletter
 \newcommand{\SetupNum}[2]{\expandafter\gdef\csname SetupNum@#1\endcsname{#2}}
 \SetupNum{p0:thm:singular-positive}{Theorem~5.7}
-\SetupNum{p0:prop:terminal-concentration}{Proposition~5.9}
-\SetupNum{p0:thm:local-weak-serrin-typeI}{Theorem~8.3}
-\SetupNum{p0:cor:paper0-local-typeI-admissible}{Corollary~8.4}
-\SetupNum{p0:lem:local-seregin-extraction}{Lemma~8.6}
+\SetupNum{p0:cor:velocity-concentration}{Corollary~5.8}
+\SetupNum{p0:thm:local-weak-serrin-typeI}{Theorem~8.4}
+\SetupNum{p0:cor:paper0-local-typeI-admissible}{Corollary~8.5}
+\SetupNum{p0:lem:local-seregin-extraction}{Lemma~8.7}
 \SetupNum{p1:thm:extraction}{Theorem~9.1}
 \SetupNum{p1:prop:ancient-limit}{Proposition~11.12}
 \SetupNum{p1:prop:nonzero}{Proposition~12.2}
@@ -137,8 +137,8 @@
 \SetupNum{p1:lem:mild-representation}{Lemma~15.3}
 \SetupNum{p2:lem:mild-limit}{Lemma~20.4}
 \SetupNum{p2:lem:physical-mild}{Lemma~25.4}
-\SetupNum{p1:thm:classical-classes}{Theorem~15.8}
-\SetupNum{p1:thm:known-structure-decay-liouville}{Theorem~15.10}
+\SetupNum{p1:thm:classical-classes}{Theorem~15.7}
+\SetupNum{p1:thm:known-structure-decay-liouville}{Theorem~15.9}
 \SetupNum{p2:thm:no-tight-normalized-collection}{Theorem~26.1}
 \SetupNum{p2:thm:tight-liouville}{Theorem~25.8}
 \SetupNum{p2:thm:AB-endpoint}{Theorem~25.5}
@@ -242,16 +242,17 @@ The retained normalized residual class \(\calR^\#(\calS;I,J)\) of
 collection \(\calS\), of the alternatives already removed in the setup paper.
 After the previously treated small, stationary \(L^3\), uniformly
 \(L^3\)-tight, and closed structured/decay alternatives have been removed
-(\Cref{hyp:previous-nonresidual}), \(\calR^\#(\calS;I,J)\) is divided in
-\Cref{def:refined-decomposition} into four analytic classes -- axisymmetric
-bounded-circulation profiles \(\Cax\), rotational relative equilibria
-\(\Crot\), degenerate stationary-hull profiles with retained local velocity
-concentration \(\Cstat\), and the generic terminal residual \(\Cgen\) -- and
-the terminal generic case is itself refined into the affine/parasitic quotient
-stratum \(\Caff\), the log-diffuse and Young/defect critical-tail alternatives
-\(\Clogdiff,\Cyoung\), the coherent homogeneous, log-periodic, and aperiodic
-critical-tail alternatives \(\Chomcrit,\Clogper,\Capcrit\), and the residual
-remainder \(\Cgen\).
+(\Cref{hyp:previous-nonresidual}), the proof first has four analytic modules:
+the axisymmetric bounded-circulation module \(\Cax\), the rotational
+relative-equilibrium module \(\Crot\), the degenerate stationary-hull module
+\(\Cstat\), and the terminal residual module.  The terminal module is refined
+into the affine/parasitic quotient stratum \(\Caff\), the log-diffuse and
+Young/defect critical-tail alternatives \(\Clogdiff,\Cyoung\), the coherent
+homogeneous, log-periodic, and aperiodic critical-tail alternatives
+\(\Chomcrit,\Clogper,\Capcrit\), and the final ordered remainder \(\Cgen\).
+Thus the four-module description and the ten-state list in
+\Cref{def:refined-decomposition} are respectively the coarse analytic and
+refined terminal views of the same residual argument.
 
 The closure of these classes is organized as follows.
 \begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.2em]
@@ -340,7 +341,7 @@ numbers listed below.
    singular point.
    \begin{quote}\small
    \SetupLabel{p0:thm:singular-positive}\\
-   \SetupLabel{p0:prop:terminal-concentration}
+   \SetupLabel{p0:cor:velocity-concentration}
    \end{quote}
    \item Local pointwise Type~I control gives an admissible Seregin extraction
    sequence with pressure gauges, no-escape, and retained unit-scale velocity
@@ -387,14 +388,111 @@ The purpose of the present paper is to prove the residual closure
 \SetupLabel{p1:hyp:no-remainder}.
 \end{theorem}
 
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{longtable}{@{}L{0.22\textwidth}L{0.29\textwidth}L{0.31\textwidth}L{0.12\textwidth}@{}}
+\caption{Setup-paper export interface used by the residual argument.  The
+first column gives the exact producer in the setup paper; the third column
+identifies the Paper~II statement that first records or consumes the output.}
+\label{tab:setup-export-interface}\\
+\hline
+\textbf{Setup producer} & \textbf{Exported datum} &
+\textbf{Paper~II consumer} & \textbf{Transport rule}\\
+\hline
+\endfirsthead
+\hline
+\textbf{Setup producer} & \textbf{Exported datum} &
+\textbf{Paper~II consumer} & \textbf{Transport rule}\\
+\hline
+\endhead
+\hline
+\endfoot
+\SetupLabel{p0:thm:singular-positive};
+\SetupLabel{p0:cor:velocity-concentration} &
+A singular terminal point supplies a sequence of scales with positive local
+scale-invariant concentration, and at the selected singular point the velocity
+quantity has a fixed positive lower bound. &
+The physical entry is recorded in
+\Cref{def:pointwise-typeI-convention,sec:local-typeI-implication};
+\Cref{hyp:base-seregin-hypotheses} records the retained compact velocity mass
+after extraction. &
+Converted by admissible extraction into the fixed compact velocity
+obstruction.\\
+\SetupLabel{p0:thm:local-weak-serrin-typeI};
+\SetupLabel{p0:cor:paper0-local-typeI-admissible};
+\SetupLabel{p0:lem:local-seregin-extraction} &
+The local pointwise Type~I envelope gives terminal velocity no-escape; a
+positive concentration sequence is admissible and yields a smooth bounded
+centered Seregin profile with nonzero compact local \(L^3\) mass. &
+\Cref{hyp:base-seregin-hypotheses} is the public residual-entry statement;
+\Cref{def:coarse-residual} then selects the residual part of the generated
+Seregin collection. &
+The extracted profile and its generating sequence form the root residual
+state.\\
+\SetupLabel{p1:thm:extraction};
+\SetupLabel{p1:prop:ancient-limit};
+\SetupLabel{p1:prop:nonzero};
+\SetupLabel{p1:lem:pressure};
+\SetupLabel{p1:lem:gauge-compatibility};
+\SetupLabel{p1:lem:pressure-atlas} &
+The normalized limit is a bounded ancient suitable solution, is nonzero by
+retained velocity mass, and carries compatible local pressure representatives
+modulo the permitted gauges. &
+\Cref{hyp:base-seregin-hypotheses,thm:ancestor-realization-inheritance}
+record the root state and its realized limiting operations;
+\Cref{lem:typeI-pressure-atlas-compatibility} records the pressure interface
+used by the local descendants. &
+Velocity retention is transported by descendant heredity; pressure is
+transported chartwise by the named atlas lemmas.\\
+\SetupLabel{p1:lem:mild-representation};
+\SetupLabel{p2:lem:mild-limit};
+\SetupLabel{p2:lem:physical-mild} &
+The normalized ancient profile has the mild representative, stability under
+the admissible limits, and the finite-shift physical pullback required by the
+endpoint argument. &
+\Cref{thm:mildness-inheritance-main} verifies the normalized descendant
+interface used in \Cref{lem:no-atomic-active}. &
+Transported only after affine routing and terminal
+indecomposability have produced the hypotheses of the local inheritance
+theorem.\\
+\SetupLabel{p1:thm:classical-classes};
+\SetupLabel{p1:thm:known-structure-decay-liouville};
+\SetupLabel{p2:thm:no-tight-normalized-collection};
+\SetupLabel{p2:thm:tight-liouville} &
+The small, stationary \(L^3\), uniformly \(L^3\)-tight, and closed
+structured/decay alternatives are empty. &
+\Cref{hyp:previous-nonresidual} records these closed classes, and
+\Cref{def:coarse-residual} defines their complement inside the generated
+Seregin collection. &
+Fixed closed lower strata; later reductions may route into them.\\
+\SetupLabel{p2:thm:AB-endpoint};
+\SetupLabel{p1:hyp:no-remainder};
+\SetupLabel{p1:thm:final-assembly} &
+The setup paper supplies the endpoint ancient Liouville input and proves local
+pointwise Type~I regularity conditional on emptiness of the residual class. &
+The endpoint input is recorded in \Cref{thm:AB-main};
+\Cref{thm:typeI-residual-closure,cor:setup-residual-hypothesis-proof}
+establish the missing hypothesis, and
+\Cref{cor:two-paper-local-typeI-exclusion} invokes the conditional assembly. &
+Endpoint use and final return to the setup paper.\\
+\hline
+\end{longtable}
+\endgroup
+
 \begin{remark}[Use of imported labels]
 \label{rem:imported-label-convention}
 Below, the phrase ``by the imported setup results'' means that the terminal
 profile is bounded, locally suitable, pressure-normalized by the setup pressure
-atlas, parasitic-free modulo the affine class, and mild after finite terminal
-shift, with the exact imported labels listed in
-\Cref{thm:imported-setup-results}.  Paper~II proves only the residual closure
-\(\calR^\#(\calS;I,J)=\varnothing\).
+atlas, and equipped with the imported mild ancient representative, with the
+exact producers and consumers listed in
+\Cref{thm:imported-setup-results,tab:setup-export-interface}.  The
+affine/parasitic quotient, descendant realization, and terminal sequence-\(L^3\)
+property are established in this paper by their named local results.  Paper~II
+proves the residual closure
+\(\calR^\#(\calS;I,J)=\varnothing\) and supplies that conclusion to the
+conditional setup-paper assembly.
 \end{remark}
 
 \begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.2em]
@@ -402,8 +500,8 @@ shift, with the exact imported labels listed in
    concentration depends on CKN theory and the setup paper; terminal no-escape follows
    from the endpoint weak Serrin local Type~I bounds in
    \Cref{thm:AB-weak-serrin-typeI-estimate,thm:local-typeI-terminal-energy-estimates}.
-   \item Seregin extraction and parasitic-free normalization: follows from
-   the setup paper and the mildness and compactness arguments in this paper.
+   \item Seregin extraction is imported from the setup paper.  Affine/parasitic
+   normalization and its descendant interfaces are proved in this paper.
    \item Small and stationary \(L^3\) strata: handled in the setup paper.
    \item Uniformly tight stratum: handled in the setup paper.
    \item Closed structured/decay strata: handled in the setup paper.
@@ -447,12 +545,14 @@ shift, with the exact imported labels listed in
 \draw[arrow] (decomp) -- node[lab, right] {case closures in this paper}
    (contradiction);
 \end{tikzpicture}}
-\caption{Decision diagram for the Type~I profile decomposition.  The first
-arrow uses the local pointwise Type~I to terminal no-escape implication supplied by
-the endpoint weak Serrin local Type~I estimate.  The inherited lower classes in
-the split box are already closed in the setup paper.  The residual alternatives in the boxed
-list are excluded by the case-exclusion theorems cited in the proof of
-\Cref{thm:refined-residual-closure}.}
+\caption{Compressed entry-to-closure view of the Type~I profile
+decomposition.  The first arrow uses the local pointwise Type~I to terminal
+no-escape implication supplied by the endpoint weak Serrin estimate.  The
+inherited lower classes are already closed in the setup paper.  The boxed
+residual list is the refined classification of
+\Cref{def:refined-decomposition}; its routing and theorem-production orders are
+recorded separately in
+\Cref{tab:typeI-residual-routing-interface,tab:typeI-dependency-order}.}
 \label{fig:typeI-state-stratification-tree}
 \end{figure}
 
@@ -552,6 +652,107 @@ closure of each non-quotient alternative, especially \(\Cgen\).  Equivalently,
    \cup\Cgen .
 \end{equation}
 \end{definition}
+
+The paper uses five complementary views of this definition.  The entry view
+connects a physical local pointwise Type~I singularity to the residual Seregin
+state.  The coarse analytic view separates the three structural modules from
+the terminal module.  The refined terminal view gives the ten states in
+\Cref{def:refined-decomposition}.  The dependency view in
+\Cref{tab:typeI-dependency-order,tab:terminal-dependency-table} records theorem
+production order.  The closure view in \Cref{sec:final-assembly} records the
+theorem that discharges each state.  The routing interface between these views
+is summarized in \Cref{tab:typeI-residual-routing-interface}.
+
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{longtable}{@{}L{0.13\textwidth}L{0.25\textwidth}L{0.31\textwidth}L{0.25\textwidth}@{}}
+\caption{Routing interface for the refined residual states.  The obstruction
+column records the datum transported from the current state; a normalized
+support profile is identified separately from a retained velocity descendant.}
+\label{tab:typeI-residual-routing-interface}\\
+\hline
+\textbf{State} & \textbf{Selecting criterion} &
+\textbf{Local producer and obstruction} & \textbf{Next route or closure}\\
+\hline
+\endfirsthead
+\hline
+\textbf{State} & \textbf{Selecting criterion} &
+\textbf{Local producer and obstruction} & \textbf{Next route or closure}\\
+\hline
+\endhead
+\hline
+\endfoot
+\(\Cax\) &
+Axisymmetry with bounded centered circulation after the setup lower classes
+have been removed. &
+\Cref{thm:R1-exclusion}; the imported compact velocity obstruction and
+residual ancestry remain attached to the profile. &
+Direct axis-absorption closure, with the no-swirl output in an already closed
+structured class.\\
+\(\Crot\) &
+Stationarity modulo a rotation, hence a local Coriolis transport structure. &
+\Cref{prop:R2-reduction-to-terminal}; retained local velocity concentration in
+the co-rotating frame. &
+An imported lower closure or a realized terminal concentration profile;
+\Cref{cor:R2-closure} closes the class after terminal assembly.\\
+\(\Cstat\) &
+A degenerate stationary hull contains a sequence-realized stationary element
+with retained velocity concentration. &
+\Cref{prop:R3-stationary-hull-reduction,prop:R3S-R3-terminal-reduction};
+stationary-hull ancestry and retained velocity concentration. &
+An imported lower closure or a realized stationary terminal profile;
+\Cref{cor:R3-closure} closes the class after terminal assembly.\\
+\(\Caff\) &
+Affine normalization removes all non-affine oscillation from the selected
+representative. &
+\Cref{thm:affine-normalization-dichotomy,thm:oscillatory-entry-normalization};
+the affine output is a quotient state, while the retained branch keeps
+positive non-affine activity. &
+Routing to the affine/parasitic lower stratum; no retained normalized
+representative remains in this row.\\
+\(\Clogdiff\) &
+The realized critical-tail compactification has a nonzero logarithmic escape
+component. &
+\Cref{thm:log-diffuse-from-hidden-scale}; a normalized log-window support
+profile carrying positive defect support. &
+Hidden-scale reduction together with the already closed coherent-tail rows;
+\Cref{cor:log-diffuse-branch-exclusion}.\\
+\(\Cyoung\) &
+A Young/defect critical-tail coordinate survives, including the non-Dirac
+variance alternative. &
+\Cref{thm:first-bad-mesoscopic-reduction,thm:no-hidden-scale-variance-realized-defects};
+a normalized defect support profile. &
+Minimal mesoscopic reduction and defect-coordinate closure;
+\Cref{cor:young-branch-exclusion}.\\
+\(\Chomcrit\) &
+A realized coherent tail is \((-1)\)-homogeneous. &
+\Cref{thm:bounded-origin-realization-coherent-tails}; a realized coherent
+support profile. &
+Bounded-origin incompatibility;
+\Cref{cor:coherent-critical-tail-branch-closure}.\\
+\(\Clogper\) &
+A realized coherent logarithmic tail has a nonzero log period. &
+\Cref{thm:bounded-origin-realization-coherent-tails}; a realized coherent
+support profile. &
+Bounded-origin decay and log-periodicity;
+\Cref{cor:coherent-critical-tail-branch-closure}.\\
+\(\Capcrit\) &
+A realized coherent logarithmic hull is nonzero, minimal, and aperiodic. &
+\Cref{thm:bounded-origin-realization-coherent-tails}; a realized coherent
+support profile. &
+Bounded-origin realization and log-hull minimality;
+\Cref{cor:coherent-critical-tail-branch-closure}.\\
+\(\Cgen\) &
+Every preceding lower residual and critical-tail state has been removed. &
+\Cref{thm:generic-terminal-exhaustion}; the original retained velocity
+obstruction is carried through realized terminal descendants. &
+Paired terminal extraction, separated-profile and chain exclusion, terminal
+indecomposability, and endpoint closure in \Cref{thm:R4-final-closure}.\\
+\hline
+\end{longtable}
+\endgroup
 
 \begin{definition}[Profiles realized from the original blow-up sequence]
 \label{def:sequence-realized-residual-object}
@@ -780,7 +981,9 @@ exclusion of all reduced cases.  The dependency order is recorded in
 \end{proof}
 
 \begin{longtable}{@{}L{0.24\textwidth}L{0.45\textwidth}L{0.23\textwidth}@{}}
-\caption{Dependency table for the residual closure proof.}
+\caption{Theorem-production order for the residual closure proof.  This is the
+acyclic dependency view; state-selection criteria are recorded separately in
+\Cref{tab:typeI-residual-routing-interface}.}
 \label{tab:typeI-dependency-order}\\
 \hline
 \textbf{Result} & \textbf{Uses} & \textbf{Does not use}\\
@@ -896,7 +1099,10 @@ the consequence of residual closure.
 \label{subsec:reading-guide}
 
 A reader interested only in the residual closure can navigate the paper as
-follows.  The proof is read top-down by class.
+follows.  This is a reading order by analytic module.  The state transitions
+are listed in \Cref{tab:typeI-residual-routing-interface}, while the acyclic
+theorem-production order is listed in
+\Cref{tab:typeI-dependency-order,tab:terminal-dependency-table}.
 
 \begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.2em]
    \item \emph{Setup interface and Type-I implication}
@@ -904,7 +1110,8 @@ follows.  The proof is read top-down by class.
    setup results used here as imported hypotheses and verifies that local pointwise
    Type-I singularities enter the admissible Seregin compactness setting.
    \item \emph{Residual decomposition} (\Cref{def:refined-decomposition}).
-   The ordered list of alternatives is
+   The coarse analytic view separates \(\Cax,\Crot,\Cstat\) from the terminal
+   module.  The refined terminal view is the ordered list
    \[
       \Cax,\ \Crot,\ \Cstat,\ \Caff,\ \Clogdiff,\quad
       \Cyoung,\ \Chomcrit,\ \Clogper,\ \Capcrit,\ \Cgen .
@@ -923,10 +1130,12 @@ follows.  The proof is read top-down by class.
    centered scale reselection, reduction
    (\Cref{prop:R3-stationary-hull-reduction,prop:R3S-R3-terminal-reduction}).
    Closure deferred until the terminal stratification assembly.
-   \item \emph{Generic terminal residual}. Tail geometry and covariant observer
-   calculus, asymptotic hull, recurrent-core rigidity, terminal concentration
-   profiles, separated-profile theory, Albritton--Barker endpoint, generic
-   exhaustion (\Cref{thm:terminal-stratification,thm:R4-final-closure}).
+   \item \emph{Terminal module and final generic remainder}.  Affine routing,
+   tail geometry and covariant observer calculus, coherent-tail and
+   hidden-scale closure, terminal concentration profiles, diffuse defects,
+   separated-profile theory, recurrence, and the Albritton--Barker endpoint
+   produce the terminal stratification and generic exhaustion
+   (\Cref{thm:terminal-stratification,thm:R4-final-closure}).
    \item \emph{Final assembly} (\Cref{sec:final-assembly}). Combines all
    class closures and the deferred lower-class arguments.
 \end{enumerate}
@@ -1818,13 +2027,14 @@ equivalence is the local Type~I/local Type~II dichotomy of the setup paper.
 \section{Ordered residual profile decomposition}
 \label{sec:mermaid-decision-tree}
 
-The following diagram records the ordered partition used in the
-paper.  Each diamond is a stratification criterion.  Each terminal branch is a
-possible singularity or candidate blow-up profile type selected by the criteria.
-The local Type~II terminal alternative is the remaining regime after the local
-pointwise Type~I case is excluded; every Type~I terminal alternative is
-excluded either by the inherited alternatives or by the case-closure
-theorems proved below.
+The first diagram is the physical entry view: it ends when the setup-paper
+alternatives leave a coarse residual Seregin state.  The second diagram is the
+refined classification view of that residual state.  Its diamonds are ordered
+selection criteria, not theorem dependencies.  The local Type~II alternative
+is the complementary physical regime after the local pointwise Type~I case is
+excluded.  Each Type~I state is closed by an inherited lower theorem, a local
+closure, or a reduction followed by terminal assembly, as recorded in
+\Cref{tab:typeI-residual-routing-interface,tab:decision-tree-classification}.
 
 \begin{figure}[tbp]
 \centering
@@ -1871,10 +2081,11 @@ theorems proved below.
 \draw[arrow] (P13) -- node[elab, above] {structured/decay} (Lstruct);
 \draw[arrow] (P13) -- node[elab, left] {none} (R);
 \end{tikzpicture}}
-\caption{Entry diagram.  Local pointwise Type~I enters the
-admissible Seregin compactness setting through endpoint weak Serrin estimates and terminal
-no-escape.  If the bound fails, the point belongs to the local Type~II
-alternative, which is not addressed here.}
+\caption{Physical entry view.  Local pointwise Type~I enters the admissible
+Seregin compactness setting through endpoint weak Serrin estimates and terminal
+no-escape.  Failure of the bound selects the local Type~II alternative, which
+is not addressed here.  This diagram ends at the coarse residual state and
+does not encode the later theorem dependency order.}
 \label{fig:rendered-entry-tree}
 \end{figure}
 
@@ -1890,6 +2101,7 @@ alternative, which is not addressed here.}
    terminalnode/.style={draw, rounded corners=2pt, align=center, text width=2.75cm,
       inner sep=2.5pt},
    arrow/.style={-{Latex[length=1.8mm]}, thick},
+   classarrow/.style={-{Latex[length=1.8mm]}, thick, dashed},
    elab/.style={font=\scriptsize, inner sep=1pt, fill=white}
 ]
 \node[process] (R) {Coarse residual class\\\(\calR(\calS;I,J)\)};
@@ -1937,23 +2149,21 @@ alternative, which is not addressed here.}
 \draw[arrow] (Qcoh) -- node[elab, above] {aperiodic} (Lap);
 \draw[arrow] (Qtail) -- node[elab, left] {none} (Qgen);
 \draw[arrow] (Qgen) -- node[elab, above] {yes} (Lgen);
-\draw[arrow] (Qgen.west) -- ++(-0.95,0) |- node[elab, near end, left] {no}
-   (R.west);
+\draw[classarrow] (Qgen.west) -- ++(-0.95,0) |-
+   node[elab, near end, left] {classification only} (R.west);
 \end{tikzpicture}}
-\caption{Residual stratification diagram.  The final return arrow only records
-the ordered nature of the decomposition: if a lower stratum has not been
-removed, the profile is assigned to that terminal alternative; after all lower
-alternatives are removed,
-the remaining residual class is \(\Cgen\).}
+\caption{Refined residual classification view.  Solid arrows select a residual
+state.  The dashed return edge records continuation of the ordered
+classification when a lower state has not yet been assigned; it is not a
+theorem dependency or a descendant-construction edge.  After all lower states
+are removed, the remaining class is \(\Cgen\).}
 \label{fig:rendered-residual-tree}
 \end{figure}
 
-The loop from the last criterion back to the residual class is only a graphical
-way to indicate the ordered nature of the decomposition: if a lower stratum has
-not actually been removed, it is assigned to its corresponding terminal
-alternative rather than
-to \(\Cgen\).  After the ordered removals are performed, \(\Cgen\) is
-the remaining residual class by definition.
+The dashed edge continues the ordered classification from the first unresolved
+lower criterion.  It carries no profile transformation and asserts no logical
+dependence on a later closure theorem.  Once the preceding states have been
+assigned and removed, \(\Cgen\) is the remaining residual class by definition.
 For the table, write
 \[
    \mathfrak T_\rho(u;z_*):=
@@ -1966,12 +2176,15 @@ For the table, write
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.25}
 \begin{longtable}{@{}L{1.20in}L{4.65in}@{}}
-\caption{Classification and closure table for the residual decomposition diagram.  Each row gives
-the criterion selecting the terminal alternative, the mechanism that excludes
-it when it is a Type~I alternative, and the statement used at that point.
-For the inherited alternatives, the displayed condition is a representative
-form of the inherited definition; the precise definitions and closures are those
-of the companion setup paper, as summarized in
+\caption{Detailed criterion-and-closure view of the residual decomposition.
+Each row gives the criterion selecting the alternative, the mechanism that
+excludes or routes it, and the statement used at that point.  This table
+describes state selection and closure provenance; theorem-production order is
+recorded in
+\Cref{tab:typeI-dependency-order,tab:terminal-dependency-table}.  For the
+inherited alternatives, the displayed condition is a representative form of
+the inherited definition; the precise definitions and closures are those of
+the companion setup paper, as summarized in
 \Cref{thm:imported-setup-results}.}
 \label{tab:decision-tree-classification}\\
 \hline
@@ -2034,7 +2247,8 @@ structured class.
 \textbf{Reduction/closure.}  Localized Coriolis-flux reduction sends the profile
 into lower classes already excluded by the setup paper or the terminal velocity-concentration
 decomposition; closure is only after terminal stratification assembly.
-\textbf{Link.}  \Cref{cor:R2-closure}.\\
+\textbf{Link.}
+\Cref{prop:R2-reduction-to-terminal,cor:R2-closure}.\\
 
 \(\Cstat\) residual profile &
 \textbf{Criterion.}  Degenerate stationary-hull retained profile: along
@@ -2042,7 +2256,8 @@ time translations \(T_{s_k}V\to W\), where \(W\) is stationary and
 \(\Vel_1(W;0)\ge\eta_*\).
 \textbf{Exclusion.}  Scale reselection reduces to a stationary retained
 concentration profile, then terminal concentration excludes it.
-\textbf{Link.}  \Cref{cor:R3-closure}.\\
+\textbf{Link.}
+\Cref{prop:R3-stationary-hull-reduction,prop:R3S-R3-terminal-reduction,cor:R3-closure}.\\
 
 \(\Caff\) affine/parasitic routing row &
 \textbf{Criterion.}  The affine-normalized oscillation vanishes:
@@ -2100,7 +2315,8 @@ alternatives.
 \textbf{Exclusion.}  Paired concentration-set decomposition, finite
 separated-family exclusion, terminal indecomposability, sequence-\(L^3\),
 parasitic-free mildness, and the Albritton--Barker endpoint Liouville theorem.
-\textbf{Link.}  \Cref{thm:R4-final-closure}.\\
+\textbf{Link.}
+\Cref{thm:generic-terminal-exhaustion,thm:R4-final-closure}.\\
 \end{longtable}
 \endgroup
 
@@ -12451,10 +12667,17 @@ impossible, so \(\Cgen=\varnothing\).
 \section{Final assembly}
 \label{sec:final-assembly}
 
-The class closures above form the following complete dependency chain.  The rotational
-relative-equilibrium arrow is the localized Coriolis-flux argument; the terminal
-concentration-set compactness, no finite separated-family, and indecomposability
-arrows are proved in this paper from local estimates:
+The following display is the closure view of the refined residual states.  It
+records the eventual closing mechanism for each state, rather than the order in
+which the required theorems are proved.  The acyclic theorem-production order
+is given in
+\Cref{tab:typeI-dependency-order,tab:terminal-dependency-table}, and the
+state-to-state interfaces are given in
+\Cref{tab:typeI-residual-routing-interface}.  The rotational
+relative-equilibrium arrow is the localized Coriolis-flux reduction followed by
+terminal assembly; the terminal concentration-set compactness, finite
+separated-family exclusion, and indecomposability steps are proved in this
+paper from local estimates:
 \[
 \begin{aligned}
 \Cax
@@ -12491,7 +12714,7 @@ decomposition.
 Equivalently, the final exclusion is the composition of eight ordered steps:
 \begin{enumerate}[label=\textup{(\arabic*)}]
    \item \emph{Entry step:} The setup paper supplies a positive local
-   velocity concentration sequence; the endpoint weak Serrin local Type~I bounds
+   velocity concentration sequence; the endpoint weak Serrin local Type~I bound
    \Cref{thm:AB-weak-serrin-typeI-estimate} gives the terminal local
    energy/no-escape estimate in
    \Cref{thm:local-typeI-terminal-energy-estimates}.  Thus the sequence is
@@ -12674,7 +12897,8 @@ numbering and the imported statements displayed here.
 \begin{longtable}{@{}L{0.60\textwidth}L{0.34\textwidth}@{}}
 \SetupLabel{p0:thm:singular-positive} & Positive local concentration at a
 Type~I singular point.\\
-\SetupLabel{p0:prop:terminal-concentration} & Terminal concentration theorem.\\
+\SetupLabel{p0:cor:velocity-concentration} & Positive velocity concentration
+at a singular terminal point.\\
 \SetupLabel{p0:thm:local-weak-serrin-typeI} & Local weak-Serrin/Type~I
 implication.\\
 \SetupLabel{p0:cor:paper0-local-typeI-admissible} & Admissibility of
