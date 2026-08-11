@@ -134,7 +134,10 @@
 \SetupNum{p1:lem:pressure}{Lemma~11.2}
 \SetupNum{p1:lem:gauge-compatibility}{Lemma~11.3}
 \SetupNum{p1:lem:pressure-atlas}{Lemma~11.4}
+\SetupNum{p1:def:mild-stratum}{Definition~13.14}
+\SetupNum{p1:lem:mild-stratum-stability}{Lemma~13.17}
 \SetupNum{p1:lem:mild-representation}{Lemma~15.3}
+\SetupNum{p1:thm:tight-liouville}{Theorem~15.8}
 \SetupNum{p2:lem:mild-limit}{Lemma~20.4}
 \SetupNum{p2:lem:physical-mild}{Lemma~25.4}
 \SetupNum{p1:thm:classical-classes}{Theorem~15.7}
@@ -142,7 +145,7 @@
 \SetupNum{p2:thm:no-tight-normalized-collection}{Theorem~26.1}
 \SetupNum{p2:thm:tight-liouville}{Theorem~25.8}
 \SetupNum{p2:thm:AB-endpoint}{Theorem~25.5}
-\SetupNum{p1:hyp:no-remainder}{Hypothesis~16.1}
+\SetupNum{p1:hyp:no-remainder}{Theorem~16.1}
 \SetupNum{p1:thm:final-assembly}{Theorem~33.1}
 \newcommand{\SetupLabel}[1]{%
    \@ifundefined{SetupNum@#1}%
@@ -165,8 +168,8 @@ Decomposition and Exclusion}
 \raggedbottom
 
 \begin{abstract}
-This paper proves the residual-class hypothesis left open by the companion
-setup paper for local pointwise Type-I Navier--Stokes blow-up.  Starting from
+This paper proves the literal raw-residual closure theorem required by the
+companion setup paper for local pointwise Type~I Navier--Stokes blow-up.  Starting from
 the setup Seregin extraction, every remaining bounded centered ancient profile
 with retained local velocity \(L^3\)-concentration is assigned to an ordered
 residual decomposition.  Axisymmetric bounded-circulation profiles are excluded
@@ -329,7 +332,7 @@ local pointwise envelope, or directly into the local Type~I estimates, before th
 present exclusion applies.
 \end{remark}
 
-\subsection{Imported setup results and remaining hypothesis}
+\subsection{Imported setup results and the residual target}
 \label{subsec:imported-setup-results}
 
 \begin{theorem}[Imported setup results]
@@ -352,9 +355,10 @@ numbers listed below.
    \SetupLabel{p0:lem:local-seregin-extraction}
    \end{quote}
    \item Every normalized Seregin limit produced by this extraction is a
-   bounded ancient suitable weak solution, admits the pressure atlas of the
-   setup paper, and has the mild ancient representative required by the
-   endpoint Liouville theorem.
+   bounded ancient suitable weak solution and admits the pressure atlas of the
+   setup paper.  On the setup mild stratum, the projected mild identity is
+   stable under uniformly bounded locally smooth limits and gives the
+   finite-shift physical pullback used by the endpoint Liouville theorem.
    \begin{quote}\small
    \SetupLabel{p1:thm:extraction}\\
    \SetupLabel{p1:prop:ancient-limit}\\
@@ -362,6 +366,8 @@ numbers listed below.
    \SetupLabel{p1:lem:pressure}\\
    \SetupLabel{p1:lem:gauge-compatibility}\\
    \SetupLabel{p1:lem:pressure-atlas}\\
+   \SetupLabel{p1:def:mild-stratum}\\
+   \SetupLabel{p1:lem:mild-stratum-stability}\\
    \SetupLabel{p1:lem:mild-representation}\\
    \SetupLabel{p2:lem:mild-limit}\\
    \SetupLabel{p2:lem:physical-mild}
@@ -370,23 +376,127 @@ numbers listed below.
    tight, and known structured/decay alternatives are empty.
    \begin{quote}\small
    \SetupLabel{p1:thm:classical-classes}\\
+   \SetupLabel{p1:thm:tight-liouville}\\
    \SetupLabel{p1:thm:known-structure-decay-liouville}\\
    \SetupLabel{p2:thm:no-tight-normalized-collection}\\
    \SetupLabel{p2:thm:tight-liouville}
    \end{quote}
-   \item The endpoint and mildness results include the Albritton--Barker input
-   and the setup paper proves local pointwise Type~I exclusion conditionally on
-   the residual-class hypothesis.
+   \item The endpoint results include the Albritton--Barker input used only
+   after the local terminal branch has reached its proved mild
+   sequence-\(L^3\) interface.
    \begin{quote}\small
-   \SetupLabel{p2:thm:AB-endpoint}\\
-   \SetupLabel{p1:hyp:no-remainder}\\
-   \SetupLabel{p1:thm:final-assembly}
+   \SetupLabel{p2:thm:AB-endpoint}
    \end{quote}
 \end{enumerate}
-The purpose of the present paper is to prove the residual closure
-\(\calR^\#(\calS;I,J)=\varnothing\).  This verifies
-\SetupLabel{p1:hyp:no-remainder}.
+The purpose of the present paper is to prove the literal raw-residual closure
+\[
+   \calR\bigl(
+      \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
+   \bigr)=\varnothing .
+\]
+The proof routes a hypothetical raw residual state through the affine or
+retained row and closes the selected row.  Thus the routing is used
+contrapositively; it is not an additional existence assumption and it does not
+replace the setup paper's residual set by a different object.
 \end{theorem}
+
+\begin{definition}[Exact setup-to-residual handoff]
+\label{def:exact-setup-residual-handoff}
+Fix a finite-energy suitable weak solution, a terminal point \(z_*\), and
+normalization data \((R_0,\eta_*)\) obtained from an admissible setup
+extraction.  In this paper
+\[
+   \calS
+   :=
+   \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
+\]
+denotes the same raw generated descendant hull as in
+\SetupLabel{p1:hyp:no-remainder}.  It is not a newly generated state space.
+Let
+\[
+   I_{\rm setup}
+   :=\{\mathrm{small},\mathrm{stat}\text{-}L^3,
+        L^3\text{-}\mathrm{tight},
+        \mathrm{sd}\}
+\]
+record the four setup-paper lower classes, and let
+\[
+   J_{\rm res}
+   :=\{\mathrm{ax},\mathrm{rot},\mathrm{stat\text{-}hull},
+        \mathrm{aff},\log\mathrm{diff},\mathrm{Young},
+        \mathrm{homcrit},\mathrm{logper},\mathrm{ap},\mathrm{gen}\}
+\]
+record the ordered refinement used here.  The indices are bookkeeping data;
+they impose no additional analytic condition on \(\calS\).
+
+The setup residual set
+\[
+   \calR_{\rm setup}(\calS)
+   :=\calR\bigl(
+       \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
+     \bigr)
+\]
+is the complement of the four classes indexed by \(I_{\rm setup}\).
+The notation
+\(\calR_{\rm pre}(\calS;I_{\rm setup},J_{\rm res})\) denotes this same
+set at the entry to Paper~II.  Its canonical affine/parasitic normalization
+has two ordered outcomes: the candidate is closed by routing to the
+affine/parasitic row \(\Caff\), or it produces a retained canonical
+representative in
+\(\calR^\#(\calS;I_{\rm setup},J_{\rm res})\).  Thus the superscript
+\(\#\) records the representative convention used after the exact setup
+handoff; it does not replace the underlying raw generated hull or its
+normalization data.  In particular, the object to be proved empty remains
+\(\calR_{\rm setup}(\calS)\), exactly as in
+\SetupLabel{p1:hyp:no-remainder}.
+\end{definition}
+
+\begin{proposition}[Completeness of the setup residual handoff]
+\label{prop:setup-residual-handoff-complete}
+Suppose, contrapositively, that
+\(V\in\calR_{\rm setup}(\calS)\).  The canonical affine normalization assigns
+this same candidate and its canonical representative to exactly one of the two
+ordered rows
+\[
+   \Caff,
+   \qquad
+   \calR^\#(\calS;I_{\rm setup},J_{\rm res}).
+\]
+In the first row, the canonical quotient assigns the candidate to the already
+closed affine/parasitic lower stratum.  This closes the incoming branch; it is
+not a claim that an unnormalized homogeneous mode loses its local mass.  In the
+second row the centered profile, the fixed retained compact velocity
+obstruction, the pressure atlas, the normalization data \((R_0,\eta_*)\), and
+the setup ancestry are unchanged.  Conversely, every retained representative
+in \(\calR^\#(\calS;I_{\rm setup},J_{\rm res})\) has an ancestor in
+\(\calR_{\rm setup}(\calS)\).  Consequently, if the affine alternative is
+closed and the retained row is empty, then no such \(V\) exists and hence
+\[
+   \calR_{\rm setup}(\calS)=\varnothing .
+\]
+\end{proposition}
+
+\begin{proof}
+The first assertion is the canonical affine-normalization dichotomy in
+\Cref{thm:affine-normalization-dichotomy,thm:oscillatory-entry-normalization},
+applied after the four setup lower classes have been removed.  The affine
+alternative is routed to the already closed affine/parasitic lower row by
+\Cref{def:affine-constant-lower-stratum,rem:affine-constant-use,thm:oscillatory-entry-normalization};
+otherwise the canonical representative retains positive non-affine activity
+and belongs to the retained residual class.  The affine operation is an exact
+centered symmetry or the associated homogeneous quotient operation, so it
+does not create a new raw state space or discard the ancestry of the
+hypothetical candidate.
+For the retained alternative, the root compact velocity lower bound, pressure
+atlas, and fixed normalization data are those of the setup candidate.  Their
+transport under later realized operations is
+\Cref{thm:ancestor-realization-inheritance,thm:descendant-heredity}.
+The converse follows from the definition of the retained class as the
+canonical representative of a pre-quotient setup residual candidate.  Since
+the two alternatives exhaust the affine-normalization dichotomy, closing both
+leaves no possible element of the pre-quotient set.  This is precisely the
+displayed raw-residual conclusion.
+\end{proof}
 
 \begingroup
 \footnotesize
@@ -394,16 +504,18 @@ The purpose of the present paper is to prove the residual closure
 \renewcommand{\arraystretch}{1.18}
 \begin{longtable}{@{}L{0.22\textwidth}L{0.29\textwidth}L{0.31\textwidth}L{0.12\textwidth}@{}}
 \caption{Setup-paper export interface used by the residual argument.  The
-first column gives the exact producer in the setup paper; the third column
-identifies the Paper~II statement that first records or consumes the output.}
+first column gives the exact setup label; imported producers appear first and
+the final downstream consumers appear in the last row.  The third column
+identifies the Paper~II statement that records, consumes, or supplies the
+corresponding interface.}
 \label{tab:setup-export-interface}\\
 \hline
-\textbf{Setup producer} & \textbf{Exported datum} &
+\textbf{Setup label} & \textbf{Exported datum or consumer} &
 \textbf{Paper~II consumer} & \textbf{Transport rule}\\
 \hline
 \endfirsthead
 \hline
-\textbf{Setup producer} & \textbf{Exported datum} &
+\textbf{Setup label} & \textbf{Exported datum or consumer} &
 \textbf{Paper~II consumer} & \textbf{Transport rule}\\
 \hline
 \endhead
@@ -446,18 +558,21 @@ record the root state and its realized limiting operations;
 used by the local descendants. &
 Velocity retention is transported by descendant heredity; pressure is
 transported chartwise by the named atlas lemmas.\\
+\SetupLabel{p1:def:mild-stratum};
+\SetupLabel{p1:lem:mild-stratum-stability};
 \SetupLabel{p1:lem:mild-representation};
 \SetupLabel{p2:lem:mild-limit};
 \SetupLabel{p2:lem:physical-mild} &
-The normalized ancient profile has the mild representative, stability under
-the admissible limits, and the finite-shift physical pullback required by the
-endpoint argument. &
-\Cref{thm:mildness-inheritance-main} verifies the normalized descendant
-interface used in \Cref{lem:no-atomic-active}. &
-Transported only after affine routing and terminal
-indecomposability have produced the hypotheses of the local inheritance
-theorem.\\
+For a setup state in \(\calS_{\mathrm{mild}}\), the projected mild identity is
+stable under uniformly bounded locally smooth limits and its physical
+pullback is mild after every finite terminal shift. &
+\Cref{thm:mildness-inheritance-main} is the local descendant interface used in
+\Cref{lem:no-atomic-active}; it is not treated as a universal property of the
+raw setup hull. &
+Transported only along the mild branch and then by the named local inheritance
+theorem after affine routing.\\
 \SetupLabel{p1:thm:classical-classes};
+\SetupLabel{p1:thm:tight-liouville};
 \SetupLabel{p1:thm:known-structure-decay-liouville};
 \SetupLabel{p2:thm:no-tight-normalized-collection};
 \SetupLabel{p2:thm:tight-liouville} &
@@ -467,16 +582,19 @@ structured/decay alternatives are empty. &
 \Cref{def:coarse-residual} defines their complement inside the generated
 Seregin collection. &
 Fixed closed lower strata; later reductions may route into them.\\
-\SetupLabel{p2:thm:AB-endpoint};
+\SetupLabel{p2:thm:AB-endpoint} &
+The setup paper supplies the endpoint ancient Liouville input. &
+The endpoint input is recorded in \Cref{thm:AB-main} and is invoked only after
+the local terminal profile has reached the hypotheses proved in this paper. &
+Endpoint use.\\
 \SetupLabel{p1:hyp:no-remainder};
 \SetupLabel{p1:thm:final-assembly} &
-The setup paper supplies the endpoint ancient Liouville input and proves local
-pointwise Type~I regularity conditional on emptiness of the residual class. &
-The endpoint input is recorded in \Cref{thm:AB-main};
+These are downstream setup-paper consumers, not imported premises of the
+residual proof. &
 \Cref{thm:typeI-residual-closure,cor:setup-residual-hypothesis-proof}
-establish the missing hypothesis, and
-\Cref{cor:two-paper-local-typeI-exclusion} invokes the conditional assembly. &
-Endpoint use and final return to the setup paper.\\
+prove that exact local residual statement, and
+\Cref{cor:two-paper-local-typeI-exclusion} invokes the resulting assembly. &
+Final return to the setup paper.\\
 \hline
 \end{longtable}
 \endgroup
@@ -485,14 +603,18 @@ Endpoint use and final return to the setup paper.\\
 \label{rem:imported-label-convention}
 Below, the phrase ``by the imported setup results'' means that the terminal
 profile is bounded, locally suitable, pressure-normalized by the setup pressure
-atlas, and equipped with the imported mild ancient representative, with the
-exact producers and consumers listed in
+atlas, and carries the setup ancestry and retained normalization data.  When a
+mild representative is used, membership in the setup mild stratum or the
+local inheritance theorem is cited separately.  The exact producers and
+consumers are listed in
 \Cref{thm:imported-setup-results,tab:setup-export-interface}.  The
 affine/parasitic quotient, descendant realization, and terminal sequence-\(L^3\)
 property are established in this paper by their named local results.  Paper~II
-proves the residual closure
-\(\calR^\#(\calS;I,J)=\varnothing\) and supplies that conclusion to the
-conditional setup-paper assembly.
+closes the affine routing row and proves
+\(\calR^\#(\calS;I,J)=\varnothing\).  Applied to the fixed incoming
+hypothetical profile, the exact-handoff proposition turns these exhaustive
+local closures into the literal conclusion
+\(\calR_{\rm setup}(\calS)=\varnothing\).
 \end{remark}
 
 \begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.2em]
@@ -597,13 +719,15 @@ alternatives and does not add any hypothesis to their statements.
 
 \begin{definition}[Coarse residual class]
 \label{def:coarse-residual}
-Let \(I,J\) be the index sets used in the base Type I residual
-criterion.  The pre-quotient coarse residual class
+Let \(\calS\) be the setup hull fixed in
+\Cref{def:exact-setup-residual-handoff}, and put
+\(I=I_{\rm setup}\), \(J=J_{\rm res}\).  The pre-quotient coarse residual class
 \[
    \calR_{\rm pre}(\calS;I,J)
 \]
-is the complement in \(\calS\) of the already removed alternatives in
-\Cref{hyp:previous-nonresidual}.  The retained normalized residual class
+is exactly \(\calR_{\rm setup}(\calS)\), the complement in \(\calS\) of the
+already removed alternatives in \Cref{hyp:previous-nonresidual}.  The retained
+normalized residual class
 \[
    \calR^\#(\calS;I,J)
 \]
@@ -997,8 +1121,8 @@ acyclic dependency view; state-selection criteria are recorded separately in
 \endfoot
 Imported setup results &
 Setup paper only: local concentration, local Type~I implication, normalized
-Seregin extraction, pressure atlas, lower classes, mildness, and conditional
-final assembly. &
+Seregin extraction, pressure atlas, lower classes, mildness, and local final
+assembly. &
 Paper~II residual closure.\\
 R1 axisymmetric closure &
 Centered circulation equation, axis regularity, killed-strip comparison, and
@@ -1070,7 +1194,7 @@ Itself.\\
 \hline
 \end{longtable}
 
-\begin{corollary}[Residual input from the setup paper]
+\begin{corollary}[Raw residual output for the setup paper]
 \label{cor:paperI-residual-input}
 For every normalized Seregin collection \(\calS\) generated by an
 admissible finite-energy Type I singularity in the setup paper, the setup
@@ -1080,7 +1204,7 @@ remaining class is empty.
 \begin{proof}[Proof deferred]
 This is proved in \Cref{sec:final-assembly}, after
 \Cref{thm:refined-residual-closure} has been established and inserted into the
-setup paper's residual hypothesis.
+setup paper's exact raw-residual interface.
 \end{proof}
 
 \begin{corollary}[Local pointwise Type I exclusion after residual closure]
@@ -2020,7 +2144,7 @@ hypothesis inside Paper~II alone.
 \begin{proof}
 The entry assertion is \Cref{thm:local-typeI-entry-or-exclusion}.  The
 contradiction is deferred to the final assembly, where the residual closure is
-proved and then inserted into the setup paper's conditional final theorem.  The
+proved and then inserted into the setup paper's local final theorem.  The
 equivalence is the local Type~I/local Type~II dichotomy of the setup paper.
 \end{proof}
 
@@ -12786,54 +12910,84 @@ is empty by \Cref{thm:terminal-stratification,thm:R4-final-closure}.
 
 Every refined residual alternative is impossible, contradicting the ordered
 decomposition.  Hence
-\(\calR^\#(\calS;I,J)=\varnothing\), which is the residual hypothesis of the
-setup paper.  In particular, the proof constructs the setup residual-closure
-hypothesis from the ordered decomposition and the individual branch closures;
-it does not assume an independent contradiction for the residual export.
+\(\calR^\#(\calS;I,J)=\varnothing\).  Together with the affine-row closure,
+\Cref{prop:setup-residual-handoff-complete} applies contrapositively to the
+fixed incoming residual profile and gives
+\(\calR_{\rm setup}(\calS)=\varnothing\).  In particular, the proof
+constructs the literal setup residual closure from the ordered decomposition
+and the individual local branch closures; it neither assumes a residual
+object nor replaces the raw setup residual by a derived handoff set.
 \end{proof}
 
 \begin{theorem}[Type I residual closure]
 \label{thm:typeI-residual-closure}
-For every normalized Seregin collection \(\calS\) satisfying the imported setup
-admissibility hypotheses,
+Fix a hypothetical Type~I singular point, its incoming normalized Seregin
+profile, and the single setup ancestry ledger determining the hull
 \[
-   \calR^\#(\calS;I,J)=\varnothing .
+   \calS=\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*).
 \]
-Equivalently, Paper~II proves exactly the missing setup hypothesis
-that this residual class is empty.
+Then the residual set for this fixed local ledger satisfies
+\[
+   \calR_{\rm setup}(\calS)
+   =
+   \calR\bigl(
+      \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
+   \bigr)
+   =\varnothing .
+\]
+No residual-existence premise is used: the statement is the contradiction
+obtained by applying the local routing and closure theorems to an arbitrary
+hypothetical incoming residual profile carrying this fixed ancestry ledger.
 \end{theorem}
 
 \begin{proof}
-This is the conclusion of \Cref{thm:refined-residual-closure}, proved in the
-preceding final assembly.  The statement is repeated here to separate the output
-of Paper~II from the final consequence imported from the setup paper.
+Let \(V\) be an arbitrary hypothetical incoming profile in
+\(\calR_{\rm setup}(\calS)\).  By
+\Cref{prop:setup-residual-handoff-complete}, exactly one of the two local
+routing alternatives occurs.  The affine/parasitic alternative is closed by
+the quotient-row conclusion of that proposition, with
+\Cref{def:affine-constant-lower-stratum,rem:affine-constant-use}; it cannot be
+a retained normalized residual profile.  In the
+other alternative, its canonical representative belongs to
+\(\calR^\#(\calS;I_{\rm setup},J_{\rm res})\), which is empty by
+\Cref{thm:refined-residual-closure}.  Both alternatives are impossible.
+Therefore no incoming residual profile exists for this fixed local ledger, and
+\(\calR_{\rm setup}(\calS)=\varnothing\).
 \end{proof}
 
-\begin{corollary}[Verification of the setup residual hypothesis]
+\begin{corollary}[Verification of the setup residual-closure theorem]
 \label{cor:setup-residual-hypothesis-proof}
-The residual-class hypothesis
-\SetupLabel{p1:hyp:no-remainder} holds.
+The companion residual-closure statement
+\SetupLabel{p1:hyp:no-remainder} holds with its literal raw-residual meaning.
 \end{corollary}
 
 \begin{proof}
-By \Cref{thm:imported-setup-results}, the setup residual hypothesis is
-the assertion that the retained residual class
-\(\calR^\#(\calS;I,J)\) is empty after the lower setup classes are removed.
-This is \Cref{thm:typeI-residual-closure}.
+Fix the incoming profile, raw generated hull, and normalization data as in
+\Cref{def:exact-setup-residual-handoff}.  The exact conclusion of
+\Cref{thm:typeI-residual-closure} is
+\[
+   \calR\bigl(
+      \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
+   \bigr)=\varnothing .
+\]
+The hull and normalization data are exactly those in
+\SetupLabel{p1:hyp:no-remainder}; therefore the companion statement is proved
+without an additional premise.
 \end{proof}
 
 \begin{corollary}[Local pointwise Type-I exclusion from the two-paper chain]
 \label{cor:two-paper-local-typeI-exclusion}
-By the setup paper's conditional final assembly
+By the setup paper's final assembly
 \SetupLabel{p1:thm:final-assembly} and
 \Cref{cor:setup-residual-hypothesis-proof}, no local pointwise Type~I
 singularity exists under the stated admissibility hypotheses.
 \end{corollary}
 
 \begin{proof}
-This is the conditional final assembly imported in
-\Cref{thm:imported-setup-results}, with the residual hypothesis verified by
-\Cref{cor:setup-residual-hypothesis-proof}.
+This is the downstream setup assembly listed in
+\Cref{tab:setup-export-interface}, with the residual-closure theorem supplied
+by \Cref{cor:setup-residual-hypothesis-proof}.  It is invoked only after that
+producer has been proved.
 \end{proof}
 
 \begin{remark}[Inherited inputs and new arguments]
@@ -12888,9 +13042,10 @@ realization \Cref{thm:bounded-origin-realization-coherent-tails}.
 \section{Setup Paper Label Dictionary}
 \label{app:setup-label-dictionary}
 
-The imported setup results displayed in \Cref{thm:imported-setup-results} are
-cited by their companion-paper theorem numbers.  This table records the same
-dictionary in one place so that Paper~II can be read using the public theorem
+The imported setup results in \Cref{thm:imported-setup-results}, together with
+the downstream setup consumers in \Cref{tab:setup-export-interface}, are cited
+by their companion-paper theorem numbers.  This table records that dictionary
+in one place so that Paper~II can be read using the public theorem
 numbering and the imported statements displayed here.
 \begingroup
 \scriptsize
@@ -12910,18 +13065,26 @@ local Type~I sequences.\\
 \SetupLabel{p1:lem:pressure} & Pressure compactness.\\
 \SetupLabel{p1:lem:gauge-compatibility} & Pressure gauge compatibility.\\
 \SetupLabel{p1:lem:pressure-atlas} & Pressure atlas.\\
-\SetupLabel{p1:lem:mild-representation} & Mild ancient representation.\\
-\SetupLabel{p2:lem:mild-limit} & Mildness under limits.\\
-\SetupLabel{p2:lem:physical-mild} & Finite-shift physical mildness.\\
+\SetupLabel{p1:def:mild-stratum} & Setup mild-stratum definition.\\
+\SetupLabel{p1:lem:mild-stratum-stability} & Stability of the setup mild
+stratum under time translations and uniformly bounded locally smooth limits.\\
+\SetupLabel{p1:lem:mild-representation} & Projected mild identity on the setup
+mild stratum.\\
+\SetupLabel{p2:lem:mild-limit} & Stability of mildness for uniformly bounded
+locally smooth limits of mild profiles.\\
+\SetupLabel{p2:lem:physical-mild} & Finite-shift physical mildness for a
+bounded mild centered profile.\\
 \SetupLabel{p1:thm:classical-classes} & Small and stationary lower classes.\\
+\SetupLabel{p1:thm:tight-liouville} & Uniformly tight raw-state class
+closure.\\
 \SetupLabel{p1:thm:known-structure-decay-liouville} & Known structured/decay
 classes.\\
 \SetupLabel{p2:thm:no-tight-normalized-collection} & No uniformly tight
 normalized collection.\\
 \SetupLabel{p2:thm:tight-liouville} & Tight Liouville theorem.\\
 \SetupLabel{p2:thm:AB-endpoint} & Bounded mild ancient endpoint theorem.\\
-\SetupLabel{p1:hyp:no-remainder} & Residual hypothesis proved here.\\
-\SetupLabel{p1:thm:final-assembly} & Conditional final assembly in the setup
+\SetupLabel{p1:hyp:no-remainder} & Raw residual-closure theorem proved here.\\
+\SetupLabel{p1:thm:final-assembly} & Local final assembly in the setup
 paper.\\
 \end{longtable}
 \endgroup

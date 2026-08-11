@@ -1,0 +1,139 @@
+\contentsline {section}{\tocsection {}{}{Introduction and Structure of the Argument}}{4}{section*.2}%
+\contentsline {subsection}{\tocsubsection {}{}{Dependency table}}{5}{section*.3}%
+\contentsline {subsection}{\tocsubsection {}{}{How to read this paper}}{5}{section*.4}%
+\contentsline {subsection}{\tocsubsection {}{}{Pressure notation}}{5}{section*.5}%
+\contentsline {section}{\tocsection {}{}{Part I. Local Concentration and the Type I/Type II Dichotomy}}{6}{section*.6}%
+\contentsline {subsection}{\tocsubsection {}{}{Overview}}{6}{section*.7}%
+\contentsline {section}{\tocsection {}{1}{Introduction}}{6}{section.1}%
+\contentsline {section}{\tocsection {}{2}{Suitable Weak Solutions and Singular Points}}{6}{section.2}%
+\contentsline {subsection}{\tocsubsection {}{}{Temporal cutoff convention}}{7}{section*.8}%
+\contentsline {section}{\tocsection {}{3}{Parabolic Rescaling and Scale-Invariant Quantities}}{7}{section.3}%
+\contentsline {section}{\tocsection {}{4}{\(\varepsilon \)-Regularity and the Vanishing Case}}{9}{section.4}%
+\contentsline {section}{\tocsection {}{5}{Positive Local Concentration}}{10}{section.5}%
+\contentsline {section}{\tocsection {}{6}{No-Escape for Finite-Energy Type I Singularities}}{12}{section.6}%
+\contentsline {section}{\tocsection {}{7}{The Type I/Type II Blow-Up Rate Dichotomy}}{17}{section.7}%
+\contentsline {section}{\tocsection {}{8}{Local Pointwise Type I Reduction to Seregin Extraction}}{18}{section.8}%
+\contentsline {subsection}{\tocsubsection {}{}{Part I dependency diagram}}{23}{section*.9}%
+\contentsline {section}{\tocsection {}{}{Part II. Type I Blow-up Limits and Residual Closure}}{24}{section*.10}%
+\contentsline {subsection}{\tocsubsection {}{}{Overview}}{24}{section*.11}%
+\contentsline {section}{\tocsection {}{9}{Introduction and main results}}{24}{section.9}%
+\contentsline {subsection}{\tocsubsection {}{9.1}{Type I blow-up limits}}{24}{subsection.9.1}%
+\contentsline {subsection}{\tocsubsection {}{9.2}{Normalized Seregin limits}}{24}{subsection.9.2}%
+\contentsline {subsection}{\tocsubsection {}{9.3}{Liouville alternatives and the remaining case}}{25}{subsection.9.3}%
+\contentsline {subsection}{\tocsubsection {}{9.4}{Main theorems}}{25}{subsection.9.4}%
+\contentsline {subsection}{\tocsubsection {}{9.5}{Dependencies and companion closure}}{26}{subsection.9.5}%
+\contentsline {subsection}{\tocsubsection {}{9.6}{Two entry routes for the reduction}}{26}{subsection.9.6}%
+\contentsline {subsection}{\tocsubsection {}{9.7}{Organization}}{26}{subsection.9.7}%
+\contentsline {section}{\tocsection {}{10}{Suitable solutions, scale-invariant quantities, and local concentration}}{27}{section.10}%
+\contentsline {section}{\tocsection {}{11}{The Type I blow-up sequence and compactness}}{30}{section.11}%
+\contentsline {subsection}{\tocsubsection {}{11.1}{The rescaled sequence}}{30}{subsection.11.1}%
+\contentsline {subsection}{\tocsubsection {}{11.2}{Inherited Type I bounds}}{30}{subsection.11.2}%
+\contentsline {subsection}{\tocsubsection {}{11.3}{Local energy, pressure, and time-derivative estimates}}{31}{subsection.11.3}%
+\contentsline {subsection}{\tocsubsection {}{11.4}{Compactness away from the terminal time}}{35}{subsection.11.4}%
+\contentsline {subsection}{\tocsubsection {}{11.5}{The ancient suitable weak limit}}{35}{subsection.11.5}%
+\contentsline {section}{\tocsection {}{12}{Persistence of concentration and nontriviality}}{36}{section.12}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{Persistence of concentration away from the terminal time}}{36}{subsection.12.1}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Scale selection}}{37}{subsection.12.2}%
+\contentsline {subsection}{\tocsubsection {}{12.3}{Nonzero ancient limits}}{37}{subsection.12.3}%
+\contentsline {section}{\tocsection {}{13}{Centered variables and normalized Seregin limits}}{38}{section.13}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{The centered self-similar equation}}{38}{subsection.13.1}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{Boundedness, smoothness, and local energy}}{39}{subsection.13.2}%
+\contentsline {subsection}{\tocsubsection {}{13.3}{Normalized Seregin ancient limits}}{40}{subsection.13.3}%
+\contentsline {section}{\tocsection {}{14}{Liouville classes and the remaining class}}{43}{section.14}%
+\contentsline {section}{\tocsection {}{15}{Liouville hypotheses and class exclusions}}{45}{section.15}%
+\contentsline {section}{\tocsection {}{16}{Residual closure imported from the companion paper}}{47}{section.16}%
+\contentsline {section}{\tocsection {}{17}{Elementary symmetries of the centered equation}}{49}{section.17}%
+\contentsline {section}{\tocsection {}{}{Part III. Uniformly Tight Ancient Dynamics}}{51}{section*.12}%
+\contentsline {subsection}{\tocsubsection {}{}{Overview}}{51}{section*.13}%
+\contentsline {section}{\tocsection {}{18}{Introduction and main results}}{51}{section.18}%
+\contentsline {subsection}{\tocsubsection {}{18.1}{The uniformly tight ancient class}}{51}{subsection.18.1}%
+\contentsline {subsection}{\tocsubsection {}{18.2}{Minimal elements and compact hulls}}{51}{subsection.18.2}%
+\contentsline {subsection}{\tocsubsection {}{18.3}{Invariant measures and covariance}}{52}{subsection.18.3}%
+\contentsline {subsection}{\tocsubsection {}{18.4}{Endpoint \(L^3\) closure of the tight class}}{52}{subsection.18.4}%
+\contentsline {subsection}{\tocsubsection {}{18.5}{Main results}}{53}{subsection.18.5}%
+\contentsline {subsection}{\tocsubsection {}{18.6}{Relation to the Type I reduction}}{54}{subsection.18.6}%
+\contentsline {subsection}{\tocsubsection {}{18.7}{Organization}}{54}{subsection.18.7}%
+\contentsline {section}{\tocsection {}{19}{Centered ancient solutions and the local smooth topology}}{54}{section.19}%
+\contentsline {subsection}{\tocsubsection {}{19.1}{The centered equation}}{54}{subsection.19.1}%
+\contentsline {subsection}{\tocsubsection {}{19.2}{The Ornstein--Uhlenbeck--Stokes semigroup}}{55}{subsection.19.2}%
+\contentsline {subsection}{\tocsubsection {}{19.3}{Riesz transform convention}}{55}{subsection.19.3}%
+\contentsline {subsection}{\tocsubsection {}{19.4}{Bounded mild ancient solutions}}{55}{subsection.19.4}%
+\contentsline {subsection}{\tocsubsection {}{19.5}{Time translation}}{56}{subsection.19.5}%
+\contentsline {subsection}{\tocsubsection {}{19.6}{The locally smooth topology}}{56}{subsection.19.6}%
+\contentsline {section}{\tocsection {}{20}{Smoothing, pressure reconstruction, and compactness}}{56}{section.20}%
+\contentsline {subsection}{\tocsubsection {}{20.1}{Local smoothing}}{56}{subsection.20.1}%
+\contentsline {subsection}{\tocsubsection {}{20.2}{Pressure reconstruction}}{57}{subsection.20.2}%
+\contentsline {subsection}{\tocsubsection {}{20.3}{Stability under locally smooth limits}}{58}{subsection.20.3}%
+\contentsline {subsection}{\tocsubsection {}{20.4}{Compactness of bounded families}}{59}{subsection.20.4}%
+\contentsline {section}{\tocsection {}{21}{Uniform \(L^3\)-tightness and stationary \(L^3\) rigidity}}{59}{section.21}%
+\contentsline {subsection}{\tocsubsection {}{21.1}{Uniform \(L^3\)-tightness}}{59}{subsection.21.1}%
+\contentsline {subsection}{\tocsubsection {}{21.2}{Closedness under locally smooth convergence}}{60}{subsection.21.2}%
+\contentsline {subsection}{\tocsubsection {}{21.3}{Stationary time-translate limits}}{60}{subsection.21.3}%
+\contentsline {subsection}{\tocsubsection {}{21.4}{Stationary self-similar rigidity}}{61}{subsection.21.4}%
+\contentsline {section}{\tocsection {}{22}{Normalized collections and minimal ancient solutions}}{61}{section.22}%
+\contentsline {subsection}{\tocsubsection {}{22.1}{Closed normalized collections}}{61}{subsection.22.1}%
+\contentsline {subsection}{\tocsubsection {}{22.2}{Time-centering}}{61}{subsection.22.2}%
+\contentsline {subsection}{\tocsubsection {}{22.3}{Stability of local nonvanishing}}{62}{subsection.22.3}%
+\contentsline {subsection}{\tocsubsection {}{22.4}{Lower semicontinuity of size}}{62}{subsection.22.4}%
+\contentsline {subsection}{\tocsubsection {}{22.5}{Existence of a minimal element}}{62}{subsection.22.5}%
+\contentsline {subsection}{\tocsubsection {}{22.6}{The uniformly tight normalized class}}{63}{subsection.22.6}%
+\contentsline {section}{\tocsection {}{23}{Compact trajectory hulls}}{63}{section.23}%
+\contentsline {subsection}{\tocsubsection {}{23.1}{Trajectory hulls}}{64}{subsection.23.1}%
+\contentsline {subsection}{\tocsubsection {}{23.2}{Compactness of bounded hulls}}{64}{subsection.23.2}%
+\contentsline {subsection}{\tocsubsection {}{23.3}{Compact invariant sets}}{64}{subsection.23.3}%
+\contentsline {subsection}{\tocsubsection {}{23.4}{Minimal compact invariant subsets}}{65}{subsection.23.4}%
+\contentsline {subsection}{\tocsubsection {}{23.5}{The zero trajectory}}{65}{subsection.23.5}%
+\contentsline {section}{\tocsection {}{24}{Invariant measures and the covariance obstruction}}{65}{section.24}%
+\contentsline {subsection}{\tocsubsection {}{24.1}{Krylov--Bogolyubov averages}}{65}{subsection.24.1}%
+\contentsline {subsection}{\tocsubsection {}{24.2}{Support on minimal hulls}}{66}{subsection.24.2}%
+\contentsline {subsection}{\tocsubsection {}{24.3}{Stationary statistical identity}}{66}{subsection.24.3}%
+\contentsline {subsection}{\tocsubsection {}{24.4}{Barycenter and covariance}}{67}{subsection.24.4}%
+\contentsline {section}{\tocsection {}{25}{Endpoint \(L^3\) closure of the uniformly tight class}}{68}{section.25}%
+\contentsline {subsection}{\tocsubsection {}{25.1}{Physical pullback}}{68}{subsection.25.1}%
+\contentsline {subsection}{\tocsubsection {}{25.2}{Critical \(L^3\) invariance}}{69}{subsection.25.2}%
+\contentsline {subsection}{\tocsubsection {}{25.3}{Mildness after finite terminal-time restriction}}{69}{subsection.25.3}%
+\contentsline {subsection}{\tocsubsection {}{25.4}{Endpoint \(L^3\) ancient Liouville theorem}}{70}{subsection.25.4}%
+\contentsline {section}{\tocsection {}{26}{Tight-Class Liouville Criterion and Type I Reduction}}{71}{section.26}%
+\contentsline {subsection}{\tocsubsection {}{26.1}{Normalized tight collections}}{71}{subsection.26.1}%
+\contentsline {subsection}{\tocsubsection {}{26.2}{Use in the Type I reduction}}{72}{subsection.26.2}%
+\contentsline {section}{\tocsection {}{}{Part IV. Structured Ancient Solution Exclusions}}{73}{section*.14}%
+\contentsline {subsection}{\tocsubsection {}{}{Overview}}{73}{section*.15}%
+\contentsline {section}{\tocsection {}{27}{Introduction}}{73}{section.27}%
+\contentsline {subsection}{\tocsubsection {}{27.1}{Ancient solutions from Type I blow-up}}{73}{subsection.27.1}%
+\contentsline {subsection}{\tocsubsection {}{27.2}{Axisymmetric Liouville hypotheses}}{73}{subsection.27.2}%
+\contentsline {subsection}{\tocsubsection {}{27.3}{Anchored Gallay--Wayne hypotheses}}{74}{subsection.27.3}%
+\contentsline {subsection}{\tocsubsection {}{27.4}{Main results}}{74}{subsection.27.4}%
+\contentsline {subsection}{\tocsubsection {}{27.5}{Relation to the preceding parts}}{75}{subsection.27.5}%
+\contentsline {subsection}{\tocsubsection {}{27.6}{Summary of hypotheses}}{75}{subsection.27.6}%
+\contentsline {subsection}{\tocsubsection {}{27.7}{Organization}}{75}{subsection.27.7}%
+\contentsline {section}{\tocsection {}{28}{Ancient Type I limits and self-similar variables}}{75}{section.28}%
+\contentsline {subsection}{\tocsubsection {}{28.1}{Type I ancient solutions}}{75}{subsection.28.1}%
+\contentsline {subsection}{\tocsubsection {}{28.2}{Nonzero Type I blow-up limits}}{75}{subsection.28.2}%
+\contentsline {subsection}{\tocsubsection {}{28.3}{Backward self-similar variables}}{76}{subsection.28.3}%
+\contentsline {subsection}{\tocsubsection {}{28.4}{Preservation of axisymmetry and swirl variables}}{76}{subsection.28.4}%
+\contentsline {subsection}{\tocsubsection {}{28.5}{Time shifts away from the singular time}}{77}{subsection.28.5}%
+\contentsline {subsection}{\tocsubsection {}{28.6}{PDE hypotheses}}{77}{subsection.28.6}%
+\contentsline {section}{\tocsection {}{29}{Axisymmetric notation and cited Liouville theorems}}{78}{section.29}%
+\contentsline {subsection}{\tocsubsection {}{29.1}{Cylindrical variables and the swirl scalar}}{78}{subsection.29.1}%
+\contentsline {subsection}{\tocsubsection {}{29.2}{Constant solutions in the Type I frame}}{78}{subsection.29.2}%
+\contentsline {subsection}{\tocsubsection {}{29.3}{Cited Liouville theorems}}{78}{subsection.29.3}%
+\contentsline {section}{\tocsection {}{30}{Unforced axisymmetric Liouville consequences}}{81}{section.30}%
+\contentsline {subsection}{\tocsubsection {}{30.1}{No swirl}}{81}{subsection.30.1}%
+\contentsline {subsection}{\tocsubsection {}{30.2}{Pointwise scale-invariant control}}{81}{subsection.30.2}%
+\contentsline {subsection}{\tocsubsection {}{30.3}{Finite \(L^p\) control of \(\Gamma \)}}{81}{subsection.30.3}%
+\contentsline {subsection}{\tocsubsection {}{30.4}{Periodic bounded swirl}}{82}{subsection.30.4}%
+\contentsline {subsection}{\tocsubsection {}{30.5}{Proof of the axisymmetric Liouville theorem}}{82}{subsection.30.5}%
+\contentsline {section}{\tocsection {}{31}{Anchored Gallay--Wayne perturbative exclusion}}{82}{section.31}%
+\contentsline {subsection}{\tocsubsection {}{31.1}{The forward rescaled vorticity equation}}{82}{subsection.31.1}%
+\contentsline {subsection}{\tocsubsection {}{31.2}{Gallay--Wayne small-data estimate}}{83}{subsection.31.2}%
+\contentsline {subsection}{\tocsubsection {}{31.3}{Anchored Gallay--Wayne condition}}{83}{subsection.31.3}%
+\contentsline {subsection}{\tocsubsection {}{31.4}{Anchored forward Gallay--Wayne rescalings}}{84}{subsection.31.4}%
+\contentsline {subsection}{\tocsubsection {}{31.5}{Anchored perturbative exclusion}}{89}{subsection.31.5}%
+\contentsline {section}{\tocsection {}{32}{Summary of PDE consequences}}{90}{section.32}%
+\contentsline {subsection}{\tocsubsection {}{32.1}{Zero conclusions}}{90}{subsection.32.1}%
+\contentsline {subsection}{\tocsubsection {}{32.2}{Consequences for Type I blow-up arguments}}{90}{subsection.32.2}%
+\contentsline {subsection}{\tocsubsection {}{32.3}{Summary table}}{90}{subsection.32.3}%
+\contentsline {section}{\tocsection {}{}{Part V. Final Assembly: Local Type I Exclusion}}{92}{section*.16}%
+\contentsline {subsection}{\tocsubsection {}{}{Overview}}{92}{section*.17}%
+\contentsline {section}{\tocsection {}{33}{Final assembly}}{92}{section.33}%
+\contentsline {section}{\tocsection {}{}{References}}{94}{section*.18}%

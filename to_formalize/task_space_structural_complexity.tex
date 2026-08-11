@@ -53,6 +53,9 @@
 \newaliascnt{assumption}{theorem}
 \newtheorem{assumption}[assumption]{Assumption}
 \aliascntresetthe{assumption}
+\newaliascnt{certificationtarget}{theorem}
+\newtheorem{certificationtarget}[certificationtarget]{Certification Target}
+\aliascntresetthe{certificationtarget}
 \newaliascnt{convention}{theorem}
 \newtheorem{convention}[convention]{Convention}
 \aliascntresetthe{convention}
@@ -73,6 +76,7 @@
 \crefname{corollary}{Corollary}{Corollaries}
 \crefname{definition}{Definition}{Definitions}
 \crefname{assumption}{Assumption}{Assumptions}
+\crefname{certificationtarget}{Certification Target}{Certification Targets}
 \crefname{convention}{Convention}{Conventions}
 \crefname{example}{Example}{Examples}
 \crefname{remark}{Remark}{Remarks}
@@ -299,6 +303,51 @@ finite budget: it lists the entire affordable quotient slice, computes every
 conditional-algebra increment, and turns their conserved charge into a bound
 for every admissible transition rule in the example.
 
+\medskip
+\noindent\begin{minipage}{\linewidth}
+\textbf{Temporal source typing.}
+Fix a surviving pre-action history \(h_t\).  After the run, let a represented
+terminal evaluator label the next action when the completed trajectory
+succeeds and output \(\bot\) otherwise.  On a successful run this label
+identifies the first action on the successful continuation.  If two legal
+completions of \(h_t\) produce different labels, no function of the available
+history can equal that terminal label on both completions.  Once its terminal
+evaluator and complete derivation are charged, the label is an accounting
+record for the achieved performance; its retrospective representation is not
+a source for the action selected at \(h_t\).
+
+A representation of the same denotation enters the prospective source profile
+at this use precisely when it independently factors through the pre-action
+history, has no later outcome, verifier flag, terminal record, or oracle answer
+as an ancestor, is evaluated and charged before the action, and is an actual
+ancestor of the selector, transition, or target-aligned represented rule whose
+target progress it is invoked to explain:
+
+\[
+\boxed{\text{prospective source}\ \neq\ \text{retrospective explanation}.}
+\]
+
+The display distinguishes represented derivations at a claimed use, rather
+than extensional denotations.  One denotation may have both a retrospective
+terminal representation and an independent prefix representation; each is
+classified and charged through its own derivation.  Later verifier outcomes,
+exact first-hit labels, completed value functions, and other terminal
+postprocessings remain in the accounting profile under a retrospective
+representation when that representation and its complete derivation are
+charged.  An independent prefix derivation re-enters the saturated closure
+with its complete ancestry and cost.  Exact first-hit accounting preserves the
+hitting law already generated, whereas prospective selector accountability
+charges improvement over the declared neutral enumeration baseline only to
+the pre-hit sampler and its temporally admissible ancestry.
+\Cref{def-pre-hit-temporally-admissible-source,%
+cor-first-hit-accounting-not-source,%
+cor-no-retrospective-first-hit-source-loophole,%
+def-source-accounting-profile-separation,%
+thm-prospective-selector-accountability,%
+thm-no-uncharged-prospective-value-amplification} formalize this proof
+strategy.
+\end{minipage}
+
 \subsection{What this paper introduces}\label{subsec-overview-general}
 
 Stated in classical terms, the manuscript develops a single quantitative
@@ -378,8 +427,115 @@ required bound \((1-\eta)^n\).  The present manuscript does not execute that
 final certificate analysis.  Consequently, its fixed-noise hardness theorem
 and the resulting \(P\ne NP\) consequence remain conditional on acceptance of
 this explicit proof certificate.  An accepted certificate would discharge
-the sole remaining premise internally; no external LPN or
+the sole remaining certification target internally; no external LPN or
 complexity-theoretic hardness assumption is used.
+
+\begin{center}
+\fbox{%
+  \begin{minipage}{0.91\linewidth}
+  \raggedright
+  \textbf{Representative learning consequences.}
+  The target-qualified prospective source selected by a complete learning
+  record is first assigned to one of the \(4960\) exact structural ancestry
+  cells \(\alpha\in\mathfrak A_{\rm learn}\), indexed by its master mode and
+  state--coefficient provenance.  For losses in \([-1,1]\), the nonempty
+  cell-restricted output or loss classes satisfy the source-resolved
+  Rademacher union bound
+  \[
+  \begin{aligned}
+  \widehat{\mathfrak R}_S
+  \!\left(\bigcup_{\alpha\in\mathfrak A_{\rm learn}}
+  \mathcal H_\alpha(B,m)\right)
+  &\le
+  \max_{\alpha\in\mathfrak A_{\rm learn}}
+  \widehat{\mathfrak R}_S\bigl(\mathcal H_\alpha(B,m)\bigr)\\
+  &\quad+
+  \sqrt{\frac{2\log|\mathfrak A_{\rm learn}|}{m}}.
+  \end{aligned}
+  \]
+  For a cell-mixture prior \(P=\sum_\alpha w_\alpha P_\alpha\) and
+  posterior \(Q=\sum_\alpha q_\alpha Q_\alpha\) with matching conditional
+  cells, the PAC--Bayes complexity decomposes exactly as
+  \[
+  \operatorname{KL}(Q\Vert P)
+  =
+  \operatorname{KL}(q\Vert w)
+  +
+  \sum_\alpha q_\alpha
+  \operatorname{KL}(Q_\alpha\Vert P_\alpha).
+  \]
+  Thus the familiar inequalities are applied after structural ancestry has
+  been resolved: source selection is paid by the finite-cell Rademacher term
+  or by the cell-selection divergence \(\operatorname{KL}(q\Vert w)\).
+  Every complete learning bound assembled from these cellwise estimates
+  retains the sample size \(m\), confidence \(1-\delta\), resource budget
+  \(B\), exact source cell \(\alpha\), noise contraction, representation and
+  optimization cost, decoder or policy deployment, and a represented
+  same-law, same-unit conversion to the target performance quantity.  See
+  \cref{def-complete-source-resolved-learning-ledger,%
+  thm-source-resolved-saturated-learning-compilation}.
+  \end{minipage}%
+}
+\end{center}
+
+\begin{center}
+\begin{minipage}{0.95\linewidth}
+\textbf{Three non-interchangeable noise thresholds.}
+\smallskip
+
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}
+                    >{\raggedright\arraybackslash}p{0.75\linewidth}@{}}
+\toprule
+threshold & quantitative meaning\\
+\midrule
+\textbf{Statistical}
+&
+For a clean separation margin \(\Delta\), exact identification is certified
+when
+\(2\Gamma_m^{\rm Rad}(\mathcal H,\delta)+\varepsilon_{\rm opt}
+<(1-2\eta)\Delta\).
+This is a sufficient \(1-\delta\) sample-and-margin certificate; it does not
+certify that the empirical minimizer is affordable.
+\\[3pt]
+\textbf{Computational}
+&
+\(\displaystyle
+\eta_{\rm comp}^{\rm sat}(n,m;\sigma,\alpha)
+=\sup\{0\le\eta<\tfrac12:
+\operatorname{Succ}^{\kappa}_{\mathfrak M_{n,m,\eta},n}
+(\sigma(n))\ge\alpha\}\).
+The supremum is zero when the affordable region is empty.  When the declared
+ceiling is closed under represented noise degradation, it is the right
+endpoint of the noise region in which target performance \(\alpha\) remains
+affordable under the complete saturated ceiling \(\sigma(n)\).
+\\[3pt]
+\textbf{Information}
+&
+Every estimator, without a computational restriction, needs
+\(m(1-H_2(\eta))\ge\alpha\log_2N-1\) to recover a uniform target among
+\(N\) possibilities with probability at least \(\alpha\).
+Violation of this inequality rules out that recovery level regardless of
+computational resources.
+\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+Put \(\rho=1-2\eta\).  Clean target margins and correlations are attenuated
+by \(\rho\), so recovering a clean quantity from its noisy counterpart
+introduces the inverse correction \(\rho^{-1}\); quadratic error bounds carry
+\(\rho^{-2}\).  The distinct forward coefficient
+\(\vartheta(\eta)=\rho^2=(1-2\eta)^2\) is the admissible
+strong-data-processing coefficient that upper-bounds source information
+transmitted through a binary symmetric reveal.  The computation-unrestricted
+information threshold itself uses the channel capacity term
+\(1-H_2(\eta)\); these coordinates are compared on the same experiment but
+do not replace one another.  See
+\cref{def-noise-indexed-saturated-recovery-cost,%
+thm-three-noise-threshold-comparison,%
+thm-dynamical-noise-three-thresholds}.
+\end{minipage}
+\end{center}
 
 \Cref{fig-intro-channel-dictionary} summarizes the generator
 decomposition together with its classical reading; the internal channel
@@ -506,6 +662,95 @@ The static spine is
 \longrightarrow
 \text{the presented task}.
 \]
+
+\clearpage
+\subsection{Architecture-Independent Capability Analysis}
+\label{subsec-architecture-independent-capability-analysis}
+
+\begin{definition}[General intelligent computation relative to a presentation]
+\label{def-general-intelligent-computation}
+
+Fix a presented task family, a declared resource envelope (B), and declared
+observation, memory, action, and oracle interfaces.  A \emph{general
+intelligent computation} in this model is an arbitrary family-uniform,
+presentation-relative represented computation
+
+\[
+\mathcal A_n\in\mathsf{Alg}_{n,\le B}
+\]
+
+that interacts with the task only through those interfaces.  Its internal
+architecture, state organization, update rule, learned representations, and
+control strategy are unrestricted within the declared represented-computation
+model.  What is fixed is the public task presentation, the information
+available through the declared interfaces, and the complete resource account,
+including code, initialization, construction, peak memory, updates, oracle
+use, total work, and deployment.  No unpresented observation or uncharged
+interface is part of the admissible class.  This is the architecture-independent
+computational class used throughout the paper; see
+\cref{def-resource-envelope,conv-presentation-relative-budgeted-computation,def-uniform-saturated-success-profile}.
+
+\end{definition}
+
+For a task-family functional \(\mathfrak M_n\), define the corresponding
+budgeted capability envelope by
+
+\[
+\operatorname{Cap}_{\mathfrak M,n}(B)
+:=
+\operatorname{Succ}_{\mathfrak M,n}(B)
+=
+\sup_{\mathcal A\in\mathsf{Alg}_{n,\le B}}
+\mathfrak M_n\!\left(I\mapsto\alpha_I(\mathcal A)\right).
+\]
+
+The universal accountability theorem then gives the architecture-independent
+bound
+
+\begin{equation}
+\label{eq-architecture-independent-capability-envelope}
+\operatorname{Cap}_{\mathfrak M,n}(B)
+\le
+eH_B(n)\,
+m_{\mathfrak M,n}^{\mathrm{sat}}\!\left(\Psi(B,n)\right),
+\end{equation}
+
+where \(H_B\) and \(\Psi\) are derived from the same declared resource
+ledger rather than chosen for a particular algorithm
+(\cref{thm-universal-saturated-profile-accountability}).  The right-hand side
+saturates over all affordable represented structure, including features,
+memories, abstractions, policies, and runtime-generated representations.  It
+therefore applies simultaneously to every architecture in the class of
+\cref{def-general-intelligent-computation}.
+
+Different specializations of this envelope provide:
+
+\begin{itemize}
+\item capability bounds over task families and performance functionals;
+\item learning and inference bounds that retain noise contraction,
+statistical capacity, and complete represented cost
+(\cref{thm-source-resolved-saturated-learning-compilation});
+\item limits on adaptive information acquisition
+(\cref{thm-adaptive-acquisition-information-target-contact});
+\item explicit charges for memory, representation construction, and
+deployment
+(\cref{def-resource-envelope,def-saturated-representation-degree});
+\item controlled target-arrival and reach--avoid bounds
+(\cref{thm-controlled-policy-channel-decomposition,thm-universal-dynamical-certificate});
+\item Bayesian, compact-belief, and attention-based acquisition limits
+(\cref{thm-attention-target-gain-envelope,thm-compact-latent-information-sufficiency,thm-joint-compact-latent-attention-acquisition});
+and
+\item a common comparison of statistical, computational, and
+information-theoretic bottlenecks
+(\cref{thm-three-noise-threshold-comparison,thm-dynamical-noise-three-thresholds}).
+\end{itemize}
+
+Thus the AGI interpretation is a quantified modeling statement: the internal
+architecture is universally quantified while the presentation, access model,
+and resource envelope remain explicit.  The framework supplies mathematical
+language and universal quantitative machinery for analyzing general
+intelligent computation; it does not construct an AGI system or assert that
+the engineering problem of AGI has been solved.
 
 \subsection{Contributions}\label{subsec-contributions}
 
@@ -51306,15 +51551,41 @@ The strict Pareto frontier and meta-accountability theorem of
 profile into an explicit certificate-extraction lower region.
 \emph{Output:} an exact reduction of the prospective LPN source profile, a
 separate core-refined first-hit accounting bound, an exact constant-noise
-spectral perimeter, the hardness theorem under its isolated residual-ancestry
-bound, a finite proof-grade empirical protocol that discharges precisely that
-bound, the direct implication from fixed-noise LPN hardness to \(P\ne NP\),
+spectral perimeter, the hardness theorem obtained upon certification of its
+isolated residual-ancestry target, a finite proof-grade protocol whose
+deterministic acceptance discharges precisely that target, the direct
+implication from fixed-noise LPN hardness to \(P\ne NP\),
 the statistical denoising bound, and explicit polynomial, statistical, and
 information-theoretic noise thresholds.
 \emph{First pass:} the reader should retain the presentation, the saturated
 statistical-alignment specialization, the quantitative phase diagram, the
 constant-noise spectral ledger, the five source bounds, the core-reduction
 theorem, and the final obstruction criterion.
+
+\begin{center}
+\fbox{%
+  \begin{minipage}{0.91\linewidth}
+  \raggedright
+  \textbf{Proof-producing LPN route.}
+  The structural reduction eliminates every quotient-supported and explicitly
+  materialized source mode and isolates one compact residual-ancestry
+  certification target
+  (\cref{thm-lpn-residual-ancestry-attention-bound}).  The proof-grade
+  discharge theorem combines exact finite saturation, exhaustive source-cell
+  coverage, verified capacity, attenuation and error laws, an explicit
+  crossover calculation, and direct finite-prefix verification
+  (\cref{thm-lpn-proof-grade-empirical-residual-discharge}).  A learned or
+  optimized component may propose candidate records; only deterministic exact,
+  symbolic, or outward-rounded interval verification enters the proof.  If the
+  checker accepts all fields, \cref{eq-lpn-empirical-discharge-final}
+  establishes the residual bound uniformly on the audited scale range and
+  closes the LPN obstruction at the declared ceiling.  The manuscript proves
+  this verification implication and specifies its fields; it does not execute
+  an instantiated certificate analysis, so the downstream LPN hardness
+  consequences remain conditional on acceptance of that internal certificate.
+  \end{minipage}%
+}
+\end{center}
 
 \Cref{part:task-spaces,part:dynamics,part:spectral-complexity,part:learning,part:dynamical-systems,part:attention,part:structural-metacomplexity}
 respectively supply task presentations, the budget-admissible channel
@@ -64821,14 +65092,15 @@ the asserted structural exhaustion.
 
 \end{proof}
 
-\begin{assumption}[Residual-ancestry compact ambient bound for LPN]
+\begin{certificationtarget}[Compact residual-ancestry ambient bound for LPN]
 \label{thm-lpn-residual-ancestry-attention-bound}
 
 Fix \(0<\eta<1/2\), the declared LPN family functional restricted to the
 full-rank and random-code-rigidity event, and a budget \(B\) in the declared
 polynomial saturated ceiling or a class-preserving polynomial enlargement.
 For the residual-ancestry source family of
-\cref{def-lpn-ambient-geom-ancestry-branches}, assume
+\cref{def-lpn-ambient-geom-ancestry-branches}, the remaining certification
+objective is
 \begin{equation}
 \label{eq-lpn-residual-ancestry-attention-bound}
 G_{X,b,\mathfrak M,n}^{\mathrm{src,sat}}(B)
@@ -64837,22 +65109,33 @@ G_{X,b,\mathfrak M,n}^{\mathrm{src,sat}}(B)
 The estimate applies to the complete record: score construction,
 normalization, active acquisition, posterior update, Caus current, valid
 Lift, and deployed transition are all charged at the same ceiling.
-By \cref{thm-lpn-exact-constant-noise-spectral-perimeter}, the premise is
-already discharged for explicitly materialized located spectra and for every
+By \cref{thm-lpn-exact-constant-noise-spectral-perimeter}, the inequality is
+already proved for explicitly materialized located spectra and for every
 residual-parity fiber map that fails the quotient gate or is
 identity-equivalent.  Its remaining content is the numerical evaluation of
 compact, dynamically qualified, non-lumpable residual-ancestry ambient
 records, including any polynomial evaluator with an unmaterialized diffuse
-Walsh expansion.  The proof-grade empirical discharge in
-\cref{thm-lpn-proof-grade-empirical-residual-discharge} lists the source
-cover, capacity, attenuation, error, scale, crossover, and finite-prefix
-certificates that together prove this premise.
+Walsh expansion.
 
-\end{assumption}
+For the proof-producing discharge, see
+\cref{thm-lpn-proof-grade-empirical-residual-discharge}.  The exact
+finite-saturation regime is governed by the finite audits of
+\cref{sec-finite-target-audits}; recurrence and scale certification are
+specified in \cref{def-scale-certified-attenuating-source-audit}; and the
+uniformly propagated conclusion is
+\cref{eq-lpn-empirical-discharge-final}.
 
-This is the only statement in the LPN part declared as an assumption.  The
-next theorem gives a finite proof-grade route for discharging each of its
-fields; a confidence-only empirical estimate does not replace that route.
+\end{certificationtarget}
+
+This is the sole unresolved numerical certification target in the LPN part,
+not an external hardness assumption.  It is not discharged in the present
+manuscript because the instantiated certificate analysis has not been run and
+accepted.  The next theorem proves that a record satisfying its complete
+proof-grade fields discharges the target; a confidence-only empirical estimate
+does not satisfy those fields.  Consequently, every later LPN result that
+invokes this target remains conditional on deterministic acceptance of such a
+record, while the certification machinery and its implication are unconditional
+theorems of the paper.
 \Cref{fig-lpn-proof-grade-empirical-discharge} displays the resulting
 finite-prefix and propagated-tail argument.
 
@@ -64947,6 +65230,26 @@ G_{X,b,\mathfrak M,n}^{\mathrm{src,sat}}(B_n)
 Consequently the exported certificate discharges
 \cref{thm-lpn-residual-ancestry-attention-bound} at the audited ceiling.
 
+The proof dependencies are explicit.  Exact source-cell exhaustion is supplied
+by
+\cref{thm-lpn-exact-constant-noise-spectral-perimeter,cor-lpn-residual-ancestry-five-family-geom-classification}.
+The exact finite-saturation and direct finite-prefix fields use complete
+full-support audit data in the sense of
+\cref{def-computable-observable-audit}, with finite-matrix soundness supplied
+by \cref{thm-computable-audit-soundness}; sampled audit data alone do not
+supply this field.  Capacity factorization, attenuation, and error control are
+the verified fields of
+\cref{def-scale-certified-attenuating-source-audit,thm-empirical-asymptotic-saturated-source-closure,cor-empirical-discovery-deterministic-universal-closure},
+specialized here by
+\cref{eq-lpn-empirical-discharge-capacity,eq-lpn-empirical-discharge-noise-attenuation,eq-lpn-empirical-discharge-error}.
+The strict phase separation and crossover exclusion are exactly
+\cref{eq-lpn-empirical-discharge-lambda,eq-lpn-empirical-discharge-crossover-monotonicity,eq-lpn-empirical-discharge-crossover-leading,eq-lpn-empirical-discharge-crossover-error};
+the prefix and propagated tail meet in
+\cref{eq-lpn-empirical-discharge-finite-prefix,eq-lpn-empirical-discharge-final}.
+After deterministic acceptance, the conversion from this source bound to a
+universal success bound is supplied by
+\cref{thm-prospective-selector-accountability,thm-universal-saturated-profile-accountability,thm-lpn-one-way}.
+
 Every premise above has a distinct verification field: source-cell coverage
 comes from the cited LPN exhaustion theorems; the factorization, capacity,
 attenuation, and error bounds come from the scale audit; the polynomial
@@ -65006,6 +65309,7 @@ finite sizes.  Since \(e^{-\lambda_\eta n}=(1-\eta)^n\), the conclusion is
 exactly \cref{eq-lpn-residual-ancestry-attention-bound}.
 \end{proof}
 
+\clearpage
 \begin{figure}[tbp]
 \centering
 \resizebox{.98\linewidth}{!}{%
@@ -66005,7 +66309,8 @@ at that fixed noise rate.  Then \(P\ne NP\).
 
 In particular, any unconditional derivation of
 \cref{eq-lpn-one-way-family-obstruction-bound} proves \(P\ne NP\).  Under the
-present residual-ancestry premise, the derivation is supplied by
+current residual-ancestry certification target, the conditional derivation is
+supplied by
 \cref{thm-lpn-residual-ancestry-attention-bound,thm-lpn-one-way}.
 The implication from fixed-noise search-LPN hardness to \(P\ne NP\) itself
 uses no additional complexity-barrier premise.
@@ -66250,7 +66555,8 @@ The \hyperref[thm-channel-exhaustiveness]{generic component decomposition},
 \hyperref[thm-lpn-coupled-source-seal-final]{coupled-source theorem}, and
 \hyperref[cor-lpn-abs-source-exhaustion]{LPN exact-\(\Abs\) source-exhaustion
 corollary} reduce the prospective \(\Geom/\Abs\) source profile to the
-ambient Geom coordinate.  Before the remaining compact ambient premise is
+ambient Geom coordinate.  Before the remaining compact ambient certification
+target is
 invoked, the constant-noise spectral perimeter
 \cref{thm-lpn-exact-constant-noise-spectral-perimeter} exponentially closes
 materialized located spectra and applies the exact terminal-rank gate to
@@ -66259,8 +66565,8 @@ Geom coordinates vanish, and
 \hyperref[cor-lpn-complete-ambient-geom-source-seal]{the complete ambient
 source seal}, using
 \cref{thm-lpn-residual-ancestry-attention-bound}, bounds the remaining coordinate by
-\(2^{-n}+(1-\eta)^n\).  The only formal premise in this chain is therefore
-\cref{thm-lpn-residual-ancestry-attention-bound}.  It is discharged by a
+\(2^{-n}+(1-\eta)^n\).  The sole unresolved numerical target in this chain is
+therefore \cref{thm-lpn-residual-ancestry-attention-bound}.  It is discharged by a
 computer-assisted record exactly when the finite verification fields of
 \cref{thm-lpn-proof-grade-empirical-residual-discharge} pass; no sampled
 failure to find a source is substituted for saturated source coverage.  The
@@ -66269,7 +66575,7 @@ complete record, but it does not supply an accepted instantiated certificate
 for the residual-ancestry cell.  Thus the fixed-noise hardness and separation
 consequences remain conditional in this version on that internal certificate
 obligation.  Supplying and deterministically verifying the record would
-discharge the sole remaining premise without importing an LPN or
+discharge the sole remaining target without importing an LPN or
 complexity-theoretic hardness assumption.  The
 \hyperref[cor-no-retrospective-first-hit-source-loophole]{no retrospective
 first-hit source loophole corollary} excludes a completed first-hit label as

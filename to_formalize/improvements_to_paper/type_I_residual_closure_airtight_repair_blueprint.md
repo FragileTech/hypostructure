@@ -160,9 +160,11 @@ The endpoint contradiction is obtained at a realized local profile.  Its force
 returns through descendant heredity or defect support transfer, through the
 terminal stratification, and finally to the imported residual Seregin object.
 
-The global Type I exclusion is then obtained by inserting the residual closure
-into the setup paper's conditional assembly.  The proof does not propagate one
-global estimate forward through every state.
+The Type I exclusion is then obtained by inserting the companion
+residual-closure theorem into the setup paper's local assembly.  This is an
+unconditional contrapositive for the fixed hypothetical singular profile and
+its ledger; the proof does not propagate one global estimate through every
+state or assume that a residual state exists.
 
 ---
 
@@ -189,7 +191,7 @@ checked against the current theorem bodies before manuscript edits are made.
 | R6c | Diffuse and mixed compact--diffuse alternatives | `thm:diffuse-defect-compactness`, `thm:diffuse-defect-trichotomy`, `thm:no-mixed-compact-diffuse` | Active, affine, or critical-tail route; mixed remainder excluded |
 | R6d | Separated profiles and descendant chains | `thm:active-path-space-recurrence`, `thm:compact-active-descendant`, `thm:no-finite-separated-profile-family` | Infinite chains and finite separated families excluded |
 | R7 | Terminal indecomposable endpoint | `lem:atomic-sequence-L3`, `thm:mildness-inheritance-main`, `thm:AB-main`, `thm:R4-final-closure` | Sequence-\(L^3\), bounded mild pullback, endpoint Liouville contradiction |
-| Assembly | Close the full residual class and discharge the setup hypothesis | `thm:terminal-stratification`, `thm:typeI-residual-closure`, `cor:setup-residual-hypothesis-proof` | The retained normalized residual class is empty |
+| Assembly | Close the fixed incoming raw residual profile and supply the exact setup theorem | `prop:setup-residual-handoff-complete`, `thm:terminal-stratification`, `thm:typeI-residual-closure`, `cor:setup-residual-hypothesis-proof` | The literal raw setup residual class is empty |
 
 The capsule identifiers are audit names.  They need not replace the paper's
 class notation or theorem names.
@@ -205,14 +207,20 @@ class notation or theorem names.
 The manuscript now contains `tab:setup-export-interface`, which records the
 exact setup-paper producers, exported data, Paper II consumers, and transport
 rules.  The setup-label dictionary and public number map have been synchronized
-with `proof_setup.tex`, and the import convention now separates imported
-compactness, pressure, and mildness data from the affine normalization,
-descendant realization, and terminal sequence-\(L^3\) interfaces proved in
-Paper II.
+with `proof_setup.tex`.  The exact-handoff definition identifies
+\(\calS\) with the same raw generated hull and normalization data used by the
+setup theorem, and the handoff proposition separates the affine quotient row
+from the retained residual row without replacing the raw set.  The import convention now distinguishes
+the compactness and pressure properties of every raw setup state from the mild
+identity available on the setup mild stratum.  Descendant mildness, affine
+normalization, realization, and terminal sequence-\(L^3\) remain named local
+interfaces in Paper II.
 
 ### Source anchors
 
 - `thm:imported-setup-results`
+- `def:exact-setup-residual-handoff`
+- `prop:setup-residual-handoff-complete`
 - `hyp:base-seregin-hypotheses`
 - `hyp:previous-nonresidual`
 - `def:coarse-residual`
@@ -223,9 +231,11 @@ Paper II.
 
 The setup paper produces a bounded normalized centered ancient Seregin profile,
 local suitability, an admissible pressure atlas, positive compact local velocity
-concentration, mildness data, and the removal of the earlier non-residual
-classes.  Paper II proves that the retained residual class left by this export
-is empty.
+concentration, the mild identity on its mild stratum, and the removal of the
+earlier non-residual classes.  For an arbitrary hypothetical incoming residual
+profile with this fixed ledger, Paper II closes the affine routing row or the
+retained residual row selected by the exhaustive local routing.  The pointwise
+contradiction proves literal emptiness of the original raw residual class.
 
 ### Expository edit
 
@@ -246,8 +256,10 @@ the residual proof itself begins from the export.
 ### Mathematics preserved
 
 - The imported theorem remains an import.
-- The residual hypothesis remains exactly
-  \(\calR^\#(\calS;I,J)=\varnothing\).
+- The setup residual theorem remains literal emptiness of the residual part of
+  the same raw generated hull; the canonical affine row and retained
+  \(\calR^\#(\calS;I,J)\) row are its two exhaustive local routes, not a
+  replacement target.
 - The setup-paper labels and the existing public theorem labels remain stable.
 
 ### Acceptance checks
@@ -622,8 +634,9 @@ closures, rather than terminal assembly itself.
 
 The terminal assembly closes every terminal output.  The deferred R2 and R3
 corollaries then close their classes.  The generic terminal theorem closes
-\(\Cgen\).  The final residual theorem combines the ordered class closures and
-discharges the setup paper's residual hypothesis.
+\(\Cgen\).  For the fixed incoming profile and its ledger, the final residual
+theorem combines the ordered local class closures and proves the setup paper's
+literal raw-residual theorem.
 
 ### Expository edit
 
@@ -661,7 +674,9 @@ The checker must avoid encoding incidental line numbers or prose punctuation.
 ### Mathematics preserved
 
 - The final theorem remains a consequence of the existing local closures.
-- The setup paper's conditional assembly remains the final external consumer.
+- The setup paper's local assembly remains the final external consumer, with
+  the residual closure supplied as a proved companion theorem rather than an
+  added assumption.
 - Supporting appendices remain in place unless a line-by-line comparison proves
   that a block is redundant and all consumers are preserved.
 

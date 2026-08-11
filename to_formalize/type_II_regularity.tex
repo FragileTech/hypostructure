@@ -508,33 +508,27 @@ Rectangles in the diagrams are proved states or interfaces, diamonds are
 exhaustive ordered tests, and ellipses are closed outcomes.  A rectangular
 failure node remains part of the routing ledger until its cited closure is
 applied.  Bracketed integers are unique node numbers.  Continuation arrows use
-those integers rather than repeating a node in a later panel.
+those integers rather than repeating a node in a later diagram.
 
-\subsection{Panel map}
-\label{subsec:typeII-panel-map}
+\subsection{Diagram map}
+\label{subsec:typeII-diagram-map}
 
 \begingroup
 \small
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.15}
 \begin{longtable}{@{}C{0.50in}C{0.65in}L{2.15in}L{2.45in}@{}}
-\caption{Map of the six Type II proof-dependency panels.}
-\label{tab:typeII-proof-panel-map}\\
+\caption{Map of the three Type II proof-dependency diagrams.}
+\label{tab:typeII-proof-diagram-map}\\
 \toprule
-Panel & Nodes & Question resolved & Principal internal sources \\
+Diagram & Nodes & Question resolved & Principal internal sources \\
 \midrule
-I & [1]--[7] & Does the upstream singular profile enter the retained Type II analytic class? &
-\cref{def:physical-local-typeII-germ,thm:typeII-analytic-data-exhaustive} \\
-II & [8]--[14] & Does an admissible repaired chart contain one retained velocity core? &
-\cref{thm:repaired-gauge-representation,lem:pressure-only-critical-mass-routing,thm:multibubble} \\
-III & [15]--[24] & Does the compact single core close directly, or enter a named local row? &
-\cref{thm:rough-core,lem:compact-core-dissipation-dichotomy,thm:single-core} \\
-IV & [25]--[35] & How are scale collapse and divergent localized cost discharged? &
-\cref{thm:scale-stratification,thm:windowwise-routing-gives-stratified-routing,thm:cost-divergence-exclusion-discharged} \\
-V & [36]--[44] & Can terminal profile or residual mass escape the retained compact state? &
-\cref{thm:critical-ns-profile-decomposition-discharged,thm:local-residual-exhaustion,cor:expanded-terminal-wrapper-discharged} \\
-VI & [45]--[52] & How do the retained states and the final four named exits give the unconditional theorem? &
-\cref{thm:state-decomposition,def:remaining-named-exits,thm:unconditional-no-typeII-discharged} \\
+1 & [1]--[14] & Does the initial profile close as regular/Type I, or pass the analytic and repaired-chart tests to yield one retained core? &
+\cref{def:physical-local-typeII-germ,thm:typeII-analytic-data-exhaustive,thm:repaired-gauge-representation,thm:multibubble} \\
+2 & [15]--[35] & Does the compact core close directly, or pass through the scale and localized-cost routing to a closed outcome? &
+\cref{thm:rough-core,thm:single-core,thm:scale-stratification,thm:cost-divergence-exclusion-discharged} \\
+3 & [36]--[52] & How do terminal-profile and residual exhaustion feed the state-space assembly and unconditional exclusion? &
+\cref{thm:critical-ns-profile-decomposition-discharged,thm:local-residual-exhaustion,thm:state-decomposition,thm:unconditional-no-typeII-discharged} \\
 \bottomrule
 \end{longtable}
 \endgroup
@@ -542,60 +536,36 @@ VI & [45]--[52] & How do the retained states and the final four named exits give
 \subsection{Proof-dependency diagram}
 \label{subsec:typeII-proof-diagram}
 
-The diagram is split across six panels.  Each continuation points to the next
-numbered state in the logical order, and the detailed dependency table following
-the panels supplies the exact proof source for every node.
+The proof-dependency guide consists of three diagrams.  The first is the
+continuous path from physical entry at [1] through retained-core selection at
+[14]; in particular, the repaired-chart test [8] follows directly below the
+retained analytic data [7].  The second continues from the compact-core tests
+at [15] through the scale and localized-cost closure at [35].  The third
+continues from terminal-profile analysis at [36] through the unconditional
+assembly at [52].  The detailed dependency table following the diagrams
+supplies the exact proof source for every node.
 
 \clearpage
 \begin{figure}[p]
 \centering
-\resizebox{0.96\textwidth}{!}{%
+\resizebox{!}{0.69\textheight}{%
 \begin{tikzpicture}[
-node distance=0.65cm and 1.10cm,
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=5.15cm,minimum height=0.62cm},
-dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.85cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.35cm},
+node distance=0.38cm and 0.78cm,
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=5.15cm,minimum height=0.58cm},
+dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,minimum width=4.85cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.75cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[box] (n1) {\textbf{[1]}~initial analytic input:\\residual or singular profile at $(x_0,T)$};
 \node[dec, below=of n1] (n2) {\textbf{[2]}~physical local Type II singular germ?};
-\node[term, right=of n2] (n3) {\textbf{[3]}~outside the\\Type II branch};
+\node[term, right=of n2, text width=4.15cm] (n3) {\textbf{[3]}~closed at entry:\\
+$x_0\notin\Sigma(T)$ (regular), or the local Type I bound holds};
 \node[box, below=of n2] (n4) {\textbf{[4]}~positive local Type II CKN concentration sequence};
 \node[dec, below=of n4] (n5) {\textbf{[5]}~ordered C1 analytic-data tests pass?};
 \node[box, right=of n5] (n6) {\textbf{[6]}~first class-incompatible or\\named non-retained row; see [48]};
-\node[box, below=of n5] (n7) {\textbf{[7]}~retained Type II analytic data;\\continue with chart and gauge tests at [8]};
-\draw[arrow] (n1)--(n2);
-\draw[arrow] (n2)--node[above]{no}(n3);
-\draw[arrow] (n2)--node[right]{yes}(n4);
-\draw[arrow] (n4)--(n5);
-\draw[arrow] (n5)--node[above]{no}(n6);
-\draw[arrow] (n5)--node[right]{yes}(n7);
-\end{tikzpicture}%
-}
-\caption[Type II proof-dependency diagram, Part I]{Type II proof-dependency
-diagram, Part I: physical entry and analytic-data exhaustion.  The input node
-is interpreted internally by
-\cref{def:physical-local-typeII-germ,lem:physical-typeII-germ-admissible}.
-The positive concentration sequence at [4] is supplied by
-\cref{lem:physical-typeII-germ-concentration-sequence}.  The no-branch
-at [5] is recorded before closure; the retained branch continues at [8].}
-\label{fig:typeII-proof-diagram-part-i}
-\end{figure}
-
-\clearpage
-\begin{figure}[p]
-\centering
-\resizebox{0.96\textwidth}{!}{%
-\begin{tikzpicture}[
-node distance=0.65cm and 1.10cm,
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=5.25cm,minimum height=0.62cm},
-dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=5.0cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.55cm},
-arrow/.style={-{Latex[length=2mm]},thick},
-every node/.style={font=\scriptsize}
-]
-\node[dec] (n8) {\textbf{[8]}~raw AC chart, repaired gauge,\\and strong-chart entry tests pass?};
+\node[box, below=of n5] (n7) {\textbf{[7]}~retained Type II analytic data};
+\node[dec, below=of n7] (n8) {\textbf{[8]}~raw AC chart, repaired gauge,\\and strong-chart entry tests pass?};
 \node[box, right=of n8] (n9) {\textbf{[9]}~first chart or gauge failure;\\named routing row; see [48]};
 \node[box, below=of n8] (n10) {\textbf{[10]}~canonical repaired equation, local pressure atlas,\\and transported suitable local energy inequality};
 \node[dec, below=of n10] (n11) {\textbf{[11]}~retained velocity carrier?};
@@ -603,6 +573,13 @@ every node/.style={font=\scriptsize}
 \node[dec, below=of n11] (n13) {\textbf{[13]}~one unique nondegenerate retained core?};
 \node[term, right=of n13] (n14) {\textbf{[14]}~multibubble, cascade,\\or gauge-degenerate route closed};
 \node[box, below=of n13] (cont) {continue with compact-core tests at \textbf{[15]}};
+\draw[arrow] (n1)--(n2);
+\draw[arrow] (n2)--node[above]{no}(n3);
+\draw[arrow] (n2)--node[right]{yes}(n4);
+\draw[arrow] (n4)--(n5);
+\draw[arrow] (n5)--node[above]{no}(n6);
+\draw[arrow] (n5)--node[right]{yes}(n7);
+\draw[arrow] (n7)--(n8);
 \draw[arrow] (n8)--node[above]{no}(n9);
 \draw[arrow] (n8)--node[right]{yes}(n10);
 \draw[arrow] (n10)--(n11);
@@ -612,26 +589,33 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (n13)--node[right]{yes}(cont);
 \end{tikzpicture}%
 }
-\caption[Type II proof-dependency diagram, Part II]{Type II proof-dependency
-diagram, Part II: repaired representation and retained-core selection.  Node
-[10] combines the canonical equation
+\caption[Type II proof-dependency diagram: entry and retained-core selection]{
+Type II proof-dependency diagram from physical entry through retained-core
+selection.  The input node is interpreted by
+\cref{def:physical-local-typeII-germ,lem:physical-typeII-germ-admissible}, and
+\cref{lem:physical-typeII-germ-concentration-sequence} supplies [4].  The
+no-branch at [2] closes at [3]: in the whole-space setting, either
+$x_0\notin\Sigma(T)$ and the point is regular, or the local Type I bound holds,
+which is the Type I outcome of
+\cref{thm:local-typeI-typeII-dichotomy}.  Node [8] follows [7] in the same
+continuous flow and begins the repaired-chart tests.  Node [10] combines the canonical equation
 \cref{thm:canonical-repaired-gauge-equation}, the pressure atlas
 \cref{thm:pressure-decomp}, and suitable-energy transport
 \cref{prop:ren-suitable}.  Failure nodes [9] and [12] remain named rows
 until the assembly layer; [14] is closed by
 \cref{thm:multibubble}.}
-\label{fig:typeII-proof-diagram-part-ii}
+\label{fig:typeII-proof-diagram-entry-retained-core}
 \end{figure}
 
 \clearpage
 \begin{figure}[p]
 \centering
-\resizebox{0.96\textwidth}{!}{%
+\resizebox{0.98\textwidth}{!}{%
 \begin{tikzpicture}[
-node distance=0.58cm and 1.00cm,
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=5.15cm,minimum height=0.60cm},
-dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.85cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.35cm},
+node distance=0.34cm and 0.68cm,
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.65cm,minimum height=0.56cm},
+dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,minimum width=4.45cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.20cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
@@ -641,93 +625,82 @@ every node/.style={font=\scriptsize}
 \node[term, right=of n17] (n18) {\textbf{[18]}~canonical Caccioppoli routes\\rough-core loss to closed rows};
 \node[box, below=of n17] (n19) {\textbf{[19]}~compact retained core and its dissipation dichotomy};
 \node[dec, below=of n19] (n20) {\textbf{[20]}~vanishing localized dissipation on selected windows?};
-\node[box, below=of n20] (n21) {\textbf{[21]}~compactness gives a spatially constant limit};
+\node[box, left=3.00cm of n20] (n21) {\textbf{[21]}~compactness gives a spatially constant limit};
 \node[dec, below=of n21] (n22) {\textbf{[22]}~is the spatially constant limit zero?};
-\node[term, left=of n22] (n23) {\textbf{[23]}~retained velocity\\mass contradiction};
-\node[box, right=of n22] (n24) {\textbf{[24]}~nonzero bounded selected-window row;\\continue at [48]--[51]};
+\node[term, below=of n22] (n23) {\textbf{[23]}~retained velocity\\mass contradiction};
+\node[box, below=of n23] (n24) {\textbf{[24]}~nonzero bounded selected-window row;\\continue at [48]--[51]};
+\node[box, below=of n20] (n25) {\textbf{[25]}~retained scale/cost path:\\divergent localized cost or scale collapse};
+\node[dec, below=of n25] (n26) {\textbf{[26]}~ordered scale-collapse outcome?};
+\node[term, right=3.00cm of n26] (n27) {\textbf{[27]}~finite signed or\\absolute cost excluded};
+\node[term, below=0.22cm of n27] (n28) {\textbf{[28]}~thin negative\\drift closed};
+\node[box, below=0.22cm of n28] (n29) {\textbf{[29]}~autonomous-modulation\\failure; see [50]};
+\node[term, below=0.22cm of n29] (n30) {\textbf{[30]}~compact scale collapse\\or scale-rigid state closed};
+\node[box, below=of n26] (n31) {\textbf{[31]}~retained compact-cost data and active-window mass floor};
+\node[dec, below=of n31] (n32) {\textbf{[32]}~canonical identity-cost channel validated?};
+\node[box, left=of n32] (n33) {\textbf{[33]}~noncanonical carrier or\\cost-validation row; see [50]};
+\node[box, below=of n32] (n34) {\textbf{[34]}~corrected monotonicity; only $J_1,J_6,J_7$ can remain nonintegrable};
+\node[term, below=of n34] (n35) {\textbf{[35]}~transition/exterior, negative-drift, and positive-scale routes close;\\cost-divergence branch excluded};
 \draw[arrow] (n15)--node[above]{no}(n16);
 \draw[arrow] (n15)--node[right]{yes}(n17);
 \draw[arrow] (n17)--node[above]{no}(n18);
 \draw[arrow] (n17)--node[right]{yes}(n19);
 \draw[arrow] (n19)--(n20);
-\draw[arrow] (n20)--node[right]{yes}(n21);
-\draw[arrow] (n20.west)--++(-1.1,0) node[above,align=center]{no: divergent retained cost;\\continue at [25]} ;
+\draw[arrow] (n20)--node[above]{yes}(n21);
+\draw[arrow] (n20)--node[right]{no}(n25);
 \draw[arrow] (n21)--(n22);
-\draw[arrow] (n22)--node[above]{yes}(n23);
-\draw[arrow] (n22)--node[above]{no}(n24);
-\end{tikzpicture}%
-}
-\caption[Type II proof-dependency diagram, Part III]{Type II proof-dependency
-diagram, Part III: compact single-core and rough-core alternatives.  The
-compact upper estimates come from
-\cref{prop:selected-window-suitable-estimates}; rough-core loss is
-routed by
-\cref{thm:canonical-local-caccioppoli,thm:rough-core}.  The
-vanishing-dissipation branch is the compact criterion
-\cref{thm:single-core}.  The complementary branch continues with the
-localized cost at [25], while a nonzero constant limit enters the bounded-window
-row [24].}
-\label{fig:typeII-proof-diagram-part-iii}
-\end{figure}
-
-\clearpage
-\begin{figure}[p]
-\centering
-\resizebox{0.98\textwidth}{!}{%
-\begin{tikzpicture}[
-node distance=0.68cm and 0.78cm,
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.15cm,minimum height=0.62cm},
-dec/.style={diamond,draw,aspect=2.4,align=center,inner sep=1.5pt,minimum width=4.25cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.05cm},
-arrow/.style={-{Latex[length=2mm]},thick},
-every node/.style={font=\scriptsize}
-]
-\node[box] (n25) {\textbf{[25]}~retained scale/cost path:\\divergent localized cost or scale collapse};
-\node[dec, below=of n25] (n26) {\textbf{[26]}~ordered scale-collapse outcome?};
-\node[term, below left=1.2cm and 5.2cm of n26] (n27) {\textbf{[27]}~finite signed or\\absolute cost excluded};
-\node[term, below left=1.2cm and 1.75cm of n26] (n28) {\textbf{[28]}~thin negative\\drift closed};
-\node[box, below right=1.2cm and 1.75cm of n26] (n29) {\textbf{[29]}~autonomous-modulation\\failure; see [50]};
-\node[term, below right=1.2cm and 6.6cm of n26] (n30) {\textbf{[30]}~compact scale collapse\\or scale-rigid state closed};
-\node[box, below=2.85cm of n26] (n31) {\textbf{[31]}~retained compact-cost data and active-window mass floor};
-\node[dec, below=of n31] (n32) {\textbf{[32]}~canonical identity-cost channel validated?};
-\node[box, right=of n32] (n33) {\textbf{[33]}~noncanonical carrier or\\cost-validation row; see [50]};
-\node[box, below=of n32] (n34) {\textbf{[34]}~corrected monotonicity; only $J_1,J_6,J_7$ can remain nonintegrable};
-\node[term, below=of n34] (n35) {\textbf{[35]}~transition/exterior, negative-drift, and positive-scale routes close;\\cost-divergence branch excluded};
+\draw[arrow] (n22)--node[right]{yes}(n23);
+\coordinate (constantnonzero) at ($(n22.west)+(-0.45,0)$);
+\draw[thick] (n22.west)--node[above]{no}(constantnonzero);
+\draw[arrow] (constantnonzero)|-(n24.west);
 \draw[arrow] (n25)--(n26);
-\draw[arrow] (n26)--node[above,sloped]{finite cost}(n27);
-\draw[arrow] (n26)--node[above,sloped]{thin drift}(n28);
-\draw[arrow] (n26)--node[above,sloped]{modulation}(n29);
-\draw[arrow] (n26)--node[above,sloped]{compact/rigid}(n30);
+\coordinate (scaleout) at ($(n26.east)+(1.55,0)$);
+\draw[thick] (n26.east)--(scaleout);
+\draw[arrow] (scaleout)|-node[pos=0.82,above,font=\tiny]{finite cost}(n27.west);
+\draw[arrow] (scaleout)|-node[pos=0.82,above,font=\tiny]{thin drift}(n28.west);
+\coordinate (route29turn) at (scaleout |- n29.west);
+\coordinate (route30turn) at (scaleout |- n30.west);
+\draw[arrow] (scaleout)|-(n29.west);
+\draw[arrow] (scaleout)|-(n30.west);
+\node[font=\tiny,anchor=south,inner sep=0.5pt]
+  at ($(route29turn)!0.45!(n29.west)$) {modulation};
+\node[font=\tiny,align=center,anchor=south,inner sep=0.5pt]
+  at ($(route30turn)!0.45!(n30.west)$) {compact/\\rigid};
 \draw[arrow] (n26)--node[right]{retained cost}(n31);
-\draw[arrow] (n32)--node[above]{no}(n33);
 \draw[arrow] (n31)--(n32);
+\draw[arrow] (n32)--node[above]{no}(n33);
 \draw[arrow] (n32)--node[right]{yes}(n34);
 \draw[arrow] (n34)--(n35);
 \end{tikzpicture}%
 }
-\caption[Type II proof-dependency diagram, Part IV]{Type II proof-dependency
-diagram, Part IV: scale collapse, localized cost, and carrier routing.  The
-scale alternatives are those of
-\cref{thm:scale-stratification}.  Nodes [27], [28], and [30] are closed
-by
+\caption[Type II proof-dependency diagram: compact-core and scale-cost closure]{
+Type II proof-dependency diagram from compact-core tests through scale and
+localized-cost closure.  Compact upper estimates and rough-core routing are
+supplied by
+\cref{prop:selected-window-suitable-estimates,thm:canonical-local-caccioppoli,thm:rough-core}.
+At [20], the vanishing-dissipation branch is resolved by
+\cref{thm:single-core}: [23] is a contradiction and [24] enters the
+bounded-window routing.  The complementary branch enters [25] directly.
+The scale alternatives at [26] are those of
+\cref{thm:scale-stratification}; nodes [27], [28], and [30] are closed by
 \cref{thm:scale-cost,thm:thin-negative-drift-closed,thm:compact-scale-collapse-rigidity-discharged,prop:scale-rigidity-discharged}.
 The canonical identity-cost channel is supplied by
 \cref{lem:canonical-identity-cost-available}; the remaining moving
 components are routed by
 \cref{thm:windowwise-routing-gives-stratified-routing} before the
 cost-divergence exclusion is applied.}
-\label{fig:typeII-proof-diagram-part-iv}
+\label{fig:typeII-proof-diagram-compact-core-scale-cost}
 \end{figure}
 
 \clearpage
 \begin{figure}[p]
 \centering
-\resizebox{0.96\textwidth}{!}{%
+\resizebox{0.97\textwidth}{!}{%
 \begin{tikzpicture}[
-node distance=0.62cm and 1.00cm,
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=5.15cm,minimum height=0.62cm},
-dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.85cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.45cm},
+node distance=0.34cm and 0.80cm,
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.75cm,minimum height=0.56cm},
+dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,minimum width=4.55cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.35cm},
+route/.style={rectangle,rounded corners,draw,dashed,align=center,inner sep=3pt,minimum width=3.35cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
@@ -736,74 +709,65 @@ every node/.style={font=\scriptsize}
 \node[dec, below=of n37] (n38) {\textbf{[38]}~additional active, hidden, separated, cascade, or exterior state?};
 \node[term, right=of n38] (n39) {\textbf{[39]}~structural or exterior\\row closed};
 \node[dec, below=of n38] (n40) {\textbf{[40]}~visible residual, critical-tail, or pressure defect?};
-\node[box, right=of n40] (n41) {\textbf{[41]}~local residual or tail routing\\produces a named row; see [48]};
+\node[box, right=of n40] (n41) {\textbf{[41]}~local residual or tail routing\\produces a named rank-$1$ row};
 \node[box, below=of n40] (n42) {\textbf{[42]}~retained comparable profile; residual is perturbative};
 \node[box, below=of n42] (n43) {\textbf{[43]}~critical tightness, windowed $H^1$, and terminal compactness};
-\node[term, below=of n43] (n44) {\textbf{[44]}~expanded terminal wrapper holds;\\retained terminal Type II branch excluded};
+\node[box, below=of n43] (n44) {\textbf{[44]}~expanded terminal wrapper and\\terminal-exclusion result available to the assembly};
+\node[box, below=of n44] (n45) {\textbf{[45]}~ordered local state-space exhaustion and five-state decomposition};
+\node[dec, below=of n45] (n46) {\textbf{[46]}~retained state rather than a first-failure row?};
+\node[term, left=of n46] (n47) {\textbf{[47]}~retained state eliminated\\by structural or terminal closure};
+\node[dec, below=of n46] (n48) {\textbf{[48]}~one of the four remaining rank-$1$ rows?};
+\node[term, left=of n48] (n49) {\textbf{[49]}~earlier local or\\ambient row closed};
+\node[box, below=of n48] (n50) {\textbf{[50]}~bounded window; autonomous modulation;\\noncanonical cost; or loss of retained active core};
+\node[route, right=1.10cm of n50] (from29) {continuation from [29]:\\autonomous-modulation failure};
+\node[term, below=of n50] (n51) {\textbf{[51]}~listed closure theorem lowers rank $1\to0$};
+\node[term, below=of n51] (n52) {\textbf{[52]}~no physical local Type II germ;\\the local Type II alternative is excluded};
 \draw[arrow] (n36)--(n37);
 \draw[arrow] (n37)--(n38);
 \draw[arrow] (n38)--node[above]{yes}(n39);
 \draw[arrow] (n38)--node[right]{no}(n40);
 \draw[arrow] (n40)--node[above]{yes}(n41);
 \draw[arrow] (n40)--node[right]{no}(n42);
+\coordinate (residualroute) at ($(n41.east)+(0.65,0)$);
+\draw[thick] (n41.east)--(residualroute);
+\draw[arrow] (residualroute)|-node[pos=0.90,above,font=\tiny]{named row}(n48.east);
 \draw[arrow] (n42)--(n43);
 \draw[arrow] (n43)--(n44);
-\end{tikzpicture}%
-}
-\caption[Type II proof-dependency diagram, Part V]{Type II proof-dependency
-diagram, Part V: terminal profiles and residual exhaustion.  The critical
-profile package is discharged by
-\cref{thm:critical-ns-profile-decomposition-discharged}; visible
-residuals are routed by
-\cref{thm:local-residual-exhaustion}.  On the retained comparable
-class, the compact tests and expanded wrapper
-\cref{thm:retained-compact-tests-closed,cor:expanded-terminal-wrapper-discharged}
-give the terminal exclusion at [44].}
-\label{fig:typeII-proof-diagram-part-v}
-\end{figure}
-
-\clearpage
-\begin{figure}[p]
-\centering
-\resizebox{0.96\textwidth}{!}{%
-\begin{tikzpicture}[
-node distance=0.68cm and 1.05cm,
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=5.2cm,minimum height=0.62cm},
-dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.85cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.7cm},
-arrow/.style={-{Latex[length=2mm]},thick},
-every node/.style={font=\scriptsize}
-]
-\node[box] (n45) {\textbf{[45]}~ordered local state-space exhaustion and five-state decomposition};
-\node[dec, below=of n45] (n46) {\textbf{[46]}~retained state rather than a first-failure row?};
-\node[term, left=of n46] (n47) {\textbf{[47]}~retained state eliminated\\by structural or terminal closure};
-\node[dec, below=of n46] (n48) {\textbf{[48]}~one of the four remaining rank-$1$ rows?};
-\node[term, left=of n48] (n49) {\textbf{[49]}~earlier local or\\ambient row closed};
-\node[box, below=of n48] (n50) {\textbf{[50]}~bounded window; autonomous modulation;\\noncanonical cost; or loss of retained active core};
-\node[term, below=of n50] (n51) {\textbf{[51]}~listed closure theorem lowers rank $1\to0$};
-\node[term, below=of n51] (n52) {\textbf{[52]}~no physical local Type II germ;\\the local Type II alternative is excluded};
+\draw[arrow] (n44)--node[right]{assembly}(n45);
 \draw[arrow] (n45)--(n46);
 \draw[arrow] (n46)--node[above]{yes}(n47);
 \draw[arrow] (n46)--node[right]{no}(n48);
 \draw[arrow] (n48)--node[above]{no}(n49);
 \draw[arrow] (n48)--node[right]{yes}(n50);
+\draw[arrow] (from29)--(n50);
 \draw[arrow] (n50)--(n51);
-\draw[arrow] (n47.west)--++(-0.6,0) |- (n52.west);
-\draw[arrow] (n49.west)--++(-1.1,0) |- (n52.west);
+\coordinate (closedassembly) at ($(n52.west)+(-0.60,0)$);
+\draw[thick] (n47.west)--++(-0.85,0) |-(closedassembly);
+\draw[thick] (n49.west)--++(-0.40,0) |-(closedassembly);
+\draw[arrow] (closedassembly)--(n52.west);
 \draw[arrow] (n51)--(n52);
 \end{tikzpicture}%
 }
-\caption[Type II proof-dependency diagram, Part VI]{Type II proof-dependency
-diagram, Part VI: unconditional assembly.  The retained alternatives are
-listed in \cref{thm:state-decomposition} and eliminated by
+\caption[Type II proof-dependency diagram: terminal profiles and unconditional assembly]{Type II
+proof-dependency diagram from terminal profiles and residual exhaustion through
+the unconditional assembly.  The critical profile package is discharged by
+\cref{thm:critical-ns-profile-decomposition-discharged}; visible
+residuals are routed by
+\cref{thm:local-residual-exhaustion}, and the named row at [41] enters
+the rank-$1$ ledger test at [48].  On the retained comparable
+class, the compact tests and expanded wrapper
+\cref{thm:retained-compact-tests-closed,cor:expanded-terminal-wrapper-discharged}
+give the terminal exclusion at [44], which supplies the terminal closure used
+at [45].  The retained alternatives are listed in
+\cref{thm:state-decomposition} and eliminated by
 \cref{prop:state-elimination} together with the terminal wrapper.  The
 four rows at [50] are exactly the canonical ledger
-\cref{def:remaining-named-exits}; their closure sources give [51] by
+\cref{def:remaining-named-exits}; the unnumbered connector into [50]
+records the autonomous-modulation row from [29].  Their closure sources give [51] by
 \cref{cor:remaining-named-exits-closed}.  Thus [52] is the
 unconditional conclusion
-\cref{thm:unconditional-no-typeII-discharged,thm:local-typeII-exclusion},
-not a conditional retained-branch statement.}
-\label{fig:typeII-proof-diagram-part-vi}
+\cref{thm:unconditional-no-typeII-discharged,thm:local-typeII-exclusion}.}
+\label{fig:typeII-proof-diagram-terminal-assembly}
 \end{figure}
 
 \clearpage
@@ -846,14 +810,14 @@ Local suitable Navier--Stokes germ, terminal point, and pressure modulo function
 Interpret the upstream object through the physical Type II interface and test [2] \\
 
 [2] & Physical local Type II germ test &
-\cref{def:physical-local-typeII-germ} &
+\cref{def:physical-local-typeII-germ,thm:local-typeI-typeII-dichotomy} &
 Singularity, failure of the local Type I bound, and interior cylinders &
-Yes gives [4]; no gives the out-of-scope outcome [3] \\
+Yes gives [4]; no gives the closed regular/Type I outcome [3] \\
 
-[3] & Outside the Type II branch &
-\cref{def:physical-local-typeII-germ} &
-Failure of at least one defining Type II clause &
-No Type II conclusion is required for this input \\
+[3] & Closed regular/Type I outcome &
+\cref{def:physical-local-typeII-germ,thm:local-typeI-typeII-dichotomy} &
+Negation of the Type II germ test; interiority is automatic in the whole-space setting &
+If $x_0\notin\Sigma(T)$, the point is regular; if $x_0\in\Sigma(T)$, the local Type I bound holds, so the initial branch is complete \\
 
 [4] & Positive local Type II CKN concentration sequence &
 \cref{lem:physical-typeII-germ-concentration-sequence,def:local-typeII-sequence} &
@@ -1163,7 +1127,7 @@ The first chart, gauge, or modulation failure is recorded at [9], [29], or [33] 
 
 First-failure order and rank &
 \cref{thm:ordered-local-state-space-exhaustion,lem:acyclic-terminal-ledger} &
-All routing panels [5]--[51] &
+All routing stages [5]--[51] &
 Every route stops at one first named row; final closure strictly lowers rank $1\to0$ \\
 
 \end{longtable}

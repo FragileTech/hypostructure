@@ -7,6 +7,7 @@ import Hypostructure.Graph.SparseEntropySandwich
 import Hypostructure.Graph.CapacityTokenAssignment
 import Hypostructure.Graph.SparseUpperEnvelope
 import Hypostructure.Graph.ObjectCapacityLedger
+import Hypostructure.Graph.Induced
 
 /-!
 # The sparse surplus branch: the activation rows
@@ -62,17 +63,14 @@ The manuscript writes `m = (3/2)n + (1/2)σ(G)` and, with `λ = 2n − 3 − m`,
 the first, and doubling the first is the exact `Nat` identity committed here.
 The only input is the standing baseline, which the executor reads off the
 residual rather than from a fact. -/
-@[reducible] noncomputable def sparseSlackSurplusRow
-    (sparseSlackSurplus :
-      FactKey (Input BranchState Presentation presentation data))
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (2 * input.object.edgeCount =
-        data.threshold * input.object.vertexCount +
-          input.object.degreeSurplus data.threshold) →
-      sparseSlackSurplus.At input) :
+@[reducible] noncomputable def sparseSlackSurplusRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseSlackSurplus
-    (sourceFreeManifest sparseSlackSurplus)
+    { Requires := []
+      Produces := [K .sparseSlackSurplus]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let handshake : data.threshold * inputs.current.object.vertexCount ≤
           2 * inputs.current.object.edgeCount :=
@@ -80,10 +78,12 @@ residual rather than from a fact. -/
           inputs.current.object data.threshold fun vertex =>
             le_trans inputs.current.baseline
               (inputs.current.object.minDegree_le_degree vertex)
-      .cons (key := sparseSlackSurplus)
-        (encode inputs.current (by
-          unfold Graph.FiniteObject.degreeSurplus
-          omega))
+      .cons (key := K .sparseSlackSurplus)
+        (show Value BranchState Presentation presentation data
+            .sparseSlackSurplus inputs.current from
+          ⟨by
+            unfold Graph.FiniteObject.degreeSurplus
+            omega⟩)
         .nil)
 
 /-! ## Node `[127]`: the excess selector and its count -/
@@ -99,44 +99,30 @@ degree `3`, and `N_G(x) = {h, a_p, b_p}`"*, stated at the registered baseline as
 Node `[10]`'s independence is consumed, not re-proved: it is the committed
 slack-independence fact, and it is exactly what forces a port's endpoint down to
 the baseline. -/
-@[reducible] noncomputable def activeSurplusFamilyRow
-    (slackIndependent activeSurplusFamily :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : slackIndependent ≠ activeSurplusFamily)
-    (independentOf : (input : Input BranchState Presentation presentation data) →
-      slackIndependent.At input →
-      ∀ left right : input.object.Vertex,
-        data.threshold < input.object.degree left →
-        data.threshold < input.object.degree right →
-        ¬ input.object.graph.Adj left right)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      ((input.object.excessPorts data.threshold).card =
-          input.object.degreeSurplus data.threshold ∧
-        ∀ pair : input.object.Vertex × input.object.Vertex,
-          ∀ member : pair ∈ input.object.excessPorts data.threshold,
-            data.threshold < input.object.degree pair.1 ∧
-              input.object.degree pair.2 = data.threshold ∧
-              (input.object.surplusPortOfMem member).shoulders.card =
-                data.threshold - 1) →
-      activeSurplusFamily.At input) :
+@[reducible] noncomputable def activeSurplusFamilyRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.activeSurplusFamily
-    (rowManifest slackIndependent activeSurplusFamily distinct)
+    { Requires := [K .slackIndependent]
+      Produces := [K .activeSurplusFamily]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let object := inputs.current.object
       let baseline : ∀ vertex : object.Vertex,
           data.threshold ≤ object.degree vertex :=
         fun vertex => le_trans inputs.current.baseline
           (object.minDegree_le_degree vertex)
-      let independent := independentOf inputs.current (inputs.get slackIndependent)
-      .cons (key := activeSurplusFamily)
-        (encode inputs.current
-          ⟨object.card_excessPorts baseline, fun _pair member =>
+      let independent := (inputs.get (K .slackIndependent)).down
+      .cons (key := K .activeSurplusFamily)
+        (show Value BranchState Presentation presentation data
+            .activeSurplusFamily inputs.current from
+          ⟨⟨object.card_excessPorts baseline, fun _pair member =>
             ⟨Graph.FiniteObject.centre_high_of_mem_excessPorts member,
               (object.surplusPortOfMem member).endpoint_degree_eq baseline
                 independent,
               (object.surplusPortOfMem member).card_shoulders baseline
-                independent⟩⟩)
+                independent⟩⟩⟩)
         .nil)
 
 /-! ## Node `[128]`: port activation -/
@@ -160,47 +146,23 @@ each port.  Clause (b) is the return path `R_p ⊆ G − c(p)x(p)`: the port's o
 edge is not a bridge, because contracting it gives a strictly smaller object
 still meeting the baseline, and minimality and avoidance close it exactly as
 they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
-@[reducible] noncomputable def sparsePortActivationRow
-    (selection sparsePortActivation :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : selection ≠ sparsePortActivation)
-    (avoidsOf : (input : Input BranchState Presentation presentation data) →
-      selection.At input →
-      ¬ Graph.HasCycleWithLength data.LengthOK input.object)
-    (minimalOf : (input : Input BranchState Presentation presentation data) →
-      selection.At input →
-      ∀ smaller : Graph.FiniteObject.{u},
-        smaller.LexicographicallySmaller input.object →
-        data.threshold ≤ smaller.minDegree →
-        Graph.HasCycleWithLength data.LengthOK smaller)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (∀ pair : input.object.Vertex × input.object.Vertex,
-        ∀ member : pair ∈ input.object.excessPorts data.threshold,
-          ∀ left right : input.object.Vertex,
-            (∀ vertex : input.object.Vertex,
-              vertex ∈ (input.object.surplusPortOfMem member).shoulders ↔
-                (vertex = left ∨ vertex = right)) →
-            left ≠ right →
-            Nonempty (Graph.FiniteObject.SurplusPort.PortReturn
-                input.object pair.1 pair.2 left right) ∧
-              (¬ input.object.graph.Adj left right →
-                Nonempty (Graph.FiniteObject.SurplusPort.OpenPortWitness
-                  input.object data.LengthOK pair.2 left right)) ∧
-              (input.object.graph.Adj left right →
-                input.object.graph.Adj pair.2 left ∧
-                  input.object.graph.Adj left right ∧
-                  input.object.graph.Adj right pair.2)) →
-      sparsePortActivation.At input) :
+@[reducible] noncomputable def sparsePortActivationRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparsePortActivation
-    (rowManifest selection sparsePortActivation distinct)
+    { Requires := [K .selection]
+      Produces := [K .sparsePortActivation]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let object := inputs.current.object
-      let fact := inputs.get selection
-      let avoids := avoidsOf inputs.current fact
-      let minimal := minimalOf inputs.current fact
-      .cons (key := sparsePortActivation)
-        (encode inputs.current fun _pair member left right shoulders distinct =>
+      let fact := (inputs.get (K .selection)).down
+      let avoids := fact.1
+      let minimal := fact.2
+      .cons (key := K .sparsePortActivation)
+        (show Value BranchState Presentation presentation data
+            .sparsePortActivation inputs.current from
+          ⟨fun _pair member left right shoulders distinct =>
           ⟨(object.surplusPortOfMem member).portReturn_of_minimal
               shoulders inputs.current.baseline avoids minimal,
             fun openPort =>
@@ -211,6 +173,7 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
               (object.surplusPortOfMem member).triangle_of_shoulders_adj
                 (shoulders left |>.2 (Or.inl rfl))
                 (shoulders right |>.2 (Or.inr rfl)) adjacent⟩)
+          ⟩)
         .nil)
 
 /-! ## Node `[129]`: the active family and baseline demand -/
@@ -444,7 +407,8 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
 @[reducible] noncomputable def capacityTokenLedgerRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
-    { Requires := [K .canonicalPairLedger, K .sparseUpperEnvelope]
+    { Requires := [K .canonicalPairLedger, K .sparseUpperEnvelope,
+        K .noProperBaseline]
       Produces := [K .capacityTokenLedger]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -468,14 +432,168 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
             have pairNonempty : certificate.choose.Nonempty :=
               Finset.card_pos.mp (by omega : 0 < certificate.choose.card)
             let port := pairNonempty.choose
+            letI : Nonempty inputs.current.object.Vertex := ⟨port.1⟩
+            have graphConnected : inputs.current.object.graph.Connected := by
+              classical
+              let root : inputs.current.object.Vertex := port.1
+              let support : Finset inputs.current.object.Vertex :=
+                inputs.current.object.vertexFinset.filter fun vertex =>
+                  inputs.current.object.graph.connectedComponentMk vertex =
+                    inputs.current.object.graph.connectedComponentMk root
+              by_contra disconnected
+              have rootMem : root ∈ support := by
+                simp [support]
+              have supportCardLt : support.card < inputs.current.object.vertexCount := by
+                have notAllReachable :
+                    ¬ ∀ vertex : inputs.current.object.Vertex,
+                      inputs.current.object.graph.Reachable root vertex := by
+                  intro allReachable
+                  apply disconnected
+                  exact inputs.current.object.graph.connected_iff_exists_forall_reachable.mpr
+                    ⟨root, allReachable⟩
+                push Not at notAllReachable
+                rcases notAllReachable with ⟨outside, unreachable⟩
+                have outsideNotMem : outside ∉ support := by
+                  simp only [support, Finset.mem_filter,
+                    inputs.current.object.mem_vertexFinset, true_and,
+                    SimpleGraph.ConnectedComponent.eq]
+                  exact fun reachable => unreachable reachable.symm
+                have strict : support ⊂ inputs.current.object.vertexFinset := by
+                  refine Finset.ssubset_iff_subset_ne.mpr ⟨?_, ?_⟩
+                  · intro vertex _
+                    exact inputs.current.object.mem_vertexFinset vertex
+                  · intro equal
+                    exact outsideNotMem
+                      (equal ▸ inputs.current.object.mem_vertexFinset outside)
+                simpa only [inputs.current.object.card_vertexFinset] using
+                  Finset.card_lt_card strict
+              let component : Graph.ProperSubgraph inputs.current.object :=
+                Graph.ProperSubgraph.ofInducedSupport inputs.current.object support
+                  supportCardLt
+              letI : Nonempty component.value.Vertex := ⟨⟨root, rootMem⟩⟩
+              have neighborSubset
+                  (vertex : component.value.Vertex) :
+                  inputs.current.object.graph.neighborSet vertex.1 ⊆
+                    (support : Set inputs.current.object.Vertex) := by
+                intro neighbor adjacent
+                change neighbor ∈ support
+                simp only [support, Finset.mem_filter,
+                  inputs.current.object.mem_vertexFinset, true_and,
+                  SimpleGraph.ConnectedComponent.eq]
+                exact (show inputs.current.object.graph.Adj vertex.1 neighbor from
+                  adjacent).reachable.symm.trans (by
+                    simpa only [support, Finset.mem_filter,
+                      inputs.current.object.mem_vertexFinset, true_and,
+                      SimpleGraph.ConnectedComponent.eq] using vertex.2)
+              have componentMinimumDegree :
+                  data.threshold ≤ component.value.minDegree := by
+                apply component.value.le_minDegree_of_forall_le_degree data.threshold
+                intro vertex
+                rw [show component.value.degree vertex =
+                    inputs.current.object.degree vertex.1 from
+                  inputs.current.object.degree_induce_of_neighborSet_subset
+                    support vertex (neighborSubset vertex)]
+                exact inputs.current.baseline.trans
+                  (inputs.current.object.minDegree_le_degree vertex.1)
+              exact (inputs.get (K .noProperBaseline)).down component
+                componentMinimumDegree
+            have connectedOn :
+                Graph.SupportComponents.Connected.ConnectedOn
+                  inputs.current.object inputs.current.object.vertexFinset := by
+              letI := inputs.current.object.vertices.decEq
+              constructor
+              · exact ⟨port.1, inputs.current.object.mem_vertexFinset _⟩
+              · intro left right _ _
+                obtain ⟨walk⟩ := graphConnected.preconnected left right
+                let path := walk.toPath
+                exact ⟨path, path.isPath, fun vertex _ =>
+                  inputs.current.object.mem_vertexFinset vertex⟩
+            have pairSupportSome :=
+              Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+                (Graph.pairResponseActivation active) certificate.choose connectedOn
+            obtain ⟨pairSupport, pairSupportEq⟩ :=
+              Option.isSome_iff_exists.mp pairSupportSome
+            letI := inputs.current.object.vertices.decEq
+            have pairSupportNonempty : pairSupport.Nonempty :=
+              (Graph.FiniteObject.DemandActivation.pairSupport_mem_candidates
+                pairSupportEq).2.1
+            have coordinateNonempty :
+                (Graph.DeclaredSignature.Coordinate.support
+                  (Graph.sparsePairDECoordinate
+                    (Graph.pairResponseActivation active)
+                    (inputs.current.object.portPairSchedule data.threshold)
+                    certificate)).Nonempty := by
+              letI := inputs.current.object.vertices.decEq
+              simpa [Graph.sparsePairDECoordinate, pairSupportEq] using
+                pairSupportNonempty
             let presentation : inputs.current.object.CarrierPresentation
                 inputs.current.object.PairCoordinate
-                inputs.current.object.PairCoordinate := {
+                PEmpty := {
               coordinateSupport := by
                 letI := inputs.current.object.vertices.decEq
                 exact Graph.DeclaredSignature.Coordinate.support
-              chordEnds := fun _ => (port.1, port.1)
-              chordPort := fun _ => port }
+              chordEnds := PEmpty.elim
+              chordPort := PEmpty.elim }
+            have carried : ∀ pair ∈
+                inputs.current.object.portPairSchedule data.threshold,
+                ∀ blocker ∈ activation.blockers pair,
+                  (Graph.FiniteObject.Blocker.carrier inputs.current.object
+                    data.threshold presentation.coordinateSupport
+                    presentation.chordPort blocker).isSome := by
+              classical
+              intro pair _pairMem blocker blockerMem
+              cases blocker with
+              | sharedDeclaredSupport item =>
+                  cases item <;> rfl
+              | sharedReturnSupport item =>
+                  cases item <;> rfl
+              | sharedLocalBuffer _ => rfl
+              | boundaryProfile coordinate =>
+                  have coordinateMem :
+                      coordinate ∈ activation.profileObstructions pair := by
+                    simpa [Graph.FiniteObject.DemandActivation.blockers] using
+                      blockerMem
+                  have coordinateEq : coordinate =
+                      Graph.sparsePairDECoordinate
+                        (Graph.pairResponseActivation active)
+                        (inputs.current.object.portPairSchedule data.threshold)
+                        certificate := by
+                    simp only [activation, Graph.recordSparsePairDEBlocker] at coordinateMem
+                    split at coordinateMem
+                    · simpa using coordinateMem
+                    · simp at coordinateMem
+                  subst coordinate
+                  rw [Graph.FiniteObject.Blocker.carrier]
+                  simp only [Option.isSome_map, List.isSome_head?]
+                  exact List.ne_nil_of_mem (by
+                    simpa [presentation] using coordinateNonempty.choose_spec)
+              | targetResponse coordinate =>
+                  have coordinateMem :
+                      coordinate ∈ activation.responseObstructions pair := by
+                    simpa [Graph.FiniteObject.DemandActivation.blockers] using
+                      blockerMem
+                  have coordinateEq : coordinate =
+                      Graph.sparsePairDECoordinate
+                        (Graph.pairResponseActivation active)
+                        (inputs.current.object.portPairSchedule data.threshold)
+                        certificate := by
+                    simp only [activation, Graph.recordSparsePairDEBlocker] at coordinateMem
+                    split at coordinateMem
+                    · simpa using coordinateMem
+                    · simp at coordinateMem
+                  subst coordinate
+                  rw [Graph.FiniteObject.Blocker.carrier]
+                  simp only [Option.isSome_map, List.isSome_head?]
+                  exact List.ne_nil_of_mem (by
+                    simpa [presentation] using coordinateNonempty.choose_spec)
+              | arithmeticChordSet chords =>
+                  have chordMem :
+                      chords ∈ activation.chordObstructions pair := by
+                    simpa [Graph.FiniteObject.DemandActivation.blockers] using
+                      blockerMem
+                  change chords ∈ (Graph.pairResponseActivation active).chordObstructions pair at chordMem
+                  change chords ∈ ∅ at chordMem
+                  simpa using chordMem
             have baseline : ∀ vertex : inputs.current.object.Vertex,
                 data.threshold ≤ inputs.current.object.degree vertex :=
               fun vertex => le_trans inputs.current.baseline
@@ -485,7 +603,7 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
               Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
                 inputs.current.object data.threshold baseline
             refine ⟨inputs.current.object.PairCoordinate,
-              inputs.current.object.PairCoordinate, activation, presentation,
+              PEmpty, activation, presentation,
               packing, valid, maximal, ⟨?_, ?_⟩, ?_⟩
             · exact inputs.current.object.card_primitiveCarrier baseline
             · exact inputs.current.object.card_primitiveCarrier_le baseline
@@ -503,17 +621,38 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
                     (packing := packing)]
                 exact Graph.FiniteObject.card_chargedPairs_eq_sum_load
                   activation presentation data.threshold packing
-              · intro blocked carried
-                exact Graph.FiniteObject.chargedPairs_eq_of_blocked
-                  activation presentation data.threshold packing blocked carried
-              · intro token
-                exact ⟨Graph.FiniteObject.tokenFibre_subset activation presentation
-                    data.threshold packing token,
-                  fun pair member =>
-                    Graph.FiniteObject.card_of_mem_tokenFibre activation presentation
-                      data.threshold packing member,
-                  Graph.FiniteObject.card_tokenFibre_eq_pairMultiplicity activation
-                    presentation data.threshold packing token⟩⟩)
+              · exact ⟨carried,
+                  Graph.FiniteObject.chargedPairs_eq_blockedPairs
+                    activation presentation data.threshold packing carried⟩
+              · have rolePartition : ∀ token :
+                    Graph.FiniteObject.CapacityToken inputs.current.object,
+                    (Graph.FiniteObject.tokenFibre activation presentation
+                      data.threshold packing token).card =
+                      ∑ role : Graph.SameTokenBlockerRoles.Role,
+                        (Graph.FiniteObject.tokenRoleFibre activation presentation
+                          data.threshold packing token role).card :=
+                    fun token =>
+                      Graph.FiniteObject.card_tokenFibre_eq_sum_roleFibre
+                        activation presentation data.threshold packing token
+                refine ⟨rolePartition, ?_, ?_⟩
+                · rw [← Graph.FiniteObject.chargedPairs_eq_blockedPairs
+                      activation presentation data.threshold packing carried]
+                  rw [← Graph.FiniteObject.capacityTokenOrder_toFinset
+                    (object := inputs.current.object) (threshold := data.threshold)
+                    (packing := packing)]
+                  rw [Graph.FiniteObject.card_chargedPairs_eq_sum_load
+                    activation presentation data.threshold packing]
+                  apply Finset.sum_congr rfl
+                  intro token _tokenMem
+                  exact rolePartition token
+                · intro token
+                  exact ⟨Graph.FiniteObject.tokenFibre_subset activation presentation
+                      data.threshold packing token,
+                    fun pair member =>
+                      Graph.FiniteObject.card_of_mem_tokenFibre activation presentation
+                        data.threshold packing member,
+                    Graph.FiniteObject.card_tokenFibre_eq_pairMultiplicity activation
+                      presentation data.threshold packing token⟩⟩)
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

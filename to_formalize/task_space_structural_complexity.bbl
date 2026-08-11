@@ -1,0 +1,603 @@
+\begin{thebibliography}{80}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Aaronson and Wigderson(2009)]{AaronsonWigderson2009}
+Scott Aaronson and Avi Wigderson.
+\newblock Algebrization: A new barrier in complexity theory.
+\newblock \emph{ACM Transactions on Computation Theory}, 1\penalty0
+  (1):\penalty0 2:1--2:54, 2009.
+\newblock \doi{10.1145/1490270.1490272}.
+
+\bibitem[Allender et~al.(2017)Allender, Grochow, van Melkebeek, Moore, and
+  Morgan]{AllenderGrochowVanMelkebeekMooreMorgan2017}
+Eric Allender, Joshua~A. Grochow, Dieter van Melkebeek, Cristopher Moore, and
+  Andrew Morgan.
+\newblock Minimum circuit size, graph isomorphism, and related problems, 2017.
+\newblock URL \url{https://arxiv.org/abs/1710.09806}.
+
+\bibitem[Aronszajn(1950)]{Aronszajn1950}
+Nachman Aronszajn.
+\newblock Theory of reproducing kernels.
+\newblock \emph{Transactions of the American Mathematical Society}, 68\penalty0
+  (3):\penalty0 337--404, 1950.
+\newblock \doi{10.1090/S0002-9947-1950-0051437-7}.
+
+\bibitem[Arora et~al.(2019)Arora, Du, Hu, Li, Salakhutdinov, and
+  Wang]{AroraEtAl2019}
+Sanjeev Arora, Simon~S. Du, Wei Hu, Zhiyuan Li, Ruslan Salakhutdinov, and
+  Ruosong Wang.
+\newblock On exact computation with an infinitely wide neural net.
+\newblock In \emph{Advances in Neural Information Processing Systems 32}, pages
+  8139--8148, 2019.
+\newblock URL
+  \url{https://papers.nips.cc/paper/2019/hash/dbc4d84bfcfe2284ba11beffb853a8c4-Abstract.html}.
+
+\bibitem[Aspvall et~al.(1979)Aspvall, Plass, and
+  Tarjan]{AspvallPlassTarjan1979}
+Bengt Aspvall, Michael~F. Plass, and Robert~E. Tarjan.
+\newblock A linear-time algorithm for testing the truth of certain quantified
+  boolean formulas.
+\newblock \emph{Information Processing Letters}, 8\penalty0 (3):\penalty0
+  121--123, 1979.
+\newblock \doi{10.1016/0020-0190(79)90002-4}.
+
+\bibitem[Baker et~al.(1975)Baker, Gill, and Solovay]{BakerGillSolovay1975}
+Theodore~P. Baker, John Gill, and Robert Solovay.
+\newblock Relativizations of the $\mathcal{P}=?\mathcal{NP}$ question.
+\newblock \emph{SIAM Journal on Computing}, 4\penalty0 (4):\penalty0 431--442,
+  1975.
+\newblock \doi{10.1137/0204037}.
+
+\bibitem[Bakry and {\'E}mery(1985)]{BakryEmery1985}
+Dominique Bakry and Michel {\'E}mery.
+\newblock Diffusions hypercontractives.
+\newblock In \emph{S{\'e}minaire de probabilit{\'e}s XIX, 1983/84}, volume 1123
+  of \emph{Lecture Notes in Mathematics}, pages 177--206. Springer, Berlin,
+  1985.
+\newblock \doi{10.1007/BFb0075847}.
+
+\bibitem[Bartlett and Mendelson(2002)]{BartlettMendelson2002}
+Peter~L. Bartlett and Shahar Mendelson.
+\newblock Rademacher and {Gaussian} complexities: Risk bounds and structural
+  results.
+\newblock \emph{Journal of Machine Learning Research}, 3:\penalty0 463--482,
+  2002.
+\newblock URL \url{https://www.jmlr.org/papers/v3/bartlett02a.html}.
+
+\bibitem[Bartlett et~al.(2017)Bartlett, Foster, and
+  Telgarsky]{BartlettFosterTelgarsky2017}
+Peter~L. Bartlett, Dylan~J. Foster, and Matus~J. Telgarsky.
+\newblock Spectrally-normalized margin bounds for neural networks.
+\newblock In \emph{Advances in Neural Information Processing Systems 30}, pages
+  6240--6249, 2017.
+
+\bibitem[Bellman(1957)]{Bellman1957}
+Richard Bellman.
+\newblock \emph{Dynamic Programming}.
+\newblock Princeton University Press, Princeton, NJ, 1957.
+
+\bibitem[Bertsekas and Tsitsiklis(1996)]{BertsekasTsitsiklis1996}
+Dimitri~P. Bertsekas and John~N. Tsitsiklis.
+\newblock \emph{Neuro-Dynamic Programming}.
+\newblock Athena Scientific, Belmont, MA, 1996.
+
+\bibitem[Blum et~al.(1994)Blum, Furst, Kearns, and
+  Lipton]{BlumFurstKearnsLipton1994}
+Avrim Blum, Merrick Furst, Michael Kearns, and Richard~J. Lipton.
+\newblock Cryptographic primitives based on hard learning problems.
+\newblock In \emph{Advances in Cryptology---CRYPTO '93}, volume 773 of
+  \emph{Lecture Notes in Computer Science}, pages 278--291. Springer, 1994.
+\newblock \doi{10.1007/3-540-48329-2_24}.
+
+\bibitem[Blum et~al.(2003)Blum, Kalai, and Wasserman]{BlumKalaiWasserman2003}
+Avrim Blum, Adam Kalai, and Hal Wasserman.
+\newblock Noise-tolerant learning, the parity problem, and the statistical
+  query model.
+\newblock \emph{Journal of the ACM}, 50\penalty0 (4):\penalty0 506--519, 2003.
+\newblock \doi{10.1145/792538.792543}.
+
+\bibitem[Bobkov and G{\"o}tze(1999)]{BobkovGotze1999}
+S.~G. Bobkov and F.~G{\"o}tze.
+\newblock Exponential integrability and transportation cost related to
+  logarithmic sobolev inequalities.
+\newblock \emph{Journal of Functional Analysis}, 163\penalty0 (1):\penalty0
+  1--28, 1999.
+\newblock \doi{10.1006/jfan.1998.3326}.
+
+\bibitem[Bobkov and Tetali(2006)]{BobkovTetali2006}
+Sergey~G. Bobkov and Prasad Tetali.
+\newblock Modified logarithmic sobolev inequalities in discrete settings.
+\newblock \emph{Journal of Theoretical Probability}, 19\penalty0 (2):\penalty0
+  289--336, 2006.
+\newblock \doi{10.1007/s10959-006-0016-3}.
+
+\bibitem[Bogos et~al.(2015)Bogos, Tram\`er, and
+  Vaudenay]{BogosTramerVaudenay2015}
+Sonia Bogos, Florian Tram\`er, and Serge Vaudenay.
+\newblock On solving {LPN} using {BKW} and variants: Implementation and
+  analysis.
+\newblock Cryptology ePrint Archive, Paper 2015/049, 2015.
+\newblock URL \url{https://eprint.iacr.org/2015/049}.
+
+\bibitem[Buchholz(1994)]{Buchholz1994}
+Peter Buchholz.
+\newblock Exact and ordinary lumpability in finite markov chains.
+\newblock \emph{Journal of Applied Probability}, 31\penalty0 (1):\penalty0
+  59--75, 1994.
+\newblock \doi{10.2307/3215235}.
+
+\bibitem[Caponnetto and De~Vito(2007)]{CaponnettoDeVito2007}
+Andrea Caponnetto and Ernesto De~Vito.
+\newblock Optimal rates for the regularized least-squares algorithm.
+\newblock \emph{Foundations of Computational Mathematics}, 7\penalty0
+  (3):\penalty0 331--368, 2007.
+\newblock \doi{10.1007/s10208-006-0196-8}.
+
+\bibitem[Carlen et~al.(1987)Carlen, Kusuoka, and
+  Stroock]{CarlenKusuokaStroock1987}
+Eric~A. Carlen, Shigeo Kusuoka, and Daniel~W. Stroock.
+\newblock Upper bounds for symmetric {M}arkov transition functions.
+\newblock \emph{Annales de l'Institut Henri Poincar\'e, Probabilit\'es et
+  Statistiques}, 23\penalty0 (S2):\penalty0 245--287, 1987.
+\newblock URL \url{https://eudml.org/doc/77309}.
+
+\bibitem[Carmosino et~al.(2016)Carmosino, Impagliazzo, Kabanets, and
+  Kolokolova]{CarmosinoEtAl2016}
+Marco Carmosino, Russell Impagliazzo, Valentine Kabanets, and Antonina
+  Kolokolova.
+\newblock Algorithms from natural lower bounds.
+\newblock Technical Report TR16-008, Electronic Colloquium on Computational
+  Complexity, 2016.
+\newblock URL \url{https://eccc.weizmann.ac.il/report/2016/008/}.
+
+\bibitem[Chen et~al.(2020)Chen, Hirahara, Oliveira, Pich, Rajgopal, and
+  Santhanam]{ChenEtAl2020}
+Lijie Chen, Shuichi Hirahara, Igor~C. Oliveira, J\'an Pich, Ninad Rajgopal, and
+  Rahul Santhanam.
+\newblock Beyond natural proofs: Hardness magnification and locality.
+\newblock In \emph{11th Innovations in Theoretical Computer Science
+  Conference}, volume 151 of \emph{Leibniz International Proceedings in
+  Informatics}, pages 70:1--70:48, 2020.
+\newblock \doi{10.4230/LIPIcs.ITCS.2020.70}.
+
+\bibitem[Chizat et~al.(2019)Chizat, Oyallon, and Bach]{ChizatEtAl2019}
+L{\'e}na{\"i}c Chizat, Edouard Oyallon, and Francis Bach.
+\newblock On lazy training in differentiable programming.
+\newblock In \emph{Advances in Neural Information Processing Systems 32}, pages
+  2933--2943, 2019.
+\newblock URL
+  \url{https://papers.nips.cc/paper/2019/hash/ae614c557843b1df326cb29c57225459-Abstract.html}.
+
+\bibitem[Cook(1971)]{Cook1971}
+Stephen~A. Cook.
+\newblock The complexity of theorem-proving procedures.
+\newblock In \emph{Proceedings of the Third Annual ACM Symposium on Theory of
+  Computing}, pages 151--158. ACM, 1971.
+\newblock \doi{10.1145/800157.805047}.
+
+\bibitem[Courr{\`e}ge(1965--1966)]{Courrege1965}
+Philippe Courr{\`e}ge.
+\newblock Sur la forme int{\'e}gro-diff{\'e}rentielle des op{\'e}rateurs de
+  $c_k^\infty$ dans $c$ satisfaisant au principe du maximum.
+\newblock \emph{S{\'e}minaire Brelot-Choquet-Deny. Th{\'e}orie du potentiel},
+  10\penalty0 (1):\penalty0 1--38, 1965--1966.
+\newblock URL \url{http://eudml.org/doc/109338}.
+
+\bibitem[Cristianini et~al.(2002)Cristianini, Shawe-Taylor, Elisseeff, and
+  Kandola]{CristianiniEtAl2002}
+Nello Cristianini, John Shawe-Taylor, Andr{\'e} Elisseeff, and Jaz~S. Kandola.
+\newblock On kernel-target alignment.
+\newblock In \emph{Advances in Neural Information Processing Systems 14}, pages
+  367--373. MIT Press, 2002.
+\newblock URL
+  \url{https://papers.nips.cc/paper/2001/hash/1f71e393b3809197ed66df836fe833e5-Abstract.html}.
+
+\bibitem[Davis and Kahan(1970)]{DavisKahan1970}
+Chandler Davis and W.~M. Kahan.
+\newblock The rotation of eigenvectors by a perturbation. iii.
+\newblock \emph{SIAM Journal on Numerical Analysis}, 7\penalty0 (1):\penalty0
+  1--46, 1970.
+\newblock \doi{10.1137/0707001}.
+
+\bibitem[Dowling and Gallier(1984)]{DowlingGallier1984}
+William~F. Dowling and Jean~H. Gallier.
+\newblock Linear-time algorithms for testing the satisfiability of
+  propositional horn formulae.
+\newblock \emph{Journal of Logic Programming}, 1\penalty0 (3):\penalty0
+  267--284, 1984.
+\newblock \doi{10.1016/0743-1066(84)90014-1}.
+
+\bibitem[Dudley(1967)]{Dudley1967}
+R.~M. Dudley.
+\newblock The sizes of compact subsets of {Hilbert} space and continuity of
+  {Gaussian} processes.
+\newblock \emph{Journal of Functional Analysis}, 1\penalty0 (3):\penalty0
+  290--330, 1967.
+\newblock \doi{10.1016/0022-1236(67)90017-1}.
+
+\bibitem[Dvoretzky et~al.(1956)Dvoretzky, Kiefer, and
+  Wolfowitz]{DvoretzkyKieferWolfowitz1956}
+Aryeh Dvoretzky, Jack Kiefer, and Jacob Wolfowitz.
+\newblock Asymptotic minimax character of the sample distribution function and
+  of the classical multinomial estimator.
+\newblock \emph{The Annals of Mathematical Statistics}, 27\penalty0
+  (3):\penalty0 642--669, 1956.
+\newblock \doi{10.1214/aoms/1177728174}.
+
+\bibitem[Eckmann(1944)]{Eckmann1944}
+Beno Eckmann.
+\newblock {Harmonische Funktionen und Randwertaufgaben in einem Komplex}.
+\newblock \emph{Commentarii Mathematici Helvetici}, 17\penalty0 (1):\penalty0
+  240--255, 1944.
+\newblock \doi{10.1007/BF02566245}.
+
+\bibitem[Fukushima et~al.(2011)Fukushima, Oshima, and
+  Takeda]{FukushimaOshimaTakeda2011}
+Masatoshi Fukushima, Yoichi Oshima, and Masayoshi Takeda.
+\newblock \emph{Dirichlet Forms and Symmetric Markov Processes}.
+\newblock De Gruyter, Berlin, 2 edition, 2011.
+
+\bibitem[Gilbert(1952)]{Gilbert1952}
+Edgar~N. Gilbert.
+\newblock A comparison of signalling alphabets.
+\newblock \emph{Bell System Technical Journal}, 31\penalty0 (3):\penalty0
+  504--522, 1952.
+\newblock \doi{10.1002/j.1538-7305.1952.tb01393.x}.
+
+\bibitem[Goel et~al.(2006)Goel, Montenegro, and
+  Tetali]{GoelMontenegroTetali2006}
+Sharad Goel, Ravi Montenegro, and Prasad Tetali.
+\newblock Mixing time bounds via the spectral profile.
+\newblock \emph{Electronic Journal of Probability}, 11:\penalty0 1--26, 2006.
+\newblock \doi{10.1214/EJP.v11-302}.
+
+\bibitem[Goldberg and Kabanets(2023)]{GoldbergKabanets2023}
+Halley Goldberg and Valentine Kabanets.
+\newblock Improved learning from kolmogorov complexity.
+\newblock Technical Report TR23-080, Electronic Colloquium on Computational
+  Complexity, 2023.
+\newblock URL \url{https://eccc.weizmann.ac.il/report/2023/080/}.
+
+\bibitem[Goldreich and Levin(1989)]{GoldreichLevin1989}
+Oded Goldreich and Leonid~A. Levin.
+\newblock A hard-core predicate for all one-way functions.
+\newblock In \emph{Proceedings of the Twenty-First Annual ACM Symposium on
+  Theory of Computing}, pages 25--32. ACM, 1989.
+\newblock \doi{10.1145/73007.73010}.
+
+\bibitem[Gross(1975)]{Gross1975}
+Leonard Gross.
+\newblock Logarithmic sobolev inequalities.
+\newblock \emph{American Journal of Mathematics}, 97\penalty0 (4):\penalty0
+  1061--1083, 1975.
+\newblock \doi{10.2307/2373688}.
+
+\bibitem[Hamming(1950)]{Hamming1950}
+Richard~W. Hamming.
+\newblock Error detecting and error correcting codes.
+\newblock \emph{Bell System Technical Journal}, 29\penalty0 (2):\penalty0
+  147--160, 1950.
+\newblock \doi{10.1002/j.1538-7305.1950.tb00463.x}.
+
+\bibitem[Hirahara et~al.(2024)Hirahara, Lu, and
+  Nanashima]{HiraharaLuNanashima2024}
+Shuichi Hirahara, Zhenjian Lu, and Mikito Nanashima.
+\newblock Optimal coding for randomized kolmogorov complexity and its
+  applications.
+\newblock Technical Report TR24-155, Electronic Colloquium on Computational
+  Complexity, 2024.
+\newblock URL \url{https://eccc.weizmann.ac.il/report/2024/155/}.
+
+\bibitem[Hopper and Blum(2001)]{HopperBlum2001}
+Nicholas~J. Hopper and Manuel Blum.
+\newblock Secure human identification protocols.
+\newblock In \emph{Advances in Cryptology---ASIACRYPT 2001}, volume 2248 of
+  \emph{Lecture Notes in Computer Science}, pages 52--66. Springer, 2001.
+\newblock \doi{10.1007/3-540-45682-1_4}.
+
+\bibitem[Jacot et~al.(2018)Jacot, Gabriel, and Hongler]{JacotEtAl2018}
+Arthur Jacot, Franck Gabriel, and Cl{\'e}ment Hongler.
+\newblock {Neural Tangent Kernel}: Convergence and generalization in neural
+  networks.
+\newblock In \emph{Advances in Neural Information Processing Systems 31}, pages
+  8571--8580, 2018.
+\newblock URL
+  \url{https://papers.nips.cc/paper/2018/hash/5a4be1fa34e62bb8a6ec6b91d2462f5a-Abstract.html}.
+
+\bibitem[Jensen(1953)]{Jensen1953}
+Arne Jensen.
+\newblock Markoff chains as an aid in the study of markoff processes.
+\newblock \emph{Scandinavian Actuarial Journal}, 1953\penalty0 (sup1):\penalty0
+  87--91, 1953.
+\newblock \doi{10.1080/03461238.1953.10419459}.
+
+\bibitem[Jiang et~al.(2011)Jiang, Lim, Yao, and Ye]{JiangEtAl2011}
+Xiaoye Jiang, Lek-Heng Lim, Yuan Yao, and Yinyu Ye.
+\newblock Statistical ranking and combinatorial {Hodge} theory.
+\newblock \emph{Mathematical Programming}, 127\penalty0 (1):\penalty0 203--244,
+  2011.
+\newblock \doi{10.1007/s10107-010-0419-x}.
+
+\bibitem[Karp(1972)]{Karp1972}
+Richard~M. Karp.
+\newblock Reducibility among combinatorial problems.
+\newblock In \emph{Complexity of Computer Computations}, pages 85--103. Plenum
+  Press, 1972.
+\newblock \doi{10.1007/978-1-4684-2001-2_9}.
+
+\bibitem[Kato(1995)]{Kato1995}
+Tosio Kato.
+\newblock \emph{Perturbation Theory for Linear Operators}.
+\newblock Springer, 2 edition, 1995.
+\newblock \doi{10.1007/978-3-642-66282-9}.
+
+\bibitem[Kemeny and Snell(1976)]{KemenySnell1976}
+John~G. Kemeny and J.~Laurie Snell.
+\newblock \emph{Finite Markov Chains}.
+\newblock Springer, New York, 1976.
+\newblock ISBN 9780387901923.
+
+\bibitem[Kimeldorf and Wahba(1971)]{KimeldorfWahba1971}
+George Kimeldorf and Grace Wahba.
+\newblock Some results on {Tchebycheffian} spline functions.
+\newblock \emph{Journal of Mathematical Analysis and Applications}, 33\penalty0
+  (1):\penalty0 82--95, 1971.
+\newblock \doi{10.1016/0022-247X(71)90184-3}.
+
+\bibitem[Lawler and Sokal(1988)]{LawlerSokal1988}
+Gregory~F. Lawler and Alan~D. Sokal.
+\newblock Bounds on the {$L^2$} spectrum for {Markov} chains and {Markov}
+  processes: A generalization of {Cheeger's} inequality.
+\newblock \emph{Transactions of the American Mathematical Society},
+  309\penalty0 (2):\penalty0 557--580, 1988.
+\newblock \doi{10.1090/S0002-9947-1988-0930082-9}.
+
+\bibitem[Ledoux and Talagrand(1991)]{LedouxTalagrand1991}
+Michel Ledoux and Michel Talagrand.
+\newblock \emph{Probability in Banach Spaces: Isoperimetry and Processes}.
+\newblock Springer, Berlin, 1991.
+\newblock \doi{10.1007/978-3-642-20212-4}.
+
+\bibitem[Lee et~al.(2019)Lee, Xiao, Schoenholz, Bahri, Novak, Sohl-Dickstein,
+  and Pennington]{LeeEtAl2019}
+Jaehoon Lee, Lechao Xiao, Samuel~S. Schoenholz, Yasaman Bahri, Roman Novak,
+  Jascha Sohl-Dickstein, and Jeffrey Pennington.
+\newblock Wide neural networks of any depth evolve as linear models under
+  gradient descent.
+\newblock In \emph{Advances in Neural Information Processing Systems 32}, pages
+  8570--8581, 2019.
+\newblock URL
+  \url{https://papers.nips.cc/paper/2019/hash/0d1a9651497a38d8b1c3871c84528bd4-Abstract.html}.
+
+\bibitem[Lefmann et~al.(1993)Lefmann, Phelps, and
+  R{\"o}dl]{LefmannPhelpsRodl1993}
+Hanno Lefmann, Kevin~T. Phelps, and Vojt{\v e}ch R{\"o}dl.
+\newblock Rigid linear binary codes.
+\newblock \emph{Journal of Combinatorial Theory, Series A}, 63\penalty0
+  (1):\penalty0 110--128, 1993.
+\newblock \doi{10.1016/0097-3165(93)90028-7}.
+
+\bibitem[Levin and Peres(2017)]{LevinPeres2017}
+David~A. Levin and Yuval Peres.
+\newblock \emph{Markov Chains and Mixing Times}.
+\newblock American Mathematical Society, 2 edition, 2017.
+\newblock \doi{10.1090/mbk/107}.
+
+\bibitem[Liu and Pass(2020)]{LiuPass2020}
+Yanyi Liu and Rafael Pass.
+\newblock On one-way functions and kolmogorov complexity.
+\newblock In \emph{61st Annual IEEE Symposium on Foundations of Computer
+  Science}, pages 1243--1254, 2020.
+\newblock \doi{10.1109/FOCS46700.2020.00118}.
+
+\bibitem[Lyubashevsky(2005)]{Lyubashevsky2005}
+Vadim Lyubashevsky.
+\newblock The parity problem in the presence of noise, decoding random linear
+  codes, and the subset sum problem.
+\newblock In \emph{Approximation, Randomization and Combinatorial Optimization.
+  Algorithms and Techniques}, volume 3624 of \emph{Lecture Notes in Computer
+  Science}, pages 378--389. Springer, 2005.
+\newblock \doi{10.1007/11538462_32}.
+
+\bibitem[Massart(1990)]{Massart1990}
+Pascal Massart.
+\newblock The tight constant in the {Dvoretzky--Kiefer--Wolfowitz} inequality.
+\newblock \emph{The Annals of Probability}, 18\penalty0 (3):\penalty0
+  1269--1283, 1990.
+\newblock \doi{10.1214/aop/1176990746}.
+
+\bibitem[Massart(2000)]{Massart2000}
+Pascal Massart.
+\newblock About the constants in talagrand's concentration inequalities for
+  empirical processes.
+\newblock \emph{The Annals of Probability}, 28\penalty0 (2):\penalty0 863--884,
+  2000.
+\newblock \doi{10.1214/aop/1019160263}.
+
+\bibitem[Maurer(2004)]{Maurer2004}
+Andreas Maurer.
+\newblock A note on the {PAC-Bayesian} theorem, 2004.
+\newblock URL \url{https://arxiv.org/abs/cs/0411099}.
+
+\bibitem[McAllester(1999)]{McAllester1999}
+David~A. McAllester.
+\newblock Some {PAC-Bayesian} theorems.
+\newblock \emph{Machine Learning}, 37\penalty0 (3):\penalty0 355--363, 1999.
+\newblock \doi{10.1023/A:1007618624809}.
+
+\bibitem[Mercer(1909)]{Mercer1909}
+James Mercer.
+\newblock Functions of positive and negative type, and their connection with
+  the theory of integral equations.
+\newblock \emph{Philosophical Transactions of the Royal Society of London.
+  Series A}, 209\penalty0 (441--458):\penalty0 415--446, 1909.
+\newblock \doi{10.1098/rsta.1909.0016}.
+
+\bibitem[Metzner et~al.(2009)Metzner, Sch{\"u}tte, and
+  Vanden-Eijnden]{MetznerSchuetteVandenEijnden2009}
+Philipp Metzner, Christof Sch{\"u}tte, and Eric Vanden-Eijnden.
+\newblock Transition path theory for {Markov} jump processes.
+\newblock \emph{Multiscale Modeling \& Simulation}, 7\penalty0 (3):\penalty0
+  1192--1219, 2009.
+\newblock \doi{10.1137/070699500}.
+
+\bibitem[Nemhauser et~al.(1978)Nemhauser, Wolsey, and
+  Fisher]{NemhauserWolseyFisher1978}
+G.~L. Nemhauser, L.~A. Wolsey, and M.~L. Fisher.
+\newblock An analysis of approximations for maximizing submodular set
+  functions---i.
+\newblock \emph{Mathematical Programming}, 14\penalty0 (1):\penalty0 265--294,
+  1978.
+\newblock \doi{10.1007/BF01588971}.
+
+\bibitem[Norris(1997)]{Norris1997}
+J.~R. Norris.
+\newblock \emph{Markov Chains}.
+\newblock Cambridge University Press, 1997.
+\newblock \doi{10.1017/CBO9780511810633}.
+
+\bibitem[O'Donnell(2014)]{ODonnell2014}
+Ryan O'Donnell.
+\newblock \emph{Analysis of {Boolean} Functions}.
+\newblock Cambridge University Press, 2014.
+\newblock \doi{10.1017/CBO9781139814782}.
+
+\bibitem[Oliveira and Santhanam(2018)]{OliveiraSanthanam2018}
+Igor~Carboni Oliveira and Rahul Santhanam.
+\newblock Hardness magnification for natural problems.
+\newblock Technical Report TR18-139, Electronic Colloquium on Computational
+  Complexity, 2018.
+\newblock URL \url{https://eccc.weizmann.ac.il/report/2018/139/}.
+
+\bibitem[Oliveira et~al.(2018)Oliveira, Pich, and
+  Santhanam]{OliveiraPichSanthanam2018}
+Igor~Carboni Oliveira, J\'an Pich, and Rahul Santhanam.
+\newblock Hardness magnification near state-of-the-art lower bounds.
+\newblock Technical Report TR18-158, Electronic Colloquium on Computational
+  Complexity, 2018.
+\newblock URL \url{https://eccc.weizmann.ac.il/report/2018/158/}.
+
+\bibitem[Otto and Villani(2000)]{OttoVillani2000}
+Felix Otto and C{\'e}dric Villani.
+\newblock Generalization of an inequality by {Talagrand} and links with the
+  logarithmic sobolev inequality.
+\newblock \emph{Journal of Functional Analysis}, 173\penalty0 (2):\penalty0
+  361--400, 2000.
+\newblock \doi{10.1006/jfan.1999.3557}.
+
+\bibitem[Paulin(2015)]{Paulin2015}
+Daniel Paulin.
+\newblock Concentration inequalities for {M}arkov chains by {M}arton couplings
+  and spectral methods.
+\newblock \emph{Electronic Journal of Probability}, 20\penalty0 (79):\penalty0
+  1--32, 2015.
+\newblock \doi{10.1214/EJP.v20-4039}.
+
+\bibitem[Puterman(1994)]{Puterman1994}
+Martin~L. Puterman.
+\newblock \emph{Markov Decision Processes: Discrete Stochastic Dynamic
+  Programming}.
+\newblock John Wiley \& Sons, New York, 1994.
+
+\bibitem[Rakhlin et~al.(2015)Rakhlin, Sridharan, and
+  Tewari]{RakhlinSridharanTewari2015}
+Alexander Rakhlin, Karthik Sridharan, and Ambuj Tewari.
+\newblock Online learning via sequential complexities.
+\newblock \emph{Journal of Machine Learning Research}, 16:\penalty0 155--186,
+  2015.
+\newblock URL \url{https://jmlr.org/papers/v16/rakhlin15a.html}.
+
+\bibitem[Razborov and Rudich(1997)]{RazborovRudich1997}
+Alexander~A. Razborov and Steven Rudich.
+\newblock Natural proofs.
+\newblock \emph{Journal of Computer and System Sciences}, 55\penalty0
+  (1):\penalty0 24--35, 1997.
+\newblock \doi{10.1006/jcss.1997.1494}.
+
+\bibitem[R\"ockner and Wang(2001)]{RocknerWang2001}
+Michael R\"ockner and Feng-Yu Wang.
+\newblock Weak {P}oincar\'e inequalities and {$L^2$}-convergence rates of
+  {M}arkov semigroups.
+\newblock \emph{Journal of Functional Analysis}, 185\penalty0 (2):\penalty0
+  564--603, 2001.
+\newblock \doi{10.1006/jfan.2001.3776}.
+
+\bibitem[Rudelson and Vershynin(2013)]{RudelsonVershynin2013}
+Mark Rudelson and Roman Vershynin.
+\newblock {Hanson--Wright} inequality and sub-gaussian concentration.
+\newblock \emph{Electronic Communications in Probability}, 18\penalty0
+  (82):\penalty0 1--9, 2013.
+\newblock \doi{10.1214/ECP.v18-2865}.
+
+\bibitem[Schaefer(1978)]{Schaefer1978}
+Thomas~J. Schaefer.
+\newblock The complexity of satisfiability problems.
+\newblock In \emph{Proceedings of the Tenth Annual ACM Symposium on Theory of
+  Computing}, pages 216--226. ACM, 1978.
+\newblock \doi{10.1145/800133.804350}.
+
+\bibitem[Seldin et~al.(2012)Seldin, Laviolette, Cesa-Bianchi, Shawe-Taylor, and
+  Auer]{SeldinEtAl2012}
+Yevgeny Seldin, Fran\c{c}ois Laviolette, Nicol\`o Cesa-Bianchi, John
+  Shawe-Taylor, and Peter Auer.
+\newblock {PAC}-bayesian inequalities for martingales.
+\newblock \emph{IEEE Transactions on Information Theory}, 58\penalty0
+  (12):\penalty0 7086--7093, 2012.
+\newblock \doi{10.1109/TIT.2012.2214217}.
+
+\bibitem[Trefethen(2019)]{Trefethen2019}
+Lloyd~N. Trefethen.
+\newblock \emph{Approximation Theory and Approximation Practice}.
+\newblock SIAM, extended edition, 2019.
+\newblock \doi{10.1137/1.9781611975949}.
+
+\bibitem[Tropp(2012)]{Tropp2012}
+Joel~A. Tropp.
+\newblock User-friendly tail bounds for sums of random matrices.
+\newblock \emph{Foundations of Computational Mathematics}, 12:\penalty0
+  389--434, 2012.
+\newblock \doi{10.1007/s10208-011-9099-z}.
+
+\bibitem[Varshamov(1957)]{Varshamov1957}
+Rom~R. Varshamov.
+\newblock Estimate of the number of signals in error correcting codes.
+\newblock \emph{Doklady Akademii Nauk SSSR}, 117\penalty0 (5):\penalty0
+  739--741, 1957.
+\newblock URL \url{https://www.mathnet.ru/eng/dan22571}.
+
+\bibitem[Villani(2009)]{Villani2009}
+C\'edric Villani.
+\newblock \emph{Hypocoercivity}, volume 202 of \emph{Memoirs of the American
+  Mathematical Society}.
+\newblock American Mathematical Society, 2009.
+\newblock \doi{10.1090/S0065-9266-09-00567-5}.
+\newblock no. 950.
+
+\bibitem[Walsh(1923)]{Walsh1923}
+J.~L. Walsh.
+\newblock A closed set of normal orthogonal functions.
+\newblock \emph{American Journal of Mathematics}, 45\penalty0 (1):\penalty0
+  5--24, 1923.
+\newblock \doi{10.2307/2387224}.
+
+\bibitem[Weyl(1912)]{Weyl1912}
+Hermann Weyl.
+\newblock {Das asymptotische Verteilungsgesetz der Eigenwerte linearer
+  partieller Differentialgleichungen}.
+\newblock \emph{Mathematische Annalen}, 71\penalty0 (4):\penalty0 441--479,
+  1912.
+\newblock \doi{10.1007/BF01456804}.
+
+\bibitem[Wiggers and Samardjiska(2021)]{WiggersSamardjiska2021}
+Thom Wiggers and Simona Samardjiska.
+\newblock Practically solving {LPN}.
+\newblock In \emph{2021 IEEE International Symposium on Information Theory}.
+  IEEE, 2021.
+\newblock URL \url{https://eprint.iacr.org/2021/962}.
+\newblock Cryptology ePrint Archive, Paper 2021/962.
+
+\end{thebibliography}

@@ -78,12 +78,11 @@ universe u v
 used by `def:sparse-pair-response`.  The obstruction coordinates are empty at
 construction time: clauses (d)--(f) are populated only by a failed quotient or
 suppression later in the argument. -/
-theorem existsPairResponseActivation
+noncomputable def pairResponseActivation
     {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {threshold : Nat}
     (active : ActiveSurplusDemands Baseline Target LengthOK object threshold) :
-    Nonempty (object.DemandActivation (object.PairCoordinate)
-      (object.PairCoordinate)) := by
+    object.DemandActivation (object.PairCoordinate) PEmpty := by
   classical
   let supportOf := fun demand : object.Vertex × object.Vertex =>
     if member : demand ∈ object.excessPorts threshold then
@@ -119,22 +118,21 @@ theorem existsPairResponseActivation
     if member : demand ∈ object.excessPorts threshold then
       (object.surplusPortOfMem member).support
     else ∅
-  exact ⟨{
+  exact {
     declaredSupport := supportOf
     returnSupport := returnOf
     localBuffer := bufferOf
     profileObstructions := fun _ => ∅
     responseObstructions := fun _ => ∅
-    chordObstructions := fun _ => ∅ }⟩
+    chordObstructions := fun _ => ∅ }
 
-/-- A response activation whose existence is proved from the active-family
-fact. -/
-noncomputable def pairResponseActivation
+/-- The active-family fact constructs the concrete response activation. -/
+theorem existsPairResponseActivation
     {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {threshold : Nat}
     (active : ActiveSurplusDemands Baseline Target LengthOK object threshold) :
-    object.DemandActivation (object.PairCoordinate) (object.PairCoordinate) :=
-  Classical.choice (existsPairResponseActivation active)
+    Nonempty (object.DemandActivation (object.PairCoordinate) PEmpty) :=
+  ⟨pairResponseActivation active⟩
 
 /-- A concrete type-(d) or type-(e) obstruction carried by some pair in
 `Π`.  The three alternatives are exactly the corresponding cases in the proof

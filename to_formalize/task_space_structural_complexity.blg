@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2025/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: task_space_structural_complexity.aux
+The style file: plainnat.bst
+Database file #1: task_space_structural_complexity.bib
+You've used 80 entries,
+            2773 wiz_defined-function locations,
+            1215 strings with 20515 characters,
+and the built_in function-call counts, 37848 in all, are:
+= -- 3638
+> -- 1746
+< -- 81
++ -- 602
+- -- 522
+* -- 2983
+:= -- 5708
+add.period$ -- 325
+call.type$ -- 80
+change.case$ -- 406
+chr.to.int$ -- 80
+cite$ -- 160
+duplicate$ -- 1802
+empty$ -- 3225
+format.name$ -- 650
+if$ -- 8081
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 84
+newline$ -- 483
+num.names$ -- 320
+pop$ -- 754
+preamble$ -- 1
+purify$ -- 334
+quote$ -- 0
+skip$ -- 1371
+stack$ -- 0
+substring$ -- 1722
+swap$ -- 259
+text.length$ -- 27
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 820
+warning$ -- 0
+while$ -- 374
+width$ -- 0
+write$ -- 1208

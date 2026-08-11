@@ -83,51 +83,6 @@ before it branches.
 
 Both reads are spent: the pair count converts the package bound and the token
 ledger witnesses the high-load display. -/
-@[reducible] noncomputable def coupledFibrePressureRow
-    (canonicalPairLedger capacityTokenLedger
-      roleFibrePartition fibrePressure :
-      FactKey (Input BranchState Presentation presentation data))
-    (pairNeToken : canonicalPairLedger ≠ capacityTokenLedger)
-    (partitionNePressure : roleFibrePartition ≠ fibrePressure)
-    (pairCountOf : (input : Input BranchState Presentation presentation data) →
-      canonicalPairLedger.At input →
-      (input.object.portPairSchedule data.threshold).card =
-        (input.object.degreeSurplus data.threshold).choose 2)
-    (tokenLedgerOf : (input : Input BranchState Presentation presentation data) →
-      capacityTokenLedger.At input →
-      ∀ declared : Graph.CapacityPresentation input.object data.windowOrder,
-        Nonempty (Graph.ObjectCapacityLedger input.object data.threshold
-          data.windowOrder declared))
-    (encodePartition : (input : Input BranchState Presentation presentation data) →
-      Graph.RoleFibrePartitionStatement input.object data.threshold
-        data.windowOrder →
-      roleFibrePartition.At input)
-    (encodePressure : (input : Input BranchState Presentation presentation data) →
-      Graph.FibrePressureStatement input.object data.threshold
-        data.windowOrder →
-      fibrePressure.At input) :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coupledFibrePressure
-    { Requires := [canonicalPairLedger, capacityTokenLedger]
-      Produces := [roleFibrePartition, fibrePressure]
-      requiresUnique := by simp [pairNeToken]
-      producesUnique := by simp [partitionNePressure]
-      producesNonempty := by simp }
-    (fun inputs =>
-      let object := inputs.current.object
-      -- Node `[130]`'s count and node `[136]`'s ledger.
-      let _pairCount := pairCountOf inputs.current (inputs.get canonicalPairLedger)
-      let existing := tokenLedgerOf inputs.current (inputs.get capacityTokenLedger)
-      .cons (key := roleFibrePartition)
-        (encodePartition inputs.current
-          (Graph.roleFibrePartitionStatement object data.threshold
-            data.windowOrder))
-        (.cons (key := fibrePressure)
-          (encodePressure inputs.current
-            (Graph.fibrePressureStatement object data.threshold data.windowOrder
-              existing))
-          .nil))
-
 /-! ## Node `[137]`: the branch
 
 `prop:single-graph-sparse-pressure-routing` is exhaustive: either every capacity
@@ -145,39 +100,6 @@ bound and the near-cubic route cannot read an overload that did not occur.  The
 test is `SparsePressureCapped` itself, a property of the object; no graph
 remains at `[137]` because the two arms are the two cases of the excluded middle
 on it. -/
-noncomputable def sparsePressureDichotomy
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous :
-      ExactLedger (Input BranchState Presentation presentation data)
-        current known)
-    (sparsePressureNearCubic sparsePressureOverload :
-      FactKey (Input BranchState Presentation presentation data))
-    (encodeNearCubic :
-      Graph.SparsePressureCapped current.object data.threshold
-        data.windowOrder →
-      sparsePressureNearCubic.At current)
-    (encodeOverload :
-      Graph.SparsePressureOverloadStatement current.object data.threshold
-        data.windowOrder →
-      sparsePressureOverload.At current)
-    (nearCubicFresh : sparsePressureNearCubic ∉ known)
-    (overloadFresh : sparsePressureOverload ∉ known) :
-    Decision sparsePressureNearCubic sparsePressureOverload previous := by
-  classical
-  refine Decision.run previous sparsePressureNearCubic sparsePressureOverload
-    `Hypostructure.Graph.Strategy.Spine.sparsePressureRouting ?_ nearCubicFresh
-    overloadFresh
-  exact
-    if capped : Graph.SparsePressureCapped current.object data.threshold
-        data.windowOrder then
-      .inl (encodeNearCubic capped)
-    else
-      .inr (encodeOverload
-        ((Graph.sparsePressureRouting current.object data.threshold
-          data.windowOrder).resolve_left
-          capped))
-
 /-- The one arithmetic bridge used by both near-cubic exits `[138]` and
 `[144]`.  All graph-specific data is already inside the certified ledger. -/
 theorem certifiedDegreeSurplus_le_spineScale
