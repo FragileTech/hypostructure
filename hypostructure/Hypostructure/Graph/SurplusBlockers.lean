@@ -411,7 +411,38 @@ theorem blocks_arithmeticChordSet
   refine Finset.mem_union_right _ (Finset.mem_union_right _ ?_)
   exact Finset.mem_union_right _ (Finset.mem_image_of_mem _ obstructs)
 
-/-! ## `Π_blk` and `Π_free` at the manuscript's own relation -/
+/-! ## The canonical blocker, `Π_blk`, and `Π_free` -/
+
+end DemandActivation
+
+noncomputable def canonicalBlocker
+    (activation : DemandActivation object Coordinate Chord)
+    (pair : Finset (object.Vertex × object.Vertex)) :
+    Option (Blocker object Coordinate Chord) :=
+  (activation.blockers pair).toList.head?
+
+theorem canonicalBlocker_mem
+    (activation : DemandActivation object Coordinate Chord)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {blocker : Blocker object Coordinate Chord}
+    (selected : canonicalBlocker activation pair = some blocker) :
+    blocker ∈ activation.blockers pair := by
+  simpa using List.mem_of_mem_head? selected
+
+theorem isSome_canonicalBlocker
+    (activation : DemandActivation object Coordinate Chord)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    (blocked : (activation.blockers pair).Nonempty) :
+    (canonicalBlocker activation pair).isSome := by
+  obtain ⟨blocker, member⟩ := blocked
+  have inside : blocker ∈ (activation.blockers pair).toList :=
+    Finset.mem_toList.2 member
+  rw [canonicalBlocker]
+  cases enumeration : (activation.blockers pair).toList with
+  | nil => rw [enumeration] at inside; cases inside
+  | cons head tail => simp
+
+namespace DemandActivation
 
 /-- **`Π_blk`** at `def:surplus-blockers`: the pairs of the schedule carrying a
 blocker object. -/
@@ -426,13 +457,49 @@ noncomputable def freePairs (activation : DemandActivation object Coordinate Cho
   object.freePairs threshold SameTokenBlockerRoles.canonicalBlockerOrder
     activation.Blocks activation.decidableBlocks
 
-/-- **`μ(B)`** at the manuscript's own relation: the fibre of a clause under
-`Φ_can`. -/
+/-- `Π_blk`, defined directly by nonempty concrete blocker sets. -/
+noncomputable def blockedPairs (activation : DemandActivation object Coordinate Chord)
+    (threshold : Nat) : Finset (Finset (object.Vertex × object.Vertex)) :=
+  (object.portPairSchedule threshold).filter fun pair =>
+    (activation.blockers pair).Nonempty
+
+/-- `Π_free`, the complement of the concrete blocked pairs. -/
+noncomputable def unblockedPairs (activation : DemandActivation object Coordinate Chord)
+    (threshold : Nat) : Finset (Finset (object.Vertex × object.Vertex)) :=
+  (object.portPairSchedule threshold).filter fun pair =>
+    ¬(activation.blockers pair).Nonempty
+
+/-- The concrete image `B_can = Φ_can(Π_blk)`. -/
+noncomputable def canonicalBlockerSet
+    (activation : DemandActivation object Coordinate Chord) (threshold : Nat) :
+    Finset (Blocker object Coordinate Chord) := by
+  classical
+  exact (activation.blockedPairs threshold).biUnion fun pair =>
+    (canonicalBlocker activation pair).toFinset
+
+/-- The graph `I_can = {(π, Φ_can π) | π ∈ Π_blk}`. -/
+noncomputable def canonicalIncidenceLedger
+    (activation : DemandActivation object Coordinate Chord) (threshold : Nat) :
+    Finset (Sigma fun _ : Finset (object.Vertex × object.Vertex) =>
+      Blocker object Coordinate Chord) := by
+  classical
+  exact (activation.blockedPairs threshold).sigma fun pair =>
+    (canonicalBlocker activation pair).toFinset
+
+/-- **`μ(B)`**: the fibre of the concrete canonical blocker `B`. -/
 noncomputable def multiplicity (activation : DemandActivation object Coordinate Chord)
     (threshold : Nat) (kind : SameTokenBlockerRoles.BlockerKind) : Nat :=
   object.pairMultiplicity threshold inferInstance
     SameTokenBlockerRoles.canonicalBlockerOrder activation.Blocks
     activation.decidableBlocks kind
+
+/-- `μ(B)`, indexed by the concrete canonical blocker. -/
+noncomputable def blockerMultiplicity
+    (activation : DemandActivation object Coordinate Chord)
+    (threshold : Nat) (blocker : Blocker object Coordinate Chord) : Nat := by
+  classical
+  exact ((activation.blockedPairs threshold).filter fun pair =>
+    canonicalBlocker activation pair = some blocker).card
 
 /-- **The split is exhaustive**: `|Π_blk| + |Π_free| = |Π(𝒜₀)|`, now at
 `def:surplus-blockers`' own relation. -/
@@ -442,6 +509,32 @@ theorem card_chargedPairs_add_card_freePairs
         (activation.freePairs threshold).card =
       (object.portPairSchedule threshold).card :=
   object.card_chargedPairs_add_card_freePairs _ _ _
+
+theorem card_blockedPairs_add_card_unblockedPairs
+    (activation : DemandActivation object Coordinate Chord) (threshold : Nat) :
+    (activation.blockedPairs threshold).card +
+        (activation.unblockedPairs threshold).card =
+      (object.portPairSchedule threshold).card := by
+  classical
+  rw [blockedPairs, unblockedPairs]
+  exact Finset.card_filter_add_card_filter_not _
+
+/-- The canonical incidence graph has exactly one entry for each blocked pair. -/
+theorem card_canonicalIncidenceLedger
+    (activation : DemandActivation object Coordinate Chord) (threshold : Nat) :
+    (activation.canonicalIncidenceLedger threshold).card =
+      (activation.blockedPairs threshold).card := by
+  classical
+  rw [canonicalIncidenceLedger, Finset.card_sigma]
+  rw [Finset.card_eq_sum_ones]
+  apply Finset.sum_congr rfl
+  intro pair member
+  have full : pair ∈ object.portPairSchedule threshold ∧
+      (activation.blockers pair).Nonempty := by
+    simpa [blockedPairs] using member
+  obtain ⟨blocker, selected⟩ := Option.isSome_iff_exists.1
+    (isSome_canonicalBlocker activation full.2)
+  simp [selected]
 
 /-- **`lem:canonical-blocker-ledger-no-overcount` at the instantiated ledger**:
 `|Π_blk| = Σ_{B ∈ ℬ_can} μ(B)`.
@@ -455,6 +548,35 @@ theorem card_chargedPairs_eq_sum_multiplicity
       SameTokenBlockerRoles.canonicalBlockerOrder.toFinset.sum
         (activation.multiplicity threshold) :=
   object.card_chargedPairs_eq_sum_multiplicity inferInstance _ _ _
+
+theorem card_blockedPairs_eq_sum_blockerMultiplicity
+    (activation : DemandActivation object Coordinate Chord) (threshold : Nat) :
+    (activation.blockedPairs threshold).card =
+      (activation.canonicalBlockerSet threshold).sum
+        (activation.blockerMultiplicity threshold) := by
+    classical
+    let assigned := activation.blockedPairs threshold
+    let blockers := activation.canonicalBlockerSet threshold
+    have maps : Set.MapsTo (canonicalBlocker activation) (↑assigned)
+        (↑(blockers.image some)) := by
+      intro pair member
+      have blocked : (activation.blockers pair).Nonempty := by
+        have full : pair ∈ object.portPairSchedule threshold ∧
+            (activation.blockers pair).Nonempty := by
+          simpa [assigned, blockedPairs] using member
+        exact full.2
+      obtain ⟨blocker, selected⟩ := Option.isSome_iff_exists.1
+        (isSome_canonicalBlocker activation blocked)
+      rw [selected]
+      refine Finset.mem_image.2 ⟨blocker, ?_, rfl⟩
+      change blocker ∈ activation.canonicalBlockerSet threshold
+      rw [canonicalBlockerSet]
+      exact Finset.mem_biUnion.2 ⟨pair, member, by simp [selected]⟩
+    rw [Finset.card_eq_sum_card_fiberwise maps]
+    rw [Finset.sum_image (fun _ _ _ _ equality => Option.some_injective _ equality)]
+    apply Finset.sum_congr rfl
+    intro blocker _
+    rfl
 
 end DemandActivation
 

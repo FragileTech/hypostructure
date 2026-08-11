@@ -252,38 +252,11 @@ structure CarrierPresentation (object : FiniteObject.{u}) (Coordinate Chord : Ty
   /-- The selected surplus port whose shoulder chord this is. -/
   chordPort : Chord → object.Vertex × object.Vertex
 
-/-! ## `Φ_can(π)` and `supp(B_π)` -/
+/-! ## `supp(B_π)` -/
 
 variable (activation : DemandActivation object Coordinate Chord)
   (presentation : CarrierPresentation object Coordinate Chord)
   (threshold : Nat) (packing : Finset (Finset object.Vertex))
-
-/-- **`Φ_can(π) = min_≺ 𝖡𝗅𝗄(π)`**, the canonical blocker of
-`def:canonical-blocker-ledger`: the first member of the pair's own blocker set in
-the object's enumeration, which is the framework's single reading of the
-manuscript's "the lexicographically first …".  `none` exactly on the free
-pairs. -/
-noncomputable def canonicalBlocker
-    (pair : Finset (object.Vertex × object.Vertex)) :
-    Option (Blocker object Coordinate Chord) :=
-  (activation.blockers pair).toList.head?
-
-theorem canonicalBlocker_mem {pair : Finset (object.Vertex × object.Vertex)}
-    {blocker : Blocker object Coordinate Chord}
-    (selected : canonicalBlocker activation pair = some blocker) :
-    blocker ∈ activation.blockers pair := by
-  simpa using List.mem_of_mem_head? selected
-
-theorem isSome_canonicalBlocker {pair : Finset (object.Vertex × object.Vertex)}
-    (blocked : (activation.blockers pair).Nonempty) :
-    (canonicalBlocker activation pair).isSome := by
-  obtain ⟨blocker, member⟩ := blocked
-  have inside : blocker ∈ (activation.blockers pair).toList :=
-    Finset.mem_toList.2 member
-  rw [canonicalBlocker]
-  cases enumeration : (activation.blockers pair).toList with
-  | nil => rw [enumeration] at inside; cases inside
-  | cons head tail => simp
 
 /-- **`supp(B_π)`**, the declared support of the pair's canonical blocker.  A free
 pair has no canonical blocker and therefore no support, which is why no case of

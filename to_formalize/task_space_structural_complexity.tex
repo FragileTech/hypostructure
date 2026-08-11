@@ -182,12 +182,18 @@ For random binary learning parity with noise, the quotient and
 quotient-supported geometric exhaustion, together with a constant-noise
 spectral analysis, exponentially suppresses every explicitly materialized
 located spectral block and isolates one compact residual-ancestry source
-coordinate.  Under its stated bound, the complete saturated value is at most
-\(2^{-n}+(1-\eta)^n\).  The empirical verification theorem gives explicit
-capacity--attenuation and finite-to-asymptotic conditions that discharge this
-coordinate when a proof-grade certificate is supplied.  All statements are
-relative to the declared presentation and its resource-saturated constructor
-closure.
+coordinate as the sole remaining certification obligation.  The verification
+theorem proves that an accepted proof-grade certificate---comprising exact
+source coverage, capacity, attenuation, error, finite-prefix, and uniform
+scale-propagation fields---discharges this coordinate and bounds the complete
+saturated value by \(2^{-n}+(1-\eta)^n\).  This manuscript specifies and proves
+the discharge mechanism but does not execute the final instantiated
+certificate analysis.  Its LPN hardness consequences are therefore
+conditional, in the present version, on acceptance of that internal
+certificate rather than on an imported complexity-theoretic assumption.
+Verifying such a certificate would discharge the remaining premise and make
+those consequences unconditional relative to the declared presentation and
+its resource-saturated constructor closure.
 \end{abstract}
 
 \begin{center}
@@ -346,12 +352,16 @@ quotient, and provenance sources are exhausted, the surviving
 coordinate of the saturated profile is isolated explicitly.  At fixed
 positive noise, every materialized located spectral block has exponentially
 small alignment, while compact non-lumpable residual-ancestry records form
-the remaining numerical premise.  Under the stated bound
-\((1-\eta)^n\) on that single coordinate---an explicitly isolated
-hypothesis, not a theorem of this paper---the saturated profile is at
-most \(2^{-n}+(1-\eta)^n\), which yields the corresponding
-presentation-relative fixed-noise hardness theorem and, via an
-unconditional prefix-search reduction, \(P\ne NP\).
+one internal certification target.  The paper proves a deterministic
+finite-to-asymptotic verification theorem: exact source coverage, certified
+capacity and attenuation, outward-rounded error bounds, symbolic uniform
+scale laws, a crossover check, and a finite-prefix check together imply the
+required bound \((1-\eta)^n\).  The present manuscript does not execute that
+final certificate analysis.  Consequently, its fixed-noise hardness theorem
+and the resulting \(P\ne NP\) consequence remain conditional on acceptance of
+this explicit proof certificate.  An accepted certificate would discharge
+the sole remaining premise internally; no external LPN or
+complexity-theoretic hardness assumption is used.
 
 \Cref{fig-intro-channel-dictionary} summarizes the generator
 decomposition together with its classical reading; the internal channel
@@ -393,6 +403,69 @@ reorganize, and read out that structure, and \(\Res\) is transport that
 provably admits no such attribution.}
 \label{fig-intro-channel-dictionary}
 \end{figure}
+
+The labels in \cref{fig-intro-channel-dictionary} name typed framework
+objects, not only their classical operator cores.  A row of
+\cref{tab-intro-channel-meanings} applies to a complete represented record;
+the classical ingredient in its middle column supplies an algebraic
+coordinate, while the final column states the additional conditions under
+which that coordinate has framework status.
+
+\begin{table}[tbp]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.16}
+\begin{tabular}{@{}
+  >{\raggedright\arraybackslash}p{0.105\linewidth}
+  >{\raggedright\arraybackslash}p{0.255\linewidth}
+  >{\raggedright\arraybackslash}p{0.535\linewidth}@{}}
+\toprule
+Framework term & Classical ingredient & Additional framework meaning \\
+\midrule
+\(\Geom\) &
+reversible or symmetric operator; Dirichlet form &
+represented intrinsic geometry with public provenance, qualification,
+complete representation cost, and target-visibility accounting \\
+
+\(\Caus\) &
+directed current or drift &
+authorized target-oriented use of an exposed source, using the represented
+projection of the actual selected current under a declared authority envelope \\
+
+\(\Abs\) &
+quotient, sufficient statistic, or lumping &
+represented abstraction with explicit fibers, terminal compatibility,
+qualification, temporal availability, and saturated representation cost \\
+
+\(\Lift\) &
+state augmentation &
+represented enlargement with a charged interface that preserves target
+fractions and inherits the provenance and qualification of its base source \\
+
+\(\Bdry\) &
+killing, absorption, or terminal value &
+represented terminal readout that evaluates previously exposed structure and
+creates no independent interior transport source \\
+
+\(\Res\) &
+orthogonal remainder &
+post-saturation transport remaining after all affordable
+channel-qualified target-relevant representatives have been reclassified and
+charged; it carries no prospective structural source charge \\
+\bottomrule
+\end{tabular}
+\caption{What the channel names mean.  The middle column records the
+classical operator ingredient; the final column records the additional typed
+requirements imposed by the framework.  The precise gates are the budgeted
+representative condition of \cref{def-admissible-channel-representatives}, the
+authority condition of \cref{def-caus-authority-envelope}, the quotient and
+lift conditions of \cref{def-abs-lift-split,def-valid-lift}, the boundary
+readout condition of \cref{def-boundary-value-channel}, and the saturated
+residual condition of
+\cref{cor-no-post-saturation-residual-source-alternative}.}
+\label{tab-intro-channel-meanings}
+\end{table}
 
 \PartI formalizes this structure independently of any solution method.
 A task presentation consists of complete states, observables, a declared
@@ -516,12 +589,14 @@ The source-resolved ledger separates the sample, represented-computation, and
 information limits and compares their phase transitions
 (\cref{thm-three-noise-threshold-comparison,thm-dynamical-noise-three-thresholds}).
 
-\item \emph{Proof-producing finite-to-asymptotic saturation certificates.}
+\item \emph{Proof-producing finite-to-asymptotic certificate machinery.}
 For the LPN application, exact quotient and geometric exhaustion isolates one
 residual-ancestry certification target.  Exact enumeration, deterministic
 verification, symbolic inequalities, outward-rounded interval bounds,
-finite-prefix checks, and uniform scale propagation discharge that target
-under the stated certificate conditions
+finite-prefix checks, and uniform scale propagation form a sufficient
+certificate whose deterministic acceptance discharges that target.  The
+paper proves this discharge implication and specifies every verification
+field; it does not execute the final instantiated certificate analysis
 (\cref{thm-lpn-constant-noise-materialized-spectral-closure,lem-lpn-residual-parity-spectral-fibers,cor-empirical-discovery-deterministic-universal-closure,thm-lpn-proof-grade-empirical-residual-discharge}).
 \end{itemize}
 
@@ -65921,6 +65996,13 @@ source seal}, using
 computer-assisted record exactly when the finite verification fields of
 \cref{thm-lpn-proof-grade-empirical-residual-discharge} pass; no sampled
 failure to find a source is substituted for saturated source coverage.  The
+present manuscript proves this verification implication and specifies its
+complete record, but it does not supply an accepted instantiated certificate
+for the residual-ancestry cell.  Thus the fixed-noise hardness and separation
+consequences remain conditional in this version on that internal certificate
+obligation.  Supplying and deterministically verifying the record would
+discharge the sole remaining premise without importing an LPN or
+complexity-theoretic hardness assumption.  The
 \hyperref[cor-no-retrospective-first-hit-source-loophole]{no retrospective
 first-hit source loophole corollary} excludes a completed first-hit label as
 an uncharged source and classifies every independent pre-hit representation

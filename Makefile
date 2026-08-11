@@ -1,4 +1,4 @@
-.PHONY: help build test lint mathlib-cache framework-build erdos-build erdos
+.PHONY: help build test lint mathlib-cache framework-build erdos-build erdos typeii-paper-check
 
 .DEFAULT_GOAL := help
 
@@ -24,6 +24,7 @@ help:
 	  '  make erdos           Check the end-to-end Erdős 64 theorem' \
 	  '  make build           Build the framework and the EG application' \
 	  '  make lint            Run the total-execution and canonical-ledger gates' \
+	  '  make typeii-paper-check  Audit the consolidated Type II manuscript' \
 	  '  make test            Build everything and run the gates' \
 	  '  make mathlib-cache   Fetch prebuilt Mathlib artifacts'
 
@@ -66,5 +67,9 @@ lint:
 	$(PYTHON) $(HYPOSTRUCTURE_DIR)/scripts/check_quarantine.py
 	$(PYTHON) .agents/skills/eg-proof-expansion/scripts/api_catalog.py check \
 	  --repo-root .
+	$(PYTHON) to_formalize/check_type_II_regularity.py
+
+typeii-paper-check:
+	$(PYTHON) to_formalize/check_type_II_regularity.py
 
 test: build lint

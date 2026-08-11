@@ -391,12 +391,13 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
               fun vertex => le_trans inputs.current.baseline
                 (inputs.current.object.minDegree_le_degree vertex)
             refine ⟨Coordinate, Chord, activation, pairs, certificate, pairsEq,
-              ?_, ?_, ?_, ?_⟩
+              ?_, ?_, ?_, ?_, ?_⟩
             · rw [pairsEq]
               exact inputs.current.object.card_portPairSchedule baseline
             · simpa [pairsEq, recorded] using
-                recorded.card_chargedPairs_add_card_freePairs data.threshold
-            · exact recorded.card_chargedPairs_eq_sum_multiplicity data.threshold
+                recorded.card_blockedPairs_add_card_unblockedPairs data.threshold
+            · exact recorded.card_canonicalIncidenceLedger data.threshold
+            · exact recorded.card_blockedPairs_eq_sum_blockerMultiplicity data.threshold
             · exact Graph.recordedSparsePairDEBlocker_nonempty activation pairs
                 certificate⟩)
         .nil)

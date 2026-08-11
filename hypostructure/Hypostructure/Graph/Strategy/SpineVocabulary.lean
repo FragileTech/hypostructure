@@ -4336,11 +4336,13 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         pairs = object.portPairSchedule data.threshold ∧
           pairs.card = (object.degreeSurplus data.threshold).choose 2 ∧
           let recorded := Graph.recordSparsePairDEBlocker activation pairs certificate
-          (recorded.chargedPairs data.threshold).card +
-                (recorded.freePairs data.threshold).card = pairs.card ∧
-            (recorded.chargedPairs data.threshold).card =
-              Graph.SameTokenBlockerRoles.canonicalBlockerOrder.toFinset.sum
-                (recorded.multiplicity data.threshold) ∧
+          (recorded.blockedPairs data.threshold).card +
+                (recorded.unblockedPairs data.threshold).card = pairs.card ∧
+            (recorded.canonicalIncidenceLedger data.threshold).card =
+              (recorded.blockedPairs data.threshold).card ∧
+            (recorded.blockedPairs data.threshold).card =
+              (recorded.canonicalBlockerSet data.threshold).sum
+                (recorded.blockerMultiplicity data.threshold) ∧
             ∃ pair ∈ pairs, (recorded.blockers pair).Nonempty
   | .sparsePairExit, object =>
       Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)

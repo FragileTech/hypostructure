@@ -1,4 +1,4 @@
-# Remaining Airtight Repairs for `type_II_regularity.tex`
+# Airtight Repair Audit for `type_II_regularity.tex`
 
 ## Purpose and audit standard
 
@@ -31,24 +31,16 @@ The global no-Type-II conclusion is **not** expected to come from any single glo
 Accordingly, this blueprint does **not** ask a local theorem to prove a global property. It asks that every capsule have an exact local input contract, a correct local calculation, an exact topology and pressure representative, a transported obstruction, and explicit failure routes.
 
 The manuscript already states this philosophy in its abstract and introduction.
-The remaining correction below consolidates duplicated proof-bearing
-conventions.
+All enumerated repair packages have now been incorporated.
 
 ---
 
 ## Remaining repair packages
 
-The manuscript already contains the coordinate, domain-buffer, gauge,
-pressure, bounded-window, parameter-chart, dependency-direction,
-upper-estimate, cost-phase, and imported-output provenance repairs formerly
-listed as R1--R12.  The remaining work is:
-
-| Package | Nature | Severity | New deep PDE theorem? |
-|---|---|---:|---:|
-| R13 | Remove superseded duplicate conventions and add static checks | High consolidation | No |
-
-This is a consolidation repair.  It does not call for a new global analytic
-theorem.
+The manuscript contains the coordinate, domain-buffer, gauge, pressure,
+bounded-window, parameter-chart, dependency-direction, upper-estimate,
+cost-phase, imported-output provenance, and consolidation repairs formerly
+listed as R1--R13.  There is no remaining repair package in this blueprint.
 
 ---
 
@@ -107,79 +99,18 @@ The repairs below therefore never replace the state-space proof by a global esti
 
 # Part II. Detailed repair packages
 
-# R13. Consolidate the paper and eliminate superseded duplicate proof-bearing blocks
-
-## Problem
-
-The manuscript contains an early repaired-chart/gauge package and a later AC
-package.  Their principal coefficient formulas now agree, but both remain
-proof-bearing.  Keeping both active creates:
-
-- duplicated theorem labels or roles;
-- ambiguous downstream citations;
-- difficulty determining which theorem is canonical;
-- risk of future formula drift;
-- and false dependency cycles.
-
-## Canonical notation dictionary
-
-Place this table near the beginning:
-
-| Symbol | Meaning |
-|---|---|
-| \(t\) | physical time |
-| \(\rho\) | raw renormalized time |
-| \(\tau\) | final repaired time |
-| \(x_c(t),\lambda(t)\) | raw concentration center and scale |
-| \(U(y,\rho),Q(y,\rho)\) | raw profile and pressure |
-| \(\mu(\tau),q(\tau)\) | repaired-gauge scale and translation |
-| \(\Lambda=\lambda\mu\) | final physical scale |
-| \(X=x_c+\lambda q\) | final physical center |
-| \(V(Y,\tau),P(Y,\tau)\) | final repaired profile and pressure |
-| \(a=\partial_\tau\log\Lambda\) | final logarithmic scale velocity |
-| \(b=\Lambda^{-1}X_\tau\) | final normalized center velocity |
-
-## Consolidation action
-
-1. Make the later AC chart section canonical.
-2. Replace the early exact-change section by either:
-   - a short forward reference to the canonical section; or
-   - a corrected duplicate whose formulas are generated from one macro/definition.
-3. Point every local energy, pressure, compactness, cost, and carrier theorem to the same canonical represented equation.
-4. Keep only one canonical Caccioppoli theorem. The later version using a genuine temporal buffer is preferable.
-5. Keep only one canonical local pressure decomposition statement; all stronger pressure-stability conclusions should be separate conditional corollaries.
-6. Keep a single final state ledger and derive summary ledgers from it rather than manually repeating rows.
-
-## Static checks to add to the build process
-
-Run automated searches for forbidden strings or patterns:
-
-```text
-a(\tau):=-\Lambda'(\tau)
-b(\tau):=-X'(\tau)
-d\tau=\Lambda^2 dt
-\nabla_Y V=\Lambda\nabla_x u
-```
-
-Also check:
-
-- every theorem label is unique;
-- every `\cref` resolves;
-- every state marked closed has a source theorem or reduction edge;
-- every reduction edge decreases the declared rank;
-- every pressure convergence statement records the harmonic component;
-- every global-looking norm is either an explicit input or replaced by a local/tail split.
+There are no outstanding detailed repair packages.  The R13 consolidation is
+enforced by `to_formalize/check_type_II_regularity.py`, available through
+`make typeii-paper-check` and also included in `make lint`.
 
 ---
 
-# Part III. Recommended edit order
+# Part III. Continuing audit
 
-## Stage 1. Consolidate and run static checks
-
-1. Apply R13 to remove superseded duplicate proof-bearing blocks.
-2. Point downstream theorems to the canonical chart, Caccioppoli, pressure, and
-   state-ledger declarations.
-3. Run the label, cross-reference, rank, pressure, and forbidden-string checks.
+Run `make typeii-paper-check` after every manuscript edit.  It checks the
+canonical chart, pressure, Caccioppoli, and final-ledger interfaces together
+with labels, references, ranks, pressure components, norm scope, and forbidden
+formula patterns.
 
 ---
 
@@ -204,7 +135,7 @@ A referee should be able to answer **yes** to every item below.
 
 # Part VI. What this repair does and does not claim
 
-These remaining edits preserve the paper's central idea: the proof is a
+The completed edits preserve the paper's central idea: the proof is a
 repeated local operation, not a search for one miraculous global estimate.
 They expose the ownership of imported data and consolidate duplicated
 proof-bearing interfaces.
@@ -247,8 +178,7 @@ After the edits, the main proof should read as follows:
 \text{global contradiction by exhaustive assembly}.
 \]
 
-This blueprint does not by itself certify every source line.  It records only
-the repairs still outstanding after the current manuscript changes.  Once they
-are implemented, the manuscript should be re-audited with a mechanically
-generated theorem dependency graph and an independent specialist review of the
-proof-bearing local capsules.
+This audit file does not by itself certify every source line.  It records that
+the specified R1--R13 repairs are implemented; continuing verification should
+include the static check above, a mechanically generated theorem dependency
+graph, and independent specialist review of the proof-bearing local capsules.

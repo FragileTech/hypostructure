@@ -210,8 +210,21 @@ field conventions are
   u=\Lambda^{-1}V,\qquad
   p=\Lambda^{-2}P+c(t).
 \]
-These conventions are fixed throughout the manuscript.
+These conventions govern every passage that compares the raw and repaired
+charts.  A self-contained auxiliary lemma may introduce a different dummy
+scale, but it does not change the raw-to-final dictionary above.
 \end{definition}
+
+\begin{remark}[Scope of whole-space norms]
+\label{rem:r13-whole-space-norm-scope}
+A norm over \(\mathbb R^3\) appears below only when it is an explicit
+hypothesis or profile-space datum, an exact scaling identity, or the norm of a
+compactly supported source extended by zero in a Calder\'on--Zygmund
+construction.  Every estimate used to close the physical Type II branch is
+instead stated on a buffered compact cylinder or as an explicit local/tail
+split.  In particular, no whole-space velocity or pressure bound is inferred
+from local suitable-solution data.
+\end{remark}
 
 \subsection{Imported-output provenance and ownership}
 \label{subsec:imported-output-provenance}
@@ -1571,8 +1584,8 @@ V\in L^3(B_{4R})\cap W^{1,3}_{\rm loc}(B_{4R};\RR^3),\\[2mm]
 \end{array}\right\}.
 \]
 The larger ball is only a domain buffer: all gauge integrals are supported in
-\(B_{2R}\), while \((\lambda,c)\) is restricted near \((1,0)\) so that
-\(c+\lambda B_{2R}\subset B_{4R}\).
+\(B_{2R}\), while \((\mu,q)\) is restricted near \((1,0)\) so that
+\(q+\mu B_{2R}\subset B_{4R}\).
 
 For the actual repaired-gauge implicit-function step we use the following
 strong local chart class.
@@ -1585,74 +1598,74 @@ A profile \(V\) belongs to \(\mathcal A^{\rm tr,C^1}_{p,R}\) if
    V\in \mathcal A_{p,R}\cap\mathcal V_R
 \]
 and there exists \(\delta_0>0\) such that the scale functional
-\((c,\lambda)\mapsto\mathcal J(c,\lambda;V)\) and the three centering
-moments \((c,\lambda)\mapsto\mathcal M_j(c,\lambda;V)\), \(j=1,2,3\),
+\((q,\mu)\mapsto\mathcal J(q,\mu;V)\) and the three centering
+moments \((q,\mu)\mapsto\mathcal M_j(q,\mu;V)\), \(j=1,2,3\),
 are finite and actually \(C^1\) for
 \[
-   |c|+|\lambda-1|<\delta_0,\qquad \lambda>0:
+   |q|+|\mu-1|<\delta_0,\qquad \mu>0:
 \]
 \[
-   \mathcal J(c,\lambda;V)
+   \mathcal J(q,\mu;V)
    :=
-   \int_{B_{2R}}\chi_R(Y)|Y|^{-p}|V(c+\lambda Y)|^3\,dY ,
+   \int_{B_{2R}}\chi_R(Y)|Y|^{-p}|V(q+\mu Y)|^3\,dY ,
 \]
 \[
 \begin{aligned}
-   \mathcal J_{c_k}(c,\lambda;V)
+   \mathcal J_{q_k}(q,\mu;V)
    &:=
-   \lambda^{-1}
+   \mu^{-1}
    \left[
-   p\int_{B_{2R}}\chi_R(Y)Y_k|Y|^{-p-2}|V(c+\lambda Y)|^3\,dY \right.\\
+   p\int_{B_{2R}}\chi_R(Y)Y_k|Y|^{-p-2}|V(q+\mu Y)|^3\,dY \right.\\
    &\hspace{2.7cm}\left.
    -
-   \int_{B_{2R}}\partial_k\chi_R(Y)|Y|^{-p}|V(c+\lambda Y)|^3\,dY
+   \int_{B_{2R}}\partial_k\chi_R(Y)|Y|^{-p}|V(q+\mu Y)|^3\,dY
    \right],
 \end{aligned}
 \]
 and
 \[
 \begin{aligned}
-   \mathcal J_{\lambda}(c,\lambda;V)
+   \mathcal J_{\mu}(q,\mu;V)
    &:=
-   -\lambda^{-1}
+   -\mu^{-1}
    \int_{B_{2R}}
    \left[(3-p)\chi_R(Y)+Y\cdot\nabla\chi_R(Y)\right]
-   |Y|^{-p}|V(c+\lambda Y)|^3\,dY .
+   |Y|^{-p}|V(q+\mu Y)|^3\,dY .
 \end{aligned}
 \]
 For the centering moments set
 \[
-   \mathcal M_j(c,\lambda;V)
+   \mathcal M_j(q,\mu;V)
    :=
-   \int_{B_{2R}}Y_j\chi_R(Y)|V(c+\lambda Y)|^2\,dY,
+   \int_{B_{2R}}Y_j\chi_R(Y)|V(q+\mu Y)|^2\,dY,
    \qquad j=1,2,3,
 \]
 and require that their actual derivatives are the displayed maps
 \[
-   \mathcal M_{j,c_k}(c,\lambda;V)
+   \mathcal M_{j,q_k}(q,\mu;V)
    :=
-   -\lambda^{-1}
+   -\mu^{-1}
    \int_{B_{2R}}
    \bigl(\delta_{jk}\chi_R(Y)+Y_j\partial_k\chi_R(Y)\bigr)
-   |V(c+\lambda Y)|^2\,dY,
+   |V(q+\mu Y)|^2\,dY,
 \]
 \[
-   \mathcal M_{j,\lambda}(c,\lambda;V)
+   \mathcal M_{j,\mu}(q,\mu;V)
    :=
-   -\lambda^{-1}
+   -\mu^{-1}
    \int_{B_{2R}}
    Y_j\bigl(4\chi_R(Y)+Y\cdot\nabla\chi_R(Y)\bigr)
-   |V(c+\lambda Y)|^2\,dY,
+   |V(q+\mu Y)|^2\,dY,
 \]
 for \(j,k\in\{1,2,3\}\).  In other words,
 \[
-  \partial_{c_k}\mathcal J=\mathcal J_{c_k},
+  \partial_{q_k}\mathcal J=\mathcal J_{q_k},
   \quad
-  \partial_\lambda\mathcal J=\mathcal J_\lambda,
+  \partial_\mu\mathcal J=\mathcal J_\mu,
   \quad
-  \partial_{c_k}\mathcal M_j=\mathcal M_{j,c_k},
+  \partial_{q_k}\mathcal M_j=\mathcal M_{j,q_k},
   \quad
-  \partial_\lambda\mathcal M_j=\mathcal M_{j,\lambda}
+  \partial_\mu\mathcal M_j=\mathcal M_{j,\mu}
 \]
 on the chart.  Thus these are not merely candidate derivative maps: the strong
 chart requires actual \(C^1\) differentiability of the gauge functionals.  If
@@ -1685,30 +1698,30 @@ closure theorem.
 \end{proof}
 
 \begin{definition}[Gauge actions]\label{paper2:def:gauge-action}
-For \((\lambda,c)\in (0,\infty)\times\RR^3\), define
+For \((\mu,q)\in (0,\infty)\times\RR^3\), define
 \[
-V_{\lambda,c}(Y):=\lambda V(c+\lambda Y).
+V_{\mu,q}(Y):=\mu V(q+\mu Y).
 \]
 For pressure profiles use
 \[
-P_{\lambda,c}(Y):=\lambda^2P(c+\lambda Y).
+P_{\mu,q}(Y):=\mu^2P(q+\mu Y).
 \]
-We also write \(V^{\lambda,c}:=V_{\lambda,c}\) and \(P^{\lambda,c}:=P_{\lambda,c}\).
+We also write \(V^{\mu,q}:=V_{\mu,q}\) and \(P^{\mu,q}:=P_{\mu,q}\).
 \end{definition}
 
 \begin{definition}[Finite-dimensional gauge map]\label{paper2:def:gauge-map}
-For \(V\in\mathcal V_R\) and \( (\lambda,c) \in (0,\infty)\times\RR^3\), set
+For \(V\in\mathcal V_R\) and \( (\mu,q) \in (0,\infty)\times\RR^3\), set
 \[
-\mathcal F(\lambda,c;V)
+\mathcal F(\mu,q;V)
 :=\bigl(\mathcal F_0,\mathcal F_1,\mathcal F_2,\mathcal F_3\bigr),
 \]
 with
 \[
-\mathcal F_0(\lambda,c;V):=
-\int_{\RR^3}\chi_R(Y)\,|Y|^{-p}|V_{\lambda,c}(Y)|^3\dd Y-\Theta_0,\qquad
-\mathcal F_j(\lambda,c;V):=\int_{\RR^3}Y_j\,\chi_R(Y)\,|V_{\lambda,c}(Y)|^2\dd Y
+\mathcal F_0(\mu,q;V):=
+\int_{\RR^3}\chi_R(Y)\,|Y|^{-p}|V_{\mu,q}(Y)|^3\dd Y-\Theta_0,\qquad
+\mathcal F_j(\mu,q;V):=\int_{\RR^3}Y_j\,\chi_R(Y)\,|V_{\mu,q}(Y)|^2\dd Y
 \]
-for \(j=1,2,3\). The gauge conditions are \(\mathcal F(\lambda,c;V)=0\).
+for \(j=1,2,3\). The gauge conditions are \(\mathcal F(\mu,q;V)=0\).
 Codomain is \(\RR^4\), domain \((0,\infty)\times\RR^3\times\mathcal V_R\).
 \end{definition}
 
@@ -1716,7 +1729,7 @@ Codomain is \(\RR^4\), domain \((0,\infty)\times\RR^3\times\mathcal V_R\).
 For \(J\subset I_*\) and a profile path \(W:J\to\mathcal V_R\), define
 \[
 J_W(\tau):=
-D_{(\lambda,c)}\mathcal F\bigl(1,0;W(\tau)\bigr)
+D_{(\mu,q)}\mathcal F\bigl(1,0;W(\tau)\bigr)
 \in\mathbb R^{4\times4}.
 \]
 The rows are ordered as the scale constraint followed by the three centering
@@ -1756,24 +1769,24 @@ Hence dominated convergence allows differentiation under the integral, and
 \end{proof}
 
 \begin{lemma}[Gauge covariance]\label{paper2:lem:gauge-covariance}
-For \(V\in\mathcal V_R\), \((\lambda,c)\in(0,\infty)\times\RR^3\), and
+For \(V\in\mathcal V_R\), \((\mu,q)\in(0,\infty)\times\RR^3\), and
 \(\alpha=0,\dots,3\),
 \[
-\mathcal F_\alpha(1,0;V_{\lambda,c})=\mathcal F_\alpha(\lambda,c;V).
+\mathcal F_\alpha(1,0;V_{\mu,q})=\mathcal F_\alpha(\mu,q;V).
 \]
 \end{lemma}
 
 \begin{proof}
 For each component this is a direct substitution:
 \[
-\mathcal F_0(1,0;V_{\lambda,c})
-=\int\chi_R(Y)|Y|^{-p}|V_{\lambda,c}(Y)|^3-\Theta_0\,\dd Y
-=\mathcal F_0(\lambda,c;V),
+\mathcal F_0(1,0;V_{\mu,q})
+=\int\chi_R(Y)|Y|^{-p}|V_{\mu,q}(Y)|^3-\Theta_0\,\dd Y
+=\mathcal F_0(\mu,q;V),
 \]
 \[
-\mathcal F_j(1,0;V_{\lambda,c})
-=\int Y_j\chi_R(Y)|V_{\lambda,c}(Y)|^2\,\dd Y
-=\mathcal F_j(\lambda,c;V),\quad j=1,2,3.
+\mathcal F_j(1,0;V_{\mu,q})
+=\int Y_j\chi_R(Y)|V_{\mu,q}(Y)|^2\,\dd Y
+=\mathcal F_j(\mu,q;V),\quad j=1,2,3.
 \]
 \end{proof}
 
@@ -1796,7 +1809,7 @@ repaired-gauge degeneracy row before the implicit-function theorem is invoked.
 
 \begin{proposition}[Differentiability of \(\mathcal F\)]\label{paper2:prop:gauge-C1}
 For each fixed \(V\in\mathcal A^{\rm tr,C^1}_{p,R}\), the map
-\((\lambda,c)\mapsto \mathcal F(\lambda,c;V)\) is \(C^1\) in a neighborhood of
+\((\mu,q)\mapsto \mathcal F(\mu,q;V)\) is \(C^1\) in a neighborhood of
 \((1,0)\). In each component \( \mathcal F_\alpha\) all derivatives under the
 integral sign are legitimate on the retained gauge chart.  By
 \cref{paper2:lem:strong-gauge-chart-entry-test}, every retained
@@ -1815,50 +1828,50 @@ translation-admissible chart condition or the Jacobian nondegeneracy fails, the
 branch is routed to the repaired-gauge degeneracy row and is not treated by
 this proposition.
 Thus each component admits pointwise \(C^1\) formulas and these are continuous in
-\((\lambda,c)\) near \((1,0)\). Therefore \((\lambda,c)\mapsto\mathcal F(\lambda,c;V)\in C^1\)
+\((\mu,q)\) near \((1,0)\). Therefore \((\mu,q)\mapsto\mathcal F(\mu,q;V)\in C^1\)
 near \((1,0)\).
 \end{proof}
 
 \begin{proposition}[Full local Jacobian at \((1,0)\)]\label{paper2:prop:full-jacobian}
 Let \(V\in\mathcal A^{\rm tr,C^1}_{p,R}\).
 Set \(V_0(Y)=V(Y)\).
-At \((\lambda,c)=(1,0)\), the matrix
+At \((\mu,q)=(1,0)\), the matrix
 \[
-J(V):=D_{(\lambda,c)}\mathcal F(1,0;V)\in \RR^{4\times4}
+J(V):=D_{(\mu,q)}\mathcal F(1,0;V)\in \RR^{4\times4}
 \]
 has rows
 \[
-J_\alpha=\bigl(\partial_\lambda \mathcal F_\alpha,\ \partial_{c_1}\mathcal F_\alpha,\
-\partial_{c_2}\mathcal F_\alpha,\ \partial_{c_3}\mathcal F_\alpha\bigr),\quad \alpha=0,\dots,3.
+J_\alpha=\bigl(\partial_\mu \mathcal F_\alpha,\ \partial_{q_1}\mathcal F_\alpha,\
+\partial_{q_2}\mathcal F_\alpha,\ \partial_{q_3}\mathcal F_\alpha\bigr),\quad \alpha=0,\dots,3.
 \]
 Writing
 \[
 \mathcal J_*:=\mathcal J(0,1;V),\qquad
-\mathcal J_{\lambda,*}:=\mathcal J_{\lambda}(0,1;V),\qquad
-\mathcal J_{c_k,*}:=\mathcal J_{c_k}(0,1;V),
+\mathcal J_{\mu,*}:=\mathcal J_{\mu}(0,1;V),\qquad
+\mathcal J_{q_k,*}:=\mathcal J_{q_k}(0,1;V),
 \]
 and
 \[
 \mathcal M_{j,*}:=\mathcal M_j(0,1;V),\qquad
-\mathcal M_{j,\lambda,*}:=\mathcal M_{j,\lambda}(0,1;V),\qquad
-\mathcal M_{j,c_k,*}:=\mathcal M_{j,c_k}(0,1;V),
+\mathcal M_{j,\mu,*}:=\mathcal M_{j,\mu}(0,1;V),\qquad
+\mathcal M_{j,q_k,*}:=\mathcal M_{j,q_k}(0,1;V),
 \]
 one has
 \begin{align}
-\partial_\lambda \mathcal F_0(1,0;V)
+\partial_\mu \mathcal F_0(1,0;V)
 &=
-3\mathcal J_*+\mathcal J_{\lambda,*}
+3\mathcal J_*+\mathcal J_{\mu,*}
 =p\int\chi_R|Y|^{-p}|V_0|^3\,\dd Y
 -\int (Y\cdot\nabla\chi_R)|Y|^{-p}|V_0|^3\,\dd Y,\label{paper2:eq:jac00}\\
-\partial_{c_k}\mathcal F_0(1,0;V)
-&=\mathcal J_{c_k,*}
+\partial_{q_k}\mathcal F_0(1,0;V)
+&=\mathcal J_{q_k,*}
 =p\int \chi_R(Y)Y_k|Y|^{-p-2}|V_0(Y)|^3\,dY
 -\int (\partial_k\chi_R)(Y)|Y|^{-p}|V_0(Y)|^3\,dY,\label{paper2:eq:jac0k}\\
-\partial_\lambda \mathcal F_j(1,0;V)
-&=2\mathcal M_{j,*}+\mathcal M_{j,\lambda,*}
-=-\int_{\RR^3}Y_j\bigl(2\chi_R+Y\cdot\nabla\chi_R\bigr)|V_0|^2\,\dd Y,\label{paper2:eq:jacjlambda}\\
-\partial_{c_k}\mathcal F_j(1,0;V)
-&=\mathcal M_{j,c_k,*}
+\partial_\mu \mathcal F_j(1,0;V)
+&=2\mathcal M_{j,*}+\mathcal M_{j,\mu,*}
+=-\int_{\RR^3}Y_j\bigl(2\chi_R+Y\cdot\nabla\chi_R\bigr)|V_0|^2\,\dd Y,\label{paper2:eq:jacjmu}\\
+\partial_{q_k}\mathcal F_j(1,0;V)
+&=\mathcal M_{j,q_k,*}
 =-\int_{\RR^3}\bigl(\delta_{jk}\chi_R+Y_j\partial_k\chi_R\bigr)|V_0|^2\,\dd Y,\label{paper2:eq:jacjk}
 \end{align}
 for \(j,k=1,2,3\).
@@ -1867,29 +1880,29 @@ for \(j,k=1,2,3\).
 \begin{proof}
 By gauge covariance,
 \[
-\mathcal F_0(\lambda,c;V)=\lambda^3\mathcal J(c,\lambda;V)-\Theta_0,
+\mathcal F_0(\mu,q;V)=\mu^3\mathcal J(q,\mu;V)-\Theta_0,
 \qquad
-\mathcal F_j(\lambda,c;V)=\lambda^2\mathcal M_j(c,\lambda;V).
+\mathcal F_j(\mu,q;V)=\mu^2\mathcal M_j(q,\mu;V).
 \]
 Since \(V\in\mathcal A^{\rm tr,C^1}_{p,R}\),
 \cref{paper2:lem:weighted-gauge-C1-strong-chart} gives the \(C^1\) chart
 derivatives for \(\mathcal J\), and the same strong chart package supplies the
 \(C^1\) derivatives for \(\mathcal M_j\).  Applying the product rule at
-\((c,\lambda)=(0,1)\) yields
+\((q,\mu)=(0,1)\) yields
 \[
-\partial_\lambda\mathcal F_0(1,0;V)=3\mathcal J(0,1;V)+\mathcal J_\lambda(0,1;V),
+\partial_\mu\mathcal F_0(1,0;V)=3\mathcal J(0,1;V)+\mathcal J_\mu(0,1;V),
 \qquad
-\partial_{c_k}\mathcal F_0(1,0;V)=\mathcal J_{c_k}(0,1;V),
+\partial_{q_k}\mathcal F_0(1,0;V)=\mathcal J_{q_k}(0,1;V),
 \]
 and
 \[
-\partial_\lambda\mathcal F_j(1,0;V)=2\mathcal M_j(0,1;V)+\mathcal M_{j,\lambda}(0,1;V),
+\partial_\mu\mathcal F_j(1,0;V)=2\mathcal M_j(0,1;V)+\mathcal M_{j,\mu}(0,1;V),
 \qquad
-\partial_{c_k}\mathcal F_j(1,0;V)=\mathcal M_{j,c_k}(0,1;V).
+\partial_{q_k}\mathcal F_j(1,0;V)=\mathcal M_{j,q_k}(0,1;V).
 \]
 The displayed integral formulas are exactly the explicit \((0,1)\)-formulas for
 these chart derivatives.  In particular, the singular-weight first row is read
-through \(\mathcal J_\lambda\) and \(\mathcal J_{c_k}\), not through the raw
+through \(\mathcal J_\mu\) and \(\mathcal J_{q_k}\), not through the raw
 term \(\chi_R|Y|^{-p}|V|V\cdot\partial_kV\).
 \end{proof}
 
@@ -1906,8 +1919,8 @@ J(V(\tau))=
 v(\tau)&A(\tau)
 \end{pmatrix},
 \]
-where \(\alpha=\partial_\lambda\mathcal F_0\), \(u_\ell=\partial_{c_\ell}\mathcal F_0\),
-\(v_j=\partial_\lambda\mathcal F_j\), and \(A_{j\ell}=\partial_{c_\ell}\mathcal F_j\).
+where \(\alpha=\partial_\mu\mathcal F_0\), \(u_\ell=\partial_{q_\ell}\mathcal F_0\),
+\(v_j=\partial_\mu\mathcal F_j\), and \(A_{j\ell}=\partial_{q_\ell}\mathcal F_j\).
 Assume that for a.e. \(\tau\in J\)
 \[
 m_\chi(\tau):=\int |V(Y,\tau)|^2\chi_R(Y)\,dY\ge m_0>0,
@@ -1939,15 +1952,15 @@ Then \(J(V(\tau))\) is invertible for a.e. \(\tau\in J\), and
 By \cref{paper2:prop:full-jacobian}, the first row is given by the strong-chart
 derivatives
 \[
-\alpha=3\mathcal J(0,1;V(\tau))+\mathcal J_\lambda(0,1;V(\tau)),
+\alpha=3\mathcal J(0,1;V(\tau))+\mathcal J_\mu(0,1;V(\tau)),
 \qquad
-u_\ell=\mathcal J_{c_\ell}(0,1;V(\tau)),
+u_\ell=\mathcal J_{q_\ell}(0,1;V(\tau)),
 \]
 and the remaining rows by
 \[
-v_j=2\mathcal M_j(0,1;V(\tau))+\mathcal M_{j,\lambda}(0,1;V(\tau)),
+v_j=2\mathcal M_j(0,1;V(\tau))+\mathcal M_{j,\mu}(0,1;V(\tau)),
 \qquad
-A_{j\ell}=\mathcal M_{j,c_\ell}(0,1;V(\tau)).
+A_{j\ell}=\mathcal M_{j,q_\ell}(0,1;V(\tau)).
 \]
 Thus the Jacobian is evaluated entirely in the strong chart already built into
 \(\mathcal A^{\rm tr,C^1}_{p,R}\), and no singular derivative of \(V\) under the
@@ -2020,11 +2033,11 @@ Let \(J\subset I_*\) be compact. The retained nondegenerate repaired-gauge
 regime over the preliminary profile \(V_{\rm pre}\) consists of branches for
 which there are
 \[
-\lambda\in AC(J;(0,\infty)),\qquad c\in AC(J;\mathbb R^3),
+\mu\in AC(J;(0,\infty)),\qquad q\in AC(J;\mathbb R^3),
 \]
 such that, for a.e. \(\tau\in J\),
 \[
-V(\tau):=V_{\rm pre}^{\lambda(\tau),c(\tau)}
+V(\tau):=V_{\rm pre}^{\mu(\tau),q(\tau)}
 \in\mathcal A^{\rm tr,C^1}_{p,R},\qquad
 \mathcal F(1,0;V(\tau))=0.
 \]
@@ -2039,13 +2052,13 @@ multibubble, or cascade alternatives rather than in the retained regime.
 \end{definition}
 
 \begin{proposition}[Gauge regularity on the retained regime]\label{paper2:prop:preliminary-correction}
-Let \((\lambda,c)\) be the repaired-gauge selection of the retained
+Let \((\mu,q)\) be the repaired-gauge selection of the retained
 nondegenerate regime on \(J\). Then
 \[
-\mathcal F\bigl(\lambda(\tau),c(\tau);V_{\rm pre}(\tau)\bigr)=0
+\mathcal F\bigl(\mu(\tau),q(\tau);V_{\rm pre}(\tau)\bigr)=0
 \quad\text{for a.e. }\tau\in J,
 \]
-and \((\lambda,c)\in AC(J;\mathbb R^4)\) by definition. If the path is
+and \((\mu,q)\in AC(J;\mathbb R^4)\) by definition. If the path is
 quantitatively nondegenerate, then
 \[
 \operatorname*{ess\,sup}_{\tau\in J}\|J(V(\tau))^{-1}\|<\infty.
@@ -2053,7 +2066,7 @@ quantitatively nondegenerate, then
 \end{proposition}
 \begin{proof}
 The constraint follows from Lemma~\ref{paper2:lem:gauge-covariance} applied to
-\(V(\tau)=V_{\rm pre}^{\lambda(\tau),c(\tau)}\). The absolute continuity is part
+\(V(\tau)=V_{\rm pre}^{\mu(\tau),q(\tau)}\). The absolute continuity is part
 of Definition~\ref{paper2:def:admissible-gauge-path}. The hypotheses of
 \Cref{paper2:thm:quant-jac} are part of the retained nondegenerate regime
 through the strong chart entry test
@@ -2064,19 +2077,19 @@ Proposition~\ref{paper2:thm:quant-jac}.
 \begin{definition}[Repaired chart]\label{paper2:def:repaired-chart}
 Define
 \[
-\Lambda(\tau):=\Lambda_{\rm pre}(\tau)\lambda(\tau),\qquad
-X(\tau):=X_{\rm pre}(\tau)+\Lambda_{\rm pre}(\tau)c(\tau),
+\Lambda(\tau):=\Lambda_{\rm pre}(\tau)\mu(\tau),\qquad
+X(\tau):=X_{\rm pre}(\tau)+\Lambda_{\rm pre}(\tau)q(\tau),
 \]
 \[
-V(\tau):=V_{\rm pre}^{\lambda(\tau),c(\tau)},\qquad
-P(\tau):=P_{\rm pre}^{\lambda(\tau),c(\tau)}\ \text{(same physical pressure pull-back under }\Phi).
+V(\tau):=V_{\rm pre}^{\mu(\tau),q(\tau)},\qquad
+P(\tau):=P_{\rm pre}^{\mu(\tau),q(\tau)}\ \text{(same physical pressure pull-back under }\Phi).
 \]
 \end{definition}
 
 \begin{theorem}[AC repaired parameters]\label{paper2:thm:repaired-existence}
 Assume \(\mathrm{SC}(R_*,r_*,M,\eta,\kappa)\), and suppose the branch lies in the
 retained nondegenerate repaired-gauge regime on \(J\), with selection
-\((\lambda,c)\). Then the corrected
+\((\mu,q)\). Then the corrected
 chart \((\Lambda,X)\) is absolutely continuous on \(J\), satisfies
 \[
 a(\tau)=\frac{\Lambda'(\tau)}{\Lambda(\tau)}\in L^1_{\rm loc}(J),\qquad
@@ -2085,29 +2098,29 @@ b(\tau)=\frac{X'(\tau)}{\Lambda(\tau)}\in L^1_{\rm loc}(J),
 and the gauge constraints \(\mathcal F(1,0;V(\tau))=0\) hold a.e.
 Equivalently,
 \[
-\mathcal F(\lambda(\tau),c(\tau);V_{\rm pre}(\tau))=0
+\mathcal F(\mu(\tau),q(\tau);V_{\rm pre}(\tau))=0
 \]
-for the repaired-gauge selection \((\lambda,c)\).
+for the repaired-gauge selection \((\mu,q)\).
 \end{theorem}
 \begin{proof}
-By Definition~\ref{paper2:def:admissible-gauge-path}, \((\lambda,c)\in AC(J)\) and the
+By Definition~\ref{paper2:def:admissible-gauge-path}, \((\mu,q)\in AC(J)\) and the
 repaired gauge constraints hold for \(V(\tau)\) a.e.
-By definition \(V(\tau)=V_{\rm pre}^{\lambda(\tau),c(\tau)}\), so Lemma~\ref{paper2:lem:gauge-covariance}
-applied at \((\lambda,c)=(\lambda(\tau),c(\tau))\) gives
+By definition \(V(\tau)=V_{\rm pre}^{\mu(\tau),q(\tau)}\), so Lemma~\ref{paper2:lem:gauge-covariance}
+applied at \((\mu,q)=(\mu(\tau),q(\tau))\) gives
 \[
-\mathcal F(1,0;V_{\rm pre}^{\lambda,c})=\mathcal F(\lambda,c;V_{\rm pre})
+\mathcal F(1,0;V_{\rm pre}^{\mu,q})=\mathcal F(\mu,q;V_{\rm pre})
 \]
 implies \(\mathcal F(1,0;V(\tau))=0\) a.e.
 
-Since \(\Lambda=\Lambda_{\rm pre}\lambda\) and \(X=X_{\rm pre}+\Lambda_{\rm pre}c\),
+Since \(\Lambda=\Lambda_{\rm pre}\mu\) and \(X=X_{\rm pre}+\Lambda_{\rm pre}q\),
 and \(\Lambda_{\rm pre},X_{\rm pre}\) are AC by \textup{(SC5)}, the products and sums
 preserve AC, hence \((\Lambda,X)\in AC(I_*)\). Differentiating,
 \[
 a=\frac{\Lambda'}{\Lambda}
-=\frac{\Lambda_{\rm pre}'}{\Lambda_{\rm pre}}+\frac{\lambda'}{\lambda}\in L^1_{\rm loc},\qquad
+=\frac{\Lambda_{\rm pre}'}{\Lambda_{\rm pre}}+\frac{\mu'}{\mu}\in L^1_{\rm loc},\qquad
 b=\frac{X'}{\Lambda}
-=\frac{X_{\rm pre}'+\Lambda_{\rm pre}'c+\Lambda_{\rm pre}c'}
-{\Lambda_{\rm pre}\lambda}\in L^1_{\rm loc}.
+=\frac{X_{\rm pre}'+\Lambda_{\rm pre}'q+\Lambda_{\rm pre}q'}
+{\Lambda_{\rm pre}\mu}\in L^1_{\rm loc}.
 \]
 This gives the claimed regularity.
 \end{proof}
@@ -2158,6 +2171,13 @@ Let \(0<r<R\), let \(\zeta\in C_c^\infty(B_R)\) satisfy
   V\in L^2_{\mathrm{loc}}(I_*;L^3(B_R)),\qquad
   P\in L^1_{\mathrm{loc}}(I_*;L^{3/2}(B_R)).
 \]
+Assume also the canonical pressure identity
+\[
+  -\Delta P=\partial_i\partial_j(V_iV_j)
+  \quad\text{in }\mathcal D'(B_R\times I_*),
+\]
+which follows from
+\cref{paper6a:thm:canonical-repaired-gauge-equation,paper2:lem:pressure-eq}.
 For a.e. \(\tau\in I_*\) there exists
 \[
 P(\cdot,\tau)=P_{\rm loc}(\cdot,\tau)+H(\cdot,\tau)
@@ -2175,9 +2195,9 @@ Moreover
 \|P_{\rm loc}(\tau)\|_{L^{3/2}(\mathbb R^3)}
 \lesssim \|V(\tau)\|_{L^3(B_R)}^2,
 \]
-and, for each \(1\le q<\infty\) and \(0<r'<r\),
+and, for each \(1\le \ell<\infty\) and \(0<r'<r\),
 \[
-\|H(\tau)\|_{L^q(B_{r'})}\lesssim_{q,R,r,r'}
+\|H(\tau)\|_{L^\ell(B_{r'})}\lesssim_{\ell,R,r,r'}
 \|P(\tau)\|_{L^{3/2}(B_R)}+\|V(\tau)\|_{L^3(B_R)}^2.
 \]
 Thus the source-generated pressure and the harmonic component are recorded
@@ -2215,11 +2235,11 @@ Since \(-\Delta P_{\rm loc}=\partial_i\partial_j(\zeta V_iV_j)\) and
 so \(H(\cdot,\tau)\) is harmonic on \(B_r\). Imposing
 \(\fint_{B_r}H=0\) fixes the
 time-dependent additive constant uniquely in each time slice.
-For \(q\in[1,\infty)\) and \(0<r'<r\), harmonicity and local
-\(L^p\)-to-\(L^q\) interior estimates imply
+For \(\ell\in[1,\infty)\) and \(0<r'<r\), harmonicity and local
+\(L^p\)-to-\(L^\ell\) interior estimates imply
 \[
-\|H(\tau)\|_{L^q(B_{r'})}
-\lesssim_{q,r,r'}\|H(\tau)\|_{L^{3/2}(B_r)}.
+\|H(\tau)\|_{L^\ell(B_{r'})}
+\lesssim_{\ell,r,r'}\|H(\tau)\|_{L^{3/2}(B_r)}.
 \]
 Finally,
 \[
@@ -2234,8 +2254,8 @@ If \(V,P\) are measurable in \(\tau\), then
 \(\tau\mapsto P_{\rm loc}(\cdot,\tau)\) is measurable in
 \(L^{3/2}(\mathbb R^3)\) by boundedness of
 \(\mathcal R_i\mathcal R_j\), hence
-\(\tau\mapsto H(\cdot,\tau)\) is measurable in each \(L^q(B_{r'})\),
-\(0<r'<r\).  The normalization
+\(\tau\mapsto H(\cdot,\tau)\) is measurable in each
+\(L^\ell(B_{r'})\), \(1\leq\ell<\infty\), \(0<r'<r\).  The normalization
 \(\fint_{B_r}H(\cdot,\tau)\,dY=0\) fixes the time-dependent additive constant
 in \(H\) uniquely for each \(\tau\), and therefore the decomposition is a legitimate
 renormalized pressure splitting.
@@ -2253,8 +2273,8 @@ belongs to \(AC(J)\), and there are functions
 \begin{equation}\label{paper2:eq:mod-row}
 G_\alpha'(\tau)
 =-\mathcal R_\alpha(\tau)
-+a(\tau)\,\partial_\lambda\mathcal F_\alpha(1,0;V(\tau))
-+\sum_{k=1}^3 b_k(\tau)\,\partial_{c_k}\mathcal F_\alpha(1,0;V(\tau))
++a(\tau)\,\partial_\mu\mathcal F_\alpha(1,0;V(\tau))
++\sum_{k=1}^3 b_k(\tau)\,\partial_{q_k}\mathcal F_\alpha(1,0;V(\tau))
 \end{equation}
 for a.e. \(\tau\in J\).  The terms \(\mathcal R_\alpha\) are defined as the
 limits obtained by testing the represented renormalized equation against smooth
@@ -2287,25 +2307,25 @@ step uses an \(L^1_x\)-against-\(L^2_x\) pairing with \(\partial_\tau V\).
 For \(\mathcal A_\tau=V+Y\cdot\nn V\) and \(\alpha=0,1,2,3\),
 \[
 D_V\mathcal F_\alpha(1,0;V)[\mathcal A_\tau]
-=\partial_\lambda\mathcal F_\alpha(1,0;V).
+=\partial_\mu\mathcal F_\alpha(1,0;V).
 \]
 For the translation directions, the Jacobian entries are read from the strong
 chart of \cref{paper2:prop:full-jacobian}:
 \[
-\partial_{c_k}\mathcal F_0(1,0;V)=\mathcal J_{c_k}(0,1;V),
+\partial_{q_k}\mathcal F_0(1,0;V)=\mathcal J_{q_k}(0,1;V),
 \qquad
-\partial_{c_k}\mathcal F_j(1,0;V)=\mathcal M_{j,c_k}(0,1;V)
+\partial_{q_k}\mathcal F_j(1,0;V)=\mathcal M_{j,q_k}(0,1;V)
 \]
 for \(j,k=1,2,3\).  In particular, the singular weighted translation entries in
 the first row are not identified through the raw profile variation
 \(D_V\mathcal F_0(1,0;V)[\partial_kV]\), but through the strong-chart
-derivative \(\mathcal J_{c_k}\).
+derivative \(\mathcal J_{q_k}\).
 \end{lemma}
 
 \begin{proof}
-From \(V_{\lambda,c}(Y)=\lambda V(c+\lambda Y)\),
+From \(V_{\mu,q}(Y)=\mu V(q+\mu Y)\),
 \[
-\partial_\lambda V_{\lambda,c}\big|_{(1,0)}=V+Y\cdot\nabla V=\mathcal A_\tau.
+\partial_\mu V_{\mu,q}\big|_{(1,0)}=V+Y\cdot\nabla V=\mathcal A_\tau.
 \]
 Substituting this into the profile derivative formula for \(\mathcal F_\alpha\)
 gives the scale identity.  The translation identities are exactly the chart
@@ -2320,8 +2340,8 @@ and assume the branch satisfies the modulation-differentiability row
 \cref{paper2:def:mod-diff-row}.
 Then for a.e. \(\tau\in I_*\),
 \[
-\partial_\lambda\mathcal F_\alpha(1,0;V)\,a(\tau)
-+\sum_{k=1}^3\partial_{c_k}\mathcal F_\alpha(1,0;V)\,b_k(\tau)
+\partial_\mu\mathcal F_\alpha(1,0;V)\,a(\tau)
++\sum_{k=1}^3\partial_{q_k}\mathcal F_\alpha(1,0;V)\,b_k(\tau)
 =\mathcal R_\alpha(\tau),
 \]
 Equivalently,
@@ -2341,8 +2361,8 @@ Set \(G_\alpha(\tau):=\mathcal F_\alpha(1,0;V(\tau))\). By Theorem~\ref{paper2:t
 \eqref{paper2:eq:mod-row} holds. Hence \(G_\alpha'=0\) a.e., and
 \eqref{paper2:eq:mod-row} gives
 \[
-\partial_\lambda\mathcal F_\alpha(1,0;V)\,a(\tau)
-+\sum_{k=1}^3\partial_{c_k}\mathcal F_\alpha(1,0;V)\,b_k(\tau)
+\partial_\mu\mathcal F_\alpha(1,0;V)\,a(\tau)
++\sum_{k=1}^3\partial_{q_k}\mathcal F_\alpha(1,0;V)\,b_k(\tau)
 =\mathcal R_\alpha(\tau),
 \]
 which is equivalent to \(J(\tau)\theta(\tau)=\mathcal R(\tau)\).
@@ -2372,7 +2392,7 @@ immediate from \(\mathcal R\in L^1_{\rm loc}\), while the second follows if \(\m
 \begin{lemma}[AC chart-generated tests are admissible]\label{paper2:lem:ac-chart-tests}
 Let \((u,p)\) be suitable on a compact physical cylinder, and let
 \(\Lambda,X\in AC(J)\) on a compact interval \(J\), with
-\(0<\lambda_-\le \Lambda\le\lambda_+<\infty\) and
+\(0<\Lambda_-\le \Lambda\le\Lambda_+<\infty\) and
 \[
 a=\frac{\Lambda'}{\Lambda},\qquad b=\frac{X'}{\Lambda}
 \quad\text{in }L^1(J).
@@ -2594,7 +2614,7 @@ yields the corresponding limit constraints and equations.
 
 \begin{theorem}[Chart and repaired-gauge representation]\label{paper2:thm:A}
 Assume \(\mathrm{SC}(R_*,r_*,M,\eta,\kappa)\), and suppose the branch lies in the
-retained repaired-gauge regime with selection \((\lambda,c)\) on
+retained repaired-gauge regime with selection \((\mu,q)\) on
 \(J=[\tau_0-\ell,\tau_0+\ell]\subset I_*\). Then there are fields \((V,P)\) on \(Q_{2R}^J\), with
 \((\Lambda,X)\in AC(J)\),
 \[
@@ -2613,15 +2633,15 @@ and \(\mathcal F(1,0;V(\tau))=0\) for \(\tau\in J\).
 From \textup{(SC5)} and Proposition~\ref{paper2:prop:prelim-frame}, \((\Lambda_{\rm pre},X_{\rm pre})\)
 are AC on \(I_*\), so \(V_{\rm pre}\) is defined on \(Q_{2R}^*\).
 The retained repaired-gauge regime supplies
-\((\lambda,c)\in AC(J;(0,\infty)\times\mathbb R^3)\) and
-\(\mathcal F(1,0;V_{\rm pre}^{\lambda,c})=0\) a.e.
+\((\mu,q)\in AC(J;(0,\infty)\times\mathbb R^3)\) and
+\(\mathcal F(1,0;V_{\rm pre}^{\mu,q})=0\) a.e.
 By Definition~\ref{paper2:def:repaired-chart} and Theorem~\ref{paper2:thm:repaired-existence}, setting
 \[
-\Lambda(\tau)=\Lambda_{\rm pre}(\tau)\lambda(\tau),\qquad
-X(\tau)=X_{\rm pre}(\tau)+\Lambda_{\rm pre}(\tau)c(\tau),\qquad
-V(\tau)=V_{\rm pre}^{\lambda(\tau),c(\tau)},
+\Lambda(\tau)=\Lambda_{\rm pre}(\tau)\mu(\tau),\qquad
+X(\tau)=X_{\rm pre}(\tau)+\Lambda_{\rm pre}(\tau)q(\tau),\qquad
+V(\tau)=V_{\rm pre}^{\mu(\tau),q(\tau)},
 \]
-and \(P(\tau)=P_{\rm pre}^{\lambda(\tau),c(\tau)}\),
+and \(P(\tau)=P_{\rm pre}^{\mu(\tau),q(\tau)}\),
 gives \( \Lambda,X\in AC(J)\) and
 \[
 a=\frac{\Lambda'}{\Lambda},\qquad b=\frac{X'}{\Lambda},
@@ -3911,7 +3931,10 @@ and \((V_*,P_*)\) is a suitable weak solution on every compact subcylinder of
 \]
 Finally, on every smaller subcylinder, the local Calder\'on--Zygmund pressure
 pieces associated to \(V_n\otimes V_n\) converge strongly in \(L^{3/2}\) to the
-corresponding local pressure piece associated to \(V_*\otimes V_*\).
+corresponding local pressure piece associated to \(V_*\otimes V_*\).  In the
+same canonical decomposition, the mean-normalized harmonic remainders converge
+weakly in \(L^{3/2}\), remain spatially harmonic in the limit, and are
+controlled only through their local pressure-oscillation bounds.
 \end{lemma}
 
 \begin{proof}
@@ -4157,7 +4180,16 @@ After passing to a subsequence:
       \(\widetilde P_n:=P_n-\overline{P_n}_{B_\rho}\) converges weakly in
       \(L^{3/2}(Q_\rho)\) to a limit \(P_*\) such that
       \(-\Delta P_*=\partial_i\partial_j(V_{*,i}V_{*,j})\) on \(Q_\rho\) in
-      the sense of distributions modulo a function of time;
+      the sense of distributions modulo a function of time.  On every
+      \(Q_{\rho'}\), \(\rho'<\rho\), the canonical decomposition is
+      \[
+        \widetilde P_n=P_{{\rm loc},n}+H_n,\qquad
+        P_*=P_{{\rm loc},*}+H_*,
+      \]
+      where \(P_{{\rm loc},n}\to P_{{\rm loc},*}\) strongly in
+      \(L^{3/2}(Q_{\rho'})\), \(H_n\rightharpoonup H_*\) weakly there after
+      normalization, and every \(H_n\) and \(H_*\) is spatially harmonic on
+      the inner ball;
 \item \(a_n\rightharpoonup^* a_*\) and \(b_n\rightharpoonup^* b_*\)
       weakly-\(*\) in \(L^\infty(-R_*^2,0)\), with
       \(\|a_*\|_\infty+\|b_*\|_\infty\le M\);
@@ -4195,6 +4227,24 @@ the fixed cylinder \(Q_\rho\) yields strong convergence
 estimate \cite{CalderonZygmund1952,Stein1970} applied to the local pressure
 identity in \cref{paper2:thm:pressure-decomp}.  Banach--Alaoglu yields
 \(\widetilde P_n\rightharpoonup P_*\) weakly in \(L^{3/2}(Q_\rho)\).
+Choose a cutoff supported in \(B_\rho\) and equal to one on an intermediate
+ball containing \(B_{\rho'}\).  By
+\cref{paper2:thm:pressure-decomp}, write
+\[
+  \widetilde P_n=P_{{\rm loc},n}+H_n.
+\]
+The strong \(L^3(Q_{\rho'})\) convergence from item \textup{(i)}, with the
+cutoff supported in the intermediate ball, and Calder\'on--Zygmund boundedness
+give
+\[
+  P_{{\rm loc},n}\longrightarrow P_{{\rm loc},*}
+  \quad\text{strongly in }L^{3/2}(Q_{\rho'}).
+\]
+Subtracting this convergence from the weak convergence of
+\(\widetilde P_n\) gives \(H_n\rightharpoonup H_*:=P_*-P_{{\rm loc},*}\)
+weakly in \(L^{3/2}(Q_{\rho'})\).  Harmonicity passes to the limit in
+distributions, and the spatial-mean normalization fixes the time-dependent
+constant.  This proves the asserted convergence of both pressure components.
 Pass to the limit in the local pressure identity
 \[
   -\Delta\widetilde P_n
@@ -5700,7 +5750,7 @@ Repeating the same estimates with terminal time $\sigma\in J'$ gives
 \le C\bigl(1+\mathcal C_J(2R)+\mathcal D_J(2R)\bigr)
 \]
 for almost every $\sigma\in J'$. Taking the essential supremum over
-$\sigma\in J'$ and renaming $C$ proves the theorem.
+$\sigma\in J'$ and renaming $C$ proves the lemma.
 \end{proof}
 
 \begin{definition}[Local compact-cylinder control]
@@ -9457,8 +9507,9 @@ for \(\chi_{\varepsilon,R}\) implies
   |y|^{-p-1}|V|^4\,dy .
 \end{aligned}
 \]
-The integrand \(|y|^{-p-1}|V|^4\) belongs to \(L^1(\mathbb R^3)\) at the
-fixed time.  Hence absolute continuity of the Lebesgue integral gives
+By the explicit weighted \(L^4\)-window hypothesis in the statement, the
+integrand \(|y|^{-p-1}|V|^4\) belongs to \(L^1(\mathbb R^3)\) at the fixed
+time.  Hence absolute continuity of the Lebesgue integral gives
 \[
   \int_{\{\varepsilon<|y|<2\varepsilon\}}
   |y|^{-p-1}|V|^4\,dy\to0
@@ -13602,6 +13653,19 @@ for suitable constants \(c_{n,R}(\tau)\), and consequently
   \nabla P_n\to0
   \quad\text{in }L^1_\tau H^{-1}_y(B_R).
 \]
+More explicitly, for every \(A>2R\),
+\[
+  P_n-c_{n,A}=P_n^{\rm loc}+H_{n,A}\quad\text{on }B_R,
+\]
+where \(P_n^{\rm loc}\) is generated by
+\(F_n{\bf 1}_{B_A}\), \(H_{n,A}\) is harmonic on \(B_R\), the local part
+tends to zero for fixed \(A\), and
+\[
+  \lim_{A\to\infty}\sup_n
+  \|H_{n,A}\|_{L^1_\tau L^2_y(B_R)}=0.
+\]
+The constants in the first conclusion may be chosen as
+\(c_{n,R}=c_{n,A_n}\) along a diagonal sequence \(A_n\to\infty\).
 \end{lemma}
 
 \begin{proof}
@@ -13620,7 +13684,7 @@ For the local part, Calder\'on--Zygmund boundedness gives
 \]
 For the far part define
 \[
-  c_{n,R}(\tau)=
+  c_{n,A}(\tau)=
   \int_{|z|>A}\Gamma_{ij}(-z)F_{n,ij}(z,\tau)\,dz,
 \]
 first for compactly supported approximations and then by passage to the
@@ -13631,7 +13695,7 @@ first for compactly supported approximations and then by passage to the
 \]
 Hence
 \[
-  |P_n^{\rm far}(y,\tau)-c_{n,R}(\tau)|
+  |P_n^{\rm far}(y,\tau)-c_{n,A}(\tau)|
   \le
   C_R\int_{|z|>A}|z|^{-4}|F_n(z,\tau)|\,dz.
 \]
@@ -13646,14 +13710,29 @@ By Hölder's inequality with exponents \(3/2\) and \(3\),
 \]
 Therefore
 \[
-  \|P_n^{\rm far}-c_{n,R}\|_{L^1_\tau L^\infty_y(B_R)}
+  \|P_n^{\rm far}-c_{n,A}\|_{L^1_\tau L^\infty_y(B_R)}
   \le
   C_{R,I}A^{-3}
   \sup_n\|F_n\|_{L^\infty_\tau L^{3/2}_y}.
 \]
-Since \(B_R\) has finite measure, this also controls the far part in
-\(L^1_\tau L^2_y(B_R)\).  Taking \(n\to\infty\) in the local term and then
-\(A\to\infty\) in the far term gives
+Since \(B_R\) has finite measure, this also controls the harmonic far part
+\[
+  H_{n,A}:=P_n^{\rm far}-c_{n,A}
+\]
+in \(L^1_\tau L^2_y(B_R)\), uniformly in \(n\), with norm tending to zero
+as \(A\to\infty\).  It is harmonic on \(B_R\) because its source is supported
+outside \(B_A\).
+
+Choose \(A_k\uparrow\infty\).  For each \(k\), the local convergence on
+\(B_{A_k}\) gives \(N_k\) such that
+\[
+  \|P_n^{\rm loc}\|_{L^1_\tau L^2_y(B_R)}\leq 2^{-k}
+  \qquad(n\geq N_k),
+\]
+after increasing \(N_k\) so that \(N_k<N_{k+1}\).  Set \(A_n=A_k\) for
+\(N_k\leq n<N_{k+1}\), and set \(c_{n,R}:=c_{n,A_n}\).  Then
+\(A_n\to\infty\), the local part tends to zero, and the uniform far-part
+bound tends to zero.  Thus
 \[
   P_n-c_{n,R}\to0
   \quad\text{in }L^1_\tau L^2_y(B_R).
@@ -14452,10 +14531,17 @@ Then
   \quad\text{in }L^1(I;L^2(B_R)).
 \]
 If the pressures associated with these cross stresses are reconstructed by the
-local pressure decomposition, then their gradients converge to zero in
+canonical local pressure decomposition, write
+\[
+  P_n^{\rm cross}=P_{n,{\rm loc}}^{\rm cross}+H_n^{\rm cross}.
+\]
+The local components have gradients converging to zero in
 \[
   L^1(I;H^{-1}(B_R)).
 \]
+The remainders \(H_n^{\rm cross}\) are harmonic on \(B_R\); a nonvanishing
+harmonic remainder is the named pressure/exterior row, and in its absence the
+full cross-pressure gradients converge to zero in the same space.
 \end{lemma}
 
 \begin{proof}
@@ -19034,7 +19120,11 @@ subcylinders has a subsequential local occupation state.
 More precisely, after passing to a subsequence, the full represented branch
 \(V_n\) converges weakly in \(L^2(I;H^1(B_R))\) and strongly in
 \(L^2(I;L^q(B_R))\) for every \(q<6\).  Its pressure gradients converge
-distributionally modulo functions of time.
+distributionally modulo functions of time.  In the canonical pressure split,
+the source-generated parts converge with the velocity products, while the
+mean-normalized harmonic components converge weakly on inner balls after
+subsequence extraction; failure of that harmonic compactness is recorded as
+the pressure/exterior row.
 
 The components \(U_n\) and \(S_n\) have the same strong compactness only on
 subbranches for which their componentwise time-derivative rows are available.
@@ -20427,9 +20517,12 @@ route the branch to a named bounded-window/local row;
 \item \(W_\infty\) has a singular point on that compact subwindow.  Then the
 contrapositive of
 \cref{paper8:thm:terminal-ckn-regularity} yields a compact subcylinder on which
-the local CKN quantity of \((W_\infty,\widetilde P_\infty)\) is positive.  Strong
-local convergence of the velocity and local pressure transfers a positive amount
-of this CKN quantity to \((W_n,\widetilde P_n)\), and
+the local CKN quantity of \((W_\infty,\widetilde P_\infty)\) is positive.
+Strong local convergence of the velocity and of the
+Calder\'on--Zygmund pressure component transfers a positive amount of this
+CKN quantity to \((W_n,\widetilde P_n)\).  The harmonic pressure component
+either converges under the retained pressure-atlas hypothesis or triggers the
+named pressure/exterior row.  Thus
 \cref{paper6a:lem:terminal-local-critical-mass-routing} assigns a compact active,
 pressure, rough-core, or other named adjacent local row;
 \item \(W_\infty\) is regular on the chosen compact subwindow but carries
@@ -22299,20 +22392,15 @@ The local results needed for the final assembly are restated in the following fo
 \begin{theorem}[Repaired-gauge representation]
 \label{paper6:thm:representation}
 Let a positive local Type II concentration sequence contain a nondegenerate
-selected core.  Then, after passing to selected windows, there are local
-scale-center variables \(\lambda(\tau)>0\), \(x_c(\tau)\), renormalized fields
+selected core.  Then, after passing to selected windows, there are final
+scale-center variables \(\Lambda(\tau)>0\), \(X(\tau)\), renormalized fields
 \[
-  V(y,\tau)=\lambda(\tau)u(x_c(\tau)+\lambda(\tau)y,t(\tau)),
+  V(Y,\tau)=\Lambda(\tau)u(X(\tau)+\Lambda(\tau)Y,t(\tau)),
   \qquad
-  P(y,\tau)=\lambda(\tau)^2p(x_c(\tau)+\lambda(\tau)y,t(\tau))+\pi(\tau),
+  P(Y,\tau)=\Lambda(\tau)^2p(X(\tau)+\Lambda(\tau)Y,t(\tau))+\pi(\tau),
 \]
-and modulation coefficients \(a,b\) such that
-\[
-  \partial_\tau V+(V\cdot\nabla)V+\nabla P
-  =
-  \nu\Delta V+a(\tau)(V+y\cdot\nabla V)+b(\tau)\cdot\nabla V,
-  \qquad \nabla\cdot V=0.
-\]
+and modulation coefficients \(a,b\) satisfying the single canonical
+represented equation \eqref{paper6a:eq:canonical-repaired-gauge-equation}.
 On each compact renormalized window one has the local suitable energy
 inequality, local pressure reconstruction modulo functions of time, stability
 under subsequences, and the compact-window bounds proved in \cref{sec:repaired-gauge-construction}.  Failure of the nondegenerate scale-center selection is part of the
@@ -22320,7 +22408,11 @@ multibubble, cascade, or scale-rigidity alternatives.
 \end{theorem}
 
 \begin{proof}
-\Cref{paper2:thm:C} is precisely the compact-window representation theorem.
+\Cref{paper2:thm:C} constructs the compact-window chart and its suitable
+structure.  Its absolutely continuous final variables enter
+\cref{paper6a:thm:canonical-repaired-gauge-equation}, and
+\cref{paper2:thm:pressure-decomp} supplies the canonical local pressure
+decomposition.  These are exactly the conclusions stated here.
 \end{proof}
 
 \begin{theorem}[Compact single-core exclusion]
