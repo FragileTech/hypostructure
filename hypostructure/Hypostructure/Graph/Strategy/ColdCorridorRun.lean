@@ -50,7 +50,7 @@ abbrev coldKeys
     K .coldGermExtraction ::
     K .coldHandoffTransfer :: K .coldExchangeBound :: K .coldFailureRouting ::
     K .coldAmbientCubicStubExcess ::
-    K .coldSelectedBranchExcess :: K .coldHotFailureMass ::
+    K .coldSelectedBranchExcess ::
     K .coldFailureHandoff :: K .coldFailureCompression ::
     K .coldFailureDefect :: K .coldFailureCycle :: K .coldGermSilent ::
     K .coldGermDistinguished :: K .coldGermRealized ::
@@ -65,7 +65,7 @@ abbrev coldBranchClosedKeys
     K .coldGermExtraction ::
     K .coldHandoffTransfer :: K .coldExchangeBound :: K .coldFailureRouting ::
     K .coldAmbientCubicStubExcess ::
-    K .coldSelectedBranchExcess :: K .coldHotFailureMass ::
+    K .coldSelectedBranchExcess ::
     K .coldFailureHandoff :: K .coldFailureCompression ::
     K .coldFailureDefect :: K .coldFailureCycle :: K .coldGermSilent ::
     K .coldGermDistinguished :: K .coldGermRealized ::
@@ -83,15 +83,10 @@ noncomputable def runColdBranchClosed
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
     [FactKeys.Has (K (data := data) .uncompressible) known]
-    [FactKeys.Has (K (data := data) .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K (data := data) .hotColdPartition) known]
     [FactKeys.Has (K (data := data) .maximalPacking) known]
     [FactKeys.Has (K (data := data) .densityCap) known]
-    [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
-    [FactKeys.Has (K (data := data) .negativeSupport) known]
     [FactKeys.Has (K (data := data) .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K (data := data) .spineSurplusEstimate) known]
-    [FactKeys.Has (K (data := data) .sparsePressureNearCubic) known]
-    [FactKeys.Has (K (data := data) .route8TerminalNoGo) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
     (stateFresh : K (data := data) .coldCorridorState ∉ known)
@@ -105,7 +100,6 @@ noncomputable def runColdBranchClosed
     (handoffFresh : K (data := data) .coldFailureHandoff ∉ known)
     (routingFresh : K (data := data) .coldFailureRouting ∉ known)
     (exchangeFresh : K (data := data) .coldExchangeBound ∉ known)
-    (hotMassFresh : K (data := data) .coldHotFailureMass ∉ known)
     (selectedExcessFresh : K (data := data) .coldSelectedBranchExcess ∉ known)
     (ambientStubFresh : K (data := data) .coldAmbientCubicStubExcess ∉ known)
     (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
@@ -175,15 +169,8 @@ noncomputable def runColdBranchClosed
       subst isNew
       revert isOld
       simp [handoffFresh])
-  have afterHotMass :=
-    (coldHotFailureMassRow (data := data)).run afterHandoff (by
-      intro key isNew isOld
-      simp only [List.mem_singleton] at isNew
-      subst isNew
-      revert isOld
-      simp [hotMassFresh])
   have afterSelectedExcess :=
-    (coldSelectedBranchExcessRow (data := data)).run afterHotMass (by
+    (coldSelectedBranchExcessRow (data := data)).run afterHandoff (by
       intro key isNew isOld
       simp only [List.mem_singleton] at isNew
       subst isNew
@@ -252,15 +239,10 @@ noncomputable def runCold
     {known : FactKeys (Input BranchState Presentation presentation data)}
     [FactKeys.Has (K (data := data) .selection) known]
     [FactKeys.Has (K (data := data) .uncompressible) known]
-    [FactKeys.Has (K (data := data) .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K (data := data) .hotColdPartition) known]
     [FactKeys.Has (K (data := data) .maximalPacking) known]
     [FactKeys.Has (K (data := data) .densityCap) known]
-    [FactKeys.Has (K (data := data) .largeBudgetResidual) known]
-    [FactKeys.Has (K (data := data) .negativeSupport) known]
     [FactKeys.Has (K (data := data) .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K (data := data) .spineSurplusEstimate) known]
-    [FactKeys.Has (K (data := data) .sparsePressureNearCubic) known]
-    [FactKeys.Has (K (data := data) .route8TerminalNoGo) known]
     [FactKeys.Has (K (data := data) .coldTerminalResidual) known]
     (history : ExactLedger (Input BranchState Presentation presentation data)
       current known)
@@ -275,7 +257,6 @@ noncomputable def runCold
     (handoffFresh : K (data := data) .coldFailureHandoff ∉ known)
     (routingFresh : K (data := data) .coldFailureRouting ∉ known)
     (exchangeFresh : K (data := data) .coldExchangeBound ∉ known)
-    (hotMassFresh : K (data := data) .coldHotFailureMass ∉ known)
     (selectedExcessFresh : K (data := data) .coldSelectedBranchExcess ∉ known)
     (ambientStubFresh : K (data := data) .coldAmbientCubicStubExcess ∉ known)
     (transferFresh : K (data := data) .coldHandoffTransfer ∉ known)
@@ -293,7 +274,7 @@ noncomputable def runCold
     runColdBranchClosed (data := data) history
       stateFresh tableFresh realizedFresh distinguishedFresh silentFresh
       cycleFresh defectFresh compressionFresh handoffFresh routingFresh
-      exchangeFresh hotMassFresh selectedExcessFresh
+      exchangeFresh selectedExcessFresh
       ambientStubFresh transferFresh extractionFresh routedFresh
       branchClosedFresh
   exact closeIncompatible afterBranchClosed (K .coldTerminalResidual)

@@ -1628,24 +1628,19 @@ noncomputable def selectedBarrierDichotomy
       [K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .barrierCap)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .barrierOverflow)
-      history :=
-  barrierEnumerationDichotomy (data := spineData) history
+        K .selection]) :=
+  let partitioned :=
+    (hotColdPartition (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [hotColdPartition, K_eq_iff])
+  barrierEnumerationDichotomy (data := spineData) partitioned
     (K .maximalPacking) (K .barrierCap) (K .barrierOverflow)
     (fun fact => fact.down.2)
     (fun cap => ⟨cap⟩)
     (fun overflow => ⟨overflow⟩)
-    (by simp [K_eq_iff])
-    (by simp [K_eq_iff])
+    (by simp [hotColdPartition, K_eq_iff])
+    (by simp [hotColdPartition, K_eq_iff])
 
 /-- Node `[23]`, closing the barrier-overflow arm of the separated package. -/
 noncomputable def selectedBarrierOverflowCloses
@@ -1664,12 +1659,12 @@ noncomputable def selectedBarrierOverflowCloses
 noncomputable def selectedDensityBudget
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .windowPackageSeparated, K .surplusAtOrBelow,
+      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .densityCap, K .barrierCap, K .windowPackageSeparated,
+      [K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -1682,14 +1677,14 @@ noncomputable def selectedDensityBudget
 noncomputable def selectedCompletedSpinePrefix
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .windowPackageSeparated, K .surplusAtOrBelow,
+      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -1725,7 +1720,7 @@ noncomputable def selectedCompletedSpinePrefix
 noncomputable def selectedCurvatureRankDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .windowPackageSeparated, K .surplusAtOrBelow,
+      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
@@ -1752,7 +1747,7 @@ noncomputable def selectedCurvatureRankDichotomy
 noncomputable def selectedBarrierCapCurvatureRankDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .windowPackageSeparated, K .surplusAtOrBelow,
+      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
@@ -1888,7 +1883,7 @@ noncomputable def selectedForcedCurvatureCost
       [K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -1986,7 +1981,7 @@ noncomputable def selectedEntropyPackage
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -2112,7 +2107,7 @@ noncomputable def selectedLowEntropyLargeBudget
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -2198,7 +2193,7 @@ noncomputable def selectedLowEntropyNetChargeLocalization
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -2289,7 +2284,7 @@ noncomputable def selectedLowEntropyNegativeSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -2351,7 +2346,7 @@ noncomputable def selectedLowEntropyNegativeSupportAfterNetChargeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -2468,7 +2463,7 @@ noncomputable def selectedHighEntropyNetChargeCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2478,7 +2473,7 @@ noncomputable def selectedHighEntropyNetChargeCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -2496,7 +2491,7 @@ noncomputable def selectedHighEntropyNetChargeLocalization
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2529,7 +2524,7 @@ noncomputable def selectedHighEntropyNetChargeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2563,7 +2558,7 @@ noncomputable def selectedHighEntropyNetChargeNonNegativeCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -2587,7 +2582,7 @@ noncomputable def selectedHighEntropyNegativeSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2618,7 +2613,7 @@ noncomputable def selectedHighEntropyTypeSplitDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2650,7 +2645,7 @@ noncomputable def selectedHighEntropyNegativeSupportAfterNetChargeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2682,7 +2677,7 @@ noncomputable def selectedHighEntropyTypeSplitAfterNetChargeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2725,7 +2720,7 @@ noncomputable def selectedLowEntropyTypeAReceiverRouting
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2759,7 +2754,7 @@ noncomputable def selectedLowEntropyTypeASaturationDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2793,7 +2788,7 @@ noncomputable def selectedLowEntropyTypeAUnsaturatedDischarge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2805,7 +2800,7 @@ noncomputable def selectedLowEntropyTypeAUnsaturatedDischarge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -2830,7 +2825,7 @@ noncomputable def selectedLowEntropyTypeAPortReturn
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2842,7 +2837,7 @@ noncomputable def selectedLowEntropyTypeAPortReturn
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -2866,7 +2861,7 @@ noncomputable def selectedLowEntropyTypeAVisibleEntryDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -2914,7 +2909,7 @@ noncomputable def selectedHighEntropyTypeAReceiverRouting
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -2985,7 +2980,7 @@ noncomputable def selectedHighEntropyTypeAUnsaturatedDischarge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -3024,7 +3019,7 @@ noncomputable def selectedHighEntropyTypeAPortReturn
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -3086,7 +3081,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessSilentHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3099,7 +3094,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessSilentHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -3144,7 +3139,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessSilentHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -3174,7 +3169,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitEntry
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3187,7 +3182,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitEntry
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -3216,7 +3211,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFourFiniteDescent
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3230,7 +3225,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFourFiniteDescent
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -3273,7 +3268,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitEntry
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -3346,7 +3341,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessSilentExitFourReady
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3360,7 +3355,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessSilentExitFourReady
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -3395,7 +3390,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFourDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3447,7 +3442,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessSilentExitFourReady
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -3483,7 +3478,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFourDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3521,7 +3516,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3558,7 +3553,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3573,7 +3568,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -3600,7 +3595,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3637,7 +3632,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3673,7 +3668,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3689,7 +3684,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -3724,7 +3719,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3756,7 +3751,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8TerminalNoGo
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3772,7 +3767,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8TerminalNoGo
           K .forcedCurvatureCost, K .curvatureFullRank,
           K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
           K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-          K .densityCap, K .barrierCap, K .windowPackageSeparated,
+          K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
           K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
           K .uncompressible, K .tightEndpoint, K .slackIndependent,
           K .noProperBaseline, K .returnAvoidance, K .selection]) :=
@@ -3788,7 +3783,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8TerminalNoGo
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) history
@@ -3813,7 +3808,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3851,7 +3846,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3867,7 +3862,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -3895,7 +3890,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3933,7 +3928,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3970,7 +3965,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -3987,7 +3982,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -4023,7 +4018,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4056,7 +4051,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8TerminalNoGo
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4073,7 +4068,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8TerminalNoGo
           K .forcedCurvatureCost, K .curvatureFullRank,
           K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
           K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-          K .densityCap, K .barrierCap, K .windowPackageSeparated,
+          K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
           K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
           K .uncompressible, K .tightEndpoint, K .slackIndependent,
           K .noProperBaseline, K .returnAvoidance, K .selection]) :=
@@ -4090,7 +4085,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8TerminalNoGo
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) history
@@ -4112,7 +4107,7 @@ noncomputable def selectedLowEntropyTypeAVisibleEntryClause
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4125,7 +4120,7 @@ noncomputable def selectedLowEntropyTypeAVisibleEntryClause
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -4150,7 +4145,7 @@ noncomputable def selectedLowEntropyTypeASaturatedExitEntry
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4164,7 +4159,7 @@ noncomputable def selectedLowEntropyTypeASaturatedExitEntry
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -4189,7 +4184,7 @@ noncomputable def selectedLowEntropyTypeAExitFourFiniteDescent
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4203,7 +4198,7 @@ noncomputable def selectedLowEntropyTypeAExitFourFiniteDescent
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -4246,7 +4241,7 @@ noncomputable def selectedHighEntropyTypeAVisibleEntryClause
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -4272,7 +4267,7 @@ noncomputable def selectedHighEntropyTypeASaturatedExitEntry
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4313,7 +4308,7 @@ noncomputable def selectedHighEntropyTypeAExitFourFiniteDescent
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4328,7 +4323,7 @@ noncomputable def selectedHighEntropyTypeAExitFourFiniteDescent
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -4356,7 +4351,7 @@ noncomputable def selectedLowEntropyTypeASaturatedHandoffSplitDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4395,7 +4390,7 @@ noncomputable def selectedHighEntropyTypeASaturatedHandoffSplitDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4435,7 +4430,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFourDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4473,7 +4468,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFourDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4590,7 +4585,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4628,7 +4623,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -4652,7 +4647,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4668,7 +4663,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -4694,7 +4689,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4732,7 +4727,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4770,7 +4765,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixProperCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -4795,7 +4790,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixGlobalCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -4819,7 +4814,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4836,7 +4831,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -4868,7 +4863,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4901,7 +4896,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4919,7 +4914,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -4942,7 +4937,7 @@ noncomputable def selectedLowEntropyTypeASilentRoute8Residual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -4960,7 +4955,7 @@ noncomputable def selectedLowEntropyTypeASilentRoute8Residual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -4994,7 +4989,7 @@ noncomputable def selectedLowEntropyTypeASilentRoute8ResidualProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5012,7 +5007,7 @@ noncomputable def selectedLowEntropyTypeASilentRoute8ResidualProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -5036,7 +5031,7 @@ noncomputable def selectedLowEntropyTypeASilentRoute8GlobalSqueeze
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5055,7 +5050,7 @@ noncomputable def selectedLowEntropyTypeASilentRoute8GlobalSqueeze
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -5077,7 +5072,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5115,7 +5110,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5131,7 +5126,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -5159,7 +5154,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5197,7 +5192,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5234,7 +5229,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5251,7 +5246,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -5287,7 +5282,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5320,7 +5315,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5338,7 +5333,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -5360,7 +5355,7 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5399,7 +5394,7 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -5424,7 +5419,7 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5441,7 +5436,7 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -5468,7 +5463,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5507,7 +5502,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5546,7 +5541,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixProperCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -5572,7 +5567,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixGlobalCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -5597,7 +5592,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5615,7 +5610,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -5648,7 +5643,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5682,7 +5677,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5701,7 +5696,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -5725,7 +5720,7 @@ noncomputable def selectedHighEntropyTypeASilentRoute8Residual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5744,7 +5739,7 @@ noncomputable def selectedHighEntropyTypeASilentRoute8Residual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -5779,7 +5774,7 @@ noncomputable def selectedHighEntropyTypeASilentRoute8ResidualProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5798,7 +5793,7 @@ noncomputable def selectedHighEntropyTypeASilentRoute8ResidualProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -5823,7 +5818,7 @@ noncomputable def selectedHighEntropyTypeASilentRoute8GlobalSqueeze
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5843,7 +5838,7 @@ noncomputable def selectedHighEntropyTypeASilentRoute8GlobalSqueeze
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -5866,7 +5861,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5905,7 +5900,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5922,7 +5917,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -5951,7 +5946,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -5990,7 +5985,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6028,7 +6023,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6046,7 +6041,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -6083,7 +6078,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6117,7 +6112,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6136,7 +6131,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -6154,7 +6149,7 @@ noncomputable def selectedLowEntropyTypeBNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6185,7 +6180,7 @@ noncomputable def selectedLowEntropyTypeBDegreeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6232,7 +6227,7 @@ noncomputable def selectedHighEntropyTypeBNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -6287,7 +6282,7 @@ noncomputable def selectedLowEntropyTypeBLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6320,7 +6315,7 @@ noncomputable def selectedLowEntropyTypeBHeavyFanCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6333,7 +6328,7 @@ noncomputable def selectedLowEntropyTypeBHeavyFanCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -6357,7 +6352,7 @@ noncomputable def selectedLowEntropyTypeBDegreeFourFanCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6390,7 +6385,7 @@ noncomputable def selectedLowEntropyTypeBDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6403,7 +6398,7 @@ noncomputable def selectedLowEntropyTypeBDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -6441,7 +6436,7 @@ noncomputable def selectedHighEntropyTypeBLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -6514,7 +6509,7 @@ noncomputable def selectedHighEntropyTypeBDegreeFourFanCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -6574,7 +6569,7 @@ noncomputable def selectedLowEntropyTypeBFanCertificateDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6608,7 +6603,7 @@ noncomputable def selectedLowEntropyTypeBHeavyFanCertificateDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6652,7 +6647,7 @@ noncomputable def selectedLowEntropyTypeBCertificateResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -6711,7 +6706,7 @@ noncomputable def selectedLowEntropyTypeBDirectCycleCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -6747,7 +6742,7 @@ noncomputable def selectedLowEntropyTypeBDirectCycleFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -6770,7 +6765,7 @@ noncomputable def selectedLowEntropyTypeBB2AssignmentDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6852,7 +6847,7 @@ noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -6940,7 +6935,7 @@ noncomputable def selectedHighEntropyTypeBCertificateResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -6978,7 +6973,7 @@ noncomputable def selectedHighEntropyTypeBDirectCycleDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7037,7 +7032,7 @@ noncomputable def selectedHighEntropyTypeBDirectCycleFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7112,7 +7107,7 @@ noncomputable def selectedHighEntropyTypeBB2AssignmentAfterDirectCycleDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7143,7 +7138,7 @@ noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7181,7 +7176,7 @@ noncomputable def selectedLowEntropyDegreeFourFanCertificateDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7215,7 +7210,7 @@ noncomputable def selectedLowEntropyDegreeFourProfileFanCertificateDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7259,7 +7254,7 @@ noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -7318,7 +7313,7 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -7354,7 +7349,7 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -7377,7 +7372,7 @@ noncomputable def selectedLowEntropyDegreeFourB2AssignmentDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7459,7 +7454,7 @@ noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -7547,7 +7542,7 @@ noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7585,7 +7580,7 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7644,7 +7639,7 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7719,7 +7714,7 @@ noncomputable def selectedHighEntropyDegreeFourB2AssignmentAfterDirectCycleDicho
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7750,7 +7745,7 @@ noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7901,7 +7896,7 @@ noncomputable def selectedLowEntropyTypeBExcludedCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -7941,7 +7936,7 @@ noncomputable def selectedLowEntropyTypeBExclusionResidual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -7965,7 +7960,7 @@ noncomputable def selectedHighEntropyTypeBB2ExclusionCharge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -7982,7 +7977,7 @@ noncomputable def selectedHighEntropyTypeBB2ExclusionCharge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -8025,7 +8020,7 @@ noncomputable def selectedHighEntropyTypeBExclusionDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -8100,7 +8095,7 @@ noncomputable def selectedHighEntropyTypeBExclusionResidual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -8253,7 +8248,7 @@ noncomputable def selectedLowEntropyDegreeFourExcludedCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -8293,7 +8288,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -8318,7 +8313,7 @@ noncomputable def selectedHighEntropyDegreeFourB2ExclusionCharge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -8335,7 +8330,7 @@ noncomputable def selectedHighEntropyDegreeFourB2ExclusionCharge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -8378,7 +8373,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -8453,7 +8448,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -8498,7 +8493,7 @@ noncomputable def selectedLowEntropyTypeBExclusionResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -8560,7 +8555,7 @@ noncomputable def selectedHighEntropyTypeBExclusionResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -8585,7 +8580,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -8647,7 +8642,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -8709,7 +8704,7 @@ noncomputable def selectedHighEntropyTypeBExclusionMassAfterDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -8727,7 +8722,7 @@ noncomputable def selectedHighEntropyTypeBExclusionMassAfterDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -8787,7 +8782,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionMassAfterDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -8805,7 +8800,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionMassAfterDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -8824,7 +8819,7 @@ noncomputable def selectedLowEntropyTypeAUnsaturatedCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -8866,13 +8861,13 @@ noncomputable def selectedColdWindowLedgerSplit
       [K .coldTerminalResidual, K .route8TerminalNoGo,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
-        K .barrierCap, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
+        K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldWindowLedgerSplit, K .coldTerminalResidual,
         K .route8TerminalNoGo, K .sparsePressureNearCubic,
         K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated, K .maximalPacking,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking,
         K .uncompressible, K .selection] :=
   (coldWindowLedgerSplitRow (data := spineData)).run history
     (by simp [K_eq_iff])
@@ -8885,14 +8880,14 @@ noncomputable def selectedColdSparseSurplusSurvivor
         K .route8TerminalNoGo,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
-        K .barrierCap, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
+        K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .coldWindowLedgerSplit,
         K .coldTerminalResidual,
         K .route8TerminalNoGo, K .sparsePressureNearCubic,
         K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated, K .maximalPacking,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking,
         K .uncompressible, K .selection] :=
   (sparseSurplusSurvivorRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -8912,7 +8907,7 @@ noncomputable def selectedColdCorridorBranchClosedHistory
       [K .coldTerminalResidual, K .route8TerminalNoGo,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
-        K .barrierCap, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
+        K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       (coldBranchClosedKeys (BranchState := BranchState)
@@ -8922,7 +8917,7 @@ noncomputable def selectedColdCorridorBranchClosedHistory
           K .coldTerminalResidual,
           K .route8TerminalNoGo, K .sparsePressureNearCubic,
           K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
-          K .densityCap, K .barrierCap, K .windowPackageSeparated, K .maximalPacking,
+          K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking,
           K .uncompressible, K .selection]) := by
   let withSplit := selectedColdWindowLedgerSplit history
   let withSurvivor := selectedColdSparseSurplusSurvivor withSplit
@@ -8946,7 +8941,7 @@ noncomputable def selectedColdCorridorClosedHistory
       [K .coldTerminalResidual, K .route8TerminalNoGo,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
-        K .barrierCap, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
+        K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       (coldKeys (BranchState := BranchState)
@@ -8956,7 +8951,7 @@ noncomputable def selectedColdCorridorClosedHistory
           K .coldTerminalResidual,
           K .route8TerminalNoGo, K .sparsePressureNearCubic,
           K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
-          K .densityCap, K .barrierCap, K .windowPackageSeparated, K .maximalPacking,
+          K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking,
           K .uncompressible, K .selection]) := by
   let afterBranchClosed := selectedColdCorridorBranchClosedHistory history
   exact
@@ -8972,7 +8967,7 @@ noncomputable def selectedColdCorridorCloses
       [K .coldTerminalResidual, K .route8TerminalNoGo,
         K .sparsePressureNearCubic, K .spineSurplusEstimate,
         K .negativeSupport, K .largeBudgetResidual, K .densityCap,
-        K .barrierCap, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
+        K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
         K .selection]) : False :=
   (selectedColdCorridorClosedHistory history).elimClosed (by
     dsimp [coldKeys]
@@ -9036,35 +9031,88 @@ theorem erdos_64_of_selectedLedgerClosure
   EGTarget.target_to_statement
     (target_closure_of_selectedLedgerClosure selectedLedgerClosure)
 
+/-! The two node-[19] arms are kept as separate exact-ledger cursors.  Node
+[21] is common in the paper's bookkeeping, but it is run independently on
+each arm; no sum, existential bundle, or branch carrier is introduced. -/
+
+noncomputable def selectedStrictNode21
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (finiteBarrierEnumeration (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    EGTarget rfl).run history (by simp [K_eq_iff])
+
+noncomputable def selectedNearCubicNode21
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (finiteBarrierEnumeration (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    EGTarget rfl).run history (by simp [K_eq_iff])
+
+/-! Node `[20]` and the two continuations after `[21]` are explicit branch
+functions.  Their arguments and results are exact-ledger indices, so the
+strict and near-cubic cursors cannot be accidentally exchanged. -/
+
+noncomputable def selectedStrictSurplusBranch
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let enumerated := selectedStrictNode21 history
+  match selectedStrictSeparatedWindowClassDichotomy enumerated with
+  | .left windowHistory =>
+      exact selectedWindowOverloadBridgeSublinearHistory windowHistory
+  | .right windowAbsentHistory =>
+      match selectedRemainderClassDichotomy windowAbsentHistory with
+      | .left remainderHistory =>
+          exact selectedRemainderOverloadBridgeSublinearHistory remainderHistory
+      | .right remainderAbsentHistory =>
+          exact selectedPrimitiveOverloadBridgeSublinearHistory
+            remainderAbsentHistory
+
+noncomputable def selectedNearCubicBranch
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
+  let enumerated := selectedNearCubicNode21 history
+  match selectedBarrierDichotomy enumerated with
+  | .left capHistory =>
+      -- `[24]` enters the cold continuation directly; `[25]`--`[144]` are
+      -- not traversed by this paper arm.
+      exact selectedColdCorridorCloses (selectedDensityBudget capHistory)
+  | .right overflowHistory =>
+      exact selectedBarrierOverflowCloses overflowHistory
+
 /-- Selected-root closure, assembled directly from the exact-ledger rows. -/
 theorem selectedLedgerClosure
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) : False := by
   match selectedSurplusDichotomy history with
   | .left strictHistory =>
-      let enumerated :=
-        (finiteBarrierEnumeration (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)
-          EGTarget rfl).run strictHistory (by simp [K_eq_iff])
-      match selectedStrictSeparatedWindowClassDichotomy enumerated with
-      | .left windowHistory =>
-          exact selectedWindowOverloadBridgeSublinearHistory windowHistory
-      | .right windowAbsentHistory =>
-          match selectedRemainderClassDichotomy windowAbsentHistory with
-          | .left remainderHistory =>
-              exact selectedRemainderOverloadBridgeSublinearHistory
-                remainderHistory
-          | .right remainderAbsentHistory =>
-              exact selectedPrimitiveOverloadBridgeSublinearHistory
-                remainderAbsentHistory
+      exact selectedStrictSurplusBranch strictHistory
   | .right nearCubicHistory =>
-      let enumerated :=
-        (finiteBarrierEnumeration (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)
-          EGTarget rfl).run nearCubicHistory (by simp [K_eq_iff])
-      exact selectedColdCorridorCloses enumerated
+      exact selectedNearCubicBranch nearCubicHistory
 
 /-- Final public theorem for Erdős Problem 64. -/
 theorem erdos_64 : OfficialStatement.{u} :=

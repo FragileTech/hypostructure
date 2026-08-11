@@ -458,11 +458,11 @@ inductive Key where
   /-- Node `[19]`, at-or-below arm: `def:near-cubic-spine` in exact finite
   form. -/
   | surplusAtOrBelow
-  /-- Node `[21]`, cap arm: the packing's entropy demand fits inside the
+  /-- Node `[22]`, cap arm: the packing's entropy demand fits inside the
   labelled skeleton budget, which is itself stable under a variable edge
   count. -/
   | barrierCap
-  /-- Node `[21]`, overflow arm: the demand exceeds the budget. -/
+  /-- Node `[22]`, overflow arm: the demand exceeds the budget. -/
   | barrierOverflow
   /-- Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing
   in the object's own dyadic scale. -/
@@ -754,7 +754,6 @@ inductive Key where
   | coldFailureRouting
   | coldExchangeBound
   | coldWindowLedgerSplit
-  | coldHotFailureMass
   | coldSelectedBranchExcess
   | coldAmbientCubicStubExcess
   | coldHandoffTransfer
@@ -1143,6 +1142,10 @@ inductive Key where
   `lem:surviving-active-family`: the active family is the excess-port family,
   it has `σ(G)` members, and every member carries its canonical return path. -/
   | activeSurplusDemands
+  /-- Node `[22]`: the canonical hot/cold partition of the maximal packing.
+  The witnesses are derived from `LiveHotWindow` on the incoming residual;
+  they are not supplied as routing data. -/
+  | hotColdPartition
   deriving DecidableEq
 
 /-- **`𝒲₂(R)`**: the raw internal length-two curvature tests carried by the
@@ -1398,10 +1401,14 @@ def HotColdWindowStatement (data : Data.{u})
 
 def BarrierCapStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing hot cold : Finset (Finset object.Vertex),
-    IsHotColdWindowPartition data object packing hot cold ∧
+  ∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+      packing.card = object.windowPackingNumber data.windowOrder ∧
+      (∀ support : Finset object.Vertex,
+        object.InducesWindow data.windowOrder support →
+          ∃ member ∈ packing, ¬ Disjoint support member) ∧
     2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-          hot.card) ≤
+          packing.card) ≤
       Graph.skeletonBudget object ∧
     ∀ family : Finset Nat, object.edgeCount ∈ family →
       Graph.skeletonBudget object ≤
@@ -1409,11 +1416,15 @@ def BarrierCapStatement (data : Data.{u})
 
 def BarrierOverflowStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing hot cold : Finset (Finset object.Vertex),
-    IsHotColdWindowPartition data object packing hot cold ∧
+  ∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+      packing.card = object.windowPackingNumber data.windowOrder ∧
+      (∀ support : Finset object.Vertex,
+        object.InducesWindow data.windowOrder support →
+          ∃ member ∈ packing, ¬ Disjoint support member) ∧
     Graph.skeletonBudget object <
       2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-        hot.card)
+        packing.card)
 
 /-- Node `[145]`: the hot/cold interface on the literal post-spine residual.
 It fixes the maximal packing together with the canonical live window package
@@ -1421,50 +1432,29 @@ already committed by the predecessor.  Later nodes decide the route-8 and
 live-hot alternatives; this fact performs neither decision. -/
 def ColdWindowLedgerStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  HotColdWindowStatement data object ∧
-    object.degreeSurplus data.threshold ≤
-      data.spineScale * Core.ceilSqrt object.vertexCount ∧
-    Graph.SparsePressureCapped object data.threshold data.windowOrder
+  HotColdWindowStatement data object
 
-/-- Node `[150]` specialized to the packing and hot/cold counts already stored
-by `[145]` on this residual.  No numerical datum is supplied by a consumer. -/
-def ColdHotFailureMassStatement (data : Data.{u})
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing hot cold : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-    Disjoint hot cold ∧ hot.card + cold.card = packing.card ∧
-    data.windowRate * packing.card ≤
-      data.windowRate * cold.card +
-        data.surplusScale * object.vertexCount
-
-/-- The branch-excess quantity for the exact cold family committed by `[150]`.
-The witness is tied to the current object's packing and cannot be instantiated
-with a caller-selected list of stubs. -/
+/-- Node `[152]`: the scalar branch-excess witness for the canonical cold
+family. -/
 def ColdSelectedBranchExcessStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing hot cold : Finset (Finset object.Vertex), ∃ excess : Nat,
-    object.IsWindowPacking data.windowOrder packing ∧
-    Disjoint hot cold ∧ hot.card + cold.card = packing.card ∧
-    excess = Graph.ColdCorridor.branchExcessOf
-      (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
-        cold.card
+  ∀ packing hot cold : Finset (Finset object.Vertex),
+    IsHotColdWindowPartition data object packing hot cold →
+    ∃ excess : Nat,
+      excess = Graph.ColdCorridor.branchExcessOf
+        (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
+          cold.card
 
-/-- Nodes `[151]`--`[152]` on the current near-cubic residual.  It retains the
-same concrete cold family and branch-excess witness while recording the two
-incoming near-cubic estimates used to justify that this is the surviving
-ambient-cubic contribution. -/
+/-- Node `[151]`: the scalar ambient-cubic estimate for the canonical cold
+family. -/
 def ColdAmbientCubicStubExcessStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing hot cold : Finset (Finset object.Vertex), ∃ excess : Nat,
-    object.IsWindowPacking data.windowOrder packing ∧
-    Disjoint hot cold ∧ hot.card + cold.card = packing.card ∧
-    excess = Graph.ColdCorridor.branchExcessOf
-      (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
-        cold.card ∧
-    object.degreeSurplus data.threshold ≤
-      data.spineScale * Core.ceilSqrt object.vertexCount ∧
-    Graph.SparsePressureCapped object data.threshold data.windowOrder
-
+  ∀ packing hot cold : Finset (Finset object.Vertex),
+    IsHotColdWindowPartition data object packing hot cold →
+    ∃ excess : Nat,
+      excess = Graph.ColdCorridor.branchExcessOf
+        (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
+          cold.card
 /-- First-failure routing specialized to the current residual's committed cold
 family.  The corridor quantification ranges only over the current object and is
 paired with the exact `[152]` witness that activates the extraction. -/
@@ -2581,8 +2571,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdExchangeBoundStatement data object
   | .coldWindowLedgerSplit, object =>
       ColdWindowLedgerStatement data object
-  | .coldHotFailureMass, object =>
-      ColdHotFailureMassStatement data object
   | .coldSelectedBranchExcess, object =>
       ColdSelectedBranchExcessStatement data object
   | .coldAmbientCubicStubExcess, object =>
@@ -4605,6 +4593,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Graph.ActiveSurplusDemands (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
         data.threshold
+  | .hotColdPartition, object =>
+      HotColdWindowStatement data object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -4685,7 +4675,6 @@ def label : Key → String
   | .coldFailureRouting => "coldFailureRouting"
   | .coldExchangeBound => "coldExchangeBound"
   | .coldWindowLedgerSplit => "coldWindowLedgerSplit"
-  | .coldHotFailureMass => "coldHotFailureMass"
   | .coldSelectedBranchExcess => "coldSelectedBranchExcess"
   | .coldAmbientCubicStubExcess => "coldAmbientCubicStubExcess"
   | .coldHandoffTransfer => "coldHandoffTransfer"
@@ -4780,6 +4769,7 @@ def label : Key → String
   | .homogeneousBottleneck => "homogeneousBottleneck"
   | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
   | .activeSurplusDemands => "activeSurplusDemands"
+  | .hotColdPartition => "hotColdPartition"
 
 /-! ### Label pins
 
@@ -4802,6 +4792,7 @@ example : label .surplusAbove = "surplusAbove" := rfl
 example : label .surplusAtOrBelow = "surplusAtOrBelow" := rfl
 example : label .barrierCap = "barrierCap" := rfl
 example : label .barrierOverflow = "barrierOverflow" := rfl
+example : label .hotColdPartition = "hotColdPartition" := rfl
 example : label .densityCap = "densityCap" := rfl
 example : label .remainderNormalized = "remainderNormalized" := rfl
 example : label .boundaryDemand = "boundaryDemand" := rfl
@@ -4866,9 +4857,6 @@ example : label .coldFailureHandoff = "coldFailureHandoff" := rfl
 example : label .coldFailureRouting = "coldFailureRouting" := rfl
 example : label .coldExchangeBound = "coldExchangeBound" := rfl
 example : label .coldWindowLedgerSplit = "coldWindowLedgerSplit" := rfl
-example : label .coldHotFailureMass = "coldHotFailureMass" := rfl
-example : label .coldSelectedBranchExcess = "coldSelectedBranchExcess" := rfl
-example : label .coldAmbientCubicStubExcess = "coldAmbientCubicStubExcess" := rfl
 example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
 example : label .coldGermExtraction = "coldGermExtraction" := rfl
 example : label .coldPositiveGerm = "coldPositiveGerm" := rfl
@@ -5067,7 +5055,6 @@ def idx : Key → Nat
   | .coldFailureRouting => 68
   | .coldExchangeBound => 177
   | .coldWindowLedgerSplit => 178
-  | .coldHotFailureMass => 181
   | .coldSelectedBranchExcess => 179
   | .coldAmbientCubicStubExcess => 180
   | .coldPositiveGerm => 182
@@ -5161,6 +5148,7 @@ def idx : Key → Nat
   | .homogeneousBottleneck => 118
   | .sparseSurplusSurvivor => 119
   | .activeSurplusDemands => 120
+  | .hotColdPartition => 200
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -5236,7 +5224,6 @@ def ofIdx : Nat → Key
   | 68 => .coldFailureRouting
   | 177 => .coldExchangeBound
   | 178 => .coldWindowLedgerSplit
-  | 181 => .coldHotFailureMass
   | 179 => .coldSelectedBranchExcess
   | 180 => .coldAmbientCubicStubExcess
   | 182 => .coldPositiveGerm
@@ -5335,6 +5322,7 @@ def ofIdx : Nat → Key
   | 126 => .spineSurplusEstimate
   | 127 => .sparsePressureNearCubic
   | 128 => .sparsePressureOverload
+  | 200 => .hotColdPartition
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -5511,8 +5499,6 @@ def name : Key → Lean.Name
   | .coldWindowLedgerSplit =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "coldWindowLedgerSplit") 178
-  | .coldHotFailureMass =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldHotFailureMass") 181
   | .coldSelectedBranchExcess =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "coldSelectedBranchExcess") 179
@@ -5741,6 +5727,8 @@ def name : Key → Lean.Name
         "sparseSurplusSurvivor") 119
   | .activeSurplusDemands =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "activeSurplusDemands") 120
+  | .hotColdPartition =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "hotColdPartition") 200
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

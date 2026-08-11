@@ -352,42 +352,24 @@ attains it. -/
 
 /-! ## Node `[18]`: the exact finite local algebra
 
-`lem:labels`.  The legal labels of a window of the registered order are exactly
-the ones the ascending code enumeration lists, and the two-step curvature
-relation is decided on them.  Both are theorems about the registered order --
-`legalCodeList_length` and `curvatureTwo_eq_true_iff` -- so the row states them
-at `data.windowOrder` and never writes their values.  The manuscript's `399` is
-the computed length of that list at the manuscript's own order.
-
-The row reads no fact.  Its statement quantifies over the registered window
-order and ignores the residual object entirely -- `Holds .localAlgebra` takes
-`_object` -- so there is no prerequisite to declare, and `Requires := []` says
-exactly that.  An earlier revision declared `maximalPacking` as a requirement
-and never called `FactInputs.get` on it: that claimed a dependency the executor
-does not have, and used the manifest to express paper order, which the
-composition in `SpineRun` already expresses. -/
+The local algebra is a generic, source-free fact: `legalCodeList_length`
+identifies the executable enumeration with the semantic legal-label carrier,
+and `curvatureTwo_eq_true_iff` identifies the executable two-step relation with
+the manuscript's safety conditions.  The executor derives this proposition
+itself from the registered presentation and commits it on the literal incoming
+residual.  There is no caller-supplied proof callback and no packing
+prerequisite, because neither is part of this fact.
+-/
 @[reducible] noncomputable def localAlgebraRow
-    (localAlgebra : FactKey (Input BranchState Presentation presentation data))
-    (encode : (input : Input BranchState Presentation presentation data) →
-      ((Graph.WindowCurvature.legalCodeList data.windowOrder).length =
-          (Graph.WindowCurvature.Labels data.windowOrder).card ∧
-        ∀ source middle target :
-            Graph.WindowCurvature.Label data.windowOrder,
-          Graph.WindowCurvature.curvatureTwo source middle target = true ↔
-            Graph.WindowCurvature.Safe 1 source middle ∧
-              Graph.WindowCurvature.Safe 1 middle target ∧
-              ¬ Graph.WindowCurvature.Safe 2 source target) →
-      localAlgebra.At input) :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
+    (data : Data.{u})
+    : AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.localAlgebra
-    (sourceFreeManifest localAlgebra)
+    (sourceFreeManifest (K .localAlgebra))
     (fun inputs =>
-      .cons (key := localAlgebra)
-        (encode inputs.current
-          ⟨Graph.WindowCurvature.legalCodeList_length data.windowOrder,
-            fun source middle target =>
-              Graph.WindowCurvature.curvatureTwo_eq_true_iff source middle
-                target⟩)
+      .cons (key := K .localAlgebra)
+        ⟨Graph.WindowCurvature.legalCodeList_length data.windowOrder,
+          fun source middle target =>
+            Graph.WindowCurvature.curvatureTwo_eq_true_iff source middle target⟩
         .nil)
 
 /-! ## Node `[19]`: the surplus split
@@ -453,28 +435,23 @@ summed form of the same count).  That is what makes the retained cap survive
 /-- Node `[21]`, as one monotone fact step on the literal residual.
 
 The executor reads the predecessor's `localAlgebra` key to enforce the paper
-position, reads the certified table only through `data`, and appends the single
-finite-enumeration fact.  It does not construct the later window package, make
-the node `[22]` decision, or change `inputs.current`. -/
+position, derives the certified table from `data`, and appends the canonical
+`windowPackageSeparated` fact.  It does not construct the node `[22]` decision,
+change `inputs.current`, or accept a caller-supplied encoding callback. -/
 @[reducible] noncomputable def barrierEnumerationRow
-    (localAlgebra finiteEnumeration :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : localAlgebra ≠ finiteEnumeration)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      BarrierEnumerationStatement data → finiteEnumeration.At input) :
+    (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.barrierEnumeration
-    (rowManifest localAlgebra finiteEnumeration distinct)
+    (rowManifest (K .localAlgebra) (K .windowPackageSeparated) (by simp [K_eq_iff]))
     (fun inputs =>
-      .cons (key := finiteEnumeration)
-        (encode inputs.current (by
-          have _local := inputs.get localAlgebra
-          let presentation := data.windowBarrier
-          letI := presentation.indexFintype
-          refine ⟨data.windowRate_eq_barrier,
-            data.curvatureCost_eq_barrierRow, ?_⟩
-          rw [data.windowRate_eq_barrier]
-          exact presentation.two_pow_binaryRateFloor_mul_flatProduct_le))
+      .cons (key := K .windowPackageSeparated)
+        ⟨data.windowRate_eq_barrier,
+          data.curvatureCost_eq_barrierRow, by
+            have _local := inputs.get (K .localAlgebra)
+            let presentation := data.windowBarrier
+            letI := presentation.indexFintype
+            rw [data.windowRate_eq_barrier]
+            exact presentation.two_pow_binaryRateFloor_mul_flatProduct_le⟩
         .nil)
 
 noncomputable def barrierEnumerationDichotomy
@@ -494,21 +471,29 @@ noncomputable def barrierEnumerationDichotomy
           current.object.InducesWindow data.windowOrder support →
           ∃ member ∈ packing, ¬ Disjoint support member)
     (encodeCap :
-      (∃ packing hot cold : Finset (Finset current.object.Vertex),
-        IsHotColdWindowPartition data current.object packing hot cold ∧
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+        packing.card = current.object.windowPackingNumber data.windowOrder ∧
+        (∀ support : Finset current.object.Vertex,
+          current.object.InducesWindow data.windowOrder support →
+            ∃ member ∈ packing, ¬ Disjoint support member) ∧
         2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
-            hot.card) ≤
+            packing.card) ≤
           Graph.skeletonBudget current.object ∧
         ∀ family : Finset Nat, current.object.edgeCount ∈ family →
           Graph.skeletonBudget current.object ≤
             Graph.variableEdgeBudget current.object.vertexCount family) →
       barrierCap.At current)
     (encodeOverflow :
-      (∃ packing hot cold : Finset (Finset current.object.Vertex),
-        IsHotColdWindowPartition data current.object packing hot cold ∧
+      (∃ packing : Finset (Finset current.object.Vertex),
+        current.object.IsWindowPacking data.windowOrder packing ∧
+        packing.card = current.object.windowPackingNumber data.windowOrder ∧
+        (∀ support : Finset current.object.Vertex,
+          current.object.InducesWindow data.windowOrder support →
+            ∃ member ∈ packing, ¬ Disjoint support member) ∧
         Graph.skeletonBudget current.object <
         2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
-          hot.card)) →
+          packing.card)) →
       barrierOverflow.At current)
     (capFresh : barrierCap ∉ known)
     (overflowFresh : barrierOverflow ∉ known) :
@@ -518,30 +503,6 @@ noncomputable def barrierEnumerationDichotomy
   let maximal := packingOf (ExactLedger.get previous maximalPacking)
   let packing := Classical.choose maximal
   let packingFacts := Classical.choose_spec maximal
-  let hot := packing.filter (LiveHotWindow data current.object)
-  let cold := packing.filter (fun window =>
-    ¬ LiveHotWindow data current.object window)
-  let split : IsHotColdWindowPartition data current.object packing hot cold := by
-    refine ⟨packingFacts.1, packingFacts.2.1, packingFacts.2.2, ?_, ?_, ?_, ?_⟩
-    · intro window
-      simp [hot]
-    · intro window
-      simp [cold]
-    · exact Finset.disjoint_left.mpr (by
-        intro window inHot inCold
-        simp only [hot, Finset.mem_filter] at inHot
-        simp only [cold, Finset.mem_filter] at inCold
-        exact inCold.2 inHot.2)
-    · intro window
-      constructor
-      · intro member
-        by_cases live : LiveHotWindow data current.object window
-        · exact Or.inl (by simp [hot, member, live])
-        · exact Or.inr (by simp [cold, member, live])
-      · intro member
-        rcases member with member | member
-        · exact Finset.mem_of_mem_filter _ member
-        · exact Finset.mem_of_mem_filter _ member
   let stable : ∀ family : Finset Nat, current.object.edgeCount ∈ family →
       Graph.skeletonBudget current.object ≤
         Graph.variableEdgeBudget current.object.vertexCount family :=
@@ -551,12 +512,58 @@ noncomputable def barrierEnumerationDichotomy
     `Hypostructure.Graph.Strategy.Spine.finiteBarrierEnumeration
     (if overflow : Graph.skeletonBudget current.object <
         2 ^ (data.windowRate * data.separatedScaleCount current.object.vertexCount *
-          hot.card) then
-      .inr (encodeOverflow ⟨packing, hot, cold, split, overflow⟩)
+          packing.card) then
+      .inr (encodeOverflow ⟨packing, packingFacts.1, packingFacts.2.1,
+        packingFacts.2.2, overflow⟩)
     else
-      .inl (encodeCap ⟨packing, hot, cold, split,
+      .inl (encodeCap ⟨packing, packingFacts.1, packingFacts.2.1,
+        packingFacts.2.2,
         Nat.le_of_not_lt overflow, stable⟩))
     capFresh overflowFresh
+
+/-! ## Node `[22]`: the canonical hot/cold partition
+
+The partition is a fact about the literal incoming residual and its maximal
+packing.  `hot` and `cold` are witnesses inside the ledger proposition; they
+are not callback arguments or mutable routing state. -/
+@[reducible] noncomputable def hotColdPartitionRow
+    (data : Data.{u}) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  by
+  classical
+  exact factOnly `Hypostructure.Graph.Strategy.Spine.hotColdPartition
+    (rowManifest (K .maximalPacking) (K .hotColdPartition) (by simp [K_eq_iff]))
+    (fun inputs =>
+      let maximal := (inputs.get (K .maximalPacking)).down.2
+      let packing := Classical.choose maximal
+      let packingFacts := Classical.choose_spec maximal
+      let hot := packing.filter (LiveHotWindow data inputs.current.object)
+      let cold := packing.filter (fun window =>
+        ¬ LiveHotWindow data inputs.current.object window)
+      let split : IsHotColdWindowPartition data inputs.current.object packing hot cold := by
+        refine ⟨packingFacts.1, packingFacts.2.1, packingFacts.2.2, ?_, ?_, ?_, ?_⟩
+        · intro window
+          simp [hot]
+        · intro window
+          simp [cold]
+        · exact Finset.disjoint_left.mpr (by
+            intro window inHot inCold
+            simp only [hot, Finset.mem_filter] at inHot
+            simp only [cold, Finset.mem_filter] at inCold
+            exact inCold.2 inHot.2)
+        · intro window
+          constructor
+          · intro member
+            by_cases live : LiveHotWindow data inputs.current.object window
+            · exact Or.inl (by simp [hot, member, live])
+            · exact Or.inr (by simp [cold, member, live])
+          · intro member
+            rcases member with member | member
+            · exact Finset.mem_of_mem_filter _ member
+            · exact Finset.mem_of_mem_filter _ member
+      .cons (key := K .hotColdPartition)
+        ⟨packing, hot, cold, split⟩
+        .nil)
 
 /-! ## Nodes `[22]`--`[24]`: the finite window-density budget
 

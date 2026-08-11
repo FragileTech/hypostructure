@@ -105,8 +105,13 @@ noncomputable def spineTargetInvariant
 active residual.  The later independent-window package is not encoded here. -/
 @[reducible] noncomputable def finiteBarrierEnumeration :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  barrierEnumerationRow (K .localAlgebra) (K .windowPackageSeparated)
-    (by simp [K_eq_iff]) (fun _input value => ⟨value⟩)
+  barrierEnumerationRow data
+
+/-- Node `[22]`: derive the hot/cold partition from the incoming maximal
+packing on the unchanged residual. -/
+@[reducible] noncomputable def hotColdPartition :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  hotColdPartitionRow data
 
 /-- Node `[91]` closes because its nonnegative discharging conclusion is
 incompatible with the retained negative Type A support. -/
@@ -165,8 +170,7 @@ noncomputable instance typeAExitFiveClosed :
 /-- Node `[18]`. -/
 @[reducible] noncomputable def localAlgebra :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  localAlgebraRow (K .localAlgebra)
-    (fun _input value => ⟨value⟩)
+  localAlgebraRow data
 
 /-- Nodes `[25]`--`[27]`. -/
 @[reducible] noncomputable def remainderNormalization :
@@ -179,7 +183,9 @@ noncomputable instance typeAExitFiveClosed :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   densityBudgetRow (K .barrierCap) (K .surplusAtOrBelow) (K .densityCap)
     (by simp)
-    (fun _input fact => fact.down.2.1)
+    (fun _input fact => by
+      rcases fact.down with ⟨packing, packingFacts, card_eq, maximal, cap, stable⟩
+      simpa [card_eq] using cap)
     (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
 
