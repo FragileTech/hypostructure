@@ -79,9 +79,12 @@ reference machine together with soundness, exhaustiveness, and a polynomial chec
 budget agreeing with the machine's own count; the resulting `Result` has a private
 constructor, so a caller cannot present an unverified outcome as a verified one.
 
-`Routing.lean` provides `RoutedTask.selectFor` and `RoutedTask.dispatchFor`, the only
-scheduling entry points. Both dispatch on exact keys in the branch index; declaration
-names are diagnostic.
+`Strategy/FactManifest.lean` provides `RoutedTask.selectFor` and
+`RoutedTask.dispatchFor`. Both schedule by exact keys in the branch index;
+declaration names are used only for diagnostics. `Routing.lean` is a separate
+execution-routing API: it defines stable `CTId`/`Edge` identities, registered
+`Profile` and `Transition` values, semantic discovery, and framework-generated route
+results.
 
 Core also carries the finite mathematics the applications require: enumeration,
 partitions and connected partitions, maximal selection, certified table aggregation and
@@ -102,10 +105,13 @@ field of the registered presentation data. The order-generic curvature algebra r
 in `Graph/WindowCurvature`, while everything fixed to a particular window order lives in
 the application.
 
-`Graph/Strategy/` holds the executable spine: `SpineVocabulary` (the `Data` record and
-the semantic keys with their `Holds` clauses), `SpineRows` (the rows, each an
-`AtomicStrategy` or a `Decision`), and `SpineRun` (the composition, its 21-exit `Result`,
-and the audit theorems).
+`Graph/Strategy/` holds the reusable executable rows and their exact-ledger
+compositions. `SpineVocabulary` defines the registered `Data`, the residual input, and
+the closed semantic-key vocabulary. `SpineRows`, `SurplusRows`,
+`HomogeneousBottleneckRows`, and `ColdCorridorRows` define atomic strategies and binary
+decisions. `SpineAssembly`, `SpineContinuationRun`, `SurplusRun`, `TypeAExitRun`, and
+`ColdCorridorRun` compose those rows over literal `ExactLedger` indices and expose audit
+theorems. There is no `SpineRun` result carrier in the live API.
 
 ### `Hypostructure/Fixtures` — sealing tests
 
@@ -116,11 +122,10 @@ the sealing properties above are tested rather than asserted.
 
 ### Gates
 
-Three checks run under `make lint`. The total-execution gate rejects partial outcomes at
-the execution boundary. The canonical-ledger gate rejects declarations grafted into the
-canonical ledger's namespace and structures that impersonate it without instantiating
-`FactSystem`, and keeps quarantined legacy modules outside the build closure. The
-API-catalog check restricts the proof application to the generated plumbing allowlist in
+Three checks run under `make lint`: `check_total_execution.py`,
+`check_quarantine.py`, and the generated API-catalog check. They reject partial outcomes
+at the execution boundary, keep retired modules and noncanonical carriers outside the
+build closure, and restrict the Erdős--Gyárfás application to the plumbing allowlist in
 `.agents/skills/eg-proof-expansion/references/allowed-api.md`.
 
 ## Repository layout
@@ -147,9 +152,10 @@ Requires [`elan`](https://github.com/leanprover/elan). The toolchain is
 ```bash
 make mathlib-cache     # fetch prebuilt Mathlib artifacts
 make framework-build   # build the Hypostructure package
-make erdos-build       # build the Erdős–Gyárfás application
+make erdos-build       # build the Erdős–Gyárfás application package
+make erdos             # check the final theorem and print its axioms
 make build             # both
-make lint              # the three gates
+make lint              # total-execution, quarantine, and API-catalog gates
 make test              # build and lint
 ```
 
@@ -171,20 +177,28 @@ the whole-graph case is handled by exact closed response profiles; the final clo
 driven by two-budget entropy routing and a large-budget branch governed by a
 surplus-adjusted comparison.
 
-The application boundary is two modules. `Problem.lean` declares the public statement,
-one Core problem, one Core target, and the single record of registered data the spine
-reads — the Hegde–Sandeep–Shashank theorem, via `WindowAlgebra.lean`, and an audited
-finite curvature table, via `FiniteChecks/P13Barrier`. It contains no strategy, no
-executor, and no ledger operation. `StrategyDag.lean` holds the authored topology.
+`Problem.lean` declares the public statement, one Core problem, one Core target, and the
+registered data consumed by the generic graph strategies. Its problem-specific inputs
+are supplied by `WindowAlgebra.lean` and `FiniteChecks/P13Barrier`. `StrategyDag.lean`
+contains the thin authored root checks and imports the generic continuation surface;
+it defines no application-local result carrier. `Assembly.lean` instantiates and
+composes the generic rows over exact ledger indices and proves the selected-root closure
+and the final public theorem. The package root imports `Problem` and `Assembly` and
+exports `HypostructureErdos64EG.erdos_64 : OfficialStatement`.
 
 ### Status
 
-Current status is tracked in the two synchronized tables of
+Implementation coverage is tracked in the two synchronized tables of
 [`Assembly_node_audit.md`](Assembly_node_audit.md): one row per labeled manuscript fact
 and one row per Chapter 1 diagram node. The TeX remains the mathematical authority;
 table cells are updated from live Lean types, bodies, exact ledgers, call-graph wiring,
 and builds. A blank implementation cell means that nothing in the tree implements the
 object.
+
+The application currently assembles a selected-ledger contradiction and exposes the
+end-to-end theorem `HypostructureErdos64EG.erdos_64`. `make erdos` checks that this
+declaration has the pinned `OfficialStatement` type, prints its axioms, and rejects a
+dependency on `sorryAx`.
 
 Every ported row has been checked with `#print axioms` and depends on `propext`,
 `Classical.choice`, and `Quot.sound` alone. There is no `sorryAx`, and no
@@ -192,13 +206,11 @@ Every ported row has been checked with `#print axioms` and depends on `propext`,
 
 ### The canonical-ledger rewrite
 
-The framework was rewritten onto the single `ExactLedger` API, retiring a layered `CT*`
-stack of capability, certificate, search, and automation modules that `AtomicCT.run`
-replaces. This accounts for the blocks listed above as in rebuild: their mathematics is
-intact and quarantined on disk as porting reference, but a quarantined module is not
-re-imported, and each row is reconstructed against the live framework.
-`LEGACY_REMOVAL_AUDIT.md` records the removal and establishes that it does not change
-the build closure.
+The framework was rewritten onto the single `ExactLedger` API, retiring the former
+layered execution and registration surfaces in favor of `AtomicCT.run`, sealed
+`FactInputs`, exact manifests, and framework-owned decisions and closures. Retired
+modules are excluded from the build closure rather than imported through compatibility
+wrappers. `LEGACY_REMOVAL_AUDIT.md` records that removal.
 
 ## Roadmap
 
@@ -212,7 +224,8 @@ dependencies. `Hypostructure/Core` is an implementation of that specification.
 the search for a single decisive global estimate by iterated local closure, residual
 promotion, and certified reduction to previously discharged obstructions.
 
-**Combinatorics.** `original_erdos_64_proof.tex`, in progress as described above.
+**Combinatorics.** `original_erdos_64_proof.tex`, whose current Lean application exports
+the end-to-end theorem described above.
 
 **Navier–Stokes.** Four manuscripts forming a chain in which each discharges a hypothesis
 named by its predecessor.
@@ -248,9 +261,8 @@ target is queued once its branch structure — its case splits, residual promoti
 retained obstructions — has been read off the manuscript and expressed as rows over the
 canonical ledger. The immediate items are:
 
-1. Complete Erdős–Gyárfás: close the open rows, re-root `StrategyDag.lean` on
-   `Spine.run`, and drive the argument to the pinned public statement. This is what
-   demonstrates that the framework carries a complete proof end to end.
+1. Maintain the Erdős–Gyárfás application against the manuscript, synchronized node
+   audit, canonical-ledger gates, and pinned public statement.
 2. Formalize the assurance layer of `branch_closure_methodology_extended.tex` as
    theorems about `ExactLedger`.
 3. Rebuild `Hypostructure/PDE/`. It predates the canonical-ledger rewrite and lies

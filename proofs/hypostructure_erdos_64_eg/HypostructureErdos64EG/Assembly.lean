@@ -176,109 +176,43 @@ noncomputable def selectedSparseSurplusActivation
           activeSurplusFamilyRow, sparseSlackSurplusRow,
           sparseSurplusSurvivorRow, K_eq_iff])
 
-/-- Nodes `[125]`--`[128]`, on the strict arm after node `[21]`'s separated package. -/
-noncomputable def selectedSeparatedSparseSurplusActivation
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
-        K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] := by
-  let h1 :=
-    (sparseSurplusSurvivorRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      (K .selection) (K .uncompressible) (K .sparseSurplusSurvivor)
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (fun _input fact => fact.down.1)
-      (fun _input fact => fact.down.2)
-      (fun _input fact => fact.down)
-      (fun _input fact => ⟨fact.1, fact.2⟩)).run
-      history (by simp [sparseSurplusSurvivorRow, K_eq_iff])
-  let h2 :=
-    (sparseSlackSurplusRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      (K .sparseSlackSurplus) (fun _input fact => ⟨fact⟩)).run
-      h1 (by simp [sparseSlackSurplusRow, K_eq_iff])
-  let h3 :=
-    (activeSurplusFamilyRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      (K .slackIndependent) (K .activeSurplusFamily)
-      (by simp [K_eq_iff]) (fun _input fact => fact.down)
-      (fun _input fact => ⟨fact⟩)).run h2 (by
-        simp [activeSurplusFamilyRow, sparseSlackSurplusRow,
-          sparseSurplusSurvivorRow, K_eq_iff])
-  let h4 :=
-    (sparsePortActivationRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      (K .selection) (K .sparsePortActivation) (by simp [K_eq_iff])
-      (fun _input fact => fact.down.1)
-      (fun _input fact => fact.down.2)
-      (fun _input fact => ⟨fact⟩)).run h3 (by
-        simp [sparsePortActivationRow, activeSurplusFamilyRow,
-          sparseSlackSurplusRow, sparseSurplusSurvivorRow, K_eq_iff])
-  exact
-    (activeSurplusDemandsRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      (K .sparseSurplusSurvivor) (K .activeSurplusFamily)
-      (K .sparsePortActivation) (K .activeSurplusDemands)
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (by simp [K_eq_iff]) (by simp [K_eq_iff])
-      (fun _input fact => fact.down.1)
-      (fun _input fact => fact.down.1)
-      (fun _input fact => fact.down)
-      (fun _input fact => ⟨fact⟩)).run h4 (by
-        simp [activeSurplusDemandsRow, sparsePortActivationRow,
-          activeSurplusFamilyRow, sparseSlackSurplusRow,
-          sparseSurplusSurvivorRow, K_eq_iff])
-
-/-- Node `[129]`, baseline spine demand on the strict separated surplus arm. -/
+/-- Node `[129]`, the paper's common active-family baseline demand on the
+strict surplus arm.  This reads only the completed `[125]`--`[128]` fact; it
+does not read or manufacture the sibling node `[21]` package. -/
 noncomputable def selectedBaselineSpineDemand
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+      [K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .baselineSpineDemand, K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] := by
-  let afterActivation := selectedSeparatedSparseSurplusActivation history
-  exact
-    (baselineSpineDemandRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)
-      (K .windowPackageSeparated) (K .baselineSpineDemand)
-      (by simp)
-      (fun _input fact => fact.down)
-      (fun _input fact => ⟨fact⟩)).run afterActivation (by
-        simp [baselineSpineDemandRow, selectedSeparatedSparseSurplusActivation,
-          K_eq_iff])
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor, K .surplusAbove,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
+        K .returnAvoidance, K .selection] :=
+  (baselineSpineDemandRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)
+    (K .activeSurplusDemands) (K .sparseSurplusSurvivor)
+    (K .baselineSpineDemand)
+    rfl rfl rfl (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
+    (le_trans (by omega) spineData.three_le_threshold)).run history (by
+      simp [baselineSpineDemandRow, K_eq_iff])
 
 /-- Node `[132]`, the sparse-pair routing split after baseline demand. -/
 noncomputable def selectedBlockedPairRoutingDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .baselineSpineDemand, K .activeSurplusDemands,
+      [K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -295,38 +229,14 @@ noncomputable def selectedBlockedPairRoutingDichotomy
   blockedPairRoutingDichotomy (data := spineData) history
     (K .sparsePairExit) (K .canonicalBlockerRoute)
     (fun exit => ⟨exit⟩)
-    (fun blocker => ⟨blocker⟩)
-    (by simp [K_eq_iff])
-    (by simp [K_eq_iff])
-
-/-- Nodes `[125]`--`[132]`, strict separated surplus through the sparse-pair split. -/
-noncomputable def selectedStrictSeparatedPairDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .sparsePairExit)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .canonicalBlockerRoute)
-      (selectedBaselineSpineDemand history) :=
-  selectedBlockedPairRoutingDichotomy (selectedBaselineSpineDemand history)
-
 /-- Node `[133]`, sparse-pair exit closes against the survivor fact. -/
 noncomputable def selectedSparsePairExitCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .sparsePairExit, K .baselineSpineDemand, K .activeSurplusDemands,
+      [K .sparsePairExit, K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
@@ -339,19 +249,19 @@ noncomputable def selectedSparsePairExitCloses
 noncomputable def selectedCanonicalPairFacts
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .canonicalBlockerRoute, K .baselineSpineDemand,
+      [K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
@@ -360,8 +270,7 @@ noncomputable def selectedCanonicalPairFacts
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)
       (K .activeSurplusFamily) (K .sparseSlackSurplus)
-      (K .surplusAbove) (K .baselineSpineDemand)
-      (K .canonicalBlockerRoute) (K .canonicalPairLedger)
+      (K .surplusAbove)       (K .canonicalBlockerRoute) (K .canonicalPairLedger)
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
@@ -379,20 +288,20 @@ noncomputable def selectedCanonicalPairFacts
 noncomputable def selectedCapacityTokenFacts
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .canonicalBlockerRoute, K .baselineSpineDemand,
+      [K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
@@ -401,8 +310,7 @@ noncomputable def selectedCapacityTokenFacts
     (capacityTokenLedgerRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)
-      (K .canonicalPairLedger) (K .baselineSpineDemand)
-      (K .noProperBaseline) (K .tightEndpoint) (K .surplusAbove)
+      (K .canonicalPairLedger)       (K .noProperBaseline) (K .tightEndpoint) (K .surplusAbove)
       (K .sparseUpperEnvelope) (K .capacityTokenLedger)
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
       (by simp [K_eq_iff]) (by simp [K_eq_iff])
@@ -424,10 +332,10 @@ noncomputable def selectedCapacityTokenFacts
 noncomputable def selectedCoupledFibrePressure
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .canonicalBlockerRoute, K .baselineSpineDemand,
+      [K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -435,10 +343,10 @@ noncomputable def selectedCoupledFibrePressure
       [K .roleFibrePartition, K .fibrePressure,
         K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
@@ -464,10 +372,10 @@ noncomputable def selectedSparsePressureDichotomy
       [K .roleFibrePartition, K .fibrePressure,
         K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -492,10 +400,10 @@ noncomputable def selectedSparsePressureDichotomy
 noncomputable def selectedCanonicalBlockerPressureDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .canonicalBlockerRoute, K .baselineSpineDemand,
+      [K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -518,10 +426,10 @@ noncomputable def selectedPressureSpineSurplusEstimate
       [K .sparsePressureNearCubic, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -529,10 +437,10 @@ noncomputable def selectedPressureSpineSurplusEstimate
       [K .spineSurplusEstimate, K .sparsePressureNearCubic,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -556,10 +464,10 @@ noncomputable def selectedPressureNearCubicCloses
       [K .sparsePressureNearCubic, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
@@ -573,7 +481,7 @@ noncomputable def selectedPressureNearCubicCloses
 noncomputable def selectedStrictSeparatedOverload
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+      [K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -581,10 +489,10 @@ noncomputable def selectedStrictSeparatedOverload
       [K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
@@ -605,10 +513,10 @@ noncomputable def selectedWindowClassDichotomy
       [K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -636,10 +544,10 @@ noncomputable def selectedWindowIncidenceAudit
       [K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -648,10 +556,10 @@ noncomputable def selectedWindowIncidenceAudit
         K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -672,10 +580,10 @@ noncomputable def selectedRemainderClassDichotomy
       [K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -704,10 +612,10 @@ noncomputable def selectedRemainderSurplusAudit
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -717,10 +625,10 @@ noncomputable def selectedRemainderSurplusAudit
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
@@ -742,10 +650,10 @@ noncomputable def selectedPrimitiveCarrierAudit
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -755,10 +663,10 @@ noncomputable def selectedPrimitiveCarrierAudit
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -788,10 +696,10 @@ noncomputable def selectedWindowHomogeneousCapsDichotomy
         K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -821,10 +729,10 @@ noncomputable def selectedWindowHomogeneousCapsEstimate
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -835,10 +743,10 @@ noncomputable def selectedWindowHomogeneousCapsEstimate
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
@@ -876,10 +784,10 @@ noncomputable def selectedWindowHomogeneousCapsCloses
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
@@ -898,10 +806,10 @@ noncomputable def selectedWindowBottleneckRouting
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -912,10 +820,10 @@ noncomputable def selectedWindowBottleneckRouting
         K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -947,10 +855,10 @@ noncomputable def selectedRemainderHomogeneousCapsDichotomy
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -980,10 +888,10 @@ noncomputable def selectedRemainderHomogeneousCapsEstimate
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -994,10 +902,10 @@ noncomputable def selectedRemainderHomogeneousCapsEstimate
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -1035,10 +943,10 @@ noncomputable def selectedRemainderHomogeneousCapsCloses
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
@@ -1057,10 +965,10 @@ noncomputable def selectedRemainderBottleneckRouting
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -1072,10 +980,10 @@ noncomputable def selectedRemainderBottleneckRouting
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
@@ -1107,10 +1015,10 @@ noncomputable def selectedPrimitiveHomogeneousCapsDichotomy
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -1141,10 +1049,10 @@ noncomputable def selectedPrimitiveHomogeneousCapsEstimate
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -1156,10 +1064,10 @@ noncomputable def selectedPrimitiveHomogeneousCapsEstimate
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
@@ -1198,10 +1106,10 @@ noncomputable def selectedPrimitiveHomogeneousCapsCloses
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
@@ -1221,10 +1129,10 @@ noncomputable def selectedPrimitiveBottleneckRouting
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -1236,10 +1144,10 @@ noncomputable def selectedPrimitiveBottleneckRouting
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -1269,10 +1177,10 @@ noncomputable def selectedWindowOverloadCapsDichotomy
       [K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -1296,10 +1204,10 @@ noncomputable def selectedRemainderOverloadCapsDichotomy
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -1324,10 +1232,10 @@ noncomputable def selectedPrimitiveOverloadCapsDichotomy
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -1351,10 +1259,10 @@ noncomputable def selectedWindowOverloadBottleneckRouting
       [K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
@@ -1365,10 +1273,10 @@ noncomputable def selectedWindowOverloadBottleneckRouting
         K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -1386,10 +1294,10 @@ noncomputable def selectedWindowOverloadBridgeMassHistory
       [K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) := by
@@ -1409,10 +1317,10 @@ noncomputable def selectedWindowOverloadBridgeSublinearHistory
       [K .windowClassOverload, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) := by
@@ -1434,10 +1342,10 @@ noncomputable def selectedRemainderOverloadBottleneckRouting
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -1449,10 +1357,10 @@ noncomputable def selectedRemainderOverloadBottleneckRouting
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
@@ -1471,10 +1379,10 @@ noncomputable def selectedRemainderOverloadBridgeMassHistory
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) := by
@@ -1495,10 +1403,10 @@ noncomputable def selectedRemainderOverloadBridgeSublinearHistory
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) := by
@@ -1520,10 +1428,10 @@ noncomputable def selectedPrimitiveOverloadBottleneckRouting
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -1535,10 +1443,10 @@ noncomputable def selectedPrimitiveOverloadBottleneckRouting
         K .windowClassAbsent, K .sparsePressureOverload,
         K .roleFibrePartition, K .fibrePressure, K .sparseUpperEnvelope,
         K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .baselineSpineDemand,
+        K .canonicalBlockerRoute,
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
@@ -1557,10 +1465,10 @@ noncomputable def selectedPrimitiveOverloadBridgeMassHistory
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) := by
@@ -1581,10 +1489,10 @@ noncomputable def selectedPrimitiveOverloadBridgeSublinearHistory
         K .sparsePressureOverload, K .roleFibrePartition,
         K .fibrePressure, K .sparseUpperEnvelope, K .capacityTokenLedger,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+        K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) := by
@@ -1602,7 +1510,7 @@ noncomputable def selectedPrimitiveOverloadBridgeSublinearHistory
 noncomputable def selectedStrictSeparatedWindowClassDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
+      [K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
@@ -9031,25 +8939,8 @@ theorem erdos_64_of_selectedLedgerClosure
   EGTarget.target_to_statement
     (target_closure_of_selectedLedgerClosure selectedLedgerClosure)
 
-/-! The two node-[19] arms are kept as separate exact-ledger cursors.  Node
-[21] is common in the paper's bookkeeping, but it is run independently on
-each arm; no sum, existential bundle, or branch carrier is introduced. -/
-
-noncomputable def selectedStrictNode21
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] :=
-  (finiteBarrierEnumeration (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)
-    EGTarget rfl).run history (by simp [K_eq_iff])
+/-! The two node-[19] arms are separate exact-ledger cursors.  Node `[20]`
+is exhausted before node `[21]`; only the no arm reaches the enumeration. -/
 
 noncomputable def selectedNearCubicNode21
     {selected : EGInput.{u}}
@@ -9067,7 +8958,7 @@ noncomputable def selectedNearCubicNode21
     (presentation := erdosReceiverLoadProfile) (data := spineData)
     EGTarget rfl).run history (by simp [K_eq_iff])
 
-/-! Node `[20]` and the two continuations after `[21]` are explicit branch
+/-! Node `[20]` and the post-`[21]` continuation are explicit branch
 functions.  Their arguments and results are exact-ledger indices, so the
 strict and near-cubic cursors cannot be accidentally exchanged. -/
 
@@ -9077,8 +8968,7 @@ noncomputable def selectedStrictSurplusBranch
       [K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
-  let enumerated := selectedStrictNode21 history
-  match selectedStrictSeparatedWindowClassDichotomy enumerated with
+  match selectedStrictSeparatedWindowClassDichotomy history with
   | .left windowHistory =>
       exact selectedWindowOverloadBridgeSublinearHistory windowHistory
   | .right windowAbsentHistory =>

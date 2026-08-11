@@ -4301,64 +4301,25 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                   object.graph.Adj left right ∧
                   object.graph.Adj right pair.2))
   | .baselineSpineDemand, object =>
-      -- `lem:incremental-skeleton-room` on the manuscript's own envelope, the
-      -- same estimate spent at the object's own edge count,
-      -- `lem:exact-cubic-baseline-budget`'s two-sided evaluation of `B₀(n)`,
-      -- `def:baseline-spine-demand` at every declared coordinate family the
-      -- branch may present, and `def:spine-lower-bound-deficits`' ordering of
-      -- the three lower-bound packages.
-      (Nonempty (object.BaselineWindowDemand
-          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-          data.threshold data.windowOrder data.surplusScale) ∧
-      ((∀ increment : Nat,
-          Graph.cubicBaselineEdgeCount object.vertexCount data.threshold +
-              increment ≤ 2 * object.vertexCount - 2 →
-          (object.vertexCount.choose 2).choose
-              (Graph.cubicBaselineEdgeCount object.vertexCount data.threshold +
-                increment) ≤
-            (object.vertexCount.choose 2).choose
-                (Graph.cubicBaselineEdgeCount object.vertexCount
-                  data.threshold) *
-              object.vertexCount ^ increment) ∧
-        (Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
-            object.edgeCount →
-          Graph.skeletonBudget object ≤
-            Graph.cubicBaselineBudget object.vertexCount data.threshold *
-              object.vertexCount ^
-                (object.edgeCount -
-                  Graph.cubicBaselineEdgeCount object.vertexCount
-                    data.threshold)) ∧
-        -- `lem:exact-cubic-baseline-budget`, both directions, with the
-        -- logarithms cleared: `B₀(n) = (δ/2)n log₂ n + O(n)`.  The lower
-        -- direction is stated on the manuscript's own hypothesis that the
-        -- baseline stratum is nonempty.
-        (Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
-            (2 * object.vertexCount) ^
-              Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ∧
-          (2 * Graph.cubicBaselineEdgeCount object.vertexCount
-                data.threshold ≤ object.vertexCount.choose 2 →
-            (object.vertexCount - 1) ^
-                Graph.cubicBaselineEdgeCount object.vertexCount
-                  data.threshold ≤
-              Graph.cubicBaselineBudget object.vertexCount data.threshold *
-                (2 * (data.threshold + 1)) ^
-                  Graph.cubicBaselineEdgeCount object.vertexCount
-                    data.threshold)) ∧
-        -- `def:spine-lower-bound-deficits`: the window-only package, the
-        -- high-remainder-entropy package and the forced-curvature package are
-        -- increasing at the registered rates, so their deficits decrease.
-        (∀ packing remainder scaleCount : Nat,
-          Graph.spineDeficit object.vertexCount data.threshold
-              (Graph.curvaturePackageBound data.windowRate packing scaleCount
-                remainder data.entropyDenominator data.curvatureCost) ≤
-            Graph.spineDeficit object.vertexCount data.threshold
-              (Graph.highEntropyPackageBound data.windowRate packing scaleCount
-                remainder data.entropyDenominator) ∧
-          Graph.spineDeficit object.vertexCount data.threshold
-              (Graph.highEntropyPackageBound data.windowRate packing scaleCount
-                remainder data.entropyDenominator) ≤
-            Graph.spineDeficit object.vertexCount data.threshold
-              (Graph.windowPackageBound data.windowRate packing scaleCount))))
+      -- Node `[129]`, exactly `def:baseline-spine-demand`: the already-built
+      -- active family together with one concrete declared, independently
+      -- target-testable spine family, its canonical deficit, and the bound
+      -- `E_spine <= C_E n`.  This has no window-package premise: that package
+      -- belongs exclusively to `[21]`.
+      (Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold ∧
+        ∃ (Coordinate : Type u) (family : Finset Coordinate)
+          (coordinateSupport : Coordinate → Finset object.Vertex),
+          Graph.IsBaselineSpineDemand
+              (object.declaredQuotientSystem
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) family coordinateSupport)
+              object.vertexCount data.threshold
+              (Graph.spineDeficit object.vertexCount data.threshold family.card) ∧
+            Graph.spineDeficit object.vertexCount data.threshold family.card ≤
+              data.surplusScale * object.vertexCount)
   | .canonicalPairLedger, object =>
       -- `def:sparse-pair-response`, `def:surplus-blockers` instantiated,
       -- `def:canonical-blocker-ledger` and its no-overcount identity at that

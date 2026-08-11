@@ -77,8 +77,7 @@
 
 \lstset{basicstyle=\ttfamily\small,breaklines=true,columns=fullflexible,frame=single,backgroundcolor=\color{black!3},upquote=true}
 
-\title{Curvature Compression and the Power-of-Two Cycle Problem\\
-\large A minimal-counterexample analysis}
+\title{A Structural Exhaustion Proof of the Erd\H{o}s--Gy\'arf\'as Conjecture on Power-of-Two Cycles}
 \author{Guillem Duran-Ballester\\\texttt{guillem@fragile.tech}}
 \date{\today}
 
@@ -86,51 +85,17 @@
 \maketitle
 
 \begin{abstract}
-We give a minimal-counterexample proof of the Erd\H{o}s--Gy\'arf\'as
-power-of-two cycle problem.  The $P_{13}$-free theorem of Hegde, Sandeep,
-and Shashank is used as a black box, and auxiliary dense-window quiet-block
-bookkeeping is recorded in the appendix.  After replacing the power-of-two-cycle predicate by the
-absence of edge-rooted Mersenne returns, minimality and a boundaried
-replacement principle make every proper atom target-uncompressible; the
-$P_{13}$-free theorem then forces a maximal packing of induced $P_{13}$
-windows with low density, leaving a large $P_{13}$-free remainder.  The
-curvature-rank branch routes rank loss to target defect, compression, or
-delocalization; the whole-graph case is handled by exact closed response
-profiles, so empty-context data cannot silently identify curvature tests.  The
-final closure is driven by two-budget entropy routing and a large-budget branch governed by a surplus-adjusted
-positive-deficiency invariant
-\[
-\mathcal N(X)=\partial_+(X)-\sigma(X)-\tfrac14|V(X)|
-\]
-on connected admissible supports.  The closed part of the local analysis
-excludes bounded low-deficiency $P_{13}$-free atoms outside the reduced route-8
-silent trace-basin profile and high-degree fan-safe surplus supports whenever
-the Type B bridge ledger is available.  Certificate-marked fan centers have fan
-degree at most $8$ and positive-deficit Type B fan-window data are paid locally
-by the hybrid incidence ledger.  A Type B bridge residual is either a
-fan-certificate residual center or a failure of the refined support ledger,
-represented in the latter case by the minimal overlap obstruction of
-\cref{def:typeB-overlap-obstruction}.  Both residual forms are charged to the
-assigned surplus units at their high-degree fan centers.  Before the normalized
-near-cubic entropy budget is invoked, the sparse surplus-token branch
-\cref{prop:nonnear-cubic-sharp-overload-routing} either discharges a sparse
-surplus exit, routes ordinary decorated Type B fan data to the Type B ledger, or
-supplies the near-cubic spine estimate of \cref{def:near-cubic-spine}.  In that
-spine, the assigned surplus consumes the global
-surplus budget $\sigma(G)=O(\sqrt n)$; hence all Type B bridge residuals
-together carry only $o(|R|)$ negative net charge and cannot support the linear
-large-budget deficit in that spine.
-The route-8 residual is quantified: if it carries the large-budget charge deficit,
-it contains linearly many unpaid silent target-complete-minimal trace-basin
-entries, counted by their routed vertices.  The carrier ledger passes each entry
-to its canonical minimal target-complete carrier core inside the declared
-$u$-supported response algebra, closes zero/one-essential-core entries by exits
-(4)--(7), and reduces any surviving large-budget route-8 branch to a
-two-carrier route-8 entry.  The terminal obstruction is then isolated as a
-single local no-go theorem, \cref{thm:typeA-two-carrier-nogo}, with the
-carrier-deletion witnesses recorded as part of the residual data.  All numerical
-constants are displayed explicitly, and the finite curvature enumerations are
-reproduced, with code, in an appendix.
+We prove the Erd\H{o}s--Gy\'arf\'as conjecture that every finite simple graph
+of minimum degree at least three contains a cycle whose length is a power of
+two.  Assuming a minimal counterexample, we reformulate the forbidden-cycle
+condition in terms of edge-rooted Mersenne returns and combine a boundaried
+replacement principle with the $P_{13}$-free theorem of Hegde, Sandeep, and
+Shashank.  A maximal packing of induced $P_{13}$ windows reduces the problem
+to a structured remainder, which is exhausted through curvature, compression,
+and surplus-routing alternatives.  The remaining configurations are ruled out
+by explicit deficiency and entropy estimates together with a finite local
+analysis.  All constants are stated explicitly, and the finite enumerations
+used in the proof are reproduced with code in the appendix.
 \end{abstract}
 
 \tableofcontents

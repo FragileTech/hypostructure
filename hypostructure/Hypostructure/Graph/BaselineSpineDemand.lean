@@ -1,4 +1,5 @@
 import Hypostructure.Core.TargetRank
+import Hypostructure.Graph.DeclaredCoordinateSignature
 import Hypostructure.Graph.SkeletonBudget
 
 /-!
@@ -489,6 +490,44 @@ theorem spineDeficit_le_of_le (vertexCount baselineDegree : Nat)
 /-! ## `def:baseline-spine-demand` -/
 
 universe w
+
+/-- A concrete family in the closed declared-coordinate signature used when a
+branch fixes its common baseline spine demand.  The lifted finite label keeps
+the coordinate type in the finite object's universe. -/
+abbrev FiniteObject.BaselineSpineCoordinate (object : FiniteObject.{w})
+    (bits : Nat) :=
+  DeclaredSignature.Coordinate object.Vertex (ULift.{w} (Fin bits))
+
+/-- One declared sparse-surplus coordinate of the baseline family. -/
+noncomputable def FiniteObject.baselineSpineCoordinate
+    (object : FiniteObject.{w}) {bits : Nat} (bit : ULift.{w} (Fin bits)) :
+    object.BaselineSpineCoordinate bits :=
+  .base .sparseSurplus bit ∅
+
+/-- The concrete declared family with one coordinate for every baseline bit. -/
+noncomputable def FiniteObject.baselineSpineFamily
+    (object : FiniteObject.{w}) (bits : Nat) :
+    Finset (object.BaselineSpineCoordinate bits) := by
+  classical
+  exact Finset.univ.image object.baselineSpineCoordinate
+
+/-- The support map belonging to the concrete declared baseline family. -/
+noncomputable def FiniteObject.baselineSpineSupport
+    (object : FiniteObject.{w}) {bits : Nat} :
+    object.BaselineSpineCoordinate bits → Finset object.Vertex := by
+  letI := object.vertices.decEq
+  exact DeclaredSignature.Coordinate.support
+
+@[simp] theorem FiniteObject.card_baselineSpineFamily
+    (object : FiniteObject.{w}) (bits : Nat) :
+    (object.baselineSpineFamily bits).card = bits := by
+  classical
+  rw [FiniteObject.baselineSpineFamily, Finset.card_image_iff.mpr]
+  · simp [Fintype.card_ulift]
+  · intro left _ right _ equality
+    simp only [FiniteObject.baselineSpineCoordinate,
+      DeclaredSignature.Coordinate.base.injEq] at equality
+    exact equality.2.1
 
 /-- **`def:baseline-spine-demand`.**
 

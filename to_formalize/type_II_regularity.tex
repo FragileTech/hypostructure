@@ -1040,6 +1040,15 @@ Moreover, \(1/\Lambda_{\rm pre}\), \(\Lambda_{\rm pre}\in L^\infty(I_*)\),
 \[
 \Phi_{\rm pre}(Q_R^*)\subset B_{R_*/2+\Lambda_{\max}R}(x_\bullet)\times I_{\rm ph}.
 \]
+Consequently, if \(B_{R_{\rm phys}}(x_\bullet)\times I_{\rm ph}\) is a
+declared physical working cylinder and
+\[
+  \frac{R_*}{2}+\Lambda_{\max}R<R_{\rm phys},
+\]
+then \(\Phi_{\rm pre}(Q_R^*)\) has a positive spatial buffer inside that
+working cylinder.  The displayed geometric inclusion alone does not assert
+containment in a prescribed physical working cylinder when this inequality
+fails.
 For each fixed time \(\tau\), the spatial map
 \(Y\mapsto X_{\rm pre}(\tau)+\Lambda_{\rm pre}(\tau)Y\) is bi-Lipschitz on
 \(B_R\), with \(\det \nabla_Y\Phi_{\rm pre}=\Lambda_{\rm pre}^3\), hence
@@ -1228,44 +1237,80 @@ in \(\mathcal D'\) on the physical image.
 
 \subsection{Domain localization and support}\label{paper2:sec:domains}
 
-Let \(R>0\) be fixed and \(0<\ell\le \ell_0\). Set \(Q_R^*=B_R\times I_*\).
-With \(\Phi\) as above define physical support maps
+Let \(J\subset I_*\) be a compact interval on which the chart is defined and
+let \(R>0\).  Set \(Q_R^J:=B_R\times J\).  With \(\Phi\) as above define
+the restricted physical support maps
 \[
-\mathcal Q^{\rm ph}_{R}:=\Phi(Q_R^*),\qquad
-\mathcal Q^{\rm ph}_{2R}:=\Phi(Q_{2R}^*).
+\mathcal Q^{\rm ph}_{R,J}:=\Phi(Q_R^J),\qquad
+\mathcal Q^{\rm ph}_{2R,J}:=\Phi(Q_{2R}^J).
 \]
+Let
+\[
+  \mathcal Q^{\rm ph}_{\rm work}
+  :=B_{R_{\rm phys}}(x_\bullet)\times I_{\rm ph}
+\]
+denote a physical working cylinder on which the suitable solution and the
+chosen pressure representative or pressure atlas are available.
 
 \begin{proposition}[Compact support transport]\label{paper2:prop:domain}
-Assume \(\Lambda_{\min}\le \Lambda\le \Lambda_{\max}\) on \(I_*\).
-Then
+Assume \(\Lambda_{\min}\le \Lambda\le \Lambda_{\max}\) on \(J\), and set
+\[
+  D_X(J):=\sup_{\tau\in J}|X(\tau)-x_\bullet|.
+\]
+For a repaired chart
+\(X=X_{\rm pre}+\Lambda_{\rm pre}c\), this quantity is finite and obeys
+\[
+  D_X(J)\le \frac{R_*}{2}
+  +\|\Lambda_{\rm pre}\|_{L^\infty(J)}
+   \|c\|_{L^\infty(J)}.
+\]
+Suppose \(D_X(J)<R_{\rm phys}\), and choose \(R_{\rm adm}(J)>0\) so that
+\begin{equation}\label{paper2:eq:domain-buffer}
+  D_X(J)+2\Lambda_{\max}R_{\rm adm}(J)<R_{\rm phys}.
+\end{equation}
+Then, for every \(0<R\le R_{\rm adm}(J)\),
 \[
 \begin{gathered}
-X(\tau)\in B_{R_*/2}(x_\bullet),\qquad |x-X(\tau)|\le \Lambda_{\max}R,\\
-\mathcal Q^{\rm ph}_{R}\subset B_{R_*/2+ \Lambda_{\max}R}(x_\bullet)\times I_{\rm ph},\\
-\mathcal Q^{\rm ph}_{2R}\subset B_{R_*/2+2\Lambda_{\max}R}(x_\bullet)\times I_{\rm ph},
+\mathcal Q^{\rm ph}_{R,J}
+ \subset B_{D_X(J)+\Lambda_{\max}R}(x_\bullet)\times I_{\rm ph},\\
+\mathcal Q^{\rm ph}_{2R,J}
+ \subset B_{D_X(J)+2\Lambda_{\max}R}(x_\bullet)\times I_{\rm ph}
+ \subset \mathcal Q^{\rm ph}_{\rm work}.
 \end{gathered}
 \]
-for every \(\tau\in I_*\) and \(x=X(\tau)+\Lambda(\tau)Y\) with \(Y\in B_{2R}\).
-In particular, if \(|c(\tau)|\le \delta\) from Proposition~\ref{paper2:prop:preliminary-correction},
-then \(X(\tau)\in B_{R_*/2+\Lambda_{\max}\delta}(x_\bullet)\) on \(I_*\).
-Hence, \(\chi_R\in C_c^\infty(B_{2R})\) pulls back to a compactly supported
-physical cutoff that is smooth in the spatial variables and absolutely
-continuous in time under the AC chart, with support depending only on
-\(R,\Lambda_{\min},\Lambda_{\max}\).
+The spatial distance from \(\mathcal Q^{\rm ph}_{2R,J}\) to the lateral boundary
+of the working cylinder is at least
+\[
+  d_{\rm buf}(R)
+  :=R_{\rm phys}-D_X(J)-2\Lambda_{\max}R>0.
+\]
+Consequently, \(\chi_R\in C_c^\infty(B_{2R})\) pulls back to a spatially
+compactly supported physical cutoff that is smooth in the spatial variables
+and absolutely continuous in time under the AC chart, with support depending only on
+\(R,D_X(J),\Lambda_{\min},\Lambda_{\max}\) and with the declared positive
+spatial buffer \(d_{\rm buf}(R)\).  Multiplication by a temporal cutoff compactly
+supported in the interior of \(J\) supplies the corresponding temporal buffer.
 \end{proposition}
 \begin{proof}
-Fix \(\tau\in I_*\) and \(Y\in B_R\). Since \(x=X(\tau)+\Lambda(\tau)Y\),
+The repaired-center identity and the preliminary-center bound give
 \[
-|x-X(\tau)|\le |Y|\,\Lambda_{\max}\le \Lambda_{\max}R,\qquad
-\Lambda_{\max}^{-1}|x-X(\tau)|\le |Y|.
+|X(\tau)-x_\bullet|
+\le |X_{\rm pre}(\tau)-x_\bullet|
+  +\Lambda_{\rm pre}(\tau)|c(\tau)|
+\le \frac{R_*}{2}
+  +\|\Lambda_{\rm pre}\|_{L^\infty(J)}
+   \|c\|_{L^\infty(J)},
 \]
-Because \(X(\tau)\in B_{R_*/2}(x_\bullet)\), this gives
+which proves the stated estimate for \(D_X(J)\).  Next, if \(Y\in B_{kR}\),
+where \(k\in\{1,2\}\), then
 \[
-x\in B_{R_*/2+\Lambda_{\max}R}(x_\bullet).
+|x-x_\bullet|
+\le |X(\tau)-x_\bullet|+\Lambda(\tau)|Y|
+\le D_X(J)+k\Lambda_{\max}R.
 \]
-Similarly, if \(Y\in B_{2R}\), then \(x\in B_{R_*/2+2\Lambda_{\max}R}(x_\bullet)\).
-Together with \(t=t_{\rm c}(\tau)\in I_{\rm ph}\), these give the claimed
-inclusions for \(\mathcal Q_{R}^{\rm ph}\) and \(\mathcal Q_{2R}^{\rm ph}\).
+Together with \(t=t_{\rm c}(\tau)\in I_{\rm ph}\), this proves both image
+inclusions.  Inequality~\eqref{paper2:eq:domain-buffer} gives the strict
+containment and the lower bound \(d_{\rm buf}(R)>0\).
 
 For pull-backs of cutoffs, \(\Phi\) is bi-Lipschitz at every \(\tau\), so composition
 \[
@@ -1273,10 +1318,21 @@ For pull-backs of cutoffs, \(\Phi\) is bi-Lipschitz at every \(\tau\), so compos
 \]
 is smooth in \(x\) for each time and is AC in time when the chart is AC. It is
 supported where \(Y\in B_{2R}\), hence supported where
-\((x,t)\in\mathcal Q^{\rm ph}_{2R}\). The support size depends
-only on \(R,\Lambda_{\min},\Lambda_{\max}\) and the fixed \(C_c^\infty\) norm of
-\(\chi_R\), not on the particular branch.
+\((x,t)\in\mathcal Q^{\rm ph}_{2R,J}\subset\mathcal Q^{\rm ph}_{\rm work}\).
+The preceding bound gives its declared spatial support buffer; a compactly
+supported temporal factor gives the time buffer when the cutoff is used as a
+test function.
 \end{proof}
+
+\begin{remark}[Buffer entry]\label{paper2:rem:domain-buffer-entry}
+The compact-window representation and every transported-cutoff argument are
+used only after verifying \eqref{paper2:eq:domain-buffer}.  If no positive
+\(R_{\rm adm}(J)\) exists on the selected physical working cylinder, the required
+raw chart is unavailable on the working window.  The branch is then recorded
+as the representation alternative (failure of the admissible raw chart on the
+required cylinder), rather than continuing with an unsupported cutoff or
+pressure representative.
+\end{remark}
 
 \subsection{Transport of local quantities under the chart}\label{paper2:sec:local-transfer}
 
@@ -2217,14 +2273,19 @@ semicontinuity. This gives the physical local energy inequality with \(\psi\).
 \end{proof}
 
 \begin{proposition}[Transport of suitable local energy inequality]\label{paper2:prop:ren-suitable}
-Suppose \((u,p)\) is suitable on \(\mathcal Q^{\rm ph}_{2R}\), and
-\((V,P)\) is obtained by the repaired map \(\Phi\).
+Assume the domain-buffer condition of
+\cref{paper2:prop:domain,paper2:rem:domain-buffer-entry} for some
+compact \(J\subset I_*\) and \(0<R\le R_{\rm adm}(J)\).  Suppose \((u,p)\) is suitable and its chosen pressure
+representative or pressure atlas is available on
+\(\mathcal Q^{\rm ph}_{\rm work}\), and \((V,P)\) is obtained by the repaired
+map \(\Phi\).
 Set
 \[
 \tilde a(\tau):=\Lambda(\tau)^{-1}\Lambda'(\tau),\qquad
 \tilde b(\tau):=\Lambda(\tau)^{-1}X'(\tau).
 \]
-Then for every nonnegative \(\phi\in C_c^\infty(Q_R^*)\) and \(\tau_1<\tau_2\),
+Then for every nonnegative \(\phi\in C_c^\infty(Q_R^J)\) and
+\(\tau_1<\tau_2\) in \(J\),
 \[
 \begin{aligned}
 \mathscr E_\phi(V,P)
@@ -2246,7 +2307,7 @@ Then for every nonnegative \(\phi\in C_c^\infty(Q_R^*)\) and \(\tau_1<\tau_2\),
 The right-hand side is controlled on compact windows by
 \(\|\tilde a\|_{L^1},\|\tilde b\|_{L^1},M\), and the local bounds from
 Theorem~\ref{paper2:thm:pressure-decomp}, and support bounds from Section~\ref{paper2:sec:domains}.
-Hence \((V,P)\) is locally suitable on \(Q_R^*\).
+Hence \((V,P)\) is locally suitable on \(Q_R^J\).
 \end{proposition}
 
 \begin{proof}
@@ -2257,9 +2318,11 @@ Set
 \tau=\tau(t),\qquad d\tau/dt=\Lambda^{-2},
 \]
 and let \(t_i=t(\tau_i)\), \(i=1,2\).  By
-Proposition~\ref{paper2:prop:prelim-frame}, Section~\ref{paper2:sec:domains},
-and \cref{paper2:lem:ac-chart-tests}, the physical local energy inequality is
-valid with this nonnegative AC chart-generated test \(\psi\).
+\cref{paper2:prop:domain}, the pullback of the support of \(\phi\) lies inside
+\(\mathcal Q^{\rm ph}_{\rm work}\) with a positive spatial buffer.  The
+compact temporal support of \(\phi\), together with
+\cref{paper2:lem:ac-chart-tests}, therefore makes \(\psi\) an admissible
+nonnegative test for the physical local energy inequality.
 \[
 \nabla_x\psi=\Lambda^{-2}\nabla_Y\phi^2,\quad
 \Delta_x\psi=\Lambda^{-3}\Delta_Y\phi^2,\quad
@@ -2451,8 +2514,10 @@ Uniform bounds on \((a,b)\) are obtained by the bound on \(J^{-1}\) there and th
 \end{proof}
 
 \begin{theorem}[Compact-window representation theorem]\label{paper2:thm:C}
-Under the assumptions of \cref{paper2:thm:A,paper2:thm:B}, for every compact
-window \(J\subset I_*\) and each fixed \(R>0\), setting
+Under the assumptions of \cref{paper2:thm:A,paper2:thm:B}, suppose the
+domain-buffer entry condition \eqref{paper2:eq:domain-buffer} holds on the
+selected physical working cylinder.  Then, for every compact window
+\(J\subset I_*\) and each fixed \(0<R\le R_{\rm adm}(J)\), setting
 \(Q_R^J:=B_R\times J\),
 one has:
 \begin{enumerate}
@@ -2468,6 +2533,9 @@ one has:
         in the \(L^\infty\)-modulated retained rows used below.
 \end{enumerate}
 The later reductions use only these conclusions.
+If the domain-buffer entry condition fails, the conclusion is not invoked and
+the branch is assigned to the representation alternative as in
+\cref{paper2:rem:domain-buffer-entry}.
 \end{theorem}
 
 \begin{proof}
@@ -3321,13 +3389,100 @@ single-core analysis.
 
 \subsection{Same-point and separated-point reductions}
 
+\begin{definition}[Scale-rigid local branch data]
+\label{paper3:def:scale-rigid-branch}
+A scale-rigid local branch consists of a represented branch
+\((V_n,P_n,a_n,b_n)\) on a fixed compact selected cylinder \(Q_{R_*}\), a
+retained frame \((x_n^0,\lambda_n^0)\), and, when a second selection is
+present, comparison parameters \((x_n^1,\lambda_n^1)\).  Write
+\[
+  \rho_n:=\frac{\lambda_n^1}{\lambda_n^0},
+  \qquad
+  z_n:=\frac{x_n^1-x_n^0}{\lambda_n^0}.
+\]
+The branch data satisfy:
+\begin{enumerate}[label=\textup{(R\arabic*)}]
+\item the compact-cylinder suitable estimates are uniformly bounded,
+      \[
+        A_{V_n}(R_*)+E_{V_n}(R_*)+C_{V_n}(R_*)+D_{P_n}(R_*)\le M;
+      \]
+\item the retained velocity obstruction persists on a fixed inner cylinder
+      \(Q_{r_*}\Subset Q_{R_*}\),
+      \[
+        C_{V_n}(r_*)\ge\eta_0>0;
+      \]
+      a pressure-only obstruction is assigned instead to the harmonic-pressure
+      or exterior-pressure row;
+\item the modulation coefficients are bounded on the selected cylinder,
+      \[
+        \|a_n\|_{L^\infty(-R_*^2,0)}
+        +\|b_n\|_{L^\infty(-R_*^2,0)}\le M;
+      \]
+\item one of the following two relative-parameter records is present:
+      \begin{enumerate}[label=\textup{(R4\alph*)}]
+      \item for some \(L<\infty\),
+            \(e^{-L}\le\rho_n\le e^L\), \(|z_n|\le L\), and the
+            finite-dimensional scale-center selection Jacobian
+            \(\mathcal J_n\) of the selected compound frame satisfies
+            \[
+              \sigma_{\min}(\mathcal J_n)\to0;
+            \]
+      \item the retained frame is the innermost frame of a strict same-point
+            cascade,
+            \[
+              \rho_n\to\infty,
+              \qquad
+              \frac{|z_n|}{\rho_n}=O(1),
+            \]
+            and the sum \(S_n\) of the outer profiles and terminal remainder
+            satisfies on every fixed inner cylinder
+            \[
+              \|S_n\|_{L^\infty_I L^3(B_{2R})}
+              +\|F_n^S\|_{L^1_IH^{-1}(B_R)}
+              +\|\nabla\pi_n^S\|_{L^1_IH^{-1}(B_R)}
+              \to0,
+            \]
+            where \(F_n^S\) and \(\pi_n^S\) are respectively the equation
+            residual and pressure residual after subtracting the retained
+            component.
+      \end{enumerate}
+\end{enumerate}
+The tuple in \textup{(R1)}--\textup{(R4)} is the input contract for the
+scale-rigid stratification below.  Its construction is distinct from the later
+closure of the scale-rigid row.
+\end{definition}
+
 \begin{theorem}[Same-point cascade reduction]\label{paper3:thm:same-point-reduction}
-Every same-point multibubble or strict same-point cascade reduces, in the
-selected innermost or compound frame, to one of the following: the single-core
-criterion, scale-rigidity, or a perturbative terminal branch covered by
-\cref{paper3:thm:terminal-decoupling}, provided the terminal family generated in the
-selected innermost frame is admissible in the sense of
-\cref{paper3:def:admissible-terminal}.
+Let a same-point active family be admissible in the sense of
+\cref{paper3:def:admissible-terminal}.  After passing to a subsequence, the
+same-point analysis constructs the following ordered outputs:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item every comparable-scale class is grouped into one compound retained core,
+      or is placed in the perturbative residual when its compound profile is
+      below the critical small-data threshold;
+\item a strict scale class is recorded in its innermost frame by the relative
+      data
+      \[
+        \rho_n=\lambda_n^{\rm out}/\lambda_n^{\rm in}\to\infty,
+        \qquad
+        z_n=(x_n^{\rm out}-x_n^{\rm in})/\lambda_n^{\rm in},
+        \qquad
+        |z_n|/\rho_n=O(1);
+      \]
+\item a retained rigid output carries the positive velocity obstruction and
+      the full branch data \textup{(R1)}--\textup{(R4)} of
+      \cref{paper3:def:scale-rigid-branch};
+\item the nonretained outer profiles and remainder form a perturbative terminal
+      component governed by \cref{paper3:thm:terminal-decoupling};
+\item failure of the compact suitable bounds, pressure/velocity-carrier test,
+      or represented scale-center selection is assigned to the corresponding
+      multicore, pressure/exterior, rough-core, or gauge-degenerate row.
+\end{enumerate}
+After the construction, the retained component is therefore a compound
+single-core candidate or a scale-rigid local branch, while the remaining
+component is perturbative or belongs to a named adjacent row.  This theorem is
+a state-construction and routing theorem; it makes no scale-rigid closure
+assertion.
 \end{theorem}
 
 \begin{proof}
@@ -3365,16 +3520,39 @@ at most one active core from that class is needed for local selection.
 \noindent\textit{Step 3: local alternatives.}
 If the retained compound core is unique and its scale-centering Jacobian is
 nondegenerate, we obtain the single selected core alternative.
-If this Jacobian is degenerate, the localized choice of active center or scale is
-not unique, which is the gauge-degenerate alternative in
-\cref{paper3:def:local-multibubble}.
+If this Jacobian is degenerate, choose an alternate scale-center selection in
+the same compact comparability class and record its relative parameters
+\((\rho_n,z_n)\).  After passing to a subsequence, these parameters stay in a
+fixed compact set and
+\(\sigma_{\min}(\mathcal J_n)\to0\).  Admissibility supplies the compact
+suitable bound, retained velocity floor, and bounded modulation in
+\textup{(R1)}--\textup{(R3)}.  Thus the retained output is the
+scale-rigid branch data \textup{(R4a)} of
+\cref{paper3:def:scale-rigid-branch}.  If an input fails before this record is
+formed, its first failure is the corresponding compactness, pressure/exterior,
+rough-core, or gauge-degenerate adjacent row.
 
 \smallskip
 \noindent\textit{Step 4: strict same-point scale separation.}
-Assume now the branch is not reduced to comparable scales and choose the innermost
-active scale \(\lambda^1_n\) in that physical point.  By
+Assume now the branch is not reduced to comparable scales and choose the
+innermost active frame \((x_n^{\rm in},\lambda_n^{\rm in})\) at that physical
+point.  For an outer frame \((x_n^{\rm out},\lambda_n^{\rm out})\), set
+\[
+  \rho_n:=\frac{\lambda_n^{\rm out}}{\lambda_n^{\rm in}},
+  \qquad
+  z_n:=\frac{x_n^{\rm out}-x_n^{\rm in}}{\lambda_n^{\rm in}}.
+\]
+The same-point cascade relation gives
+\[
+  \rho_n\to\infty,
+  \qquad
+  \frac{|z_n|}{\rho_n}
+  =\frac{|x_n^{\rm out}-x_n^{\rm in}|}{\lambda_n^{\rm out}}
+  =O(1).
+\]
+By
 \cref{paper3:lem:outer-vanish}, every profile with larger scale vanishes in the
-\(\lambda^1_n\)-frame in local \(L^3\), up to constant drift terms.
+\(\lambda_n^{\rm in}\)-frame in local \(L^3\), up to constant drift terms.
 These constant drifts are absorbed into translation modulation by admissibility.
 Let \(S_n\) be the sum of all such outer profiles plus the rescaled remainder
 \(r_n\).  Then, by Step 2 and \cref{paper3:lem:outer-vanish},
@@ -3382,37 +3560,44 @@ Let \(S_n\) be the sum of all such outer profiles plus the rescaled remainder
   S_n\to0\quad\text{in }L^\infty_I L^3(B_{2R}).
 \]
 
-Subtracting the equation for the innermost selected profile from the full-frame
-equation gives a perturbation equation for the selected profile whose forcing
-belongs to \(L^1_I H^{-1}(B_R)\) and vanishes.  Thus
-\cref{paper3:thm:terminal-decoupling} applies, and one of three outcomes holds:
+Subtracting the retained equation from the full-frame equation and applying
+\cref{paper3:thm:terminal-decoupling} gives
+\[
+  \|F_n^S\|_{L^1_IH^{-1}(B_R)}
+  +\|\nabla\pi_n^S\|_{L^1_IH^{-1}(B_R)}\to0.
+\]
+The retained velocity floor is unchanged by subtracting \(S_n\), while the
+compact suitable bounds and bounded modulation are inherited from
+admissibility.  The ordered retained outputs are therefore:
 \begin{enumerate}[label=\textup{(\alph*)}]
 \item \textbf{Single-core branch:}
-  after subtracting \(S_n\), the branch is governed by one active component, so it
-  reduces to the compact single-core branch of \cref{paper3:prop:local-single-core-exclusion};
+  after subtracting \(S_n\), one nondegenerate active component remains and is
+  passed to the compact single-core row;
 \item \textbf{Scale-rigid branch:}
-  the relative Jacobian between comparable scales becomes rigid in the sense of
-  the later scale-rigidity closure package, so the branch is routed to the
-  scale-rigid local row eventually closed by
-  \cref{paper3:prop:scale-rigidity-discharged};
+  the relative parameters \((\rho_n,z_n)\), the retained velocity floor, and
+  the three displayed residual convergences give
+  \textup{(R1)}--\textup{(R4b)} of
+  \cref{paper3:def:scale-rigid-branch};
 \item \textbf{Purely perturbative branch:}
   \(S_n\to0\) and the selected profile satisfies a vanishing forcing perturbation
-  in \(L^1_IH^{-1}(B_R)\).  No independent same-point cascade mechanism remains;
-  after subtracting \(S_n\), the selected component is reduced to the single-core
-  or scale-rigid local row.
+  in \(L^1_IH^{-1}(B_R)\); it carries no independent same-point obstruction.
 \end{enumerate}
 
-These are the strict same-point scale-separation alternatives, so the
-same-point reduction is exhausted.
+Every step above either groups an active class, records a strict relative-scale
+relation, constructs the scale-rigid input contract, removes a perturbative
+remainder, or enters a named adjacent row.  These are exactly the asserted
+state-construction outputs.
 \end{proof}
 
 
 \begin{theorem}[Separated-point decoupling]\label{paper3:thm:separated-point-reduction}
 Separated active physical points are locally invisible in each other's active
 rescaled frames.  Consequently every separated-point multibubble reduces in each
-selected active frame to a single-core, scale-rigid, or perturbative terminal
+selected active frame to a single-core candidate, scale-rigid branch data in
+the sense of \cref{paper3:def:scale-rigid-branch}, or a perturbative terminal
 branch, provided the terminal family in that selected active frame is
-admissible in the sense of \cref{paper3:def:admissible-terminal}.
+admissible in the sense of \cref{paper3:def:admissible-terminal}.  This is a
+construction statement and makes no use of scale-rigid closure.
 \end{theorem}
 
 \begin{proof}
@@ -3441,10 +3626,16 @@ and by admissibility item \((\text{vii})\).
 Therefore, in the selected \(p\)-frame, all other physical points contribute
 only a perturbative forcing tending to zero in \(L^1H^{-1}\) on compact
 cylinders.  The selected frame remains a positive finite-mass branch with the
-same compact-cylinder and pressure reconstruction properties.  Hence the branch
-reduces to the single-core case, the scale-rigid case, or the perturbative
-terminal branch.  Since \(p\) was arbitrary, the same reduction holds in every
-active frame.
+same compact-cylinder, pressure-reconstruction, and modulation properties.  If
+its scale-center selection is nondegenerate, it is the single-core candidate.
+If the selection Jacobian degenerates in a compact comparison chart, record
+\((\rho_n,z_n,\mathcal J_n)\) as in \textup{(R4a)}; if a strict same-point
+scale class remains inside the selected physical point, record its innermost
+parameters and decoupled residual as in \textup{(R4b)}.  Together with the
+inherited bounds and velocity floor, these are exactly the scale-rigid branch
+data \textup{(R1)}--\textup{(R4)}.  If neither retained case occurs, the
+remaining component is perturbative.  Since \(p\) was arbitrary, the same
+construction holds in every active frame.
 \end{proof}
 
 \subsection{Multibubble and cascade exclusion}
@@ -3478,30 +3669,17 @@ estimates are the inputs of the compactness statement
 \cref{paper1:thm:single-core-criterion} is exactly the stated exclusion.
 \end{proof}
 
-\begin{proposition}[Local scale-rigidity exclusion]\label{paper3:prop:local-scale-rigidity-exclusion}
-Every scale-rigid local branch produced by the same-point or separated-point
-reductions, including a branch with degenerate relative scale-center Jacobian,
-either has a nonzero bounded selected-window limit or reduces to the single-core
-branch in \cref{paper3:prop:local-single-core-exclusion}.  Consequently no such branch is compatible
-with the local Type II condition.
-\end{proposition}
-
-\begin{proof}
-This is proved at the end of the subsection as
-\cref{paper3:prop:scale-rigidity-discharged}.  The present proposition is a
-forward reference used by the multibubble reduction.
-\end{proof}
-
-\begin{remark}[Status of \cref{paper3:prop:local-scale-rigidity-exclusion}]
+\begin{remark}[Scale-rigid construction and closure order]
 \label{paper3:rem:scale-rigidity-discharge}
-The remainder of this subsection proves
-\cref{paper3:prop:local-scale-rigidity-exclusion} by an explicit local compactness
-stratification.  The proof consists of the local lemmas
+The same-point and separated-point theorems construct scale-rigid branch data;
+they do not exclude those data.  The remainder of this subsection consumes the
+input contract \textup{(R1)}--\textup{(R4)} of
+\cref{paper3:def:scale-rigid-branch}.  The local lemmas
 \cref{paper3:lem:scale-rigid-bounded-limit-exit,paper3:lem:scale-rigid-pressure-modulation-stability,paper3:lem:scale-rigid-chart-comparability,paper3:lem:scale-rigid-two-sided-ckn-transfer,paper3:lem:scale-rigid-ckn-in-gauge,paper3:lem:scale-rigid-scaled-pressure-decay,paper3:lem:scale-rigid-dyadic-ckn-persistence,paper3:lem:scale-rigid-exterior-pressure-routing,paper3:lem:scale-rigid-pressure-core-activation,paper3:lem:scale-rigid-active-core-capture,paper3:lem:scale-rigid-no-subconcentration-bounded,paper3:lem:scale-rigid-degenerate-jacobian,paper3:thm:scale-rigid-single-core-compatibility}
-and the main decomposition
-\cref{paper3:thm:scale-rigid-stratum-decomposition}.  The final
-\cref{paper3:prop:scale-rigidity-discharged} then proves the conclusion of
-\cref{paper3:prop:local-scale-rigidity-exclusion} from these results.  All proofs use only the
+and the decomposition
+\cref{paper3:thm:scale-rigid-stratum-decomposition} refine that input.  The
+sole closure edge is the final proposition
+\cref{paper3:prop:scale-rigidity-discharged}.  The refinement layer uses only the
 local Type II definition \cref{paper1:def:typeII}, the represented variables of
 \cref{paper2:thm:C}, the local pressure decomposition of
 \cref{paper2:thm:pressure-decomp}, the modulation \(L^\infty\) control of
@@ -3512,8 +3690,7 @@ the minimal bad-configuration extraction
 \cref{paper1:thm:single-core-criterion}, the terminal CKN regularity criterion
 \cref{paper8:thm:terminal-ckn-regularity}, and Banach--Alaoglu plus
 Calder\'on--Zygmund on fixed cylinders \cite{CalderonZygmund1952,Stein1970}.
-No global PDE bound, no Liouville theorem, and no profile-decomposition
-classification are invoked.
+The scale-rigid discharge is not an input to any of these construction steps.
 \end{remark}
 
 \subsubsection{Local stratification of scale-rigid branches}
@@ -3521,43 +3698,8 @@ classification are invoked.
 We now identify the named scale-rigid local stratum and prove that every
 branch placed there by
 \cref{paper3:thm:same-point-reduction,paper3:thm:separated-point-reduction}
-either exits the local Type II class through
-\cref{paper1:def:typeII} or relaxes back to one of the already excluded local
-strata.
-
-\begin{definition}[Scale-rigid local branch]
-\label{paper3:def:scale-rigid-branch}
-A scale-rigid local branch is a represented branch
-\((V_n,P_n,a_n,b_n)\) on a fixed compact selected cylinder \(Q_{R_*}\),
-produced by Step~3 or Step~4 of \cref{paper3:thm:same-point-reduction} or by
-\cref{paper3:thm:separated-point-reduction}, such that:
-\begin{enumerate}[label=\textup{(R\arabic*)}]
-\item the compact-cylinder suitable estimates are uniformly bounded,
-      \[
-        A_{V_n}(R_*)+E_{V_n}(R_*)+C_{V_n}(R_*)+D_{P_n}(R_*)\le M;
-      \]
-\item the branch carries retained positive local velocity concentration on a fixed inner
-      cylinder \(Q_{r_*}\Subset Q_{R_*}\),
-      \[
-        C_{V_n}(r_*)\ge\eta_0;
-      \]
-      If the retained concentration is pressure-only, the branch is assigned
-      instead to the harmonic pressure row or to the exterior-pressure row.
-\item the modulation coefficients are bounded on the selected cylinder,
-      \[
-        \|a_n\|_{L^\infty(-R_*^2,0)}+\|b_n\|_{L^\infty(-R_*^2,0)}\le M;
-      \]
-\item the relative scale-center selection between the retained core and any
-      previously selected core is rigid in one of the senses produced by
-      \cref{paper3:thm:same-point-reduction}: either the relative
-      scale-center Jacobian degenerates along the subsequence (the
-      gauge-degenerate alternative of
-      \cref{paper3:def:local-multibubble}\,(v)), or the inner core is the
-      innermost member of a same-point cascade in which all outer profiles
-      have been absorbed into the perturbative remainder by
-      \cref{paper3:lem:outer-vanish}.
-\end{enumerate}
-\end{definition}
+is refined to a bounded-window exit, a compact single-core state, a
+perturbative residual, or an earlier-ranked structural row.
 
 \begin{remark}[Inputs (R1)--(R3) are automatic on the selected cylinder]
 \label{paper3:rem:scale-rigid-inputs-automatic}
@@ -4649,13 +4791,15 @@ lemma give items (i)--(iv) respectively.
 \cref{paper3:thm:same-point-reduction}, after subtracting the outer-profile
 sum \(S_n\to0\) in \(L^\infty_I L^3(B_{2R})\) and absorbing constant drifts
 into the translation modulation, the residual is governed by
-\cref{paper3:thm:terminal-decoupling}.  That theorem produces three
-outcomes already enumerated as (a) single-core, (b) scale-rigid (degenerate
-Jacobian), or (c) purely perturbative.  Case (a) is item (ii) here via
-\cref{paper3:thm:scale-rigid-single-core-compatibility}; case (c) is item
-(iii); case (b) loops back into the degenerate Jacobian case treated above
-and is therefore reduced by
-\cref{paper3:lem:scale-rigid-degenerate-jacobian} to one of (i)--(iv).
+\cref{paper3:thm:terminal-decoupling}.  A nondegenerate retained component is
+item \textup{(ii)} via
+\cref{paper3:thm:scale-rigid-single-core-compatibility}, and a component with
+no retained obstruction is item \textup{(iii)}.  If the retained selection is
+degenerate, its recorded Jacobian is an unresolved \textup{(L3)} entry in the
+finite ledger below.  Apply
+\cref{paper3:lem:scale-rigid-degenerate-jacobian} directly to that entry; its
+four outputs are items \textup{(i)}--\textup{(iv)}.  Thus this case creates no
+back edge to the same-point construction.
 \end{proof}
 
 \begin{lemma}[Finite refinement of scale-rigid structural exits]
@@ -4709,6 +4853,18 @@ The ledger is finite because it is built from a finite active family and
 finitely many compounds.  Order ledgers lexicographically by the number of
 unresolved entries in \textup{(L1)}, \textup{(L2)}, \textup{(L3)}, and
 \textup{(L4)}.
+Explicitly, set
+\[
+  \mathfrak r(\omega)
+  :=\bigl(N_{\rm act}(\omega),N_{\rm pair}(\omega),
+          N_{\rm deg}(\omega),N_{\rm rem}(\omega)\bigr)
+  \in\mathbb N^4,
+\]
+where the four entries are the numbers of unresolved ledger entries in
+\textup{(L1)}--\textup{(L4)}, and order \(\mathbb N^4\) lexicographically.
+The same-point and separated-point maps used below are construction edges:
+they group, classify, or assign one ledger entry.  They are not closure edges.
+The only scale-rigid closure edge is applied after this rank has been exhausted.
 
 At each nonterminal step, no multibubble exclusion theorem is used.  If
 \cref{paper3:thm:scale-rigid-stratum-decomposition} gives a multicore,
@@ -4770,13 +4926,14 @@ selected-window limit on a compact cylinder (and so fails
 single-core branch governed by
 \cref{paper1:thm:single-core-criterion} (equivalently by the local
 proposition \cref{paper3:prop:local-single-core-exclusion}).  Consequently no such branch is
-compatible with the local Type II condition.  This proves the earlier
-scale-rigidity exclusion statement recorded as
-\cref{paper3:prop:local-scale-rigidity-exclusion} in the stated class.
+compatible with the local Type II condition.
 \end{proposition}
 
 \begin{proof}
-Let \(\omega\) be a scale-rigid local branch.
+Let \(\omega\) be a scale-rigid local branch carrying the input contract
+\textup{(R1)}--\textup{(R4)} constructed by
+\cref{paper3:thm:same-point-reduction} or
+\cref{paper3:thm:separated-point-reduction}.
 \Cref{paper3:thm:scale-rigid-stratum-decomposition} places \(\omega\) into
 one of items (i)--(iv).
 
@@ -4788,9 +4945,8 @@ refinement procedure of
 \cref{paper3:thm:same-point-reduction},
 \cref{paper3:thm:separated-point-reduction}, and
 \cref{paper3:thm:terminal-decoupling}; it does not invoke
-\cref{paper3:thm:multi}, so there is no circular use of
-\cref{paper3:prop:local-scale-rigidity-exclusion}.  The refinement terminates at a bounded
-selected-window limit or at the compact single-core
+\cref{paper3:thm:multi} or the present discharge proposition.  The refinement
+terminates at a bounded selected-window limit or at the compact single-core
 vanishing-dissipation branch.
 
 In item (ii), apply
@@ -4815,8 +4971,10 @@ Type II sequence in the sense of \cref{paper1:def:typeII}.  This is the
 ``nonzero bounded selected-window limit'' alternative.
 
 In every case the branch either has a nonzero bounded selected-window limit
-or reduces to the single-core branch.  This is the conclusion of
-\cref{paper3:prop:local-scale-rigidity-exclusion}.
+or reduces to the single-core branch.  All uses of the same-point and
+separated-point theorems in this proof occur inside the strictly decreasing
+rank of \cref{paper3:lem:scale-rigid-refinement-terminates}; neither
+construction theorem uses this proposition.
 \end{proof}
 
 \begin{proposition}[Terminal admissibility in active frames]\label{paper3:prop:terminal-admissibility-active-frames}
@@ -7275,12 +7433,16 @@ retained compact state by
 
 After those exits are removed, the same ordered reductions leave only the
 structural outputs named in
-\cref{paper3:def:scale-rigid-branch}\textup{(R4)}: either the relative
-scale-center Jacobian degenerates, or the selected core is the innermost member
-after all strict outer same-point states have been absorbed into the
-perturbative remainder by \cref{paper3:lem:outer-vanish}.  Thus the shifted
-sequence is produced by the scale-rigid reduction and satisfies \textup{(R4)}
-on the selected compact cylinder.
+\cref{paper3:def:scale-rigid-branch}\textup{(R4)}.  In the compact
+degenerate case, Step~3 of \cref{paper3:thm:same-point-reduction} records
+bounded \((\rho_n,z_n)\) and
+\(\sigma_{\min}(\mathcal J_n)\to0\), which is \textup{(R4a)}.  In the strict
+same-point case, Step~4 records
+\(\rho_n\to\infty\), \(|z_n|/\rho_n=O(1)\), and applies
+\cref{paper3:thm:terminal-decoupling} after the outer states have been
+absorbed; this supplies all three residual convergences in \textup{(R4b)}.
+Thus the shifted sequence satisfies the exact structural input contract on the
+selected compact cylinder.
 \end{proof}
 
 \begin{theorem}[Scale-collapse first failures are routed local alternatives]
@@ -12066,11 +12228,15 @@ this partition are exterior/leakage, modulation-driven recentering, negative
 drift, or perturbative absorption; the first three are excluded by hypothesis
 and perturbative absorption would make the \(J_7\)-row summable.  The only
 retained compact scale-center label left is therefore the scale-rigid residual
-alternative produced by those reductions: the relative scale-center selection
-is rigid in the sense of (R4), either through the gauge-degenerate selection or
-through the innermost same-point cascade after outer profiles have been
-absorbed.  Thus the production requirement in
-\cref{paper3:def:scale-rigid-branch} and clauses (R1)--(R4) all hold.
+alternative produced by those reductions.  In the compact gauge-degenerate
+case, Step~3 of \cref{paper3:thm:same-point-reduction} supplies bounded
+\((\rho_n,z_n)\) and
+\(\sigma_{\min}(\mathcal J_n)\to0\), giving \textup{(R4a)}.  In the
+innermost same-point case, Step~4 supplies
+\(\rho_n\to\infty\), \(|z_n|/\rho_n=O(1)\), and the velocity, equation, and
+pressure-residual convergence in \textup{(R4b)}.  Thus the branch data and
+clauses \textup{(R1)}--\textup{(R4)} of
+\cref{paper3:def:scale-rigid-branch} all hold.
 \end{proof}
 
 \begin{theorem}[Positive scale-work occupation states enter the scale-rigid branch]
@@ -18826,11 +18992,258 @@ terminal residual topology.  Thus residual mass is visible in the augmented
 local state and cannot be hidden by cancellation between \(V_n\) and \(U_n\).
 \end{proof}
 
+\begin{lemma}[Active-witness compact-chart/tail dichotomy]
+\label{paper6a:lem:active-parameter-chart-tail}
+Let \((x_n^0,\lambda_n^0)\) be a retained frame and let
+\((x_n,\lambda_n)\) be a candidate active witness based at the same terminal
+time origin.  Set
+\[
+  \rho_n:=\frac{\lambda_n}{\lambda_n^0},
+  \qquad
+  \xi_n:=\frac{x_n-x_n^0}{\lambda_n^0},
+  \qquad
+  \sigma_n:=\log\rho_n.
+\]
+After passing to a subsequence, exactly one of the following alternatives
+holds:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item \emph{Compact relative chart.}  There is \(L<\infty\) such that
+\[
+  |\xi_n|\le L,
+  \qquad
+  |\sigma_n|\le L
+\]
+for all large \(n\).
+\item \emph{Comparable-scale center escape.}  The sequence \((\rho_n)\) is
+bounded above and away from zero, while \(|\xi_n|\to\infty\).  The two
+frames are separated-point frames.
+\item \emph{Strict inner scale.}  One has \(\rho_n\to0\).  If
+\((\xi_n)\) is bounded, the candidate and retained frames form a same-point
+cascade with the candidate as the inner frame; if \(|\xi_n|\to\infty\),
+they are separated-point frames.
+\item \emph{Strict outer scale.}  One has \(\rho_n\to\infty\).  If
+\((\xi_n/\rho_n)\) is bounded, the candidate and retained frames form a
+same-point cascade with the candidate as the outer frame; if
+\(|\xi_n|/\rho_n\to\infty\), they are separated-point frames.
+\end{enumerate}
+The separated-point alternatives are assigned to the separated-center or
+exterior row.  The two same-point alternatives are assigned respectively to
+the strict inner-cascade row and to the outer-scale/cascade row.  If the
+rebased witness fails represented compactness, the local pressure atlas, the
+local energy inequality, or the rough-core bound on its model cylinder, its
+first failed coordinate is instead the corresponding named failure face of
+\cref{paper6a:lem:compact-local-state-factor}; no compact-chart packing is
+applied to that witness.
+
+If a tail witness is recentered and the bounded-window selection is repeated,
+the iteration is governed by
+\cref{paper10:lem:bounded-window-reselection-well-founded}: it terminates in a
+finite named row or produces one of the named infinite same-point cascade,
+scale-collapse, noncompact exterior, or diffuse reselection-tree rows.
+\end{lemma}
+
+\begin{proof}
+Pass first to a subsequence on which \(\rho_n\) converges in the compactified
+half-line \([0,\infty]\).  If its limit belongs to \((0,\infty)\), pass to a
+further subsequence on which \((\xi_n)\) is bounded or
+\(|\xi_n|\to\infty\).  The bounded case is item \textup{(i)}, after enlarging
+\(L\), and the escaping case is item \textup{(ii)}.  In the latter case,
+\[
+  \frac{|x_n-x_n^0|}{\lambda_n^0}=|\xi_n|\to\infty,
+  \qquad
+  \frac{|x_n-x_n^0|}{\lambda_n}=\frac{|\xi_n|}{\rho_n}\to\infty,
+\]
+so the frames are separated-point in the sense of
+\cref{paper3:def:frame-relations}.
+
+If \(\rho_n\to0\), pass to a further subsequence on which \((\xi_n)\) is
+bounded or \(|\xi_n|\to\infty\).  In the bounded case,
+\[
+  \frac{\lambda_n}{\lambda_n^0}\to0,
+  \qquad
+  \frac{|x_n-x_n^0|}{\lambda_n^0}=O(1),
+\]
+which is the same-point cascade relation with the candidate as the inner
+frame.  In the escaping case, both normalized center distances diverge,
+because \(|\xi_n|/\rho_n\ge |\xi_n|\) for all large \(n\); hence the frames
+are separated-point.  This proves item \textup{(iii)}.
+
+If \(\rho_n\to\infty\), pass to a further subsequence on which
+\((\xi_n/\rho_n)\) is bounded or \(|\xi_n|/\rho_n\to\infty\).  The bounded
+case satisfies
+\[
+  \frac{\lambda_n^0}{\lambda_n}\to0,
+  \qquad
+  \frac{|x_n-x_n^0|}{\lambda_n}=O(1),
+\]
+so it is the same-point cascade relation after interchanging the two frames.
+In the escaping case,
+\[
+  \frac{|x_n-x_n^0|}{\lambda_n}=\frac{|\xi_n|}{\rho_n}\to\infty,
+  \qquad
+  \frac{|x_n-x_n^0|}{\lambda_n^0}=|\xi_n|\to\infty,
+\]
+and the frames are separated-point.  This proves item \textup{(iv)} and
+exhausts all limits of \(\rho_n\).
+
+The stated assignments are the corresponding cases of the exhaustive
+parameter partition \cref{paper3:lem:parameter-partition}.  Strict outer
+states in the retained inner frame are treated by
+\cref{paper8:thm:same-point-scale-separation}; escaping centers are routed by
+the exterior scale-center package, in particular
+\cref{paper8:lem:noncompact-exterior-structural-route}.  Failure of a rebased
+analytic input lands on the named coordinate added in
+\cref{paper6a:lem:compact-local-state-factor}.  Finally,
+\cref{paper10:lem:bounded-window-reselection-well-founded} gives the asserted
+finite or infinite named route for repeated bounded-window reselection.
+\end{proof}
+
+\begin{lemma}[Finite active packing in a compact relative chart]
+\label{paper6a:lem:compact-chart-active-packing}
+Let
+\[
+  Q_{\rm work}:=B_{R_{\rm work}}\times I_{\rm work}
+\]
+be a fixed represented working cylinder and suppose
+\[
+  \sup_n\|V_n\|_{L^\infty(I_{\rm work};L^3(B_{R_{\rm work}}))}
+  \le M<\infty.
+\]
+Let \(\Gamma\) be a finite or countable family of candidate active witnesses
+relative to a retained frame \((x_n^0,\lambda_n^0)\), all based at the same
+terminal time origin.  For \(\gamma\in\Gamma\), write
+\[
+  \rho_n^\gamma:=\frac{\lambda_n^\gamma}{\lambda_n^0},
+  \qquad
+  \xi_n^\gamma:=\frac{x_n^\gamma-x_n^0}{\lambda_n^0},
+  \qquad
+  \sigma_n^\gamma:=\log\rho_n^\gamma.
+\]
+Assume that, for some fixed \(L,r_*,\eta_*>0\) and compact interval
+\(J_*\), every \(\gamma\in\Gamma\) satisfies on a tail depending on
+\(\gamma\)
+\[
+  |\xi_n^\gamma|\le L,
+  \qquad
+  |\sigma_n^\gamma|\le L,
+\]
+and has a normalized representative on
+\(Q_*:=B_{r_*}\times J_*\) given by
+\[
+  W_n^\gamma(z,s)
+  =\rho_n^\gamma
+   V_n\bigl(\xi_n^\gamma+\rho_n^\gamma z,
+             (\rho_n^\gamma)^2s\bigr)
+\]
+with the fixed velocity floor
+\[
+  \int_{J_*}\int_{B_{r_*}}|W_n^\gamma|^3\,dz\,ds
+  \ge\eta_*^3.
+\]
+Assume also that the image cylinders
+\[
+  \widehat Q_n^\gamma
+  :=\bigl(\xi_n^\gamma+\rho_n^\gamma B_{r_*}\bigr)
+    \times (\rho_n^\gamma)^2J_*
+\]
+are contained in \(Q_{\rm work}\).  For \(\delta>0\), call a subfamily
+\(\Gamma_\delta\subset\Gamma\) \(\delta\)-separated if, for distinct
+\(\gamma,\beta\in\Gamma_\delta\),
+\[
+  \liminf_{n\to\infty}
+  \bigl(|\xi_n^\gamma-\xi_n^\beta|
+       +|\sigma_n^\gamma-\sigma_n^\beta|\bigr)
+  \ge\delta.
+\]
+Choose \(\Gamma_\delta\) maximal before assembling same-point comparable
+representatives into compound classes.  Then
+\(N:=\#\Gamma_\delta\) is finite and satisfies
+\[
+  N
+  \le
+  \left\lfloor
+  \frac{C_{L,\delta,r_*,J_*}\,e^{2L}
+  |I_{\rm work}|M^3}{\eta_*^3}
+  \right\rfloor,
+\]
+where \(C_{L,\delta,r_*,J_*}<\infty\) is the overlap constant of the image
+cylinders.  Every unselected compact-chart witness lies in one of these
+parameter cells and is grouped with its same-point comparable compound class.
+\end{lemma}
+
+\begin{proof}
+The bounds on \(\sigma_n^\gamma\) give
+\[
+  e^{-L}\le\rho_n^\gamma\le e^L.
+\]
+Let \(F\subset\Gamma_\delta\) be finite.
+Partition \([-L,L]\) into finitely many intervals of length less than
+\(\delta/4\), and in each scale interval apply the Euclidean packing lemma to
+the centers \(\xi_n^\gamma\in\overline{B_L}\).  For a
+finite \(\delta\)-separated subfamily in the metric
+\[
+  d\bigl((\xi,\sigma),(\xi',\sigma')\bigr)
+  :=|\xi-\xi'|+|\sigma-\sigma'|,
+\]
+this gives, for all sufficiently large \(n\) depending on that finite
+subfamily, an overlap bound
+\[
+  \sum_{\gamma\in F}{\bf 1}_{\widehat Q_n^\gamma}
+  \le C_{L,\delta,r_*,J_*}
+\]
+on \(Q_{\rm work}\).  Equivalently, this is the finite-band parabolic Vitali
+estimate; its constant depends only on the displayed compact-chart data.
+
+The change of variables
+\[
+  y=\xi_n^\gamma+\rho_n^\gamma z,
+  \qquad
+  \tau=(\rho_n^\gamma)^2s
+\]
+has \(dy\,d\tau=(\rho_n^\gamma)^5dz\,ds\).  Since
+\(W_n^\gamma=\rho_n^\gamma V_n\) in these coordinates,
+\[
+\begin{aligned}
+  \int_{\widehat Q_n^\gamma}|V_n(y,\tau)|^3\,dy\,d\tau
+  &=(\rho_n^\gamma)^2
+    \int_{Q_*}|W_n^\gamma(z,s)|^3\,dz\,ds \\
+  &\ge e^{-2L}\eta_*^3.
+\end{aligned}
+\]
+Take \(n\) large enough that the parameter separation and mass floor hold for
+every \(\gamma\in F\).  Summing the last
+inequality and using the overlap bound gives
+\[
+\begin{aligned}
+  \#F\,e^{-2L}\eta_*^3
+  &\le \sum_{\gamma\in F}
+       \int_{\widehat Q_n^\gamma}|V_n|^3 \\
+  &\le C_{L,\delta,r_*,J_*}
+       \int_{Q_{\rm work}}|V_n|^3 \\
+  &\le C_{L,\delta,r_*,J_*}|I_{\rm work}|M^3.
+\end{aligned}
+\]
+Thus every finite subfamily obeys the displayed cardinality bound, which
+proves the same bound for \(\Gamma_\delta\).  Enumerate the finite or countable
+family \(\Gamma\) and select greedily whenever the next parameter is
+\(\delta\)-separated from those already selected.  If this procedure did not
+terminate within the displayed bound, its first one-more-than-the-bound
+members would contradict the estimate just proved.  It therefore produces a
+finite maximal \(\delta\)-separated family.  Every remaining parameter lies
+within \(\delta\) of one of its members; the corresponding frames have
+comparable scales and bounded relative centers, and hence are assembled into
+the same-point comparable compound classes of
+\cref{paper8:lem:compound-same-point}.  The estimate uses only the fixed
+working-cylinder norm stated in the lemma.
+\end{proof}
+
 \begin{lemma}[Maximality of the selected retained frame]
 \label{paper6a:lem:retained-frame-maximality}
-The terminal selection rule for the retained component
-\(U_n\) on a compact terminal cylinder \(Q_{2R,I}\) produces a finite
-collection of comparable retained classes
+The terminal selection rule for the retained component \(U_n\) on a compact
+terminal cylinder \(Q_{2R,I}\) first assigns every candidate outside all
+compact relative scale-center charts to the parameter-tail alternatives of
+\cref{paper6a:lem:active-parameter-chart-tail}.  On the remaining compact
+chart it produces a finite collection of compound retained classes
 \(\{U_n^\alpha\}_{\alpha\in A}\) such that:
 \begin{enumerate}[label=\textup{(\roman*)}]
 \item \emph{Pairwise scale-center separation.} For
@@ -18840,12 +19253,12 @@ either tend to \(0\) or to \(\infty\) (separated scales) or stay
 bounded with the centers escaping each other in scale-comparable units
 (separated centers).
 \item \emph{Maximality.} If a candidate retained class
-\((\tilde\lambda_n,\tilde x_n)\) at the same physical center and with
-scale parameter comparable to some \(\lambda_n^\alpha\) survives the
-selection rule (i.e.\ carries a positive active local mass floor in
-the sense of \cref{paper8:thm:active-profile-mass-floor}), then it is already
-asymptotically equivalent to \((\lambda_n^\alpha,x_n^\alpha)\) and is
-absorbed into \(U_n^\alpha\).
+\((\tilde\lambda_n,\tilde x_n)\) at the same physical point has relative
+scale-center parameters in a compact chart with respect to some
+\((\lambda_n^\alpha,x_n^\alpha)\) and survives the selection rule
+(i.e.\ carries a positive active local mass floor in the sense of
+\cref{paper8:thm:active-profile-mass-floor}), then it belongs to the same
+compound comparable class and is absorbed into \(U_n^\alpha\).
 \end{enumerate}
 \end{lemma}
 
@@ -18853,15 +19266,29 @@ absorbed into \(U_n^\alpha\).
 The terminal selection rule is local on the fixed compact cylinder
 \(Q_{2R,I}\).  It extracts only classes which carry the active local mass floor
 of \cref{paper8:thm:active-profile-mass-floor} on a selected compact
-subcylinder.  Classes whose witnesses leave every compact subcylinder, or form
-an infinite same-point scale chain, are not retained classes in this branch:
-they are read first as exterior, separated-scale, or cascade boundary faces in
-the ordered local validation.  After those adjacent faces are removed, the
-remaining witnesses lie in a compact scale-center chart.  A finite-overlap
-cover of that chart and the local bound
-\(\sup_n\|V_n\|_{L^\infty(I;L^3(B_{2R}))}<\infty\) allow only finitely many
-disjoint active-floor witnesses.  Hence the retained list on the compact
-terminal branch is finite.
+subcylinder.  First normalize those detecting subcylinders using the rescaling in
+\cref{paper8:thm:active-profile-mass-floor}, decreasing the threshold once if
+necessary so that one fixed \(\eta_*>0\) holds on a common model cylinder.
+The relative parameters below are the parameters of these normalized
+witnesses.  If no compact relative scale-center chart contained all remaining
+candidates, a diagonal choice of candidates would leave every such chart.
+Applying \cref{paper6a:lem:active-parameter-chart-tail} to that diagonal
+sequence would produce a separated-center/exterior, strict inner cascade,
+outer-scale/cascade, or named analytic failure row before the retained frame
+was fixed.  Repeated bounded-window rebasing is also routed by the
+well-foundedness clause of that lemma.  Therefore all candidates that reach
+retained-frame packing lie in one fixed compact relative chart.
+
+The working-cylinder buffer contains the images of the normalized cores.  Now
+apply \cref{paper6a:lem:compact-chart-active-packing} with the local bound
+\[
+  \sup_n\|V_n\|_{L^\infty(I;L^3(B_{2R}))}<\infty.
+\]
+It gives a finite maximal separated family by an estimate on
+\(Q_{2R,I}\).  Every remaining compact-chart candidate is comparable with a
+selected representative and is grouped into its compound class.  Hence the
+retained list on the compact terminal branch is finite.  No whole-space
+critical norm is used.
 
 For two retained classes in this finite list, either their relative
 scale-center parameters leave every compact subset of the relative
@@ -18871,12 +19298,10 @@ concentrations are comparable in the same local observer coordinates and are
 grouped before the terminal frame is fixed.  This proves the separation
 alternative in \textup{(i)} for distinct retained classes.
 
-For maximality (ii), suppose toward contradiction that
-\((\tilde\lambda_n,\tilde x_n)\) is comparable to
-\((\lambda_n^\alpha,x_n^\alpha)\) (i.e.\ both
-\(\tilde\lambda_n/\lambda_n^\alpha\to c\in(0,\infty)\) and
-\(|\tilde x_n-x_n^\alpha|/\lambda_n^\alpha\to0\)) but not asymptotically
-equivalent.  Then the rescaled profile
+For maximality \textup{(ii)}, suppose toward contradiction that
+\((\tilde\lambda_n,\tilde x_n)\) remains in a compact relative chart with
+respect to \((\lambda_n^\alpha,x_n^\alpha)\) but survives outside
+\(U_n^\alpha\).  Then the rescaled profile
 \(\tilde\lambda_n V_n(x_n^\alpha+\tilde\lambda_n y,\cdot)\) carries an active
 local mass floor in a relative scale-center chart compactly comparable to the
 chart of \(U_n^\alpha\).  Thus the two candidates are not separated by any
