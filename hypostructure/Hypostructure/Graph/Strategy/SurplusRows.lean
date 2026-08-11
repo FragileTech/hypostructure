@@ -305,6 +305,123 @@ noncomputable def pairResponseIndependenceDichotomy
         exact ⟨.inr ⟨active, independent⟩⟩))
     independentFresh dependentFresh
 
+/-! ## Node `[131]`: mixed sparse-spine dependence -/
+
+/-- `lem:mixed-sparse-spine-dependence` on the literal independent residual of
+`[130]`.  The concrete spine family and active pair schedule are read from the
+same incoming ledger; the four-case circuit proof is published as one exact
+semantic fact. -/
+@[reducible] noncomputable def mixedSparseSpineDependenceRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.mixedSparseSpineDependence
+    { Requires := [K .baselineSpineDemand, K .independentPairFamily]
+      Produces := [K .mixedSparseSpineDependence]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .mixedSparseSpineDependence)
+        (show Value BranchState Presentation presentation data
+            .mixedSparseSpineDependence inputs.current from
+          ⟨by
+            obtain ⟨active, Coordinate, family, coordinateSupport, demand,
+                deficitBound⟩ :=
+              (inputs.get (K .baselineSpineDemand)).down
+            let _independent := (inputs.get (K .independentPairFamily)).down
+            refine ⟨active, Coordinate, family, coordinateSupport, demand,
+              deficitBound, ?_⟩
+            intro drop
+            classical
+            let object := inputs.current.object
+            let activation := Graph.pairResponseActivation active
+            let pairs := object.portPairSchedule data.threshold
+            let pairFamily := activation.pairFamily pairs
+            let mixedFamily : Finset (Sum Coordinate object.PairCoordinate) :=
+              family.image Sum.inl ∪ pairFamily.image Sum.inr
+            let mixedSupport : Sum Coordinate object.PairCoordinate →
+                Finset object.Vertex :=
+              Sum.elim coordinateSupport (by
+                letI := object.vertices.decEq
+                exact Graph.DeclaredSignature.Coordinate.support)
+            let rankQuotient :
+                Graph.AttemptedQuotient
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object
+                    mixedFamily mixedSupport →
+                  Core.TargetRank.RankQuotient.{u, u + 1}
+                    (Sum Coordinate object.PairCoordinate) :=
+              fun attempt =>
+                { Label := attempt.Label
+                  Value := attempt.Value
+                  Realization := Graph.BoundaryPiece
+                    (Graph.SupportAtom.boundary object attempt.support)
+                  label := attempt.label
+                  value := attempt.value }
+            let system : Core.TargetRank.QuotientSystem.{u, u + 1}
+                (Sum Coordinate object.PairCoordinate) mixedFamily :=
+              { Member := fun quotient =>
+                  (∃ attempt, rankQuotient attempt = quotient) ∧
+                    quotient.FunctionalOn ↑mixedFamily
+                functional := fun membership => membership.2 }
+            obtain ⟨coordinate, determiners, dependence⟩ :=
+              Core.TargetRank.exists_dependence_of_targetRank_lt system drop
+            obtain ⟨quotient, member, reducing, determines⟩ := dependence.witness
+            obtain ⟨⟨attempt, equality⟩, _functional⟩ := member
+            subst quotient
+            have pair_of_mem (pairCoordinate : object.PairCoordinate)
+                (membership : Sum.inr pairCoordinate ∈ mixedFamily) :
+                ∃ pair ∈ pairs,
+                  Graph.FiniteObject.DemandActivation.pairCoordinate pair
+                      ((activation.pairSupport pair).getD ∅) = pairCoordinate := by
+              change Sum.inr pairCoordinate ∈
+                family.image Sum.inl ∪ pairFamily.image Sum.inr at membership
+              rcases Finset.mem_union.mp membership with spineMem | pairMem
+              · obtain ⟨spine, _, impossible⟩ := Finset.mem_image.mp spineMem
+                cases impossible
+              · obtain ⟨candidate, candidateMem, candidateEq⟩ :=
+                  Finset.mem_image.mp pairMem
+                injection candidateEq with candidateEq
+                subst pairCoordinate
+                change candidate ∈ activation.pairFamily pairs at candidateMem
+                rw [Graph.FiniteObject.DemandActivation.pairFamily] at candidateMem
+                exact Finset.mem_image.mp candidateMem
+            rcases attempt.route reducing with profiles | defect | replacement |
+                ⟨representative, smaller, baseline, transfer⟩
+            · cases coordinate with
+              | inl spine =>
+                  obtain ⟨left, right, identifies, different⟩ := profiles
+                  exact Or.inl (.targetDefect attempt left right identifies
+                    (Or.inl different))
+              | inr pairCoordinate =>
+                  obtain ⟨pair, pairMem, pairEq⟩ :=
+                    pair_of_mem pairCoordinate dependence.determined
+                  subst pairCoordinate
+                  exact Or.inr ⟨pair, pairMem, attempt, determiners, determines,
+                    reducing, Or.inl profiles⟩
+            · cases coordinate with
+              | inl spine =>
+                  obtain ⟨left, right, identifies, separated⟩ := defect
+                  exact Or.inl (.targetDefect attempt left right identifies
+                    (Or.inr separated))
+              | inr pairCoordinate =>
+                  obtain ⟨pair, pairMem, pairEq⟩ :=
+                    pair_of_mem pairCoordinate dependence.determined
+                  subst pairCoordinate
+                  exact Or.inr ⟨pair, pairMem, attempt, determiners, determines,
+                    reducing, Or.inr (Or.inl defect)⟩
+            · cases coordinate with
+              | inl spine =>
+                  exact Or.inl (.compression attempt.support replacement)
+              | inr pairCoordinate =>
+                  obtain ⟨pair, pairMem, pairEq⟩ :=
+                    pair_of_mem pairCoordinate dependence.determined
+                  subst pairCoordinate
+                  exact Or.inr ⟨pair, pairMem, attempt, determiners, determines,
+                    reducing, Or.inr (Or.inr replacement)⟩
+            · exact Or.inl
+                (.delocalization representative smaller baseline transfer)⟩)
+        .nil)
+
 /-- `lem:sparse-pair-dependence-exit` on the literal residual produced by
 node `[130]`.  The attempted quotient and its failure of injectivity are read
 from that residual's exact ledger.  The two conclusions are distinct decision

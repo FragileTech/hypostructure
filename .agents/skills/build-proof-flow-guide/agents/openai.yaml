@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Proof Flow Guide"
+  short_description: "Create rigorous proof-flow chapters and diagrams"
+  default_prompt: "Use $build-proof-flow-guide to create and audit an introductory proof-flow chapter for this LaTeX manuscript."

@@ -1152,6 +1152,9 @@ inductive Key where
   | dependentPairFamily
   /-- Node `[130]`, independent arm for the same concrete full response family. -/
   | independentPairFamily
+  /-- Node `[131]`, `lem:mixed-sparse-spine-dependence` on the concrete
+  baseline spine family and full pair-response schedule. -/
+  | mixedSparseSpineDependence
   deriving DecidableEq
 
 /-- **`𝒲₂(R)`**: the raw internal length-two curvature tests carried by the
@@ -4398,6 +4401,77 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               coordinateSupport,
           let family := activation.pairFamily pairs
           Set.InjOn attempt.label ↑family
+  | .mixedSparseSpineDependence, object =>
+      ∃ (active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold)
+        (Coordinate : Type u) (family : Finset Coordinate)
+        (coordinateSupport : Coordinate → Finset object.Vertex),
+        Graph.IsBaselineSpineDemand
+            (object.declaredQuotientSystem
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) family coordinateSupport)
+            object.vertexCount data.threshold
+            (Graph.spineDeficit object.vertexCount data.threshold family.card) ∧
+          Graph.spineDeficit object.vertexCount data.threshold family.card ≤
+            data.surplusScale * object.vertexCount ∧
+          let activation := Graph.pairResponseActivation active
+          let pairs := object.portPairSchedule data.threshold
+          let pairFamily := activation.pairFamily pairs
+          let mixedFamily : Finset (Sum Coordinate object.PairCoordinate) :=
+            family.image Sum.inl ∪ pairFamily.image Sum.inr
+          let mixedSupport : Sum Coordinate object.PairCoordinate →
+              Finset object.Vertex :=
+            Sum.elim coordinateSupport (by
+              letI := object.vertices.decEq
+              exact Graph.DeclaredSignature.Coordinate.support)
+          let rankQuotient :
+              Graph.AttemptedQuotient
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) object
+                  mixedFamily mixedSupport →
+                Core.TargetRank.RankQuotient.{u, u + 1}
+                  (Sum Coordinate object.PairCoordinate) :=
+            fun attempt =>
+              { Label := attempt.Label
+                Value := attempt.Value
+                Realization := Graph.BoundaryPiece
+                  (Graph.SupportAtom.boundary object attempt.support)
+                label := attempt.label
+                value := attempt.value }
+          let system : Core.TargetRank.QuotientSystem.{u, u + 1}
+              (Sum Coordinate object.PairCoordinate) mixedFamily :=
+            { Member := fun quotient =>
+                (∃ attempt, rankQuotient attempt = quotient) ∧
+                  quotient.FunctionalOn ↑mixedFamily
+              functional := fun membership => membership.2 }
+          Core.TargetRank.targetRank system < mixedFamily.card →
+            Graph.SparseSurplusExit
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∨
+              ∃ pair ∈ pairs,
+                ∃ attempt : Graph.AttemptedQuotient
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object
+                    mixedFamily mixedSupport,
+                  ∃ determiners : Set
+                      (Sum Coordinate object.PairCoordinate),
+                    (rankQuotient attempt).Determines
+                        (Sum.inr
+                          (Graph.FiniteObject.DemandActivation.pairCoordinate pair
+                            ((activation.pairSupport pair).getD ∅))) determiners ∧
+                      ¬ Set.InjOn attempt.label ↑mixedFamily ∧
+                      ((∃ left right, attempt.Identifies left right ∧
+                          left.boundaryDegreeProfile ≠
+                            right.boundaryDegreeProfile) ∨
+                        (∃ left right, attempt.Identifies left right ∧
+                          Graph.Response.TargetDefect
+                            (Graph.HasCycleWithLength data.LengthOK) left right) ∨
+                        Graph.Strategy.InterfaceReplacement.ReplacementSupport
+                          (Graph.MinimumDegreeAtLeast data.threshold)
+                          (Graph.HasCycleWithLength data.LengthOK) object
+                          attempt.support)
   | .sparseUpperEnvelope, object =>
       (object.edgeCount + 2 ≤ (data.threshold - 1) * object.vertexCount) ∧
         ∃ packing : Finset (Finset object.Vertex),
@@ -4715,6 +4789,7 @@ def label : Key → String
   | .hotColdPartition => "hotColdPartition"
   | .dependentPairFamily => "dependentPairFamily"
   | .independentPairFamily => "independentPairFamily"
+  | .mixedSparseSpineDependence => "mixedSparseSpineDependence"
 
 /-! ### Label pins
 
@@ -4911,6 +4986,7 @@ example : label .sparseSurplusSurvivor = "sparseSurplusSurvivor" := rfl
 example : label .activeSurplusDemands = "activeSurplusDemands" := rfl
 example : label .dependentPairFamily = "dependentPairFamily" := rfl
 example : label .independentPairFamily = "independentPairFamily" := rfl
+example : label .mixedSparseSpineDependence = "mixedSparseSpineDependence" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -5098,6 +5174,7 @@ def idx : Key → Nat
   | .hotColdPartition => 200
   | .dependentPairFamily => 201
   | .independentPairFamily => 202
+  | .mixedSparseSpineDependence => 203
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -5274,6 +5351,7 @@ def ofIdx : Nat → Key
   | 200 => .hotColdPartition
   | 201 => .dependentPairFamily
   | 202 => .independentPairFamily
+  | 203 => .mixedSparseSpineDependence
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -5684,6 +5762,9 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "dependentPairFamily") 201
   | .independentPairFamily =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "independentPairFamily") 202
+  | .mixedSparseSpineDependence =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "mixedSparseSpineDependence") 203
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

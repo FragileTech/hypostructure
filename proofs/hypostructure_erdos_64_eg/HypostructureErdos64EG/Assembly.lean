@@ -193,6 +193,31 @@ noncomputable def selectedPairResponseIndependenceDichotomy
   pairResponseIndependenceDichotomy (data := spineData) history
     (by simp [K_eq_iff]) (by simp [K_eq_iff])
 
+/-- Node `[131]`, the exact mixed sparse-spine dependence fact on the
+independent residual of `[130]`. -/
+noncomputable def selectedMixedSparseSpineDependence
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .independentPairFamily, K .baselineSpineDemand,
+        K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .mixedSparseSpineDependence, K .independentPairFamily,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (mixedSparseSpineDependenceRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
+      simp [mixedSparseSpineDependenceRow, K_eq_iff])
+
 /-- Node `[132]`, the sparse-pair routing split after baseline demand. -/
 noncomputable def selectedBlockedPairRoutingDichotomy
     {selected : EGInput.{u}}

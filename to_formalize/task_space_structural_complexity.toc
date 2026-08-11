@@ -10,8 +10,9 @@
 \contentsline {paragraph}{B. New theorems enabled by these objects.}{23}{section*.4}%
 \contentsline {paragraph}{C. Standard ingredients used inside the proofs.}{24}{section*.5}%
 \contentsline {subsection}{\numberline {I.0.5}Global Accounting Conventions}{24}{subsection.1.0.5}%
-\contentsline {subsection}{\numberline {I.0.6}Executive theorem map}{26}{subsection.1.0.6}%
-\contentsline {subsection}{\numberline {I.0.7}How to read this paper}{27}{subsection.1.0.7}%
+\contentsline {subsection}{\numberline {I.0.6}Result Nomenclature}{25}{subsection.1.0.6}%
+\contentsline {subsection}{\numberline {I.0.7}Executive theorem map}{26}{subsection.1.0.7}%
+\contentsline {subsection}{\numberline {I.0.8}How to read this paper}{27}{subsection.1.0.8}%
 \contentsline {section}{\numberline {I.1}The Task-Space Signature}{30}{section.1.1}%
 \contentsline {section}{\numberline {I.2}The Observable Algebra}{32}{section.1.2}%
 \contentsline {subsection}{\numberline {I.2.1}Observable partitions and measurable readouts}{32}{subsection.1.2.1}%
@@ -147,7 +148,7 @@
 \contentsline {subsection}{\numberline {III.33.1}Oracle extensions and presentation identity}{265}{subsection.3.33.1}%
 \contentsline {subsection}{\numberline {III.33.2}Relativization, natural proofs, and algebrization}{267}{subsection.3.33.2}%
 \contentsline {section}{\numberline {III.34}Examples: Discounted Hitting for SAT, Subset Sum, and Degree Scans}{269}{section.3.34}%
-\contentsline {section}{\numberline {III.35}Summary: Hardness as Saturated Extraction Cost}{270}{section.3.35}%
+\contentsline {section}{\numberline {III.35}Summary: Hardness as Saturated Extraction Cost}{271}{section.3.35}%
 \contentsline {paragraph}{Dependency trail.}{271}{section*.121}%
 \contentsline {part}{IV\hspace {1em}Learning and Computability Bounds}{273}{part.4}%
 \contentsline {section}{\numberline {IV.0}Introduction}{273}{section.4.0}%
@@ -174,7 +175,7 @@
 \contentsline {subsection}{\numberline {IV.9.1}Defect-Geometry Inequality Profiles}{303}{subsection.4.9.1}%
 \contentsline {section}{\numberline {IV.10}Learning Under Symmetric Label Corruption}{305}{section.4.10}%
 \contentsline {subsection}{\numberline {IV.10.1}Risk transport through a binary flip channel}{305}{subsection.4.10.1}%
-\contentsline {subsection}{\numberline {IV.10.2}Rademacher capacity and the tolerable-noise region}{306}{subsection.4.10.2}%
+\contentsline {subsection}{\numberline {IV.10.2}Rademacher capacity and the tolerable-noise region}{307}{subsection.4.10.2}%
 \contentsline {subsection}{\numberline {IV.10.3}Structural PAC--Bayes correction}{308}{subsection.4.10.3}%
 \contentsline {subsection}{\numberline {IV.10.4}Effective dimension after label debiasing}{309}{subsection.4.10.4}%
 \contentsline {section}{\numberline {IV.11}Saturated Statistical Attacks and Population Alignment}{310}{section.4.11}%
@@ -232,21 +233,21 @@
 \contentsline {subsection}{\numberline {V.7.1}Caus action, aiming, and target contact}{411}{subsection.5.7.1}%
 \contentsline {subsection}{\numberline {V.7.2}Noise-corrected Caus aiming}{413}{subsection.5.7.2}%
 \contentsline {subsection}{\numberline {V.7.3}Variational capacity comparison under valid lifts}{415}{subsection.5.7.3}%
-\contentsline {subsection}{\numberline {V.7.4}Dynamic lift transfer}{416}{subsection.5.7.4}%
+\contentsline {subsection}{\numberline {V.7.4}Dynamic lift transfer}{417}{subsection.5.7.4}%
 \contentsline {section}{\numberline {V.8}Noisy Target Interfaces and Lifted Capacity}{420}{section.5.8}%
-\contentsline {subsection}{\numberline {V.8.1}Observation regularity and sparse-reward exploration}{425}{subsection.5.8.1}%
-\contentsline {section}{\numberline {V.9}Optimal Structural Active Sampling}{430}{section.5.9}%
-\contentsline {subsection}{\numberline {V.9.1}Complete active-acquisition records and cost}{430}{subsection.5.9.1}%
-\contentsline {subsection}{\numberline {V.9.2}Information, master visibility, and optimal arrival}{434}{subsection.5.9.2}%
+\contentsline {subsection}{\numberline {V.8.1}Observation regularity and sparse-reward exploration}{424}{subsection.5.8.1}%
+\contentsline {section}{\numberline {V.9}Optimal Structural Active Sampling}{431}{section.5.9}%
+\contentsline {subsection}{\numberline {V.9.1}Complete active-acquisition records and cost}{431}{subsection.5.9.1}%
+\contentsline {subsection}{\numberline {V.9.2}Information, master visibility, and optimal arrival}{435}{subsection.5.9.2}%
 \contentsline {subsection}{\numberline {V.9.3}Complexity, sample, and noise frontiers}{436}{subsection.5.9.3}%
 \contentsline {section}{\numberline {V.10}Affordable Occupation Flows and the Bellman Structural Converse}{439}{section.5.10}%
 \contentsline {section}{\numberline {V.11}Optimal Structural Bayesian Learning}{444}{section.5.11}%
-\contentsline {subsection}{\numberline {V.11.1}Prior provenance and represented task beliefs}{444}{subsection.5.11.1}%
+\contentsline {subsection}{\numberline {V.11.1}Prior provenance and represented task beliefs}{445}{subsection.5.11.1}%
 \contentsline {subsection}{\numberline {V.11.2}Posterior concentration and target contact}{446}{subsection.5.11.2}%
 \contentsline {subsection}{\numberline {V.11.3}Source-resolved actionable Bayesian gain}{448}{subsection.5.11.3}%
-\contentsline {subsection}{\numberline {V.11.4}Optimal acquisition and structural routing}{451}{subsection.5.11.4}%
-\contentsline {subsection}{\numberline {V.11.5}Optimal structural information extraction}{455}{subsection.5.11.5}%
-\contentsline {subsection}{\numberline {V.11.6}Compact latent beliefs and optimal represented compression}{458}{subsection.5.11.6}%
+\contentsline {subsection}{\numberline {V.11.4}Optimal acquisition and structural routing}{452}{subsection.5.11.4}%
+\contentsline {subsection}{\numberline {V.11.5}Optimal structural information extraction}{456}{subsection.5.11.5}%
+\contentsline {subsection}{\numberline {V.11.6}Compact latent beliefs and optimal represented compression}{459}{subsection.5.11.6}%
 \contentsline {section}{\numberline {V.12}Bellman Error, Policy Loss, and the Universal Certificate}{463}{section.5.12}%
 \contentsline {section}{\numberline {V.13}Learned Policies and Continuous-System Transfer}{470}{section.5.13}%
 \contentsline {subsection}{\numberline {V.13.1}Represented trajectory learning records}{470}{subsection.5.13.1}%
@@ -254,27 +255,27 @@
 \contentsline {subsection}{\numberline {V.13.3}Generalization Envelopes and Budget-Reachable Value}{474}{subsection.5.13.3}%
 \contentsline {section}{\numberline {V.14}Master Learning Certificate and Continuous-System Transfer}{476}{section.5.14}%
 \contentsline {subsection}{\numberline {V.14.1}Continuous-System and Discretization Transfer}{480}{subsection.5.14.1}%
-\contentsline {section}{\numberline {V.15}Certified Neural Implementation of the Saturated Optimum}{481}{section.5.15}%
+\contentsline {section}{\numberline {V.15}Certified Neural Implementation of the Saturated Optimum}{482}{section.5.15}%
 \contentsline {subsection}{\numberline {V.15.1}Implementation records and error coordinates}{482}{subsection.5.15.1}%
-\contentsline {subsection}{\numberline {V.15.2}Parameter-indexed approximation and underfitting}{482}{subsection.5.15.2}%
+\contentsline {subsection}{\numberline {V.15.2}Parameter-indexed approximation and underfitting}{483}{subsection.5.15.2}%
 \contentsline {subsection}{\numberline {V.15.3}Canonical finite-precision attention--belief architecture}{484}{subsection.5.15.3}%
 \contentsline {subsection}{\numberline {V.15.4}Empirical Bellman upper certificates}{486}{subsection.5.15.4}%
-\contentsline {subsection}{\numberline {V.15.5}Scale-certified empirical closure of attenuating sources}{487}{subsection.5.15.5}%
+\contentsline {subsection}{\numberline {V.15.5}Scale-certified empirical closure of attenuating sources}{488}{subsection.5.15.5}%
 \contentsline {subsection}{\numberline {V.15.6}Certificate engineering specification}{491}{subsection.5.15.6}%
 \contentsline {paragraph}{Discovery code.}{491}{section*.166}%
 \contentsline {paragraph}{Proof objects.}{491}{section*.167}%
-\contentsline {paragraph}{Trusted checker.}{491}{section*.168}%
-\contentsline {paragraph}{Certified object.}{491}{section*.169}%
+\contentsline {paragraph}{Trusted checker.}{492}{section*.168}%
+\contentsline {paragraph}{Certified object.}{492}{section*.169}%
 \contentsline {paragraph}{Uniformity beyond the audited prefix.}{493}{section*.170}%
-\contentsline {subsubsection}{\numberline {V.15.6.1}Proof-producing verification of structural scaling laws}{493}{subsubsection.5.15.6.1}%
-\contentsline {subsection}{\numberline {V.15.7}Finite-network audit and selection}{496}{subsection.5.15.7}%
+\contentsline {subsubsection}{\numberline {V.15.6.1}Proof-producing verification of structural scaling laws}{494}{subsubsection.5.15.6.1}%
+\contentsline {subsection}{\numberline {V.15.7}Finite-network audit and selection}{497}{subsection.5.15.7}%
 \contentsline {subsection}{\numberline {V.15.8}Empirical structural-channel attribution}{498}{subsection.5.15.8}%
-\contentsline {subsection}{\numberline {V.15.9}Canonical primal--dual learning objective}{499}{subsection.5.15.9}%
+\contentsline {subsection}{\numberline {V.15.9}Canonical primal--dual learning objective}{500}{subsection.5.15.9}%
 \contentsline {subsection}{\numberline {V.15.10}Certified WAdam optimization}{501}{subsection.5.15.10}%
 \contentsline {subsection}{\numberline {V.15.11}Certified structural bias--variance ledger}{503}{subsection.5.15.11}%
 \contentsline {subsection}{\numberline {V.15.12}Empirical certification of analytical geometry}{506}{subsection.5.15.12}%
 \contentsline {subsection}{\numberline {V.15.13}Empirical certification of exact and quasi-lumpability}{508}{subsection.5.15.13}%
-\contentsline {section}{\numberline {V.16}Black-Box Structural Auditing of Trained Predictors}{511}{section.5.16}%
+\contentsline {section}{\numberline {V.16}Black-Box Structural Auditing of Trained Predictors}{512}{section.5.16}%
 \contentsline {subsection}{\numberline {V.16.1}Oracle access and complete audit records}{513}{subsection.5.16.1}%
 \contentsline {subsection}{\numberline {V.16.2}Predictive performance, calibration, and law transfer}{514}{subsection.5.16.2}%
 \contentsline {subsection}{\numberline {V.16.3}Noise identification and clean-risk reconstruction}{515}{subsection.5.16.3}%
@@ -332,15 +333,15 @@
 \contentsline {section}{\numberline {VIII.6}Quantitative Noise--Resource Phase Diagram}{580}{section.8.6}%
 \contentsline {subsection}{\numberline {VIII.6.1}Exact finite-budget error enumeration}{580}{subsection.8.6.1}%
 \contentsline {section}{\numberline {VIII.7}Asymptotic, Statistical, and Information Thresholds}{583}{section.8.7}%
-\contentsline {subsection}{\numberline {VIII.7.1}The saturated computational boundary}{587}{subsection.8.7.1}%
+\contentsline {subsection}{\numberline {VIII.7.1}The saturated computational boundary}{588}{subsection.8.7.1}%
 \contentsline {section}{\numberline {VIII.8}Structural Core Reduction for LPN}{589}{section.8.8}%
 \contentsline {subsection}{\numberline {VIII.8.1}Representation and Geometric Source Bounds}{589}{subsection.8.8.1}%
 \contentsline {subsection}{\numberline {VIII.8.2}Capacity and arrival transfer under valid lifts}{590}{subsection.8.8.2}%
-\contentsline {subsection}{\numberline {VIII.8.3}Ambient ancestry and permutation bounds}{593}{subsection.8.8.3}%
+\contentsline {subsection}{\numberline {VIII.8.3}Ambient ancestry and permutation bounds}{594}{subsection.8.8.3}%
 \contentsline {section}{\numberline {VIII.9}Residual Perturbations, Likelihood Quotients, and Direct-Target Obstructions}{596}{section.8.9}%
 \contentsline {subsection}{\numberline {VIII.9.1}Residual Displacement and Simultaneous Separation}{596}{subsection.8.9.1}%
-\contentsline {subsection}{\numberline {VIII.9.2}Base and Lifted Residual Drift}{598}{subsection.8.9.2}%
-\contentsline {subsection}{\numberline {VIII.9.3}Residual Likelihood Quotients and Compact Factorization}{601}{subsection.8.9.3}%
+\contentsline {subsection}{\numberline {VIII.9.2}Base and Lifted Residual Drift}{599}{subsection.8.9.2}%
+\contentsline {subsection}{\numberline {VIII.9.3}Residual Likelihood Quotients and Compact Factorization}{602}{subsection.8.9.3}%
 \contentsline {subsection}{\numberline {VIII.9.4}Direct-Target Perturbation Obstruction}{603}{subsection.8.9.4}%
 \contentsline {section}{\numberline {VIII.10}Public-Ancestry Local Geometry and Gate Evaluation}{605}{section.8.10}%
 \contentsline {subsection}{\numberline {VIII.10.1}Target-edge and ancestry normal forms}{605}{subsection.8.10.1}%
@@ -353,7 +354,7 @@
 \contentsline {section}{\numberline {VIII.12}Hypercube Functional Geometry and Learned Operators}{620}{section.8.12}%
 \contentsline {subsection}{\numberline {VIII.12.1}Exact hypercube spectrum and functional outputs}{620}{subsection.8.12.1}%
 \contentsline {subsection}{\numberline {VIII.12.2}Capacity, effective dimension, and carrier profile}{622}{subsection.8.12.2}%
-\contentsline {subsection}{\numberline {VIII.12.3}Nonlinear reweighting and learned-operator transfer}{625}{subsection.8.12.3}%
+\contentsline {subsection}{\numberline {VIII.12.3}Nonlinear reweighting and learned-operator transfer}{624}{subsection.8.12.3}%
 \contentsline {section}{\numberline {VIII.13}LPN Committors and Dynamical Learning}{627}{section.8.13}%
 \contentsline {subsection}{\numberline {VIII.13.1}Committor and Bellman propagation}{627}{subsection.8.13.1}%
 \contentsline {subsection}{\numberline {VIII.13.2}Safe spectra and dependent-data candidates}{628}{subsection.8.13.2}%
@@ -387,7 +388,8 @@
 \contentsline {subsection}{\numberline {VIII.23.1}Relativization}{702}{subsection.8.23.1}%
 \contentsline {subsection}{\numberline {VIII.23.2}Natural proofs}{702}{subsection.8.23.2}%
 \contentsline {subsection}{\numberline {VIII.23.3}Algebrization}{702}{subsection.8.23.3}%
-\contentsline {subsection}{\numberline {VIII.23.4}Oracle-Blind Family Classification}{702}{subsection.8.23.4}%
+\contentsline {subsection}{\numberline {VIII.23.4}Oracle-Blind Family Classification}{703}{subsection.8.23.4}%
 \contentsline {section}{\numberline {VIII.24}Conclusion}{703}{section.8.24}%
-\contentsline {section}{\numberline {A}Index of Notation}{704}{appendix.A}%
-\contentsline {subsection}{\numberline {A.1}Superscript and subscript conventions}{714}{subsection.A.1}%
+\contentsline {section}{\numberline {A}External Theorem-Dependency Audit}{704}{appendix.A}%
+\contentsline {section}{\numberline {B}Index of Notation}{707}{appendix.B}%
+\contentsline {subsection}{\numberline {B.1}Superscript and subscript conventions}{716}{subsection.B.1}%

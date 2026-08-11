@@ -1,4 +1,5 @@
 import Hypostructure.Graph.CurvatureTargetRank
+import Hypostructure.Graph.DeclaredRankQuotient
 import Hypostructure.Graph.SimultaneousTightVertexSuppression
 import Hypostructure.Graph.Strategy.InterfaceReplacement
 import Hypostructure.Graph.SparsePortActivation
@@ -57,12 +58,11 @@ inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
   one: an admissible quotient identifying two boundaried pieces that are
   nonetheless separated, by their boundary-degree profiles or by an outside
   context. -/
-  | targetDefect {region : Finset object.Vertex}
-      (quotient : CurvatureQuotient Baseline Target object region)
+  | targetDefect {Coordinate : Type u} {family : Finset Coordinate}
+      {coordinateSupport : Coordinate → Finset object.Vertex}
+      (quotient : AttemptedQuotient Baseline Target object family coordinateSupport)
       (left right : BoundaryPiece (SupportAtom.boundary object quotient.support))
-      (identified : ∀ test ∈ object.internalWedgeFamily region,
-        quotient.value left (quotient.label test) =
-          quotient.value right (quotient.label test))
+      (identified : quotient.Identifies left right)
       (separated : left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
         Response.TargetDefect Target left right)
   /-- (c) a nontrivial target-complete compression of a proper atom.
@@ -71,8 +71,7 @@ inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
   `CompressibleSupport`, which `cor:uncompressible` forbids -- not the one-way
   `ReplacementSupport`, which is the weaker `lem:replacement` obstruction. -/
   | compression (support : Finset object.Vertex)
-      (compressible : CompressibleSupport Baseline
-        Target object support)
+      (replacement : ReplacementSupport Baseline Target object support)
   /-- (d) a proper or global delocalization coordinate: a strictly smaller
   representative meeting the baseline whose target transfers back. -/
   | delocalization (representative : FiniteObject.{u})
@@ -92,46 +91,6 @@ conclusions occurs. -/
 def SurvivesSparseExits (Baseline Target : FiniteObject.{u} → Prop)
     (LengthOK : Nat → Prop) (object : FiniteObject.{u}) : Prop :=
   ¬ SparseSurplusExit Baseline Target LengthOK object
-
-/-- **A selected minimal counterexample survives the sparse surplus exits.**
-
-This is node `[125]`'s standing hypothesis, derived rather than assumed.  Only
-the selection entry's own two halves are spent -- avoidance and minimality --
-together with `lem:replacement` at that selection. -/
-theorem survives_of_selection
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}}
-    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
-    (minimal : ∀ smaller : FiniteObject.{u},
-      smaller.LexicographicallySmaller object → Baseline smaller →
-      Graph.HasCycleWithLength LengthOK smaller)
-    (uncompressible : ∀ support : Finset object.Vertex,
-      ¬ CompressibleSupport Baseline
-        (Graph.HasCycleWithLength LengthOK) object support) :
-    SurvivesSparseExits Baseline (Graph.HasCycleWithLength LengthOK) LengthOK
-      object := by
-  intro exit
-  cases exit with
-  | dyadic cycle => exact avoids cycle
-  | targetDefect quotient left right identified separated =>
-      obtain ⟨fibrewise, universal⟩ :=
-        Graph.DeclaredQuotient.targetComplete_of_identified quotient left right
-          identified
-      rcases separated with different | ⟨outside, distinguishes⟩
-      · exact different fibrewise
-      · exact distinguishes (universal outside)
-  | compression support compressible => exact uncompressible support compressible
-  | delocalization representative smaller baseline transfer =>
-      exact avoids (transfer (minimal representative smaller baseline))
-  | suppressionChord family certificate violates =>
-      -- `lem:suppressed-family-critical-cycle`: expanding the accepted cycle of
-      -- `G/𝒬` gives a simple cycle of `G` of length `2^j + |𝒮|`.
-      obtain ⟨_nonempty, expanded, length⟩ :=
-        family.suppressedFamilyExpansion avoids certificate
-      exact avoids ⟨{ vertex := family.sourceVertex certificate.vertex
-                      walk := expanded.walk
-                      isCycle := expanded.isCycle
-                      length_ok := by rw [length]; exact violates }⟩
 
 /-- **`def:active-surplus-demands`.**
 

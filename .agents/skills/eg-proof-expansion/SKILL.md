@@ -9,6 +9,97 @@ Implement one requested EG StrategyDag row as an exact instance of the paper's
 strategy and of Hypostructure's generic execution model.  Repair the requested
 row completely even when the correction exposes a downstream break.
 
+## Keep the task to one requested label
+
+This is the controlling workflow. Apply every broader audit, dependency,
+cleanup, and framework instruction below only inside this scope.
+
+1. Identify the single manuscript label explicitly requested by the user. If
+   the user names a node, use the live tables to identify its single first
+   failing label. Do not begin a second label in the same turn.
+2. Copy that label's exact proposition, inherited hypotheses, alternatives,
+   and proof strategy from the manuscript. Do not infer a stronger
+   prerequisite, global version, replacement theorem, or different strategy.
+3. Identify only the facts already present on the literal incoming residual
+   that the manuscript proof consumes. Read them only through
+   `FactInputs.current` and `FactInputs.get` inside the executor. Never request
+   a sibling fact, ambient theorem parameter, callback, side carrier, supplied
+   certificate, or detached universal proof.
+4. Translate that one proof into Lean. Publish each externally usable
+   conclusion prescribed for that label in one literal `FactManifest`, and
+   append it with `AtomicCT.run` to the same `ExactLedger`.
+5. Delete an illegal wrapper, callback, side carrier, or compatibility shim
+   only while repairing the valid mathematical proof it transported to use
+   the canonical ledger API. Never delete, weaken, broaden, or replace a
+   correct paper fact merely because its current transport is illegal.
+6. Update exactly the corresponding paper-fact row and node row from the
+   kernel-checked implementation. Build the narrow target and report the first
+   downstream failure. Stop there unless the user explicitly requests the
+   next label.
+
+Dependency tracing is diagnostic and read-only. It never expands the edit
+scope. A missing downstream interface, inconvenient schema, or compiler error
+does not authorize a new API, mathematical certificate, carrier, strategy, or
+repair of another label. Do not speculate about such designs. State the exact
+requested formula that remains unproved and implement it with a permitted
+Type A pattern.
+
+### Ban detached proof declarations
+
+Implement the selected paper fact only as the value returned for its declared
+`Produces` key by the sealed atomic executor. Keep its proof as an anonymous
+tactic or term subexpression inside that executor. Do not declare a `theorem`,
+`lemma`, helper `def`, public conversion, quotient-system constructor, or other
+standalone declaration whose conclusion supplies, implies, packages, or
+reconstructs the selected fact. This prohibition applies even when the
+declaration is generic, mathematically true, reusable, or convenient to test.
+
+Before editing, name the exact existing atomic row that will own the proof. If
+no such row exists, create only the permitted Type A row and its vocabulary
+entry; do not first stage the mathematics in a detached declaration. Construct
+all temporary mathematical objects with local `let` or `have` bindings inside
+the executor from `inputs.current` and `inputs.get` facts.
+
+Before compiling or updating the audit tables, inspect the complete diff for
+new top-level declarations. If any new declaration outside the vocabulary and
+Type A row carries mathematical content for the selected label, the repair is
+invalid: delete it, inline its proof into the executor, and repeat the diff
+inspection. Never report the fact as implemented while such a declaration
+exists. A downstream elaboration failure after its removal is the required
+loud failure, not permission to restore the declaration.
+
+### Never confuse mathematical data with a transport interface
+
+There is exactly one proof-data interface: the incoming `ExactLedger`, read by
+sealed `FactInputs` and extended by `AtomicCT.run`. Mathematical structures
+such as quotients, families, coordinates, witnesses, and certificates are
+objects appearing inside propositions; they do not authorize another channel
+and must never be described as a second interface.
+
+When a paper proof needs such an object, obtain its prerequisites from the
+incoming ledger, construct the object locally in the executor, prove the exact
+paper proposition, and return that proposition under its declared semantic
+key. If the object must be used later, make it part of that key's exact `Holds`
+proposition and publish it in `Produces`; do not pass it separately.
+
+Never respond to an awkward mathematical schema by proposing, requesting, or
+waiting for permission to add an interface, source certificate, carrier,
+wrapper, callback, theorem parameter, or compatibility layer. Never call such
+a proposal a prerequisite or blocker. Either the existing mathematical
+declarations suffice for the local proof, or delete the illegal transport,
+repair the proof as far as the canonical ledger permits, and let the first
+unresolved Lean obligation or downstream compilation failure remain loud.
+
+Do not delete valid mathematics when deleting illegal transport. Reconstruct
+and publish the same paper fact through the ledger. Do not replace it with a
+surrogate, a universally quantified detached theorem, or a stronger fact that
+bypasses the manuscript argument.
+
+This section overrides every broader paragraph below. In particular, “repair
+the row completely”, “transitive implementation slice”, “follow referenced
+proofs”, and “inspect every theorem” do not authorize edits outside the
+selected label or changes to the manuscript's proof strategy.
+
 ## Establish the authorities
 
 Work from the repository root.  Require these live sources:
@@ -22,16 +113,17 @@ Work from the repository root.  Require these live sources:
   implementation tables are live; its stable rubrics are explanatory.
 
 Treat every docstring, block comment, line comment, metadata note, and old audit
-claim as adversarial.  Never use prose as evidence that a declaration realizes
-a paper object.  Delete every misleading docstring or comment encountered in
-the requested row's transitive implementation slice.
+claim as adversarial. Never use prose as evidence that a declaration realizes
+a paper object. Within the selected label only, correct a misleading comment
+when the implementation edit would otherwise leave it false. Do not perform a
+transitive comment cleanup.
 
 Search `references/allowed-api.md` before designing or editing any data access,
 execution, transport, ledger, residual, or routing code.  The catalog is large:
 use `rg -n` with the fully qualified name, module name, or operation family and
 read only the matching `###` module and `####` symbol entries with their
-compiled types.  A plumbing symbol not present in that catalog is forbidden
-until a proof-agnostic framework API is added and the catalog is refreshed.
+compiled types. A plumbing symbol not present in that catalog is forbidden for
+the label implementation. Do not add an API to make a proposed design legal.
 
 The catalog is a closed allowlist, not a list of suggestions.  Declarations
 outside it are unavailable for proof plumbing.  Run the
@@ -118,11 +210,12 @@ Permit problem-specific code in exactly two files:
 - `HypostructureErdos64EG/StrategyDag.lean` may construct only the paper's DAG
   topology with framework Strategy combinators.
 
-Add no other proof-specific declaration.  In the requested row's transitive
-implementation slice, delete or generalize every EG-specific theorem,
-definition, structure, instance, carrier, result, residual, ledger, executor,
-transport helper, routing helper, and compatibility wrapper.  Do not retain a
-dead shim for downstream code.
+Add no other proof-specific declaration. Within the selected label, replace
+only the illegal carrier, callback, transport helper, routing helper, or
+compatibility wrapper directly used to move that label's mathematical facts.
+Repair those facts onto the canonical ledger before removing their illegal
+transport. Do not delete or generalize unrelated declarations in a transitive
+slice, and do not retain a dead shim for downstream code.
 
 Place reusable logic under `hypostructure/Hypostructure/Core`, the applicable
 `CT1`--`CT17` module, or a proof-agnostic `Hypostructure.Graph` module.  Generic
@@ -137,10 +230,10 @@ framework code must:
   output, or generic hypotheses already owned by the framework;
 - avoid a registration field whose value merely supplies the desired theorem.
 
-If the catalog lacks a required operation, add a generic framework operation
-and a generic fixture proving predecessor preservation, residual behavior,
-ledger availability, and the advertised theorem.  Refresh the API catalog in
-the same change before consuming the operation.
+If the catalog lacks an operation apparently needed by a proposed design,
+reject that design and return to the manuscript proof and permitted Type A
+forms. Do not add a generic framework operation while implementing a paper
+label. This skill never changes or adds a proof-data interface.
 
 ## Enforce one canonical history
 
@@ -319,6 +412,9 @@ Type A forms above.
   routes branch payloads.
 - Prove exactly the paper fact.  Do not smuggle it through an axiom, `sorry`,
   `admit`, an opaque assumption, a supplied callback, or a stronger surrogate.
+  Do not prove it first as a detached universal theorem and call that theorem
+  from the executor. The executor itself must derive the produced value from
+  the incoming residual facts.
 
 Framework ownership is necessary but not sufficient for a Graph Strategy
 adapter: inspect its body and use it only when its catalog entry and body show
@@ -389,9 +485,5 @@ python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py check --repo-ro
 python3 .agents/skills/eg-proof-expansion/scripts/audit_tables.py check --repo-root .
 ```
 
-After intentionally changing the public framework API, refresh and re-check:
-
-```bash
-python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh --repo-root .
-python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py check --repo-root .
-```
+Do not refresh the catalog to legalize a new proof-data operation. This skill
+does not add or change the proof-data interface.

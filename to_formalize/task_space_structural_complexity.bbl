@@ -1,4 +1,4 @@
-\begin{thebibliography}{91}
+\begin{thebibliography}{92}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -422,6 +422,11 @@ David~A. Levin and Yuval Peres.
 \newblock American Mathematical Society, 2 edition, 2017.
 \newblock \doi{10.1090/mbk/107}.
 
+\bibitem[Li et~al.(2026)Li, Wang, and Zhou]{LiWangZhou2026}
+Xiaoru Li, Qi~Wang, and Yue Zhou.
+\newblock The automorphism groups of random linear codes, 2026.
+\newblock URL \url{https://arxiv.org/abs/2607.23936}.
+
 \bibitem[Liu and Pass(2020)]{LiuPass2020}
 Yanyi Liu and Rafael Pass.
 \newblock On one-way functions and kolmogorov complexity.
@@ -530,14 +535,6 @@ Felix Otto and C{\'e}dric Villani.
 \newblock \emph{Journal of Functional Analysis}, 173\penalty0 (2):\penalty0
   361--400, 2000.
 \newblock \doi{10.1006/jfan.1999.3557}.
-
-\bibitem[Paulin(2015)]{Paulin2015}
-Daniel Paulin.
-\newblock Concentration inequalities for {M}arkov chains by {M}arton couplings
-  and spectral methods.
-\newblock \emph{Electronic Journal of Probability}, 20\penalty0 (79):\penalty0
-  1--32, 2015.
-\newblock \doi{10.1214/EJP.v20-4039}.
 
 \bibitem[Pearl(1995)]{Pearl1995}
 Judea Pearl.
@@ -672,5 +669,13 @@ Thom Wiggers and Simona Samardjiska.
   IEEE, 2021.
 \newblock URL \url{https://eprint.iacr.org/2021/962}.
 \newblock Cryptology ePrint Archive, Paper 2021/962.
+
+\bibitem[Yu(1994)]{Yu1994}
+Bin Yu.
+\newblock Rates of convergence for empirical processes of stationary mixing
+  sequences.
+\newblock \emph{The Annals of Probability}, 22\penalty0 (1):\penalty0 94--116,
+  1994.
+\newblock \doi{10.1214/aop/1176988849}.
 
 \end{thebibliography}

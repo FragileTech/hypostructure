@@ -1093,7 +1093,7 @@ pressure, and critical-tightness rows continue to their separate parts.}
 \begin{landscape}
 \begin{figure}[p]
 \centering
-\resizebox{0.80\linewidth}{!}{%
+\resizebox{0.79\linewidth}{!}{%
 \begin{tikzpicture}[
 dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.25cm},
 term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.85cm},
@@ -1109,6 +1109,7 @@ every node/.style={font=\scriptsize}
 \node[term,text width=2.80cm] (n114) at (7.00,-3.40) {\textbf{[114]}~pressure reconstruction or gauge first failure closed};
 \node[term,text width=2.80cm] (n115) at (-8.00,-10.20) {\textbf{[115]}~localized velocity-stress source is regular};
 \node[dec] (n116) at (0,-10.20) {\textbf{[116]}~which velocity-supported label is selected?};
+\coordinate (in116) at ($(n116.east)+(3.60,0)$);
 \node[route,text width=2.35cm] (r110a) at (-10.00,-6.20) {\textbf{[110]}~pressure/exterior closure};
 \node[route,text width=2.20cm] (r105) at (-10.00,-14.50) {\textbf{[105]}~comparable class grouped};
 \node[route,text width=2.20cm] (r106) at (-6.00,-14.50) {\textbf{[106]}~multibubble closure};
@@ -1123,6 +1124,7 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (n112)--node[right]{yes}(n113.north);
 \draw[arrow] (n113.south west)--node[above,sloped]{regular}(n115.north);
 \draw[arrow] (n113.south east)--node[above,sloped]{velocity carrier}(n116.north);
+\draw[arrow] (in116)--node[above]{also from [117] or [122]}(n116.east);
 \draw[arrow] (n116.south west)--node[above,sloped]{comparable}(r105.north);
 \draw[arrow] (n116.south west)--node[above,sloped]{multibubble}(r106.north);
 \draw[arrow] (n116.south)--node[left]{multicore}(r107.north);
@@ -1135,8 +1137,9 @@ every node/.style={font=\scriptsize}
 The proof of \cref{lem:pressure-only-critical-mass-routing} first tests the
 pressure reconstruction at [111], then the localized source at [112], and
 only then runs the local CKN test [113].  A velocity carrier is classified at
-[116].  Dashed ellipses are references to terminal closures proved and drawn
-as solid ellipses in Part IX.}
+[116], which also receives the velocity-supported outcomes of [117] and [122].
+Dashed ellipses are references to terminal closures proved and drawn as solid
+ellipses in Part IX.}
 \label{fig:typeII-proof-flow-part-x}
 \end{figure}
 \end{landscape}
