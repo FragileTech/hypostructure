@@ -947,13 +947,14 @@ current profile selected by the terminal extraction.
 
 ## I8. Synchronize final assembly, auxiliary views, and static checks
 
-**Implementation status:** in progress.  This item is a
+**Implementation status:** complete.  This item is a
 source-synchronization pass.  It adds a final selected-owner directory, corrects
 three overbroad sentences, synchronizes the Type I architecture capsules, and
 adds a structural checker.  It changes no analytic argument, profile class,
 hypothesis, or proof order.  The displayed residual conclusions are restated
 in pointwise implication form only to expose their existing contrapositive
-logic.
+logic.  The checker passes, and both the manuscript and architecture documents
+compile without undefined references or new layout warnings.
 
 ### Source anchors
 
@@ -1073,9 +1074,9 @@ Make only the following ownership corrections in the final-assembly prose.
 
    > “Fix an arbitrary centered profile \(V\) carrying the fixed setup ancestry
    > ledger.  To prove
-   > \(\calR^\#(\calS;I_{\rm setup},J_{\rm res})=\varnothing\), it suffices to
+   > \(\calR^\#(\calS;I,J)=\varnothing\), it suffices to
    > prove
-   > \(V\in\calR^\#(\calS;I_{\rm setup},J_{\rm res})\Rightarrow\bot\).
+   > \(V\in\calR^\#(\calS;I,J)\Rightarrow\bot\).
    > Assume the antecedent.”
 
    Continue with the existing refined-routing proof.  After that row is proved
