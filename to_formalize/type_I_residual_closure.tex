@@ -402,10 +402,17 @@ The purpose of the present paper is to prove the literal raw-residual closure
       \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
    \bigr)=\varnothing .
 \]
-The proof routes a hypothetical raw residual state through the affine or
-retained row and closes the selected row.  Thus the routing is used
-contrapositively; it is not an additional existence assumption and it does not
-replace the setup paper's residual set by a different object.
+For an arbitrary incoming profile \(V\) carrying the fixed setup ledger, the
+proof establishes the implication
+\[
+   V\in\calR_{\rm setup}(\calS)\quad\Longrightarrow\quad\bot
+\]
+by routing the antecedent through the affine or retained row and closing the
+selected row.  Thus residual membership is only the antecedent of the
+contrapositive argument: if it is false there is nothing to prove for \(V\),
+and if it is true the exhaustive routing yields a contradiction.  No residual
+profile is assumed to exist, and the setup paper's residual set is not replaced
+by a different object.
 \end{theorem}
 
 \begin{definition}[Exact setup-to-residual handoff]
@@ -493,8 +500,8 @@ alternative is routed to the already closed affine/parasitic lower row by
 otherwise the canonical representative retains positive non-affine activity
 and belongs to the retained residual class.  The affine operation is an exact
 centered symmetry or the associated homogeneous quotient operation, so it
-does not create a new raw state space or discard the ancestry of the
-hypothetical candidate.
+does not create a new raw state space or discard the ancestry of the candidate
+under the antecedent.
 For the retained alternative, the root compact velocity lower bound, pressure
 atlas, and fixed normalization data are those of the setup candidate.  Their
 transport under later realized operations is
@@ -627,9 +634,9 @@ consumers are listed in
 affine/parasitic quotient, descendant realization, and terminal sequence-\(L^3\)
 property are established in this paper by their named local results.  Paper~II
 closes the affine routing row and proves
-\(\calR^\#(\calS;I,J)=\varnothing\).  Applied to the fixed incoming
-hypothetical profile, the exact-handoff proposition turns these exhaustive
-local closures into the literal conclusion
+\(\calR^\#(\calS;I,J)=\varnothing\).  Applied conditionally to an arbitrary
+incoming profile carrying the fixed ledger, the exact-handoff proposition
+turns these exhaustive local closures into the literal conclusion
 \(\calR_{\rm setup}(\calS)=\varnothing\).
 \end{remark}
 
@@ -13384,10 +13391,156 @@ paper from local estimates:
    \varnothing .
 \end{aligned}
 \]
-The positive local velocity concentration inherited by every normalized Seregin limit,
-after affine normalization through the non-affine oscillation functional
-\(\Phi\), is the common contradiction target in the complete ordered
-decomposition.
+The normalized profile selected from the fixed extraction carries retained
+local velocity concentration.  A descendant row uses this obstruction only
+after the cited realization and heredity interfaces transport it to that
+descendant.
+
+\paragraph{Final selected-owner directory.}
+The following table records the closure view for the fixed incoming profile and
+its setup ancestry ledger.  Each row is conditional on the current selected
+datum entering the state in the first column.  The dependency-status and
+consumer columns record no premise for an earlier row.
+
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{1.5pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{longtable}{@{}L{0.15\textwidth}L{0.20\textwidth}L{0.18\textwidth}L{0.18\textwidth}L{0.10\textwidth}L{0.10\textwidth}@{}}
+\caption{Selected-owner directory for final residual assembly.  Obstructions
+are recorded only for the datum whose cited producer supplies them.}
+\label{tab:final-selected-owner-directory}\\
+\hline
+\textbf{Current owner or state} & \textbf{Entry or producer} &
+\textbf{Owned obstruction} & \textbf{Closure or reduction} &
+\textbf{Status} & \textbf{Later consumer only}\\
+\hline
+\endfirsthead
+\hline
+\textbf{Current owner or state} & \textbf{Entry or producer} &
+\textbf{Owned obstruction} & \textbf{Closure or reduction} &
+\textbf{Status} & \textbf{Later consumer only}\\
+\hline
+\endhead
+\hline
+\endfoot
+Arbitrary incoming candidate \(V\) carrying the fixed setup ledger, under the
+antecedent \(V\in\calR_{\rm setup}(\calS)\). &
+\Cref{prop:setup-residual-handoff-complete}. &
+The root retained local velocity concentration supplied by the fixed
+extraction. &
+Affine routing, or entry of the same candidate's canonical representative into
+the refined decomposition. &
+Conditional handoff. &
+Applied contrapositively after the affine and refined rows are closed.\\
+
+Current canonical representative selected into \(\Cax\). &
+\Cref{def:refined-decomposition}, instantiated to this representative. &
+The retained obstruction already recorded for this profile. &
+\Cref{thm:R1-exclusion}. &
+Independent closure. &
+\Cref{thm:refined-residual-closure}.\\
+
+Current profile selected into \(\Crot\). &
+\Cref{prop:R2-reduction-to-terminal}. &
+Retained velocity only on the selected realized terminal sequence, through its
+cited ancestry and heredity interfaces. &
+\Cref{thm:terminal-stratification}, followed by \Cref{cor:R2-closure}. &
+Terminal output; no sequence-\(L^3\) entry input. &
+\Cref{thm:refined-residual-closure}.\\
+
+Current profile selected into \(\Cstat\). &
+\Cref{prop:R3-stationary-hull-reduction,prop:R3S-R3-terminal-reduction}. &
+Retained velocity only on the selected realized terminal sequence. &
+\Cref{thm:terminal-stratification}, followed by \Cref{cor:R3-closure}. &
+Terminal output; the stationary sequence-\(L^3\) subcase is produced there. &
+\Cref{thm:refined-residual-closure}.\\
+
+Current affine/parasitic representative. &
+\Cref{thm:affine-normalization-dichotomy}. &
+Its selected non-affine oscillation, when retained. &
+\Cref{thm:oscillatory-entry-normalization}. &
+Quotient routing. &
+The refined closure; no retained normalized representative remains in this
+row.\\
+
+Current realized coherent critical tail. &
+\Cref{cor:coherent-critical-tail-extraction,thm:bounded-origin-realization-coherent-tails}. &
+Its selected annular non-affine activity and realized bounded-origin
+interface. &
+\Cref{cor:coherent-critical-tail-branch-closure}. &
+Produced before hidden-scale and log-diffuse closure. &
+The hidden-scale, log-diffuse, and complete critical-tail rows.\\
+
+Current realized Young or pressure/viscous defect alternative. &
+\Cref{thm:no-hidden-scale-variance-realized-defects} for its selected tight
+annular blow-down and \Cref{lem:critical-tail-defect-coordinate-closure} for
+its chartwise coordinates. &
+The Young variance or named defect coordinate produced for this selected
+datum. &
+\Cref{cor:young-branch-exclusion}. &
+Selected-datum closure. &
+\Cref{cor:critical-tail-exclusion-complete}.\\
+
+Current realized log-diffuse defect and its selected normalized log windows. &
+\Cref{lem:log-window-support-transfer,lem:renormalized-log-window-heredity}. &
+Positive normalized window mass and a support point only when the cited theorem
+produces them. &
+\Cref{cor:log-diffuse-branch-exclusion}. &
+Uses hidden-scale exclusion and the already closed coherent row. &
+\Cref{cor:critical-tail-exclusion-complete}.\\
+
+Current realized critical-tail profile. &
+\Cref{thm:realized-critical-tail-rigidity}, instantiated to that profile. &
+Only the selected tail obstruction recorded by its producer. &
+\Cref{cor:critical-tail-exclusion-complete}. &
+Completed tail closure. &
+The terminal and generic routes.\\
+
+Current generic profile and its selected terminal extraction. &
+\Cref{thm:generic-terminal-exhaustion}. &
+Retained velocity transported along the named realization chain;
+sequence-\(L^3\) and mildness only at the selected indecomposable endpoint. &
+The named branch closures in the proof of \Cref{thm:R4-final-closure}. &
+Sibling of the R2/R3 terminal consumer. &
+\Cref{thm:refined-residual-closure}.\\
+
+Refined decomposition of the current canonical representative. &
+The ordered routing in \Cref{def:refined-decomposition} and the preceding row
+closures. &
+No new obstruction is assigned at assembly. &
+\Cref{thm:refined-residual-closure}. &
+All producer rows already proved. &
+The exact raw-residual handoff.\\
+
+The same arbitrary incoming candidate \(V\), under the antecedent
+\(V\in\calR_{\rm setup}(\calS)\). &
+\Cref{prop:setup-residual-handoff-complete}, used contrapositively after affine
+and refined closure. &
+The original fixed-ledger retained obstruction. &
+\Cref{thm:typeI-residual-closure} proves
+\(V\in\calR_{\rm setup}(\calS)\Rightarrow\bot\). &
+Literal raw-residual closure. &
+\Cref{cor:setup-residual-hypothesis-proof}.\\
+
+The proved setup residual statement. &
+\Cref{cor:setup-residual-hypothesis-proof}. &
+No new analytic input. &
+The literal setup raw-residual statement. &
+Downstream handoff complete. &
+\Cref{cor:two-paper-local-typeI-exclusion} and the setup final assembly.\\
+\hline
+\end{longtable}
+\endgroup
+
+The obstruction column is not a uniform inheritance column.  Root velocity
+concentration belongs to the fixed extraction.  A descendant receives retained
+velocity only through its cited realization and heredity interfaces.  A defect
+window receives normalized mass and a support point only through its named
+normalization and support-transfer theorems.  A terminal profile receives
+sequence-\(L^3\) and finite-shift mildness only through
+\Cref{tab:atomic-endpoint-input-production}.  Pressure remains attached to the
+local chart used in the corresponding row.
 
 Equivalently, the final exclusion is the composition of eight ordered steps:
 \begin{enumerate}[label=\textup{(\arabic*)}]
@@ -13434,49 +13587,58 @@ Equivalently, the final exclusion is the composition of eight ordered steps:
 \end{enumerate}
 
 \begin{proof}[Proof of \Cref{thm:refined-residual-closure}, revisited]
-Assume, for contradiction, that a retained admissible residual profile exists.
-Apply the setup-paper export interface to the corresponding remaining
-generated state.  This produces a fixed residual object carrying the same
-centered profile, retained compact velocity mass, pressure-gauge compatibility,
-and terminal ancestry as the setup construction.  The refined decomposition is
-then used as a proof-carrying routing datum for this same object: the selected
-alternative is not allowed to change the setup export, and every later
-descendant or quotient profile is linked back to that export by the realization
-inheritance theorem.  By the refined ordered decomposition, after extraction
-the residual object belongs to one of
+Fix an arbitrary centered profile \(V\) carrying the fixed setup ancestry
+ledger.  To prove
+\(\calR^\#(\calS;I,J)=\varnothing\), it is enough to establish
+\[
+   V\in\calR^\#(\calS;I,J)\quad\Longrightarrow\quad\bot .
+\]
+Assume the antecedent.  By the definition of the retained canonical class and
+the setup-paper export interface, this same \(V\) carries its retained compact
+velocity obstruction, the normalization data, the setup ancestry, and the
+pressure representative appropriate to each local chart.  The refined
+decomposition is a routing datum for this same profile: it does not change the
+setup export, and any later descendant or quotient profile is linked to \(V\)
+by the cited realization and inheritance theorem.  The refined ordered
+decomposition selects for \(V\) one of
 \[
    \Cax,\Crot,\Cstat,\Caff,\Clogdiff,\Cyoung,
    \Chomcrit,\Clogper,\Capcrit,\Cgen .
 \]
-The axisymmetric class is empty by \Cref{thm:R1-exclusion}.  The rotational
-class is reduced to the terminal stratification assembly theorem by \Cref{prop:R2-reduction-to-terminal} and
-is empty by \Cref{cor:R2-closure}.  The stationary-hull class is reduced to
-the terminal stratification assembly theorem by
-\Cref{prop:R3-stationary-hull-reduction,prop:R3S-R3-terminal-reduction} and is
-empty by \Cref{cor:R3-closure}.  The affine/parasitic quotient row
-\(\Caff\) contains no retained normalized representative by the routing theorem
-\Cref{thm:oscillatory-entry-normalization}.  The
-log-diffuse and Young branches are empty by
-\Cref{cor:log-diffuse-branch-exclusion,cor:young-branch-exclusion}.  The
-coherent critical-tail classes are empty by
-\Cref{cor:coherent-critical-tail-branch-closure}.  The generic terminal class
-is empty by \Cref{thm:terminal-stratification,thm:R4-final-closure}.
+If \(V\) is selected into \(\Cax\), \Cref{thm:R1-exclusion} excludes this
+profile.  If it is selected into \(\Crot\),
+\Cref{prop:R2-reduction-to-terminal} produces the terminal route for this
+profile and \Cref{cor:R2-closure} excludes it.  If it is selected into
+\(\Cstat\),
+\Cref{prop:R3-stationary-hull-reduction,prop:R3S-R3-terminal-reduction}
+produce its terminal route and \Cref{cor:R3-closure} excludes it.  If its
+canonical representative is selected into the affine/parasitic quotient row
+\(\Caff\), \Cref{thm:oscillatory-entry-normalization} leaves no retained
+normalized representative in that row.  If \(V\) is selected into the
+log-diffuse or Young row, the corresponding closure
+\Cref{cor:log-diffuse-branch-exclusion,cor:young-branch-exclusion} excludes the
+selected datum.  If it is selected into a coherent critical-tail row,
+\Cref{cor:coherent-critical-tail-branch-closure} excludes the realized tail.
+Finally, if it is selected into \(\Cgen\),
+\Cref{thm:R4-final-closure} excludes its selected generic terminal route.
 
-Every refined residual alternative is impossible, contradicting the ordered
-decomposition.  Hence
-\(\calR^\#(\calS;I,J)=\varnothing\).  Together with the affine-row closure,
-\Cref{prop:setup-residual-handoff-complete} applies contrapositively to the
-fixed incoming residual profile and gives
-\(\calR_{\rm setup}(\calS)=\varnothing\).  In particular, the proof
-constructs the literal setup residual closure from the ordered decomposition
-and the individual local branch closures; it neither assumes a residual
-object nor replaces the raw setup residual by a derived handoff set.
+Every possible selection contradicts the antecedent.  Since \(V\) was
+arbitrary, \(\calR^\#(\calS;I,J)=\varnothing\).  Together with the affine-row
+closure, \Cref{prop:setup-residual-handoff-complete} now applies
+contrapositively to any incoming profile \(W\) carrying the fixed setup ledger:
+\[
+   W\in\calR_{\rm setup}(\calS)\quad\Longrightarrow\quad\bot .
+\]
+Consequently \(\calR_{\rm setup}(\calS)=\varnothing\).  The proof therefore
+uses residual membership only as the antecedent of an implication and closes
+the row selected for that same profile; it neither assumes a residual object
+nor replaces the raw setup residual by a derived handoff set.
 \end{proof}
 
 \begin{theorem}[Type I residual closure]
 \label{thm:typeI-residual-closure}
-Fix a hypothetical Type~I singular point, its incoming normalized Seregin
-profile, and the single setup ancestry ledger determining the hull
+Fix a candidate Type~I singular point, its incoming normalized Seregin profile,
+and the single setup ancestry ledger determining the hull
 \[
    \calS=\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*).
 \]
@@ -13489,23 +13651,32 @@ Then the residual set for this fixed local ledger satisfies
    \bigr)
    =\varnothing .
 \]
-No residual-existence premise is used: the statement is the contradiction
-obtained by applying the local routing and closure theorems to an arbitrary
-hypothetical incoming residual profile carrying this fixed ancestry ledger.
+For every incoming centered profile \(V\) carrying this fixed ancestry ledger,
+the proof establishes
+\[
+   V\in\calR_{\rm setup}(\calS)\quad\Longrightarrow\quad\bot .
+\]
+Thus no residual-existence premise is used.  Membership is only the antecedent
+of the implication: a false antecedent is already harmless, while a true
+antecedent is excluded by the local routing and closure theorems.
 \end{theorem}
 
 \begin{proof}
-Let \(V\) be an arbitrary hypothetical incoming profile in
-\(\calR_{\rm setup}(\calS)\).  By
-\Cref{prop:setup-residual-handoff-complete}, exactly one of the two local
-routing alternatives occurs.  The affine/parasitic alternative is closed by
-the quotient-row conclusion of that proposition, with
+Fix an arbitrary incoming centered profile \(V\) carrying the fixed setup
+ledger.  It suffices to prove
+\[
+   V\in\calR_{\rm setup}(\calS)\quad\Longrightarrow\quad\bot .
+\]
+Assume the antecedent.  By \Cref{prop:setup-residual-handoff-complete}, exactly
+one of the two local routing alternatives occurs for this same \(V\).  The
+affine/parasitic alternative is closed by the quotient-row conclusion of that
+proposition, with
 \Cref{def:affine-constant-lower-stratum,rem:affine-constant-use}; it cannot be
 a retained normalized residual profile.  In the
 other alternative, its canonical representative belongs to
 \(\calR^\#(\calS;I_{\rm setup},J_{\rm res})\), which is empty by
 \Cref{thm:refined-residual-closure}.  Both alternatives are impossible.
-Therefore no incoming residual profile exists for this fixed local ledger, and
+Thus the antecedent implies a contradiction.  Since \(V\) was arbitrary,
 \(\calR_{\rm setup}(\calS)=\varnothing\).
 \end{proof}
 

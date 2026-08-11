@@ -1030,6 +1030,66 @@ architecture that assigns complete cost, provenance, temporal availability,
 source type, and deployment semantics before compiling them into universal
 capability bounds.
 
+\subsection{Global Accounting Conventions}
+\label{subsec-global-accounting-conventions}
+
+The following conventions apply to every structural, statistical, control,
+attention, meta-complexity, and LPN record; a statement may refine them through
+a more specialized typed interface.  They collect the formal definitions and
+results cited below; they introduce no additional constructor, source channel,
+admissible record, or hypothesis.
+
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em]
+\item \emph{Complete ledger.}
+Every object credited by the ledger is evaluated through one complete
+represented derivation.  Data access, construction, representation,
+precision, evaluation, storage, optimization or verification, retained state,
+and deployment remain in its accumulated cost
+(\cref{def-budget-constructor-accounting,def-budgeted-derivability-closure}).
+
+\item \emph{Source conservation.}
+Represented postprocessing, directed transport, lifts, and boundary operations
+retain the source ancestry assigned by the exhaustive provenance normal form;
+they do not create a target-qualified source absent from that ancestry
+(\cref{thm-affordable-composition-no-creation,prop-derived-channels-create-no-structure}).
+
+\item \emph{Temporal typing.}
+Source credit at time \(t\) requires a represented prefix evaluator whose
+complete cost is charged before use and whose record is an ancestor of the
+transition being explained.  A completed first-hit or terminal record is
+retrospective accounting unless it has a separate admissible prefix
+representation
+(\cref{def-pre-hit-temporally-admissible-source,cor-first-hit-accounting-not-source,def-source-accounting-profile-separation}).
+
+\item \emph{Residual reclassification.}
+The residual is the complement left after the represented exposed-channel
+projections.  Whenever an affordable target-aligned representative satisfies
+an exposed-channel predicate, its corresponding projection is reclassified
+before the residual profile is evaluated; the prospective full-process bound
+still includes every remaining residual interaction
+(\cref{prop-family-uniform-residual-reclassification,thm-no-uniform-residual-correlation,prop-residual-excess-reclassification}).
+
+\item \emph{Typed conversion.}
+Candidates for one numerical conclusion are combined or minimized only after
+a represented converter puts them on the same complete record, probability
+law, and output unit.  Bounds in distinct statistical, structural,
+information, capacity, risk, value, or arrival coordinates otherwise remain
+separate
+(\cref{def-complete-source-resolved-learning-ledger,def-learned-control-certificate-coordinates}).
+
+\item \emph{Neutral values.}
+An unavailable candidate receives the neutral element of its local
+aggregation: one for a probability upper bound, \(+\infty\) for an unbounded
+error or loss upper bound, and zero for an unavailable lower certificate or
+empty supremum.  The local typed definition fixes the applicable neutral
+value, so absence of a candidate cannot improve a bound
+(\cref{def-complete-source-resolved-learning-ledger,def-learned-control-certificate-coordinates,def-source-resolved-attention-ledger}).
+\end{enumerate}
+
+Subsequent references to the global accounting conventions invoke these six
+rules together.  Whenever a result needs a sharper gate, normalization,
+neutral element, or temporal condition, that requirement is stated locally.
+
 \clearpage
 \subsection{Executive theorem map}\label{subsec-executive-theorem-map}
 
@@ -24204,13 +24264,13 @@ under the declared budget structure \(\mathcal B\), with ceiling
 \(B=b(n)\). This accounting includes public basis changes, represented
 quotients, runtime-generated observables, admissible finite-horizon
 statistics, boundary readouts, and valid lifts. A learning algorithm is
-itself a budget-admissible oracle-free computation on the presented
-data; ordinary polynomial-time learning corresponds to
-\(\mathcal B_{\mathrm{poly}}\). Consequently, generalization within this
-formalism requires a fixed or learned observable algebra that captures
-target mass at a statistical cost within the same saturated represented
-closure. The choice \(\mathcal B=\mathcal B_{\mathrm{poly}}\) yields the
-polynomial-time specialization.
+itself a budget-admissible oracle-free computation on the presented data and
+therefore obeys the global accounting conventions of
+\cref{subsec-global-accounting-conventions}. Consequently, generalization
+within this formalism requires a fixed or learned observable algebra that
+captures target mass at a statistical cost within the same saturated
+represented closure. The choice \(\mathcal B=\mathcal B_{\mathrm{poly}}\)
+yields the ordinary polynomial-time specialization.
 
 We consider three settings.
 
@@ -24313,21 +24373,19 @@ declared budget.
 \end{proof}
 
 \paragraph{Source-resolved convention for Part~IV.}
+The global accounting conventions of
+\cref{subsec-global-accounting-conventions} apply throughout this part.
 Every hypothesis class, operator, kernel, prior, posterior, learned feature,
-decoder, and deployed selector below is restricted by its exact source index
-when a target-qualified structural use is made.  The complete quantitative
+decoder, and deployed selector is restricted by its exact source index when a
+target-qualified structural use is made.  The complete quantitative
 compilation is
 \cref{def-complete-source-resolved-learning-ledger,%
 thm-source-resolved-saturated-learning-compilation}.  Thus each statistical
-bound retains \(B,m,\delta\), its source cell, and its complete
-construction cost.  A noisy target-dependent reveal additionally retains
-its source-assigned channel coefficient and noise parameter.  Generic
-population--empirical deviations remain in risk units; they enter a
-target-alignment, recovery, selector, or arrival bound only through a
-represented same-law, same-unit converter.  This convention applies to
-every theorem in this part, including fixed and learned kernels, NTK feature
-learning, effective dimension, PAC--Bayes, dependent samples, channel
-learning, active querying, and the complete learning decomposition.
+bound retains \(B,m,\delta\), its source cell, complete construction cost,
+and, for a noisy target-dependent reveal, its source-assigned channel
+coefficient and noise parameter.  Generic population--empirical deviations
+remain in risk units and enter a target-alignment, recovery, selector, or
+arrival bound only through a represented same-law, same-unit converter.
 
 \section{The Observable Algebra Is a Reproducing-Kernel Hilbert
 Space}\label{the-observable-algebra-is-a-reproducing-kernel-hilbert-space}
@@ -32767,9 +32825,11 @@ dynamical-system analysis: positive generators, reversible conductance,
 authorized directed current, represented quotients and lifts, boundary
 readouts, killed resolvents, temporal source admissibility, and learned
 geometry.  This part assembles those ingredients for controlled dynamics.
-An action rule selects a represented generator; it creates no additional
-structural channel.  Its geometry is evaluated by the same saturated
-\(\Geom/\Caus/\Abs\) ledger used for search and learning.
+Under the global accounting conventions of
+\cref{subsec-global-accounting-conventions}, an action rule selects a
+represented generator while retaining its complete cost and source ancestry.
+Its geometry is evaluated by the same saturated \(\Geom/\Caus/\Abs\) ledger
+used for search and learning.
 
 The direct setting is a finite represented carrier.  A deterministic system
 is a point kernel, a randomized system is a Markov kernel, and a
@@ -49988,9 +50048,10 @@ attention layers and their deployed transition kernels.
 \emph{First pass:} read
 \cref{def-complete-attention-record,thm-attention-gibbs-gradient-flow,thm-attention-structural-source-compilation,thm-attention-target-gain-envelope}.
 
-Attention is used here as a represented mechanism for selecting and
-transporting public values.  It is not adjoined as a new structural channel.
-Every attention coordinate is compiled into the already exhaustive
+By the complete-ledger and source-conservation conventions of
+\cref{subsec-global-accounting-conventions}, attention is a represented
+mechanism for selecting and transporting public values.  Every attention
+coordinate is compiled into the already exhaustive
 \(\Geom,\Caus,\Abs,\Lift,\Bdry,\Res\) ledger and retains the five-family
 constructor provenance of its score and value records.
 The canonical finite-precision realization is
@@ -52103,6 +52164,8 @@ theorem, and the final obstruction criterion.
 }
 \end{center}
 
+The global accounting conventions of
+\cref{subsec-global-accounting-conventions} apply throughout this part.
 \Cref{part:task-spaces,part:dynamics,part:spectral-complexity,part:learning,part:dynamical-systems,part:attention,part:structural-metacomplexity}
 respectively supply task presentations, the budget-admissible channel
 decomposition, the resource-saturated structural profile, structural learning

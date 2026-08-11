@@ -23,7 +23,7 @@ The intended editing standard is the one already used for
 local input and output contract, synchronize all views of the routing graph,
 and make the final contradiction visibly follow from the local closures.
 
-Throughout this blueprint, **local** means attached to the fixed hypothetical
+Throughout this blueprint, **local** means attached to the fixed candidate
 singular point and to the singularity-generated profile currently carried by
 its ancestry ledger.  Coordinate domains such as \(\mathbb R^3\), ancient-time
 intervals, centered hulls, and expanding terminal regions describe the chart
@@ -236,11 +236,16 @@ interface, through the terminal stratification, and finally to the original
 singularity-generated raw Seregin profile and its fixed ledger.
 
 The Type I exclusion is then obtained by inserting the companion
-residual-closure theorem into the setup paper's local assembly.  This is an
-unconditional contrapositive for the fixed hypothetical singular profile and
-its ledger.  Every route consumes properties produced for that profile, and
-residual membership is considered only as the hypothetical alternative to be
-closed.
+residual-closure theorem into the setup paper's local assembly.  The outer
+argument fixes the candidate singular profile and its ledger.  Inside that
+fixed ledger, the residual statement has the explicit pointwise form
+\[
+   V\in\calR_{\rm setup}(\calS)\Longrightarrow\bot
+\]
+for an arbitrary incoming profile \(V\).  Thus residual membership is an
+antecedent, not an existence premise: if the antecedent is false the
+implication is already satisfied, and if it is true the existing routing
+closes the selected row.
 
 ---
 
@@ -252,7 +257,7 @@ checked against the current theorem bodies before manuscript edits are made.
 
 | Capsule | Mathematical role | Principal source labels | Output or closure |
 |---|---|---|---|
-| R0 | Fix the normalized raw Seregin profile produced from the hypothetical singular point; enter the residual branch only after the direct setup classes close | `thm:imported-setup-results`, `hyp:base-seregin-hypotheses`, `hyp:previous-nonresidual` | Fixed setup profile with retained compact velocity concentration, pressure compatibility, normalization data, and ancestry |
+| R0 | Fix the normalized raw Seregin profile produced from the candidate singular point; enter the residual branch only after the direct setup classes close | `thm:imported-setup-results`, `hyp:base-seregin-hypotheses`, `hyp:previous-nonresidual` | Fixed setup profile with retained compact velocity concentration, pressure compatibility, normalization data, and ancestry |
 | R0b | Realize descendants and transfer support | `def:sequence-realized-residual-object`, `def:retained-vs-support-profile-descendant`, `thm:ancestor-realization-inheritance`, `thm:descendant-heredity` | Proof-relevant descendants remain connected to the original branch |
 | R1 | Close the axisymmetric bounded-circulation state selected for the current profile | `thm:R1-exclusion` | The centered circulation equation and axis absorption place that profile in the previously closed no-swirl state |
 | R2 | Reduce the rotational state selected for the current profile through compact annular Coriolis-flux windows | `prop:R2-reduction-to-terminal`, `cor:R2-closure` | Previously closed local state or realized terminal concentration profile; deferred closure after terminal assembly |
@@ -267,7 +272,7 @@ checked against the current theorem bodies before manuscript edits are made.
 | R6c | Diffuse and mixed compact--diffuse alternatives | `thm:diffuse-defect-compactness`, `thm:diffuse-defect-trichotomy`, `thm:no-mixed-compact-diffuse` | Active, affine, or critical-tail route; mixed remainder excluded |
 | R6d | Separated profiles and descendant chains | `thm:active-path-space-recurrence`, `thm:compact-active-descendant`, `thm:no-finite-separated-profile-family` | Infinite chains and finite separated families excluded |
 | R7 | Terminal indecomposable endpoint for the realized profile | `lem:atomic-sequence-L3`, `thm:mildness-inheritance-main`, `thm:AB-main`, `thm:R4-final-closure` | Terminally produced sequence-\(L^3\), finite-shift mild pullback, and contradiction with that profile's retained local obstruction |
-| Assembly | Fix the setup ledger and a hypothetical incoming \(V\) in its raw residual alternative; close the affine or retained route selected for this \(V\) | `prop:setup-residual-handoff-complete`, `thm:terminal-stratification`, `thm:typeI-residual-closure`, `cor:setup-residual-hypothesis-proof` | The selected \(V\) is impossible; the same pointwise contrapositive establishes raw-residual closure for the fixed ledger |
+| Assembly | Fix the setup ledger and an arbitrary incoming \(V\); under the antecedent \(V\in\calR_{\rm setup}(\calS)\), close the affine or retained route selected for this same \(V\) | `prop:setup-residual-handoff-complete`, `thm:typeI-residual-closure`, `cor:setup-residual-hypothesis-proof` | The implication \(V\in\calR_{\rm setup}(\calS)\Rightarrow\bot\) establishes raw-residual closure for the fixed ledger; no residual element is postulated |
 
 The capsule identifiers are audit names.  They need not replace the paper's
 class notation or theorem names.
@@ -309,10 +314,11 @@ At the fixed local singular point, the setup paper produces a normalized
 centered Seregin profile, local suitability, an admissible pressure atlas,
 positive compact local velocity concentration, the mild identity on the
 profile's mild stratum, and the closure of the earlier states selected for that
-profile.  Fixing a hypothetical incoming residual profile with this ledger,
-Paper II closes the affine routing row or the retained residual row selected by
-the local routing.  This pointwise contradiction proves the raw-residual
-closure for the same fixed ledger.
+profile.  For an arbitrary incoming profile \(V\) with this ledger, Paper II
+assumes only the antecedent \(V\in\calR_{\rm setup}(\calS)\) and closes the
+affine routing row or retained residual row selected for this same \(V\).  The
+resulting implication proves the raw-residual closure for the fixed ledger
+without postulating a residual element.
 
 ### Expository edit
 
@@ -941,40 +947,180 @@ current profile selected by the terminal extraction.
 
 ## I8. Synchronize final assembly, auxiliary views, and static checks
 
+**Implementation status:** in progress.  This item is a
+source-synchronization pass.  It adds a final selected-owner directory, corrects
+three overbroad sentences, synchronizes the Type I architecture capsules, and
+adds a structural checker.  It changes no analytic argument, profile class,
+hypothesis, or proof order.  The displayed residual conclusions are restated
+in pointwise implication form only to expose their existing contrapositive
+logic.
+
 ### Source anchors
 
 - `tab:typeI-dependency-order`
 - `tab:terminal-dependency-table`
+- `tab:critical-tail-local-dependency-directory`
+- `tab:atomic-endpoint-input-production`
+- `tab:terminal-indecomposable-production`
+- `def:refined-decomposition`
+- `thm:R1-exclusion`
+- `prop:R2-reduction-to-terminal`
+- `cor:R2-closure`
+- `prop:R3-stationary-hull-reduction`
+- `prop:R3S-R3-terminal-reduction`
+- `cor:R3-closure`
+- `thm:affine-normalization-dichotomy`
+- `thm:oscillatory-entry-normalization`
+- `thm:no-hidden-scale-variance-realized-defects`
+- `lem:critical-tail-defect-coordinate-closure`
+- `lem:log-window-support-transfer`
+- `lem:renormalized-log-window-heredity`
+- `cor:coherent-critical-tail-extraction`
+- `thm:bounded-origin-realization-coherent-tails`
+- `thm:realized-critical-tail-rigidity`
+- `cor:coherent-critical-tail-branch-closure`
+- `cor:young-branch-exclusion`
+- `cor:log-diffuse-branch-exclusion`
+- `cor:critical-tail-exclusion-complete`
 - `thm:terminal-stratification`
+- `thm:generic-terminal-exhaustion`
 - `thm:R4-final-closure`
 - `sec:final-assembly`
+- `thm:refined-residual-closure`
+- `prop:setup-residual-handoff-complete`
 - `thm:typeI-residual-closure`
 - `cor:setup-residual-hypothesis-proof`
 - `cor:two-paper-local-typeI-exclusion`
 - Type I capsules in `overall_proof_architecture.tex`
+- `check_type_II_regularity.py` as a structural-checking model only
 
 ### Existing route
 
-The terminal assembly closes every terminal output.  The deferred R2 and R3
-corollaries then close their classes.  The generic terminal theorem closes
-\(\Cgen\).  For the fixed incoming profile and its ledger, the final residual
-theorem combines the ordered local class closures and proves the setup paper's
-literal raw-residual theorem.
+Fix the incoming profile and its setup ancestry ledger.  If that profile were
+in the literal setup raw-residual class, the exact handoff theorem would route
+its canonical representative either to the affine/parasitic quotient row or to
+the refined residual decomposition.  Each refined row is then closed by its
+existing local reduction or closure theorem.  The R2 and R3 routes consume
+`thm:terminal-stratification` only after producing a selected terminal sequence
+satisfying its hypotheses.  The generic route instead uses
+`thm:generic-terminal-exhaustion` and the named branch closures in the proof of
+`thm:R4-final-closure`.  After the refined alternatives have been excluded,
+`prop:setup-residual-handoff-complete` is applied contrapositively to the same
+incoming profile and ledger.  This proves the literal setup raw-residual
+theorem.  The setup paper's final assembly is the last consumer.
 
 ### Expository edit
 
-Make the final assembly table-driven.  Each row should state:
+#### Final selected-owner directory
 
-- class or terminal state;
-- entry theorem;
-- retained obstruction;
-- closing theorem or valid reduction;
+Add one table in `sec:final-assembly` with the following columns:
+
+- current selected owner or state;
+- entry or production theorem;
+- obstruction actually owned by that selected datum;
+- existing closing theorem or valid reduction;
 - dependency status;
-- final consumer.
+- later consumer only.
 
-Keep the prose proof as the mathematical assembly, but ensure the figure,
-classification table, dependency tables, reader guide, final displayed chain,
-and `overall_proof_architecture.tex` use the same labels and route descriptions.
+The table must use the following routes.
+
+| Current selected owner or state | Entry or production theorem | Owned obstruction | Existing closure or reduction | Dependency status and later consumer |
+|---|---|---|---|---|
+| arbitrary incoming candidate \(V\) carrying the fixed setup ledger, under the conditional antecedent \(V\in\calR_{\rm setup}(\calS)\) | `prop:setup-residual-handoff-complete` | retained local velocity concentration supplied by the fixed extraction | affine routing or entry of its canonical representative into the refined decomposition | the handoff is used contrapositively only after the refined rows are closed |
+| current profile selected into \(\Cax\) | `def:refined-decomposition`, instantiated to the current canonical representative | the retained obstruction already recorded for this profile | `thm:R1-exclusion` | proved independently; consumed by refined closure |
+| current profile selected into \(\Crot\) | `prop:R2-reduction-to-terminal` | retained velocity only on the selected realized terminal sequence, through its cited ancestry and heredity interfaces | `thm:terminal-stratification`, then `cor:R2-closure` | sequence-\(L^3\) is produced inside the terminal route, never assumed at R2 entry |
+| current profile selected into \(\Cstat\) | `prop:R3-stationary-hull-reduction` and `prop:R3S-R3-terminal-reduction` | retained velocity only on the selected realized terminal sequence | `thm:terminal-stratification`, then `cor:R3-closure` | the stationary sequence-\(L^3\) subcase is a terminal output, not an entry hypothesis |
+| current affine/parasitic representative | `thm:affine-normalization-dichotomy` | its selected non-affine oscillation, if retained | `thm:oscillatory-entry-normalization` | quotient routing; no retained normalized representative remains in this row |
+| current realized coherent critical tail | `cor:coherent-critical-tail-extraction` and `thm:bounded-origin-realization-coherent-tails` | its selected annular non-affine activity and realized bounded-origin interface | `cor:coherent-critical-tail-branch-closure` | proved before hidden-scale and log-diffuse closure |
+| current realized Young or pressure/viscous defect alternative | `thm:no-hidden-scale-variance-realized-defects` for the selected tight annular blow-down and `lem:critical-tail-defect-coordinate-closure` for its chartwise defect coordinates | the Young variance or named defect coordinate produced for that selected datum | `cor:young-branch-exclusion` | consumed by complete critical-tail closure |
+| current realized log-diffuse defect and selected normalized log windows | `lem:log-window-support-transfer` and `lem:renormalized-log-window-heredity` | positive normalized window mass and a support point only when the cited theorem produces them | `cor:log-diffuse-branch-exclusion` | uses hidden-scale exclusion and the already closed coherent row |
+| current realized critical-tail profile | `thm:realized-critical-tail-rigidity`, instantiated to that profile | only the selected tail obstruction recorded by its producer | `cor:critical-tail-exclusion-complete` | consumed by terminal and generic routing |
+| current generic terminal profile and its selected terminal extraction | `thm:generic-terminal-exhaustion` | retained velocity transported along the named realization chain; sequence-\(L^3\) and mildness only at the selected indecomposable endpoint | the named terminal branch closures in the proof of `thm:R4-final-closure` | consumed by refined closure; `thm:terminal-stratification` is not added as an entry premise of this row |
+| refined decomposition of the current canonical representative | the ordered refined routing theorem and all preceding row closures | no new obstruction is assigned at assembly | `thm:refined-residual-closure` | consumed by the exact raw-residual handoff |
+| the same arbitrary incoming candidate \(V\), under the conditional antecedent \(V\in\calR_{\rm setup}(\calS)\) | `prop:setup-residual-handoff-complete`, used contrapositively after affine and refined closure | the original fixed-ledger retained obstruction | `thm:typeI-residual-closure` proves \(V\in\calR_{\rm setup}(\calS)\Rightarrow\bot\) | produces `cor:setup-residual-hypothesis-proof` |
+| proved setup residual statement | `cor:setup-residual-hypothesis-proof` | no new analytic input | literal setup raw-residual closure | `cor:two-paper-local-typeI-exclusion` and the setup final assembly only |
+
+The obstruction column is not a uniform inheritance column.  Root velocity
+concentration belongs to the fixed extraction.  A descendant receives retained
+velocity only through its cited realization and heredity interfaces.  A defect
+window receives normalized mass and a support point only through its named
+normalization and support-transfer theorems.  A terminal profile receives
+sequence-\(L^3\) and finite-shift mildness only through the I7 producers.
+Pressure remains attached to the local chart used in the corresponding row.
+
+#### Required prose corrections
+
+Make only the following ownership corrections in the final-assembly prose.
+
+1. Replace
+
+   > “The positive local velocity concentration inherited by every normalized
+   > Seregin limit ...”
+
+   by
+
+   > “The normalized profile selected from the fixed extraction carries
+   > retained local velocity concentration.  A descendant row uses this
+   > obstruction only after the cited realization and heredity interfaces
+   > transport it to that descendant.”
+
+2. Replace the opening
+
+   > “Assume, for contradiction, that a retained admissible residual profile
+   > exists.”
+
+   by
+
+   > “Fix an arbitrary centered profile \(V\) carrying the fixed setup ancestry
+   > ledger.  To prove
+   > \(\calR^\#(\calS;I_{\rm setup},J_{\rm res})=\varnothing\), it suffices to
+   > prove
+   > \(V\in\calR^\#(\calS;I_{\rm setup},J_{\rm res})\Rightarrow\bot\).
+   > Assume the antecedent.”
+
+   Continue with the existing refined-routing proof.  After that row is proved
+   empty, `thm:typeI-residual-closure` separately fixes an arbitrary incoming
+   profile \(V\) with the same ledger and proves
+   \(V\in\calR_{\rm setup}(\calS)\Rightarrow\bot\) by applying
+   `prop:setup-residual-handoff-complete` contrapositively.  This keeps the
+   refined closure and raw handoff as their existing two proof stages.  In each
+   stage membership is only the antecedent being disproved; no existence
+   premise is introduced.
+
+3. Wherever the final proof says that a previously classified class is empty,
+   use the conditional formulation:
+
+   > “If the current profile is selected into that previously classified lower
+   > state, the corresponding closure theorem excludes that profile.”
+
+These replacements alter exposition only.  The displayed class list, theorem
+statements, proof steps, and closure dependencies remain unchanged.
+
+#### Architecture synchronization
+
+Synchronize only the Type I rows and nodes in
+`overall_proof_architecture.tex`.  In particular:
+
+- replace “every residual descendant preserves ancestry and retained mass” by
+  “each descendant used in the proof is first realized through the named
+  ancestry interface; retained velocity is recorded only when the cited
+  heredity theorem supplies it”;
+- give the R2 node the reduction, selected terminal consumer, and
+  `cor:R2-closure` labels;
+- give the R3 node its two reduction labels, selected terminal consumer, and
+  `cor:R3-closure` label;
+- give the coherent, Young, and log-diffuse nodes their actual closure labels;
+- give the endpoint node `lem:atomic-sequence-L3`,
+  `thm:mildness-inheritance-main`, and `lem:no-atomic-active`, with
+  `thm:AB-main` only as the endpoint input consumed there;
+- place `thm:typeI-residual-closure`,
+  `cor:setup-residual-hypothesis-proof`, and
+  `cor:two-paper-local-typeI-exclusion` in that downstream order.
+
+The architecture file is a label-and-route view.  It introduces no additional
+profile, closure theorem, or hypothesis.
+
+#### Structural checker
 
 Create a Type I static audit script analogous in purpose to
 `check_type_II_regularity.py`.  The script should check only stable structural
@@ -993,25 +1139,54 @@ facts, including:
   documents;
 - every final class in the refined decomposition appears in the final assembly.
 
-The checker must avoid encoding incidental line numbers or prose punctuation.
+The checker may compare source offsets to verify declaration order; it must not
+encode incidental line numbers or prose punctuation.  It must not infer
+ancestry, retained mass, suitability, mildness, pressure compatibility, defect
+support, or theorem hypotheses from class membership.  Those facts remain
+certified only by the named mathematical producers.  The checker creates no
+premise used by the manuscript and is never cited as a proof step.
 
 ### Mathematics preserved
 
 - The final theorem remains a consequence of the existing local closures.
-- The setup paper's local assembly remains the final external consumer, with
+- The setup paper's local assembly remains the final downstream consumer, with
   the residual closure supplied as a proved companion theorem rather than an
   added assumption.
-- Supporting appendices remain in place unless a line-by-line comparison proves
-  that a block is redundant and all consumers are preserved.
+- The fixed raw hull, fixed incoming profile, and single ancestry ledger remain
+  unchanged.
+- Residual emptiness is proved by fixing an arbitrary profile with the existing
+  ledger and proving that membership in the relevant residual row implies a
+  contradiction.  The exact handoff is then applied contrapositively.
+- Mildness, retained descendant concentration, pressure representatives,
+  normalized support points, and endpoint sequence-\(L^3\) remain attached to
+  their named selected owners and producers.
+- R2 and R3 consume terminal outputs; they acquire no new entry assumptions.
+- Every proof block, appendix, theorem statement, and supporting lemma remains
+  in place.
 
 ### Acceptance checks
 
-- No reachable terminal state lacks a named closure or reduction.
-- The two dependency tables and the final proof have the same topological
-  order.
+- Every final-assembly row begins with the current selected profile, sequence,
+  defect window, family, or terminal extraction which owns the recorded facts.
+- No final-assembly row assigns retained velocity to a descendant without the
+  named realization and heredity interfaces.
+- No final-assembly row transports a pressure representative beyond its local
+  chart.
+- Mildness and sequence-\(L^3\) occur only in the selected terminal endpoint
+  row after their I7 producers.
+- The R2 and R3 rows contain no sequence-\(L^3\) entry hypothesis.
+- The R2/R3 terminal consumer and the generic closure are sibling producers;
+  `thm:refined-residual-closure`, `thm:typeI-residual-closure`,
+  `cor:setup-residual-hypothesis-proof`, and the setup final assembly then occur
+  in downstream order.
+- The dependency directories and the final proof have the same theorem order.
 - The capsule register in `overall_proof_architecture.tex` resolves to labels
   present in the manuscript.
-- Static checks and the TeX build pass after the manuscript edits.
+- The structural checker verifies source consistency only and is not a premise
+  of any theorem.
+- The static checker and both TeX builds pass after the synchronization edits.
+- The implementation adds no profile class, state space, hypothesis, theorem,
+  proof step, or appendix deletion.
 
 ---
 
@@ -1188,7 +1363,7 @@ A reader should be able to answer yes to each question.
 After these edits, the paper should read as the following cohesive argument:
 
 \[
-\text{hypothetical local pointwise Type I singularity}
+\text{candidate local pointwise Type I singularity}
 \longrightarrow
 \text{admissible Seregin extraction}
 \longrightarrow
@@ -1204,9 +1379,12 @@ V_0\in
 \calR_{\rm setup}(\calS).
 \]
 
-Every direct setup class closes locally.  In the remaining alternative, fix a
-hypothetical
-\(V\in\calR_{\rm setup}(\calS)\) with this same ledger.  The exact handoff gives
+Every direct setup class closes locally.  For an arbitrary incoming \(V\) with
+this same ledger, prove
+\[
+   V\in\calR_{\rm setup}(\calS)\Longrightarrow\bot .
+\]
+Assume only the antecedent.  The exact handoff then gives
 
 \[
 V
@@ -1260,7 +1438,7 @@ Together with the closed affine route and the exhaustive handoff, this gives
 and therefore
 
 \[
-\text{the hypothetical profile }V_0\text{ cannot exist}
+\text{the candidate singular profile }V_0\text{ cannot exist}
 \longrightarrow
 \text{the setup paper's unconditional local Type I exclusion}.
 \]

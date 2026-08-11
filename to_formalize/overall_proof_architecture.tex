@@ -465,21 +465,21 @@ Imported residual object mismatch & The residual paper must use the same Seregin
 Non-realized descendant & A recentered limit, hull element, tail state, or terminal profile must descend from the original branch. & Routed through ancestor-realization and heredity before any closure theorem is applied. & \path|thm:ancestor-realization-inheritance| and \path|thm:descendant-heredity| make descendant closures logically effective. \\
 Axisymmetric bounded-circulation residual & The residual profile is axisymmetric with bounded centered circulation after lower direct classes are removed. & Routed through centered circulation and axis-absorption; if it falls into no-swirl or lower structured behavior, it is sent back to direct Type I closure. & \path|thm:R1-exclusion| closes the exit. \\
 Rotational relative equilibrium & The residual profile is stationary modulo rotation and carries local Coriolis transport structure. & Routed through local Coriolis flux and terminal concentration; lower compact profiles are sent to already closed strata. & \path|prop:R2-reduction-to-terminal|, \path|thm:terminal-stratification|, and \path|cor:R2-closure| close the exit. \\
-Degenerate stationary hull & A time-translation hull contains a degenerate stationary-family carrier with retained concentration. & Routed through stationary-family realization, terminal stratification, and no-active-stationary-carrier closure. & \path|thm:R3-no-attainable-degenerate-family|, \path|thm:R3S-terminal-theorem|, and \path|thm:R3S-no-active-stationary-carrier|. \\
+Degenerate stationary hull & A time-translation hull contains a degenerate stationary-family carrier with retained concentration. & Routed by the two stationary-hull reductions to a selected terminal profile; only then is terminal stratification consumed. & \path|prop:R3-stationary-hull-reduction|, \path|prop:R3S-R3-terminal-reduction|, \path|thm:terminal-stratification|, and \path|cor:R3-closure| close the selected route. \\
 Affine or parasitic quotient & The apparent residual behavior is an affine/parasitic normalization mode rather than genuine nonlinear retained activity. & Routed through affine normalization; oscillatory representatives are removed and non-oscillatory representatives drop to lower strata. & \path|thm:affine-normalization-dichotomy| and \path|thm:oscillatory-entry-normalization|. \\
 Closed non-affine activity failure & The non-affine active set must be closed under the local observer calculus. & Routed through covariant observers and hull compactness before terminal extraction. & \path|thm:covariant-observer-calculus|, \path|thm:closed-nonaffine-activity|, and \path|thm:escaping-covariant-hull-compactness|. \\
 Recurrent tail-core residual & Tail activity recurs without entering a compact terminal profile. & Routed to recurrent tail-core rigidity or to terminal concentration extraction. & \path|thm:recurrent-tail-core-rigidity| and \path|thm:terminal-exhaustion-main|. \\
-Log-diffuse critical tail & Critical activity escapes through logarithmic annuli. & Routed to hidden-scale compactification and then to critical-tail compactification. & \path|thm:log-diffuse-from-hidden-scale| and \path|thm:critical-tail-compactification-extraction|. \\
-Young critical-tail defect & Tail mass survives only as a variance or Young-measure defect. & Routed to first bad mesoscopic scale; realized hidden variance is excluded before compactification. & \path|thm:first-bad-mesoscopic-reduction| and \path|thm:no-hidden-scale-variance-realized-defects|. \\
-Coherent homogeneous critical tail & Tail compactification produces a coherent homogeneous critical state. & Routed through bounded-origin realization; realized homogeneous tails become incompatible with bounded residual origin behavior. & \path|thm:coherent-critical-tail-classification|, \path|thm:bounded-origin-realization-coherent-tails|, and \path|thm:realized-critical-tail-rigidity|. \\
-Coherent log-periodic critical tail & Tail compactification produces a coherent log-periodic state. & Routed to the same coherent-tail classification and realization test. & \path|thm:coherent-critical-tail-classification| and \path|thm:realized-critical-tail-rigidity|. \\
-Coherent aperiodic critical tail & Tail compactification produces a compact log-translation hull with no period. & Routed to the aperiodic coherent-tail rigidity branch. & \path|thm:coherent-critical-tail-classification| and \path|thm:realized-critical-tail-rigidity|. \\
+Log-diffuse critical tail & Critical activity escapes through logarithmic annuli. & Routed to hidden-scale compactification and then to critical-tail compactification for the selected defect windows. & \path|thm:log-diffuse-from-hidden-scale|, \path|thm:critical-tail-compactification-extraction|, and \path|cor:log-diffuse-branch-exclusion| close this row. \\
+Young critical-tail defect & Tail mass survives only as a variance or Young-measure defect. & Routed to the first bad mesoscopic scale; realized hidden variance is excluded before compactification. & \path|thm:first-bad-mesoscopic-reduction|, \path|thm:no-hidden-scale-variance-realized-defects|, and \path|cor:young-branch-exclusion| close this row. \\
+Coherent homogeneous critical tail & Tail compactification produces a coherent homogeneous critical state. & Routed through bounded-origin realization; realized homogeneous tails become incompatible with bounded residual origin behavior. & \path|thm:coherent-critical-tail-classification|, \path|thm:bounded-origin-realization-coherent-tails|, \path|thm:realized-critical-tail-rigidity|, and \path|cor:coherent-critical-tail-branch-closure|. \\
+Coherent log-periodic critical tail & Tail compactification produces a coherent log-periodic state. & Routed to the same coherent-tail classification and realization test. & \path|thm:coherent-critical-tail-classification|, \path|thm:realized-critical-tail-rigidity|, and \path|cor:coherent-critical-tail-branch-closure|. \\
+Coherent aperiodic critical tail & Tail compactification produces a compact log-translation hull with no period. & Routed to the aperiodic coherent-tail rigidity branch. & \path|thm:coherent-critical-tail-classification|, \path|thm:realized-critical-tail-rigidity|, and \path|cor:coherent-critical-tail-branch-closure|. \\
 Terminal nonactive or nonconcentrating state & Terminal extraction produces no active compact concentration. & Routed to terminal nonactive discharge; retained mass cannot disappear. & \path|thm:terminal-inactive-exclusion|. \\
 Diffuse terminal defect & Terminal mass is diffuse rather than carried by a compact active profile. & Routed through diffuse compactness, recurrent diffuse measures, and the diffuse trichotomy; active outputs re-enter active terminal routing, affine outputs re-enter affine closure, tail outputs re-enter critical-tail closure. & \path|thm:diffuse-defect-compactness|, \path|thm:recurrent-diffuse-defect-measure|, and \path|thm:diffuse-defect-trichotomy|. \\
 Mixed compact-diffuse terminal mass & Compact active concentration and diffuse defect coexist without a clean decomposition. & Routed to the mixed compact-diffuse exclusion. & \path|thm:no-mixed-compact-diffuse|. \\
 Finite separated active profile family & Terminal mass splits into finitely many separated compact active profiles. & Routed through separated-profile analysis and indecomposability. & \path|thm:no-finite-separated-profile-family|. \\
 Infinite active descendant chain or recurrence loop & Retained activity keeps regenerating through descendants without terminal closure. & Routed to active path-space recurrence and compact active descendant extraction. & \path|thm:active-path-space-recurrence| and \path|thm:compact-active-descendant|. \\
-Generic terminal residual & No lower residual, tail, affine, diffuse, separated, or recurrent exit remains. & Routed through parasitic-free mildness, sequence-\(L^3\) completeness, and endpoint Liouville. & \path|thm:mildness-inheritance-main|, \path|thm:AB-main|, \path|thm:R4-final-closure|, and \path|thm:typeI-residual-closure|. \\
+Generic terminal residual & No lower residual, tail, affine, diffuse, separated, or recurrent exit remains. & The selected endpoint first acquires sequence-\(L^3\), then finite-shift mildness; endpoint Liouville is consumed only there. & \path|lem:atomic-sequence-L3|, \path|thm:mildness-inheritance-main|, \path|thm:AB-main|, and \path|lem:no-atomic-active| close the endpoint; \path|thm:R4-final-closure|, \path|thm:typeI-residual-closure|, \path|cor:setup-residual-hypothesis-proof|, and \path|cor:two-paper-local-typeI-exclusion| consume it in that order. \\
 \bottomrule
 \end{longtable}
 
@@ -550,7 +550,7 @@ The recommended reading order is:
 \endhead
 1 & \path|proof_setup.tex|, Parts I--II. & A singular point has positive critical concentration; the Type I/Type II split is exhaustive; a local pointwise Type I branch gives a nonzero normalized Seregin profile. \\
 2 & \path|proof_setup.tex|, Parts III--V. & The non-residual Type I classes are correctly closed by perturbative, stationary, tight, and structured Liouville mechanisms. \\
-3 & \path|type_I_residual_closure.tex|. & The residual class imported from the setup paper is the same object being refined; every residual descendant preserves ancestry and retained mass; the ordered residual alternatives are exhaustive and closed. \\
+3 & \path|type_I_residual_closure.tex|. & The residual class imported from the setup paper is the same object being refined; each descendant used in the proof is first realized through the named ancestry interface, and retained velocity is recorded only when the cited heredity theorem supplies it; the ordered residual alternatives are exhaustive and closed. \\
 4 & \path|type_II_regularity.tex|, representation and local alternatives. & Every Type II branch has the analytic data needed for repaired gauges, pressure reconstruction, local energy, compactness, rough-core routing, and multibubble/cascade routing. \\
 5 & \path|type_II_regularity.tex|, cost/carrier, terminal profile, and remaining-exit sections. & Scale-rigidity, retained compact cost coverage, windowwise carrier routing, cost-divergence exclusion, local residual exhaustion, critical-tail routing, bounded-window reselection, noncanonical-cost routing, active-core-loss closure, and terminal critical-profile decomposition are proved under the hypotheses under which the assembly invokes them. \\
 6 & Final assembly statements in the three proof-bearing files. & No branch is closed using a theorem before its hypotheses have been produced by an earlier routing step. \\
@@ -689,25 +689,25 @@ The diagrams below give the state-space stratification as a theorem-labelled dec
 \node[decision, below=of R] (R1) {Axisymmetric bounded circulation?\\ Yes: close R1\\ No: continue};
 \node[archnode, left=of R1, xshift=-17mm] (R1x) {\path|thm:R1-exclusion|};
 \node[decision, below=of R1] (R2) {Rotational relative equilibrium?\\ Yes: terminal routing\\ No: continue};
-\node[archnode, left=of R2, xshift=-17mm] (R2a) {Local Coriolis/terminal routing: \path|thm:terminal-stratification|};
-\node[archnode, below=of R2a] (R2x) {R2 closed through terminal package};
+\node[archnode, left=of R2, xshift=-17mm] (R2a) {Selected Coriolis/terminal route: \path|prop:R2-reduction-to-terminal|, then \path|thm:terminal-stratification|};
+\node[archnode, below=of R2a] (R2x) {Selected R2 route closed by \path|cor:R2-closure|};
 \node[decision, below=of R2] (R3) {Degenerate stationary hull?\\ Yes: close R3/R3S\\ No: continue};
-\node[archnode, left=of R3, xshift=-17mm] (R3a) {\path|thm:R3-no-attainable-degenerate-family|};
-\node[archnode, below=of R3a] (R3b) {\path|thm:R3S-terminal-theorem|, \path|thm:R3S-no-active-stationary-carrier|};
+\node[archnode, left=of R3, xshift=-17mm] (R3a) {Selected stationary route: \path|prop:R3-stationary-hull-reduction|, \path|prop:R3S-R3-terminal-reduction|};
+\node[archnode, below=of R3a] (R3b) {\path|thm:terminal-stratification|, then \path|cor:R3-closure|};
 \node[decision, below=of R3] (R4) {Affine or parasitic quotient?\\ Yes: normalize/close\\ No: continue};
 \node[archnode, left=of R4, xshift=-17mm] (R4x) {\path|thm:oscillatory-entry-normalization|};
 \node[decision, below=of R4] (R5) {Critical-tail defect?\\ Options: log-diffuse, Young, neither};
-\node[archnode, left=of R5, xshift=-17mm] (R5a) {Log diffuse: \path|thm:log-diffuse-from-hidden-scale|};
-\node[archnode, right=of R5, xshift=17mm] (R5b) {Young defect: \path|thm:first-bad-mesoscopic-reduction|, \path|thm:no-hidden-scale-variance-realized-defects|};
+\node[archnode, left=of R5, xshift=-17mm] (R5a) {Log diffuse: \path|thm:log-diffuse-from-hidden-scale|, \path|cor:log-diffuse-branch-exclusion|};
+\node[archnode, right=of R5, xshift=17mm] (R5b) {Young defect: \path|thm:first-bad-mesoscopic-reduction|, \path|thm:no-hidden-scale-variance-realized-defects|, \path|cor:young-branch-exclusion|};
 \node[archnode, below=of R5] (R5c) {Critical-tail compactification: \path|thm:critical-tail-compactification-extraction|};
-\node[archnode, below=of R5c] (R5x) {\path|thm:coherent-critical-tail-classification|, \path|thm:realized-critical-tail-rigidity|};
+\node[archnode, below=of R5c] (R5x) {\path|thm:coherent-critical-tail-classification|, \path|thm:realized-critical-tail-rigidity|, \path|cor:coherent-critical-tail-branch-closure|};
 \node[archnode, below=of R5x] (R6) {Generic terminal residual};
 \node[archnode, below=of R6] (R6a) {Terminal concentration: \path|thm:terminal-exhaustion-main|};
 \node[archnode, below=of R6a] (R6b) {No nonactive/diffuse/mixed alternatives: \path|thm:terminal-inactive-exclusion|, \path|thm:no-mixed-compact-diffuse|};
 \node[archnode, below=of R6b] (R6c) {No separated or recurrent active descendants: \path|thm:active-path-space-recurrence|, \path|thm:no-finite-separated-profile-family|};
-\node[archnode, below=of R6c] (R6d) {Endpoint $L^3$ closure: \path|thm:AB-main|};
+\node[archnode, below=of R6c] (R6d) {Selected endpoint: \path|lem:atomic-sequence-L3|, \path|thm:mildness-inheritance-main|; consume \path|thm:AB-main|, conclude \path|lem:no-atomic-active|};
 \node[archnode, below=of R6d] (DONE) {Residual class empty};
-\node[archnode, below=of DONE] (FINAL) {\path|thm:R4-final-closure|, \path|thm:typeI-residual-closure|, \path|cor:setup-residual-hypothesis-proof|};
+\node[archnode, below=of DONE] (FINAL) {\path|thm:R4-final-closure|, \path|thm:typeI-residual-closure|, \path|cor:setup-residual-hypothesis-proof|, then \path|cor:two-paper-local-typeI-exclusion|};
 \draw[arr] (R)--(R1);
 \draw[arr] (R1)--node[right]{No}(R2);
 \draw[arr] (R2)--node[right]{No}(R3);
@@ -737,22 +737,22 @@ The expanded residual branch matches the internal organization of \path|type_I_r
 \node[archnode, below=of A] (B) {Imported setup package: \path|thm:imported-setup-results|, \path|hyp:base-seregin-hypotheses|};
 \node[archnode, below=of B] (C) {Ancestor-realized limiting operations: \path|thm:ancestor-realization-inheritance|};
 \node[decision, below=of C] (D) {Ordered lower residual stratum fires first?};
-\node[archnode, left=of D, xshift=-35mm] (LOW) {Lower residual closures: R1 axisymmetric \(\to\) \path|thm:R1-exclusion|; R2 rotational \(\to\) \path|prop:R2-reduction-to-terminal|, \path|cor:R2-closure|; R3 stationary hull \(\to\) \path|thm:R3-no-attainable-degenerate-family|, \path|thm:R3S-terminal-theorem|, \path|cor:R3-closure|; affine/parasitic quotient \(\to\) \path|thm:affine-normalization-dichotomy|, \path|thm:oscillatory-entry-normalization|.};
+\node[archnode, left=of D, xshift=-35mm] (LOW) {Lower residual closures: R1 axisymmetric \(\to\) \path|thm:R1-exclusion|; R2 rotational \(\to\) \path|prop:R2-reduction-to-terminal|, \path|thm:terminal-stratification|, \path|cor:R2-closure|; R3 stationary hull \(\to\) \path|prop:R3-stationary-hull-reduction|, \path|prop:R3S-R3-terminal-reduction|, \path|thm:terminal-stratification|, \path|cor:R3-closure|; affine/parasitic quotient \(\to\) \path|thm:affine-normalization-dichotomy|, \path|thm:oscillatory-entry-normalization|.};
 \node[decision, below=of D] (TAIL) {Tail or diffuse defect?};
-\node[archnode, left=of TAIL, xshift=-35mm] (L1) {Log-diffuse escape: \path|thm:log-diffuse-from-hidden-scale|};
-\node[archnode, right=of TAIL, xshift=35mm] (Y1) {Young variance defect: \path|thm:first-bad-mesoscopic-reduction|, \path|thm:no-hidden-scale-variance-realized-defects|};
+\node[archnode, left=of TAIL, xshift=-35mm] (L1) {Log-diffuse escape: \path|thm:log-diffuse-from-hidden-scale|, \path|cor:log-diffuse-branch-exclusion|};
+\node[archnode, right=of TAIL, xshift=35mm] (Y1) {Young variance defect: \path|thm:first-bad-mesoscopic-reduction|, \path|thm:no-hidden-scale-variance-realized-defects|, \path|cor:young-branch-exclusion|};
 \node[archnode, below=of TAIL] (CT) {Critical-tail compactification: \path|thm:critical-tail-compactification-extraction|};
 \node[decision, below=of CT] (CT2) {Coherent critical-tail state?};
-\node[archnode, left=of CT2, xshift=-35mm] (CT3) {Classify coherent tail and close realized tail: \path|thm:coherent-critical-tail-classification|, \path|thm:bounded-origin-realization-coherent-tails|, \path|thm:realized-critical-tail-rigidity|};
+\node[archnode, left=of CT2, xshift=-35mm] (CT3) {Classify coherent tail and close realized tail: \path|thm:coherent-critical-tail-classification|, \path|thm:bounded-origin-realization-coherent-tails|, \path|thm:realized-critical-tail-rigidity|, \path|cor:coherent-critical-tail-branch-closure|};
 \node[archnode, below=of CT2] (GEN) {Generic terminal residual};
 \node[archnode, below=of GEN] (G0) {Observer and non-affine activity package: \path|thm:covariant-observer-calculus|, \path|thm:closed-nonaffine-activity|, \path|thm:escaping-covariant-hull-compactness|, \path|thm:recurrent-tail-core-rigidity|};
 \node[archnode, below=of G0] (TC) {Terminal concentration extraction: \path|thm:maximal-active-family|, \path|thm:terminal-exhaustion-main|};
 \node[decision, below=of TC] (TC1) {Terminal alternative};
 \node[archnode, left=of TC1, xshift=-35mm] (NON) {Nonactive/diffuse/mixed alternatives: \path|thm:terminal-inactive-exclusion|, \path|thm:diffuse-defect-compactness|, \path|thm:recurrent-diffuse-defect-measure|, \path|thm:diffuse-defect-trichotomy|, \path|thm:no-mixed-compact-diffuse|.};
 \node[archnode, right=of TC1, xshift=35mm] (ACT) {Active terminal profile: exclude separated family by \path|thm:no-finite-separated-profile-family|; use descendant heredity and recurrence via \path|thm:descendant-heredity|, \path|thm:active-path-space-recurrence|, \path|thm:compact-active-descendant|.};
-\node[archnode, below=of TC1] (AB) {Single terminal profile: \path|thm:mildness-inheritance-main| and endpoint $L^3$ contradiction \path|thm:AB-main|};
+\node[archnode, below=of TC1] (AB) {Selected single terminal profile: \path|lem:atomic-sequence-L3|, \path|thm:mildness-inheritance-main|; endpoint input \path|thm:AB-main|; conclusion \path|lem:no-atomic-active|};
 \node[archnode, below=of AB] (CLOSE) {All residual alternatives closed};
-\node[archnode, below=of CLOSE] (FINALR) {Generic closure and full residual closure: \path|thm:R4-final-closure|, \path|thm:typeI-residual-closure|};
+\node[archnode, below=of CLOSE] (FINALR) {Downstream assembly: \path|thm:R4-final-closure|, \path|thm:typeI-residual-closure|, \path|cor:setup-residual-hypothesis-proof|, \path|cor:two-paper-local-typeI-exclusion|};
 \foreach \a/\b in {A/B,B/C,CLOSE/FINALR}{\draw[arr] (\a)--(\b);}
 \draw[arr] (C)--(D);
 \draw[arr] (D)--node[right]{No}(TAIL);

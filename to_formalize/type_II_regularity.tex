@@ -505,8 +505,11 @@ remains available after subsequence extraction, reselection, and passage to a
 terminal frame.  Such monotone ledger facts are therefore not represented by
 additional backward arrows.  Rectangles are states or interfaces with one
 incoming and one outgoing branch, diamonds are exhaustive routing tests, and
-ellipses are closed branches.  Node [1] is the unique root.  Every other node
-is reached from [1], and every terminal node is an ellipse.
+solid ellipses are closed branches.  A dashed ellipse is not a new node: it is
+a local copy of the numbered solid ellipse named inside it, used when an edge
+routes directly to a closure drawn in another part.  Node [1] is the unique
+root.  Every other numbered node is reached from [1], and every terminal node
+is a solid ellipse or is represented locally by such a dashed closure copy.
 
 The shared routing diamond [56] receives the first-failure continuations from
 the earlier parts.  The ordered exhaustion theorem
@@ -1023,6 +1026,7 @@ leaves use the closure theorem belonging to that layer.}
 dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.20cm},
 box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=3.55cm,minimum height=0.58cm},
 term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.75cm},
+route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,minimum width=2.55cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
@@ -1036,13 +1040,15 @@ every node/.style={font=\scriptsize}
 \node[dec] (n101) at (-9.00,-16.00) {\textbf{[101]}~if no velocity frame remains, what carries the original CKN signal?};
 \node[term,text width=2.65cm] (n102) at (-9.00,-20.00) {\textbf{[102]}~all smaller cylinders are subthreshold; singular CKN concentration is contradicted};
 \node[dec] (n103) at (-3.00,-8.00) {\textbf{[103]}~which upper-bound failure label is first?};
-\node[term,text width=2.40cm] (n104) at (-5.00,-13.00) {\textbf{[104]}~same-frame critical-mass face is nonretained};
-\node[term,text width=2.40cm] (n105) at (-1.00,-13.00) {\textbf{[105]}~comparable finite-mass class grouped};
-\node[term,text width=2.40cm] (n106) at (3.00,-13.00) {\textbf{[106]}~multibubble row closed};
-\node[term,text width=2.40cm] (n107) at (7.00,-13.00) {\textbf{[107]}~multicore row closed};
-\node[term,text width=2.40cm] (n108) at (11.00,-13.00) {\textbf{[108]}~cascade row closed};
-\node[term,text width=2.40cm] (n109) at (15.00,-13.00) {\textbf{[109]}~rough-core row closed};
+\node[term,text width=2.40cm] (n104) at (-1.00,-13.00) {\textbf{[104]}~same-frame critical-mass face is nonretained};
+\node[term,text width=2.40cm] (n105) at (3.00,-13.00) {\textbf{[105]}~comparable finite-mass class grouped};
+\node[term,text width=2.40cm] (n106) at (7.00,-13.00) {\textbf{[106]}~multibubble row closed};
+\node[term,text width=2.40cm] (n107) at (11.00,-13.00) {\textbf{[107]}~multicore row closed};
+\node[term,text width=2.40cm] (n108) at (15.00,-13.00) {\textbf{[108]}~cascade row closed};
+\node[term,text width=2.40cm] (n109) at (19.00,-13.00) {\textbf{[109]}~rough-core row closed};
 \node[term,text width=2.65cm] (n110) at (18.00,-8.00) {\textbf{[110]}~pressure/exterior active-profile row closed};
+\node[route,text width=2.25cm] (r110c) at (-16.00,-17.00) {\textbf{[110]}~pressure/exterior closure};
+\node[route,text width=2.25cm] (r109c) at (-2.00,-17.00) {\textbf{[109]}~rough-core closure};
 
 \draw[arrow] (n96.south west)--node[above,sloped]{active-core loss}(n97.north);
 \draw[arrow] (n96.west)--++(-1.60,0) node[left]{pressure only: continue at [111]};
@@ -1054,18 +1060,18 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (n97.south east)--node[above,sloped]{upper bound fails}(n103.north);
 \draw[arrow] (n99)--(n100);
 \draw[arrow] (n100.west) to[out=180,in=-70] node[below,sloped]{positive finite}(n98.south);
-\draw[arrow] (n100.east) to[out=0,in=-110] node[below,sloped]{upper bound fails}(n103.south);
+\draw[arrow] (n100.north east) to[out=35,in=215] node[above,sloped]{upper bound fails}(n103.south west);
 \draw[arrow] (n100)--node[right]{no velocity frame}(n101.north);
 \draw[arrow] (n101.west)--++(-1.55,0) node[left]{pressure only: continue at [111]};
-\draw[arrow] (n101.south west)--++(-1.25,-0.80) node[left]{exterior: to [110]};
-\draw[arrow] (n101.south east)--++(1.25,-0.80) node[right]{rough core: to [109]};
+\draw[arrow] (n101.south west)--node[above,sloped]{exterior}(r110c.north);
+\draw[arrow] (n101.south east)--node[above,sloped]{rough core}(r109c.north);
 \draw[arrow] (n101)--node[right]{regular/subthreshold}(n102.north);
-\draw[arrow] (n103.south west)--node[above,sloped]{adjacent face}(n104.north);
-\draw[arrow] (n103.south)--node[left]{comparable}(n105.north);
-\draw[arrow] (n103.south east)--node[above,sloped]{multibubble}(n106.north);
-\draw[arrow] (n103.east) to[out=-25,in=110] node[above,sloped]{multicore}(n107.north);
-\draw[arrow] (n103.east) to[out=-12,in=130] node[above,sloped]{cascade}(n108.north);
-\draw[arrow] (n103.east) to[out=-3,in=150] node[above,sloped]{rough core}(n109.north);
+\draw[arrow] (n103.south)--node[above,sloped]{adjacent face}(n104.north);
+\draw[arrow] (n103.south east)--node[above,sloped]{comparable}(n105.north);
+\draw[arrow] (n103.east) to[out=-35,in=120] node[above,sloped]{multibubble}(n106.north);
+\draw[arrow] (n103.east) to[out=-25,in=120] node[above,sloped]{multicore}(n107.north);
+\draw[arrow] (n103.east) to[out=-15,in=135] node[above,sloped]{cascade}(n108.north);
+\draw[arrow] (n103.east) to[out=-5,in=150] node[above,sloped]{rough core}(n109.north);
 \draw[arrow] (n103.east)--node[above]{exterior}(n110.west);
 \end{tikzpicture}%
 }
@@ -1087,37 +1093,50 @@ pressure, and critical-tightness rows continue to their separate parts.}
 \begin{landscape}
 \begin{figure}[p]
 \centering
-\resizebox{0.93\linewidth}{!}{%
+\resizebox{0.80\linewidth}{!}{%
 \begin{tikzpicture}[
 dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.25cm},
 term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.85cm},
+route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,minimum width=2.55cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
-\node[dec] (n110) at (0,0) {\textbf{[110]}~which local pressure-source outcome occurs?};
-\coordinate (in110) at ($(n110.north)+(0,0.92)$);
-\draw[arrow] (in110)--node[right]{from [96] or [101]}(n110.north);
-\node[term,text width=2.80cm] (n111) at (-8.00,-4.00) {\textbf{[111]}~localized velocity-stress source is regular};
-\node[dec] (n112) at (0,-4.00) {\textbf{[112]}~which velocity-supported label is selected?};
-\node[term,text width=2.80cm] (n113) at (8.00,-4.00) {\textbf{[113]}~pressure reconstruction first failure closed};
+\node[dec] (n111) at (0,0) {\textbf{[111]}~is the local pressure reconstruction and gauge available?};
+\coordinate (in111) at ($(n111.north)+(0,0.92)$);
+\draw[arrow] (in111)--node[right]{from [96] or [101]}(n111.north);
+\node[dec] (n112) at (-3.00,-3.40) {\textbf{[112]}~does the localized velocity-stress source persist?};
+\node[dec] (n113) at (-3.00,-6.80) {\textbf{[113]}~what does the local CKN test produce?};
+\node[term,text width=2.80cm] (n114) at (7.00,-3.40) {\textbf{[114]}~pressure reconstruction or gauge first failure closed};
+\node[term,text width=2.80cm] (n115) at (-8.00,-10.20) {\textbf{[115]}~localized velocity-stress source is regular};
+\node[dec] (n116) at (0,-10.20) {\textbf{[116]}~which velocity-supported label is selected?};
+\node[route,text width=2.35cm] (r110a) at (-10.00,-6.20) {\textbf{[110]}~pressure/exterior closure};
+\node[route,text width=2.20cm] (r105) at (-10.00,-14.50) {\textbf{[105]}~comparable class grouped};
+\node[route,text width=2.20cm] (r106) at (-6.00,-14.50) {\textbf{[106]}~multibubble closure};
+\node[route,text width=2.20cm] (r107) at (-2.00,-14.50) {\textbf{[107]}~multicore closure};
+\node[route,text width=2.20cm] (r108) at (2.00,-14.50) {\textbf{[108]}~cascade closure};
+\node[route,text width=2.20cm] (r109) at (6.00,-14.50) {\textbf{[109]}~rough-core closure};
+\node[route,text width=2.20cm] (r110b) at (10.00,-14.50) {\textbf{[110]}~pressure/exterior closure};
 
-\draw[arrow] (n110.south west)--node[above,sloped]{regular source}(n111.north);
-\draw[arrow] (n110)--node[right]{velocity label}(n112.north);
-\draw[arrow] (n110.east)--++(1.45,0) node[right]{harmonic remainder: to [109]};
-\draw[arrow] (n110.south east)--node[above,sloped]{reconstruction fails}(n113.north);
-\draw[arrow] (n112.south west)--++(-3.60,-2.60) node[left]{comparable: to [105]};
-\draw[arrow] (n112.south west)--++(-2.15,-3.60) node[left]{multibubble: to [106]};
-\draw[arrow] (n112.south)--++(0,-4.20) node[below]{multicore: to [106]};
-\draw[arrow] (n112.south east)--++(2.15,-3.60) node[right]{cascade: to [107]};
-\draw[arrow] (n112.south east)--++(3.60,-2.60) node[right]{rough core: to [108]};
-\draw[arrow] (n112.east)--++(4.30,-1.55) node[right]{exterior: to [109]};
+\draw[arrow] (n111.south west)--node[above,sloped]{yes}(n112.north);
+\draw[arrow] (n111.south east)--node[above,sloped]{no}(n114.north);
+\draw[arrow] (n112.west)--node[above]{no: harmonic remainder}(r110a.east);
+\draw[arrow] (n112)--node[right]{yes}(n113.north);
+\draw[arrow] (n113.south west)--node[above,sloped]{regular}(n115.north);
+\draw[arrow] (n113.south east)--node[above,sloped]{velocity carrier}(n116.north);
+\draw[arrow] (n116.south west)--node[above,sloped]{comparable}(r105.north);
+\draw[arrow] (n116.south west)--node[above,sloped]{multibubble}(r106.north);
+\draw[arrow] (n116.south)--node[left]{multicore}(r107.north);
+\draw[arrow] (n116.south)--node[right]{cascade}(r108.north);
+\draw[arrow] (n116.south east)--node[above,sloped]{rough core}(r109.north);
+\draw[arrow] (n116.south east)--node[above,sloped]{exterior}(r110b.north);
 \end{tikzpicture}%
 }
 \caption[Proof-dependency diagram, Part X]{Proof-dependency diagram, Part X.
-The pressure-only branch of [96] is expanded by
-\cref{lem:pressure-only-critical-mass-routing}.  A velocity-supported label is
-classified at [112] and sent to the individual retained, structural, rough, or
-exterior closures already displayed in Part IX.}
+The proof of \cref{lem:pressure-only-critical-mass-routing} first tests the
+pressure reconstruction at [111], then the localized source at [112], and
+only then runs the local CKN test [113].  A velocity carrier is classified at
+[116].  Dashed ellipses are references to terminal closures proved and drawn
+as solid ellipses in Part IX.}
 \label{fig:typeII-proof-flow-part-x}
 \end{figure}
 \end{landscape}
@@ -1126,46 +1145,56 @@ exterior closures already displayed in Part IX.}
 \begin{landscape}
 \begin{figure}[p]
 \centering
-\resizebox{0.93\linewidth}{!}{%
+\resizebox{0.76\linewidth}{!}{%
 \begin{tikzpicture}[
 dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.25cm},
 term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.85cm},
+route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,minimum width=2.55cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
-\node[dec] (n114) at (0,0) {\textbf{[114]}~which well-founded nested pressure-only row occurs?};
-\coordinate (in114) at ($(n114.north)+(0,0.92)$);
-\draw[arrow] (in114)--node[right]{from [96]}(n114.north);
-\node[term,text width=2.70cm] (n115) at (-10.00,-5.00) {\textbf{[115]}~far-field harmonic pressure-tail row closed};
-\node[dec] (n116) at (-3.00,-5.00) {\textbf{[116]}~which same-point nested row occurs?};
-\node[term,text width=2.70cm] (n117) at (-3.00,-10.00) {\textbf{[117]}~pressure scale-collapse row closed};
-\node[dec] (n118) at (8.00,-5.00) {\textbf{[118]}~which diffuse pressure-defect outcome occurs?};
-\node[term,text width=2.55cm] (n119) at (2.00,-10.00) {\textbf{[119]}~constant harmonic pressure removed by gauge};
-\node[dec] (n120) at (8.00,-10.00) {\textbf{[120]}~is the affine harmonic pressure absorbed?};
-\node[term,text width=2.55cm] (n121) at (6.00,-14.00) {\textbf{[121]}~affine pressure absorbed by accelerating rebasement};
-\node[term,text width=2.55cm] (n122) at (10.00,-14.00) {\textbf{[122]}~affine-pressure modulation failure closed by Parts VI--VII};
-\node[term,text width=2.55cm] (n123) at (14.00,-10.00) {\textbf{[123]}~the unique visible diffuse residual row is closed};
+\node[dec] (n117) at (0,0) {\textbf{[117]}~which well-founded nested pressure-only row occurs?};
+\coordinate (in117) at ($(n117.north)+(0,0.92)$);
+\draw[arrow] (in117)--node[right]{from [96]}(n117.north);
+\node[term,text width=2.70cm] (n118) at (-11.00,-5.00) {\textbf{[118]}~far-field harmonic pressure-tail row closed};
+\node[dec] (n119) at (-4.00,-5.00) {\textbf{[119]}~which same-point nested row occurs?};
+\node[term,text width=2.70cm] (n120) at (-4.00,-10.00) {\textbf{[120]}~pressure scale-collapse row closed};
+\node[dec] (n121) at (8.00,-5.00) {\textbf{[121]}~normalized defect: atomic/activity or diffuse?};
+\node[dec] (n122) at (8.00,-10.00) {\textbf{[122]}~which realized atomic-support outcome occurs?};
+\node[term,text width=2.55cm] (n123) at (3.00,-15.00) {\textbf{[123]}~constant harmonic pressure removed by gauge};
+\node[dec] (n124) at (9.00,-15.00) {\textbf{[124]}~is the affine harmonic pressure absorbed?};
+\node[term,text width=2.55cm] (n125) at (7.00,-19.00) {\textbf{[125]}~affine pressure absorbed by accelerating rebasement};
+\node[term,text width=2.55cm] (n126) at (11.00,-19.00) {\textbf{[126]}~affine-pressure modulation failure closed by Parts VI--VII};
+\node[term,text width=2.55cm] (n127) at (16.00,-10.00) {\textbf{[127]}~the unique visible diffuse residual row is closed};
+\node[route,text width=2.30cm] (r114) at (10.00,0) {\textbf{[114]}~pressure/gauge closure};
+\node[route,text width=2.20cm] (r108) at (-10.00,-10.00) {\textbf{[108]}~cascade closure};
+\node[route,text width=2.20cm] (r115) at (16.00,-15.00) {\textbf{[115]}~regular-source closure};
+\node[route,text width=2.20cm] (r118) at (1.00,-10.00) {\textbf{[118]}~harmonic-tail closure};
 
-\draw[arrow] (n114.west)--++(-1.65,0) node[left]{velocity stress: to [112]};
-\draw[arrow] (n114.south west)--node[above,sloped]{harmonic tail}(n115.north);
-\draw[arrow] (n114)--node[left]{same-point nesting}(n116.north);
-\draw[arrow] (n114.east)--++(1.65,0) node[right]{gauge failure: to [113]};
-\draw[arrow] (n114.south east)--node[above,sloped]{diffuse defect}(n118.north);
-\draw[arrow] (n116.west)--++(-1.55,0) node[left]{cascade: to [107]};
-\draw[arrow] (n116)--node[right]{scale collapse}(n117.north);
-\draw[arrow] (n118.east)--++(2.10,0) node[right]{atomic velocity support: to [112]};
-\draw[arrow] (n118.north east)--++(1.35,1.35) node[right]{non-affine harmonic: to [115]};
-\draw[arrow] (n118.south west)--node[above,sloped]{constant harmonic}(n119.north);
-\draw[arrow] (n118)--node[right]{affine harmonic}(n120.north);
-\draw[arrow] (n118.south east)--node[above,sloped]{visible diffuse residual}(n123.north);
-\draw[arrow] (n120.south west)--node[above,sloped]{yes}(n121.north);
-\draw[arrow] (n120.south east)--node[above,sloped]{no}(n122.north);
+\draw[arrow] (n117.west)--++(-1.65,0) node[left]{velocity stress: continue at [116]};
+\draw[arrow] (n117.south west)--node[above,sloped]{harmonic tail}(n118.north);
+\draw[arrow] (n117)--node[left]{same-point nesting}(n119.north);
+\draw[arrow] (n117.east)--node[above]{gauge failure}(r114.west);
+\draw[arrow] (n117.south east)--node[above,sloped]{diffuse defect}(n121.north);
+\draw[arrow] (n119.west)--node[above]{cascade}(r108.east);
+\draw[arrow] (n119)--node[right]{scale collapse}(n120.north);
+\draw[arrow] (n121.south west)--node[above,sloped]{atomic/activity}(n122.north);
+\draw[arrow] (n121.south east)--node[above,sloped]{genuinely diffuse}(n127.north);
+\draw[arrow] (n122.west)--node[above]{non-affine harmonic}(r118.east);
+\draw[arrow] (n122.north west)--++(-1.60,1.60) node[left]{velocity carrier: continue at [116]};
+\draw[arrow] (n122.south west)--node[above,sloped]{constant harmonic}(n123.north);
+\draw[arrow] (n122)--node[right]{affine harmonic}(n124.north);
+\draw[arrow] (n122.south east)--node[above,sloped]{regular local source}(r115.north);
+\draw[arrow] (n124.south west)--node[above,sloped]{yes}(n125.north);
+\draw[arrow] (n124.south east)--node[above,sloped]{no}(n126.north);
 \end{tikzpicture}%
 }
 \caption[Proof-dependency diagram, Part XI]{Proof-dependency diagram, Part XI.
 The five rows of \cref{lem:nested-pressure-only-well-founded} are explicit at
-[114].  The same-point row splits at [116], while the diffuse row is expanded
-by the atomic/diffuse and harmonic-pressure alternatives at [118] and [120].}
+[117].  The same-point row splits at [119].  The proof of
+\cref{lem:diffuse-pressure-only-not-terminal} first makes the atomic/diffuse
+test [121], then classifies a realized atomic support profile at [122].
+Dashed ellipses refer directly to terminal closures drawn elsewhere.}
 \label{fig:typeII-proof-flow-part-xi}
 \end{figure}
 \end{landscape}
@@ -1174,42 +1203,52 @@ by the atomic/diffuse and harmonic-pressure alternatives at [118] and [120].}
 \begin{landscape}
 \begin{figure}[p]
 \centering
-\resizebox{0.93\linewidth}{!}{%
+\resizebox{0.82\linewidth}{!}{%
 \begin{tikzpicture}[
 dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,minimum width=4.30cm},
 term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=2.90cm},
+route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,minimum width=2.55cm},
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
-\node[dec] (n124) at (0,0) {\textbf{[124]}~which critical-tightness failure row occurs?};
-\coordinate (in124) at ($(n124.north)+(0,0.92)$);
-\draw[arrow] (in124)--node[right]{from [96]}(n124.north);
-\node[dec] (n125) at (-6.00,-6.00) {\textbf{[125]}~which compact-package failure occurs?};
-\node[term,text width=2.70cm] (n126) at (-6.00,-11.00) {\textbf{[126]}~selected compact-package first failure closed};
-\node[dec] (n127) at (6.00,-6.00) {\textbf{[127]}~which diffuse critical-tail outcome occurs?};
-\node[term,text width=2.70cm] (n128) at (1.00,-11.00) {\textbf{[128]}~the unique lower named failure row is closed};
-\node[term,text width=2.70cm] (n129) at (6.00,-11.00) {\textbf{[129]}~atomic carrier contradicts the diffuse alternative};
-\node[term,text width=2.70cm] (n130) at (11.00,-11.00) {\textbf{[130]}~the unique diffuse residual row is closed};
+\node[dec] (n128) at (0,0) {\textbf{[128]}~which critical-tightness failure row occurs?};
+\coordinate (in128) at ($(n128.north)+(0,0.92)$);
+\draw[arrow] (in128)--node[right]{from [96]}(n128.north);
+\node[dec] (n129) at (-6.00,-6.00) {\textbf{[129]}~which compact-package failure occurs?};
+\node[term,text width=2.70cm] (n130) at (-6.00,-11.00) {\textbf{[130]}~selected compact-package first failure closed};
+\node[dec] (n131) at (6.00,-6.00) {\textbf{[131]}~is a lower named face reached first?};
+\node[term,text width=2.70cm] (n132) at (1.00,-11.00) {\textbf{[132]}~the unique lower named failure row is closed};
+\node[dec] (n133) at (9.00,-11.00) {\textbf{[133]}~remaining tail defect: atomic/activity or diffuse?};
+\node[term,text width=2.70cm] (n134) at (7.00,-16.00) {\textbf{[134]}~atomic carrier contradicts the diffuse alternative};
+\node[term,text width=2.70cm] (n135) at (12.00,-16.00) {\textbf{[135]}~the unique diffuse residual row is closed};
+\node[route,text width=2.20cm] (r108a) at (-10.00,0) {\textbf{[108]}~cascade closure};
+\node[route,text width=2.20cm] (r114a) at (10.00,0) {\textbf{[114]}~pressure/gauge closure};
+\node[route,text width=2.25cm] (r110d) at (-11.00,-4.00) {\textbf{[110]}~separated-exterior closure};
+\node[route,text width=2.25cm] (r110e) at (11.00,-4.00) {\textbf{[110]}~escaping-exterior closure};
+\node[route,text width=2.20cm] (r109a) at (-12.00,-8.00) {\textbf{[109]}~rough-core closure};
 
-\draw[arrow] (n124.west)--++(-2.00,0) node[left]{same-point cascade: to [107]};
-\draw[arrow] (n124.south west)--++(-3.80,-2.55) node[left]{separated exterior: to [109]};
-\draw[arrow] (n124.south east)--++(3.80,-2.55) node[right]{escaping exterior: to [109]};
-\draw[arrow] (n124.east)--++(2.00,0) node[right]{pressure/gauge: to [113]};
-\draw[arrow] (n124.south)--node[above,sloped]{compact package}(n125.north);
-\draw[arrow] (n124.south)--node[above,sloped]{diffuse tail}(n127.north);
-\draw[arrow] (n125.west)--++(-1.55,0) node[left]{rough core: to [108]};
-\draw[arrow] (n125.south west)--node[above,sloped]{local energy}(n126.north west);
-\draw[arrow] (n125.south east)--node[above,sloped]{compact upper}(n126.north east);
-\draw[arrow] (n127.south west)--node[above,sloped]{lower named face}(n128.north);
-\draw[arrow] (n127)--node[right]{atomic activity}(n129.north);
-\draw[arrow] (n127.south east)--node[above,sloped]{diffuse residual}(n130.north);
+\draw[arrow] (n128.west)--node[above]{same-point cascade}(r108a.east);
+\draw[arrow] (n128.south west)--node[above,sloped]{separated exterior}(r110d.east);
+\draw[arrow] (n128.south east)--node[above,sloped]{escaping exterior}(r110e.west);
+\draw[arrow] (n128.east)--node[above]{pressure/gauge}(r114a.west);
+\draw[arrow] (n128.south)--node[above,sloped]{compact package}(n129.north);
+\draw[arrow] (n128.south)--node[above,sloped]{diffuse tail}(n131.north);
+\draw[arrow] (n129.west)--node[above]{rough core}(r109a.east);
+\draw[arrow] (n129.south west)--node[above,sloped]{local energy}(n130.north west);
+\draw[arrow] (n129.south east)--node[above,sloped]{compact upper}(n130.north east);
+\draw[arrow] (n131.south west)--node[above,sloped]{yes}(n132.north);
+\draw[arrow] (n131.south east)--node[above,sloped]{no}(n133.north);
+\draw[arrow] (n133.south west)--node[above,sloped]{atomic/activity}(n134.north);
+\draw[arrow] (n133.south east)--node[above,sloped]{diffuse}(n135.north);
 \end{tikzpicture}%
 }
 \caption[Proof-dependency diagram, Part XII]{Proof-dependency diagram, Part XII.
-The six alternatives of \cref{lem:critical-tightness-failure-row} leave [124]
+The six alternatives of \cref{lem:critical-tightness-failure-row} leave [128]
 on separate edges.  The compact-package and diffuse-tail cases are further
-split at [125] and [127].  Nodes [128]--[130] are the three outcomes used in
-the proof of \cref{lem:diffuse-critical-tail-row-closed}.}
+split at [129] and [131].  The proof of
+\cref{lem:diffuse-critical-tail-row-closed} tests for a lower named face first,
+then applies the atomic/diffuse dichotomy at [133].  Dashed ellipses refer to
+terminal closures already drawn in Parts IX--XI.}
 \label{fig:typeII-proof-flow-part-xii}
 \end{figure}
 \end{landscape}
@@ -1533,7 +1572,7 @@ Node & State or exhaustive test & Source in the proof & Successor or closure \\
 \cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed} & Terminal by the canonical-channel rule \\
 
 [96] & Final active-core ledger family classifier &
-\cref{def:remaining-named-exits,thm:active-core-loss-closed,lem:critical-tightness-failure-row} & Active loss gives [97], pressure gives [110], nested pressure gives [114], critical tightness gives [124], exterior gives [109] \\
+\cref{def:remaining-named-exits,thm:active-core-loss-closed,lem:critical-tightness-failure-row} & Active loss gives [97], pressure gives [111], nested pressure gives [117], critical tightness gives [128], exterior gives [110] \\
 
 [97] & Local critical-mass outcome &
 \cref{lem:terminal-local-critical-mass-routing} & Positive finite gives [98], floor failure gives [99], upper failure gives [103] \\
@@ -1548,13 +1587,13 @@ Node & State or exhaustive test & Source in the proof & Successor or closure \\
 \cref{lem:retained-frame-maximality,lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} & Positive finite gives [98], upper failure gives [103], no velocity frame gives [101] \\
 
 [101] & Carrier of the original CKN signal when no velocity frame remains &
-\cref{thm:active-core-loss-closed} & Pressure gives [110], exterior gives [109], rough core gives [108], subthreshold regularity gives [102] \\
+\cref{thm:active-core-loss-closed} & Pressure gives [111], exterior gives [110], rough core gives [109], subthreshold regularity gives [102] \\
 
 [102] & All smaller admissible cylinders below the CKN threshold &
 \cref{thm:terminal-ckn-regularity,thm:active-core-loss-closed} & Terminal contradiction to singular CKN concentration \\
 
 [103] & First label produced by local critical-mass upper-bound failure &
-\cref{lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} & Exactly one closure [104]--[109] \\
+\cref{lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} & Exactly one closure [104]--[110] \\
 
 [104] & Same-frame critical-mass adjacent face &
 \cref{lem:terminal-local-critical-mass-routing} & Terminal nonretained label \\
@@ -1562,79 +1601,94 @@ Node & State or exhaustive test & Source in the proof & Successor or closure \\
 [105] & Comparable finite-mass class &
 \cref{lem:retained-frame-maximality} & Terminal by prior grouping into the retained class \\
 
-[106] & Nonunique-core structural row &
-\cref{thm:multibubble,thm:single-core} & Terminal structural closure \\
+[106] & Multibubble row &
+\cref{thm:multibubble} & Terminal multibubble closure \\
 
-[107] & Cascade row &
+[107] & Multicore row &
+\cref{thm:single-core} & Terminal multicore closure \\
+
+[108] & Cascade row &
 \cref{thm:multibubble,thm:scale-cost,cor:multi-removal} & Terminal cascade closure \\
 
-[108] & Rough-core row &
+[109] & Rough-core row &
 \cref{thm:rough-core,prop:state-elimination} & Terminal rough-core closure \\
 
-[109] & Exterior active-profile row &
-\cref{cor:exterior-concentration-exit-discharged} & Terminal exterior closure \\
+[110] & Pressure or exterior active-profile row &
+\cref{lem:harmonic-cross-pressure-routing,cor:exterior-concentration-exit-discharged} & Terminal pressure/exterior closure \\
 
-[110] & Local pressure-source outcome &
-\cref{lem:pressure-only-critical-mass-routing,thm:active-core-loss-closed} & Regular gives [111], velocity-supported gives [112], harmonic gives [109], reconstruction failure gives [113] \\
+[111] & Availability of the local pressure reconstruction and gauge &
+\cref{lem:pressure-only-critical-mass-routing} & Available gives [112]; first failure gives [114] \\
 
-[111] & Regular localized velocity-stress source &
-\cref{lem:pressure-only-critical-mass-routing} & Terminal regular absorption \\
+[112] & Persistence of the localized velocity-stress source &
+\cref{lem:pressure-only-critical-mass-routing} & Persistent gives [113]; vanishing leaves the harmonic row [110] \\
 
-[112] & Velocity-supported pressure label &
-\cref{lem:pressure-only-critical-mass-routing,lem:retained-frame-maximality} & Comparable gives [105]; otherwise one of [106]--[109] \\
+[113] & Local CKN outcome for a persistent velocity-stress source &
+\cref{lem:pressure-only-critical-mass-routing} & Regular gives [115]; a velocity carrier gives [116] \\
 
-[113] & Pressure reconstruction first failure &
+[114] & Pressure reconstruction or gauge first failure &
 \cref{thm:pressure-decomp,cor:c2r-ordered-classification} & Terminal representation closure \\
 
-[114] & Well-founded nested pressure-only classifier &
-\cref{lem:nested-pressure-only-well-founded} & Velocity gives [112], harmonic tail gives [115], gauge gives [113], same-point gives [116], diffuse gives [118] \\
+[115] & Regular localized velocity-stress source &
+\cref{lem:pressure-only-critical-mass-routing} & Terminal regular absorption \\
 
-[115] & Far-field harmonic pressure-tail row &
+[116] & Velocity-supported pressure label &
+\cref{lem:pressure-only-critical-mass-routing,lem:retained-frame-maximality} & Comparable gives [105]; otherwise one of [106]--[110] \\
+
+[117] & Well-founded nested pressure-only classifier &
+\cref{lem:nested-pressure-only-well-founded} & Velocity gives [116], harmonic tail gives [118], gauge gives [114], same-point gives [119], diffuse gives [121] \\
+
+[118] & Far-field harmonic pressure-tail row &
 \cref{lem:harmonic-cross-pressure-routing,lem:diffuse-pressure-only-not-terminal} & Terminal pressure-tail closure \\
 
-[116] & Same-point nested pressure classifier &
-\cref{lem:nested-pressure-only-well-founded} & Cascade gives [107]; scale collapse gives [117] \\
+[119] & Same-point nested pressure classifier &
+\cref{lem:nested-pressure-only-well-founded} & Cascade gives [108]; scale collapse gives [120] \\
 
-[117] & Pressure scale-collapse row &
+[120] & Pressure scale-collapse row &
 \cref{thm:scale-cost,thm:compact-scale-collapse-rigidity-discharged} & Terminal scale closure \\
 
-[118] & Diffuse pressure-defect outcome &
-\cref{lem:diffuse-pressure-only-not-terminal} & Exactly one of [112], [115], [119], [120], or [123] \\
+[121] & Atomic/activity versus genuinely diffuse pressure defect &
+\cref{lem:normalized-defect-atomic-or-diffuse,lem:diffuse-pressure-only-not-terminal} & Atomic/activity gives [122]; genuinely diffuse gives [127] \\
 
-[119] & Constant harmonic pressure &
+[122] & Closure produced by the realized atomic support profile &
+\cref{thm:pressure-defect-compactification-support-transfer,lem:diffuse-pressure-only-not-terminal} & Regular gives [115], velocity gives [116], non-affine harmonic gives [118], constant gives [123], affine gives [124] \\
+
+[123] & Constant harmonic pressure &
 \cref{lem:diffuse-pressure-only-not-terminal} & Terminal removal by the pressure gauge \\
 
-[120] & Affine harmonic pressure absorption test &
-\cref{lem:affine-harmonic-pressure-absorption,lem:diffuse-pressure-only-not-terminal} & Absorbed gives [121]; failure gives [122] \\
+[124] & Affine harmonic pressure absorption test &
+\cref{lem:affine-harmonic-pressure-absorption,lem:diffuse-pressure-only-not-terminal} & Absorbed gives [125]; failure gives [126] \\
 
-[121] & Affine pressure absorbed by accelerating rebasement &
+[125] & Affine pressure absorbed by accelerating rebasement &
 \cref{lem:affine-harmonic-pressure-absorption} & Terminal pressure closure \\
 
-[122] & Affine-pressure modulation failure &
+[126] & Affine-pressure modulation failure &
 \cref{lem:affine-harmonic-pressure-absorption,thm:autonomous-modulation-failure-closed} & Terminal by the alternatives [71]--[87] \\
 
-[123] & Visible diffuse pressure residual &
+[127] & Visible diffuse pressure residual &
 \cref{lem:diffuse-pressure-only-not-terminal,thm:local-residual-exhaustion} & Terminal through its unique named-row closure \\
 
-[124] & Critical-tightness first-row classifier &
-\cref{lem:critical-tightness-failure-row} & Cascade gives [107], exterior gives [109], pressure gives [113], compact failure gives [125], diffuse gives [127] \\
+[128] & Critical-tightness first-row classifier &
+\cref{lem:critical-tightness-failure-row} & Cascade gives [108], exterior gives [110], pressure gives [114], compact failure gives [129], diffuse gives [131] \\
 
-[125] & Compact-package first-failure classifier &
-\cref{lem:critical-tightness-failure-row} & Rough core gives [108]; local-energy or compact-upper failure gives [126] \\
+[129] & Compact-package first-failure classifier &
+\cref{lem:critical-tightness-failure-row} & Rough core gives [109]; local-energy or compact-upper failure gives [130] \\
 
-[126] & Selected compact-package first failure &
+[130] & Selected compact-package first failure &
 \cref{thm:selected-compactness-failure-routed,cor:ambient-adjacent-wrapper-discharged} & Terminal compact closure \\
 
-[127] & Diffuse critical-tail outcome &
-\cref{lem:diffuse-critical-tail-row-closed} & Lower named face gives [128], atomic activity gives [129], diffuse residual gives [130] \\
+[131] & First lower-face test for a diffuse critical tail &
+\cref{lem:logarithmic-tail-shell-realization,lem:diffuse-critical-tail-row-closed} & A lower named face gives [132]; otherwise continue to [133] \\
 
-[128] & First lower named failure face &
+[132] & First lower named failure face &
 \cref{lem:diffuse-critical-tail-row-closed} & Terminal through its recorded closure \\
 
-[129] & Atomic carrier in the diffuse-tail case &
+[133] & Atomic/activity versus genuinely diffuse residual tail defect &
+\cref{lem:normalized-defect-atomic-or-diffuse,lem:diffuse-critical-tail-row-closed} & Atomic/activity gives [134]; genuinely diffuse gives [135] \\
+
+[134] & Atomic carrier in the diffuse-tail case &
 \cref{thm:logarithmic-tail-support-transfer,lem:diffuse-critical-tail-row-closed} & Terminal contradiction to the diffuse alternative \\
 
-[130] & Visible diffuse critical-tail residual &
+[135] & Visible diffuse critical-tail residual &
 \cref{thm:local-residual-exhaustion,lem:diffuse-critical-tail-row-closed} & Terminal through its unique named-row closure \\
 
 \end{longtable}
@@ -1674,8 +1728,8 @@ Class-incompatible failure closes at [57] \\
 
 Positive local critical signal &
 \cref{lem:physical-typeII-germ-concentration-sequence,thm:active-profile-mass-floor} &
-Core selection, scale analysis, terminal profiles, and the final ledger [4]--[130] &
-The zero limit closes at [27]; loss of the selected signal is classified at [96]--[113] \\
+Core selection, scale analysis, terminal profiles, and the final ledger [4]--[135] &
+The zero limit closes at [27]; loss of the selected signal is classified at [96]--[116] \\
 
 Buffered locality and suitable energy &
 \cref{prop:compact-support-transport,prop:ren-suitable} &
@@ -1685,12 +1739,12 @@ The first domain, energy, or compact-upper failure goes to [56] \\
 Pressure representative &
 \cref{thm:pressure-decomp} &
 Carrier selection, compactness, Caccioppoli, and residual exhaustion &
-Pressure-only rows are expanded at [110]--[123], and reconstruction failure closes at [113] \\
+Pressure-only rows are expanded at [111]--[127], and reconstruction failure closes at [114] \\
 
 Retained ancestry &
 \cref{lem:retained-frame-maximality,thm:terminal-windowed-profile-completeness} &
 Core selection, terminal descendants, and residual coordinates &
-Noncomparable descendants close at [49], [59], or [106]--[109] \\
+Noncomparable descendants close at [49], [59], or [106]--[110] \\
 
 Canonical chart and modulation convention &
 \cref{def:canonical-chart-notation,thm:canonical-repaired-gauge-equation} &
@@ -1699,7 +1753,7 @@ The first chart, modulation, or cost failure closes through [56] \\
 
 First-failure order and rank &
 \cref{thm:ordered-local-state-space-exhaustion,lem:acyclic-terminal-ledger} &
-Every routing test [5]--[130] &
+Every routing test [5]--[135] &
 Exactly one named row occurs, and every displayed ellipse is terminal \\
 
 \end{longtable}
@@ -1776,14 +1830,14 @@ Autonomous-modulation failure & [39], [56], [61], [71]--[87] &
 Noncanonical carrier or cost-validation failure & [32], [56], [62], [88]--[95] &
 \cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed} & [90], [92]--[95] \\
 
-Loss of the retained active core & [15], [45], [51], [56], [63], [96]--[113] &
-\cref{lem:retained-frame-maximality,lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} & [98], [102], [104]--[111], [113] \\
+Loss of the retained active core & [15], [45], [51], [56], [63], [96]--[116] &
+\cref{lem:retained-frame-maximality,lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} & [98], [102], [104]--[110], [114]--[115] \\
 
-Nested pressure-only behavior & [114]--[123] &
-\cref{lem:nested-pressure-only-well-founded,lem:diffuse-pressure-only-not-terminal} & [105]--[109], [112]--[113], [115], [117], [119], [121]--[123] \\
+Nested pressure-only behavior & [117]--[127] &
+\cref{lem:nested-pressure-only-well-founded,lem:diffuse-pressure-only-not-terminal} & [105]--[110], [114]--[115], [118], [120], [123], [125]--[127] \\
 
-Critical-tightness and diffuse-tail failure & [124]--[130] &
-\cref{lem:critical-tightness-failure-row,lem:diffuse-critical-tail-row-closed} & [107]--[109], [113], [126], [128]--[130] \\
+Critical-tightness and diffuse-tail failure & [128]--[135] &
+\cref{lem:critical-tightness-failure-row,lem:diffuse-critical-tail-row-closed} & [108]--[110], [114], [130], [132], [134]--[135] \\
 
 \end{longtable}
 \endgroup
@@ -1792,8 +1846,8 @@ Critical-tightness and diffuse-tail failure & [124]--[130] &
 Every path from [1] therefore terminates at one of the earlier leaves
 [3], [12], [21], [27], [34], [36], [38], [49], [55], or at one of
 [57], [59], [65], [68]--[70], [73]--[77], [80]--[81], [83]--[86],
-[90], [92]--[95], [98], [102], [104]--[111], [113], [115], [117],
-[119], [121]--[123], [126], or [128]--[130].
+[90], [92]--[95], [98], [102], [104]--[110], [114]--[115], [118],
+[120], [123], [125]--[127], [130], [132], or [134]--[135].
 This leaf exhaustion is the diagrammatic audit of
 \cref{thm:unconditional-no-typeII-discharged,thm:local-typeII-exclusion}.
 The unconditional conclusion is not used to justify any earlier node.

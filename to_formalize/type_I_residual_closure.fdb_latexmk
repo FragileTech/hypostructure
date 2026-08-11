@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1786454521.66441 "type_I_residual_closure.tex" "type_I_residual_closure.pdf" "type_I_residual_closure" 1786454524.58031 0
+["pdflatex"] 1786461881.98422 "type_I_residual_closure.tex" "type_I_residual_closure.pdf" "type_I_residual_closure" 1786461893.96242 0
   "/etc/texmf/web2c/texmf.cnf" 1775461942.93881 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -214,10 +214,10 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1741904018 41538 c016915c1d51223b6dbbfe27341748a8 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775461957 5467255 9a64d1b40e0b893fc5588ecce9d8accf ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775462000 3347157 e3d55367a58d5fdfabed5b8302e4b102 ""
-  "type_I_residual_closure.aux" 1786454524.46627 95144 79a663a62de4f833ac6efc741f72d143 "pdflatex"
-  "type_I_residual_closure.out" 1786454524.47127 12002 b31850fb541b181147019a764a78e979 "pdflatex"
-  "type_I_residual_closure.tex" 1786454481.74556 592073 dbd8a7066d5b81da80ac8b5f00a2a862 ""
-  "type_I_residual_closure.toc" 1786454524.47127 4650 e135b493bd7c239ad083632c2050e325 "pdflatex"
+  "type_I_residual_closure.aux" 1786461893.30552 100776 640feff1e13d64845cf7d2b5c885b7d1 "pdflatex"
+  "type_I_residual_closure.out" 1786461893.33152 12003 b9b05fd01480c53c0e1b5a90cee2f2a2 "pdflatex"
+  "type_I_residual_closure.tex" 1786461609.07842 627499 2052a9e90497df3c9393c2ee2340315e ""
+  "type_I_residual_closure.toc" 1786461893.33252 5163 2b1ccf3aec3225c985e46a5c1ac16318 "pdflatex"
   (generated)
   "type_I_residual_closure.aux"
   "type_I_residual_closure.log"

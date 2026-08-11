@@ -68,6 +68,39 @@ plumbing already written directly in `StrategyDag.lean`.
    manuscript difference, kernel check, and manuscript labels. Do not edit a
    cell before collecting fresh evidence.
 
+### Report failures by the two live table rows
+
+Every explanation of a missing fact, noncompliant node, compilation break, or
+next repair must identify both live audit rows before drawing a conclusion:
+
+- name the diagram row as `Node [n]`, reproduce its exact mathematical output,
+  and cite the node table's current implementation, wiring, registration, and
+  kernel-check cells;
+- name every corresponding manuscript-label row in the paper-fact table and
+  cite its current Lean declaration, partial-match assessment, ledger write,
+  wiring, legality, and hardcoded-fact cells;
+- state the first exact proposition or witness that Lean does not currently
+  establish.  Write its complete mathematical formula and all objects it is
+  quantified over; never report only a node range, umbrella theorem, generic
+  dependency, or downstream symptom;
+- classify the defect precisely as one of: mathematical proof absent,
+  mathematical statement weakened/strengthened, fact proved but not published,
+  fact published under the wrong schema, fact published but not wired, illegal
+  read/write or carrier, wrong branch ancestry, or downstream interface
+  mismatch.  Do not conflate these categories;
+- distinguish the first failing audit row from later facts that merely cannot
+  be derived because of it.  A compiler error at a later line is not the first
+  mathematical gap when an earlier table row is absent or incorrectly
+  implemented;
+- if the two tables disagree with the inspected Lean source, update both table
+  rows from fresh evidence before using them to answer.  Never silently replace
+  the tables with an informal diagnosis.
+
+The final answer for any audit or failure question must lead with this exact
+row-and-fact identification.  It may then explain prerequisites and downstream
+effects, but those effects must not be presented as additional missing facts
+unless their own table rows independently fail.
+
 The paper strategy is immutable.  Never add, remove, merge, reorder, weaken,
 strengthen, or replace a mathematical alternative.  Correct the Lean topology
 only when it differs from the paper; never invent a new strategy to make Lean
