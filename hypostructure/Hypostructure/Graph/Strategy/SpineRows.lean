@@ -414,12 +414,48 @@ noncomputable def surplusDichotomy
 
 /-! ## Node `[21]`: the finite barrier enumeration
 
-`lem:p13-window-package`.  The registered barrier rate is a per-window cost
-*per dyadic scale*, so the packing demands
-`2 ^ (rate · scaleCount · p)` distinguishable states -- the manuscript's
-`c₁₃ p₁₃ log₂ n` bits.  `lem:skeleton-dominates` supplies the labelled skeleton
-budget `C(C(n,2), m)` the object can pay from.  The comparison is exhaustive,
-so the node is a `Decision` again.
+`lem:curv-enum` is already computed by the registered certified presentation.
+This source-free row publishes its safe, curvature-positive, and flat counts
+and their exact logarithmic entropy ratio.  It performs no second enumeration,
+copies no numerical answer, and constructs no label carrier.
+-/
+
+/-- `lem:curv-enum`, projected directly from the registered presentation. -/
+@[reducible] noncomputable def barrierEnumerationRow
+    (data : Data.{u}) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.barrierEnumeration
+    (sourceFreeManifest (K .barrierEnumeration))
+    (fun _inputs =>
+      .cons (key := K .barrierEnumeration)
+        ⟨by
+          change BarrierEnumerationStatement data
+          let barrier := data.windowBarrier
+          letI := barrier.indexFintype
+          let row := data.curvatureBarrierRow
+          let left := barrier.table.counts.leftLength row
+          let right := barrier.table.counts.rightLength row
+          let safe := barrier.table.counts.storedSafe row
+          let flat := barrier.table.counts.storedFlat row
+          let curvaturePositive := safe - flat
+          refine ⟨safe, curvaturePositive, flat, rfl, rfl, rfl,
+            barrier.table.storedSafe_eq row, ?_,
+            barrier.table.storedFlat_eq row, rfl⟩
+          change barrier.table.counts.storedSafe row -
+              barrier.table.counts.storedFlat row =
+            barrier.profile.obstructedCount left right
+          rw [barrier.table.storedSafe_eq, barrier.table.storedFlat_eq]
+          rfl⟩
+        .nil)
+
+/-! ## Node `[21]`: the separated window package
+
+`lem:p13-window-package`.  For every selected dyadic scale, the complete
+certified table contributes the ratio between the products of its safe and
+flat columns.  The package compounds that exact ratio across all scales and
+only then takes the integer logarithm.  This is the manuscript's
+`(c₁₃ - o(1)) p₁₃ log₂ n` exponent; taking the integer floor before
+scale aggregation would incorrectly replace `c₁₃` by `118`.
 
 The scale factor is not decorative: without it the demand grows a whole
 `log₂ n` slower than the manuscript's, and the cap node `[22]`--`[24]` derives
@@ -437,8 +473,8 @@ summed form of the same count).  That is what makes the retained cap survive
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.windowPackage
-    { Requires := [K .barrierEnumeration, K .maximalPacking,
-        K .sparseSurplusSurvivor, K .surplusAtOrBelow]
+    { Requires := [K .maximalPacking, K .sparseSurplusSurvivor,
+        K .surplusAtOrBelow]
       Produces := [K .windowPackageSeparated]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -449,16 +485,21 @@ summed form of the same count).  That is what makes the retained cap survive
             .windowPackageSeparated inputs.current from
           ⟨by
             classical
-            have enumeration := (inputs.get (K .barrierEnumeration)).down
             simp only [Holds]
-            rw [enumeration.1]
             have _nearCubic := (inputs.get (K .surplusAtOrBelow)).down
             let survivor := (inputs.get (K .sparseSurplusSurvivor)).down
             obtain ⟨_positive, packing, valid, maximum, maximal⟩ :=
               (inputs.get (K .maximalPacking)).down
             refine ⟨packing, valid, maximum, maximal, ?_⟩
-            let bits := data.windowBarrier.binaryRateFloor *
-              data.separatedScaleCount inputs.current.object.vertexCount
+            let barrier := data.windowBarrier
+            letI := barrier.indexFintype
+            let scales := data.separatedScaleCount
+              inputs.current.object.vertexCount
+            let safe := Core.Finite.CertifiedTableAggregation.safeProduct
+              barrier.table
+            let flat := Core.Finite.CertifiedTableAggregation.flatProduct
+              barrier.table
+            let bits := Nat.log2 ((safe ^ scales - 1) / flat ^ scales)
             let Coordinate := Graph.DeclaredSignature.Coordinate
               inputs.current.object.Vertex
                 (Fin bits × Finset inputs.current.object.Vertex)
@@ -495,8 +536,10 @@ summed form of the same count).  That is what makes the retained cap survive
                 simp [Nat.mul_comm]
               · intro left leftMem right rightMem different
                 exact packagesDisjoint left leftMem right rightMem different
-            refine ⟨(fun window _member => packageCard window),
-              packagesDisjoint, familyCard, ?_, ?_⟩
+            refine ⟨(fun window _member => by
+                simpa only [package, bits] using packageCard window),
+              (by simpa only [package] using packagesDisjoint),
+              (by simpa only [family, bits] using familyCard), ?_, ?_⟩
             · intro declared _functional
               by_contra reducing
               rcases declared.localize reducing with replacement |
@@ -597,35 +640,44 @@ are not callback arguments or mutable routing state. -/
   exact factOnly `Hypostructure.Graph.Strategy.Spine.hotColdPartition
     (rowManifest (K .maximalPacking) (K .hotColdPartition) (by simp [K_eq_iff]))
     (fun inputs =>
-      let maximal := (inputs.get (K .maximalPacking)).down.2
-      let packing := Classical.choose maximal
-      let packingFacts := Classical.choose_spec maximal
-      let hot := packing.filter (LiveHotWindow data inputs.current.object)
-      let cold := packing.filter (fun window =>
-        ¬ LiveHotWindow data inputs.current.object window)
+      let _maximal := (inputs.get (K .maximalPacking)).down
+      let packing := canonicalWindowPacking data inputs.current.object
+      let packingFacts := Classical.choose_spec
+        (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)
+      let hot := canonicalHotWindows data inputs.current.object
+      let cold := canonicalColdWindows data inputs.current.object
       let split : IsHotColdWindowPartition data inputs.current.object packing hot cold := by
-        refine ⟨packingFacts.1, packingFacts.2.1, packingFacts.2.2, ?_, ?_, ?_, ?_⟩
+        refine ⟨packingFacts.1, packingFacts.2, ?_, ?_, ?_, ?_, ?_⟩
+        · intro support window
+          exact inputs.current.object.exists_mem_not_disjoint_of_card_eq
+            data.windowOrder_pos packingFacts.1 packingFacts.2 window
         · intro window
-          simp [hot]
+          simp [hot, packing, canonicalHotWindows]
         · intro window
-          simp [cold]
+          simp [cold, packing, canonicalColdWindows]
         · exact Finset.disjoint_left.mpr (by
             intro window inHot inCold
-            simp only [hot, Finset.mem_filter] at inHot
-            simp only [cold, Finset.mem_filter] at inCold
+            simp only [hot, canonicalHotWindows, Finset.mem_filter] at inHot
+            simp only [cold, canonicalColdWindows, Finset.mem_filter] at inCold
             exact inCold.2 inHot.2)
         · intro window
           constructor
           · intro member
             by_cases live : LiveHotWindow data inputs.current.object window
-            · exact Or.inl (by simp [hot, member, live])
-            · exact Or.inr (by simp [cold, member, live])
+            · exact Or.inl (by simp [hot, packing, canonicalHotWindows, member, live])
+            · exact Or.inr (by simp [cold, packing, canonicalColdWindows, member, live])
           · intro member
             rcases member with member | member
-            · exact Finset.mem_of_mem_filter _ member
-            · exact Finset.mem_of_mem_filter _ member
+            · have decoded : window ∈ packing ∧
+                  LiveHotWindow data inputs.current.object window := by
+                simpa [hot, packing, canonicalHotWindows] using member
+              exact decoded.1
+            · have decoded : window ∈ packing ∧
+                  ¬ LiveHotWindow data inputs.current.object window := by
+                simpa [cold, packing, canonicalColdWindows] using member
+              exact decoded.1
       .cons (key := K .hotColdPartition)
-        ⟨packing, hot, cold, split⟩
+        ⟨split⟩
         .nil)
 
 /-! ## Nodes `[22]`--`[24]`: the finite window-density budget
@@ -1007,8 +1059,11 @@ label injectivity, a finite subfamily of the independent coordinates determines
 its response in every realization.  No state space or target rank is formed at
 this label. -/
 @[reducible] noncomputable def functionalRankQuotientRow
+    (data : Data.{u})
     : AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.functionalRankQuotient
+  by
+  classical
+  exact factOnly `Hypostructure.Graph.Strategy.Spine.functionalRankQuotient
     (rowManifest (K .admissibleRankQuotient) (K .functionalRankQuotient)
       (by simp [K_eq_iff]))
     (fun inputs =>
@@ -1048,6 +1103,7 @@ The row commits only the definition at this label: a surviving subfamily of
 maximum cardinality.  `lem:target-rank-circuit` is a later fact and is not
 proved or published here. -/
 @[reducible] noncomputable def curvatureTargetRankRow
+    (data : Data.{u})
     : AtomicStrategy (Input BranchState Presentation presentation data) := by
   classical
   exact
@@ -1141,6 +1197,7 @@ label-injective on the selected family, and its `FunctionalOn` clause supplies
 the finite determining subfamily.  Since that subfamily lies in the selected
 family while the new coordinate does not, the dependence is proper. -/
 @[reducible] noncomputable def targetRankCircuitRow
+    (data : Data.{u})
     : AtomicStrategy (Input BranchState Presentation presentation data) := by
   classical
   exact
@@ -1172,6 +1229,9 @@ family while the new coordinate does not, the dependence is proper. -/
                       (Graph.FiniteObject.internalWedgeSupport
                         (region := inputs.current.object.remainderSupport packing)),
                       declared.toRankQuotient.FunctionalOn
+                          ↑(inputs.current.object.internalWedgeFamily
+                            (inputs.current.object.remainderSupport packing)) ∧
+                        declared.toRankQuotient.RankReducingOn
                           ↑(inputs.current.object.internalWedgeFamily
                             (inputs.current.object.remainderSupport packing)) ∧
                         declared.toRankQuotient.Determines test determiners := by
@@ -1217,10 +1277,20 @@ family while the new coordinate does not, the dependence is proper. -/
                   independentInjective
                   (by simpa [candidate] using candidateNotInjective) with
                 ⟨determiners, finite, determinersSubset, determines⟩
-              refine ⟨determiners, determinersSubset, finite, ?_, declared, ?_, ?_⟩
+              have reducing : quotient.RankReducingOn
+                  ↑(inputs.current.object.internalWedgeFamily
+                    (inputs.current.object.remainderSupport packing)) :=
+                Core.TargetRank.RankQuotient.RankReducingOn.mono
+                  (by
+                    intro coordinate member
+                    exact candidateSubset member)
+                  candidateNotInjective
+              refine ⟨determiners, determinersSubset, finite, ?_, declared,
+                ?_, ?_, ?_⟩
               · intro testInDeterminers
                 exact testOutside (determinersSubset testInDeterminers)
               · simpa [declaredEq] using functional
+              · simpa [declaredEq] using reducing
               · simpa [declaredEq] using determines
             refine ⟨packing, valid, card, independent, independentSubset,
               independentSurvives, rank, extract, ?_⟩
@@ -1228,7 +1298,9 @@ family while the new coordinate does not, the dependence is proper. -/
               have familySubset :
                   (↑(inputs.current.object.internalWedgeFamily
                     (inputs.current.object.remainderSupport packing)) : Set _) ⊆
-                    ↑independent := by
+                    (↑independent : Set
+                      (inputs.current.object.InternalWedge
+                        (inputs.current.object.remainderSupport packing))) := by
                 intro test testMember
                 by_contra testOutside
                 have testMemberFinset : test ∈
@@ -1243,40 +1315,60 @@ family while the new coordinate does not, the dependence is proper. -/
               exact (independentSurvives quotient member).mono familySubset⟩
           .nil)
 
-/-! ## Node `[32]`: exact rank loss or exact full rank
+/-! ## Node `[32]`: the finite circuit form of the rank split
 
-The proof of `lem:full-rank` eliminates every proper target-dependence and then
-concludes `r_Ω(R) = W₂(R)`, which implies its displayed all-but-`o(W₂)` bound.
-This decision exposes that exact proof step.  Its left arm is any strict rank
-loss, together with the dependence extracted by `lem:target-rank-circuit`; its
-right arm is exact full rank. -/
+The paragraph immediately after `lem:target-rank-circuit` states the exact
+finite implication `r_Ω(R) < W₂(R) ⇒` a raw curvature coordinate is
+target-dependent.  The complementary finite arm is `r_Ω(R) = W₂(R)`;
+`lem:full-rank` later records its weaker asymptotic consequence
+`r_Ω(R) ≥ W₂(R) - o(W₂(R))`.  This decision publishes precisely those
+two finite branch facts on the concrete remainder. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def curvatureRankDichotomy
     {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
     (previous :
-      ExactLedger (Input BranchState Presentation presentation data)
-        current known)
-    [Core.Residual.FactKeys.Has (K .targetRankCircuit) known]
-    (dropFresh : K .curvatureRankDrop ∉ known)
-    (fullFresh : K .curvatureFullRank ∉ known) :
-    Decision (K .curvatureRankDrop) (K .curvatureFullRank) previous :=
-  Decision.run previous (K .curvatureRankDrop) (K .curvatureFullRank)
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .targetRankCircuit) known]
+    (dropFresh : ¬ List.Mem (K .curvatureRankDrop) known)
+    (fullFresh : ¬ List.Mem (K .curvatureFullRank) known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .curvatureRankDrop) (K .curvatureFullRank) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .curvatureRankDrop) (K .curvatureFullRank)
     `Hypostructure.Graph.Strategy.Spine.curvatureRankDichotomy
     (by
       classical
-      rcases (ExactLedger.get previous (K .targetRankCircuit)).down with
-        ⟨packing, valid, packingCard, independent, independentSubset,
-          _independentSurvives, rank, extract, _fullIfNoDependence⟩
+      let circuit := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .targetRankCircuit)).down
+      let packing := Classical.choose circuit
+      have packingSpec := Classical.choose_spec circuit
+      have valid := packingSpec.1
+      have packingCard := packingSpec.2.1
+      let independent := Classical.choose packingSpec.2.2
+      have independentSpec := Classical.choose_spec packingSpec.2.2
+      have independentSubset := independentSpec.1
+      have rank := independentSpec.2.2.1
+      have extract := independentSpec.2.2.2.1
       by_cases below :
           remainderCurvatureTargetRank data current.object packing <
             remainderWedgeSupply current.object packing
-      · refine .inl ⟨⟨packing, valid, below, ?_⟩⟩
+      · refine .inl ⟨⟨packing, valid, packingCard, below, ?_⟩⟩
         have outside : ∃ test ∈
             current.object.internalWedgeFamily
               (current.object.remainderSupport packing),
             test ∉ independent := by
           by_contra noOutside
-          push_neg at noOutside
+          push Not at noOutside
           have familySubset :
               current.object.internalWedgeFamily
                   (current.object.remainderSupport packing) ⊆ independent :=
@@ -1285,266 +1377,190 @@ noncomputable def curvatureRankDichotomy
               current.object.internalWedgeFamily
                 (current.object.remainderSupport packing) :=
             Finset.Subset.antisymm independentSubset familySubset
+          change independent.card =
+            current.object.curvatureTargetRank
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK)
+              (current.object.remainderSupport packing) at rank
           rw [equal, Graph.FiniteObject.internalWedgeFamily_card] at rank
           exact (Nat.ne_of_lt below) rank.symm
         obtain ⟨test, testMember, testOutside⟩ := outside
         obtain ⟨determiners, determinersSubset, finite, proper, declared,
-          functional, determines⟩ := extract test testMember testOutside
-        refine ⟨test, testMember, determiners,
+          functional, reducing, determines⟩ :=
+          extract test testMember testOutside
+        exact ⟨test, testMember, determiners,
           determinersSubset.trans independentSubset, finite, proper,
-          declared, functional, determines⟩
+          declared, functional, reducing, determines⟩
       · refine .inr ⟨⟨packing, valid, packingCard, ?_⟩⟩
-        exact Nat.le_antisymm
-          (Graph.FiniteObject.curvatureTargetRank_le_internalWedgeCount
-            _ _ _ _)
-          (Nat.le_of_not_gt below))
+        apply Nat.le_antisymm
+        · change
+            current.object.curvatureTargetRank
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK)
+                (current.object.remainderSupport packing) ≤
+              current.object.internalWedgeCount
+                (current.object.remainderSupport packing)
+          rw [← rank]
+          calc
+            independent.card ≤
+                (current.object.internalWedgeFamily
+                  (current.object.remainderSupport packing)).card :=
+              Finset.card_le_card independentSubset
+            _ = current.object.internalWedgeCount
+                  (current.object.remainderSupport packing) :=
+              Graph.FiniteObject.internalWedgeFamily_card
+                (object := current.object)
+                (support := current.object.remainderSupport packing)
+        exact Nat.le_of_not_gt below)
     dropFresh fullFresh
 
-/-! ## Nodes `[33]` and `[35]`: Branch D, entered with its determination certificate
+/-! ## Nodes `[33]` and `[35]`: minimal curvature-dependence support
 
-Node `[33]` is the yes arm of `[32]` and node `[35]` is the same box redrawn as
-the entry of the rank-drop branch, so the two carry one statement: Branch D, the
-rank-reducing curvature dependence.
-
-The rank drop is committed as an existential dependence.  The manuscript opens
-`lem:curvature-dependence-routing`'s proof by turning it into the object the
-branch actually routes: *"Choose a determination certificate with
-inclusion-minimal connected support.  The certificate has an admissible quotient
-`q` and a finite support set `𝒫`."*  So this row unpacks the dependence into
-that certificate -- all four clauses of `def:curvature-target-dependence`,
-carried by `DeterminationCertificate` -- and commits it with the minimality the
-proof chooses.
-
-Branch D is a rank-reducing curvature *dependence*, so the determined coordinate
-`a` and its determiners `ℬ` travel with the quotient: dropping them would leave
-"some rank-reducing quotient exists", which is a different and weaker statement
-and is not what `[38]` and `[40]` route.
-
-Nothing is re-derived.  The dependence's own witness clause already names the
-member of the system that realizes it, supplies the rank reduction the branch
-was entered on, and supplies the determination; its `determined`, `supported`
-and `proper` fields are the membership and properness clauses; and membership in
-the manuscript's system is by definition the existence of the admissible
-quotient.  The one thing the row does is the manuscript's choice: the supports
-carrying a determination certificate form a finite family of `Finset`s, so one
-of minimum cardinality exists, and a proper subset is strictly smaller -- which
-is inclusion-minimality. -/
+The rank-drop arm already contains a concrete proper determination.  Following
+`lem:curvature-dependence-routing`, this row chooses, for its fixed determined
+coordinate, a certificate whose connected declared support is inclusion-minimal.
+All candidates are local mathematical objects; the sole proof-data input and
+output are the exact-ledger facts named in the manifest. -/
 @[reducible] noncomputable def branchDependenceRow
-    (curvatureRankDrop branchDependence :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : curvatureRankDrop ≠ branchDependence)
-    (dropOf : (input : Input BranchState Presentation presentation data) →
-      curvatureRankDrop.At input →
-      ∃ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing ∧
-          remainderCurvatureTargetRank data input.object packing <
-              remainderWedgeSupply input.object packing ∧
-            let support := input.object.remainderSupport packing
-            let family := input.object.internalWedgeFamily support
-            ∃ test ∈ family,
-              ∃ determiners : Set (input.object.InternalWedge support),
-                determiners ⊆ ↑family ∧ determiners.Finite ∧
-                  test ∉ determiners ∧
-                    ∃ declared : Graph.DeclaredQuotient
-                      (Graph.MinimumDegreeAtLeast data.threshold)
-                      (Graph.HasCycleWithLength data.LengthOK) input.object family
-                      (Graph.FiniteObject.internalWedgeSupport
-                        (region := support)),
-                      declared.toRankQuotient.FunctionalOn ↑family ∧
-                        declared.toRankQuotient.Determines test determiners)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (∃ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data input.object packing,
-            DeterminationCertificate data input.object packing quotient ∧
-              ∀ smaller : Finset input.object.Vertex,
-                smaller ⊂ quotient.support →
-                ∀ narrower : remainderQuotient data input.object packing,
-                  narrower.support = smaller →
-                  ¬ DeterminationCertificate data input.object packing
-                      narrower) →
-      branchDependence.At input) :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.branchDependence
-    (rowManifest curvatureRankDrop branchDependence distinct)
-    (fun inputs =>
-      .cons (key := branchDependence)
-        (encode inputs.current (by
-          classical
-          letI : Fintype inputs.current.object.Vertex :=
-            @FinEnum.instFintype _ inputs.current.object.vertices
-          obtain ⟨packing, valid, _below, test, determiners, dependence⟩ :=
-            dropOf inputs.current (inputs.get curvatureRankDrop)
-          -- The dependence names the member of the manuscript's own system that
-          -- realizes it: it reduces rank on the raw curvature tests *and*
-          -- determines the coordinate from the subfamily, which is clause (c).
-          obtain ⟨quotient, member, reducing, determines⟩ := dependence.witness
-          -- Membership in that system *is* the admissible quotient.
-          obtain ⟨⟨admissible, represents⟩, _functional⟩ := member
-          subst represents
-          -- The dependence, as a determination certificate: clauses (a), (b)
-          -- and (d) are the quotient's own fields, and (c) with its properness
-          -- clause is what the dependence carries.
-          have certified :
-              DeterminationCertificate data inputs.current.object packing
-                admissible :=
-            ⟨reducing, test, dependence.determined, determiners,
-              dependence.supported, dependence.proper, determines⟩
-          -- *"Choose a determination certificate with inclusion-minimal
-          -- connected support."*  The supports that carry a determination
-          -- certificate form a finite family; one of minimum size is
-          -- inclusion-minimal, because a proper subset is strictly smaller.
-          set carriers :=
-            (Finset.univ : Finset (Finset inputs.current.object.Vertex)).filter
-              fun support => ∃ candidate :
-                  remainderQuotient data inputs.current.object packing,
-                candidate.support = support ∧
-                  DeterminationCertificate data inputs.current.object packing
-                    candidate
-            with carriers_def
-          have inhabited : admissible.support ∈ carriers := by
-            simp only [carriers_def, Finset.mem_filter, Finset.mem_univ,
-              true_and]
-            exact ⟨admissible, rfl, certified⟩
-          obtain ⟨chosen, member, least⟩ :=
-            Finset.exists_min_image carriers Finset.card ⟨_, inhabited⟩
-          simp only [carriers_def, Finset.mem_filter, Finset.mem_univ,
-            true_and] at member
-          obtain ⟨minimal, supportEq, minimalCertified⟩ := member
-          refine ⟨packing, valid, minimal, minimalCertified,
-            fun smaller strict narrower narrowerSupport narrowerCertified => ?_⟩
-          have carried : smaller ∈ carriers := by
-            simp only [carriers_def, Finset.mem_filter, Finset.mem_univ,
-              true_and]
-            exact ⟨narrower, narrowerSupport, narrowerCertified⟩
-          have := least smaller carried
-          rw [supportEq] at strict
-          exact absurd (Finset.card_lt_card strict) (by omega)))
-        .nil)
+    (data : Data.{u}) :
+    AtomicStrategy (Input BranchState Presentation presentation data) := by
+  classical
+  exact
+    factOnly `Hypostructure.Graph.Strategy.Spine.branchDependence
+      (rowManifest (K .curvatureRankDrop) (K .branchDependence)
+        (by simp [K_eq_iff]))
+      (fun inputs =>
+        let inherited := (inputs.get (K .curvatureRankDrop)).down
+        .cons (key := K .branchDependence)
+          ⟨by
+            letI : Fintype inputs.current.object.Vertex :=
+              @FinEnum.instFintype _ inputs.current.object.vertices
+            rcases inherited with
+              ⟨packing, valid, packingCard, below, test, testMember,
+                determiners, determinersSubset, finite, proper, declared,
+                functional, reducing, determines⟩
+            let support := inputs.current.object.remainderSupport packing
+            let family := inputs.current.object.internalWedgeFamily support
+            let supportData := family
+            have supportDataCarried : ∀ coordinate ∈ supportData,
+                Graph.FiniteObject.internalWedgeSupport
+                    (region := support) coordinate ⊆ declared.support := by
+              intro coordinate coordinateMember
+              exact declared.carries coordinate coordinateMember
+            have certified :
+                DeterminationCertificate data inputs.current.object packing test
+                  determiners declared supportData :=
+              ⟨testMember, determinersSubset, finite, proper, functional,
+                reducing, determines, rfl, supportDataCarried⟩
+            refine ⟨packing, valid, packingCard, below, test, ?_⟩
+            dsimp only
+            set Supports :=
+              inputs.current.object.vertexFinset.powerset.filter
+                fun candidateSupport =>
+                  ∃ basis candidate,
+                    candidate.support = candidateSupport ∧
+                      ∃ candidateSupportData,
+                        DeterminationCertificate data inputs.current.object
+                          packing test basis candidate candidateSupportData
+            change ∃ selectedDeterminers selectedQuotient selectedSupportData,
+              DeterminationCertificate data inputs.current.object packing test
+                    selectedDeterminers selectedQuotient selectedSupportData ∧
+                ∀ smaller : Finset inputs.current.object.Vertex,
+                  smaller ⊂ selectedQuotient.support →
+                    ∀ narrower : remainderQuotient data inputs.current.object packing,
+                      narrower.support = smaller →
+                        ∀ narrowerDeterminers narrowerSupportData,
+                          ¬ DeterminationCertificate data inputs.current.object
+                            packing test narrowerDeterminers narrower
+                              narrowerSupportData
+            have inhabited : declared.support ∈ Supports := by
+              simp only [Supports, Finset.mem_filter, Finset.mem_powerset]
+              exact ⟨by intro vertex _; simp, determiners, declared, rfl,
+                supportData, certified⟩
+            obtain ⟨leastSupport, leastMember, least⟩ :=
+              Finset.exists_min_image Supports Finset.card ⟨_, inhabited⟩
+            have leastInSupports := leastMember
+            simp only [Supports, Finset.mem_filter, Finset.mem_powerset]
+              at leastInSupports
+            rcases leastInSupports with ⟨_, leastInSupports⟩
+            obtain ⟨chosenDeterminers, chosen, supportEq,
+              chosenSupportData, chosenCertified⟩ := leastInSupports
+            subst leastSupport
+            refine ⟨chosenDeterminers, chosen, chosenSupportData,
+              chosenCertified, ?_⟩
+            intro smaller strict narrower narrowerSupport narrowerDeterminers
+              narrowerSupportData narrowerCertified
+            have carried : smaller ∈ Supports := by
+              simp only [Supports, Finset.mem_filter, Finset.mem_powerset]
+              exact ⟨by intro vertex _; simp, narrowerDeterminers, narrower,
+                narrowerSupport, narrowerSupportData, narrowerCertified⟩
+            have minimum := least smaller carried
+            exact absurd (Finset.card_lt_card strict) (by omega)⟩
+          .nil)
 
-/-! ## Node `[36]`: the context-validity test, and its terminal `[37]`
+/-! ## Node `[36]`: the context-validity test
 
-*"Valid against every outside context?"*  The no arm is the terminal `[37]`, a
-target-defective quotient -- case (i) of `lem:curvature-dependence-routing`.
-
-The branch is the manuscript's eligibility test on the identification: both
-clauses of `def:target-complete-quotient`, the boundary-degree fibre and the
-all-context response.  Failing either is target-defective and the manuscript
-says so of each -- of the second in `def:target-complete-quotient` itself
-(*"an identification failing this context-universal test is target-defective"*)
-and of the first in the sparse-exit routing (*"a non-fibrewise quotient is
-target-defective"*).  Invariant 6 is attributed to `[36]` *and* `[37]` with
-failure mode "otherwise target-defective", so `[37]` admits both and the two are
-the halves of one negation rather than a third alternative.
-
-`lem:separated-testers` supplies the exhaustiveness -- *"any quotient
-identifying `w(u)` with `w(v)` is either context-universal or target-defective"*
--- and `Graph.Response.contextEquivalent_or_targetDefect` is that clause at the
-framework's own interface: an identification is separated by an outside context
-or it is not, with no third outcome and with the separating context exhibited in
-the first case.
-
-Nothing admissible is used to *decide* the branch: the test is the manuscript's
-own excluded middle on the identification, and it is decided without looking at
-why the quotient was chosen.  Admissibility is spent only afterwards, on the
-terminal, where `lem:degree-profile-fibres` and `lem:context-universality`
-together close `[37]`. -/
+The literal `[33]` residual contains one inclusion-minimal determination
+certificate.  Node `[36]` asks the paper's exact question of that certificate:
+does its determination remain valid against every outside context?  The no arm
+exhibits an identified pair and a distinguishing context; the yes arm records
+context universality for that same certificate.  Boundary-fibre preservation
+is already part of the admissible quotient and is not a second test here. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def contextValidityDichotomy
     {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
     (previous :
-      ExactLedger (Input BranchState Presentation presentation data)
-        current known)
-    (contextDefect contextUniversal :
-      FactKey (Input BranchState Presentation presentation data))
-    (encodeDefect :
-      (∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data current.object packing,
-            ∃ left right, Identified quotient left right ∧
-              (left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
-                Graph.Response.TargetDefect
-                  (Graph.HasCycleWithLength data.LengthOK) left right)) →
-      contextDefect.At current)
-    (encodeUniversal :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∀ quotient : remainderQuotient data current.object packing,
-          TargetCompleteAt data quotient) →
-      contextUniversal.At current)
-    (defectFresh : contextDefect ∉ known)
-    (universalFresh : contextUniversal ∉ known) :
-    Decision contextDefect contextUniversal previous :=
-  Decision.run previous contextDefect contextUniversal
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .branchDependence) known]
+    (defectFresh : ¬ List.Mem (K .contextDefect) known)
+    (universalFresh : ¬ List.Mem (K .contextUniversal) known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .contextDefect) (K .contextUniversal) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .contextDefect) (K .contextUniversal)
     `Hypostructure.Graph.Strategy.Spine.contextValidityDichotomy
     (by
       classical
-      -- The manuscript's eligibility test: is the identification target-complete
-      -- -- fibrewise over the boundary degree profile, and valid against every
-      -- outside context?
+      let inherited := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .branchDependence)).down
+      let packing := Classical.choose inherited
+      have packingSpec := Classical.choose_spec inherited
+      let test := Classical.choose packingSpec.2.2.2
+      have testSpec := Classical.choose_spec packingSpec.2.2.2
+      dsimp only at testSpec
+      let determiners := Classical.choose testSpec
+      have determinersSpec := Classical.choose_spec testSpec
+      let quotient := Classical.choose determinersSpec
+      have quotientSpec := Classical.choose_spec determinersSpec
+      let supportData := Classical.choose quotientSpec
+      have selected := Classical.choose_spec quotientSpec
+      have certified := selected.1
+      have minimal := selected.2
+      have valid := packingSpec.1
+      have packingCard := packingSpec.2.1
       by_cases universal :
-          ∀ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing →
-            ∀ quotient : remainderQuotient data current.object packing,
-              TargetCompleteAt data quotient
-      · -- Yes: the determination is target-complete.  This is the residual
-        -- node `[38]` is stated on.
-        exact .inr (encodeUniversal universal)
-      · -- No: an identified pair is separated, and the witness is exhibited --
-        -- which is what makes `[37]` a terminal rather than a restatement of
-        -- the negation.
-        refine .inl (encodeDefect ?_)
-        simp only [TargetCompleteAt] at universal
+          ∀ left right, Identified quotient left right →
+            Graph.Response.ContextEquivalent
+              (Graph.HasCycleWithLength data.LengthOK) left right
+      · exact .inr ⟨⟨packing, valid, packingCard, test, determiners, quotient,
+          supportData, certified, minimal, universal⟩⟩
+      · refine .inl ⟨⟨packing, valid, packingCard, test, determiners, quotient,
+          supportData, certified, minimal, ?_⟩⟩
         push Not at universal
-        obtain ⟨packing, valid, quotient, left, right, identified, failure⟩ :=
-          universal
-        refine ⟨packing, valid, quotient, left, right, identified, ?_⟩
-        by_cases profile :
-            left.boundaryDegreeProfile = right.boundaryDegreeProfile
-        · -- The fibre clause held, so it was the context clause that failed.
-          -- `lem:separated-testers`: the identification admits no third
-          -- outcome, so the failure hands back the separating context.
-          rcases Graph.Response.contextEquivalent_or_targetDefect
-              (Graph.HasCycleWithLength data.LengthOK) left right with
-            equivalent | defect
-          · exact absurd equivalent (failure profile)
-          · exact Or.inr defect
-        · -- A non-fibrewise identification: target-defective by
-          -- `lem:degree-profile-fibres`, with the mismatch itself the witness.
-          exact Or.inl profile)
+        obtain ⟨left, right, identified, failure⟩ := universal
+        exact ⟨left, right, identified,
+          Graph.Response.targetDefect_of_not_contextEquivalent failure⟩)
     defectFresh universalFresh
-
-/-- **The target-defect terminal `[37]` is uninhabited.**
-
-The pair is identified by an *admissible* rank quotient, and
-`def:admissible-rank-quotient` requires admissible quotients to preserve the
-boundary degree profile and to be target-complete against all `T`-boundaried
-contexts.  So neither way of being target-defective can occur: the profiles
-agree by `lem:degree-profile-fibres`, and no context separates the pair by
-`lem:context-universality`.
-
-This is why `[37]` is a *closed* round node in the manuscript's Part III
-diagram.  The branch test at `[36]` still has to offer the alternative -- it is
-decided on the identification, not on the certificate's provenance -- and this
-is the theorem that closes the arm once it is taken. -/
-theorem not_contextDefect
-    (residual : Input BranchState Presentation presentation data)
-    (defect : ∃ packing : Finset (Finset residual.object.Vertex),
-      residual.object.IsWindowPacking data.windowOrder packing ∧
-        ∃ quotient : remainderQuotient data residual.object packing,
-          ∃ left right, Identified quotient left right ∧
-            (left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
-              Graph.Response.TargetDefect
-                (Graph.HasCycleWithLength data.LengthOK) left right)) :
-    False := by
-  obtain ⟨_packing, _valid, quotient, left, right, identified, separated⟩ :=
-    defect
-  obtain ⟨fibrewise, universal⟩ :=
-    Graph.DeclaredQuotient.targetComplete_of_identified quotient left right
-      identified
-  rcases separated with different | ⟨outside, distinguishes⟩
-  · exact different fibrewise
-  · exact distinguishes (universal outside)
 
 /-! ## Nodes `[38]`--`[46]`: the rest of Branch D, and why every arm closes
 
@@ -1566,73 +1582,7 @@ cases and Part III's diagram closes each one:
   smaller counterexample, contradicting minimality.
 
 The two refutations are the same two the manuscript uses, and
-`Graph.DeclaredQuotient.localize` is the scope split between them.  It is
-stated once here because the three cases differ in *which* support is
-compressed, not in why compression is impossible -- which is exactly what the
-manuscript says when it routes all three to the same two exclusions. -/
-/-- **The barrier node `[45]` raises is impossible**, from the reading it
-*stored* rather than from a fresh derivation.
-
-Node `[45]` already committed the disjunction `lem:no-silent-global-smearing`
-leaves.  The terminal `[46]` therefore reads it back by exact key and refutes
-its two disjuncts -- `lem:replacement` for the proper-support replacement, and
-the selection's own minimality and avoidance for the closed representative.
-Nothing is recomputed: `Graph.DeclaredQuotient.localize` is applied once, in
-the row that commits `[45]`, and never again. -/
-theorem not_globalBarrierReading
-    (residual : Input BranchState Presentation presentation data)
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK residual.object)
-    (minimal : ∀ smaller : Graph.FiniteObject.{u},
-      (progress BranchState Presentation presentation data).Smaller
-        smaller residual.object →
-      Graph.MinimumDegreeAtLeast data.threshold smaller →
-      Graph.HasCycleWithLength data.LengthOK smaller)
-    {support : Finset residual.object.Vertex}
-    (reading :
-      Graph.Strategy.InterfaceReplacement.ReplacementSupport
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) residual.object support ∨
-        ∃ representative : Graph.FiniteObject.{u},
-          representative.LexicographicallySmaller residual.object ∧
-            Graph.MinimumDegreeAtLeast data.threshold representative ∧
-              (Graph.HasCycleWithLength data.LengthOK representative →
-              Graph.HasCycleWithLength data.LengthOK residual.object)) :
-    False := by
-  rcases reading with
-    replacement | ⟨representative, smaller, representativeBaseline, transfer⟩
-  · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
-      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-      Presentation presentation
-      (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
-      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-        Presentation presentation
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-      { G := residual.object, baseline := residual.baseline,
-        state := residual.branchState, avoids := avoids,
-        minimal := minimal }
-      support replacement
-  · exact avoids (transfer (minimal representative smaller
-      representativeBaseline))
-
-theorem not_determinationCertificate
-    (residual : Input BranchState Presentation presentation data)
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK residual.object)
-    (minimal : ∀ smaller : Graph.FiniteObject.{u},
-      (progress BranchState Presentation presentation data).Smaller
-        smaller residual.object →
-      Graph.MinimumDegreeAtLeast data.threshold smaller →
-      Graph.HasCycleWithLength data.LengthOK smaller)
-    {packing : Finset (Finset residual.object.Vertex)}
-    {quotient : remainderQuotient data residual.object packing}
-    (certified : DeterminationCertificate data residual.object packing quotient) :
-    False := by
-  -- `[39]` and `[42]` reach their terminal straight from a branch test, with no
-  -- row in between to commit the reading, so the scope split is taken here --
-  -- once -- and handed to the same refutation `[46]` uses.
-  exact not_globalBarrierReading residual avoids minimal
-    (Graph.DeclaredQuotient.localize quotient certified.1)
+`Graph.DeclaredQuotient.localize` is the scope split between them. -/
 
 /-! ### Node `[38]`: is the determination certified already at `C`?
 
@@ -1642,89 +1592,90 @@ outside context already with support `C`, then `q` is a target-complete
 rank-reducing quotient of the proper atom `C`"*.  The no arm is node `[40]`: the
 determination reaches outside `C`, so the connected support it needs strictly
 contains `C`, which is case (iii)'s entry. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def atomCompressionDichotomy
     {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
     (previous :
-      ExactLedger (Input BranchState Presentation presentation data)
-        current known)
-    (branchDependence contextUniversal atomCompression delocalizedSupport :
-      FactKey (Input BranchState Presentation presentation data))
-    [Core.Residual.FactKeys.Has branchDependence known]
-    [Core.Residual.FactKeys.Has contextUniversal known]
-    (universalOf : contextUniversal.At current →
-      ∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∀ quotient : remainderQuotient data current.object packing,
-          TargetCompleteAt data quotient)
-    (certificateOf : branchDependence.At current →
-      ∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data current.object packing,
-            DeterminationCertificate data current.object packing quotient ∧
-              ∀ smaller : Finset current.object.Vertex,
-                smaller ⊂ quotient.support →
-                ∀ narrower : remainderQuotient data current.object packing,
-                  narrower.support = smaller →
-                  ¬ DeterminationCertificate data current.object packing
-                      narrower)
-    (encodeCompression :
-      (∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data current.object packing,
-            DeterminationCertificate data current.object packing quotient ∧
-              TargetCompleteAt data quotient ∧
-                quotient.support ⊆
-                  current.object.remainderSupport packing) →
-      atomCompression.At current)
-    (encodeDelocalized :
-      (∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data current.object packing,
-            DeterminationCertificate data current.object packing quotient ∧
-              TargetCompleteAt data quotient ∧
-                ¬ quotient.support ⊆
-                    current.object.remainderSupport packing ∧
-                  current.object.remainderSupport packing ⊂
-                    delocalizationSupport data current.object packing
-                      quotient) →
-      delocalizedSupport.At current)
-    (compressionFresh : atomCompression ∉ known)
-    (delocalizedFresh : delocalizedSupport ∉ known) :
-    Decision atomCompression delocalizedSupport previous :=
-  Decision.run previous atomCompression delocalizedSupport
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .contextUniversal) known]
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .maximalPacking) known]
+    (compressionFresh : ¬ List.Mem (K .atomCompression) known)
+    (delocalizedFresh : ¬ List.Mem (K .delocalizedSupport) known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .atomCompression) (K .delocalizedSupport) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .atomCompression) (K .delocalizedSupport)
     `Hypostructure.Graph.Strategy.Spine.atomCompressionDichotomy
     (by
       classical
-      -- The node's own question, as an excluded middle on its yes arm: is the
-      -- determination certified without leaving `C`?
-      -- Node `[36]`'s yes arm, read by exact key: the determination this node
-      -- asks about is the target-complete one, which is what makes case (ii) a
-      -- *target-complete* compression rather than a bare rank reduction.
-      have complete := universalOf (ExactLedger.get previous contextUniversal)
+      let inherited := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .contextUniversal)).down
+      let packing := Classical.choose inherited
+      have packingSpec := Classical.choose_spec inherited
+      have valid := packingSpec.1
+      have packingCard := packingSpec.2.1
+      let test := Classical.choose packingSpec.2.2
+      have testSpec := Classical.choose_spec packingSpec.2.2
+      let determiners := Classical.choose testSpec
+      have determinersSpec := Classical.choose_spec testSpec
+      let quotient := Classical.choose determinersSpec
+      have quotientSpec := Classical.choose_spec determinersSpec
+      let supportData := Classical.choose quotientSpec
+      have selected := Classical.choose_spec quotientSpec
+      have certified := selected.1
+      have universal := selected.2.2
+      have packingPositive :=
+        (@ExactLedger.get
+          (Input BranchState Presentation presentation data) _
+          (factSystem BranchState Presentation presentation data)
+          current known previous (K .maximalPacking)).down.1
+      have complete : TargetCompleteAt data quotient := by
+        intro left right identified
+        exact ⟨quotient.fibrewise left right identified,
+          universal left right identified⟩
       by_cases inside :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              ∃ quotient : remainderQuotient data current.object packing,
-                DeterminationCertificate data current.object packing quotient ∧
-                  TargetCompleteAt data quotient ∧
-                    quotient.support ⊆
-                      current.object.remainderSupport packing
-      · exact .inl (encodeCompression inside)
-      · -- No: the certificate Branch D was entered with reaches outside `C`,
-        -- so the support the determination needs strictly contains it.
-        refine .inr (encodeDelocalized ?_)
-        obtain ⟨packing, valid, quotient, certified, _minimalSupport⟩ :=
-          certificateOf (ExactLedger.get previous branchDependence)
-        have outside :
-            ¬ quotient.support ⊆ current.object.remainderSupport packing :=
-          fun contained =>
-            inside ⟨packing, valid, quotient, certified,
-              complete packing valid quotient, contained⟩
-        exact ⟨packing, valid, quotient, certified,
-          complete packing valid quotient, outside,
+          quotient.support ⊆ current.object.remainderSupport packing
+      · have packingNonempty : packing.Nonempty :=
+          Finset.card_pos.mp (packingCard ▸ packingPositive)
+        let member := Classical.choose packingNonempty
+        have memberMem := Classical.choose_spec packingNonempty
+        have windowNonempty :=
+          current.object.nonempty_of_inducesWindow data.windowOrder_pos
+            (valid.1 member memberMem)
+        let vertex := Classical.choose windowNonempty
+        have vertexMem := Classical.choose_spec windowNonempty
+        have supportProper : ∃ vertex, vertex ∉ quotient.support := by
+          refine ⟨vertex, ?_⟩
+          intro vertexInSupport
+          have vertexInRemainder := inside vertexInSupport
+          exact
+            (current.object.notMem_windowSupport_of_mem_remainderSupport
+              vertexInRemainder)
+              (current.object.mem_windowSupport memberMem vertexMem)
+        have reducing : quotient.toRankQuotient.RankReducingOn
+            ↑(remainderCurvatureTests current.object packing) :=
+          certified.2.2.2.2.2.1
+        have replacement := quotient.properRepresentative supportProper reducing
+        exact .inl ⟨⟨packing, valid, quotient,
+          ⟨test, determiners, supportData, certified⟩, complete, inside,
+          replacement⟩⟩
+      · exact .inr ⟨⟨packing, valid, quotient,
+          ⟨test, determiners, supportData, certified⟩, complete, inside,
           remainderSupport_ssubset_delocalizationSupport data quotient
-            outside⟩)
+            inside⟩⟩)
     compressionFresh delocalizedFresh
 
 /-! ### Node `[41]`: is the enlarged support proper in `G`?
@@ -1735,78 +1686,66 @@ dependence fails against some outside `∂Z`-context, it is target-defective.  I
 it succeeds against every outside context, it is a nontrivial target-complete
 compression of the proper support `Z`, forbidden by `cor:uncompressible`."*  The
 no arm is node `[43]`, whole-graph delocalization. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def delocalizationScopeDichotomy
     {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
     (previous :
-      ExactLedger (Input BranchState Presentation presentation data)
-        current known)
-    (delocalizedSupport properDelocalization globalDelocalization :
-      FactKey (Input BranchState Presentation presentation data))
-    [Core.Residual.FactKeys.Has delocalizedSupport known]
-    (supportOf : delocalizedSupport.At current →
-      ∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data current.object packing,
-            DeterminationCertificate data current.object packing quotient ∧
-              TargetCompleteAt data quotient ∧
-                ¬ quotient.support ⊆
-                    current.object.remainderSupport packing ∧
-                  current.object.remainderSupport packing ⊂
-                    delocalizationSupport data current.object packing
-                      quotient)
-    (encodeProper :
-      (∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data current.object packing,
-            DeterminationCertificate data current.object packing quotient ∧
-              TargetCompleteAt data quotient ∧
-                ¬ quotient.support ⊆
-                    current.object.remainderSupport packing ∧
-                  ∃ vertex, vertex ∉ delocalizationSupport data current.object
-                    packing quotient) →
-      properDelocalization.At current)
-    (encodeGlobal :
-      (∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data current.object packing,
-            DeterminationCertificate data current.object packing quotient ∧
-              TargetCompleteAt data quotient ∧
-                ¬ quotient.support ⊆
-                    current.object.remainderSupport packing ∧
-                  ∀ vertex, vertex ∈ delocalizationSupport data current.object
-                    packing quotient) →
-      globalDelocalization.At current)
-    (properFresh : properDelocalization ∉ known)
-    (globalFresh : globalDelocalization ∉ known) :
-    Decision properDelocalization globalDelocalization previous :=
-  Decision.run previous properDelocalization globalDelocalization
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .delocalizedSupport) known]
+    (properFresh : ¬ List.Mem (K .properDelocalization) known)
+    (globalFresh : ¬ List.Mem (K .globalDelocalization) known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .properDelocalization) (K .globalDelocalization) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .properDelocalization) (K .globalDelocalization)
     `Hypostructure.Graph.Strategy.Spine.delocalizationScopeDichotomy
     (by
       classical
-      -- The node's own question, as an excluded middle on its yes arm: is the
-      -- enlarged support still proper in `G`?
+      let inherited := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .delocalizedSupport)).down
+      let packing := Classical.choose inherited
+      have packingSpec := Classical.choose_spec inherited
+      have valid := packingSpec.1
+      let quotient := Classical.choose packingSpec.2
+      have quotientSpec := Classical.choose_spec packingSpec.2
+      have certificate := quotientSpec.1
+      have complete := quotientSpec.2.1
+      have outside := quotientSpec.2.2.1
       by_cases proper :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              ∃ quotient : remainderQuotient data current.object packing,
-                DeterminationCertificate data current.object packing quotient ∧
-                  TargetCompleteAt data quotient ∧
-                    ¬ quotient.support ⊆
-                        current.object.remainderSupport packing ∧
-                      ∃ vertex, vertex ∉ delocalizationSupport data
-                        current.object packing quotient
-      · exact .inl (encodeProper proper)
-      · -- No: the support covers every vertex, so the dependence delocalizes to
-        -- the whole graph.
-        refine .inr (encodeGlobal ?_)
-        obtain ⟨packing, valid, quotient, certified, complete, outside,
-          _strict⟩ := supportOf (ExactLedger.get previous delocalizedSupport)
-        refine ⟨packing, valid, quotient, certified, complete, outside,
-          fun vertex => ?_⟩
-        by_contra absent
-        exact proper ⟨packing, valid, quotient, certified, complete, outside,
-          vertex, absent⟩)
+          ∃ vertex, vertex ∉
+            delocalizationSupport data current.object packing quotient
+      · let vertex := Classical.choose proper
+        have vertexOutside := Classical.choose_spec proper
+        have supportProper : ∃ vertex, vertex ∉ quotient.support := by
+          refine ⟨vertex, ?_⟩
+          intro vertexInSupport
+          exact vertexOutside (Finset.mem_union_left _ vertexInSupport)
+        let test := Classical.choose certificate
+        have testSpec := Classical.choose_spec certificate
+        let determiners := Classical.choose testSpec
+        have determinersSpec := Classical.choose_spec testSpec
+        let supportData := Classical.choose determinersSpec
+        have certified := Classical.choose_spec determinersSpec
+        have reducing : quotient.toRankQuotient.RankReducingOn
+            ↑(remainderCurvatureTests current.object packing) :=
+          certified.2.2.2.2.2.1
+        have replacement := quotient.properRepresentative supportProper reducing
+        exact .inl ⟨⟨packing, valid, quotient,
+          ⟨test, determiners, supportData, certified⟩, complete, outside,
+          vertex, vertexOutside, replacement⟩⟩
+      · push Not at proper
+        exact .inr ⟨⟨packing, valid, quotient, certificate, complete, outside,
+          proper⟩⟩)
     properFresh globalFresh
 
 /-! ### Nodes `[44]` and `[45]`: the repair identity and the global barrier
@@ -1822,83 +1761,46 @@ whole-graph dependence: the closed clause of `def:admissible-rank-quotient`
 leaves a rank-reducing quotient either representable by a proper-support
 replacement or by a strictly smaller admissible closed representative, and
 `Graph.DeclaredQuotient.localize` is that split. -/
+@[reducible] noncomputable def repairIdentityRow
+    (data : Data.{u}) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.repairIdentity
+    { Requires := [K .globalDelocalization]
+      Produces := [K .repairIdentity]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .repairIdentity)
+        ⟨fun component => by
+          have _selectedSupport :=
+            (inputs.get (K .globalDelocalization)).down
+          exact component.identity⟩
+        .nil)
+
 @[reducible] noncomputable def globalBarrierRow
-    (globalDelocalization repairIdentity globalBarrier :
-      FactKey (Input BranchState Presentation presentation data))
-    (identityFresh : repairIdentity ≠ globalDelocalization)
-    (barrierFresh : globalBarrier ≠ globalDelocalization)
-    (distinct : repairIdentity ≠ globalBarrier)
-    (globalOf : (input : Input BranchState Presentation presentation data) →
-      globalDelocalization.At input →
-      ∃ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data input.object packing,
-            DeterminationCertificate data input.object packing quotient ∧
-              TargetCompleteAt data quotient ∧
-                ¬ quotient.support ⊆ input.object.remainderSupport packing ∧
-                  ∀ vertex, vertex ∈
-                    delocalizationSupport data input.object packing quotient)
-    (encodeIdentity : (input : Input BranchState Presentation presentation data) →
-      (∀ component : Graph.OneThreeRepair.Component.{u},
-        (component.internal.card : Int) =
-          component.boundary.card - 2 + 2 * component.cycleRank -
-            component.surplus) →
-      repairIdentity.At input)
-    (encodeBarrier : (input : Input BranchState Presentation presentation data) →
-      (∃ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data input.object packing,
-            DeterminationCertificate data input.object packing quotient ∧
-              (Graph.Strategy.InterfaceReplacement.ReplacementSupport
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) input.object
-                  quotient.support ∨
-                ∃ representative : Graph.FiniteObject.{u},
-                  representative.LexicographicallySmaller input.object ∧
-                    Graph.MinimumDegreeAtLeast data.threshold representative ∧
-                      (Graph.HasCycleWithLength data.LengthOK representative →
-                        Graph.HasCycleWithLength data.LengthOK
-                          input.object))) →
-      globalBarrier.At input) :
+    (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.globalBarrier
-    (pairManifest globalDelocalization repairIdentity globalBarrier
-      identityFresh barrierFresh distinct)
+    { Requires := [K .globalDelocalization, K .repairIdentity]
+      Produces := [K .globalBarrier]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
-      .cons (key := repairIdentity)
-        (encodeIdentity inputs.current fun component => component.identity)
-        (.cons (key := globalBarrier)
-          (encodeBarrier inputs.current (by
-            obtain ⟨packing, valid, quotient, certified, _complete, _outside,
-              _covers⟩ :=
-              globalOf inputs.current (inputs.get globalDelocalization)
-            exact ⟨packing, valid, quotient, certified,
-              Graph.DeclaredQuotient.localize quotient certified.1⟩))
-          .nil))
-
-/-- **The terminals `[39]`, `[42]` and `[46]` are all closed.**
-
-Each of the three names a determination certificate on the selected object, and
-`not_determinationCertificate` refutes every one of them: `cor:uncompressible`
-kills the proper-support readings and the selection's own minimality kills the
-closed representative.  The three differ in *which* support the manuscript says
-is being compressed -- `C` at `[39]`, the enlarged `Z ⊊ G` at `[42]`, and `G`
-itself at `[46]` -- which is why they are three terminals and not one. -/
-theorem not_branchDCertificate
-    (residual : Input BranchState Presentation presentation data)
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK residual.object)
-    (minimal : ∀ smaller : Graph.FiniteObject.{u},
-      (progress BranchState Presentation presentation data).Smaller
-        smaller residual.object →
-      Graph.MinimumDegreeAtLeast data.threshold smaller →
-      Graph.HasCycleWithLength data.LengthOK smaller)
-    (certificate : ∃ packing : Finset (Finset residual.object.Vertex),
-      residual.object.IsWindowPacking data.windowOrder packing ∧
-        ∃ quotient : remainderQuotient data residual.object packing,
-          DeterminationCertificate data residual.object packing quotient) :
-    False := by
-  obtain ⟨_packing, _valid, quotient, certified⟩ := certificate
-  exact not_determinationCertificate residual avoids minimal certified
+      .cons (key := K .globalBarrier)
+        ⟨by
+          obtain ⟨packing, valid, quotient, certificate, _complete, _outside,
+            _covers⟩ := (inputs.get (K .globalDelocalization)).down
+          have _repairIdentity := (inputs.get (K .repairIdentity)).down
+          obtain ⟨test, determiners, supportData, certified⟩ := certificate
+          have reducing : quotient.toRankQuotient.RankReducingOn
+              ↑(remainderCurvatureTests inputs.current.object packing) :=
+            certified.2.2.2.2.2.1
+          exact ⟨packing, valid, quotient,
+            ⟨test, determiners, supportData, certified⟩,
+            Graph.DeclaredQuotient.localize quotient reducing⟩⟩
+        .nil)
 
 /-! ## Nodes `[47]`--`[48]`: the forced curvature cost
 

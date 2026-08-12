@@ -223,9 +223,7 @@ noncomputable instance typeAExitFiveClosed :
 /-- Nodes `[33]` and `[35]`: Branch D, entered with its certificate. -/
 @[reducible] noncomputable def branchDependence :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  branchDependenceRow (K .curvatureRankDrop) (K .branchDependence) (by simp)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+  branchDependenceRow data
 
 /-- Nodes `[47]`--`[48]`. -/
 @[reducible] noncomputable def forcedCurvatureCost :
@@ -384,51 +382,85 @@ cursor. -/
 
 end Rows
 
-/-- Nodes `[44]` and `[45]`: the repair identity and the global barrier. -/
+/-- Node `[44]`: the repair identity on the whole-graph residual. -/
+@[reducible] noncomputable def repairIdentity :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  repairIdentityRow data
+
+/-- Node `[45]`: the global barrier after the repair identity. -/
 @[reducible] noncomputable def globalBarrier :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  globalBarrierRow (K .globalDelocalization) (K .repairIdentity)
-    (K .globalBarrier) (by simp) (by simp) (by simp)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
+  globalBarrierRow data
 
-/-- **The terminals `[39]`, `[42]` and `[46]` close against the selection.**
+/-- **The terminal `[39]` closes against the selected object.**
 
-Each names a determination certificate on the selected object, and
-`not_branchDCertificate` refutes it: `cor:uncompressible` kills the
-proper-support readings and the selection's own minimality kills the closed
-representative.  Both halves of the selection fact are used -- its avoidance and
-its minimality -- so the closure is genuinely a collision between the terminal
-and the object the block selected, not a fact contradicting itself. -/
+The `K .atomCompression` fact already contains the proper-support replacement
+derived at node `[38]` from its exact rank-reducing certificate.  This
+registration applies the paper's replacement lemma directly to that ledger
+fact; no certificate package or detached Branch-D closure theorem intervenes. -/
 noncomputable instance instIncompatibleAtomCompression :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .atomCompression) where
-  contradiction := fun residual selected compression =>
-    not_branchDCertificate residual selected.down.1 selected.down.2
-      (by
-        obtain ⟨packing, valid, quotient, certified, _complete, _inside⟩ :=
-          compression.down
-        exact ⟨packing, valid, quotient, certified⟩)
+  contradiction := fun residual selected compression => by
+    obtain ⟨_packing, _valid, quotient, _certificate, _complete, _inside,
+      replacement⟩ := compression.down
+    exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
+      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+      Presentation presentation
+      (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
+      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
+        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+        Presentation presentation
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
+      { G := residual.object, baseline := residual.baseline,
+        state := residual.branchState, avoids := selected.down.1,
+        minimal := selected.down.2 }
+      quotient.support replacement
 
 noncomputable instance instIncompatibleProperDelocalization :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .properDelocalization) where
-  contradiction := fun residual selected smearing =>
-    not_branchDCertificate residual selected.down.1 selected.down.2
-      (by
-        obtain ⟨packing, valid, quotient, certified, _complete, _outside,
-          _proper⟩ := smearing.down
-        exact ⟨packing, valid, quotient, certified⟩)
+  contradiction := fun residual selected smearing => by
+    obtain ⟨_packing, _valid, quotient, _certificate, _complete, _outside,
+      _vertex, _vertexOutside, replacement⟩ := smearing.down
+    exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
+      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+      Presentation presentation
+      (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
+      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
+        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+        Presentation presentation
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
+      { G := residual.object, baseline := residual.baseline,
+        state := residual.branchState, avoids := selected.down.1,
+        minimal := selected.down.2 }
+      quotient.support replacement
 
 noncomputable instance instIncompatibleGlobalBarrier :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .globalBarrier) where
   contradiction := fun residual selected barrier => by
-    -- The reading node `[45]` committed is read back, not recomputed: this is
-    -- the one place `lem:no-silent-global-smearing`'s disjunction is consumed,
-    -- and the row that produced it is the one place it was derived.
-    obtain ⟨_packing, _valid, _quotient, _certified, reading⟩ := barrier.down
-    exact not_globalBarrierReading residual selected.down.1 selected.down.2 reading
+    obtain ⟨_packing, _valid, quotient, _certificate, reading⟩ := barrier.down
+    rcases reading with
+      replacement | ⟨representative, smaller, representativeBaseline, transfer⟩
+    · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
+        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+        Presentation presentation
+        (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
+        ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
+          (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+          Presentation presentation
+          (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
+        { G := residual.object, baseline := residual.baseline,
+          state := residual.branchState, avoids := selected.down.1,
+          minimal := selected.down.2 }
+        quotient.support replacement
+    · exact selected.down.1
+        (transfer (selected.down.2 representative smaller
+          representativeBaseline))
 
 noncomputable instance instIncompatibleTypeAExitSixProper :
     Incompatible (Input BranchState Presentation presentation data)
@@ -485,16 +517,20 @@ noncomputable instance instIncompatibleSparsePairExit :
 
 /-- **The terminal `[37]` is uninhabited**, at the spine's own key.
 
-`not_contextDefect` is the mathematics: an admissible rank quotient is
-target-complete, so no pair it identifies is separated by a boundary-degree
-profile or by an outside context.  Registering it as `Impossible` is what lets
-the framework close the arm the moment the branch test takes it, with the
-closure entry naming this fact and nothing else. -/
+The registration consumes the exact `K .contextDefect` value exposed by the
+framework closure boundary.  Its selected admissible quotient is
+context-universal, contradicting the concrete outside-context defect.  The
+caller then uses `closeImpossible` to append only the canonical closure fact to
+the same ledger. -/
 noncomputable instance instImpossibleContextDefect :
     Impossible (Input BranchState Presentation presentation data)
       (K .contextDefect) where
-  contradiction := fun residual value =>
-    not_contextDefect (data := data) residual value.down
+  contradiction := fun _residual value => by
+    obtain ⟨_packing, _valid, _packingCard, _test, _determiners, quotient,
+      _supportData, _certificate, _minimal, left, right, identified,
+      outside, distinguishes⟩ := value.down
+    exact distinguishes
+      (quotient.contextUniversal left right identified outside)
 
 /-- **The near-cubic surplus route closes against node `[19]`.**
 

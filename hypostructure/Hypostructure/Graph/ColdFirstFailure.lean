@@ -1,4 +1,6 @@
 import Hypostructure.Graph.ColdCorridor
+import Hypostructure.Graph.WindowPacking
+import Hypostructure.Graph.BoundaryDemand
 
 /-!
 # The first failure of a cold return corridor
@@ -879,6 +881,86 @@ theorem branchExcess_ge_of_cubic (perWindow cubicCount coldCount nonCubicBound :
   calc perWindow * coldCount
       ≤ perWindow * (cubicCount + nonCubicBound) := Nat.mul_le_mul_left _ split
     _ = perWindow * cubicCount + perWindow * nonCubicBound := by ring
+
+/-- The finite form of "all but `o(n)` cold windows are ambient-cubic".
+
+Every non-ambient-baseline window contains a vertex with positive degree
+surplus.  Vertex-disjointness makes the choice of such a vertex injective, and
+the number of positive-surplus vertices is bounded by total degree surplus. -/
+theorem coldWindow_card_le_ambient_add_degreeSurplus
+    (object : FiniteObject.{u}) (threshold order : Nat)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (packing cold : Finset (Finset object.Vertex))
+    (valid : object.IsWindowPacking order packing)
+    (coldSubset : cold ⊆ packing) :
+    let cubic := cold.filter fun window =>
+      ∀ vertex ∈ window, object.degree vertex = threshold
+    cold.card ≤ cubic.card + object.degreeSurplus threshold := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := inferInstance
+  let ambient : Finset object.Vertex := Finset.univ.filter fun vertex =>
+    threshold < object.degree vertex
+  let bad : Finset (Finset object.Vertex) := cold.filter fun window =>
+    ¬ ∀ vertex ∈ window, object.degree vertex = threshold
+  have existsHigh (window : {window // window ∈ bad}) :
+      ∃ vertex ∈ window.1, threshold < object.degree vertex := by
+    have notCubic := (Finset.mem_filter.mp window.property).2
+    push Not at notCubic
+    obtain ⟨vertex, member, different⟩ := notCubic
+    exact ⟨vertex, member, by
+      have lower := baseline vertex
+      omega⟩
+  let chosen : {window // window ∈ bad} → {vertex // vertex ∈ ambient} :=
+    fun window => ⟨Classical.choose (existsHigh window),
+      Finset.mem_filter.mpr ⟨Finset.mem_univ _,
+        (Classical.choose_spec (existsHigh window)).2⟩⟩
+  have chosen_mem (window : {window // window ∈ bad}) :
+      (chosen window).1 ∈ window.1 := by
+    exact (Classical.choose_spec (existsHigh window)).1
+  have injective : Function.Injective chosen := by
+    intro left right same
+    apply Subtype.ext
+    by_contra different
+    have leftPacking : left.1 ∈ packing :=
+      coldSubset (Finset.mem_filter.mp left.property).1
+    have rightPacking : right.1 ∈ packing :=
+      coldSubset (Finset.mem_filter.mp right.property).1
+    have disjoint := valid.2 left.1 leftPacking right.1 rightPacking different
+    have sameVertex : (chosen left).1 = (chosen right).1 :=
+      congrArg Subtype.val same
+    exact (Finset.disjoint_left.mp disjoint)
+      (chosen_mem left) (sameVertex.symm ▸ chosen_mem right)
+  have badCard : bad.card ≤ ambient.card := by
+    simpa using Fintype.card_le_of_injective chosen injective
+  have ambientCard : ambient.card ≤ object.degreeSurplus threshold := by
+    calc
+      ambient.card = ∑ _vertex ∈ ambient, 1 := by simp
+      _ ≤ ∑ vertex ∈ ambient, (object.degree vertex - threshold) := by
+        exact Finset.sum_le_sum fun vertex member => by
+          have high := (Finset.mem_filter.mp member).2
+          omega
+      _ ≤ ∑ vertex ∈ (Finset.univ : Finset object.Vertex),
+          (object.degree vertex - threshold) := by
+        exact Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+      _ = object.degreeSurplus threshold := by
+        simpa [FiniteObject.ambientSurplus] using
+          object.ambientSurplus_univ_eq_degreeSurplus threshold baseline
+  have split := cold.card_filter_add_card_filter_not fun window =>
+    ∀ vertex ∈ window, object.degree vertex = threshold
+  dsimp only at split ⊢
+  have badBound :
+      (cold.filter fun window =>
+        ¬ ∀ vertex ∈ window, object.degree vertex = threshold).card ≤
+        object.degreeSurplus threshold := by
+    exact badCard.trans ambientCard
+  rw [← split]
+  convert Nat.add_le_add_left badBound
+    (cold.filter fun window =>
+      ∀ vertex ∈ window, object.degree vertex = threshold).card using 1
+  congr 2
+  ext window
+  simp only [Finset.mem_filter]
 
 /-! ## `lem:cold-corridor-first-failure`, assembled
 

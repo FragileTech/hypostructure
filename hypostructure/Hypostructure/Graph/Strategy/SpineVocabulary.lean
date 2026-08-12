@@ -528,9 +528,9 @@ inductive Key where
   `lem:degree-profile-fibres`).  This is the residual node `[38]` consumes. -/
   | contextUniversal
   /-- Node `[36]`, no arm — the terminal `[37]`: some pair of states the
-  certificate identifies is separated, either by an outside context or already
-  by its boundary-degree profile.  This is case (i) of
-  `lem:curvature-dependence-routing`, a target-defective quotient. -/
+  certificate identifies is separated by a concrete outside context.  This is
+  case (i) of `lem:curvature-dependence-routing`, a target-defective quotient.
+  Boundary-profile preservation is already part of quotient admissibility. -/
   | contextDefect
   /-- Node `[38]`, yes arm — the terminal `[39]`: the context-universal
   determination is already certified inside the proper atom `C`, so the
@@ -774,6 +774,24 @@ inductive Key where
   | coldFailureRouting
   | coldExchangeBound
   | coldWindowLedgerSplit
+  /-- Node `[146]`, yes: the canonical packing lies below the route-8
+  private-carrier threshold. -/
+  | coldRoute8Below
+  /-- Node `[146]`, no: the same canonical packing is not below that threshold. -/
+  | coldRoute8AtOrAbove
+  /-- Node `[148]`, yes: the live-hot coordinates exceed the near-cubic
+  skeleton allowance. -/
+  | coldHotEntropyOverflow
+  /-- Node `[148]`, no: the live-hot coordinates fit in that allowance. -/
+  | coldHotEntropyCap
+  /-- Node `[150]`: the exact cleared cold-mass inequality. -/
+  | coldMass
+  /-- Node `[151]`: the non-ambient-cubic cold-window loss. -/
+  | coldAmbientCubic
+  /-- Node `[152]`: the selected cold-skeleton branch-excess inequality. -/
+  | coldStubExcess
+  /-- Node `[153]`: a positive current-residual bounded-germ family. -/
+  | coldGermCandidates
   | coldSelectedBranchExcess
   | coldAmbientCubicStubExcess
   | coldHandoffTransfer
@@ -1237,12 +1255,24 @@ The rank reduction is the drop Branch D was entered on: the certificate is the
 quotient that loses label-injectivity on `𝒲₂(R)`. -/
 def DeterminationCertificate (data : Data.{u}) (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex))
-    (quotient : remainderQuotient data object packing) : Prop :=
-  ¬ Set.InjOn quotient.label ↑(remainderCurvatureTests object packing) ∧
-    ∃ test ∈ remainderCurvatureTests object packing,
-      ∃ determiners ⊆ (↑(remainderCurvatureTests object packing) : Set _),
-        test ∉ determiners ∧
-          quotient.toRankQuotient.Determines test determiners
+    (test : object.InternalWedge (object.remainderSupport packing))
+    (determiners : Set
+      (object.InternalWedge (object.remainderSupport packing)))
+    (quotient : remainderQuotient data object packing)
+    (supportData : Finset
+      (object.InternalWedge (object.remainderSupport packing))) : Prop := by
+  classical
+  exact
+    let family := remainderCurvatureTests object packing
+    test ∈ family ∧ determiners ⊆ (↑family : Set _) ∧ determiners.Finite ∧
+      test ∉ determiners ∧ quotient.toRankQuotient.FunctionalOn ↑family ∧
+        quotient.toRankQuotient.RankReducingOn ↑family ∧
+          quotient.toRankQuotient.Determines test determiners ∧
+            supportData = family ∧
+              ∀ coordinate ∈ supportData,
+                Graph.FiniteObject.internalWedgeSupport
+                    (region := object.remainderSupport packing) coordinate ⊆
+                  quotient.support
 
 /-- **`Z`, the connected support the determination actually needs.**
 
@@ -1348,40 +1378,31 @@ noncomputable abbrev jointPackageDemand (data : Data.{u})
     2 ^ (data.curvatureCost *
       remainderCurvatureTargetRank data object packing)
 
-/-- `lem:curv-enum` at node `[21]`, with every count read from the certified
-table on the current problem presentation.
+/-- `lem:curv-enum` at node `[21]`: the three exact certified counts and their
+flatness entropy cost.
 
-The witness identifies the table indices with the legal labels already
-published by `[18]`; its curvature clause says that the selected table row is
-literally the manuscript's `Ω₂`, and the final three equalities expose the
-safe, flat, and curvature-positive counts.  No numerical value is restated:
-the values are the certified table projections themselves. -/
+The witnesses are read from the registered `(1,1)` row itself.  Its semantic
+certificate proves that they are exactly the finite safe, curvature-positive,
+and flat enumerations.  Thus the EG presentation reduces these witnesses to
+the manuscript's displayed values without copying any numeral into the
+strategy row. -/
 def BarrierEnumerationStatement (data : Data.{u}) : Prop :=
   let presentation := data.windowBarrier
   letI := presentation.indexFintype
   let row := data.curvatureBarrierRow
   let left := presentation.table.counts.leftLength row
   let right := presentation.table.counts.rightLength row
-  presentation.size =
-      (Graph.WindowCurvature.Labels data.windowOrder).card ∧
-    ∃ label : Fin presentation.size →
-        Graph.WindowCurvature.Label data.windowOrder,
-      Function.Injective label ∧
-      Finset.image label Finset.univ =
-        Graph.WindowCurvature.Labels data.windowOrder ∧
-      (∀ source middle target,
-        ((presentation.profile.row left source).getLsb middle = true ∧
-          (presentation.profile.row right middle).getLsb target = true ∧
-          (presentation.profile.row (left + right) source).getLsb target = false) ↔
-        Graph.WindowCurvature.curvatureTwo
-          (label source) (label middle) (label target) = true) ∧
-      presentation.table.counts.storedSafe row =
-        presentation.profile.safeCount left right ∧
-      presentation.table.counts.storedFlat row =
-        presentation.profile.flatCount left right ∧
-      presentation.table.counts.storedSafe row -
-          presentation.table.counts.storedFlat row =
-        presentation.profile.obstructedCount left right
+  ∃ safe curvaturePositive flat : Nat,
+    safe = presentation.table.counts.storedSafe row ∧
+    curvaturePositive = safe - flat ∧
+    flat = presentation.table.counts.storedFlat row ∧
+    safe = presentation.profile.safeCount left right ∧
+    curvaturePositive = presentation.profile.obstructedCount left right ∧
+    flat = presentation.profile.flatCount left right ∧
+    Real.logb 2 ((safe : ℝ) / flat) =
+      Real.logb 2
+        ((presentation.table.counts.storedSafe row : ℝ) /
+          presentation.table.counts.storedFlat row)
 
 /-- A packed window is live-hot exactly when its declared singleton window
 package is retained at every selected scale. -/
@@ -1397,6 +1418,24 @@ def LiveHotWindow (data : Data.{u}) (object : Graph.FiniteObject.{u})
       declared.toRankQuotient.FunctionalOn ↑family →
         declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
     2 ^ bits ≤ Graph.skeletonBudget object
+
+/-- The manuscript fixes one maximal packing before splitting it.  This is the
+canonical finite choice of that packing, hence every later key names the same
+family without transporting a witness outside the ledger. -/
+noncomputable def canonicalWindowPacking (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Finset (Finset object.Vertex) :=
+  Classical.choose (object.exists_windowPacking_card_eq data.windowOrder)
+
+noncomputable def canonicalHotWindows (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Finset (Finset object.Vertex) := by
+  classical
+  exact (canonicalWindowPacking data object).filter (LiveHotWindow data object)
+
+noncomputable def canonicalColdWindows (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Finset (Finset object.Vertex) := by
+  classical
+  exact (canonicalWindowPacking data object).filter
+    (fun window => ¬ LiveHotWindow data object window)
 
 /-- The hot/cold partition created at node `[22]`.  Both parts are defined
 inside the selected maximal packing; the equivalences prevent a consumer from
@@ -1418,8 +1457,10 @@ def IsHotColdWindowPartition (data : Data.{u})
 
 def HotColdWindowStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing hot cold : Finset (Finset object.Vertex),
-    IsHotColdWindowPartition data object packing hot cold
+  IsHotColdWindowPartition data object
+    (canonicalWindowPacking data object)
+    (canonicalHotWindows data object)
+    (canonicalColdWindows data object)
 
 def BarrierCapStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
@@ -1455,6 +1496,103 @@ live-hot alternatives; this fact performs neither decision. -/
 def ColdWindowLedgerStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   HotColdWindowStatement data object
+
+/-- The external-stub count of an ambient baseline-degree window.  For the
+Erdős presentation this evaluates to `15`; no numerical value is written into
+the strategy. -/
+def coldExternalStubCount (data : Data.{u}) : Nat :=
+  data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)
+
+/-- The exact finite bit rate used by the near-cubic density comparison. -/
+def coldWindowBitRate (data : Data.{u}) (object : Graph.FiniteObject.{u}) : Nat :=
+  2 * (data.windowRate * data.separatedScaleCount object.vertexCount)
+
+/-- The exact finite skeleton allowance; its two summands are the baseline
+degree mass and the registered sublinear surplus threshold. -/
+def coldSkeletonAllowance (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Nat :=
+  (Graph.dyadicScaleCount object + 1) *
+    (data.threshold * object.vertexCount +
+      data.surplusThreshold object.vertexCount)
+
+def ColdRoute8BelowStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Graph.ColdCorridor.TauBelow (coldExternalStubCount data) 3 13
+    (canonicalWindowPacking data object).card object.vertexCount
+
+def ColdRoute8AtOrAboveStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ¬ Graph.ColdCorridor.TauBelow (coldExternalStubCount data) 3 13
+    (canonicalWindowPacking data object).card object.vertexCount
+
+def ColdHotEntropyOverflowStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  coldSkeletonAllowance data object <
+    coldWindowBitRate data object * (canonicalHotWindows data object).card
+
+def ColdHotEntropyCapStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  coldWindowBitRate data object * (canonicalHotWindows data object).card ≤
+    coldSkeletonAllowance data object
+
+/-- `lem:hot-failure-cold-mass`, with logarithms and division cleared. -/
+def ColdMassStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  coldWindowBitRate data object * (canonicalWindowPacking data object).card ≤
+    coldWindowBitRate data object * (canonicalColdWindows data object).card +
+      coldSkeletonAllowance data object
+
+/-- A cold window is ambient-baseline exactly when every one of its vertices
+has the registered baseline degree. -/
+def AmbientCubicWindow (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (window : Finset object.Vertex) : Prop :=
+  ∀ vertex ∈ window, object.degree vertex = data.threshold
+
+/-- `def:surviving-cold-branch`'s `o(n)` assertion in exact finite form: the
+non-ambient-cubic loss is charged injectively to degree surplus. -/
+noncomputable def ColdAmbientCubicStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact cold.card ≤ cubic.card + object.degreeSurplus data.threshold ∧
+    object.degreeSurplus data.threshold ≤
+      data.surplusThreshold object.vertexCount
+
+/-- `lem:cold-window-stub-excess`, subtraction-free and specialized to the
+canonical cold family. -/
+noncomputable def ColdStubExcessStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  let perWindow := Graph.ColdCorridor.branchExcessOf
+    (coldExternalStubCount data)
+  exact perWindow * cold.card ≤
+    perWindow * cubic.card + perWindow * object.degreeSurplus data.threshold
+
+/-- `lem:cold-germ-extraction` on the current residual.  The selected
+half-edge count pays for an actual candidate family; the framework-local
+greedy extraction then returns a positive disjoint family. -/
+noncomputable def ColdGermCandidatesStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact ∃ candidates disjointFamily : Finset
+      (Graph.ColdCorridor.BoundedGerm data.coldSignature
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object),
+      Graph.ColdCorridor.CandidateGermFamily data.coldSignature data.threshold
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object candidates ∧
+      Graph.ColdCorridor.ExtractedGermFamily data.coldSignature data.threshold
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object candidates disjointFamily ∧
+      let perWindow := Graph.ColdCorridor.branchExcessOf
+        (coldExternalStubCount data)
+      perWindow * cubic.card ≤
+        candidates.card + perWindow * object.degreeSurplus data.threshold
 
 /-- Node `[152]`: the scalar branch-excess witness for the canonical cold
 family. -/
@@ -2242,7 +2380,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 (Graph.HasCycleWithLength data.LengthOK) object family
                 (Graph.FiniteObject.internalWedgeSupport (region := support)),
                 declared.toRankQuotient.FunctionalOn ↑family ∧
-                  declared.toRankQuotient.Determines test determiners
+                  declared.toRankQuotient.RankReducingOn ↑family ∧
+                    declared.toRankQuotient.Determines test determiners
           ∃ independent ⊆ family,
             (∀ quotient : Core.TargetRank.RankQuotient.{u, u + 1}
                 (object.InternalWedge support),
@@ -2277,6 +2416,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- target-dependence routed by Branch D.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
           remainderCurvatureTargetRank data object packing <
               remainderWedgeSupply object packing ∧
             let support := object.remainderSupport packing
@@ -2291,7 +2431,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                       (Graph.FiniteObject.internalWedgeSupport
                         (region := support)),
                       declared.toRankQuotient.FunctionalOn ↑family ∧
-                        declared.toRankQuotient.Determines test determiners)
+                        declared.toRankQuotient.RankReducingOn ↑family ∧
+                          declared.toRankQuotient.Determines test determiners)
   | .curvatureFullRank, object =>
       -- This is the equality proved in the last paragraph of `lem:full-rank`.
       (∃ packing : Finset (Finset object.Vertex),
@@ -2300,67 +2441,83 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             remainderCurvatureTargetRank data object packing =
               remainderWedgeSupply object packing)
   | .branchDependence, object =>
-      -- Nodes `[33]`/`[35]`.  `lem:curvature-dependence-routing`'s proof opens
-      -- by choosing a determination certificate for the dependence the rank
-      -- drop yields; clause (b) of `def:curvature-target-dependence` says its
-      -- quotient is a functional admissible rank quotient, and the drop is
-      -- exactly the rank reduction that quotient performs on `𝒲₂(R)`.  Clause
-      -- (a) -- the connected support carrying the coordinates -- is the
-      -- quotient's own `support`, `connected` and `carries`.  Branch D is a
-      -- rank-reducing curvature *dependence*, so the determined coordinate `a`
-      -- and its determiners `ℬ` travel with the certificate: that is clause
-      -- (c), and `DeterminationCertificate` carries all four clauses.  The
-      -- certificate is chosen with *inclusion-minimal* connected support, as
-      -- the proof says and as `def:curvature-target-dependence`'s minimality
-      -- clause means: no proper subsupport carries a determination certificate.
-      -- `[40]` is where that minimality is spent, so it is fixed here, at the
-      -- entry, and not re-chosen later.  Two readings of that clause differ and
-      -- the stronger one is what gets proved: the definition says "no proper
-      -- connected subsupport carries a proper target-dependence *with the same
-      -- determined coordinate*", and the choice made here -- a support of
-      -- minimum size among all that carry any determination certificate --
-      -- rules out every determined coordinate at once.  Connectedness is not a
-      -- separate clause either: a subsupport carrying a certificate carries a
-      -- `remainderQuotient`, whose `connected` field is that hypothesis.
-
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data object packing,
-            DeterminationCertificate data object packing quotient ∧
-              ∀ smaller : Finset object.Vertex, smaller ⊂ quotient.support →
-                ∀ narrower : remainderQuotient data object packing,
-                  narrower.support = smaller →
-                  ¬ DeterminationCertificate data object packing narrower)
+      -- Nodes `[33]`/`[35]`: choose the paper's determination certificate with
+      -- inclusion-minimal connected support.  The determined coordinate is
+      -- fixed during minimization, while its finite determining subfamily may
+      -- vary.  A `remainderQuotient` is already a declared admissible quotient;
+      -- its support/carries fields are the connected declared support data.
+      by
+        classical
+        exact ∃ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing ∧
+            packing.card = object.windowPackingNumber data.windowOrder ∧
+            remainderCurvatureTargetRank data object packing <
+                remainderWedgeSupply object packing ∧
+              ∃ test,
+              let Supports := object.vertexFinset.powerset.filter
+                fun candidateSupport =>
+                  ∃ determiners quotient,
+                    quotient.support = candidateSupport ∧
+                      ∃ supportData,
+                        DeterminationCertificate data object packing test
+                          determiners quotient supportData
+              ∃ determiners quotient supportData,
+                DeterminationCertificate data object packing test determiners
+                    quotient supportData ∧
+                  ∀ smaller : Finset object.Vertex,
+                    smaller ⊂ quotient.support →
+                      ∀ narrower : remainderQuotient data object packing,
+                        narrower.support = smaller →
+                          ∀ narrowerDeterminers narrowerSupportData,
+                            ¬ DeterminationCertificate data object packing test
+                              narrowerDeterminers narrower narrowerSupportData
   | .contextUniversal, object =>
-      -- Node `[36]`, yes: the determination is target-complete.  Both clauses
-      -- of `def:target-complete-quotient` at the certificate's own boundaried
-      -- states -- `lem:degree-profile-fibres` for the fibre and
-      -- `lem:context-universality` for the all-context response -- because that
-      -- conjunction is the eligibility test the manuscript branches on, and it
-      -- is what `[38]` asks about a smaller proper representative.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        ∀ quotient : remainderQuotient data object packing,
-          TargetCompleteAt data quotient)
+      -- Node `[36]`, yes: the single certificate chosen at `[33]` remains
+      -- valid against every outside context.  The certificate and its
+      -- same-coordinate inclusion-minimality identify exactly which quotient
+      -- this branch fact concerns; the earlier strict-drop fact remains in the
+      -- ExactLedger and is not copied here.
+      by
+        classical
+        exact ∃ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing ∧
+            packing.card = object.windowPackingNumber data.windowOrder ∧
+            ∃ test determiners quotient supportData,
+              DeterminationCertificate data object packing test determiners
+                  quotient supportData ∧
+              (∀ smaller : Finset object.Vertex,
+                smaller ⊂ quotient.support →
+                  ∀ narrower : remainderQuotient data object packing,
+                    narrower.support = smaller →
+                      ∀ narrowerDeterminers narrowerSupportData,
+                        ¬ DeterminationCertificate data object packing test
+                          narrowerDeterminers narrower narrowerSupportData) ∧
+              ∀ left right, Identified quotient left right →
+                Graph.Response.ContextEquivalent
+                  (Graph.HasCycleWithLength data.LengthOK) left right
   | .contextDefect, object =>
-      -- Node `[36]`, no -- the terminal `[37]`, "target-defective quotient":
-      -- the exact negation of the clause above, with the separating witness
-      -- exhibited.  Both ways of failing are target-defective, and the
-      -- manuscript says so of each: `def:target-complete-quotient` calls an
-      -- identification failing the context-universal test target-defective, and
-      -- the sparse-exit routing writes "a non-fibrewise quotient is
-      -- target-defective" of the other.  Invariant 6 is attributed to `[36]`
-      -- *and* `[37]` with failure mode "otherwise target-defective", which is
-      -- the same statement in the manuscript's own bookkeeping.  So the
-      -- terminal admits both, and neither is a third alternative: they are the
-      -- two halves of one negation.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data object packing,
-            ∃ left right, Identified quotient left right ∧
-              (left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
+      -- Node `[36]`, no: the same selected certificate has a concrete pair of
+      -- identified realizations separated by an outside context, exactly the
+      -- paper's target-defective alternative.  Boundary-fibre preservation is
+      -- part of admissibility and is not reproved or branched on here.
+      by
+        classical
+        exact ∃ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing ∧
+            packing.card = object.windowPackingNumber data.windowOrder ∧
+            ∃ test determiners quotient supportData,
+              DeterminationCertificate data object packing test determiners
+                  quotient supportData ∧
+              (∀ smaller : Finset object.Vertex,
+                smaller ⊂ quotient.support →
+                  ∀ narrower : remainderQuotient data object packing,
+                    narrower.support = smaller →
+                      ∀ narrowerDeterminers narrowerSupportData,
+                        ¬ DeterminationCertificate data object packing test
+                          narrowerDeterminers narrower narrowerSupportData) ∧
+              ∃ left right, Identified quotient left right ∧
                 Graph.Response.TargetDefect
-                  (Graph.HasCycleWithLength data.LengthOK) left right))
+                  (Graph.HasCycleWithLength data.LengthOK) left right
   | .atomCompression, object =>
       -- Node `[38]` yes, the terminal `[39]`: the determination is certified
       -- without leaving `C`, which is case (ii) -- "it holds for every outside
@@ -2368,16 +2525,24 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           ∃ quotient : remainderQuotient data object packing,
-            DeterminationCertificate data object packing quotient ∧
+            (∃ test determiners supportData,
+              DeterminationCertificate data object packing test determiners
+                quotient supportData) ∧
               TargetCompleteAt data quotient ∧
-                quotient.support ⊆ object.remainderSupport packing)
+                quotient.support ⊆ object.remainderSupport packing ∧
+                  Graph.Strategy.InterfaceReplacement.ReplacementSupport
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object
+                    quotient.support)
   | .delocalizedSupport, object =>
       -- Node `[40]`: case (iii)'s entry.  The certificate reaches outside `C`,
       -- so the connected support the determination needs strictly contains it.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           ∃ quotient : remainderQuotient data object packing,
-            DeterminationCertificate data object packing quotient ∧
+            (∃ test determiners supportData,
+              DeterminationCertificate data object packing test determiners
+                quotient supportData) ∧
               TargetCompleteAt data quotient ∧
                 ¬ quotient.support ⊆ object.remainderSupport packing ∧
                   object.remainderSupport packing ⊂
@@ -2388,18 +2553,26 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           ∃ quotient : remainderQuotient data object packing,
-            DeterminationCertificate data object packing quotient ∧
+            (∃ test determiners supportData,
+              DeterminationCertificate data object packing test determiners
+                quotient supportData) ∧
               TargetCompleteAt data quotient ∧
                 ¬ quotient.support ⊆ object.remainderSupport packing ∧
                   ∃ vertex,
-                    vertex ∉ delocalizationSupport data object packing quotient)
+                    vertex ∉ delocalizationSupport data object packing quotient ∧
+                  Graph.Strategy.InterfaceReplacement.ReplacementSupport
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object
+                    quotient.support)
   | .globalDelocalization, object =>
       -- Node `[43]`: `Z = G`.  The quotient is then a closed exact-profile
       -- quotient, which is the hypothesis of `lem:no-silent-global-smearing`.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           ∃ quotient : remainderQuotient data object packing,
-            DeterminationCertificate data object packing quotient ∧
+            (∃ test determiners supportData,
+              DeterminationCertificate data object packing test determiners
+                quotient supportData) ∧
               TargetCompleteAt data quotient ∧
                 ¬ quotient.support ⊆ object.remainderSupport packing ∧
                   ∀ vertex,
@@ -2423,7 +2596,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           ∃ quotient : remainderQuotient data object packing,
-            DeterminationCertificate data object packing quotient ∧
+            (∃ test determiners supportData,
+              DeterminationCertificate data object packing test determiners
+                quotient supportData) ∧
               (Graph.Strategy.InterfaceReplacement.ReplacementSupport
                   (Graph.MinimumDegreeAtLeast data.threshold)
                   (Graph.HasCycleWithLength data.LengthOK) object
@@ -2738,6 +2913,22 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdExchangeBoundStatement data object
   | .coldWindowLedgerSplit, object =>
       ColdWindowLedgerStatement data object
+  | .coldRoute8Below, object =>
+      ColdRoute8BelowStatement data object
+  | .coldRoute8AtOrAbove, object =>
+      ColdRoute8AtOrAboveStatement data object
+  | .coldHotEntropyOverflow, object =>
+      ColdHotEntropyOverflowStatement data object
+  | .coldHotEntropyCap, object =>
+      ColdHotEntropyCapStatement data object
+  | .coldMass, object =>
+      ColdMassStatement data object
+  | .coldAmbientCubic, object =>
+      ColdAmbientCubicStatement data object
+  | .coldStubExcess, object =>
+      ColdStubExcessStatement data object
+  | .coldGermCandidates, object =>
+      ColdGermCandidatesStatement data object
   | .coldSelectedBranchExcess, object =>
       ColdSelectedBranchExcessStatement data object
   | .coldAmbientCubicStubExcess, object =>
@@ -2746,14 +2937,18 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       BarrierEnumerationStatement data
   | .windowPackageSeparated, object => by
       classical
+      let barrier := data.windowBarrier
+      letI := barrier.indexFintype
+      let scales := data.separatedScaleCount object.vertexCount
+      let safe := Core.Finite.CertifiedTableAggregation.safeProduct barrier.table
+      let flat := Core.Finite.CertifiedTableAggregation.flatProduct barrier.table
+      let bits := Nat.log2 ((safe ^ scales - 1) / flat ^ scales)
       exact ∃ packing : Finset (Finset object.Vertex),
           object.IsWindowPacking data.windowOrder packing ∧
             packing.card = object.windowPackingNumber data.windowOrder ∧
             (∀ support : Finset object.Vertex,
               object.InducesWindow data.windowOrder support →
                 ∃ member ∈ packing, ¬ Disjoint support member) ∧
-            let bits := data.windowRate *
-              data.separatedScaleCount object.vertexCount
             let Coordinate := Graph.DeclaredSignature.Coordinate
               object.Vertex (Fin bits × Finset object.Vertex)
             let package : Finset object.Vertex → Finset Coordinate := fun window =>
@@ -4929,6 +5124,14 @@ def label : Key → String
   | .coldFailureRouting => "coldFailureRouting"
   | .coldExchangeBound => "coldExchangeBound"
   | .coldWindowLedgerSplit => "coldWindowLedgerSplit"
+  | .coldRoute8Below => "coldRoute8Below"
+  | .coldRoute8AtOrAbove => "coldRoute8AtOrAbove"
+  | .coldHotEntropyOverflow => "coldHotEntropyOverflow"
+  | .coldHotEntropyCap => "coldHotEntropyCap"
+  | .coldMass => "coldMass"
+  | .coldAmbientCubic => "coldAmbientCubic"
+  | .coldStubExcess => "coldStubExcess"
+  | .coldGermCandidates => "coldGermCandidates"
   | .coldSelectedBranchExcess => "coldSelectedBranchExcess"
   | .coldAmbientCubicStubExcess => "coldAmbientCubicStubExcess"
   | .coldHandoffTransfer => "coldHandoffTransfer"
@@ -5327,6 +5530,14 @@ def idx : Key → Nat
   | .coldFailureRouting => 68
   | .coldExchangeBound => 177
   | .coldWindowLedgerSplit => 178
+  | .coldRoute8Below => 212
+  | .coldRoute8AtOrAbove => 213
+  | .coldHotEntropyOverflow => 214
+  | .coldHotEntropyCap => 215
+  | .coldMass => 216
+  | .coldAmbientCubic => 217
+  | .coldStubExcess => 218
+  | .coldGermCandidates => 219
   | .coldSelectedBranchExcess => 179
   | .coldAmbientCubicStubExcess => 180
   | .coldPositiveGerm => 182
@@ -5506,6 +5717,14 @@ def ofIdx : Nat → Key
   | 68 => .coldFailureRouting
   | 177 => .coldExchangeBound
   | 178 => .coldWindowLedgerSplit
+  | 212 => .coldRoute8Below
+  | 213 => .coldRoute8AtOrAbove
+  | 214 => .coldHotEntropyOverflow
+  | 215 => .coldHotEntropyCap
+  | 216 => .coldMass
+  | 217 => .coldAmbientCubic
+  | 218 => .coldStubExcess
+  | 219 => .coldGermCandidates
   | 179 => .coldSelectedBranchExcess
   | 180 => .coldAmbientCubicStubExcess
   | 182 => .coldPositiveGerm
@@ -5794,6 +6013,24 @@ def name : Key → Lean.Name
   | .coldWindowLedgerSplit =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "coldWindowLedgerSplit") 178
+  | .coldRoute8Below =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldRoute8Below") 212
+  | .coldRoute8AtOrAbove =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldRoute8AtOrAbove") 213
+  | .coldHotEntropyOverflow =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldHotEntropyOverflow") 214
+  | .coldHotEntropyCap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldHotEntropyCap") 215
+  | .coldMass =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMass") 216
+  | .coldAmbientCubic =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldAmbientCubic") 217
+  | .coldStubExcess =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldStubExcess") 218
+  | .coldGermCandidates =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermCandidates") 219
   | .coldSelectedBranchExcess =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "coldSelectedBranchExcess") 179

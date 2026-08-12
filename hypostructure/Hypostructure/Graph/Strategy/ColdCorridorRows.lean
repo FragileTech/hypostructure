@@ -35,6 +35,50 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-! ## Figure XI decisions -/
+
+/-- Node `[146]`: decide the route-8 threshold on the canonical packing named
+by the incoming cold ledger. -/
+noncomputable def coldRoute8Dichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    (belowFresh : K .coldRoute8Below ∉ known)
+    (atOrAboveFresh : K .coldRoute8AtOrAbove ∉ known) :
+    Decision (K .coldRoute8Below) (K .coldRoute8AtOrAbove) previous := by
+  classical
+  let _split := (previous.get (K .coldWindowLedgerSplit)).down
+  exact Decision.run previous (K .coldRoute8Below) (K .coldRoute8AtOrAbove)
+    `Hypostructure.Graph.Strategy.Spine.coldRoute8Dichotomy
+    (if below : ColdRoute8BelowStatement data current.object then
+      .inl ⟨below⟩
+    else
+      .inr ⟨below⟩)
+    belowFresh atOrAboveFresh
+
+/-- Node `[148]`: decide whether the live-hot coordinates overflow the exact
+near-cubic allowance. -/
+noncomputable def coldHotEntropyDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    (overflowFresh : K .coldHotEntropyOverflow ∉ known)
+    (capFresh : K .coldHotEntropyCap ∉ known) :
+    Decision (K .coldHotEntropyOverflow) (K .coldHotEntropyCap) previous := by
+  classical
+  let _split := (previous.get (K .coldWindowLedgerSplit)).down
+  exact Decision.run previous (K .coldHotEntropyOverflow) (K .coldHotEntropyCap)
+    `Hypostructure.Graph.Strategy.Spine.coldHotEntropyDichotomy
+    (if overflow : ColdHotEntropyOverflowStatement data current.object then
+      .inl ⟨overflow⟩
+    else
+      .inr ⟨Nat.le_of_not_lt overflow⟩)
+    overflowFresh capFresh
+
 /-! ## Nodes `[145]`--`[157]`: the corridor cut-state `T(J)`
 
 `def:cold-corridor-first-failure` fixes, for an initial segment `J` of a cold
@@ -441,9 +485,67 @@ registered baseline and window order. -/
     (fun inputs =>
       let partition := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .coldWindowLedgerSplit)
+        ⟨partition⟩
+        .nil)
+
+/-- Node `[150]`: derive the cleared cold-mass inequality from the no arm of
+the live-hot comparison and the canonical partition stored at `[145]`. -/
+@[reducible] noncomputable def coldMassRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldMass
+    { Requires := [K .coldWindowLedgerSplit, K .coldHotEntropyCap]
+      Produces := [K .coldMass]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let hotBound := (inputs.get (K .coldHotEntropyCap)).down
+      .cons (key := K .coldMass)
         ⟨by
-          rcases partition with ⟨packing, hot, cold, split⟩
-          exact ⟨packing, hot, cold, split⟩⟩
+          classical
+          let packing := canonicalWindowPacking data inputs.current.object
+          let hot := canonicalHotWindows data inputs.current.object
+          let cold := canonicalColdWindows data inputs.current.object
+          let _partition := split
+          change coldWindowBitRate data inputs.current.object * hot.card ≤
+            coldSkeletonAllowance data inputs.current.object at hotBound
+          have count : packing.card = hot.card + cold.card := by
+            simpa [packing, hot, cold, canonicalHotWindows,
+              canonicalColdWindows] using
+              ((canonicalWindowPacking data inputs.current.object).card_filter_add_card_filter_not
+                (LiveHotWindow data inputs.current.object)).symm
+          change ColdMassStatement data inputs.current.object
+          simpa [ColdMassStatement] using
+            Graph.ColdCorridor.hotFailure_coldMass
+              (coldWindowBitRate data inputs.current.object) 0 0
+              (coldSkeletonAllowance data inputs.current.object)
+              hot.card cold.card packing.card count (by simpa using hotBound)⟩
+        .nil)
+
+/-- Node `[152]`: multiply node `[151]`'s exact non-cubic loss by the
+per-window branch excess computed from the registered presentation. -/
+@[reducible] noncomputable def coldStubExcessRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldStubExcess
+    { Requires := [K .coldAmbientCubic]
+      Produces := [K .coldStubExcess]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let cubic := (inputs.get (K .coldAmbientCubic)).down
+      .cons (key := K .coldStubExcess)
+        ⟨by
+          classical
+          change ColdStubExcessStatement data inputs.current.object
+          simpa [ColdStubExcessStatement, ColdAmbientCubicStatement] using
+            Graph.ColdCorridor.branchExcess_ge_of_cubic
+              (Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data))
+              ((canonicalColdWindows data inputs.current.object).filter
+                (AmbientCubicWindow data inputs.current.object)).card
+              (canonicalColdWindows data inputs.current.object).card
+              (inputs.current.object.degreeSurplus data.threshold) cubic⟩
         .nil)
 
 /-! ## Nodes `[153]`--`[157]`: the dispatch arms and the branch closure

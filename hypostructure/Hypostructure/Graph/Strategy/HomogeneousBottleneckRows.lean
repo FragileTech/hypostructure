@@ -68,16 +68,28 @@ noncomputable def windowOverloadClassDichotomy
       producesNonempty := by simp }
     (fun inputs =>
       let selection := (inputs.get (K .selection)).down
-      let uncompressible := (inputs.get (K .uncompressible)).down
+      let _uncompressible := (inputs.get (K .uncompressible)).down
       .cons (key := K .sparseSurplusSurvivor)
         (show Value BranchState Presentation presentation data
             .sparseSurplusSurvivor inputs.current from
           ⟨⟨Graph.survives_of_selection selection.1 selection.2 uncompressible,
-            fun _support replacement =>
-              not_globalBarrierReading (BranchState := BranchState)
-                (Presentation := Presentation) (presentation := presentation)
-                (data := data) inputs.current selection.1 selection.2
-                (Or.inl replacement)⟩⟩)
+            fun support replacement =>
+              Graph.Strategy.InterfaceReplacement.not_replacementSupport
+                (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+                (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+                Presentation presentation
+                (Core.Target.ofPredicate _
+                  (Graph.HasCycleWithLength data.LengthOK))
+                ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
+                  (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+                  Presentation presentation
+                  (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
+                { G := inputs.current.object,
+                  baseline := inputs.current.baseline,
+                  state := inputs.current.branchState,
+                  avoids := selection.1,
+                  minimal := selection.2 }
+                support replacement⟩⟩)
         .nil)
 
 /-- Node `[144]`: route every declared same-token bottleneck of the current

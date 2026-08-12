@@ -1,30 +1,71 @@
-\contentsline {section}{\tocsection {}{1}{Introduction}}{2}{section.1}%
-\contentsline {subsection}{\tocsubsection {}{}{Purpose of this paper}}{2}{section*.2}%
-\contentsline {subsection}{\tocsubsection {}{}{What is rigorously proved here}}{3}{section*.3}%
-\contentsline {subsection}{\tocsubsection {}{}{Main result}}{3}{section*.4}%
-\contentsline {subsection}{\tocsubsection {}{}{Relation to the literature}}{4}{section*.5}%
-\contentsline {subsection}{\tocsubsection {}{}{Structure of the paper}}{4}{section*.6}%
-\contentsline {section}{\tocsection {}{2}{Companion Input and the Admissible State Space}}{4}{section.2}%
-\contentsline {section}{\tocsection {}{3}{A Localized Entropy Functional}}{6}{section.3}%
-\contentsline {subsection}{\tocsubsection {}{3.1}{The normalized backward adjoint weight}}{6}{subsection.3.1}%
-\contentsline {subsection}{\tocsubsection {}{3.2}{Pressure normalization}}{8}{subsection.3.2}%
-\contentsline {subsection}{\tocsubsection {}{3.3}{The localized entropy functional}}{8}{subsection.3.3}%
-\contentsline {section}{\tocsection {}{4}{Monotonicity up to Controlled Local Error}}{8}{section.4}%
-\contentsline {subsection}{\tocsubsection {}{4.1}{Setup of the calculation}}{9}{subsection.4.1}%
-\contentsline {subsection}{\tocsubsection {}{4.2}{Exact residual and dissipation}}{9}{subsection.4.2}%
-\contentsline {subsection}{\tocsubsection {}{4.3}{The four-piece error budget}}{10}{subsection.4.3}%
-\contentsline {subsection}{\tocsubsection {}{4.4}{Companion-theorem control of the four error terms}}{11}{subsection.4.4}%
-\contentsline {subsection}{\tocsubsection {}{4.5}{The localized monotonicity identity}}{11}{subsection.4.5}%
-\contentsline {section}{\tocsection {}{5}{First Variation and Vanishing Entropy Gradient}}{12}{section.5}%
-\contentsline {subsection}{\tocsubsection {}{5.1}{Constrained perturbations}}{13}{subsection.5.1}%
-\contentsline {subsection}{\tocsubsection {}{5.2}{The three Euler--Lagrange residuals: full statement}}{13}{subsection.5.2}%
-\contentsline {subsection}{\tocsubsection {}{5.3}{Zero-gradient branch states}}{14}{subsection.5.3}%
-\contentsline {subsection}{\tocsubsection {}{5.4}{Quantitative correspondence with the five terminal classes}}{15}{subsection.5.4}%
-\contentsline {section}{\tocsection {}{6}{Entropy-Critical Limits and the Ordered Classification}}{17}{section.6}%
-\contentsline {subsection}{\tocsubsection {}{6.1}{Entropy-critical limits}}{17}{subsection.6.1}%
-\contentsline {subsection}{\tocsubsection {}{6.2}{Ordered classification of entropy-critical limits}}{19}{subsection.6.2}%
-\contentsline {section}{\tocsection {}{7}{Reduction to the Companion Exclusion Theorems}}{21}{section.7}%
-\contentsline {section}{\tocsection {}{8}{Comparison with Hamilton--Perelman Monotonicity}}{21}{section.8}%
-\contentsline {section}{\tocsection {}{9}{Concluding Remarks}}{22}{section.9}%
-\contentsline {subsection}{\tocsubsection {}{}{Possible extensions}}{22}{section*.7}%
-\contentsline {section}{\tocsection {}{}{References}}{22}{section*.8}%
+\contentsline {section}{\tocsection {}{1}{Introduction}}{3}{section.1}%
+\contentsline {subsection}{\tocsubsection {}{}{Dependency map}}{4}{section*.2}%
+\contentsline {subsection}{\tocsubsection {}{}{Trilogy source ledger}}{4}{section*.3}%
+\contentsline {section}{\tocsection {}{2}{Suitable solutions and the singular target}}{5}{section.2}%
+\contentsline {subsection}{\tocsubsection {}{2.1}{Suitable weak solutions}}{5}{subsection.2.1}%
+\contentsline {subsection}{\tocsubsection {}{2.2}{Scale-critical concentration and local kinetic energy}}{6}{subsection.2.2}%
+\contentsline {section}{\tocsection {}{3}{Euler transport and the Stokes gradient}}{7}{section.3}%
+\contentsline {subsection}{\tocsubsection {}{3.1}{The solenoidal Gelfand triple}}{7}{subsection.3.1}%
+\contentsline {subsection}{\tocsubsection {}{3.2}{The finite energy budget}}{8}{subsection.3.2}%
+\contentsline {section}{\tocsection {}{4}{Material deformation and stretching--diffusion duality}}{8}{section.4}%
+\contentsline {section}{\tocsection {}{5}{Covariance under scale--translation charts}}{9}{section.5}%
+\contentsline {subsection}{\tocsubsection {}{5.1}{The repaired equation}}{9}{subsection.5.1}%
+\contentsline {subsection}{\tocsubsection {}{5.2}{Covariant energy and pressure}}{10}{subsection.5.2}%
+\contentsline {section}{\tocsection {}{6}{Scale-critical quotient geometry}}{11}{section.6}%
+\contentsline {subsection}{\tocsubsection {}{6.1}{Physical action and critical action}}{11}{subsection.6.1}%
+\contentsline {subsection}{\tocsubsection {}{6.2}{Galilean and pressure quotients}}{12}{subsection.6.2}%
+\contentsline {subsection}{\tocsubsection {}{6.3}{The quotient topology}}{12}{subsection.6.3}%
+\contentsline {section}{\tocsection {}{7}{Backward adjoint localizations and entropy}}{13}{section.7}%
+\contentsline {subsection}{\tocsubsection {}{7.1}{The normalized finite-horizon adjoint problem}}{13}{subsection.7.1}%
+\contentsline {subsection}{\tocsubsection {}{7.2}{Transport identity and the Gaussian equality model}}{15}{subsection.7.2}%
+\contentsline {section}{\tocsection {}{8}{Viscous aiming and the ray-alignment defect}}{16}{section.8}%
+\contentsline {subsection}{\tocsubsection {}{8.1}{Scale-critical kinetic probes}}{16}{subsection.8.1}%
+\contentsline {subsection}{\tocsubsection {}{8.2}{Alignment and action--aiming}}{18}{subsection.8.2}%
+\contentsline {subsection}{\tocsubsection {}{8.3}{Alignment, coercivity, and coherent probe selection}}{20}{subsection.8.3}%
+\contentsline {section}{\tocsection {}{9}{Canonical critical orbits}}{21}{section.9}%
+\contentsline {subsection}{\tocsubsection {}{9.1}{Symmetry reduction and bad windows}}{21}{subsection.9.1}%
+\contentsline {subsection}{\tocsubsection {}{9.2}{The critical-orbit bridge}}{22}{subsection.9.2}%
+\contentsline {subsection}{\tocsubsection {}{9.3}{The two classical scale regimes}}{23}{subsection.9.3}%
+\contentsline {section}{\tocsection {}{10}{The covariant no-loss cascade principle}}{23}{section.10}%
+\contentsline {section}{\tocsection {}{11}{Covariant adjoint geometry and the moving carrier}}{25}{section.11}%
+\contentsline {subsection}{\tocsubsection {}{11.1}{The explicit nonnegative components}}{25}{subsection.11.1}%
+\contentsline {subsection}{\tocsubsection {}{11.2}{The uncoupled entropy ledger}}{26}{subsection.11.2}%
+\contentsline {subsection}{\tocsubsection {}{11.3}{The moving kinetic carrier}}{29}{subsection.11.3}%
+\contentsline {subsection}{\tocsubsection {}{11.4}{Canonical moving-carrier bridge}}{30}{subsection.11.4}%
+\contentsline {subsection}{\tocsubsection {}{11.5}{Equality states}}{30}{subsection.11.5}%
+\contentsline {section}{\tocsection {}{12}{Phase-I moving-carrier realization of the gap}}{31}{section.12}%
+\contentsline {section}{\tocsection {}{13}{Covariant exclusion of singularities}}{32}{section.13}%
+\contentsline {section}{\tocsection {Appendix}{A}{Weak covariant calculus and compact stability}}{34}{appendix.A}%
+\contentsline {subsection}{\tocsubsection {}{A.1}{Regularization of the equation}}{34}{subsection.A.1}%
+\contentsline {subsection}{\tocsubsection {}{A.2}{Compactness of the variational data}}{34}{subsection.A.2}%
+\contentsline {section}{\tocsection {Appendix}{B}{Weak material pullback: proof contract}}{35}{appendix.B}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract M.1: regularized material flows}}{35}{section*.4}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract M.2: material compactness modulo relabeling}}{35}{section*.5}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract M.3: compatibility with repaired charts}}{35}{section*.6}%
+\contentsline {section}{\tocsection {Appendix}{C}{Canonical singular-germ extraction: replacement contract}}{36}{appendix.C}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract B.1: velocity concentration}}{36}{section*.7}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract B.2: compact descendant selection}}{36}{section*.8}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract B.3: coherent forward orbit}}{36}{section*.9}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract B.4: compactness and persistence}}{36}{section*.10}%
+\contentsline {section}{\tocsection {Appendix}{D}{Gauge, pressure, and adjoint control: replacement contract}}{36}{appendix.D}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract C.1: canonical scale--center gauge}}{36}{section*.11}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract C.2: pressure atlas}}{37}{section*.12}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract C.3: normalized adjoint family}}{37}{section*.13}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract C.4: summable transport errors}}{37}{section*.14}%
+\contentsline {section}{\tocsection {Appendix}{E}{Canonical moving-carrier alternative: proof contract}}{37}{appendix.E}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract D.1: exact carrier ledger}}{37}{section*.15}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract D.2: pressure-tail and radius scheduling}}{37}{section*.16}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract D.3: transition and positive-scale routing}}{38}{section*.17}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract D.4: negative scale drift and final synthesis}}{38}{section*.18}%
+\contentsline {section}{\tocsection {Appendix}{F}{Signed scale-space current: independent proof contract}}{38}{appendix.F}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract S.1: compatible scale-space cells}}{38}{section*.19}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract S.2: signed edge-current identity}}{38}{section*.20}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract S.3: finite covariant expenditure}}{38}{section*.21}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract S.4: contact and exhaustive descent}}{39}{section*.22}%
+\contentsline {section}{\tocsection {Appendix}{G}{Lossless material geometry: independent rigidity contract}}{39}{appendix.G}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract R.1: compact lossless limit}}{39}{section*.23}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract R.2: bounded-deformation rigidity}}{39}{section*.24}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract R.3: anisotropic reduction}}{39}{section*.25}%
+\contentsline {subsection}{\tocsubsection {}{}{Contract R.4: equality closure}}{39}{section*.26}%
+\contentsline {section}{\tocsection {Appendix}{H}{Localized equality and the role of the Gaussian}}{39}{appendix.H}%
+\contentsline {section}{\tocsection {Appendix}{}{References}}{40}{section*.27}%

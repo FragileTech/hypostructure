@@ -949,8 +949,9 @@ noncomputable def selectedBarrierDichotomy
 noncomputable def selectedBarrierOverflowCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierOverflow, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+      [K .barrierOverflow, K .hotColdPartition, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) : False := by
   let closedHistory :=
@@ -962,12 +963,14 @@ noncomputable def selectedBarrierOverflowCloses
 noncomputable def selectedDensityBudget
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
+      [K .densityCap, K .barrierCap, K .hotColdPartition,
+        K .windowPackageSeparated, K .sparseSurplusSurvivor,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
@@ -1116,9 +1119,6 @@ noncomputable def selectedRankDropCloses
       history (by simp [branchDependence, K_eq_iff])
   let contextDecision :=
     contextValidityDichotomy (data := spineData) afterDependence
-      (K .contextDefect) (K .contextUniversal)
-      (fun defect => ⟨defect⟩)
-      (fun universal => ⟨universal⟩)
       (by simp [branchDependence, K_eq_iff])
       (by simp [branchDependence, K_eq_iff])
   match contextDecision with
@@ -1130,12 +1130,6 @@ noncomputable def selectedRankDropCloses
   | .right universalHistory =>
       let atomDecision :=
         atomCompressionDichotomy (data := spineData) universalHistory
-          (K .branchDependence) (K .contextUniversal)
-          (K .atomCompression) (K .delocalizedSupport)
-          (fun fact => fact.down)
-          (fun fact => fact.down)
-          (fun compression => ⟨compression⟩)
-          (fun delocalized => ⟨delocalized⟩)
           (by simp [branchDependence, K_eq_iff])
           (by simp [branchDependence, K_eq_iff])
       match atomDecision with
@@ -1147,11 +1141,6 @@ noncomputable def selectedRankDropCloses
       | .right delocalizedHistory =>
           let scopeDecision :=
             delocalizationScopeDichotomy (data := spineData) delocalizedHistory
-              (K .delocalizedSupport) (K .properDelocalization)
-              (K .globalDelocalization)
-              (fun fact => fact.down)
-              (fun proper => ⟨proper⟩)
-              (fun global => ⟨global⟩)
               (by simp [branchDependence, K_eq_iff])
               (by simp [branchDependence, K_eq_iff])
           match scopeDecision with
@@ -1162,16 +1151,24 @@ noncomputable def selectedRankDropCloses
                   (by simp [branchDependence, K_eq_iff])
               exact closedHistory.elimClosed (by infer_instance)
           | .right globalHistory =>
+              let afterRepair :=
+                (repairIdentity (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run globalHistory (by
+                    simp [repairIdentity, branchDependence, K_eq_iff])
               let afterBarrier :=
                 (globalBarrier (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
-                  (data := spineData)).run globalHistory (by
-                    simp [globalBarrier, branchDependence, K_eq_iff])
+                  (data := spineData)).run afterRepair (by
+                    simp [globalBarrier, repairIdentity, branchDependence,
+                      K_eq_iff])
               let closedHistory :=
                 closeIncompatible afterBarrier (K .selection)
                 (K .globalBarrier) (by
-                    simp [globalBarrier, branchDependence, K_eq_iff])
+                    simp [globalBarrier, repairIdentity, branchDependence,
+                      K_eq_iff])
               exact closedHistory.elimClosed (by infer_instance)
 
 /-- Nodes `[21]`--`[46]`, forwarding node `[22]`'s cold cursor to the spine.
@@ -7264,21 +7261,25 @@ noncomputable def selectedHighEntropyTypeAUnsaturatedCloses
         simp [selectedHighEntropyTypeAUnsaturatedDischarge, K_eq_iff])
   exact closedHistory.elimClosed (by infer_instance)
 
-/-- Record node `[22]`'s partition on a descendant of its `barrierCap` cursor. -/
+/-- Node `[145]`: record node `[22]`'s partition on the literal cold residual
+after the density/spine entry.  The atomic row reads `K .hotColdPartition`
+from this ExactLedger and appends only `K .coldWindowLedgerSplit`. -/
 noncomputable def selectedColdWindowLedgerSplit
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .coldTerminalResidual, K .route8TerminalNoGo,
-        K .sparsePressureNearCubic, K .spineSurplusEstimate,
-        K .negativeSupport, K .largeBudgetResidual, K .densityCap,
-        K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking, K .uncompressible,
+      [K .barrierCap, K .hotColdPartition,
+        K .windowPackageSeparated, K .sparseSurplusSurvivor,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .coldWindowLedgerSplit, K .coldTerminalResidual,
-        K .route8TerminalNoGo, K .sparsePressureNearCubic,
-        K .spineSurplusEstimate, K .negativeSupport, K .largeBudgetResidual,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .maximalPacking,
-        K .uncompressible, K .selection] :=
+      [K .coldWindowLedgerSplit, K .barrierCap,
+        K .hotColdPartition, K .windowPackageSeparated,
+        K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldWindowLedgerSplitRow (data := spineData)).run history
     (by simp [K_eq_iff])
 
@@ -7446,9 +7447,9 @@ noncomputable def selectedNearCubicNode21
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   let withSurvivor := selectedNearCubicSparseSurplusSurvivor history
   let enumerated :=
-    (finiteBarrierEnumeration (BranchState := BranchState)
+    (barrierEnumerationRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      (presentation := erdosReceiverLoadProfile) spineData).run
       withSurvivor (by simp [K_eq_iff])
   (independentWindowPackage (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -7485,9 +7486,8 @@ noncomputable def selectedNearCubicBranch
   let enumerated := selectedNearCubicNode21 history
   match selectedBarrierDichotomy enumerated with
   | .left capHistory =>
-      -- `[24]` enters the cold continuation directly; `[25]`--`[144]` are
-      -- not traversed by this paper arm.
-      exact selectedColdCorridorCloses (selectedDensityBudget capHistory)
+      let coldHistory := selectedColdWindowLedgerSplit capHistory
+      exact selectedColdCorridorCloses coldHistory
   | .right overflowHistory =>
       exact selectedBarrierOverflowCloses overflowHistory
 

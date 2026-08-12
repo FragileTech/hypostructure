@@ -1,0 +1,66 @@
+\begin{thebibliography}{10}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Aubin(1963)]{Aubin1963}
+Jean-Pierre Aubin.
+\newblock Un th\'eor\`eme de compacit\'e.
+\newblock \emph{Comptes Rendus de l'Acad\'emie des Sciences de Paris},
+  256:\penalty0 5042--5044, 1963.
+
+\bibitem[Ballester(2026)]{BallesterCovariantEntropy}
+Guillem~Duran Ballester.
+\newblock Covariant entropy and global regularity for the three-dimensional
+  navier--stokes equations, 2026.
+\newblock Manuscript.
+
+\bibitem[Fukushima et~al.(2011)Fukushima, Oshima, and
+  Takeda]{FukushimaOshimaTakeda2011}
+Masatoshi Fukushima, Yoichi Oshima, and Masayoshi Takeda.
+\newblock \emph{Dirichlet Forms and Symmetric Markov Processes}.
+\newblock De Gruyter, Berlin, second revised and extended edition, 2011.
+
+\bibitem[Jensen et~al.(1984)Jensen, Mourre, and Perry]{JensenMourrePerry1984}
+Arne Jensen, Eric Mourre, and Peter Perry.
+\newblock Multiple commutator estimates and resolvent smoothness in quantum
+  scattering theory.
+\newblock \emph{Annales de l'Institut Henri Poincar\'e, Physique Th\'eorique},
+  41\penalty0 (2):\penalty0 207--225, 1984.
+
+\bibitem[Kato(1995)]{Kato1995}
+Tosio Kato.
+\newblock \emph{Perturbation Theory for Linear Operators}.
+\newblock Springer, Berlin, second edition, 1995.
+
+\bibitem[Lions(1969)]{Lions1969}
+Jacques-Louis Lions.
+\newblock \emph{Quelques m\'ethodes de r\'esolution des probl\`emes aux limites
+  non lin\'eaires}.
+\newblock Dunod, Paris, 1969.
+
+\bibitem[Ma and R\"ockner(1992)]{MaRoeckner1992}
+Zhi-Ming Ma and Michael R\"ockner.
+\newblock \emph{Introduction to the Theory of (Non-Symmetric) Dirichlet Forms}.
+\newblock Springer, Berlin, 1992.
+
+\bibitem[Perelman(2002)]{Perelman2002}
+Grisha Perelman.
+\newblock The entropy formula for the ricci flow and its geometric
+  applications, 2002.
+
+\bibitem[Simon(1987)]{Simon1986}
+Jacques Simon.
+\newblock Compact sets in the space $l^p(0,t;b)$.
+\newblock \emph{Annali di Matematica Pura ed Applicata}, 146:\penalty0 65--96,
+  1987.
+
+\bibitem[Villani(2009)]{Villani2009}
+C\'edric Villani.
+\newblock Hypocoercivity.
+\newblock \emph{Memoirs of the American Mathematical Society}, 202\penalty0
+  (950), 2009.
+
+\end{thebibliography}
