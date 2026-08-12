@@ -101,6 +101,14 @@ Agreed. Here is the **actual final-pass list**. It assumes the manuscript, theor
 
    Aim for **1,750–1,850 characters**, not 1,919, so minor later edits do not exceed the limit. arXiv rejects metadata abstracts above 1,920 characters. ([arXiv][3])
 
+   > **Validation findings — 2026-08-12 — RESOLVED.** The revised LaTeX
+   > abstract gives **1,836 characters** after `detex` extraction and whitespace
+   > normalization.  It is below the stated 1,920-character metadata limit and
+   > inside the recommended 1,750–1,850-character buffer.  The revision retains
+   > the universal capability claim, source-resolved learning and noise
+   > results, inverse capability theory, architecture-independent AI scope,
+   > and the proof-producing LPN specialization.
+
 8. **Keep a plain metadata version of the title and abstract.**
 
    The PDF may retain all your ordinary LaTeX. In the arXiv web form:
@@ -121,6 +129,11 @@ Agreed. Here is the **actual final-pass list**. It assumes the manuscript, theor
 
    The current title accurately describes the manuscript.  A title change is not part of the required polish.
 
+   > **Validation findings — 2026-08-12 — PASS.** The source title and PDF
+   > metadata title are both exactly *Presentation-Relative Structural
+   > Complexity: Quantitative Limits for General Intelligent Computation*.
+   > No stale or competing title was found in the manuscript source.
+
 10. **Add one concise LLM-use sentence in the acknowledgments.**
 
 This is the only disclosure addition I would treat as practically necessary because you described significant text-to-text LLM assistance. A restrained sentence is enough:
@@ -128,6 +141,11 @@ This is the only disclosure addition I would treat as practically necessary beca
 > Text-to-text generative AI tools were used to accelerate drafting and editorial revision; the author verified and takes full responsibility for all definitions, proofs, calculations, citations, and claims.
 
 arXiv’s current policy says significant text-to-text generative-AI use should be reported according to subject-area methodological norms, that human authors remain responsible, and that the tool should not be listed as an author. ([arXiv][4])
+
+> **Validation findings — 2026-08-12 — OPEN.** The manuscript contains no
+> acknowledgments section and no occurrence of “generative AI,” “LLM,” or an
+> equivalent tool-use disclosure.  The recommended disclosure has therefore
+> not yet been added.
 
 11. **Fill the arXiv comments field with only useful bibliographic information.**
 
@@ -165,6 +183,13 @@ Much of this is already written. The universal capability box is ready to reuse.
 
 This is primarily a **copy, condense, and cross-reference task**, not new mathematical writing.
 
+> **Validation findings — 2026-08-12 — OPEN.** There is no synopsis between
+> `\end{abstract}` and `\tableofcontents`; the only intervening material is the
+> schematic “Universal capability bound” box.  Reusable components do exist
+> later in Part I: “What this paper introduces,” the eight-Part reading guide,
+> the one-page executive theorem map, and the certificate discussion.  They
+> have not been condensed into the requested 2–4-page pre-TOC synopsis.
+
 15. **Give the synopsis a straightforward title.**
 
 For example:
@@ -175,6 +200,11 @@ For example:
 ```
 
 Avoid calling it an “executive summary,” “reader warning,” or “scope statement.” It is simply a compact technical map of the monograph.
+
+> **Validation findings — 2026-08-12 — OPEN.** No section titled “Synopsis and
+> Principal Results,” or any other pre-TOC synopsis title, occurs in the
+> source.  The existing “Executive theorem map” is a later Part I subsection
+> on PDF page 26 and is not a substitute for the requested synopsis heading.
 
 16. **Include the exact theorem rather than only the schematic version.**
 
@@ -188,6 +218,14 @@ m*{\mathfrak M,n}^{\mathrm{sat}}!\bigl(\Psi(B,n)\bigr).
 ]
 
 Follow it with one sentence saying that the left-hand side is already optimized over the complete represented computation class at budget (B).
+
+> **Validation findings — 2026-08-12 — PARTIAL.** The pre-TOC box contains
+> only the schematic performance/profile inequality.  The exact formula
+> appears later as Eq. `eq-architecture-independent-capability-envelope` and
+> again in the conclusion, together with the statement that the left-hand
+> side is the supremum over all admissible computations.  Because no synopsis
+> exists, the exact theorem and optimization sentence are not present at the
+> location required by this item.
 
 17. **Add a compact “Principal results by Part” list.**
 
@@ -204,6 +242,13 @@ One or two sentences per Part are enough:
 
 This adds navigation without changing any existing result.
 
+> **Validation findings — 2026-08-12 — PARTIAL.** Subsection “How to read this
+> paper” gives a substantive Part I–VIII description, and Figure 2 maps all
+> eight Parts.  Both occur after the full table of contents, and the reading
+> guide is substantially longer than the requested compact eight-row synopsis
+> list.  The mathematical coverage is present; the requested placement and
+> compression are not.
+
 18. **Add a short reading-path paragraph.**
 
 Four lines are sufficient:
@@ -214,6 +259,13 @@ Four lines are sufficient:
 * LPN application: Parts I–III and VIII.
 
 Your individual “Part contract” paragraphs already handle local navigation well.  This merely gives readers the global route once.
+
+> **Validation findings — 2026-08-12 — PARTIAL.** The reading guide contains
+> global routes for the framework, LPN, learning, controlled dynamics,
+> black-box classifiers, attention/active acquisition, and structural
+> metacomplexity.  These routes are accurate and hyperlinked, but they occupy
+> seven detailed bullets after the Part-by-Part guide rather than the four-line
+> pre-TOC paragraph requested here.
 
 19. **Add a one-page principal-theorem map, not a new contribution section.**
 
@@ -238,6 +290,14 @@ Include only load-bearing results such as:
 
 No status taxonomy or “nonclaims” column is necessary.
 
+> **Validation findings — 2026-08-12 — PARTIAL.** The “Executive theorem map”
+> occupies exactly PDF page 26 and gives eleven load-bearing nodes, each with
+> one sentence, one equation, and one theorem hyperlink.  It is a numbered
+> list rather than the requested three-column table, and it omits a dedicated
+> active/Bayesian/control construction row.  The structural spine,
+> source-resolved learning, inverse frontier, empirical discharge, and LPN
+> specialization are covered.
+
 20. **Consider reducing only the global TOC depth from 3 to 2.**
 
 The preamble currently uses:
@@ -256,6 +316,12 @@ Changing it to:
 
 would preserve all headings and numbering while making the initial table of contents less overwhelming. This is optional; leave it at 3 if you prefer the complete detailed TOC.
 
+> **Validation findings — 2026-08-12 — OPEN (OPTIONAL).** The preamble still
+> sets `\setcounter{tocdepth}{3}`.  In the current PDF the detailed table of
+> contents runs from pages 2 through 12 before Part I begins on page 13.  No
+> technical defect follows from this choice, but the optional reduction has
+> not been applied.
+
 21. **Standardize the first-use wording of the five or six core terms.**
 
 In the synopsis and opening pages, consistently use the same short formulations for:
@@ -269,6 +335,16 @@ In the synopsis and opening pages, consistently use the same short formulations 
 
 Do not rewrite their definitions. The goal is simply to avoid using two slightly different informal glosses before the reader reaches the formal definition.
 
+> **Validation findings — 2026-08-12 — PARTIAL.** “Task presentation,”
+> “prospective source,” and “saturated profile” receive stable explanations in
+> the opening pages.  “Represented derivation” first appears in the temporal
+> discussion without a short first-use gloss, while the abstract says
+> “retrospective explanations” and the exact phrase “retrospective accounting”
+> first appears later in the contributions/accounting material.  “Saturated
+> cost” is also used in the abstract before the Part I cost-filtration gloss.
+> The formal definitions are consistent; the requested uniform first-use layer
+> cannot be completed until the synopsis exists.
+
 22. **Check the first twenty pages for accidental repetition.**
 
 Do not delete substantive material. Only remove or tighten sentences that repeat nearly verbatim across:
@@ -280,6 +356,14 @@ Do not delete substantive material. Only remove or tighten sentences that repeat
 
 The synopsis should point forward rather than reproduce entire paragraphs.
 
+> **Validation findings — 2026-08-12 — PARTIAL.** A manual comparison of the
+> abstract, the page-1 capability box, and the opening of Part I found repeated
+> subject matter but no nearly verbatim duplicated sentence: the abstract
+> states scope, the box states the schematic envelope, and Part I motivates
+> the reversal from algorithm-first to presentation-first analysis.  The
+> four-way repetition check remains incomplete because the proposed synopsis
+> is absent.
+
 23. **Check every displayed box and table in the front matter at ordinary laptop zoom.**
 
 Specifically verify:
@@ -290,6 +374,16 @@ Specifically verify:
 * figure captions are not stranded on another page;
 * the universal capability equation is legible;
 * the channel dictionary does not become too small.
+
+> **Validation findings — 2026-08-12 — PASS WITH MINOR LAYOUT NOTES.** The
+> compiled pages containing the front-facing boxes, tables, and maps (PDF
+> pages 1, 13, 16–19, 22, 26, and 29) were inspected at a 120-dpi
+> laptop-scale rendering.  Nothing crosses a margin; the capability equation
+> and channel dictionary are legible; captions remain with their figures; and
+> the log contains no overfull box or missing-destination warning.  The
+> feature matrix and executive theorem map are dense but readable.  Page 16
+> has a large unused lower half after the learning-consequences box, which is
+> a pagination inefficiency rather than clipping or loss of content.
 
 24. **Do one mechanical terminology pass.**
 
@@ -307,9 +401,28 @@ target aligned / target-aligned
 
 Choose one form and apply it globally. This is exactly the kind of polish readers notice in a large monograph.
 
+> **Validation findings — 2026-08-12 — PASS.** The mechanical count is
+> consistent: `source-resolved` 226/`source resolved` 0,
+> `runtime-generated` 6/`runtime generated` 0, and `target-aligned`
+> 86/`target aligned` 0.  The dominant forms are `first-hit` (328),
+> `family-uniform` (193), and `finite-horizon` (141).  The few unhyphenated
+> hits are grammatical noun phrases such as “family uniformity,” “a finite
+> horizon,” or “first hitting time,” not inconsistent attributive variants.
+> The apparent `cost saturated` hit is the unrelated phrase “least-cost
+> saturated reclassification.”
+
 25. **Do one theorem-reference pass through the synopsis and introduction.**
 
 Every large claim in those opening pages should point to a specific theorem, corollary, or definition. Avoid generic references such as “proved later” when an exact `\cref{...}` can be used.
+
+> **Validation findings — 2026-08-12 — PARTIAL.** The existing Part I overview,
+> contribution hierarchy, architecture-independent capability section,
+> executive theorem map, and reading guide attach their load-bearing claims to
+> exact definitions, theorems, corollaries, equations, or hyperlinks.  No
+> “proved later”/“shown later” placeholder was found in the audited opening
+> source.  The page-1 schematic box itself has no theorem link, although its
+> exact form is linked later.  A synopsis reference pass is necessarily still
+> open because the synopsis has not been created.
 
 26. **Do not alter Part VIII substantively.**
 
@@ -321,6 +434,20 @@ For LPN, perform only mechanical checks:
 * the terminology used in the abstract matches the terminology used in Part VIII.
 
 No new qualifications, restructuring, or rewritten claims are part of this pass.
+
+> **Validation findings — 2026-08-12 — PARTIAL; MECHANICAL FLOAT FIXES
+> REMAIN.** The current build has no unresolved citation, equation reference,
+> theorem reference, multiply defined label, missing character, missing file,
+> overfull box, or missing PDF destination warning.  The abstract and Part VIII
+> use the same residual-ancestry, deterministic finite-to-asymptotic
+> certificate, and conditional-instantiation terminology.  Four figures do,
+> however, appear after the next section has begun: Figure 120 (source section
+> VIII.3) is on page 575 after VIII.4 begins on page 574; Figures 130–131
+> (source section VIII.13) are on page 639 after VIII.14 begins on page 638;
+> and Figure 135 (source section VIII.15) is on page 667 after VIII.16 begins
+> on page 666.  Figures 121, 129, 134, and 139 share a page with the following
+> section but occur before its heading and therefore do not cross it.  No Part
+> VIII source was edited during this audit.
 
 ## Final packaging and upload
 

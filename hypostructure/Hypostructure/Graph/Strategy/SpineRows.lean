@@ -432,26 +432,89 @@ union bound dominates it (`sum_edgeStratumCount_le_variableEdgeBudget` is the
 summed form of the same count).  That is what makes the retained cap survive
 `rem:budget-robustness` rather than depending on the exact `m`. -/
 
-/-- Node `[21]`, as one monotone fact step on the literal residual.
-
-The executor reads the predecessor's `localAlgebra` key to enforce the paper
-position, derives the certified table from `data`, and appends the canonical
-`windowPackageSeparated` fact.  It does not construct the node `[22]` decision,
-change `inputs.current`, or accept a caller-supplied encoding callback. -/
-@[reducible] noncomputable def barrierEnumerationRow
+/-- `lem:p13-window-package`, on the literal near-cubic residual. -/
+@[reducible] noncomputable def windowPackageRow
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.barrierEnumeration
-    (rowManifest (K .localAlgebra) (K .windowPackageSeparated) (by simp [K_eq_iff]))
+  factOnly `Hypostructure.Graph.Strategy.Spine.windowPackage
+    { Requires := [K .barrierEnumeration, K .maximalPacking,
+        K .sparseSurplusSurvivor, K .surplusAtOrBelow]
+      Produces := [K .windowPackageSeparated]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .windowPackageSeparated)
-        ⟨data.windowRate_eq_barrier,
-          data.curvatureCost_eq_barrierRow, by
-            have _local := inputs.get (K .localAlgebra)
-            let presentation := data.windowBarrier
-            letI := presentation.indexFintype
-            rw [data.windowRate_eq_barrier]
-            exact presentation.two_pow_binaryRateFloor_mul_flatProduct_le⟩
+        (show Value BranchState Presentation presentation data
+            .windowPackageSeparated inputs.current from
+          ⟨by
+            classical
+            have enumeration := (inputs.get (K .barrierEnumeration)).down
+            simp only [Holds]
+            rw [enumeration.1]
+            have _nearCubic := (inputs.get (K .surplusAtOrBelow)).down
+            let survivor := (inputs.get (K .sparseSurplusSurvivor)).down
+            obtain ⟨_positive, packing, valid, maximum, maximal⟩ :=
+              (inputs.get (K .maximalPacking)).down
+            refine ⟨packing, valid, maximum, maximal, ?_⟩
+            let bits := data.windowBarrier.binaryRateFloor *
+              data.separatedScaleCount inputs.current.object.vertexCount
+            let Coordinate := Graph.DeclaredSignature.Coordinate
+              inputs.current.object.Vertex
+                (Fin bits × Finset inputs.current.object.Vertex)
+            let package : Finset inputs.current.object.Vertex →
+                Finset Coordinate := fun window =>
+              Finset.univ.image fun bit =>
+                Graph.DeclaredSignature.Coordinate.base
+                  .windowLabel (bit, window) window
+            let family := packing.biUnion package
+            have packageCard : ∀ window, (package window).card = bits := by
+              intro window
+              rw [Finset.card_image_iff.mpr]
+              · simp
+              · intro left _ right _ equality
+                cases equality
+                rfl
+            have packagesDisjoint :
+                ∀ left ∈ packing, ∀ right ∈ packing, left ≠ right →
+                  Disjoint (package left) (package right) := by
+              intro left _leftMem right _rightMem different
+              rw [Finset.disjoint_left]
+              intro coordinate leftMember rightMember
+              obtain ⟨leftBit, _, leftEq⟩ := Finset.mem_image.mp leftMember
+              obtain ⟨rightBit, _, rightEq⟩ := Finset.mem_image.mp rightMember
+              rw [← leftEq] at rightEq
+              have supportEq := congrArg
+                Graph.DeclaredSignature.Coordinate.support rightEq
+              simp only [Graph.DeclaredSignature.Coordinate.support_base]
+                at supportEq
+              exact different supportEq.symm
+            have familyCard : family.card = bits * packing.card := by
+              rw [Finset.card_biUnion]
+              · simp_rw [packageCard]
+                simp [Nat.mul_comm]
+              · intro left leftMem right rightMem different
+                exact packagesDisjoint left leftMem right rightMem different
+            refine ⟨(fun window _member => packageCard window),
+              packagesDisjoint, familyCard, ?_, ?_⟩
+            · intro declared _functional
+              by_contra reducing
+              rcases declared.localize reducing with replacement |
+                ⟨representative, smaller, baseline, transfer⟩
+              · exact survivor.2 _ replacement
+              · exact survivor.1
+                  (Graph.SparseSurplusExit.delocalization representative
+                    smaller baseline transfer)
+            · intro BaselineCoordinate baseline baselineSupport
+                _baselineIndependent
+              intro declared _functional
+              by_contra reducing
+              rcases declared.localize reducing with replacement |
+                ⟨representative, smaller, baselineObject, transfer⟩
+              · exact survivor.2 _ replacement
+              · exact survivor.1
+                  (Graph.SparseSurplusExit.delocalization representative
+                    smaller baselineObject transfer)⟩)
         .nil)
 
 noncomputable def barrierEnumerationDichotomy
@@ -871,24 +934,17 @@ D4 coordinate family, and its embedded `Unit` value map.  Exactness is label
 injectivity of the raw wedge coordinates even though those embedded values all
 coincide. -/
 @[reducible] noncomputable def exactResponseProfileRow
-    (maximalPacking exactResponseProfile :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : maximalPacking ≠ exactResponseProfile)
-    (decode : (input : Input BranchState Presentation presentation data) →
-      maximalPacking.At input →
-        Holds BranchState Presentation presentation data .maximalPacking
-          input.object)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      Holds BranchState Presentation presentation data .exactResponseProfile
-          input.object →
-        exactResponseProfile.At input) :
+    (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.exactResponseProfile
-    (rowManifest maximalPacking exactResponseProfile distinct)
+  by
+  classical
+  exact factOnly `Hypostructure.Graph.Strategy.Spine.exactResponseProfile
+    (rowManifest (K .maximalPacking) (K .exactResponseProfile)
+      (by simp [K_eq_iff]))
     (fun inputs =>
-      let inherited := decode inputs.current (inputs.get maximalPacking)
-      .cons (key := exactResponseProfile)
-        (encode inputs.current (by
+      let inherited := (inputs.get (K .maximalPacking)).down
+      .cons (key := K .exactResponseProfile)
+        ⟨by
           rcases inherited with ⟨_positive, packing, valid, card, _maximal⟩
           refine ⟨packing, valid, card, ?_⟩
           dsimp
@@ -896,7 +952,7 @@ coincide. -/
           · intro coordinate _member
             rfl
           · intro left _leftMember right _rightMember equal
-            exact equal))
+            exact equal⟩
         .nil)
 
 /-! ## `def:admissible-rank-quotient` on the concrete exact profile
@@ -942,6 +998,42 @@ belongs only to `def:functional-rank-quotient`. -/
           exact ⟨admissible, fun _quotient => Iff.rfl⟩))
         .nil)
 
+/-! ## `def:functional-rank-quotient` on the admissible family
+
+The incoming fact owns the concrete admissible quotient predicate.  This row
+restricts it, on the same declared remainder family, by exactly
+`RankQuotient.FunctionalOn`: whenever adjoining a coordinate first destroys
+label injectivity, a finite subfamily of the independent coordinates determines
+its response in every realization.  No state space or target rank is formed at
+this label. -/
+@[reducible] noncomputable def functionalRankQuotientRow
+    : AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.functionalRankQuotient
+    (rowManifest (K .admissibleRankQuotient) (K .functionalRankQuotient)
+      (by simp [K_eq_iff]))
+    (fun inputs =>
+      let inherited := (inputs.get (K .admissibleRankQuotient)).down
+      .cons (key := K .functionalRankQuotient)
+        ⟨by
+          rcases inherited with
+            ⟨packing, valid, card, admissible, characterization⟩
+          refine ⟨packing, valid, card, ?_⟩
+          dsimp
+          let functional := fun quotient =>
+            admissible quotient ∧
+              quotient.FunctionalOn
+                ↑(inputs.current.object.internalWedgeFamily
+                  (inputs.current.object.remainderSupport packing))
+          refine ⟨functional, fun quotient => ?_⟩
+          constructor
+          · rintro ⟨admissibleQuotient, functionalQuotient⟩
+            exact ⟨(characterization quotient).mp admissibleQuotient,
+              functionalQuotient⟩
+          · rintro ⟨declaredQuotient, functionalQuotient⟩
+            exact ⟨(characterization quotient).mpr declaredQuotient,
+              functionalQuotient⟩⟩
+        .nil)
+
 /-! ## Node `[31]`: the curvature target-rank of the remainder
 
 `def:curvature-target-rank`.  `𝒲₂(R)` is the family of raw internal length-two
@@ -949,42 +1041,207 @@ curvature tests of the remainder; a subfamily *survives* an admissible rank
 quotient when the quotient is label-injective on it, and it survives the
 admissible quotient system when it survives every functional admissible rank
 quotient.  `r_Ω(R)` is the largest surviving subfamily's size, computed by
-`Graph.FiniteObject.curvatureTargetRank` against the manuscript's own system.
+`Graph.FiniteObject.curvatureTargetRank` directly from that finite survival
+predicate.
 
-The row commits that the maximum is attained together with
-`lem:target-rank-circuit`: at a maximal surviving subfamily, every raw test left
-outside is target-dependent on a subfamily of it.  The manuscript's proof is
-exactly the reason: maximality means adjoining the test loses label-injectivity
-for some member `q`, the subfamily itself survives `q`, so the loss involves the
-test, and `q` is functional, so a finite subfamily determines the test's
-quotient value. -/
+The row commits only the definition at this label: a surviving subfamily of
+maximum cardinality.  `lem:target-rank-circuit` is a later fact and is not
+proved or published here. -/
 @[reducible] noncomputable def curvatureTargetRankRow
-    (curvatureDemandFloor curvatureTargetRank :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : curvatureDemandFloor ≠ curvatureTargetRank)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (∀ packing : Finset (Finset input.object.Vertex),
-        input.object.IsWindowPacking data.windowOrder packing →
-        ∃ independent ⊆ remainderCurvatureTests input.object packing,
-          (remainderQuotientSystem data input.object packing).Survives
-              ↑independent ∧
-            independent.card =
-              remainderCurvatureTargetRank data input.object packing ∧
-            ∀ test ∈ remainderCurvatureTests input.object packing,
-              test ∉ independent →
-              ∃ determiners ⊆ (↑independent : Set _),
-                Core.TargetRank.Dependence
-                  (remainderQuotientSystem data input.object packing) test
-                  determiners) →
-      curvatureTargetRank.At input) :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank
-    (rowManifest curvatureDemandFloor curvatureTargetRank distinct)
-    (fun inputs =>
-      .cons (key := curvatureTargetRank)
-        (encode inputs.current fun _packing _valid =>
-          Core.TargetRank.exists_independent_attaining _)
-        .nil)
+    : AtomicStrategy (Input BranchState Presentation presentation data) := by
+  classical
+  exact
+    factOnly `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank
+      (rowManifest (K .functionalRankQuotient) (K .curvatureTargetRank)
+        (by simp [K_eq_iff]))
+      (fun inputs =>
+        let inherited := (inputs.get (K .functionalRankQuotient)).down
+        .cons (key := K .curvatureTargetRank)
+          ⟨by
+            rcases inherited with
+              ⟨packing, valid, card, functional, characterization⟩
+            let support := inputs.current.object.remainderSupport packing
+            let family := inputs.current.object.internalWedgeFamily support
+            let survives := fun independent :
+                Finset (inputs.current.object.InternalWedge support) =>
+              ∀ quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+                  (inputs.current.object.InternalWedge support),
+                functional quotient →
+                  quotient.LabelInjectiveOn ↑independent
+            let candidates := family.powerset.filter survives
+            have candidatesNonempty : candidates.Nonempty := by
+              refine ⟨∅, ?_⟩
+              simp [candidates, survives,
+                Core.TargetRank.RankQuotient.LabelInjectiveOn]
+            obtain ⟨independent, independentMember, maximum⟩ :=
+              Finset.exists_mem_eq_sup candidates candidatesNonempty Finset.card
+            have independentFacts : independent ⊆ family ∧
+                survives independent := by
+              simpa [candidates] using independentMember
+            refine ⟨packing, valid, card, ?_⟩
+            dsimp only
+            refine ⟨independent, independentFacts.1, ?_, ?_, ?_⟩
+            · intro quotient member
+              exact independentFacts.2 quotient
+                ((characterization quotient).mpr member)
+            · unfold Graph.FiniteObject.curvatureTargetRank
+              let canonicalSurvives := fun candidate :
+                  Finset (inputs.current.object.InternalWedge support) =>
+                ∀ quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+                    (inputs.current.object.InternalWedge support),
+                  ((∃ declared : Graph.DeclaredQuotient
+                      (Graph.MinimumDegreeAtLeast data.threshold)
+                      (Graph.HasCycleWithLength data.LengthOK)
+                      inputs.current.object family
+                      (Graph.FiniteObject.internalWedgeSupport
+                        (region := support)),
+                      declared.toRankQuotient = quotient) ∧
+                    quotient.FunctionalOn ↑family) →
+                  quotient.LabelInjectiveOn ↑candidate
+              have candidates_eq :
+                  candidates = family.powerset.filter canonicalSurvives := by
+                ext candidate
+                simp only [candidates, Finset.mem_filter,
+                  Finset.mem_powerset]
+                constructor
+                · rintro ⟨subset, survivesCandidate⟩
+                  refine ⟨subset, ?_⟩
+                  intro quotient member
+                  exact survivesCandidate quotient
+                    ((characterization quotient).mpr member)
+                · rintro ⟨subset, survivesCandidate⟩
+                  refine ⟨subset, ?_⟩
+                  intro quotient member
+                  exact survivesCandidate quotient
+                    ((characterization quotient).mp member)
+              change independent.card =
+                (family.powerset.filter canonicalSurvives).sup Finset.card
+              rw [← candidates_eq]
+              exact maximum.symm
+            · intro candidate candidateSubset survivesCandidate
+              have candidateMember : candidate ∈ candidates := by
+                simp only [candidates, Finset.mem_filter,
+                  Finset.mem_powerset]
+                refine ⟨candidateSubset, ?_⟩
+                intro quotient member
+                exact survivesCandidate quotient
+                  ((characterization quotient).mp member)
+              have bound :=
+                Finset.le_sup (f := Finset.card) candidateMember
+              rw [maximum] at bound
+              exact bound⟩
+          .nil)
+
+/-! ## `lem:target-rank-circuit`: finite proper dependence
+
+For a coordinate outside the selected maximum surviving family, adjoining it
+cannot survive every functional admissible quotient: otherwise cardinal
+maximality is contradicted.  The quotient witnessing that failure is
+label-injective on the selected family, and its `FunctionalOn` clause supplies
+the finite determining subfamily.  Since that subfamily lies in the selected
+family while the new coordinate does not, the dependence is proper. -/
+@[reducible] noncomputable def targetRankCircuitRow
+    : AtomicStrategy (Input BranchState Presentation presentation data) := by
+  classical
+  exact
+    factOnly `Hypostructure.Graph.Strategy.Spine.targetRankCircuit
+      (rowManifest (K .curvatureTargetRank) (K .targetRankCircuit)
+        (by simp [K_eq_iff]))
+      (fun inputs =>
+        let inherited := (inputs.get (K .curvatureTargetRank)).down
+        .cons (key := K .targetRankCircuit)
+          ⟨by
+            rcases inherited with
+              ⟨packing, valid, card, independent, independentSubset,
+                independentSurvives, rank, maximal⟩
+            have extract : ∀ test ∈
+                inputs.current.object.internalWedgeFamily
+                  (inputs.current.object.remainderSupport packing),
+                test ∉ independent →
+                ∃ determiners : Set
+                    (inputs.current.object.InternalWedge
+                      (inputs.current.object.remainderSupport packing)),
+                  determiners ⊆ ↑independent ∧ determiners.Finite ∧
+                    test ∉ determiners ∧
+                    ∃ declared : Graph.DeclaredQuotient
+                      (Graph.MinimumDegreeAtLeast data.threshold)
+                      (Graph.HasCycleWithLength data.LengthOK)
+                      inputs.current.object
+                      (inputs.current.object.internalWedgeFamily
+                        (inputs.current.object.remainderSupport packing))
+                      (Graph.FiniteObject.internalWedgeSupport
+                        (region := inputs.current.object.remainderSupport packing)),
+                      declared.toRankQuotient.FunctionalOn
+                          ↑(inputs.current.object.internalWedgeFamily
+                            (inputs.current.object.remainderSupport packing)) ∧
+                        declared.toRankQuotient.Determines test determiners := by
+              intro test testMember testOutside
+              let candidate := insert test independent
+              have candidateSubset : candidate ⊆
+                  inputs.current.object.internalWedgeFamily
+                    (inputs.current.object.remainderSupport packing) := by
+                intro coordinate coordinateMember
+                simp only [candidate, Finset.mem_insert] at coordinateMember
+                rcases coordinateMember with rfl | coordinateMember
+                · exact testMember
+                · exact independentSubset coordinateMember
+              have candidateFails : ¬ ∀ quotient :
+                  Core.TargetRank.RankQuotient.{u, u + 1}
+                    (inputs.current.object.InternalWedge
+                      (inputs.current.object.remainderSupport packing)),
+                  ((∃ declared : Graph.DeclaredQuotient
+                      (Graph.MinimumDegreeAtLeast data.threshold)
+                      (Graph.HasCycleWithLength data.LengthOK)
+                      inputs.current.object
+                      (inputs.current.object.internalWedgeFamily
+                        (inputs.current.object.remainderSupport packing))
+                      (Graph.FiniteObject.internalWedgeSupport
+                        (region := inputs.current.object.remainderSupport packing)),
+                      declared.toRankQuotient = quotient) ∧
+                    quotient.FunctionalOn
+                      ↑(inputs.current.object.internalWedgeFamily
+                        (inputs.current.object.remainderSupport packing))) →
+                  quotient.LabelInjectiveOn ↑candidate := by
+                intro candidateSurvives
+                have bound := maximal candidate candidateSubset candidateSurvives
+                have larger : independent.card < candidate.card := by
+                  simp [candidate, testOutside]
+                exact (Nat.not_lt_of_ge bound) larger
+              push_neg at candidateFails
+              rcases candidateFails with
+                ⟨quotient, ⟨⟨declared, declaredEq⟩, functional⟩,
+                  candidateNotInjective⟩
+              have independentInjective := independentSurvives quotient
+                ⟨⟨declared, declaredEq⟩, functional⟩
+              rcases functional independentSubset testMember testOutside
+                  independentInjective
+                  (by simpa [candidate] using candidateNotInjective) with
+                ⟨determiners, finite, determinersSubset, determines⟩
+              refine ⟨determiners, determinersSubset, finite, ?_, declared, ?_, ?_⟩
+              · intro testInDeterminers
+                exact testOutside (determinersSubset testInDeterminers)
+              · simpa [declaredEq] using functional
+              · simpa [declaredEq] using determines
+            refine ⟨packing, valid, card, independent, independentSubset,
+              independentSurvives, rank, extract, ?_⟩
+            · intro noProperDependence
+              have familySubset :
+                  (↑(inputs.current.object.internalWedgeFamily
+                    (inputs.current.object.remainderSupport packing)) : Set _) ⊆
+                    ↑independent := by
+                intro test testMember
+                by_contra testOutside
+                have testMemberFinset : test ∈
+                    inputs.current.object.internalWedgeFamily
+                      (inputs.current.object.remainderSupport packing) := testMember
+                obtain ⟨determiners, determinersSubset, certificate⟩ :=
+                  extract test testMemberFinset testOutside
+                exact noProperDependence
+                  ⟨test, testMemberFinset, determiners,
+                    determinersSubset.trans independentSubset, certificate⟩
+              intro quotient member
+              exact (independentSurvives quotient member).mono familySubset⟩
+          .nil)
 
 /-! ## Node `[32]`: exact rank loss or exact full rank
 
@@ -999,71 +1256,48 @@ noncomputable def curvatureRankDichotomy
     (previous :
       ExactLedger (Input BranchState Presentation presentation data)
         current known)
-    (curvatureTargetRank curvatureRankDrop curvatureFullRank :
-      FactKey (Input BranchState Presentation presentation data))
-    [Core.Residual.FactKeys.Has curvatureTargetRank known]
-    (rankOf : curvatureTargetRank.At current →
-      ∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        ∃ independent ⊆ remainderCurvatureTests current.object packing,
-          (remainderQuotientSystem data current.object packing).Survives
-              ↑independent ∧
-            independent.card =
-              remainderCurvatureTargetRank data current.object packing ∧
-            ∀ test ∈ remainderCurvatureTests current.object packing,
-              test ∉ independent →
-              ∃ determiners ⊆ (↑independent : Set _),
-                Core.TargetRank.Dependence
-                  (remainderQuotientSystem data current.object packing) test
-                  determiners)
-    (encodeDrop :
-      (∃ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing ∧
-          remainderCurvatureTargetRank data current.object packing <
-              remainderWedgeSupply current.object packing ∧
-            ∃ test determiners,
-              Core.TargetRank.Dependence
-                (remainderQuotientSystem data current.object packing) test
-                determiners) →
-      curvatureRankDrop.At current)
-    (encodeFull :
-      (∀ packing : Finset (Finset current.object.Vertex),
-        current.object.IsWindowPacking data.windowOrder packing →
-        remainderCurvatureTargetRank data current.object packing =
-          remainderWedgeSupply current.object packing) →
-      curvatureFullRank.At current)
-    (dropFresh : curvatureRankDrop ∉ known)
-    (fullFresh : curvatureFullRank ∉ known) :
-    Decision curvatureRankDrop curvatureFullRank previous :=
-  Decision.run previous curvatureRankDrop curvatureFullRank
+    [Core.Residual.FactKeys.Has (K .targetRankCircuit) known]
+    (dropFresh : K .curvatureRankDrop ∉ known)
+    (fullFresh : K .curvatureFullRank ∉ known) :
+    Decision (K .curvatureRankDrop) (K .curvatureFullRank) previous :=
+  Decision.run previous (K .curvatureRankDrop) (K .curvatureFullRank)
     `Hypostructure.Graph.Strategy.Spine.curvatureRankDichotomy
     (by
       classical
-      by_cases drop :
-          ∃ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing ∧
-              remainderCurvatureTargetRank data current.object packing <
-                remainderWedgeSupply current.object packing
-      · -- Yes: the dependence Branch D is entered with, extracted from the
-        -- maximal surviving subfamily node `[31]` committed.  The subfamily is
-        -- read from the ledger by exact key; it is not recomputed here.
-        refine .inl (encodeDrop ?_)
-        obtain ⟨packing, valid, below⟩ := drop
-        obtain ⟨independent, subset, _survives, attains, dependent⟩ :=
-          rankOf (ExactLedger.get previous curvatureTargetRank) packing valid
-        refine ⟨packing, valid, below, ?_⟩
-        refine Core.TargetRank.exists_dependence_of_attaining subset attains
-          dependent ?_
-        rw [Graph.FiniteObject.internalWedgeFamily_card]
-        exact below
-      · -- No strict loss: target-rank is bounded above by the raw family and
-        -- therefore is exactly the raw wedge count.
-        refine .inr (encodeFull fun packing valid => ?_)
-        apply Nat.le_antisymm
-        · exact Graph.FiniteObject.curvatureTargetRank_le_internalWedgeCount
-            _ _ _ _
-        · by_contra short
-          exact drop ⟨packing, valid, Nat.lt_of_not_le short⟩)
+      rcases (ExactLedger.get previous (K .targetRankCircuit)).down with
+        ⟨packing, valid, packingCard, independent, independentSubset,
+          _independentSurvives, rank, extract, _fullIfNoDependence⟩
+      by_cases below :
+          remainderCurvatureTargetRank data current.object packing <
+            remainderWedgeSupply current.object packing
+      · refine .inl ⟨⟨packing, valid, below, ?_⟩⟩
+        have outside : ∃ test ∈
+            current.object.internalWedgeFamily
+              (current.object.remainderSupport packing),
+            test ∉ independent := by
+          by_contra noOutside
+          push_neg at noOutside
+          have familySubset :
+              current.object.internalWedgeFamily
+                  (current.object.remainderSupport packing) ⊆ independent :=
+            noOutside
+          have equal : independent =
+              current.object.internalWedgeFamily
+                (current.object.remainderSupport packing) :=
+            Finset.Subset.antisymm independentSubset familySubset
+          rw [equal, Graph.FiniteObject.internalWedgeFamily_card] at rank
+          exact (Nat.ne_of_lt below) rank.symm
+        obtain ⟨test, testMember, testOutside⟩ := outside
+        obtain ⟨determiners, determinersSubset, finite, proper, declared,
+          functional, determines⟩ := extract test testMember testOutside
+        refine ⟨test, testMember, determiners,
+          determinersSubset.trans independentSubset, finite, proper,
+          declared, functional, determines⟩
+      · refine .inr ⟨⟨packing, valid, packingCard, ?_⟩⟩
+        exact Nat.le_antisymm
+          (Graph.FiniteObject.curvatureTargetRank_le_internalWedgeCount
+            _ _ _ _)
+          (Nat.le_of_not_gt below))
     dropFresh fullFresh
 
 /-! ## Nodes `[33]` and `[35]`: Branch D, entered with its determination certificate
@@ -1105,10 +1339,19 @@ is inclusion-minimality. -/
         input.object.IsWindowPacking data.windowOrder packing ∧
           remainderCurvatureTargetRank data input.object packing <
               remainderWedgeSupply input.object packing ∧
-            ∃ test determiners,
-              Core.TargetRank.Dependence
-                (remainderQuotientSystem data input.object packing) test
-                determiners)
+            let support := input.object.remainderSupport packing
+            let family := input.object.internalWedgeFamily support
+            ∃ test ∈ family,
+              ∃ determiners : Set (input.object.InternalWedge support),
+                determiners ⊆ ↑family ∧ determiners.Finite ∧
+                  test ∉ determiners ∧
+                    ∃ declared : Graph.DeclaredQuotient
+                      (Graph.MinimumDegreeAtLeast data.threshold)
+                      (Graph.HasCycleWithLength data.LengthOK) input.object family
+                      (Graph.FiniteObject.internalWedgeSupport
+                        (region := support)),
+                      declared.toRankQuotient.FunctionalOn ↑family ∧
+                        declared.toRankQuotient.Determines test determiners)
     (encode : (input : Input BranchState Presentation presentation data) →
       (∃ packing : Finset (Finset input.object.Vertex),
         input.object.IsWindowPacking data.windowOrder packing ∧

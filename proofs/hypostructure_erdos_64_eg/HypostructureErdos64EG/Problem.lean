@@ -3,7 +3,7 @@ import Mathlib.Combinatorics.SimpleGraph.Paths
 import Hypostructure.Graph.MinimumDegreeCycleTarget
 import Hypostructure.Graph.ReceiverLoad
 import Hypostructure.Graph.SameTokenBlockerRoles
-import Hypostructure.Graph.Strategy.SurplusRun
+import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Core.CeilSqrt
 import Hypostructure.Core.DyadicLength
 import HypostructureErdos64EG.WindowAlgebra

@@ -231,14 +231,17 @@ fact. -/
                   ∃ (Coordinate : Type u) (family : Finset Coordinate)
                     (coordinateSupport : Coordinate →
                       Finset inputs.current.object.Vertex),
-                    Graph.IsBaselineSpineDemand
-                        (inputs.current.object.declaredQuotientSystem
-                          (Graph.MinimumDegreeAtLeast data.threshold)
-                          (Graph.HasCycleWithLength data.LengthOK)
-                          family coordinateSupport)
-                        inputs.current.object.vertexCount data.threshold
-                        (Graph.spineDeficit inputs.current.object.vertexCount
-                          data.threshold family.card) ∧
+                    (∀ declared : Graph.DeclaredQuotient
+                        (Graph.MinimumDegreeAtLeast data.threshold)
+                        (Graph.HasCycleWithLength data.LengthOK)
+                        inputs.current.object family coordinateSupport,
+                      declared.toRankQuotient.FunctionalOn ↑family →
+                        declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+                      Graph.cubicBaselineBudget inputs.current.object.vertexCount
+                          data.threshold ≤
+                        2 ^ (family.card + Graph.spineDeficit
+                          inputs.current.object.vertexCount data.threshold
+                          family.card) ∧
                       Graph.spineDeficit inputs.current.object.vertexCount
                           data.threshold family.card ≤
                         data.surplusScale * inputs.current.object.vertexCount
@@ -251,19 +254,20 @@ fact. -/
                 have familyCard : family.card = bits := by
                   simp [family]
                 let survivor := (inputs.get (K .sparseSurplusSurvivor)).down
-                have testable := Graph.survives_of_exitFree
-                  (family := family) (coordinateSupport := coordinateSupport)
-                  survivor.1 survivor.2
-                have demand := Graph.isBaselineSpineDemand_of_package
-                  (inputs.current.object.declaredQuotientSystem
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                    (Graph.HasCycleWithLength data.LengthOK)
-                    family coordinateSupport)
-                  inputs.current.object.vertexCount
-                  (le_trans (by omega) data.three_le_threshold) bits testable (by omega)
                 refine ⟨(inputs.get (K .activeSurplusDemands)).down,
-                  Coordinate, family, coordinateSupport, ?_, ?_⟩
-                · simpa [familyCard] using demand
+                  Coordinate, family, coordinateSupport, ?_, ?_, ?_⟩
+                · intro declared _functional
+                  by_contra reducing
+                  rcases declared.localize reducing with replacement |
+                    ⟨representative, smaller, baseline, transfer⟩
+                  · exact survivor.2 _ replacement
+                  · exact survivor.1
+                      (Graph.SparseSurplusExit.delocalization representative
+                        smaller baseline transfer)
+                · rw [familyCard]
+                  exact Graph.cubicBaselineBudget_le_two_pow_add_spineDeficit
+                    inputs.current.object.vertexCount
+                    (le_trans (by omega) data.three_le_threshold) bits
                 · rw [familyCard]
                   simp [bits, Graph.spineDeficit]⟩)
             .nil)
@@ -314,7 +318,7 @@ semantic fact. -/
 @[reducible] noncomputable def mixedSparseSpineDependenceRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.mixedSparseSpineDependence
-    { Requires := [K .baselineSpineDemand, K .independentPairFamily]
+    { Requires := [K .baselineSpineDemand]
       Produces := [K .mixedSparseSpineDependence]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -324,13 +328,12 @@ semantic fact. -/
         (show Value BranchState Presentation presentation data
             .mixedSparseSpineDependence inputs.current from
           ⟨by
-            obtain ⟨active, Coordinate, family, coordinateSupport, demand,
-                deficitBound⟩ :=
+            obtain ⟨active, Coordinate, family, coordinateSupport, survives,
+                demand, deficitBound⟩ :=
               (inputs.get (K .baselineSpineDemand)).down
-            let _independent := (inputs.get (K .independentPairFamily)).down
-            refine ⟨active, Coordinate, family, coordinateSupport, demand,
-              deficitBound, ?_⟩
-            intro drop
+            refine ⟨active, Coordinate, family, coordinateSupport, survives,
+              demand, deficitBound, ?_⟩
+            intro attempt dependence reducing
             classical
             let object := inputs.current.object
             let activation := Graph.pairResponseActivation active
@@ -343,31 +346,8 @@ semantic fact. -/
               Sum.elim coordinateSupport (by
                 letI := object.vertices.decEq
                 exact Graph.DeclaredSignature.Coordinate.support)
-            let rankQuotient :
-                Graph.AttemptedQuotient
-                    (Graph.MinimumDegreeAtLeast data.threshold)
-                    (Graph.HasCycleWithLength data.LengthOK) object
-                    mixedFamily mixedSupport →
-                  Core.TargetRank.RankQuotient.{u, u + 1}
-                    (Sum Coordinate object.PairCoordinate) :=
-              fun attempt =>
-                { Label := attempt.Label
-                  Value := attempt.Value
-                  Realization := Graph.BoundaryPiece
-                    (Graph.SupportAtom.boundary object attempt.support)
-                  label := attempt.label
-                  value := attempt.value }
-            let system : Core.TargetRank.QuotientSystem.{u, u + 1}
-                (Sum Coordinate object.PairCoordinate) mixedFamily :=
-              { Member := fun quotient =>
-                  (∃ attempt, rankQuotient attempt = quotient) ∧
-                    quotient.FunctionalOn ↑mixedFamily
-                functional := fun membership => membership.2 }
-            obtain ⟨coordinate, determiners, dependence⟩ :=
-              Core.TargetRank.exists_dependence_of_targetRank_lt system drop
-            obtain ⟨quotient, member, reducing, determines⟩ := dependence.witness
-            obtain ⟨⟨attempt, equality⟩, _functional⟩ := member
-            subst quotient
+            obtain ⟨coordinate, coordinateMember, determiners,
+              _determinersSubset, _finite, _proper, _determines⟩ := dependence
             have pair_of_mem (pairCoordinate : object.PairCoordinate)
                 (membership : Sum.inr pairCoordinate ∈ mixedFamily) :
                 ∃ pair ∈ pairs,
@@ -394,10 +374,9 @@ semantic fact. -/
                     (Or.inl different))
               | inr pairCoordinate =>
                   obtain ⟨pair, pairMem, pairEq⟩ :=
-                    pair_of_mem pairCoordinate dependence.determined
+                    pair_of_mem pairCoordinate coordinateMember
                   subst pairCoordinate
-                  exact Or.inr ⟨pair, pairMem, attempt, determiners, determines,
-                    reducing, Or.inl profiles⟩
+                  exact Or.inr ⟨pair, pairMem, Or.inl profiles⟩
             · cases coordinate with
               | inl spine =>
                   obtain ⟨left, right, identifies, separated⟩ := defect
@@ -405,19 +384,17 @@ semantic fact. -/
                     (Or.inr separated))
               | inr pairCoordinate =>
                   obtain ⟨pair, pairMem, pairEq⟩ :=
-                    pair_of_mem pairCoordinate dependence.determined
+                    pair_of_mem pairCoordinate coordinateMember
                   subst pairCoordinate
-                  exact Or.inr ⟨pair, pairMem, attempt, determiners, determines,
-                    reducing, Or.inr (Or.inl defect)⟩
+                  exact Or.inr ⟨pair, pairMem, Or.inr (Or.inl defect)⟩
             · cases coordinate with
               | inl spine =>
                   exact Or.inl (.compression attempt.support replacement)
               | inr pairCoordinate =>
                   obtain ⟨pair, pairMem, pairEq⟩ :=
-                    pair_of_mem pairCoordinate dependence.determined
+                    pair_of_mem pairCoordinate coordinateMember
                   subst pairCoordinate
-                  exact Or.inr ⟨pair, pairMem, attempt, determiners, determines,
-                    reducing, Or.inr (Or.inr replacement)⟩
+                  exact Or.inr ⟨pair, pairMem, Or.inr (Or.inr replacement)⟩
             · exact Or.inl
                 (.delocalization representative smaller baseline transfer)⟩)
         .nil)

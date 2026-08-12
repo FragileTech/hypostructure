@@ -157,6 +157,18 @@ bounded-window closure theorem.  Pressure-only harmonic concentration is routed 
 the pressure/exterior rows rather than closed by the single-core velocity
 argument.
 
+A compactness limit cannot create an additional hidden terminal state.  Once
+the pressure, chart, modulation, represented-equation, and local-energy limit
+interfaces have passed, the retained spacetime activity floor makes the full
+limit nonzero and suitable.  The limit is then either singular, in which case
+a diagonal CKN rebase gives an actual active descendant of the represented
+sequence, or nonsingular, in which case it is locally bounded on a nonzero
+subwindow and enters the bounded-window row.  This regular--singular routing
+is made explicit in
+\cref{lem:regular-singular-compact-limit-routing,cor:no-unclassified-compact-limit-obstruction};
+it is applied only to the full represented solution, never to a residual as
+an independent Navier--Stokes solution.
+
 The remaining sections remove the ways in which a Type II branch could avoid
 that compact single-core mechanism.  Caccioppoli estimates convert finite outer
 velocity-pressure control into inner windowed \(H^1\) control, so rough-core
@@ -373,6 +385,19 @@ Local pressure atlas
 & proved here
 \\ \hline
 
+Selected compactness and limit routing
+& \nolinkurl{type_II_regularity.tex}
+& \nolinkurl{def:selected-scale-collapse-compactness-package}; \nolinkurl{lem:selected-compactness-aubin-lions}; \nolinkurl{lem:regular-singular-compact-limit-routing}; \nolinkurl{cor:no-unclassified-compact-limit-obstruction}
+& \((V_\infty,P_\infty,a_\infty,b_\infty)\), strong local \(L^3\) convergence, represented suitability, and the exhaustive named-interface/active-descendant/bounded-window routing
+& \nolinkurl{thm:selected-compactness-failure-routed}; \nolinkurl{lem:strong-diffuse-tail-limit-row}; \nolinkurl{thm:ordered-local-state-space-exhaustion}
+& \(B_{2R}\times I\to B_R\times I\to Q'\Subset B_R\times I^\circ\)
+& strong local \(L^3\) for velocity; strong local normalized \(L^{3/2}\) for pressure; weak \(L^2H^1\), with lower semicontinuity for dissipation
+& local Calder\'on--Zygmund pressure plus harmonic remainder, modulo functions of time
+& the retained spacetime activity floor gives \(V_\infty\not\equiv0\)
+& first limit-interface failure, an actual CKN-active descendant, or the bounded-window row
+& proved here
+\\ \hline
+
 Terminal decomposition contract
 & \nolinkurl{type_II_regularity.tex}
 & \nolinkurl{def:admissible-terminal}; \nolinkurl{def:critical-ns-profile-decomposition-local}, item (i); \nolinkurl{def:active-critical-profile-data}
@@ -458,6 +483,17 @@ available for the localized part.  A nonvanishing harmonic remainder or an
 unavailable reconstruction is assigned by
 \cref{lem:harmonic-cross-pressure-routing,lem:pressure-only-critical-mass-routing}
 to the pressure/exterior or pressure-reconstruction row.
+
+The selected compactness package gives strong local velocity convergence by
+\cref{lem:selected-compactness-aubin-lions}.  On the pass branch, the same
+lemma passes the represented equation and local energy inequality to the
+limit.  The retained spacetime floor keeps that limit nonzero, and
+\cref{lem:regular-singular-compact-limit-routing} then produces exactly a
+singular active descendant or a regular bounded subwindow.  The subsequent
+scale-center routing and retained-class identification are supplied by
+\cref{cor:no-unclassified-compact-limit-obstruction}.  Thus suitability of
+the limit and the regular--singular split are proved interfaces, not new
+terminal assumptions.
 
 Finally, the initial terminal splitting and its pointwise critical bounds are
 the admissible-family contract of
@@ -996,12 +1032,12 @@ every node/.style={font=\scriptsize}
 \coordinate (in88) at ($(n88.north)+(0,0.92)$);
 \draw[arrow] (in88)--node[right]{from [62]}(n88.north);
 \node[box,text width=3.30cm] (n89) at (-5.30,-3.20) {\textbf{[89]}~comparable-cost compatibility identifies the canonical channel};
-\node[dec] (n91) at (5.30,-3.20) {\textbf{[91]}~which first-failure layer is selected?};
+\node[dec] (n91) at (6.00,-3.20) {\textbf{[91]}~which first-failure layer is selected?};
 \node[term,text width=3.05cm] (n90) at (-5.30,-6.70) {\textbf{[90]}~canonical retained cost-divergence exclusion};
-\node[term,text width=2.75cm] (n92) at (0.70,-6.70) {\textbf{[92]}~class-side first failure closed};
-\node[term,text width=2.75cm] (n93) at (4.20,-6.70) {\textbf{[93]}~state-decomposition first failure closed};
-\node[term,text width=2.75cm] (n94) at (7.70,-6.70) {\textbf{[94]}~modulation-integrability first failure closed by Parts VI--VII};
-\node[term,text width=2.75cm] (n95) at (11.20,-6.70) {\textbf{[95]}~irreducible cost-side first failure closed};
+\node[term,text width=2.35cm] (n92) at (0.00,-6.70) {\textbf{[92]}~class-side first failure closed};
+\node[term,text width=2.35cm] (n93) at (4.00,-6.70) {\textbf{[93]}~state-decomposition first failure closed};
+\node[term,text width=2.35cm] (n94) at (8.00,-6.70) {\textbf{[94]}~modulation-integrability first failure closed by Parts VI--VII};
+\node[term,text width=2.35cm] (n95) at (12.00,-6.70) {\textbf{[95]}~irreducible cost-side first failure closed};
 
 \draw[arrow] (n88.south west)--node[above,sloped]{yes}(n89.north);
 \draw[arrow] (n89)--(n90);
@@ -1048,10 +1084,10 @@ every node/.style={font=\scriptsize}
 \node[term,text width=2.40cm] (n105) at (3.00,-13.00) {\textbf{[105]}~comparable finite-mass class grouped};
 \node[term,text width=2.40cm] (n106) at (7.00,-13.00) {\textbf{[106]}~multibubble row closed};
 \node[term,text width=2.40cm] (n107) at (11.00,-13.00) {\textbf{[107]}~multicore row closed};
-\node[term,text width=2.40cm] (n108) at (15.00,-13.00) {\textbf{[108]}~cascade row closed};
+\node[term,text width=2.40cm] (n108) at (15.00,-13.00) {\textbf{[108]}~cascade\\row closed};
 \node[term,text width=2.40cm] (n109) at (19.00,-13.00) {\textbf{[109]}~rough-core row closed};
-\node[term,text width=2.65cm] (n110) at (18.00,-8.00) {\textbf{[110]}~pressure/exterior active-profile row closed};
-\node[route,text width=2.25cm] (r110c) at (-16.00,-17.00) {\textbf{[110]}~pressure/exterior closure};
+\node[term,text width=3.20cm] (n110) at (18.00,-8.00) {\textbf{[110]}~\mbox{pressure/exterior}\\active-profile\\row closed};
+\node[route,text width=2.25cm] (r110c) at (-16.00,-17.00) {\textbf{[110]}\\\mbox{pressure/exterior}\\closure};
 \node[route,text width=2.25cm] (r109c) at (-2.00,-17.00) {\textbf{[109]}~rough-core closure};
 
 \draw[arrow] (n96.south west)--node[above,sloped]{active-core loss}(n97.north);
@@ -1114,13 +1150,13 @@ every node/.style={font=\scriptsize}
 \node[term,text width=2.80cm] (n115) at (-8.00,-10.20) {\textbf{[115]}~localized velocity-stress source is regular};
 \node[dec] (n116) at (0,-10.20) {\textbf{[116]}~which velocity-supported label is selected?};
 \coordinate (in116) at ($(n116.east)+(3.60,0)$);
-\node[route,text width=2.35cm] (r110a) at (-10.00,-6.20) {\textbf{[110]}~pressure/exterior closure};
+\node[route,text width=2.35cm] (r110a) at (-10.00,-6.20) {\textbf{[110]}\\\mbox{pressure/exterior}\\closure};
 \node[route,text width=2.20cm] (r105) at (-10.00,-14.50) {\textbf{[105]}~comparable class grouped};
 \node[route,text width=2.20cm] (r106) at (-6.00,-14.50) {\textbf{[106]}~multibubble closure};
 \node[route,text width=2.20cm] (r107) at (-2.00,-14.50) {\textbf{[107]}~multicore closure};
-\node[route,text width=2.20cm] (r108) at (2.00,-14.50) {\textbf{[108]}~cascade closure};
+\node[route,text width=2.20cm] (r108) at (2.00,-14.50) {\textbf{[108]}\\cascade\\closure};
 \node[route,text width=2.20cm] (r109) at (6.00,-14.50) {\textbf{[109]}~rough-core closure};
-\node[route,text width=2.20cm] (r110b) at (10.00,-14.50) {\textbf{[110]}~pressure/exterior closure};
+\node[route,text width=2.20cm] (r110b) at (10.00,-14.50) {\textbf{[110]}\\\mbox{pressure/exterior}\\closure};
 
 \draw[arrow] (n111.south west)--node[above,sloped]{yes}(n112.north);
 \draw[arrow] (n111.south east)--node[above,sloped]{no}(n114.north);
@@ -1174,7 +1210,7 @@ every node/.style={font=\scriptsize}
 \node[term,text width=2.55cm] (n126) at (11.00,-19.00) {\textbf{[126]}~affine-pressure modulation failure closed by Parts VI--VII};
 \node[term,text width=2.55cm] (n127) at (16.00,-10.00) {\textbf{[127]}~the unique visible diffuse residual row is closed};
 \node[route,text width=2.30cm] (r114) at (10.00,0) {\textbf{[114]}~pressure/gauge closure};
-\node[route,text width=2.20cm] (r108) at (-10.00,-10.00) {\textbf{[108]}~cascade closure};
+\node[route,text width=2.20cm] (r108) at (-10.00,-10.00) {\textbf{[108]}\\cascade\\closure};
 \node[route,text width=2.20cm] (r115) at (16.00,-15.00) {\textbf{[115]}~regular-source closure};
 \node[route,text width=2.20cm] (r118) at (1.00,-10.00) {\textbf{[118]}~harmonic-tail closure};
 
@@ -1228,10 +1264,10 @@ every node/.style={font=\scriptsize}
 \node[dec] (n133) at (9.00,-11.00) {\textbf{[133]}~remaining tail defect: atomic/activity or diffuse?};
 \node[term,text width=2.70cm] (n134) at (7.00,-16.00) {\textbf{[134]}~atomic carrier contradicts the diffuse alternative};
 \node[term,text width=2.70cm] (n135) at (12.00,-16.00) {\textbf{[135]}~the unique diffuse residual row is closed};
-\node[route,text width=2.20cm] (r108a) at (-10.00,0) {\textbf{[108]}~cascade closure};
+\node[route,text width=2.20cm] (r108a) at (-10.00,0) {\textbf{[108]}\\cascade\\closure};
 \node[route,text width=2.20cm] (r114a) at (10.00,0) {\textbf{[114]}~pressure/gauge closure};
-\node[route,text width=2.25cm] (r110d) at (-11.00,-4.00) {\textbf{[110]}~separated-exterior closure};
-\node[route,text width=2.25cm] (r110e) at (11.00,-4.00) {\textbf{[110]}~escaping-exterior closure};
+\node[route,text width=2.85cm] (r110d) at (-11.00,-4.00) {\textbf{[110]}\\\mbox{separated-exterior}\\closure};
+\node[route,text width=2.85cm] (r110e) at (11.00,-4.00) {\textbf{[110]}\\\mbox{escaping-exterior}\\closure};
 \node[route,text width=2.20cm] (r109a) at (-12.00,-8.00) {\textbf{[109]}~rough-core closure};
 
 \draw[arrow] (n128.west)--node[above]{same-point cascade}(r108a.east);
@@ -1414,7 +1450,7 @@ Node & State or exhaustive test & Source in the proof & Successor or closure \\
 \cref{thm:selected-compactness-failure-routed} & Continue to [56] \\
 
 [41] & Retained terminal tail after all earlier local exits &
-\cref{thm:ordered-local-state-space-exhaustion,thm:expanded-terminal-data-branchwise} & Construct its terminal frames at [42] \\
+\cref{thm:ordered-local-state-space-exhaustion,lem:regular-singular-compact-limit-routing,thm:expanded-terminal-data-branchwise} & Construct its terminal frames at [42] \\
 
 [42] & Terminal coordinate frames constructed locally from retained state selection &
 \cref{thm:terminal-coordinate-frame-construction-profile-selection} & Apply orbit sampling at [43] \\
@@ -1441,13 +1477,13 @@ Node & State or exhaustive test & Source in the proof & Successor or closure \\
 \cref{thm:multibubble,cor:exterior-concentration-exit-discharged} & Terminal profile branch \\
 
 [50] & Residual, critical-tail, or pressure-defect test &
-\cref{prop:residual-spike-routing,thm:local-residual-exhaustion,thm:terminal-adjacent-label-routing} & Defect gives [51]; otherwise [52] \\
+\cref{prop:residual-spike-routing,lem:strong-diffuse-tail-limit-row,cor:no-unclassified-compact-limit-obstruction,thm:local-residual-exhaustion,thm:terminal-adjacent-label-routing} & Defect gives [51]; otherwise [52] \\
 
 [51] & Named residual, tail, or pressure row &
 \cref{thm:local-residual-exhaustion,lem:diffuse-critical-tail-row-closed} & Continue to [56] \\
 
 [52] & Retained comparable profile with perturbative residual &
-\cref{lem:spacetime-small-terminal-residual,thm:terminal-windowed-profile-completeness,thm:terminal-critical-local-compactness} & Apply the retained compact tests at [53] \\
+\cref{lem:spacetime-small-terminal-residual,cor:no-unclassified-compact-limit-obstruction,thm:terminal-windowed-profile-completeness,thm:terminal-critical-local-compactness} & Apply the retained compact tests at [53] \\
 
 [53] & Critical tightness and local windowed $H^1$ control &
 \cref{thm:retained-compact-tests-closed} & Verify the expanded terminal data at [54] \\
@@ -1738,6 +1774,11 @@ Positive local critical signal &
 Core selection, scale analysis, terminal profiles, and the final ledger [4]--[135] &
 The zero limit closes at [27]; loss of the selected signal is classified at [96]--[116] \\
 
+Nonzero compact-limit dichotomy &
+\cref{lem:selected-compactness-aubin-lions,lem:regular-singular-compact-limit-routing} &
+Selected compactness, terminal descendants, and diffuse-tail routing [40]--[52], [128]--[135] &
+A first interface failure is named; a singular limit gives an active descendant; a regular nonzero limit enters the bounded-window row \\
+
 Buffered locality and suitable energy &
 \cref{prop:compact-support-transport,prop:ren-suitable} &
 Every compact-cylinder restriction after [10] &
@@ -1749,7 +1790,7 @@ Carrier selection, compactness, Caccioppoli, and residual exhaustion &
 Pressure-only rows are expanded at [111]--[127], and reconstruction failure closes at [114] \\
 
 Retained ancestry &
-\cref{lem:retained-frame-maximality,thm:terminal-windowed-profile-completeness} &
+\cref{lem:retained-frame-maximality,cor:no-unclassified-compact-limit-obstruction,thm:terminal-windowed-profile-completeness} &
 Core selection, terminal descendants, and residual coordinates &
 Noncomparable descendants close at [49], [59], or [106]--[110] \\
 
@@ -1844,7 +1885,7 @@ Nested pressure-only behavior & [117]--[127] &
 \cref{lem:nested-pressure-only-well-founded,lem:diffuse-pressure-only-not-terminal} & [105]--[110], [114]--[115], [118], [120], [123], [125]--[127] \\
 
 Critical-tightness and diffuse-tail failure & [128]--[135] &
-\cref{lem:critical-tightness-failure-row,lem:diffuse-critical-tail-row-closed} & [108]--[110], [114], [130], [132], [134]--[135] \\
+\cref{lem:critical-tightness-failure-row,lem:regular-singular-compact-limit-routing,lem:strong-diffuse-tail-limit-row,lem:diffuse-critical-tail-row-closed} & [108]--[110], [114], [130], [132], [134]--[135] \\
 
 \end{longtable}
 \endgroup
@@ -8826,6 +8867,133 @@ from that named row, the local energy inequality passes to the limit on every
 smaller cylinder.  This proves the final assertion.
 \end{proof}
 
+\begin{lemma}[Regular--singular routing of nonzero selected-window limits]
+\label{lem:regular-singular-compact-limit-routing}
+Assume the selected scale-collapse compactness package of
+\cref{def:selected-scale-collapse-compactness-package} on
+\(B_{2R}\times I\), and let
+\[
+  Q_*:=B_r\times J_*\Subset B_R\times I
+\]
+be the cylinder carrying the retained spacetime activity floor.  After
+passing to a diagonal subsequence, exactly one of the following ordered
+alternatives occurs:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item the pressure/exterior, repaired-chart, modulation,
+represented-equation, or local-energy limit passage first fails, and the
+corresponding named local row occurs;
+\item all of those passages succeed and the nonzero represented suitable
+limit has a singular point in \(B_R\times I^\circ\); then a diagonal
+parabolic rebase of the full represented sequence produces an actual
+CKN-active local descendant;
+\item all of those passages succeed and the limit has no singular point in
+\(B_R\times I^\circ\); then there is a compact parabolic cylinder
+\(Q'\Subset B_R\times I^\circ\) on which
+\[
+  V_\infty\in L^\infty(Q'),\qquad
+  V_\infty\not\equiv0,\qquad
+  V_n\to V_\infty\quad\hbox{strongly in }L^3(Q').
+\]
+Thus the third alternative is a nonzero bounded selected-window limit.
+\end{enumerate}
+In particular, once the named compactness interfaces have passed, a nonzero
+selected-window limit has no additional local regularity type.  This
+conclusion concerns the full represented solutions \(V_n\); it neither
+assumes terminal residual completeness nor applies the Navier--Stokes
+equation to a residual component separately.
+\end{lemma}
+
+\begin{proof}
+Apply \cref{lem:selected-compactness-aubin-lions}.  Its first failed limit
+interface gives alternative \textup{(i)}.  Otherwise there are limiting
+repaired-gauge data \((P_\infty,a_\infty,b_\infty)\) for which
+\((V_\infty,P_\infty,a_\infty,b_\infty)\) is a represented suitable weak
+solution on compact subcylinders of \(B_R\times I\), and
+\[
+  V_n\to V_\infty
+  \quad\text{strongly in }L^3(B_R\times I).
+\]
+The retained activity floor and
+\cref{lem:spacetime-active-core-floor-suffices} give
+\[
+  \int_{Q_*}|V_\infty|^3\,dy\,ds
+  =\lim_{n\to\infty}\int_{Q_*}|V_n|^3\,dy\,ds
+  \ge\eta_*>0.
+\]
+Hence \(V_\infty\not\equiv0\).
+
+Suppose first that \(z_0\in B_R\times I^\circ\) is a singular point of
+\(V_\infty\).  In the strong \(L^1\)-coefficient alternative of
+\cref{lem:selected-compactness-aubin-lions},
+\cref{prop:repaired-gauge-subsequence-stability} identifies the limiting
+coefficients with a limiting repaired chart.  In its perturbative modulation
+alternative, the limiting coefficients are the constants
+\((a_\infty,b_\infty)\); define
+\[
+  \Lambda_\infty(s)
+  :=\Lambda_0e^{a_\infty(s-s_0)},
+  \qquad
+  X_\infty'(s):=b_\infty\Lambda_\infty(s).
+\]
+The represented equation and local energy inequality obtained in that lemma
+are exactly those of this smooth scale-translation chart.  Thus in either
+case the limit has a genuine repaired chart.  After shrinking about \(z_0\),
+\cref{lem:scale-rigid-chart-comparability} applies.  If chart identification
+or the required local comparability is unavailable, its first failed
+coordinate is the repaired-chart or modulation row in alternative
+\textup{(i)}.
+
+Choose radii \(\rho_k\downarrow0\) with
+\(Q_{2\rho_k}(z_0)\Subset B_R\times I^\circ\) and with the preceding chart
+comparability valid.  The contrapositive of
+\cref{lem:scale-rigid-ckn-in-gauge} gives, for every sufficiently large
+\(k\),
+\[
+\begin{aligned}
+ \mathcal C_\infty(z_0,\rho_k)
+ &:={\rho_k}^{-2}\int_{Q_{\rho_k}(z_0)}|V_\infty|^3\,dy\,ds\\
+ &\quad+{\rho_k}^{-2}\int_{Q_{\rho_k}(z_0)}
+   |P_\infty-(P_\infty)_{B_{\rho_k}}|^{3/2}\,dy\,ds
+ >\varepsilon_{\rm rg}.
+\end{aligned}
+\]
+Indeed, smallness at any such radius would make \(V_\infty\) bounded on a
+smaller cylinder containing \(z_0\), contrary to singularity.
+
+For each fixed \(k\), the strong velocity and normalized-pressure convergence
+from \cref{lem:selected-compactness-aubin-lions} gives
+\[
+  \mathcal C_n(z_0,\rho_k)\longrightarrow
+  \mathcal C_\infty(z_0,\rho_k).
+\]
+Here the pressure term is unchanged by the time-dependent constants in the
+pressure normalization.  If this pressure convergence is unavailable, the
+pressure/exterior row in alternative \textup{(i)} has occurred.  Otherwise
+choose integers \(n_k>n_{k-1}\) so large that
+\[
+  \mathcal C_{n_k}(z_0,\rho_k)>\tfrac12\varepsilon_{\rm rg}.
+\]
+Rebasing the full represented tuple
+\((V_{n_k},P_{n_k},a_{n_k},b_{n_k})\) on
+\(Q_{\rho_k}(z_0)\) preserves this scale-invariant lower bound.  This is an
+actual CKN-active descendant of the original full branch, proving
+alternative \textup{(ii)}.  Any failure in realizing the rebase is, by the
+ordered local tests, one of the named interfaces in alternative
+\textup{(i)}.
+
+It remains to suppose that \(V_\infty\) has no singular point in
+\(B_R\times I^\circ\).  Every point there is then regular, hence has a
+parabolic neighborhood on which \(V_\infty\) is essentially bounded.  Since
+the integral over \(Q_*\) is positive, there is a Lebesgue point
+\(z_1\in Q_*^\circ\) of \(V_\infty\) with \(|V_\infty(z_1)|>0\).  Choose a
+compact parabolic cylinder \(Q'\) about \(z_1\), contained in its regularity
+neighborhood and in \(B_R\times I^\circ\), small enough that
+\(\int_{Q'}|V_\infty|^3>0\).  Then \(V_\infty\in L^\infty(Q')\),
+\(V_\infty\not\equiv0\) there, and the strong \(L^3\)-convergence restricts
+to \(Q'\).  This is alternative \textup{(iii)}.  The singular and
+nonsingular cases are disjoint and exhaustive, completing the proof.
+\end{proof}
+
 \begin{lemma}[Pressure-only compactness failure is a pressure/exterior row]
 \label{lem:selected-compactness-pressure-only-routing}
 Let a selected scale-collapse window sequence satisfy the repaired-gauge,
@@ -9002,6 +9170,10 @@ retained active core or pressure-only critical mass, rough-core loss,
 exterior/separated-core concentration, multicore/same-point cascade, or a
 critical local upper-mass label routed by
 \cref{lem:terminal-local-critical-mass-routing}.
+On the branch where the package and its limit interfaces pass, the resulting
+nonzero compact limit is either singular and produces an actual CKN-active
+descendant, or is regular and produces a nonzero bounded selected-window
+limit.  There is no further compact-limit alternative.
 \end{theorem}
 
 \begin{proof}
@@ -9028,9 +9200,16 @@ diagonal subsequence gives strong local \(L^3\)
 compactness and pressure compactness modulo functions of time, with any
 nonvanishing harmonic pressure remainder routed by
 \cref{lem:harmonic-cross-pressure-routing}.  Therefore compactness
-failure is represented by a local first-failure
-classification.  It either returns a compact retained sequence or enters a
-more specific named local row; it is not a separate terminal obstruction.
+failure is represented by a local first-failure classification.
+
+On any retained cylinder carrying the selected spacetime activity floor,
+apply \cref{lem:regular-singular-compact-limit-routing}.  A failed limit
+interface is another named first-failure row.  Otherwise its singular case
+produces an actual active descendant of the full branch, while its nonsingular
+case produces a nonzero bounded selected-window limit.  Thus the pass branch
+either returns to the ordinary active selection, enters the bounded-window
+route, or enters a more specific named local row; it is not a separate
+terminal obstruction.
 \end{proof}
 
 \begin{lemma}[Retained autonomous scale collapse enters the scale-rigid stratum]
@@ -21348,6 +21527,55 @@ mass alternative remains.  This is a compact-cylinder statement; it does not
 require \(V(\tau)\in L^3(\mathbb R^3)\) or a whole-space critical norm bound.
 \end{proof}
 
+\begin{corollary}[No unclassified compact-limit obstruction]
+\label{cor:no-unclassified-compact-limit-obstruction}
+Let an ancestry-generated retained terminal branch produce full represented
+windows \((V_n,P_n,a_n,b_n)\) satisfying the selected compactness package on a
+compact terminal cylinder.  Then every nonzero compact-window limit has one
+of the following already recorded routes:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item a first compactness-interface failure gives its named local row;
+\item a regular limit gives the bounded selected-window row;
+\item a singular limit gives an actual CKN-active descendant of the full
+represented branch.  Under the ordinary local selection, that descendant
+either leaves every compact relative scale-center chart and enters a named
+separated-center, exterior, inner-cascade, outer-cascade, or analytic-failure
+row, or it remains in a compact relative chart.  In the latter case a
+descendant carrying the retained activity floor is already part of the
+compound retained class, while failure of the floor or of the finite compact
+upper row is an adjacent critical-mass label.
+\end{enumerate}
+Consequently there is no additional retained terminal obstruction arising
+from a nonzero compact limit.  The comparable retained class in
+\textup{(iii)} is not eliminated by this corollary; it is identified with the
+class already selected before terminalization.
+\end{corollary}
+
+\begin{proof}
+Apply \cref{lem:regular-singular-compact-limit-routing}.  Its first
+alternative is item \textup{(i)}.  Its nonsingular alternative supplies a
+nonzero bounded selected-window limit, which is the bounded-window row
+named in \cref{lem:scale-rigid-bounded-limit-exit}.  Its physical closure is
+deferred to the bounded-window entry of the final ledger.  This is item
+\textup{(ii)}.
+
+In the singular alternative, the diagonal rebase constructed in that lemma
+is performed on the full represented tuple and therefore enters the ordinary
+local descendant selection.  That selection writes each rebased window in
+coordinates with its own selected time at the common model origin; it does not
+move the CKN lower bound to a different time.  Relative to the retained frame
+in those coordinates, apply
+\cref{lem:active-parameter-chart-tail}.  Its three noncompact alternatives
+are precisely the named separated/exterior and inner- or outer-cascade rows,
+with any failed analytic input recorded before scale-center packing.  In the
+compact-chart alternative, a descendant with the retained activity floor is
+absorbed by \cref{lem:retained-frame-maximality}.  If the activity floor or
+the compact upper control needed for retention fails, the first label is one
+of the alternatives of
+\cref{lem:terminal-local-critical-mass-routing}.  These cases are exhaustive,
+which proves item \textup{(iii)} and the conclusion.
+\end{proof}
+
 \begin{proposition}[Residual-spike routing without pointwise persistence]
 \label{prop:residual-spike-routing}
 Let
@@ -21434,7 +21662,11 @@ a compact chart, a candidate carrying the retained activity floor is grouped
 by \cref{lem:retained-frame-maximality}; failure of that floor or of any
 compact local input is routed by
 \cref{lem:terminal-local-critical-mass-routing} and the ordered validation
-rows.  This proves the spacetime-occupation part of \textup{(ii)}.
+rows.  If the full selected compactness package passes on this subbranch,
+\cref{cor:no-unclassified-compact-limit-obstruction} additionally shows that
+its strong compact limit can introduce only the same active-descendant,
+bounded-window, named-interface, or already retained comparable routes.  This
+proves the spacetime-occupation part of \textup{(ii)}.
 
 The same conclusion holds when the fixed-window occupations vanish but a
 smaller parabolic rebase reaches the CKN activity threshold.  Indeed,
@@ -21442,7 +21674,9 @@ smaller parabolic rebase reaches the CKN activity threshold.  Indeed,
 as an actual descendant of the original represented branch.  Applying the
 same relative scale-center partition and maximality argument to that
 descendant gives \textup{(i)} or \textup{(ii)}.  No Navier--Stokes equation is
-imposed on \(S_n\) as an independent solution.
+imposed on \(S_n\) as an independent solution.  In particular,
+\cref{lem:regular-singular-compact-limit-routing} is applied only to the full
+represented sequence, never to the residual coordinate.
 
 It remains to consider the case in which all compact residual spacetime
 occupation coordinates vanish and there is no active rebase.  The diagonal
@@ -22238,104 +22472,84 @@ branch.
 \begin{lemma}[Strong diffuse-tail limits create a named row]
 \label{lem:strong-diffuse-tail-limit-row}
 Let \((W_n,\widetilde P_n)\) be a realized diffuse critical-tail extraction on a
-rebased unit-shell model cylinder \(Q_{\rm sh}\), and suppose case \textup{(ii)} of
-\cref{thm:young-variance-strong-compactness} holds on compact
-subcylinders of \(Q_{\rm sh}\).  Let
+rebased unit-shell model cylinder \(Q_{\rm sh}\), and suppose case
+\textup{(ii)} of \cref{thm:young-variance-strong-compactness} holds on
+compact subcylinders of \(Q_{\rm sh}\).  Let
 \[
   W_n\to W_\infty
   \quad\text{strongly in }L^3_{\rm loc}(Q_{\rm sh}).
 \]
-Assume that the pressure/gauge/local-energy structure required to test the local
-CKN, bounded-window, and occupation-state rows has not already failed.  If
-\(W_\infty\not\equiv0\), then after shrinking to a smaller compact shell
-subwindow one
-of the following occurs:
+If \(W_\infty\not\equiv0\), then after shrinking to a smaller compact shell
+subwindow exactly one of the following ordered alternatives occurs:
 \begin{enumerate}[label=\textup{(\roman*)}]
-\item \(W_\infty\in L^\infty\) on that compact subwindow, so
-\cref{lem:bounded-window-local-regularization,thm:bounded-selected-window-physical-routing}
-route the branch to a named bounded-window/local row;
-\item \(W_\infty\) has a singular point on that compact subwindow.  Then the
-contrapositive of
-\cref{thm:terminal-ckn-regularity} yields a compact subcylinder on which
-the local CKN quantity of \((W_\infty,\widetilde P_\infty)\) is positive.
-Strong local convergence of the velocity and of the
-Calder\'on--Zygmund pressure component transfers a positive amount of this
-CKN quantity to \((W_n,\widetilde P_n)\).  The harmonic pressure component
-either converges under the retained pressure-atlas hypothesis or triggers the
-named pressure/exterior row.  Thus
-\cref{lem:terminal-local-critical-mass-routing} assigns a compact active,
-pressure, rough-core, or other named adjacent local row;
-\item \(W_\infty\) is regular on the chosen compact subwindow but carries
-positive local \(L^3\) mass that is only visible below the original retained
-activity level.  Then for some basis test function \(\phi_j\) from the fixed
-countable shell occupation chart and some dyadic level \(\eta_m\) from the
-predeclared activity ladder,
+\item the pressure/exterior, repaired-chart, modulation,
+represented-equation, or local-energy limit passage first fails; its named
+local row occurs;
+\item all limit interfaces pass and \(W_\infty\) has a singular point.  Then
+an actual CKN-active descendant of the full represented shell sequence is
+produced.  The ordinary scale-center and critical-mass routing assigns that
+descendant to a named adjacent row or to the already selected comparable
+retained class;
+\item all limit interfaces pass and \(W_\infty\) has no singular point.  Then
+there is a compact shell subwindow \(Q'\Subset Q_{\rm sh}\) on which
+\(W_\infty\in L^\infty(Q')\), \(W_\infty\not\equiv0\), and
+\(W_n\to W_\infty\) strongly in \(L^3(Q')\).  Hence the bounded-window
+routing applies.  If this positive limit lies below the shell's previous
+activity level, the fixed occupation chart also records it, without creating
+another alternative: for some basis function \(\phi_j\) and some level
+\(\eta_m\) of the predeclared dyadic activity ladder,
 \[
-\int_{Q_{\rm sh}}\phi_j|W_\infty|^3\,dy\,ds\ge \eta_m>0,
+  \int_{Q_{\rm sh}}\phi_j|W_\infty|^3\,dy\,ds\ge \eta_m>0,
 \]
-and strong local \(L^3\)-convergence yields
 \[
-\liminf_{n\to\infty}\int_{Q_{\rm sh}}\phi_j|W_n|^3\,dy\,ds\ge \eta_m/2.
+  \liminf_{n\to\infty}
+  \int_{Q_{\rm sh}}\phi_j|W_n|^3\,dy\,ds\ge \eta_m/2.
 \]
-Thus the shell support-transfer bookkeeping records a retained carrier at the
-predeclared lower activity level \(\eta_m\);
-\item the pressure/gauge/local-energy structure needed for the preceding tests
-fails on the chosen compact subwindow, in which case the first failed test is an
-already named local row.
+Thus the same bounded carrier is visible at a predeclared lower level.
 \end{enumerate}
+In particular, a strong diffuse-tail limit creates no additional regularity
+type and no unclassified terminal row.
 \end{lemma}
 
 \begin{proof}
-Because the realized diffuse support profile is nonzero, there is a compact
-subcylinder \(Q'\Subset Q_{\rm sh}\) on which \(W_\infty\) has positive \(L^3\)
-mass.  If during passage to the limit the pressure atlas, repaired gauge, or
-local-energy structure breaks on a compact shell window, then the first failed
-row is already one of the named local failure rows.  This is
-alternative \textup{(iv)}.
+Case \textup{(ii)} of
+\cref{thm:young-variance-strong-compactness} says precisely that the selected
+compactness package holds on the rebased shell windows.  Apply
+\cref{lem:regular-singular-compact-limit-routing}.  A first failed limit
+interface gives alternative \textup{(i)}.
 
-Assume henceforth that the local suitable structure survives on compact shell
-windows.  If \(W_\infty\) is bounded on a slightly smaller compact subwindow,
-then
-\cref{lem:bounded-window-local-regularization} applies directly and gives
-alternative \textup{(i)} unless a named remaining-activity row has already been
-detected, in which case we are done anyway.
+If the resulting suitable limit has a singular point, that lemma produces an
+actual CKN-active diagonal rebase of the full represented shell sequence.
+The routing corollary
+\cref{cor:no-unclassified-compact-limit-obstruction} then sends it through
+the compact-chart/tail partition: a noncompact relative parameter is a named
+separated, exterior, or cascade row; a compact comparable carrier is already
+part of the compound retained class; and failure of a retained compact input
+is its named adjacent row.  This is alternative \textup{(ii)}.
 
-Assume next that \(W_\infty\) is not bounded on the chosen compact shell
-subwindow.  Because a local suitable weak solution has open regular set, there is
-then a singular point on that subwindow.  If every sufficiently small compact
-subcylinder around that point had CKN quantity below the threshold of
-\cref{thm:terminal-ckn-regularity}, that theorem would imply local
-boundedness of \(W_\infty\), contradiction.  Hence there is a compact
-subcylinder on which the local CKN quantity of the limit is positive.  By the
-strong local \(L^3\) convergence and the pressure compactness conclusion of
-\cref{lem:selected-compactness-aubin-lions}, the same positive CKN
-quantity transfers to \((W_n,\widetilde P_n)\) for all large \(n\), unless
-pressure compactness fails first; such a pressure failure is
-alternative \textup{(iv)}.  In the non-failure case,
-\cref{lem:terminal-local-critical-mass-routing} reads this positive local
-diagnostic as a named compact active/pressure/rough-core/adjacent row.  This is
-alternative \textup{(ii)}.
-
-It remains to treat the case where \(W_\infty\) is regular on a compact shell
-subwindow and hence locally bounded after shrinking, but the bookkeeping of the
-original shell branch has not yet registered activity at the previously retained
-level.  Choose a nonnegative basis test function \(\phi_j\) from the fixed
-countable shell occupation chart, supported in such a subwindow, with
-\(\int \phi_j|W_\infty|^3>0\).  By the dyadic activity ladder there exists
-\(m\) such that
+If the suitable limit has no singular point, the regular alternative of
+\cref{lem:regular-singular-compact-limit-routing} supplies a compact
+subwindow \(Q'\) on which it is nonzero and bounded.  Therefore
+\cref{lem:scale-rigid-bounded-limit-exit,thm:bounded-selected-window-physical-routing}
+give the bounded-window route in alternative \textup{(iii)}.  If the original
+shell bookkeeping has not registered this mass at its previous activity
+level, choose a nonnegative basis function \(\phi_j\) supported in \(Q'\)
+with \(\int\phi_j|W_\infty|^3>0\).  The fixed dyadic ladder contains
+\(\eta_m\) with
 \[
-0<\eta_m\le \int \phi_j|W_\infty|^3\,dy\,ds.
+  0<\eta_m\le
+  \int\phi_j|W_\infty|^3\,dy\,ds.
 \]
 Strong local \(L^3\)-convergence then gives
 \[
-\int \phi_j|W_n|^3\,dy\,ds\to \int \phi_j|W_\infty|^3\,dy\,ds,
+  \int\phi_j|W_n|^3\,dy\,ds
+  \longrightarrow
+  \int\phi_j|W_\infty|^3\,dy\,ds,
 \]
-so \(\int \phi_j|W_n|^3\ge \eta_m/2\) for all large \(n\).  Thus the shell
-support-transfer mechanism records a retained local carrier at the predeclared
-activity level \(\eta_m\).  This is alternative \textup{(iii)}.
-
-Taking the first closed row in the ordered shell/local state space makes the
-four outcomes exclusive.  Therefore one of them occurs.
+so the same bounded carrier is visible at the predeclared lower level.  This
+does not split the regular case into a second mathematical alternative.  The
+three outcomes are exclusive by first-failure order and by the singular versus
+nonsingular dichotomy.
 \end{proof}
 
 \begin{theorem}[Coherent critical-tail closure]
@@ -22355,13 +22569,20 @@ compactness package fails and we immediately obtain a lower named local row, or
 else \(W_n\) is strongly compact in local \(L^3\) on rebased unit-shell
 windows.  Choose a compact unit-shell subwindow on which the strong local limit
 is nonzero.  By \cref{lem:strong-diffuse-tail-limit-row}, after shrinking
-that subwindow if necessary, either the limit is locally bounded and the
-bounded-window row closes the branch, or it has a singular point and the local
-critical-mass routing lemma places the branch in one of the already named local
-rows, or a smaller positive dyadic activity level is visible and the shell
-support-transfer bookkeeping records a retained carrier at that predeclared
-level, or the pressure/gauge/local-energy interface fails and gives the
-corresponding named failure row.
+that subwindow if necessary, either a compactness interface fails and gives its
+named row, the limit has a singular point and creates an actual active
+descendant routed by the ordinary compact-chart/tail partition, or the limit
+is regular and nonzero on a smaller cylinder and the bounded-window row closes
+that compact core.  When the regular limit lies below the previous shell
+activity level, the predeclared dyadic ladder records the same bounded carrier
+at its first positive lower level; this is bookkeeping inside the regular
+alternative, not a fourth terminal state.
+
+In the singular alternative, a compact-chart descendant assigned to the
+comparable retained class cannot remain a diffuse-tail state: comparable
+same-point carriers were grouped before the diffuse shell extraction.  It is
+therefore reidentified with the existing compound retained class, while every
+noncomparable descendant is a named lower row.
 
 If, after subtracting the strong local limit on such a compact subwindow, a
 positive nonretained shell remainder still survives, then
@@ -24683,7 +24904,17 @@ closure layer and is not used in the routing step here.
 The remaining represented retained branch is tested by the scale package of
 \cref{thm:scale-stratification}: either one reaches finite-cost
 scale-collapse, thin drift, autonomous modulation, compactness-package first
-failure, or the retained compact scale-collapse/scale-rigid states.  Finally,
+failure, or the retained compact scale-collapse/scale-rigid states.  On a pass
+branch where the selected compactness package holds on a nonzero retained window,
+\cref{lem:regular-singular-compact-limit-routing} gives the exhaustive
+regular--singular split.  The regular case is the bounded-window row.  The
+singular case is an actual active descendant, and
+\cref{cor:no-unclassified-compact-limit-obstruction} routes it to a named
+parameter-tail or analytic row, or identifies it with the already assembled
+comparable retained class.  Hence this compact-limit step adds no sixth
+retained state.
+\par
+Finally,
 the canonical cost-validation layer is available on every retained compact
 branch by \cref{lem:canonical-cost-channel-available}, and its first-failure map
 is the ordered list in \cref{lem:no-unrecorded-cost-escape}.  Because
@@ -24721,7 +24952,9 @@ retained-core selection belong to the multibubble/cascade side of
 scale collapse is divided by \cref{thm:scale-stratification} into
 finite-cost scale collapse or one of the retained compact
 scale-collapse/scale-rigid terminal states.  No other retained terminal state
-survives the ordered first-failure algorithm.
+survives the ordered first-failure algorithm; in particular,
+\cref{cor:no-unclassified-compact-limit-obstruction} rules out an extra state
+arising only from the regularity type of a nonzero compact limit.
 \end{proof}
 
 \begin{proposition}[Elimination of local Type II states]
@@ -25529,7 +25762,7 @@ compactness by weak lower semicontinuity is used.
 \label{lem:acyclic-terminal-ledger}
 The routing layer used before the remaining-exit closure subsection is
 acyclic.  More precisely,
-\cref{thm:terminal-adjacent-label-routing,thm:local-residual-exhaustion,thm:ordered-local-state-space-exhaustion,lem:nested-pressure-only-well-founded,lem:critical-tightness-failure-row,lem:bounded-window-reselection-well-founded}
+\cref{lem:regular-singular-compact-limit-routing,cor:no-unclassified-compact-limit-obstruction,thm:terminal-adjacent-label-routing,thm:local-residual-exhaustion,thm:ordered-local-state-space-exhaustion,lem:nested-pressure-only-well-founded,lem:critical-tightness-failure-row,lem:bounded-window-reselection-well-founded}
 produce only named local rows or the retained comparable class.  They do not
 use the later closure theorems
 \cref{lem:diffuse-pressure-only-not-terminal,lem:diffuse-critical-tail-row-closed,lem:diffuse-reselection-tree-row-closed}
@@ -25545,7 +25778,13 @@ By construction,
 \cref{lem:nested-pressure-only-well-founded,lem:critical-tightness-failure-row,lem:bounded-window-reselection-well-founded}
 stop at the diffuse pressure-only, diffuse critical-tail, and diffuse
 reselection-tree rows by name.  They do not appeal to the later theorems that
-eliminate those rows.  Theorem
+eliminate those rows.  The regular--singular routing lemma
+\cref{lem:regular-singular-compact-limit-routing} produces only a named limit
+interface, an active descendant, or a bounded-window row, and
+\cref{cor:no-unclassified-compact-limit-obstruction} routes the active
+descendant to a named parameter-tail/analytic row or to the already retained
+comparable class.  It records the bounded-window row by name and defers its
+physical closure to the final ledger.  Theorem
 \cref{thm:terminal-adjacent-label-routing} is a routing theorem only,
 and \cref{thm:local-residual-exhaustion} routes a visible residual
 defect to a named adjacent row or to the retained comparable class.  The proof

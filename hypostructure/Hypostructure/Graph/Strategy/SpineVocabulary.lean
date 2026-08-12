@@ -495,12 +495,19 @@ inductive Key where
   by a connected, carrying, boundary-fibre preserving, context-universal
   `DeclaredQuotient` with the paper's proper and closed representative clauses. -/
   | admissibleRankQuotient
+  /-- `def:functional-rank-quotient` for the admissible quotient family on the
+  concrete remainder.  Membership is the exact admissible predicate restricted
+  by the manuscript's finite determination axiom `RankQuotient.FunctionalOn`. -/
+  | functionalRankQuotient
   /-- Node `[31]`: the curvature target-rank of the remainder is attained by a
-  subfamily of raw internal curvature tests that survives every functional
-  admissible rank quotient, and every test outside that subfamily is
-  target-dependent on it (`def:curvature-target-rank`,
-  `lem:target-rank-circuit`). -/
+  maximum-cardinality subfamily of raw internal curvature tests that survives
+  every functional admissible rank quotient (`def:curvature-target-rank`).
+  Circuit extraction is a separate later fact. -/
   | curvatureTargetRank
+  /-- `lem:target-rank-circuit`: every coordinate outside the selected maximal
+  surviving curvature family has a proper finite determination certificate
+  for a functional admissible quotient. -/
+  | targetRankCircuit
   /-- Node `[32]`, yes arm: `r_Ω(R) < W₂(R) − o(W₂)` for some admissible
   quotient system, together with the proper target-dependence the rank drop
   yields.  This is node `[33]`, Branch D. -/
@@ -557,6 +564,9 @@ inductive Key where
   | coldGermRealized
   | coldGermDistinguished
   | coldGermSilent
+  /-- Node `[21]`: `lem:curv-enum`, the certified finite barrier enumeration
+  read from the registered table. -/
+  | barrierEnumeration
   /-- Nodes `[21]`--`[22]`: `lem:p13-window-package`.  The selected coordinates of
   the multi-scale window package are separated, and each carries the audited
   per-window rate.  This is the arm on which `lem:independent-target-entropy`
@@ -1187,22 +1197,6 @@ noncomputable abbrev remainderCurvatureTests (object : Graph.FiniteObject.{u})
     Finset (object.InternalWedge (object.remainderSupport packing)) :=
   object.internalWedgeFamily (object.remainderSupport packing)
 
-/-- **The admissible quotient system `def:curvature-target-rank` computes
-against**, at the remainder and at the spine's registered baseline and accepted
-cycle lengths.  It is the manuscript's own system —
-`Graph.FiniteObject.curvatureQuotientSystem` — not a parameter and not a
-supplied field: a member is a target-complete quotient of the exact response
-profile of a connected determination support carrying `𝒲₂(R)`, functional on
-that family, and representable as its scope requires. -/
-noncomputable abbrev remainderQuotientSystem (data : Data.{u})
-    (object : Graph.FiniteObject.{u})
-    (packing : Finset (Finset object.Vertex)) :
-    Core.TargetRank.QuotientSystem
-      (object.InternalWedge (object.remainderSupport packing))
-      (remainderCurvatureTests object packing) :=
-  object.curvatureQuotientSystem (Graph.MinimumDegreeAtLeast data.threshold)
-    (Graph.HasCycleWithLength data.LengthOK) (object.remainderSupport packing)
-
 /-- **`r_Ω(R)`**: the curvature target-rank of the remainder. -/
 noncomputable abbrev remainderCurvatureTargetRank (data : Data.{u})
     (object : Graph.FiniteObject.{u})
@@ -1354,57 +1348,55 @@ noncomputable abbrev jointPackageDemand (data : Data.{u})
     2 ^ (data.curvatureCost *
       remainderCurvatureTargetRank data object packing)
 
-/-- The complete node-`[21]` assertion.  Besides the finite separated
-realization used by the counting argument, this records the manuscript's
-declared target coordinates, their support map, full target rank, and their
-realization in the exact `m`-edge skeleton stratum. -/
-def WindowPackageStatement (data : Data.{u})
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∀ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing →
-    ∃ (coordinateCount : Nat)
-      (family : Graph.PackedWindowRealization.SeparatedFamily object
-        (Fin coordinateCount)),
-      2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-            object.windowPackingNumber data.windowOrder) ≤
-          Nat.card (∀ coordinate, family.State coordinate) ∧
-        jointPackageDemand data object packing ≤
-          Nat.card (∀ coordinate, family.State coordinate) ∧
-        family.slots.card ≤ object.edgeCount ∧
-        object.edgeCount ≤ family.pool.card ∧
-        object.WindowTargetPackage
-          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-          data.windowOrder packing
-          (data.windowRate * data.separatedScaleCount object.vertexCount *
-            object.windowPackingNumber data.windowOrder) ∧
-        Graph.spineDeficit object.vertexCount data.threshold
-            (data.windowRate * data.separatedScaleCount object.vertexCount *
-              object.windowPackingNumber data.windowOrder) ≤
-          data.surplusScale * object.vertexCount
+/-- `lem:curv-enum` at node `[21]`, with every count read from the certified
+table on the current problem presentation.
 
-/-- Node `[21]`'s finite computation, projected entirely from the registered
-certified table.  This fact contains no graph realization and changes no
-residual: the independent multi-scale package is a later consequence after
-the manuscript's sparse-exit and near-cubic hypotheses are available. -/
+The witness identifies the table indices with the legal labels already
+published by `[18]`; its curvature clause says that the selected table row is
+literally the manuscript's `Ω₂`, and the final three equalities expose the
+safe, flat, and curvature-positive counts.  No numerical value is restated:
+the values are the certified table projections themselves. -/
 def BarrierEnumerationStatement (data : Data.{u}) : Prop :=
   let presentation := data.windowBarrier
   letI := presentation.indexFintype
-  data.windowRate = presentation.binaryRateFloor ∧
-    data.curvatureCost =
-      Core.Finite.CertifiedTableAggregation.binaryRowRateFloor
-        presentation.table data.curvatureBarrierRow ∧
-    2 ^ data.windowRate *
-        Core.Finite.CertifiedTableAggregation.flatProduct presentation.table ≤
-      Core.Finite.CertifiedTableAggregation.safeProduct presentation.table
+  let row := data.curvatureBarrierRow
+  let left := presentation.table.counts.leftLength row
+  let right := presentation.table.counts.rightLength row
+  presentation.size =
+      (Graph.WindowCurvature.Labels data.windowOrder).card ∧
+    ∃ label : Fin presentation.size →
+        Graph.WindowCurvature.Label data.windowOrder,
+      Function.Injective label ∧
+      Finset.image label Finset.univ =
+        Graph.WindowCurvature.Labels data.windowOrder ∧
+      (∀ source middle target,
+        ((presentation.profile.row left source).getLsb middle = true ∧
+          (presentation.profile.row right middle).getLsb target = true ∧
+          (presentation.profile.row (left + right) source).getLsb target = false) ↔
+        Graph.WindowCurvature.curvatureTwo
+          (label source) (label middle) (label target) = true) ∧
+      presentation.table.counts.storedSafe row =
+        presentation.profile.safeCount left right ∧
+      presentation.table.counts.storedFlat row =
+        presentation.profile.flatCount left right ∧
+      presentation.table.counts.storedSafe row -
+          presentation.table.counts.storedFlat row =
+        presentation.profile.obstructedCount left right
 
 /-- A packed window is live-hot exactly when its declared singleton window
 package is retained at every selected scale. -/
 def LiveHotWindow (data : Data.{u}) (object : Graph.FiniteObject.{u})
     (window : Finset object.Vertex) : Prop :=
-  object.WindowTargetPackage
-    (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK data.windowOrder
-    {window}
-    (data.windowRate * data.separatedScaleCount object.vertexCount)
+  object.IsWindowPacking data.windowOrder {window} ∧
+    let bits := data.windowRate * data.separatedScaleCount object.vertexCount
+    let family := object.windowTargetFamily bits (object.windowSupport {window})
+    (∀ declared : Graph.DeclaredQuotient
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object family
+        object.windowTargetSupport,
+      declared.toRankQuotient.FunctionalOn ↑family →
+        declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+    2 ^ bits ≤ Graph.skeletonBudget object
 
 /-- The hot/cold partition created at node `[22]`.  Both parts are defined
 inside the selected maximal packing; the equivalences prevent a consumer from
@@ -2156,7 +2148,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               Graph.HasCycleWithLength data.LengthOK (Graph.glue piece outside)) ∧
             profile.2.2.1 = family ∧
             (∀ coordinate ∈ profile.2.2.1, profile.2.2.2 coordinate = ()) ∧
-            Set.InjOn (fun coordinate => coordinate) ↑profile.2.2.1)
+            Set.InjOn (fun coordinate => coordinate)
+              (↑profile.2.2.1 : Set (object.InternalWedge support)))
   | .admissibleRankQuotient, object =>
       -- `def:admissible-rank-quotient` on the exact response profile already
       -- selected for the concrete remainder.  Membership is exactly existence
@@ -2178,23 +2171,107 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     (Graph.HasCycleWithLength data.LengthOK) object family
                     (Graph.FiniteObject.internalWedgeSupport (region := support)),
                   declared.toRankQuotient = quotient)
+  | .functionalRankQuotient, object =>
+      -- `def:functional-rank-quotient`: restrict the incoming admissible
+      -- family, without changing its quotients, to the members satisfying the
+      -- paper's finite functional-dependence axiom on the declared family.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          let support := object.remainderSupport packing
+          let family := object.internalWedgeFamily support
+          ∃ functional :
+              Core.TargetRank.RankQuotient.{u, u + 1}
+                  (object.InternalWedge support) → Prop,
+            ∀ quotient,
+              functional quotient ↔
+                ((∃ declared : Graph.DeclaredQuotient
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object family
+                    (Graph.FiniteObject.internalWedgeSupport (region := support)),
+                    declared.toRankQuotient = quotient) ∧
+                  quotient.FunctionalOn ↑family))
   | .curvatureTargetRank, object =>
-      -- `def:curvature-target-rank` with `lem:target-rank-circuit`.  `r_Ω(R)`
-      -- is attained by a subfamily of `𝒲₂(R)` surviving every functional
-      -- admissible rank quotient, and every raw test outside it is
-      -- target-dependent on a subfamily of it.  Stated at every packing, so
-      -- none travels; the quotient system is the manuscript's own.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        ∃ independent ⊆ remainderCurvatureTests object packing,
-          (remainderQuotientSystem data object packing).Survives ↑independent ∧
+      -- `def:curvature-target-rank` only.  At the concrete remainder inherited
+      -- from the functional-quotient fact, `independent` survives precisely
+      -- when every functional admissible quotient remains label-injective on
+      -- it.  Its cardinality is the finite maximum.  Circuit extraction is a
+      -- separate later label and is deliberately absent here.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          let support := object.remainderSupport packing
+          let family := object.internalWedgeFamily support
+          ∃ independent ⊆ family,
+            (∀ quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+                (object.InternalWedge support),
+              ((∃ declared : Graph.DeclaredQuotient
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) object family
+                  (Graph.FiniteObject.internalWedgeSupport (region := support)),
+                  declared.toRankQuotient = quotient) ∧
+                quotient.FunctionalOn ↑family) →
+              quotient.LabelInjectiveOn ↑independent) ∧
             independent.card =
-              remainderCurvatureTargetRank data object packing ∧
-            ∀ test ∈ remainderCurvatureTests object packing,
-              test ∉ independent →
-              ∃ determiners ⊆ (↑independent : Set _),
-                Core.TargetRank.Dependence
-                  (remainderQuotientSystem data object packing) test determiners)
+              object.curvatureTargetRank
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) support ∧
+            ∀ candidate ⊆ family,
+              (∀ quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+                  (object.InternalWedge support),
+                ((∃ declared : Graph.DeclaredQuotient
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object family
+                    (Graph.FiniteObject.internalWedgeSupport (region := support)),
+                    declared.toRankQuotient = quotient) ∧
+                  quotient.FunctionalOn ↑family) →
+                quotient.LabelInjectiveOn ↑candidate) →
+              candidate.card ≤ independent.card)
+  | .targetRankCircuit, object =>
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          let support := object.remainderSupport packing
+          let family := object.internalWedgeFamily support
+          let ProperDependence := fun
+              (test : object.InternalWedge support)
+              (determiners : Set (object.InternalWedge support)) =>
+            determiners.Finite ∧ test ∉ determiners ∧
+              ∃ declared : Graph.DeclaredQuotient
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object family
+                (Graph.FiniteObject.internalWedgeSupport (region := support)),
+                declared.toRankQuotient.FunctionalOn ↑family ∧
+                  declared.toRankQuotient.Determines test determiners
+          ∃ independent ⊆ family,
+            (∀ quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+                (object.InternalWedge support),
+              ((∃ declared : Graph.DeclaredQuotient
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) object family
+                  (Graph.FiniteObject.internalWedgeSupport (region := support)),
+                  declared.toRankQuotient = quotient) ∧
+                quotient.FunctionalOn ↑family) →
+              quotient.LabelInjectiveOn ↑independent) ∧
+            independent.card =
+              object.curvatureTargetRank
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) support ∧
+            (∀ test ∈ family, test ∉ independent →
+              ∃ determiners : Set (object.InternalWedge support),
+                determiners ⊆ ↑independent ∧ ProperDependence test determiners) ∧
+            ((¬ ∃ test ∈ family,
+                ∃ determiners : Set (object.InternalWedge support),
+                  determiners ⊆ ↑family ∧ ProperDependence test determiners) →
+              ∀ quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+                  (object.InternalWedge support),
+                ((∃ declared : Graph.DeclaredQuotient
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object family
+                    (Graph.FiniteObject.internalWedgeSupport (region := support)),
+                    declared.toRankQuotient = quotient) ∧
+                  quotient.FunctionalOn ↑family) →
+                quotient.LabelInjectiveOn ↑family))
   | .curvatureRankDrop, object =>
       -- Any strict loss of raw curvature rank supplies the proper
       -- target-dependence routed by Branch D.
@@ -2202,15 +2279,26 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         object.IsWindowPacking data.windowOrder packing ∧
           remainderCurvatureTargetRank data object packing <
               remainderWedgeSupply object packing ∧
-            ∃ test determiners,
-              Core.TargetRank.Dependence
-                (remainderQuotientSystem data object packing) test determiners)
+            let support := object.remainderSupport packing
+            let family := object.internalWedgeFamily support
+            ∃ test ∈ family,
+              ∃ determiners : Set (object.InternalWedge support),
+                determiners ⊆ ↑family ∧ determiners.Finite ∧
+                  test ∉ determiners ∧
+                    ∃ declared : Graph.DeclaredQuotient
+                      (Graph.MinimumDegreeAtLeast data.threshold)
+                      (Graph.HasCycleWithLength data.LengthOK) object family
+                      (Graph.FiniteObject.internalWedgeSupport
+                        (region := support)),
+                      declared.toRankQuotient.FunctionalOn ↑family ∧
+                        declared.toRankQuotient.Determines test determiners)
   | .curvatureFullRank, object =>
       -- This is the equality proved in the last paragraph of `lem:full-rank`.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        remainderCurvatureTargetRank data object packing =
-          remainderWedgeSupply object packing)
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+            remainderCurvatureTargetRank data object packing =
+              remainderWedgeSupply object packing)
   | .branchDependence, object =>
       -- Nodes `[33]`/`[35]`.  `lem:curvature-dependence-routing`'s proof opens
       -- by choosing a determination certificate for the dependence the rank
@@ -2654,8 +2742,55 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdSelectedBranchExcessStatement data object
   | .coldAmbientCubicStubExcess, object =>
       ColdAmbientCubicStubExcessStatement data object
-  | .windowPackageSeparated, object =>
+  | .barrierEnumeration, _object =>
       BarrierEnumerationStatement data
+  | .windowPackageSeparated, object => by
+      classical
+      exact ∃ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing ∧
+            packing.card = object.windowPackingNumber data.windowOrder ∧
+            (∀ support : Finset object.Vertex,
+              object.InducesWindow data.windowOrder support →
+                ∃ member ∈ packing, ¬ Disjoint support member) ∧
+            let bits := data.windowRate *
+              data.separatedScaleCount object.vertexCount
+            let Coordinate := Graph.DeclaredSignature.Coordinate
+              object.Vertex (Fin bits × Finset object.Vertex)
+            let package : Finset object.Vertex → Finset Coordinate := fun window =>
+              Finset.univ.image fun bit =>
+                Graph.DeclaredSignature.Coordinate.base
+                  .windowLabel (bit, window) window
+            let family := packing.biUnion package
+            (∀ window ∈ packing, (package window).card = bits) ∧
+              (∀ left ∈ packing, ∀ right ∈ packing, left ≠ right →
+                Disjoint (package left) (package right)) ∧
+              family.card = bits * packing.card ∧
+              (∀ declared : Graph.DeclaredQuotient
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) object family
+                  Graph.DeclaredSignature.Coordinate.support,
+                declared.toRankQuotient.FunctionalOn ↑family →
+                  declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+              (∀ (BaselineCoordinate : Type u)
+                  (baseline : Finset BaselineCoordinate)
+                  (baselineSupport : BaselineCoordinate → Finset object.Vertex),
+                (∀ declared : Graph.DeclaredQuotient
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object baseline
+                    baselineSupport,
+                  declared.toRankQuotient.FunctionalOn ↑baseline →
+                    declared.toRankQuotient.LabelInjectiveOn ↑baseline) →
+                let combined := family.image Sum.inl ∪ baseline.image Sum.inr
+                let combinedSupport : Sum Coordinate BaselineCoordinate →
+                    Finset object.Vertex :=
+                  Sum.elim Graph.DeclaredSignature.Coordinate.support
+                    baselineSupport
+                ∀ declared : Graph.DeclaredQuotient
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object combined
+                    combinedSupport,
+                  declared.toRankQuotient.FunctionalOn ↑combined →
+                    declared.toRankQuotient.LabelInjectiveOn ↑combined)
   | .coldHandoffTransfer, object =>
       -- `lem:cold-corridor-first-failure` (iv), as a ledger transfer.  The
       -- support is already marked by the incoming ledger; this row does not
@@ -4391,12 +4526,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           data.threshold ∧
         ∃ (Coordinate : Type u) (family : Finset Coordinate)
           (coordinateSupport : Coordinate → Finset object.Vertex),
-          Graph.IsBaselineSpineDemand
-              (object.declaredQuotientSystem
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) family coordinateSupport)
-              object.vertexCount data.threshold
-              (Graph.spineDeficit object.vertexCount data.threshold family.card) ∧
+          (∀ declared : Graph.DeclaredQuotient
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) object family
+              coordinateSupport,
+            declared.toRankQuotient.FunctionalOn ↑family →
+              declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+            Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
+              2 ^ (family.card + Graph.spineDeficit object.vertexCount
+                data.threshold family.card) ∧
             Graph.spineDeficit object.vertexCount data.threshold family.card ≤
               data.surplusScale * object.vertexCount)
   | .canonicalPairLedger, object =>
@@ -4471,19 +4609,23 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               coordinateSupport,
           let family := activation.pairFamily pairs
           Set.InjOn attempt.label ↑family
-  | .mixedSparseSpineDependence, object =>
-      ∃ (active : Graph.ActiveSurplusDemands
+  | .mixedSparseSpineDependence, object => by
+      classical
+      exact ∃ (active : Graph.ActiveSurplusDemands
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
           data.threshold)
         (Coordinate : Type u) (family : Finset Coordinate)
         (coordinateSupport : Coordinate → Finset object.Vertex),
-        Graph.IsBaselineSpineDemand
-            (object.declaredQuotientSystem
-              (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) family coordinateSupport)
-            object.vertexCount data.threshold
-            (Graph.spineDeficit object.vertexCount data.threshold family.card) ∧
+        (∀ declared : Graph.DeclaredQuotient
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object family
+            coordinateSupport,
+          declared.toRankQuotient.FunctionalOn ↑family →
+            declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+          Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
+            2 ^ (family.card + Graph.spineDeficit object.vertexCount
+              data.threshold family.card) ∧
           Graph.spineDeficit object.vertexCount data.threshold family.card ≤
             data.surplusScale * object.vertexCount ∧
           let activation := Graph.pairResponseActivation active
@@ -4496,52 +4638,43 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             Sum.elim coordinateSupport (by
               letI := object.vertices.decEq
               exact Graph.DeclaredSignature.Coordinate.support)
-          let rankQuotient :
-              Graph.AttemptedQuotient
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) object
-                  mixedFamily mixedSupport →
-                Core.TargetRank.RankQuotient.{u, u + 1}
-                  (Sum Coordinate object.PairCoordinate) :=
-            fun attempt =>
-              { Label := attempt.Label
-                Value := attempt.Value
-                Realization := Graph.BoundaryPiece
-                  (Graph.SupportAtom.boundary object attempt.support)
-                label := attempt.label
-                value := attempt.value }
-          let system : Core.TargetRank.QuotientSystem.{u, u + 1}
-              (Sum Coordinate object.PairCoordinate) mixedFamily :=
-            { Member := fun quotient =>
-                (∃ attempt, rankQuotient attempt = quotient) ∧
-                  quotient.FunctionalOn ↑mixedFamily
-              functional := fun membership => membership.2 }
-          Core.TargetRank.targetRank system < mixedFamily.card →
+          let Determines := fun
+              (attempt : Graph.AttemptedQuotient
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object
+                mixedFamily mixedSupport)
+              (coordinate : Sum Coordinate object.PairCoordinate)
+              (determiners : Set (Sum Coordinate object.PairCoordinate)) =>
+            ∀ left right,
+              (∀ determiner ∈ determiners,
+                attempt.value left (attempt.label determiner) =
+                  attempt.value right (attempt.label determiner)) →
+                attempt.value left (attempt.label coordinate) =
+                  attempt.value right (attempt.label coordinate)
+          ∀ attempt : Graph.AttemptedQuotient
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) object
+              mixedFamily mixedSupport,
+            (∃ coordinate ∈ mixedFamily,
+              ∃ determiners : Set (Sum Coordinate object.PairCoordinate),
+                determiners ⊆ ↑mixedFamily ∧ determiners.Finite ∧
+                  coordinate ∉ determiners ∧
+                    Determines attempt coordinate determiners) →
+            ¬ Set.InjOn attempt.label ↑mixedFamily →
             Graph.SparseSurplusExit
                 (Graph.MinimumDegreeAtLeast data.threshold)
                 (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∨
               ∃ pair ∈ pairs,
-                ∃ attempt : Graph.AttemptedQuotient
+                ((∃ left right, attempt.Identifies left right ∧
+                    left.boundaryDegreeProfile ≠
+                      right.boundaryDegreeProfile) ∨
+                  (∃ left right, attempt.Identifies left right ∧
+                    Graph.Response.TargetDefect
+                      (Graph.HasCycleWithLength data.LengthOK) left right) ∨
+                  Graph.Strategy.InterfaceReplacement.ReplacementSupport
                     (Graph.MinimumDegreeAtLeast data.threshold)
                     (Graph.HasCycleWithLength data.LengthOK) object
-                    mixedFamily mixedSupport,
-                  ∃ determiners : Set
-                      (Sum Coordinate object.PairCoordinate),
-                    (rankQuotient attempt).Determines
-                        (Sum.inr
-                          (Graph.FiniteObject.DemandActivation.pairCoordinate pair
-                            ((activation.pairSupport pair).getD ∅))) determiners ∧
-                      ¬ Set.InjOn attempt.label ↑mixedFamily ∧
-                      ((∃ left right, attempt.Identifies left right ∧
-                          left.boundaryDegreeProfile ≠
-                            right.boundaryDegreeProfile) ∨
-                        (∃ left right, attempt.Identifies left right ∧
-                          Graph.Response.TargetDefect
-                            (Graph.HasCycleWithLength data.LengthOK) left right) ∨
-                        Graph.Strategy.InterfaceReplacement.ReplacementSupport
-                          (Graph.MinimumDegreeAtLeast data.threshold)
-                          (Graph.HasCycleWithLength data.LengthOK) object
-                          attempt.support)
+                    attempt.support)
   | .exactCubicBaselineBudget, object =>
       Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
           (2 * object.vertexCount) ^
@@ -4735,7 +4868,9 @@ def label : Key → String
   | .curvatureDemandFloor => "curvatureDemandFloor"
   | .exactResponseProfile => "exactResponseProfile"
   | .admissibleRankQuotient => "admissibleRankQuotient"
+  | .functionalRankQuotient => "functionalRankQuotient"
   | .curvatureTargetRank => "curvatureTargetRank"
+  | .targetRankCircuit => "targetRankCircuit"
   | .curvatureRankDrop => "curvatureRankDrop"
   | .curvatureFullRank => "curvatureFullRank"
   | .branchDependence => "branchDependence"
@@ -4752,6 +4887,7 @@ def label : Key → String
   | .coldGermRealized => "coldGermRealized"
   | .coldGermDistinguished => "coldGermDistinguished"
   | .coldGermSilent => "coldGermSilent"
+  | .barrierEnumeration => "barrierEnumeration"
   | .windowPackageSeparated => "windowPackageSeparated"
   | .forcedCurvatureCost => "forcedCurvatureCost"
   | .remainderEntropyHigh => "remainderEntropyHigh"
@@ -4924,6 +5060,7 @@ example : label .stubSupply = "stubSupply" := rfl
 example : label .wedgeSupply = "wedgeSupply" := rfl
 example : label .curvatureDemandFloor = "curvatureDemandFloor" := rfl
 example : label .curvatureTargetRank = "curvatureTargetRank" := rfl
+example : label .targetRankCircuit = "targetRankCircuit" := rfl
 example : label .curvatureRankDrop = "curvatureRankDrop" := rfl
 example : label .curvatureFullRank = "curvatureFullRank" := rfl
 example : label .branchDependence = "branchDependence" := rfl
@@ -5096,6 +5233,8 @@ example : label .incrementalSkeletonRoom = "incrementalSkeletonRoom" := rfl
 example : label .skeletonDominates = "skeletonDominates" := rfl
 example : label .exactResponseProfile = "exactResponseProfile" := rfl
 example : label .admissibleRankQuotient = "admissibleRankQuotient" := rfl
+example : label .functionalRankQuotient = "functionalRankQuotient" := rfl
+example : label .barrierEnumeration = "barrierEnumeration" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -5146,6 +5285,7 @@ def idx : Key → Nat
   | .coldGermRealized => 32
   | .coldGermDistinguished => 33
   | .coldGermSilent => 34
+  | .barrierEnumeration => 211
   | .windowPackageSeparated => 35
   | .forcedCurvatureCost => 37
   | .remainderEntropyHigh => 38
@@ -5289,6 +5429,8 @@ def idx : Key → Nat
   | .skeletonDominates => 206
   | .exactResponseProfile => 207
   | .admissibleRankQuotient => 208
+  | .functionalRankQuotient => 209
+  | .targetRankCircuit => 210
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -5471,6 +5613,9 @@ def ofIdx : Nat → Key
   | 206 => .skeletonDominates
   | 207 => .exactResponseProfile
   | 208 => .admissibleRankQuotient
+  | 209 => .functionalRankQuotient
+  | 210 => .targetRankCircuit
+  | 211 => .barrierEnumeration
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -5554,6 +5699,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermDistinguished") 33
   | .coldGermSilent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermSilent") 34
+  | .barrierEnumeration =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "barrierEnumeration") 211
   | .windowPackageSeparated =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "windowPackageSeparated") 35
@@ -5897,6 +6044,11 @@ def name : Key → Lean.Name
   | .admissibleRankQuotient =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "admissibleRankQuotient") 208
+  | .functionalRankQuotient =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "functionalRankQuotient") 209
+  | .targetRankCircuit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "targetRankCircuit") 210
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

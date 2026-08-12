@@ -325,58 +325,6 @@ theorem exists_same_pairRoutingLabel {object : FiniteObject.{u}}
     (pairRoutingLabel threshold activation token roleOf endpointOf profileOf
       windowLabelOf) large
 
-/-- **The second absorbed alternative is a sparse surplus exit.**
-
-`def:named-surplus-exits` (c): *"a nontrivial target-complete compression of a
-proper atom, forbidden by `lem:replacement`, `cor:uncompressible`."*  Every one
-of `CompressibleSupport`'s seven clauses is present and none is assumed:
-
-* connectedness and properness are the separation's own `S_z` witnesses;
-* the replacement is the reading's compressed realization;
-* its boundary-degree profile is the atom's own, by the reading's registration
-  at an exhausted separator -- `SwitchReading.fibre`'s own step;
-* strict decrease is `SwitchReading.lexicographicallySmaller`, derived from the
-  reading's descent the way `Graph/ColdCorridor.lean`'s bounded germ derives it
-  from its increment;
-* the target response against every context is the target-completeness itself,
-  read against the atom's own piece because `baseIsPiece` says the realization
-  before the identification *is* that piece.
-
-The baseline of the compressed realization is the one clause the cold branch
-also carries beside its germ. -/
-theorem sparseSurplusExit_of_targetComplete {object : FiniteObject.{u}}
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {support : Finset object.Vertex} {receiver outside : object.Vertex}
-    {separation : Separation object support receiver outside}
-    (reading : SwitchReading separation)
-    (internal : separation.separator ∉
-      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
-        separation.switchSupport)
-    (baseline : Baseline (Graph.glue reading.quotient
-      separation.atom.decomposition.outside))
-    (complete : Graph.Response.TargetComplete
-      Graph.BoundaryPiece.boundaryDegreeProfile
-      (Graph.HasCycleWithLength LengthOK) reading.quotient reading.full) :
-    Graph.SparseSurplusExit Baseline (Graph.HasCycleWithLength LengthOK)
-      LengthOK object := by
-  classical
-  refine .compression separation.switchSupport
-    ⟨separation.switchConnected, separation.switchProper, reading.quotient,
-      ?_, baseline, reading.lexicographicallySmaller, ?_⟩
-  · -- The replacement carries `S_z`'s own registered profile.
-    have registeredQuotient := reading.registered internal reading.reduced
-      reading.reduced_ssubset.subset
-    have piece : separation.certificate.boundaryDegreeProfile =
-        separation.atom.decomposition.piece.boundaryDegreeProfile := rfl
-    exact registeredQuotient.trans piece
-  · -- Target-completeness against the atom's own piece.
-    intro context
-    have fullIsPiece : reading.full = separation.atom.decomposition.piece :=
-      reading.baseIsPiece
-    have equivalence := complete.2 context
-    rw [fullIsPiece] at equivalence
-    exact equivalence
-
 /-! ## The routed configuration `def:same-token-routing-germs` declares -/
 
 /-- **`def:same-token-routing-germs`' own routed pair at one bottleneck.**
@@ -459,45 +407,6 @@ theorem sparseSurplusExit_of_delocalizes {Baseline : FiniteObject.{u} → Prop}
       LengthOK object := by
   obtain ⟨representative, smaller, baseline, transfer⟩ := delocalizes
   exact .delocalization representative smaller baseline transfer
-
-/-- **The absorbed classification *is* a sparse surplus exit.**
-
-The manuscript reads its three alternatives as `def:named-surplus-exits`'
-clauses (b), (c), (d), and all three are discharged here with no new route
-invented:
-
-* *target-defective* is **refuted**, not converted.  `lem:context-universality`
-  enters as the branch invariant `Graph/ColdFirstFailure.lean`'s surviving cold
-  branch already carries -- *"every identification the branch makes survives
-  every compatible outside context"* -- so an identification the branch makes
-  cannot be separated by an outside context.  This is the manuscript's *"Thus
-  the parallel case is impossible in a survivor."*
-* *target-complete on a proper support* is clause (c), by
-  `sparseSurplusExit_of_targetComplete`.
-* *complete only after adjoining a larger connected support* is clause (d), by
-  `sparseSurplusExit_of_delocalizes`. -/
-theorem sparseSurplusExit_of_absorbed {object : FiniteObject.{u}}
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {support : Finset object.Vertex} {receiver outside : object.Vertex}
-    {separation : Separation object support receiver outside}
-    (reading : SwitchReading separation)
-    (internal : separation.separator ∉
-      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
-        separation.switchSupport)
-    (baseline : Baseline (Graph.glue reading.quotient
-      separation.atom.decomposition.outside))
-    (contextEquivalent : Graph.Response.ContextEquivalent
-      (Graph.HasCycleWithLength LengthOK) reading.quotient reading.full)
-    (absorbed : Absorbed (Graph.HasCycleWithLength LengthOK) reading
-      (Delocalizes Baseline (Graph.HasCycleWithLength LengthOK) object)) :
-    Graph.SparseSurplusExit Baseline (Graph.HasCycleWithLength LengthOK)
-      LengthOK object := by
-  rcases absorbed with defect | complete | delocalizes
-  · obtain ⟨context, separated⟩ := defect
-    exact absurd (contextEquivalent context) separated
-  · exact sparseSurplusExit_of_targetComplete reading internal baseline complete
-  · exact sparseSurplusExit_of_delocalizes delocalizes
-
 
 /-- **`def:same-token-routing-germs`' routed configuration at one bottleneck.**
 
@@ -584,49 +493,5 @@ theorem RoutedBottleneck.outcome {object : FiniteObject.{u}}
     bottleneck.armRightLands bottleneck.armLeftInterior
     bottleneck.armRightInterior bottleneck.highOfDegree avoids
     bottleneck.denied bottleneck.deniedSwap windowFree uncompressible
-
-/-- **`lem:same-token-bottleneck-routing` at a survivor.**
-
-*"Thus every surviving separated case enters the Type B fan ledger."*
-
-The absorbed alternative is a sparse surplus exit
-(`sparseSurplusExit_of_absorbed`), and node `[125]`'s standing fact is that the
-object survives every one of them -- so at a survivor the absorbed case cannot
-occur, the separator survives, `d_G(z) ≥ 4`, and the separated tails are
-admissible decorated Type B handoff fan data.  Nothing is assumed: survival is
-read off the ledger, and each of the three absorbed readings is refuted or
-converted where `def:named-surplus-exits` puts it. -/
-theorem RoutedBottleneck.typeBHandoff {object : FiniteObject.{u}}
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop} {order : Nat}
-    {HighDegree : object.Vertex → Prop}
-    {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
-    (bottleneck : RoutedBottleneck object HighDegree Absorbing)
-    (survives : Graph.SurvivesSparseExits Baseline
-      (Graph.HasCycleWithLength LengthOK) LengthOK object)
-    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
-    (uncompressible : ∀ piece : Finset object.Vertex,
-      ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline
-        (Graph.HasCycleWithLength LengthOK) object piece)
-    (windowFree : Graph.InducedPathFree (object.induce bottleneck.support) order)
-    (internal : bottleneck.separation.separator ∉
-      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
-        bottleneck.separation.switchSupport)
-    (baseline : Baseline (Graph.glue bottleneck.reading.quotient
-      bottleneck.separation.atom.decomposition.outside))
-    (contextEquivalent : Graph.Response.ContextEquivalent
-      (Graph.HasCycleWithLength LengthOK) bottleneck.reading.quotient
-      bottleneck.reading.full) :
-    3 < object.degree bottleneck.separation.separator ∧
-      ∃ envelope : Envelope object LengthOK HighDegree Absorbing,
-        Admissible object LengthOK
-          (fun piece => ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
-            Baseline (Graph.HasCycleWithLength LengthOK) object piece)
-          (fun piece => Graph.InducedPathFree (object.induce piece) order)
-          envelope := by
-  rcases bottleneck.outcome (Baseline := Baseline) (order := order) avoids
-      uncompressible windowFree with absorbed | handoff
-  · exact absurd (sparseSurplusExit_of_absorbed bottleneck.reading internal
-      baseline contextEquivalent absorbed) survives
-  · exact handoff
 
 end Hypostructure.Graph.SameTokenRoutingGerms

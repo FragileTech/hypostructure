@@ -671,7 +671,16 @@ noncomputable def selectedWindowOverloadBottleneckRouting
   | .left capsHistory =>
       exact False.elim (selectedWindowHomogeneousCapsCloses capsHistory)
   | .right patternHistory =>
-      exact selectedWindowBottleneckRouting patternHistory
+      let routed :=
+        (bottleneckRoutingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          patternHistory (by simp [bottleneckRoutingRow, K_eq_iff])
+      exact
+        (typeBHandoffRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          routed (by simp [typeBHandoffRow, bottleneckRoutingRow, K_eq_iff])
 
 /-- Nodes `[140]`--`[144]`, window-overload bottleneck arm through the Type B
 bridge-mass ledger row. -/
@@ -755,7 +764,16 @@ noncomputable def selectedRemainderOverloadBottleneckRouting
   | .left capsHistory =>
       exact False.elim (selectedRemainderHomogeneousCapsCloses capsHistory)
   | .right patternHistory =>
-      exact selectedRemainderBottleneckRouting patternHistory
+      let routed :=
+        (bottleneckRoutingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          patternHistory (by simp [bottleneckRoutingRow, K_eq_iff])
+      exact
+        (typeBHandoffRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          routed (by simp [typeBHandoffRow, bottleneckRoutingRow, K_eq_iff])
 
 /-- Nodes `[142]`--`[144]`, remainder-overload bottleneck arm through the Type B
 bridge-mass ledger row. -/
@@ -841,7 +859,16 @@ noncomputable def selectedPrimitiveOverloadBottleneckRouting
   | .left capsHistory =>
       exact False.elim (selectedPrimitiveHomogeneousCapsCloses capsHistory)
   | .right patternHistory =>
-      exact selectedPrimitiveBottleneckRouting patternHistory
+      let routed :=
+        (bottleneckRoutingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          patternHistory (by simp [bottleneckRoutingRow, K_eq_iff])
+      exact
+        (typeBHandoffRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          routed (by simp [typeBHandoffRow, bottleneckRoutingRow, K_eq_iff])
 
 /-- Nodes `[143]`--`[144]`, primitive-overload bottleneck arm through the Type B
 bridge-mass ledger row. -/
@@ -900,8 +927,9 @@ literal no-arm residual forwarded toward `[24]` and the cold continuation. -/
 noncomputable def selectedBarrierDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+      [K .windowPackageSeparated, K .sparseSurplusSurvivor,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   let partitioned :=
@@ -957,8 +985,9 @@ noncomputable def selectedCompletedSpinePrefix
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .curvatureTargetRank, K .admissibleRankQuotient,
-        K .exactResponseProfile, K .wedgeSupply, K .curvatureDemandFloor,
+      [K .targetRankCircuit, K .curvatureTargetRank, K .functionalRankQuotient,
+        K .admissibleRankQuotient, K .exactResponseProfile, K .wedgeSupply,
+        K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
@@ -999,12 +1028,30 @@ noncomputable def selectedCompletedSpinePrefix
         simp [admissibleRankQuotient, exactResponseProfile, wedgeSupply,
           boundaryDemand, remainderNormalization, selectedDensityBudget,
           K_eq_iff])
-  exact
-    (curvatureTargetRank (BranchState := BranchState)
+  let h7 :=
+    (functionalRankQuotientRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       h6 (by
-        simp [curvatureTargetRank, admissibleRankQuotient,
+        simp [functionalRankQuotientRow, admissibleRankQuotient,
+          exactResponseProfile, wedgeSupply, boundaryDemand,
+          remainderNormalization, selectedDensityBudget, K_eq_iff])
+  let h8 :=
+    (curvatureTargetRankRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h7 (by
+        simp [curvatureTargetRankRow, functionalRankQuotientRow,
+          admissibleRankQuotient,
+          exactResponseProfile, wedgeSupply, boundaryDemand,
+          remainderNormalization, selectedDensityBudget, K_eq_iff])
+  exact
+    (targetRankCircuitRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h8 (by
+        simp [targetRankCircuitRow, curvatureTargetRankRow,
+          functionalRankQuotientRow, admissibleRankQuotient,
           exactResponseProfile, wedgeSupply, boundaryDemand,
           remainderNormalization, selectedDensityBudget, K_eq_iff])
 
@@ -1028,10 +1075,6 @@ noncomputable def selectedCurvatureRankDichotomy
       (selectedCompletedSpinePrefix history) :=
   curvatureRankDichotomy (data := spineData)
     (selectedCompletedSpinePrefix history)
-    (K .curvatureTargetRank) (K .curvatureRankDrop) (K .curvatureFullRank)
-    (fun fact => fact.down)
-    (fun drop => ⟨drop⟩)
-    (fun full => ⟨full⟩)
     (by simp [selectedCompletedSpinePrefix, K_eq_iff])
     (by simp [selectedCompletedSpinePrefix, K_eq_iff])
 
@@ -7373,6 +7416,22 @@ theorem erdos_64_of_selectedLedgerClosure
 /-! The two node-[19] arms are separate exact-ledger cursors.  Node `[20]`
 is exhausted before node `[21]`; only the no arm reaches the enumeration. -/
 
+noncomputable def selectedNearCubicSparseSurplusSurvivor
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (sparseSurplusSurvivorRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
+      (by simp [K_eq_iff])
+
 noncomputable def selectedNearCubicNode21
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -7380,14 +7439,21 @@ noncomputable def selectedNearCubicNode21
         K .uncompressible, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] :=
-  (finiteBarrierEnumeration (BranchState := BranchState)
+      [K .windowPackageSeparated, K .barrierEnumeration,
+        K .sparseSurplusSurvivor,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  let withSurvivor := selectedNearCubicSparseSurplusSurvivor history
+  let enumerated :=
+    (finiteBarrierEnumeration (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      withSurvivor (by simp [K_eq_iff])
+  (independentWindowPackage (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)
-    EGTarget rfl).run history (by simp [K_eq_iff])
+    EGTarget rfl).run enumerated (by simp [K_eq_iff])
 
 /-! Node `[20]` and the post-`[21]` continuation are explicit branch
 functions.  Their arguments and results are exact-ledger indices, so the

@@ -820,38 +820,6 @@ theorem homogeneousBottleneckPatternStatement_of_not_caps
     exact noPattern ⟨declared, ledger, token, tokenMem, role,
       Or.inr ⟨centre, pattern, subset, star, large⟩⟩
 
-/-- **Node `[144]`'s bottleneck arm, proved.**
-
-Every input is a fact the branch already carries: node `[125]`'s survival, the
-selection entry's avoidance, and node `[11]`--`[14]`'s `cor:uncompressible`.
-Nothing is assumed and nothing is reconstructed. -/
-theorem typeBHandoffStatement (object : FiniteObject.{u})
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop} {order : Nat}
-    (survives : Graph.SurvivesSparseExits Baseline
-      (Graph.HasCycleWithLength LengthOK) LengthOK object)
-    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
-    (uncompressible : ∀ piece : Finset object.Vertex,
-      ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline
-        (Graph.HasCycleWithLength LengthOK) object piece) :
-    TypeBHandoffStatement object Baseline LengthOK order :=
-  fun _HighDegree _Absorbing bottleneck windowFree internal baseline
-      contextEquivalent =>
-    bottleneck.typeBHandoff survives avoids uncompressible windowFree internal
-      baseline contextEquivalent
-
-/-- **The first assertion, proved.**  It is
-`lem:same-token-bottleneck-routing` at the declared routed bottleneck; nothing
-about the object is assumed. -/
-theorem bottleneckRoutingStatement (object : FiniteObject.{u})
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop} {order : Nat}
-    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
-    (uncompressible : ∀ piece : Finset object.Vertex,
-      ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline
-        (Graph.HasCycleWithLength LengthOK) object piece) :
-    BottleneckRoutingStatement object Baseline LengthOK order :=
-  fun _HighDegree _Absorbing bottleneck windowFree =>
-    bottleneck.outcome avoids uncompressible windowFree
-
 /-- **`prop:nonnear-cubic-sharp-overload-routing`, the exhaustive outcome at
 node `[144]`.**
 

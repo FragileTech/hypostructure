@@ -93,17 +93,21 @@ theorem RankReducingOn.mono {quotient : RankQuotient Coordinate}
 
 /-- **The determination clause of `def:curvature-target-dependence`.**
 
-Clause (c) of a determination certificate: for any two realizations with the
-same `q`-image on the coordinates of `determiners`, the `q`-image of
-`coordinate` is the same -- equivalently, the `q`-value of `coordinate` is a
-function of the `q`-value vector on `determiners`.  The equivalence is why the
-existential form below is the definition: `φ` *is* that function. -/
+Clause (c) of a determination certificate: the `q`-value of `coordinate` is a
+function of the `q`-value vector on `determiners`.  As the manuscript requires,
+the function's domain is exactly the vectors realized by some exact-profile
+realization, not every abstract vector of quotient values. -/
 def Determines (quotient : RankQuotient Coordinate) (coordinate : Coordinate)
     (determiners : Set Coordinate) : Prop :=
-  ∃ evaluation : (determiners → quotient.Value) → quotient.Value,
+  ∃ evaluation :
+      { vector : determiners → quotient.Value //
+        ∃ realization : quotient.Realization,
+          vector = fun determiner =>
+            quotient.response realization determiner.1 } → quotient.Value,
     ∀ realization : quotient.Realization,
       quotient.response realization coordinate =
-        evaluation fun determiner => quotient.response realization determiner.1
+        evaluation ⟨(fun determiner =>
+          quotient.response realization determiner.1), ⟨realization, rfl⟩⟩
 
 /-- **`def:functional-rank-quotient`'s rank axiom.**
 
@@ -123,7 +127,10 @@ def FunctionalOn (quotient : RankQuotient Coordinate)
       coordinate ∉ independent →
       quotient.LabelInjectiveOn independent →
       ¬ quotient.LabelInjectiveOn (insert coordinate independent) →
-      ∃ determiners ⊆ independent, quotient.Determines coordinate determiners
+      ∃ determiners : Set Coordinate,
+        determiners.Finite ∧
+          determiners ⊆ independent ∧
+            quotient.Determines coordinate determiners
 
 end RankQuotient
 

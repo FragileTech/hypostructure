@@ -1,5 +1,5 @@
 import Hypostructure.Graph.SeparatedPackageSkeleton
-import Hypostructure.Graph.SparseEntropySandwich
+import Hypostructure.Graph.SparsePairResponse
 import Hypostructure.Graph.DeclaredCoordinateSignature
 
 namespace Hypostructure.Graph
@@ -83,34 +83,6 @@ theorem card_mixedTargetFamily (bits : Nat)
       obtain ⟨_, _, rfl⟩ := Finset.mem_image.mp left
       obtain ⟨_, _, equality⟩ := Finset.mem_image.mp right
       cases equality
-
-/-- The complete mathematical object exported by the multi-scale window
-package: its concrete packing, declared coordinates, exact support map, full
-target rank, and realization in the object's exact edge stratum. -/
-structure WindowTargetPackage
-    (Baseline : FiniteObject.{u} → Prop) (LengthOK : Nat → Prop)
-    (order : Nat) (packing : Finset (Finset object.Vertex)) (bits : Nat) : Prop where
-  valid : object.IsWindowPacking order packing
-  fullRank :
-    Core.TargetRank.targetRank
-        (object.declaredQuotientSystem Baseline
-          (Graph.HasCycleWithLength LengthOK)
-          (object.windowTargetFamily bits (object.windowSupport packing))
-          object.windowTargetSupport) = bits
-  exactEntropy : 2 ^ bits ≤ skeletonBudget object
-  /-- `lem:independent-target-entropy` for the package after adjoining any
-  independently target-testable sparse pair family.  This is the positive arm
-  selected at node `[21]`; failure belongs to that node's cold arm and is never
-  turned into a downstream hypothesis. -/
-  mixedEntropy : ∀ pairs : Finset (PairCoordinate object),
-    Core.TargetRank.targetRank
-        (object.declaredQuotientSystem Baseline
-          (Graph.HasCycleWithLength LengthOK)
-          (object.mixedTargetFamily bits (object.windowSupport packing) pairs)
-          object.mixedTargetSupport) =
-      (object.mixedTargetFamily bits
-        (object.windowSupport packing) pairs).card →
-    2 ^ (bits + pairs.card) ≤ skeletonBudget object
 
 end FiniteObject
 

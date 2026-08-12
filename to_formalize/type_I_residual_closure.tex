@@ -1281,7 +1281,7 @@ producers have been established.
 \subsection{Diagram map}
 
 \begin{longtable}{@{}L{0.12\textwidth}L{0.14\textwidth}L{0.31\textwidth}L{0.35\textwidth}@{}}
-\caption{Map of the twelve logical parts of the twelve-panel Type~I proof-flow graph.}
+\caption{Map of the nine logical parts of the nine-panel Type~I proof-flow graph.}
 \label{tab:typeI-proof-flow-map}\\
 \hline
 \textbf{Part} & \textbf{Nodes} & \textbf{Branch resolved} &
@@ -1298,46 +1298,39 @@ producers have been established.
 I & \textbf{[1]}--\textbf{[12]} &
 Fixed-point entry, setup lower states, and the exact raw-residual handoff. &
 \Cref{thm:local-typeI-entry-or-exclusion,thm:imported-setup-results,prop:setup-residual-handoff-complete}.\\
-II & \textbf{[13]}--\textbf{[23]} &
-The ten ordered refined states, with R2, R3, and the generic row continuing
-to the terminal module. &
-\Cref{def:refined-decomposition,thm:R1-exclusion,prop:R2-reduction-to-terminal,prop:R3S-R3-terminal-reduction,thm:R4-final-closure}.\\
-III & \textbf{[24]}--\textbf{[31]} &
-The eight terminal alternatives and the acyclic exhaustion of a retained
-active descendant. &
-\Cref{thm:terminal-exhaustion-main,thm:terminal-stratification,thm:compact-active-descendant,thm:no-finite-separated-profile-family}.\\
-IV & \textbf{[32]}--\textbf{[38]} &
-Pressure/noncompact routing, production of the endpoint inputs, and the final
-atomic contradiction. &
-\Cref{lem:no-pressure-only-retained-profile,lem:escaping-retained-recentering-routing,lem:atomic-sequence-L3,thm:mildness-inheritance-main,thm:AB-main,lem:no-atomic-active}.\\
-V & \textbf{[39]}--\textbf{[43]} &
-Centered circulation, killed radial absorption, and axis closure. &
-\Cref{lem:centered-circulation-equation,lem:one-dimensional-killed-radial-absorption,lem:axis-absorption-liouville,thm:R1-exclusion}.\\
-VI & \textbf{[44]}--\textbf{[57]} &
-Localized rotational-flux reduction and stationary-hull reselection. &
-\Cref{lem:R2-coriolis-bernoulli,lem:R2-flux-reduction-dichotomy,lem:R3-hull-is-seregin,prop:R3S-R3-terminal-reduction}.\\
-VII & \textbf{[58]}--\textbf{[77]} &
+II & \textbf{[13]}--\textbf{[37]} &
+The ten ordered refined states, the complete axis closure, and the internal
+R2 and R3 reductions. &
+\Cref{def:refined-decomposition,lem:centered-circulation-equation,lem:one-dimensional-killed-radial-absorption,lem:axis-absorption-liouville,thm:R1-exclusion,lem:R2-coriolis-bernoulli,lem:R2-flux-reduction-dichotomy,lem:R3-hull-is-seregin,prop:R2-reduction-to-terminal,prop:R3S-R3-terminal-reduction,thm:R4-final-closure}.\\
+III & \textbf{[38]}--\textbf{[57]} &
 Covariant tail geometry, affine normalization, pressure atlas, and retained
 recentering alternatives. &
 \Cref{thm:covariant-observer-calculus,thm:affine-normalization-dichotomy,prop:tail-dichotomy,lem:retained-recentering-alternatives}.\\
-VIII & \textbf{[78]}--\textbf{[89]} &
+IV & \textbf{[58]}--\textbf{[63]}, \textbf{[76]},
+\textbf{[141]}--\textbf{[146]},
+\textbf{[149]}--\textbf{[153]} &
+The eight terminal alternatives, chartwise pressure routing, the direct
+critical-tail bridge, retained-chain recurrence, and the complete finite-family
+and infinite-chain exclusions. &
+\Cref{thm:terminal-exhaustion-main,thm:terminal-stratification,lem:no-pressure-only-retained-profile,lem:escaping-retained-recentering-routing,thm:active-path-space-recurrence,thm:compact-active-descendant,lem:finite-graph-cycle,thm:no-finite-separated-profile-family}.\\
+V & \textbf{[64]}--\textbf{[75]} &
 Diffuse-defect compactification, recurrence, and its three-way routing. &
 \Cref{thm:diffuse-defect-compactness,thm:diffuse-defect-compactification-construction,thm:diffuse-defect-trichotomy}.\\
-IX & \textbf{[90]}--\textbf{[111]} &
+VI & \textbf{[77]}--\textbf{[98]} &
 Critical-tail compactification, virial routing, and defect-coordinate
 classification. &
 \Cref{thm:critical-tail-compactification-compactness,lem:critical-tail-young-log-transport,lem:recurrent-virial-equality-reduction,thm:critical-tail-compactification-extraction}.\\
-X & \textbf{[112]}--\textbf{[135]} &
+VII & \textbf{[99]}--\textbf{[124]} &
 Minimal mesoscopic scale, chartwise pressure compactness, variance rigidity,
 and log/Young closure. &
 \Cref{lem:h2-failure-first-bad-scale,lem:first-bad-pressure-compactness,lem:bounded-variance-liouville,thm:first-bad-mesoscopic-reduction}.\\
-XI & \textbf{[136]}--\textbf{[148]} &
+VIII & \textbf{[125]}--\textbf{[140]} &
 Bounded-origin realization and the three coherent critical-tail closures. &
 \Cref{thm:bounded-origin-realization-coherent-tails,thm:coherent-critical-tail-classification,cor:coherent-critical-tail-branch-closure}.\\
-XII & \textbf{[149]}--\textbf{[160]} &
-Retained-chain recurrence, finite-family exclusion, and production of the
-terminally indecomposable endpoint input. &
-\Cref{thm:active-path-space-recurrence,thm:compact-active-descendant,thm:no-finite-separated-profile-family,prop:no-multi-implies-atomic}.\\
+IX & \textbf{[147]}--\textbf{[148]}, \textbf{[154]}--\textbf{[159]} &
+The single/atomic route, its retained-tail test, endpoint production, and the
+final atomic contradiction. &
+\Cref{lem:descendant-to-separated-family,prop:no-multi-implies-atomic,lem:atomic-sequence-L3,thm:mildness-inheritance-main,thm:AB-main,lem:no-atomic-active}.\\
 \end{longtable}
 
 \clearpage
@@ -1372,9 +1365,9 @@ terminally indecomposable endpoint input. &
    {\textbf{[5]} Small state excluded\\by its setup closure};
 \node[term] (n6) at (7.0,-5.0)
    {\textbf{[6]} Stationary \(L^3\) state excluded\\by its setup closure};
-\node[term] (n7) at (7.0,-7.8)
+\node[term] (n7) at (7.0,-7.6)
    {\textbf{[7]} Uniformly \(L^3\)-tight state excluded\\by its setup closure};
-\node[term] (n8) at (7.0,-10.0)
+\node[term] (n8) at (7.0,-10.4)
    {\textbf{[8]} Selected structured/decay state excluded\\by its setup closure};
 
 \node[box] (n9) at (0,-10.2)
@@ -1382,7 +1375,7 @@ terminally indecomposable endpoint input. &
     \(V\in\calR_{\rm setup}(\calS)\)};
 \node[dec] (n10) at (0,-13.0)
    {\textbf{[10]} Exact affine-or-retained handoff};
-\node[term] (n11) at (7.0,-13.0)
+\node[term] (n11) at (7.0,-13.7)
    {\textbf{[11]} Affine/parasitic raw route closed\\
     no retained normalized representative};
 \node[box] (n12) at (0,-15.7)
@@ -1416,79 +1409,228 @@ antecedent, not an existence assertion.}
 \begin{landscape}
 \begin{figure}[H]
 \centering
-\resizebox{0.97\linewidth}{!}{%
+\resizebox{0.98\linewidth}{!}{%
 \begin{tikzpicture}[
    box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,
-      text width=2.65cm},
-   dec/.style={diamond,draw,aspect=2.5,align=center,inner sep=1.5pt,
-      text width=4.1cm},
-   term/.style={ellipse,draw,align=center,inner sep=3pt,text width=2.75cm},
+      text width=3.55cm},
+   dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,
+      text width=3.65cm},
+   term/.style={ellipse,draw,align=center,inner sep=3pt,text width=3.45cm},
+   route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,
+      text width=3.15cm},
    arrow/.style={-{Latex[length=2mm]},thick},
    edge/.style={font=\tiny,fill=white,inner sep=1pt,align=center},
    every node/.style={font=\scriptsize}
 ]
-\node[font=\small] (in13) at (0,7.1) {from [12]};
-\node[dec] (n13) at (0,5.3)
+\node[font=\small] (in13) at (0,10.8) {from [12]};
+\node[dec,text width=4.8cm] (n13) at (0,9.0)
    {\textbf{[13]} Which ordered refined state contains the current canonical representative?};
-\node[font=\small,align=center] (gfirst) at (-10.5,5.0)
-   {first five ordered states};
-\node[font=\small,align=center] (grest) at (5.0,5.0)
-   {remaining five ordered states};
 
-\node[font=\scriptsize,align=center] (c39) at (-9.0,3.6)
-   {\(\Cax\) selected\\continue at [39]};
-\node[box] (n15) at (-9.0,1.5)
-   {\textbf{[15]} \(\Crot\) reduced to a selected realized terminal profile};
-\node[box] (n16) at (-9.0,-0.9)
-   {\textbf{[16]} \(\Cstat\) reduced to a selected realized stationary terminal profile};
-\node[term] (n17) at (-9.0,-3.2)
-   {\textbf{[17]} \(\Caff\) leaves no retained normalized representative};
-\node[font=\scriptsize,align=center] (c98) at (-9.0,-5.2)
-   {\(\Clogdiff\) selected\\continue at [98]};
+% Declare the solid nodes in numerical order; coordinates place them in the
+% four vertical routes below.
+\node[box] (n14) at (-7.0,5.7)
+   {\textbf{[14]} \(\Crot\) reduced to a selected realized terminal profile};
+\node[box] (n15) at (2.2,5.7)
+   {\textbf{[15]} \(\Cstat\) reduced to a selected realized stationary terminal profile};
+\node[term] (n16) at (14.7,5.7)
+   {\textbf{[16]} \(\Caff\) leaves no retained normalized representative};
+\node[box] (n17) at (14.7,-5.8)
+   {\textbf{[17]} \(\Cgen\) enters its selected generic terminal extraction};
 
-\node[font=\scriptsize,align=center] (c112) at (7.5,3.6)
-   {\(\Cyoung\) selected\\continue at [112]};
-\node[font=\scriptsize,align=center] (c136a) at (7.5,1.5)
-   {\(\Chomcrit\) selected\\continue at [136]};
-\node[font=\scriptsize,align=center] (c136b) at (7.5,-0.7)
-   {\(\Clogper\) selected\\continue at [136]};
-\node[font=\scriptsize,align=center] (c136c) at (7.5,-2.9)
-   {\(\Capcrit\) selected\\continue at [136]};
-\node[box] (n23) at (7.5,-5.2)
-   {\textbf{[23]} \(\Cgen\) enters its selected generic terminal extraction};
-\coordinate (c15) at (-5.8,1.5);
-\coordinate (c16) at (-5.8,-0.9);
-\coordinate (c23) at (11.0,-5.2);
-\coordinate (gfmid) at (-13.0,4.3);
-\coordinate (grmid) at (3.0,4.3);
+% Axis route: the selected Cax state is resolved completely in this figure.
+\node[box] (n18) at (-15.0,5.7)
+   {\textbf{[18]} Axisymmetric bounded-circulation residual profile};
+\node[box] (n19) at (-15.0,3.9)
+   {\textbf{[19]} Centered angular-circulation equation};
+\node[box] (n20) at (-15.0,2.1)
+   {\textbf{[20]} One-dimensional killed radial absorption};
+\node[box] (n21) at (-15.0,0.3)
+   {\textbf{[21]} Axis-absorption Liouville theorem};
+\node[box] (n22) at (-15.0,-1.5)
+   {\textbf{[22]} No-swirl output lies in the already closed structured row};
+\node[term] (n23) at (-15.0,-3.6)
+   {\textbf{[23]} selected \(\Cax\) branch excluded};
+
+% R2 route.
+\node[box] (n24) at (-7.0,4.1)
+   {\textbf{[24]} Rotational relative-equilibrium profile};
+\node[box] (n25) at (-7.0,2.5)
+   {\textbf{[25]} Co-rotating stationary equation};
+\node[box] (n26) at (-7.0,0.9)
+   {\textbf{[26]} Coriolis Bernoulli identity};
+\node[box] (n27) at (-7.0,-0.7)
+   {\textbf{[27]} Localized Coriolis-flux identity};
+\node[box] (n28) at (-7.0,-2.3)
+   {\textbf{[28]} Non-small flux produces retained local velocity concentration};
+\node[dec] (n29) at (-7.0,-4.7)
+   {\textbf{[29]} Which Coriolis-flux reduction output occurs?};
+\node[box] (n30) at (-1.8,-7.5)
+   {\textbf{[30]} Selected realized rotational terminal profile};
+
+% R3 route.
+\node[box] (n31) at (2.2,4.1)
+   {\textbf{[31]} Degenerate stationary-hull retained profile};
+\node[box] (n32) at (2.2,2.5)
+   {\textbf{[32]} Admissible stationary phase space and hull realization};
+\node[box] (n33) at (2.2,0.9)
+   {\textbf{[33]} Centered scale reselection gives another Seregin limit};
+\node[box] (n34) at (2.2,-0.7)
+   {\textbf{[34]} Stationary-family degeneracy and exact-family consequences};
+\node[dec] (n35) at (2.2,-3.1)
+   {\textbf{[35]} Lower integrable row or retained stationary terminal carrier?};
+\node[box] (n36) at (7.4,-5.7)
+   {\textbf{[36]} Selected stationary profile retains unit velocity concentration};
+\node[box] (n37) at (7.4,-7.6)
+   {\textbf{[37]} Stationary-hull reduction to terminal stratification};
+
+% Dashed ellipses are visual references to the solid setup terminals in Part I.
+\node[route] (p6ii) at (-12.2,-7.5)
+   {\textbf{[6]} integrable lower row};
+\node[route] (p8ii) at (-7.0,-7.5)
+   {\textbf{[8]} structured lower row};
+\node[route] (p6iib) at (-3.0,-5.7)
+   {\textbf{[6]} stationary \(L^3\) lower row};
+\node[route] (p8iib) at (2.2,-5.7)
+   {\textbf{[8]} exact structured lower row};
+
+% The remaining-state rail is only a visual distributor for the seven cases.
+\node[font=\small,align=center] (grest) at (12.3,7.3)
+   {remaining seven ordered states};
+\coordinate (grtop) at (10.2,5.7);
+\coordinate (grbottom) at (10.2,-5.8);
+\node[font=\scriptsize,align=center] (c98) at (14.7,3.8)
+   {\(\Clogdiff\) selected\\continue at [85]};
+\node[font=\scriptsize,align=center] (c112) at (14.7,1.9)
+   {\(\Cyoung\) selected\\continue at [99]};
+\node[font=\scriptsize,align=center] (c136a) at (14.7,0.0)
+   {\(\Chomcrit\) selected\\continue at [125]};
+\node[font=\scriptsize,align=center] (c136b) at (14.7,-1.9)
+   {\(\Clogper\) selected\\continue at [125]};
+\node[font=\scriptsize,align=center] (c136c) at (14.7,-3.8)
+   {\(\Capcrit\) selected\\continue at [125]};
+\node[font=\scriptsize,align=center] (c23) at (14.7,-7.7)
+   {continue at [38]};
+
+\node[font=\small,align=center,text width=5.2cm] (out52) at (2.0,-10.0)
+   {selected retained outputs [30] and [37]\\continue at [52]};
 
 \draw[arrow] (in13)--(n13);
-\draw[arrow] (n13)--(gfirst); \draw[arrow] (n13)--(grest);
-\draw[arrow] (gfirst)--(gfmid); \draw[thick] (-13.0,4.3)--(-13.0,-5.2);
-\draw[arrow] (-13.0,3.6)--(c39); \draw[arrow] (-13.0,1.5)--(n15);
-\draw[arrow] (-13.0,-0.9)--(n16); \draw[arrow] (-13.0,-3.2)--(n17);
-\draw[arrow] (-13.0,-5.2)--(c98);
-\draw[arrow] (grest)--(grmid); \draw[thick] (3.0,4.3)--(3.0,-5.2);
-\draw[arrow] (3.0,3.6)--(c112); \draw[arrow] (3.0,1.5)--(c136a);
-\draw[arrow] (3.0,-0.7)--(c136b); \draw[arrow] (3.0,-2.9)--(c136c);
-\draw[arrow] (3.0,-5.2)--(n23);
-\draw[arrow] (n15)--node[edge,above]{continue at [44]}(c15);
-\draw[arrow] (n16)--node[edge,above]{continue at [51]}(c16);
-\draw[arrow] (n23)--node[edge,above]{continue at [58]}(c23);
+\draw[arrow] (n13)--node[edge,above,sloped]{\(\Cax\)}(n18);
+\draw[arrow] (n13)--node[edge,above,sloped]{\(\Crot\)}(n14);
+\draw[arrow] (n13)--node[edge,above,sloped]{\(\Cstat\)}(n15);
+\draw[arrow] (n13)--(grest); \draw[arrow] (grest)--(grtop);
+
+\draw[arrow] (n18)--(n19); \draw[arrow] (n19)--(n20);
+\draw[arrow] (n20)--(n21); \draw[arrow] (n21)--(n22); \draw[arrow] (n22)--(n23);
+
+\draw[arrow] (n14)--(n24); \draw[arrow] (n24)--(n25); \draw[arrow] (n25)--(n26);
+\draw[arrow] (n26)--(n27); \draw[arrow] (n27)--(n28); \draw[arrow] (n28)--(n29);
+\draw[arrow] (n29)--node[edge,above,sloped]{integrable}(p6ii);
+\draw[arrow] (n29)--node[edge,right]{structured}(p8ii);
+\draw[arrow] (n29)--node[edge,above,sloped]{retained terminal}(n30);
+
+\draw[arrow] (n15)--(n31); \draw[arrow] (n31)--(n32); \draw[arrow] (n32)--(n33);
+\draw[arrow] (n33)--(n34); \draw[arrow] (n34)--(n35);
+\draw[arrow] (n35)--node[edge,above,sloped]{integrable}(p6iib);
+\draw[arrow] (n35)--node[edge,right]{exact family}(p8iib);
+\draw[arrow] (n35)--node[edge,above,sloped]{retained carrier}(n36);
+\draw[arrow] (n36)--(n37);
+\draw[arrow] (n30.south)--(out52.west);
+\draw[arrow] (n37.south)--(out52.east);
+
+\draw[thick] (grtop)--(grbottom);
+\draw[arrow] (10.2,5.7)--(n16);
+\draw[arrow] (10.2,3.8)--(c98);
+\draw[arrow] (10.2,1.9)--(c112);
+\draw[arrow] (10.2,0.0)--(c136a);
+\draw[arrow] (10.2,-1.9)--(c136b);
+\draw[arrow] (10.2,-3.8)--(c136c);
+\draw[arrow] (10.2,-5.8)--(n17);
+\draw[arrow] (n17)--(c23);
 \end{tikzpicture}}
-\caption{Proof flow, Part II: the complete ordered refined selection at
-node \textbf{[13]}.  The two unnumbered headings only distribute the ten
-outgoing cases for readability.  They do not introduce states or hypotheses.
-Every unfinished selection continues to its displayed local module.}
+\caption{Proof flow, Part II: the complete ordered refined selection and its
+three lower-class modules.  The \(\Cax\) route closes at \textbf{[23]}; the
+retained R2 and R3 outputs meet only at the displayed continuation to
+\textbf{[52]}.  The remaining-state rail and the common continuation
+annotation are unnumbered layout aids, not states or hypotheses.  Neither R2
+nor R3 receives sequence-\(L^3\) as an entry hypothesis.}
 \label{fig:typeI-proof-flow-refined}
+\label{fig:typeI-proof-flow-axis}
+\label{fig:typeI-proof-flow-r2-r3}
 \end{figure}
 \end{landscape}
+\clearpage
+
+\begin{figure}[H]
+\centering
+\resizebox{0.83\textwidth}{!}{%
+\begin{tikzpicture}[
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=2.5pt,text width=8.0cm},
+dec/.style={diamond,draw,aspect=2.65,align=center,inner sep=1.4pt,text width=6.2cm},
+term/.style={ellipse,draw,align=center,inner sep=2.5pt,text width=6.0cm},
+route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,text width=6.0cm},
+arrow/.style={-{Latex[length=2mm]},thick},edge/.style={font=\scriptsize,fill=white,inner sep=1pt},
+every node/.style={font=\small}
+]
+\node[font=\small] (in58) at (0,8.8) {selected generic row from [17]};
+\node[box] (n38) at (0,7.6) {\textbf{[38]} Current selected generic profile with its realization ledger};
+\node[box] (n39) at (0,6.3) {\textbf{[39]} Covariant translations preserve the centered equation};
+\node[box] (n40) at (0,5.0) {\textbf{[40]} Semidirect covariant observer calculus};
+\node[box] (n41) at (0,3.7) {\textbf{[41]} Compact normalized local profile state space};
+\node[box] (n42) at (0,2.4) {\textbf{[42]} Pressure atlas on the current local chart};
+\node[box] (n43) at (0,1.1) {\textbf{[43]} Affine symmetry and pressure quotient};
+\node[box] (n44) at (0,-0.2) {\textbf{[44]} Closed non-affine oscillation functional};
+\node[dec] (n45) at (0,-2.2) {\textbf{[45]} Affine collapse or retained non-affine activity?};
+\node[route] (p17vii) at (-8.0,-4.5) {\textbf{[16]} affine/parasitic terminal};
+\node[box] (n46) at (0,-4.5) {\textbf{[46]} Compact normalized escaping covariant hull};
+\node[dec] (n47) at (0,-6.6) {\textbf{[47]} Tail-zero route or recurrent tail core?};
+\node[box] (n48) at (-5.5,-9.0) {\textbf{[48]} Tail-zero normalized route};
+\node[box] (n49) at (5.5,-8.4) {\textbf{[49]} Tail-minimal recurrent core};
+\node[box] (n50) at (5.5,-9.7) {\textbf{[50]} Chartwise pressure gradients in invariant averages};
+\node[box] (n51) at (5.5,-11.0) {\textbf{[51]} Recurrent-core rigidity supplies the terminal tail route};
+
+\node[font=\small,align=center] (in72external) at (-8.5,-13.4)
+   {selected terminal recentering\\from [30] or [37]};
+\node[box] (n52) at (0,-13.4) {\textbf{[52]} Selected parabolic recentering sequence};
+\node[box] (n53) at (0,-14.7) {\textbf{[53]} Combined parabolic--covariant descendant recentering};
+\node[box] (n54) at (0,-16.0) {\textbf{[54]} Raw atlas defect measure and active windows};
+\node[box] (n55) at (0,-17.3) {\textbf{[55]} Gauge compatibility and retained-velocity semicontinuity};
+\node[box] (n56) at (0,-18.6) {\textbf{[56]} First-generation local-window compactness};
+\node[dec] (n57) at (0,-20.6) {\textbf{[57]} Which retained-recentering alternative occurs?};
+\coordinate (c7724) at (-8.5,-23.2); \coordinate (c7778) at (-3.0,-23.2);
+\coordinate (c7790) at (3.0,-23.2); \coordinate (c7732) at (8.5,-23.2);
+
+\draw[arrow] (in58)--(n38); \draw[arrow] (n38)--(n39); \draw[arrow] (n39)--(n40);
+\draw[arrow] (n40)--(n41); \draw[arrow] (n41)--(n42); \draw[arrow] (n42)--(n43);
+\draw[arrow] (n43)--(n44); \draw[arrow] (n44)--(n45);
+\draw[arrow] (n45)--node[edge,above,sloped]{affine}(p17vii);
+\draw[arrow] (n45)--node[edge,right]{retained}(n46);
+\draw[arrow] (n46)--(n47);
+\draw[arrow] (n47)--node[edge,above,sloped]{tail zero}(n48);
+\draw[arrow] (n47)--node[edge,above,sloped]{recurrent}(n49);
+\draw[arrow] (n49)--(n50); \draw[arrow] (n50)--(n51);
+\draw[arrow] (n48)--(n52);
+\draw[arrow] (n51)--(n52);
+\draw[arrow] (in72external)--(n52);
+\draw[arrow] (n52)--(n53); \draw[arrow] (n53)--(n54); \draw[arrow] (n54)--(n55);
+\draw[arrow] (n55)--(n56); \draw[arrow] (n56)--(n57);
+\draw[arrow] (n57)--node[edge,above,sloped]{compact; to [58]}(c7724);
+\draw[arrow] (n57)--node[edge,above,sloped]{diffuse; continue at [64]}(c7778);
+\draw[arrow] (n57)--node[edge,above,sloped]{critical; to [76]}(c7790);
+\draw[arrow] (n57)--node[edge,above,sloped]{pressure; to [62]}(c7732);
+\end{tikzpicture}}
+\caption{Proof flow, Part III: covariant tail geometry, affine normalization,
+and first-generation retained recentering.  The internal routes [48] and [51]
+enter [52] directly; the unnumbered arrow supplies only the Part II inputs [30]
+and [37].  Pressure remains chartwise at [42] and [55].}
+\label{fig:typeI-proof-flow-tail-geometry}
+\end{figure}
 \clearpage
 
 \begin{landscape}
 \begin{figure}[H]
 \centering
-\resizebox{0.97\linewidth}{!}{%
+\resizebox{0.96\linewidth}{!}{%
 \begin{tikzpicture}[
    box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,
       text width=3.0cm},
@@ -1501,297 +1643,147 @@ Every unfinished selection continues to its displayed local module.}
    edge/.style={font=\tiny,fill=white,inner sep=1pt,align=center},
    every node/.style={font=\scriptsize}
 ]
-\node[font=\small,align=center] (in24) at (0,8.0)
-   {selected terminal datum from [77], with its realization ledger};
-\node[dec] (n24) at (0,6.1)
-   {\textbf{[24]} Which ordered terminal alternative is selected?};
+\node[font=\small,align=center] (in24) at (-4.0,9.8)
+   {selected terminal datum from [57], with its realization ledger};
+\node[dec] (n58) at (-4.0,8.2)
+   {\textbf{[58]} Which ordered terminal alternative is selected?};
 
-\node[dec] (n25) at (-9.0,3.2)
-   {\textbf{[25]} Which compact active alternative is selected?};
-\node[font=\scriptsize,align=center] (c2478) at (-5.0,3.2)
-   {diffuse (4)\\continue at [78]};
-\node[box] (n28) at (-1.0,3.2)
-   {\textbf{[28]} Pressure/noncompact datum on its own local chart};
-\node[font=\scriptsize,align=center] (c2490) at (3.0,3.2)
-   {critical tail (6)\\continue at [90]};
-\node[route] (p17a) at (7.0,3.2)
-   {\textbf{[17]} affine/parasitic terminal};
-\node[font=\scriptsize,align=center] (c24158) at (11.0,3.2)
-   {atomic (8)\\continue at [158]};
-\node[font=\scriptsize,align=center] (c28) at (-1.0,1.3)
-   {continue at [32]};
+\node[dec] (n59) at (-4.0,5.2)
+   {\textbf{[59]} Which compact active alternative is selected?};
+\node[dec] (n60) at (-4.0,2.0)
+   {\textbf{[60]} Iterated realized descendant:\\next selected outcome};
+\node[box] (n61) at (9.0,5.5)
+   {\textbf{[61]} Pressure/noncompact datum on its own local chart};
 
-\node[font=\scriptsize,align=center] (p25finite) at (-13.0,0.4)
-   {finite family\\continue at [154]};
-\node[dec] (n26) at (-9.0,-0.5)
-   {\textbf{[26]} Iterated realized descendant:\\next selected outcome};
-\node[font=\scriptsize,align=center] (p25chain) at (-5.0,0.4)
-   {infinite chain\\continue at [149]};
+% The direct critical input aggregates only the two routes named in the
+% terminal protocol.  Node [76] then carries that same selected datum to [77].
+\node[font=\small,align=center] (criticalin) at (-10.0,8.2)
+   {critical datum from [57]\\or alternative (6) from [58]};
+\node[box] (n76) at (-10.0,6.2)
+   {\textbf{[76]} Direct critical-tail route from [57] or [58]};
+\node[font=\scriptsize,align=center] (c77direct) at (-12.8,4.1)
+   {continue at [77]};
 
-\node[font=\scriptsize,align=center] (c2632) at (-14.3,-4.3)
-   {pressure\\continue at [32]};
-\node[font=\scriptsize,align=center] (p30a) at (-11.7,-4.3)
-   {finite family\\continue at [154]};
-\node[font=\scriptsize,align=center] (p31a) at (-9.1,-4.3)
-   {infinite chain\\continue at [149]};
-\node[font=\scriptsize,align=center] (p27a) at (-6.5,-4.3)
-   {diffuse/mixed\\continue at [78]};
-\node[font=\scriptsize,align=center] (p29a) at (-4.0,-4.3)
-   {critical tail\\continue at [90]};
-\node[route] (p17b) at (0,-4.3)
-   {\textbf{[17]} affine/parasitic terminal};
-\node[font=\scriptsize,align=center] (c2633) at (4.2,-4.3)
-   {atomic\\continue at [158]};
+% The two rails distribute displayed alternatives only; they introduce no
+% state, hypothesis, or extra branch.
+\node[font=\small,align=center] (rootrailhead) at (5.8,8.2)
+   {remaining four terminal alternatives};
+\coordinate (rootrailtop) at (5.0,6.8);
+\coordinate (rootrailbottom) at (5.0,1.6);
+\node[font=\scriptsize,align=center] (c2478) at (9.0,6.8)
+   {diffuse (4)\\continue at [64]};
+\node[route] (p17a) at (9.0,2.9)
+   {\textbf{[16]} affine/parasitic terminal};
+\node[font=\scriptsize,align=center] (c24158) at (9.0,1.6)
+   {atomic (8)\\continue at [147]};
 
-\node[font=\scriptsize,align=center] (in30) at (6.7,0.9)
-   {returned local closure\\from [156] or [157]};
-\node[term] (n30) at (6.7,-1.0)
-   {\textbf{[30]} Finite separated retained family excluded};
-\node[font=\scriptsize,align=center] (in31) at (11.7,0.9)
-   {returned local closure\\from [153]};
-\node[term] (n31) at (11.7,-1.0)
-   {\textbf{[31]} Infinite retained descendant chain excluded};
+% These two annotations aggregate already displayed incoming arrows.  They do
+% not replace any proof state: every numbered step of both branches follows.
+\node[font=\scriptsize,align=center] (chainin) at (-10.0,-0.4)
+   {infinite-chain selection\\from [59] or [60]};
+\node[font=\scriptsize,align=center] (finitein) at (-1.5,-0.4)
+   {finite-family selection\\from [59], [60], or [148]};
 
-\draw[arrow] (in24)--(n24);
-\draw[arrow] (n24)--node[edge,above,sloped]{compact active (1)--(3)}(n25);
-\draw[arrow] (n24)--(c2478); \draw[arrow] (n24)--(n28);
-\draw[arrow] (n24)--(c2490); \draw[arrow] (n24)--(p17a);
-\draw[arrow] (n24)--(c24158); \draw[arrow] (n28)--(c28);
-\draw[arrow] (n25)--(p25finite);
-\draw[arrow] (n25)--node[edge,right]{retained descendant}(n26);
-\draw[arrow] (n25)--(p25chain);
-\draw[arrow] (n26)--(c2632); \draw[arrow] (n26)--(p30a);
-\draw[arrow] (n26)--(p31a); \draw[arrow] (n26)--(p27a);
-\draw[arrow] (n26)--(p29a); \draw[arrow] (n26)--(p17b);
-\draw[arrow] (n26.east) to[out=0,in=180] (3.0,-2.7) -- (c2633);
-\draw[arrow] (in30)--(n30); \draw[arrow] (in31)--(n31);
-\end{tikzpicture}}
-\caption{Proof flow, Part III: the eight terminal alternatives and the
-acyclic exhaustion of the compact active route.  Node \textbf{[25]} is now
-drawn inside its parent selection at \textbf{[24]}; node \textbf{[26]} lists
-every outcome of an iterated realized descendant.  Nodes \textbf{[30]} and
-\textbf{[31]} are reached only through the displayed returned local closures.}
-\label{fig:typeI-proof-flow-terminal}
-\end{figure}
-\end{landscape}
-\clearpage
+\node[font=\small,align=center] (descrailhead) at (6.0,0.5)
+   {other descendant outcomes};
+\coordinate (descrailtop) at (5.0,-0.7);
+\coordinate (descrailbottom) at (5.0,-5.9);
+\node[font=\scriptsize,align=center] (c2632) at (9.0,-0.7)
+   {pressure};
+\node[font=\scriptsize,align=center] (p27a) at (9.0,-2.0)
+   {diffuse/mixed\\continue at [64]};
+\node[font=\scriptsize,align=center] (p29a) at (9.0,-3.3)
+   {critical tail\\continue at [77]};
+\node[route] (p17b) at (9.0,-4.6)
+   {\textbf{[16]} affine/parasitic terminal};
+\node[font=\scriptsize,align=center] (c2633) at (9.0,-5.9)
+   {atomic\\continue at [147]};
 
-\begin{figure}[H]
-\centering
-\resizebox{0.96\textwidth}{!}{%
-\begin{tikzpicture}[
-   box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,
-      text width=4.0cm},
-   dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,
-      text width=3.7cm},
-   term/.style={ellipse,draw,align=center,inner sep=3pt,text width=4.0cm},
-   route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,
-      text width=3.6cm},
-   arrow/.style={-{Latex[length=2mm]},thick},
-   edge/.style={font=\scriptsize,fill=white,inner sep=1pt,align=center}
-]
-\node[font=\small] (in32) at (-5.0,5.8) {from [26], [28], or [77]};
-\node[dec] (n32) at (-5.0,3.8)
-   {\textbf{[32]} Pressure/noncompact routing outcome};
-\node[font=\small] (in33) at (5.0,5.8) {from [160]};
-\node[box] (n33) at (5.0,3.8)
-   {\textbf{[33]} Selected realized terminally indecomposable profile};
-\node[box] (n34) at (5.0,1.4)
-   {\textbf{[34]} Backward sequence-\(L^3\) produced for this profile};
-\node[dec] (n35) at (5.0,-1.4)
-   {\textbf{[35]} Affine/parasitic endpoint or non-affine mild branch?};
-\node[box] (n36) at (5.0,-4.4)
-   {\textbf{[36]} Finite-shift bounded mild physical pullback\\
-    with the transported selected sequence};
-\node[term] (n37) at (-5.0,-4.5)
-   {\textbf{[37]} Recovered retained-velocity route closed\\
+% Complete infinite-chain branch.
+\node[box] (n141) at (-10.0,-1.9)
+   {\textbf{[141]} Realized infinite retained descendant chain};
+\node[box] (n142) at (-10.0,-3.3)
+   {\textbf{[142]} Closed retained-successor relation};
+\node[box] (n143) at (-10.0,-4.7)
+   {\textbf{[143]} Recurrence on the active path space};
+\node[box] (n144) at (-10.0,-6.1)
+   {\textbf{[144]} Recurrent path produces a compact retained core};
+\node[box] (n145) at (-10.0,-7.5)
+   {\textbf{[145]} No infinite retained concentration chain};
+\node[term] (n146) at (-10.0,-9.3)
+   {\textbf{[146]} Infinite retained descendant chain excluded};
+
+% Complete finite-family branch.
+\node[box] (n149) at (-1.5,-1.9)
+   {\textbf{[149]} Finite separated retained family};
+\node[dec] (n150) at (-1.5,-4.0)
+   {\textbf{[150]} Indecomposable component or retained chain?};
+\node[box] (n151) at (-4.0,-6.3)
+   {\textbf{[151]} Previously produced no-atomic conclusion closes this output};
+\node[box] (n152) at (1.0,-6.3)
+   {\textbf{[152]} Previously produced no-infinite-chain conclusion closes this output};
+\node[term] (n153) at (-1.5,-9.3)
+   {\textbf{[153]} Finite separated retained family excluded};
+
+% Complete chartwise pressure branch.  The unnumbered input annotation only
+% collects the three already displayed incoming routes; it carries no fact
+% beyond the selected pressure/noncompact datum and its own local chart.
+\node[font=\small,align=center] (pressurein) at (14.0,-0.7)
+   {pressure/noncompact datum\\from [57], [61], or [60]};
+\node[dec] (n62) at (14.0,-3.5)
+   {\textbf{[62]} Pressure/noncompact routing outcome};
+\node[route] (p17c) at (10.4,-9.3)
+   {\textbf{[16]} affine/parasitic terminal};
+\node[font=\scriptsize,align=center] (p27c) at (14.0,-9.3)
+   {diffuse/mixed\\continue at [64]};
+\node[font=\scriptsize,align=center] (p29c) at (17.0,-9.3)
+   {critical tail\\continue at [77]};
+\node[term] (n63) at (21.0,-9.3)
+   {\textbf{[63]} Recovered retained-velocity route closed\\
     by terminal stratification};
-\node[term] (n38) at (5.0,-7.4)
-   {\textbf{[38]} Endpoint Liouville gives zero, contradicting\\
-    this profile's retained velocity concentration};
 
-\node[route] (p17c) at (-9.5,0.4)
-   {\textbf{[17]} affine/parasitic terminal};
-\node[font=\scriptsize,align=center] (p27c) at (-8.0,-2.0)
-   {diffuse/mixed\\continue at [78]};
-\node[font=\scriptsize,align=center] (p29c) at (-1.0,0.4)
-   {critical tail\\continue at [90]};
-\node[route] (p17d) at (10.5,1.0)
-   {\textbf{[17]} affine/parasitic terminal};
-
-\draw[arrow] (in32) -- (n32);
-\draw[arrow] (n32) -- (p17c);
-\draw[arrow] (n32) -- (p27c);
-\draw[arrow] (n32) -- (p29c);
-\draw[arrow] (n32) -- (n37);
-
-\draw[arrow] (in33) -- (n33);
-\draw[arrow] (n33) -- (n34);
-\draw[arrow] (n34) -- (n35);
-\draw[arrow] (n35) -- (p17d);
-\draw[arrow] (n35) -- node[edge,right]{non-affine mild branch} (n36);
-\draw[arrow] (n36) -- (n38);
+\draw[arrow] (in24)--(n58);
+\draw[arrow] (n58)--node[edge,left]{compact active (1)--(3)}(n59);
+\draw[arrow] (n58.west) -- (criticalin.east);
+\draw[arrow] (criticalin) -- (n76);
+\draw[arrow] (n76) -- (c77direct);
+\draw[arrow] (n58)--(rootrailhead); \draw[arrow] (rootrailhead)--(rootrailtop);
+\draw[thick] (rootrailtop)--(rootrailbottom);
+\draw[arrow] (5.0,6.8)--(c2478); \draw[arrow] (5.0,5.5)--(n61);
+\draw[arrow] (5.0,2.9)--(p17a);
+\draw[arrow] (5.0,1.6)--(c24158);
+\draw[arrow] (n59)--node[edge,right]{retained descendant}(n60);
+\draw[arrow] (n59.west) -| node[edge,near start,above]{infinite chain} (chainin.north);
+\draw[arrow] (n59.east) -| node[edge,near start,above]{finite family} (finitein.north);
+\draw[arrow] (n60)--(chainin); \draw[arrow] (n60)--(finitein);
+\draw[arrow] (n60)--(descrailhead); \draw[arrow] (descrailhead)--(descrailtop);
+\draw[thick] (descrailtop)--(descrailbottom);
+\draw[arrow] (5.0,-0.7)--(c2632); \draw[arrow] (5.0,-2.0)--(p27a);
+\draw[arrow] (5.0,-3.3)--(p29a); \draw[arrow] (5.0,-4.6)--(p17b);
+\draw[arrow] (5.0,-5.9)--(c2633);
+\draw[arrow] (chainin)--(n141); \draw[arrow] (n141)--(n142);
+\draw[arrow] (n142)--(n143); \draw[arrow] (n143)--(n144);
+\draw[arrow] (n144)--(n145); \draw[arrow] (n145)--(n146);
+\draw[arrow] (finitein)--(n149); \draw[arrow] (n149)--(n150);
+\draw[arrow] (n150)--(n151); \draw[arrow] (n150)--(n152);
+\draw[arrow] (n151)--(n153); \draw[arrow] (n152)--(n153);
+\draw[arrow] (n61.east) -| (pressurein.north);
+\draw[arrow] (c2632.east) -- (pressurein.west);
+\draw[arrow] (pressurein) -- (n62);
+\draw[arrow] (n62) -- (p17c);
+\draw[arrow] (n62) -- (p27c);
+\draw[arrow] (n62) -- (p29c);
+\draw[arrow] (n62) -- (n63);
 \end{tikzpicture}}
-\caption{Proof flow, Part IV: chartwise pressure routing and endpoint input
-production.  Sequence-\(L^3\) is produced at node \textbf{[34]}, and
-finite-shift mildness is produced only on the non-affine branch at node
-\textbf{[36]}.  The terminal theorem and the final residual/setup assemblies
-are downstream consumers of the displayed branch closures.}
-\label{fig:typeI-proof-flow-endpoint}
-\end{figure}
-\clearpage
-
-\begin{figure}[H]
-\centering
-\resizebox{!}{0.76\textheight}{%
-\begin{tikzpicture}[
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,text width=5.4cm},
-dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,text width=4.6cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,text width=4.6cm},
-route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,text width=4.2cm},
-arrow/.style={-{Latex[length=2mm]},thick},every node/.style={font=\scriptsize}
-]
-\node[font=\small] (in39) at (0,5.8) {selected \(\Cax\) profile from [13]};
-\node[box] (n39) at (0,4.5) {\textbf{[39]} Axisymmetric bounded-circulation residual profile};
-\node[box] (n40) at (0,2.8) {\textbf{[40]} Centered angular-circulation equation};
-\node[box] (n41) at (0,1.1) {\textbf{[41]} One-dimensional killed radial absorption};
-\node[box] (n42) at (0,-0.6) {\textbf{[42]} Axis-absorption Liouville theorem};
-\node[box] (n43) at (0,-2.3) {\textbf{[43]} No-swirl output lies in the already closed structured row};
-\node[term] (n14) at (0,-4.2) {\textbf{[14]} selected \(\Cax\) branch excluded};
-\draw[arrow] (in39)--(n39);
-\draw[arrow] (n39)--(n40);
-\draw[arrow] (n40)--(n41);
-\draw[arrow] (n41)--(n42);
-\draw[arrow] (n42)--(n43);
-\draw[arrow] (n43)--(n14);
-\end{tikzpicture}}
-\caption{Proof flow, Part V: the complete axisymmetric bounded-circulation
-closure.  The terminal at \textbf{[14]} is reached only after the circulation
-equation, absorption lemma, and no-swirl routing have been produced.}
-\label{fig:typeI-proof-flow-axis}
-\end{figure}
-\clearpage
-
-\begin{landscape}
-\begin{figure}[H]
-\centering
-\resizebox{0.96\linewidth}{!}{%
-\begin{tikzpicture}[
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,text width=4.2cm},
-dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,text width=3.8cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,text width=3.6cm},
-route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,text width=3.4cm},
-arrow/.style={-{Latex[length=2mm]},thick},edge/.style={font=\tiny,fill=white,inner sep=1pt},
-every node/.style={font=\scriptsize}
-]
-\node[font=\small] (in44) at (-7.2,5.6) {selected \(\Crot\) profile from [15]};
-\node[box] (n44) at (-7.2,4.3) {\textbf{[44]} Rotational relative-equilibrium profile};
-\node[box] (n45) at (-7.2,2.7) {\textbf{[45]} Co-rotating stationary equation};
-\node[box] (n46) at (-7.2,1.1) {\textbf{[46]} Coriolis Bernoulli identity};
-\node[box] (n47) at (-7.2,-0.5) {\textbf{[47]} Localized Coriolis-flux identity};
-\node[box] (n48) at (-7.2,-2.1) {\textbf{[48]} Non-small flux produces retained local velocity concentration};
-\node[dec] (n49) at (-7.2,-4.2) {\textbf{[49]} Which Coriolis-flux reduction output occurs?};
-\node[route] (p6vi) at (-12.0,-6.6) {\textbf{[6]} integrable lower row};
-\node[route] (p8vi) at (-7.2,-6.6) {\textbf{[8]} structured lower row};
-\node[box] (n50) at (-2.2,-6.6) {\textbf{[50]} Selected realized rotational terminal profile};
-\coordinate (c5072) at (-2.2,-8.2);
-
-\node[font=\small] (in51) at (6.0,5.6) {selected \(\Cstat\) profile from [16]};
-\node[box] (n51) at (6.0,4.3) {\textbf{[51]} Degenerate stationary-hull retained profile};
-\node[box] (n52) at (6.0,2.7) {\textbf{[52]} Admissible stationary phase space and hull realization};
-\node[box] (n53) at (6.0,1.1) {\textbf{[53]} Centered scale reselection gives another Seregin limit};
-\node[box] (n54) at (6.0,-0.5) {\textbf{[54]} Stationary-family degeneracy and exact-family consequences};
-\node[dec] (n55) at (6.0,-2.7) {\textbf{[55]} Lower integrable row or retained stationary terminal carrier?};
-\node[route] (p6vib) at (1.0,-5.1) {\textbf{[6]} stationary \(L^3\) lower row};
-\node[route] (p8vib) at (6.0,-5.1) {\textbf{[8]} exact structured lower row};
-\node[box] (n56) at (11.0,-5.1) {\textbf{[56]} Selected stationary profile retains unit velocity concentration};
-\node[box] (n57) at (11.0,-6.9) {\textbf{[57]} Stationary-hull reduction to terminal stratification};
-\coordinate (c5772) at (11.0,-8.3);
-
-\draw[arrow] (in44)--(n44); \draw[arrow] (n44)--(n45); \draw[arrow] (n45)--(n46);
-\draw[arrow] (n46)--(n47); \draw[arrow] (n47)--(n48); \draw[arrow] (n48)--(n49);
-\draw[arrow] (n49)--node[edge,above,sloped]{integrable}(p6vi);
-\draw[arrow] (n49)--node[edge,right]{structured}(p8vi);
-\draw[arrow] (n49)--node[edge,above,sloped]{retained terminal}(n50);
-\draw[arrow] (n50)--node[right]{continue at [72]}(c5072);
-\draw[arrow] (in51)--(n51); \draw[arrow] (n51)--(n52); \draw[arrow] (n52)--(n53);
-\draw[arrow] (n53)--(n54); \draw[arrow] (n54)--(n55);
-\draw[arrow] (n55)--node[edge,above,sloped]{integrable}(p6vib);
-\draw[arrow] (n55)--node[edge,right]{exact family}(p8vib);
-\draw[arrow] (n55)--node[edge,above,sloped]{retained carrier}(n56);
-\draw[arrow] (n56)--(n57); \draw[arrow] (n57)--node[right]{continue at [72]}(c5772);
-\end{tikzpicture}}
-\caption{Proof flow, Part VI: the internal R2 and R3 reductions.  Neither
-row receives sequence-\(L^3\) as an entry hypothesis.  Each retained output
-continues to the common selected terminal-recentering protocol at [72].}
-\label{fig:typeI-proof-flow-r2-r3}
-\end{figure}
-\end{landscape}
-\clearpage
-
-\begin{landscape}
-\begin{figure}[H]
-\centering
-\resizebox{0.96\linewidth}{!}{%
-\begin{tikzpicture}[
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,text width=6.0cm},
-dec/.style={diamond,draw,aspect=2.65,align=center,inner sep=1.4pt,text width=5.4cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,text width=5.2cm},
-route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,text width=5.0cm},
-arrow/.style={-{Latex[length=2mm]},thick},edge/.style={font=\scriptsize,fill=white,inner sep=1pt},
-every node/.style={font=\small}
-]
-\node[font=\small] (in58) at (0,7.4) {selected generic row from [23]};
-\node[box] (n58) at (0,6.5) {\textbf{[58]} Current selected generic profile with its realization ledger};
-\node[box] (n59) at (0,5.55) {\textbf{[59]} Covariant translations preserve the centered equation};
-\node[box] (n60) at (0,4.60) {\textbf{[60]} Semidirect covariant observer calculus};
-\node[box] (n61) at (0,3.65) {\textbf{[61]} Compact normalized local profile state space};
-\node[box] (n62) at (0,2.70) {\textbf{[62]} Pressure atlas on the current local chart};
-\node[box] (n63) at (0,1.75) {\textbf{[63]} Affine symmetry and pressure quotient};
-\node[box] (n64) at (0,0.80) {\textbf{[64]} Closed non-affine oscillation functional};
-\node[dec] (n65) at (0,-0.75) {\textbf{[65]} Affine collapse or retained non-affine activity?};
-\node[route] (p17vii) at (-8.0,-2.45) {\textbf{[17]} affine/parasitic terminal};
-\node[box] (n66) at (0,-2.45) {\textbf{[66]} Compact normalized escaping covariant hull};
-\node[dec] (n67) at (0,-4.00) {\textbf{[67]} Tail-zero route or recurrent tail core?};
-\node[box] (n68) at (-8.0,-5.75) {\textbf{[68]} Tail-zero normalized route};
-\node[box] (n69) at (8.0,-5.35) {\textbf{[69]} Tail-minimal recurrent core};
-\node[box] (n70) at (8.0,-6.40) {\textbf{[70]} Chartwise pressure gradients in invariant averages};
-\node[box] (n71) at (8.0,-7.45) {\textbf{[71]} Recurrent-core rigidity supplies the terminal tail route};
-
-\node[font=\small,align=center] (in72external) at (-15.0,-9.15)
-   {selected terminal recentering\\from [50] or [57]};
-\node[box] (n72) at (0,-9.15) {\textbf{[72]} Selected parabolic recentering sequence};
-\node[box] (n73) at (0,-10.20) {\textbf{[73]} Combined parabolic--covariant descendant recentering};
-\node[box] (n74) at (0,-11.25) {\textbf{[74]} Raw atlas defect measure and active windows};
-\node[box] (n75) at (0,-12.30) {\textbf{[75]} Gauge compatibility and retained-velocity semicontinuity};
-\node[box] (n76) at (0,-13.35) {\textbf{[76]} First-generation local-window compactness};
-\node[dec] (n77) at (0,-14.95) {\textbf{[77]} Which retained-recentering alternative occurs?};
-\coordinate (c7724) at (-15.0,-17.10); \coordinate (c7778) at (-5.0,-17.10);
-\coordinate (c7790) at (5.0,-17.10); \coordinate (c7732) at (15.0,-17.10);
-
-\draw[arrow] (in58)--(n58); \draw[arrow] (n58)--(n59); \draw[arrow] (n59)--(n60);
-\draw[arrow] (n60)--(n61); \draw[arrow] (n61)--(n62); \draw[arrow] (n62)--(n63);
-\draw[arrow] (n63)--(n64); \draw[arrow] (n64)--(n65);
-\draw[arrow] (n65)--node[edge,above,sloped]{affine}(p17vii);
-\draw[arrow] (n65)--node[edge,right]{retained}(n66);
-\draw[arrow] (n66)--(n67);
-\draw[arrow] (n67)--node[edge,above,sloped]{tail zero}(n68);
-\draw[arrow] (n67)--node[edge,above,sloped]{recurrent}(n69);
-\draw[arrow] (n69)--(n70); \draw[arrow] (n70)--(n71);
-\draw[arrow] (n68)--(n72);
-\draw[arrow] (n71)--(n72);
-\draw[arrow] (in72external)--(n72);
-\draw[arrow] (n72)--(n73); \draw[arrow] (n73)--(n74); \draw[arrow] (n74)--(n75);
-\draw[arrow] (n75)--(n76); \draw[arrow] (n76)--(n77);
-\draw[arrow] (n77)--node[edge,above,sloped]{compact; to [24]}(c7724);
-\draw[arrow] (n77)--node[edge,above,sloped]{diffuse; continue at [78]}(c7778);
-\draw[arrow] (n77)--node[edge,above,sloped]{critical; continue at [90]}(c7790);
-\draw[arrow] (n77)--node[edge,above,sloped]{pressure; to [32]}(c7732);
-\end{tikzpicture}}
-\caption{Proof flow, Part VII: covariant tail geometry, affine normalization,
-and the first-generation retained-recentering protocol.  Each pressure datum
-remains on the chart produced at [62] or [75].}
-\label{fig:typeI-proof-flow-tail-geometry}
+\caption{Proof flow, Part IV: terminal selection and complete compact-active
+exhaustion.  Nodes \textbf{[141]}--\textbf{[146]} and
+\textbf{[149]}--\textbf{[153]} display the infinite-chain and finite-family
+closures in full; nodes \textbf{[62]}--\textbf{[63]} display the complete
+pressure/noncompact route on the chart that produces it.  Node \textbf{[76]}
+is the direct critical-tail bridge for the datum selected at \textbf{[57]} or
+\textbf{[58]}.  The finite-family input also includes \textbf{[148]}; the two
+rails and the two input annotations are only case distributors.}
+\label{fig:typeI-proof-flow-terminal}
 \end{figure}
 \end{landscape}
 \clearpage
@@ -1808,44 +1800,39 @@ arrow/.style={-{Latex[length=2mm]},thick},edge/.style={font=\tiny,fill=white,inn
 every node/.style={font=\scriptsize}
 ]
 \node[font=\small,align=center] (in78) at (0,6.0)
-   {diffuse or mixed selected datum\\from [24], [26], [32], or [77]};
-\node[box] (n78) at (0,4.7) {\textbf{[78]} Selected realized diffuse-defect chart};
-\node[box] (n79) at (0,3.1) {\textbf{[79]} Covariant observer compactification};
-\node[box] (n80) at (0,1.5) {\textbf{[80]} Diffuse-defect compactness on selected escaping windows};
-\node[box] (n81) at (0,-0.1) {\textbf{[81]} Finite diffuse-window selection};
-\node[box] (n82) at (0,-1.7) {\textbf{[82]} Support transfer for normalized diffuse defects};
-\node[box] (n83) at (0,-3.3) {\textbf{[83]} Countable defect observables and compact product closure};
-\node[box] (n84) at (0,-4.9) {\textbf{[84]} Amenable averaging of the realized defect};
-\node[box] (n85) at (0,-6.5) {\textbf{[85]} Recurrent diffuse-defect probability measure};
-\node[dec] (n86) at (0,-8.7) {\textbf{[86]} Which diffuse-defect trichotomy row occurs?};
-\node[box] (n87) at (-5.0,-11.0) {\textbf{[87]} Regenerated concentration contradicts prior concentration-set removal};
-\node[route] (p17viii) at (0,-11.0) {\textbf{[17]} affine/parasitic terminal};
-\node[box] (n88) at (5.0,-11.0) {\textbf{[88]} Nonzero recurrent critical diffuse tail};
-\node[term] (n27) at (-5.0,-12.7)
-   {\textbf{[27]} Diffuse or mixed compact--diffuse row excluded};
-\node[font=\scriptsize] (c8890) at (5.0,-12.7) {continue at [90]};
-\node[font=\small,align=center] (in89) at (6.2,6.0)
-   {direct critical route from [24] or [77]};
-\node[box] (n89) at (6.2,4.7) {\textbf{[89]} Direct critical-tail route from [77] or [24]};
-\node[font=\scriptsize] (c8990) at (6.2,3.0) {continue at [90]};
-\draw[arrow] (in78)--(n78); \draw[arrow] (n78)--(n79); \draw[arrow] (n79)--(n80);
-\draw[arrow] (n80)--(n81); \draw[arrow] (n81)--(n82); \draw[arrow] (n82)--(n83);
-\draw[arrow] (n83)--(n84); \draw[arrow] (n84)--(n85); \draw[arrow] (n85)--(n86);
-\draw[arrow] (n86)--node[edge,above,sloped]{D1}(n87); \draw[arrow] (n86)--node[edge,right]{D2}(p17viii);
-\draw[arrow] (n86)--node[edge,above,sloped]{D3}(n88); \draw[arrow] (n87)--(n27);
-\draw[arrow] (n88)--(c8890); \draw[arrow] (in89)--(n89); \draw[arrow] (n89)--(c8990);
+   {diffuse or mixed selected datum\\from [58], [60], [62], or [57]};
+\node[box] (n64) at (0,4.7) {\textbf{[64]} Selected realized diffuse-defect chart};
+\node[box] (n65) at (0,3.1) {\textbf{[65]} Covariant observer compactification};
+\node[box] (n66) at (0,1.5) {\textbf{[66]} Diffuse-defect compactness on selected escaping windows};
+\node[box] (n67) at (0,-0.1) {\textbf{[67]} Finite diffuse-window selection};
+\node[box] (n68) at (0,-1.7) {\textbf{[68]} Support transfer for normalized diffuse defects};
+\node[box] (n69) at (0,-3.3) {\textbf{[69]} Countable defect observables and compact product closure};
+\node[box] (n70) at (0,-4.9) {\textbf{[70]} Amenable averaging of the realized defect};
+\node[box] (n71) at (0,-6.5) {\textbf{[71]} Recurrent diffuse-defect probability measure};
+\node[dec] (n72) at (0,-8.7) {\textbf{[72]} Which diffuse-defect trichotomy row occurs?};
+\node[box] (n73) at (-5.0,-11.0) {\textbf{[73]} Regenerated concentration contradicts prior concentration-set removal};
+\node[route] (p17viii) at (0,-11.0) {\textbf{[16]} affine/parasitic terminal};
+\node[box] (n75) at (5.0,-11.0) {\textbf{[75]} Nonzero recurrent critical diffuse tail};
+\node[term] (n74) at (-5.0,-12.7)
+   {\textbf{[74]} Diffuse or mixed compact--diffuse row excluded};
+\node[font=\scriptsize] (c8890) at (5.0,-12.7) {continue at [77]};
+\draw[arrow] (in78)--(n64); \draw[arrow] (n64)--(n65); \draw[arrow] (n65)--(n66);
+\draw[arrow] (n66)--(n67); \draw[arrow] (n67)--(n68); \draw[arrow] (n68)--(n69);
+\draw[arrow] (n69)--(n70); \draw[arrow] (n70)--(n71); \draw[arrow] (n71)--(n72);
+\draw[arrow] (n72)--node[edge,above,sloped]{D1}(n73); \draw[arrow] (n72)--node[edge,right]{D2}(p17viii);
+\draw[arrow] (n72)--node[edge,above,sloped]{D3}(n75); \draw[arrow] (n73)--(n74);
+\draw[arrow] (n75)--(c8890);
 \end{tikzpicture}}
-\caption{Proof flow, Part VIII: diffuse-defect compactification and the exact
+\caption{Proof flow, Part V: diffuse-defect compactification and the exact
 D1--D3 trichotomy.  Regenerated concentration, affine collapse, and a critical
 diffuse tail are displayed separately.}
 \label{fig:typeI-proof-flow-diffuse}
 \end{figure}
 \clearpage
 
-\begin{landscape}
 \begin{figure}[H]
 \centering
-\resizebox{0.97\linewidth}{!}{%
+\resizebox{0.98\textwidth}{!}{%
 \begin{tikzpicture}[
 box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,text width=3.8cm},
 dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.4pt,text width=3.5cm},
@@ -1854,61 +1841,64 @@ route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,text width=3.2cm},
 arrow/.style={-{Latex[length=2mm]},thick},edge/.style={font=\tiny,fill=white,inner sep=1pt},
 every node/.style={font=\scriptsize}
 ]
-\node[font=\small,align=center] (in90) at (-11.0,5.8)
-   {selected critical-tail datum\\from [24], [26], [32], [77], [88], or [89]};
-\node[box] (n90) at (-11.0,4.5) {\textbf{[90]} Current realized critical-tail compactification datum};
-\node[box] (n91) at (-11.0,2.9) {\textbf{[91]} Compactness of the critical-tail compactification};
-\node[box] (n92) at (-11.0,1.3) {\textbf{[92]} Critical-tail support transfer};
-\node[box] (n93) at (-11.0,-0.3) {\textbf{[93]} Log-annular and Young-measure coordinates};
-\node[box] (n94) at (-11.0,-1.9) {\textbf{[94]} Chartwise pressure-gradient convergence};
-\node[box] (n95) at (-11.0,-3.5) {\textbf{[95]} Critical-tail Young balance with named defects};
-\node[box] (n96) at (-11.0,-5.1) {\textbf{[96]} Log-annular oscillation virial identity};
-\node[dec] (n97) at (-6.2,-5.1) {\textbf{[97]} Log escape or virial-tight recurrent equality?};
-\node[font=\small,align=center] (in98) at (-2.0,-9.3)
-   {direct selected log-diffuse branch from [13]};
-\node[box] (n98) at (-2.0,-7.2) {\textbf{[98]} Selected normalized log-window support profiles};
-\node[box] (n99) at (2.2,-7.2) {\textbf{[99]} Log-window support transfer};
-\node[box] (n100) at (6.4,-7.2) {\textbf{[100]} Renormalized log-window heredity};
-\node[box] (n101) at (10.6,-7.2) {\textbf{[101]} Log escape reduced to hidden-scale compactness};
-\coordinate (c101112) at (10.6,-8.8);
-\node[box] (n102) at (-2.0,-3.6) {\textbf{[102]} Macroscopic critical-tail blow-down};
-\node[box] (n103) at (2.2,-3.6) {\textbf{[103]} Critical-tail homogeneous-gauge bridge};
-\node[box] (n104) at (6.4,-3.6) {\textbf{[104]} Critical-tail compactification extraction};
-\node[dec] (n105) at (10.6,-3.6) {\textbf{[105]} Affine, pressure/noncompact, or retained tail?};
-\node[route] (p17ix) at (8.3,-0.5) {\textbf{[17]} affine terminal};
-\node[route] (p37ix) at (14.1,-0.5) {\textbf{[37]} chartwise pressure route closed};
-\node[box] (n106) at (15.2,-3.6) {\textbf{[106]} Retained tight critical-tail profile};
-\node[box] (n107) at (15.2,-5.4) {\textbf{[107]} Defect coordinates separated on this chart};
-\node[dec] (n108) at (15.2,-7.5) {\textbf{[108]} Young, pressure/viscous, or coherent output?};
-\node[font=\small,align=center] (in29) at (-10.0,-8.5)
-   {the route selected within [90]--[148]\\closes at its displayed local terminal};
-\node[term] (n29) at (-10.0,-10.4)
-   {\textbf{[29]} Selected critical-tail datum excluded};
-\node[term] (n109) at (11.4,-10.0) {\textbf{[109]} Pressure/viscous defect coordinates closed};
-\node[box] (n110) at (16.2,-10.0) {\textbf{[110]} Selected Young-variance branch};
-\node[box] (n111) at (20.8,-10.0) {\textbf{[111]} Selected coherent critical tail};
-\coordinate (c110112) at (16.2,-11.6); \coordinate (c111136) at (20.8,-11.6);
-\draw[arrow] (in90)--(n90); \draw[arrow] (n90)--(n91); \draw[arrow] (n91)--(n92);
-\draw[arrow] (n92)--(n93); \draw[arrow] (n93)--(n94); \draw[arrow] (n94)--(n95);
-\draw[arrow] (n95)--(n96); \draw[arrow] (n96)--(n97);
-\draw[arrow] (n97)--node[edge,above,sloped]{log escape}(n98); \draw[arrow] (in98)--(n98);
-\draw[arrow] (n98)--(n99);
-\draw[arrow] (n99)--(n100); \draw[arrow] (n100)--(n101); \draw[arrow] (n101)--node[right]{continue at [112]}(c101112);
-\draw[arrow] (n97)--node[edge,above]{tight}(n102); \draw[arrow] (n102)--(n103);
-\draw[arrow] (n103)--(n104); \draw[arrow] (n104)--(n105);
-\draw[arrow] (n105)--(p17ix); \draw[arrow] (n105)--(p37ix); \draw[arrow] (n105)--(n106);
-\draw[arrow] (n106)--(n107); \draw[arrow] (n107)--(n108);
-\draw[arrow] (in29)--(n29);
-\draw[arrow] (n108)--(n109); \draw[arrow] (n108)--(n110); \draw[arrow] (n108)--(n111);
-\draw[arrow] (n110)--node[right]{continue at [112]}(c110112);
-\draw[arrow] (n111)--node[right]{continue at [136]}(c111136);
+\node[font=\small,align=center] (in90) at (0,12.3)
+   {selected critical-tail datum from [60], [62], [75], or [76]\\
+    goal: exclude this datum by the routes below};
+\node[box] (n77) at (0,11.1) {\textbf{[77]} Current realized critical-tail compactification datum};
+\node[box] (n78) at (0,9.9) {\textbf{[78]} Compactness of the critical-tail compactification};
+\node[box] (n79) at (0,8.7) {\textbf{[79]} Critical-tail support transfer};
+\node[box] (n80) at (0,7.5) {\textbf{[80]} Log-annular and Young-measure coordinates};
+\node[box] (n81) at (0,6.3) {\textbf{[81]} Chartwise pressure-gradient convergence};
+\node[box] (n82) at (0,5.1) {\textbf{[82]} Critical-tail Young balance with named defects};
+\node[box] (n83) at (0,3.9) {\textbf{[83]} Log-annular oscillation virial identity};
+\node[dec] (n84) at (0,1.9) {\textbf{[84]} Log escape or virial-tight recurrent equality?};
+
+% This unnumbered annotation aggregates the two already named inputs of the
+% log-window branch; it is a layout aid, not a state or a new hypothesis.
+\node[font=\small,align=center] (login) at (-4.8,0.0)
+   {log-window datum from [84]\\or selected log-diffuse branch [13]};
+\node[box] (n85) at (-4.8,-1.3) {\textbf{[85]} Selected normalized log-window support profiles};
+\node[box] (n86) at (-4.8,-2.6) {\textbf{[86]} Log-window support transfer};
+\node[box] (n87) at (-4.8,-3.9) {\textbf{[87]} Renormalized log-window heredity};
+\node[box] (n88) at (-4.8,-5.2) {\textbf{[88]} Log escape reduced to hidden-scale compactness};
+\coordinate (c101112) at (-4.8,-6.7);
+
+\node[box] (n89) at (2.5,0.0) {\textbf{[89]} Macroscopic critical-tail blow-down};
+\node[box] (n90) at (2.5,-1.3) {\textbf{[90]} Critical-tail homogeneous-gauge bridge};
+\node[box] (n91) at (2.5,-2.6) {\textbf{[91]} Critical-tail compactification extraction};
+\node[dec] (n92) at (2.5,-4.6) {\textbf{[92]} Affine, pressure/noncompact, or retained tail?};
+\node[route] (p17ix) at (-2.3,-7.2) {\textbf{[16]} affine terminal};
+\node[route] (p37ix) at (3.0,-7.2) {\textbf{[63]} chartwise pressure route closed};
+\node[box] (n93) at (8.0,-7.2) {\textbf{[93]} Retained tight critical-tail profile};
+\node[box] (n94) at (8.0,-8.6) {\textbf{[94]} Defect coordinates separated on this chart};
+\node[dec] (n95) at (8.0,-10.7) {\textbf{[95]} Young, pressure/viscous, or coherent output?};
+\node[term] (n96) at (2.0,-13.2) {\textbf{[96]} Pressure/viscous defect coordinates closed};
+\node[box] (n97) at (8.0,-13.2) {\textbf{[97]} Selected Young-variance branch};
+\node[box] (n98) at (13.0,-13.2) {\textbf{[98]} Selected coherent critical tail};
+\coordinate (c110112) at (8.0,-14.7); \coordinate (c111136) at (13.0,-14.7);
+
+\draw[arrow] (in90)--(n77); \draw[arrow] (n77)--(n78); \draw[arrow] (n78)--(n79);
+\draw[arrow] (n79)--(n80); \draw[arrow] (n80)--(n81); \draw[arrow] (n81)--(n82);
+\draw[arrow] (n82)--(n83); \draw[arrow] (n83)--(n84);
+\draw[arrow] (n84)--node[edge,above,sloped]{log escape}(login);
+\draw[arrow] (login)--(n85); \draw[arrow] (n85)--(n86);
+\draw[arrow] (n86)--(n87); \draw[arrow] (n87)--(n88); \draw[arrow] (n88)--node[right]{continue at [99]}(c101112);
+\draw[arrow] (n84)--node[edge,above]{tight}(n89); \draw[arrow] (n89)--(n90);
+\draw[arrow] (n90)--(n91); \draw[arrow] (n91)--(n92);
+\draw[arrow] (n92)--(p17ix); \draw[arrow] (n92)--(p37ix); \draw[arrow] (n92)--(n93);
+\draw[arrow] (n93)--(n94); \draw[arrow] (n94)--(n95);
+\draw[arrow] (n95)--(n96); \draw[arrow] (n95)--(n97); \draw[arrow] (n95)--(n98);
+\draw[arrow] (n97)--node[right]{continue at [99]}(c110112);
+\draw[arrow] (n98)--node[right]{continue at [125]}(c111136);
 \end{tikzpicture}}
-\caption{Proof flow, Part IX: critical-tail compactification, virial routing,
+\caption{Proof flow, Part VI: critical-tail compactification, virial routing,
 and defect-coordinate classification.  Pressure alternatives are closed only
-on the chart that produces them.}
+on the chart that produces them.  The unnumbered log-window annotation only
+combines the two displayed inputs to node \textbf{[85]}.  The input states the
+goal of the routing, not an exclusion hypothesis; the complete exclusion is
+produced only after the displayed and named downstream closures.}
 \label{fig:typeI-proof-flow-critical-tail}
 \end{figure}
-\end{landscape}
 \clearpage
 
 \begin{landscape}
@@ -1923,72 +1913,73 @@ route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,text width=3.2cm},
 arrow/.style={-{Latex[length=2mm]},thick},edge/.style={font=\tiny,fill=white,inner sep=1pt},
 every node/.style={font=\scriptsize}
 ]
-% Four vertical rails display one proof route.  Their headings and continuation
-% annotations are unnumbered layout aids, not additional states or hypotheses.
-\node[font=\small,align=center] at (-12.0,8.5) {hidden-scale selection};
-\node[font=\small,align=center] (in112) at (-12.0,7.2)
-   {selected log-window or Young branch\\from [13], [101], or [110]};
-\node[box] (n112) at (-12.0,5.7) {\textbf{[112]} Current selected hidden-scale input};
-\node[box] (n113) at (-12.0,4.0) {\textbf{[113]} Hidden-scale variance obstruction};
-\node[box] (n114) at (-12.0,2.3) {\textbf{[114]} Multiscale affine oscillation};
-\node[box] (n115) at (-12.0,0.6) {\textbf{[115]} First bad mesoscopic scale};
-\node[box] (n116) at (-12.0,-1.1) {\textbf{[116]} Finite-overlap and translation control};
-\node[dec] (n117) at (-12.0,-3.5) {\textbf{[117]} Concentration, affine collapse, or mesoscopic radius?};
-\node[term] (n118) at (-16.8,-6.3) {\textbf{[118]} Earlier concentration contradicts first-bad selection};
-\node[route] (p17x) at (-12.0,-6.3) {\textbf{[17]} affine/parasitic terminal};
-\node[box] (n119) at (-7.2,-6.3) {\textbf{[119]} Minimal-scale blow-down equation};
-\node[font=\tiny,align=center] (c120) at (-7.2,-8.0) {continue at [120]};
+% Two vertical panels display one proof route.  Each panel is continuous from
+% top to bottom; the sole inter-panel annotation records the compact-chart
+% handoff from [111] to [112] and is not an additional state or hypothesis.
+\node[font=\small,align=center] at (-10.0,8.6)
+   {hidden-scale selection and minimal-scale pressure};
+\node[font=\small,align=center] (in99) at (-10.0,7.5)
+   {selected log-window or Young branch\\from [13], [88], or [97]};
+\node[box] (n99) at (-10.0,6.4) {\textbf{[99]} Current selected hidden-scale input};
+\node[box] (n100) at (-10.0,5.25) {\textbf{[100]} Hidden-scale variance obstruction};
+\node[box] (n101) at (-10.0,4.1) {\textbf{[101]} Multiscale affine oscillation};
+\node[box] (n102) at (-10.0,2.95) {\textbf{[102]} First bad mesoscopic scale};
+\node[box] (n103) at (-10.0,1.8) {\textbf{[103]} Finite-overlap and translation control};
+\node[dec] (n104) at (-10.0,-0.05) {\textbf{[104]} Concentration, affine collapse, or mesoscopic radius?};
+\node[term] (n105) at (-15.0,-2.25) {\textbf{[105]} Earlier concentration contradicts first-bad selection};
+\node[box] (n106) at (-10.0,-2.25) {\textbf{[106]} Minimal-scale blow-down equation};
+\node[route] (p17x) at (-5.0,-2.25) {\textbf{[16]} affine/parasitic terminal};
+\node[box] (n107) at (-10.0,-3.45) {\textbf{[107]} Local energy inequality under blow-down};
+\node[box] (n108) at (-10.0,-4.6) {\textbf{[108]} Minimal-scale quotient formulation};
+\node[box] (n109) at (-10.0,-5.75) {\textbf{[109]} Riesz covariance and harmonic remainder control};
+\node[box] (n110) at (-10.0,-6.9) {\textbf{[110]} Normalized pressure representation};
+\node[dec] (n111) at (-10.0,-8.75) {\textbf{[111]} Affine pressure coefficient or compact chart?};
+\node[route] (p17xb) at (-14.0,-10.9) {\textbf{[16]} affine/parasitic terminal};
+\node[font=\tiny,align=center] (c112) at (-6.0,-10.9)
+   {compact chart:\\continue at [112]};
 
-\node[font=\small,align=center] at (-4.0,8.5) {minimal-scale pressure route};
-\node[font=\small,align=center] (in120) at (-4.0,7.2) {continuation from [119]};
-\node[box] (n120) at (-4.0,5.7) {\textbf{[120]} Local energy inequality under blow-down};
-\node[box] (n121) at (-4.0,4.0) {\textbf{[121]} Minimal-scale quotient formulation};
-\node[box] (n122) at (-4.0,2.3) {\textbf{[122]} Riesz covariance and harmonic remainder control};
-\node[box] (n123) at (-4.0,0.6) {\textbf{[123]} Normalized pressure representation};
-\node[dec] (n124) at (-4.0,-1.9) {\textbf{[124]} Affine pressure coefficient or compact chart?};
-\node[route] (p17xb) at (-6.1,-4.8) {\textbf{[17]} affine/parasitic terminal};
-\node[font=\tiny,align=center] (c125) at (-1.9,-4.8) {compact chart:\\continue at [125]};
+\node[font=\small,align=center] at (10.0,8.6)
+   {compact-chart variance and closure};
+\node[font=\small,align=center] (in112) at (10.0,7.5)
+   {compact-chart continuation from [111]};
+\node[box] (n112) at (10.0,6.4) {\textbf{[112]} Scaled pressure and pressure--velocity compactness};
+\node[box] (n113) at (10.0,5.1) {\textbf{[113]} Actual pressure in the minimal-scale energy inequality};
+\node[box] (n114) at (10.0,3.8) {\textbf{[114]} Homogeneous-gauge compactness};
+\node[box] (n115) at (10.0,2.5) {\textbf{[115]} Variance invariance and support transfer};
+\node[box] (n116) at (10.0,1.2) {\textbf{[116]} Coherent barycenter renormalization};
+\node[box] (n117) at (10.0,-0.1) {\textbf{[117]} Barycenter equation and variance inequality};
+\node[box] (n118) at (10.0,-1.4) {\textbf{[118]} Bounded ancient variance Liouville theorem};
+\node[box] (n119) at (10.0,-2.7) {\textbf{[119]} Minimal-scale blow-downs are strongly compact};
+\node[box] (n120) at (10.0,-4.0) {\textbf{[120]} Minimal mesoscopic-scale reduction};
+\node[box] (n121) at (10.0,-5.3) {\textbf{[121]} No hidden-scale variance for the selected realized defect};
+\node[dec] (n122) at (10.0,-7.3) {\textbf{[122]} Was the selected input log-diffuse or Young?};
+\node[term] (n123) at (6.3,-9.7) {\textbf{[123]} log-diffuse terminal};
+\node[term] (n124) at (13.7,-9.7) {\textbf{[124]} Young terminal};
 
-\node[font=\small,align=center] at (4.0,8.5) {compact-chart variance route};
-\node[font=\small,align=center] (in125) at (4.0,7.2) {compact-chart continuation from [124]};
-\node[box] (n125) at (4.0,5.7) {\textbf{[125]} Scaled pressure and pressure--velocity compactness};
-\node[box] (n126) at (4.0,4.0) {\textbf{[126]} Actual pressure in the minimal-scale energy inequality};
-\node[box] (n127) at (4.0,2.3) {\textbf{[127]} Homogeneous-gauge compactness};
-\node[box] (n128) at (4.0,0.6) {\textbf{[128]} Variance invariance and support transfer};
-\node[box] (n129) at (4.0,-1.1) {\textbf{[129]} Coherent barycenter renormalization};
-\node[box] (n130) at (4.0,-2.8) {\textbf{[130]} Barycenter equation and variance inequality};
-\node[font=\tiny,align=center] (c131) at (4.0,-4.6) {continue at [131]};
-
-\node[font=\small,align=center] at (12.0,8.5) {variance closure};
-\node[font=\small,align=center] (in131) at (12.0,7.2) {continuation from [130]};
-\node[box] (n131) at (12.0,5.7) {\textbf{[131]} Bounded ancient variance Liouville theorem};
-\node[box] (n132) at (12.0,4.0) {\textbf{[132]} Minimal-scale blow-downs are strongly compact};
-\node[box] (n133) at (12.0,2.3) {\textbf{[133]} Minimal mesoscopic-scale reduction};
-\node[box] (n134) at (12.0,0.6) {\textbf{[134]} No hidden-scale variance for the selected realized defect};
-\node[dec] (n135) at (12.0,-1.9) {\textbf{[135]} Was the selected input log-diffuse or Young?};
-\node[term] (n18) at (9.3,-4.8) {\textbf{[18]} log-diffuse terminal};
-\node[term] (n19) at (14.7,-4.8) {\textbf{[19]} Young terminal};
+\draw[arrow] (in99)--(n99); \draw[arrow] (n99)--(n100); \draw[arrow] (n100)--(n101);
+\draw[arrow] (n101)--(n102); \draw[arrow] (n102)--(n103); \draw[arrow] (n103)--(n104);
+\draw[arrow] (n104)--node[edge,above,sloped]{concentration}(n105);
+\draw[arrow] (n104)--node[edge,left]{mesoscopic radius}(n106);
+\draw[arrow] (n104)--node[edge,above,sloped]{affine}(p17x);
+\draw[arrow] (n106)--(n107); \draw[arrow] (n107)--(n108); \draw[arrow] (n108)--(n109);
+\draw[arrow] (n109)--(n110); \draw[arrow] (n110)--(n111);
+\draw[arrow] (n111)--node[edge,above,sloped]{affine coefficient}(p17xb);
+\draw[arrow] (n111)--(c112);
 \draw[arrow] (in112)--(n112); \draw[arrow] (n112)--(n113); \draw[arrow] (n113)--(n114);
 \draw[arrow] (n114)--(n115); \draw[arrow] (n115)--(n116); \draw[arrow] (n116)--(n117);
-\draw[arrow] (n117)--node[edge,left]{concentration}(n118);
-\draw[arrow] (n117)--node[edge,left]{affine}(p17x);
-\draw[arrow] (n117)--node[edge,right]{mesoscopic radius}(n119);
-\draw[arrow] (n119)--(c120);
-\draw[arrow] (in120)--(n120); \draw[arrow] (n120)--(n121); \draw[arrow] (n121)--(n122);
-\draw[arrow] (n122)--(n123); \draw[arrow] (n123)--(n124);
-\draw[arrow] (n124)--node[edge,left]{affine coefficient}(p17xb);
-\draw[arrow] (n124)--(c125);
-\draw[arrow] (in125)--(n125); \draw[arrow] (n125)--(n126); \draw[arrow] (n126)--(n127);
-\draw[arrow] (n127)--(n128); \draw[arrow] (n128)--(n129); \draw[arrow] (n129)--(n130);
-\draw[arrow] (n130)--(c131);
-\draw[arrow] (in131)--(n131); \draw[arrow] (n131)--(n132); \draw[arrow] (n132)--(n133);
-\draw[arrow] (n133)--(n134); \draw[arrow] (n134)--(n135);
-\draw[arrow] (n135)--node[edge,left]{log}(n18);
-\draw[arrow] (n135)--node[edge,right]{Young}(n19);
+\draw[arrow] (n117)--(n118); \draw[arrow] (n118)--(n119); \draw[arrow] (n119)--(n120);
+\draw[arrow] (n120)--(n121); \draw[arrow] (n121)--(n122);
+\draw[arrow] (n122)--node[edge,above,sloped]{log}(n123);
+\draw[arrow] (n122)--node[edge,above,sloped]{Young}(n124);
 \end{tikzpicture}}
-\caption{Proof flow, Part X: the complete minimal-mesoscopic-scale pressure
-and variance argument.  The pressure representation is chartwise, and the
-log/Young closures appear only after no hidden-scale variance is produced.}
+\caption{Proof flow, Part VII: the complete minimal-mesoscopic-scale pressure
+and variance argument, displayed as two top-down diagrams.  The left diagram
+runs continuously from \textbf{[99]} through \textbf{[111]}, and the right
+diagram runs continuously from \textbf{[112]} through the terminal split at
+\textbf{[122]}.  Their sole handoff is the compact-chart output
+\textbf{[111]}--\textbf{[112]}.  The pressure representation is chartwise,
+and the log/Young closures appear only after no hidden-scale variance is
+produced.}
 \label{fig:typeI-proof-flow-hidden-scale}
 \end{figure}
 \end{landscape}
@@ -2004,87 +1995,90 @@ term/.style={ellipse,draw,align=center,inner sep=3pt,text width=3.5cm},
 route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,text width=3.3cm},
 arrow/.style={-{Latex[length=2mm]},thick},every node/.style={font=\scriptsize}
 ]
-\node[font=\small] (in136) at (0,7.7) {selected coherent tail from [13] or [111]};
-\node[box] (n136) at (0,6.2) {\textbf{[136]} Current realized coherent critical tail};
-\node[box] (n137) at (0,4.5) {\textbf{[137]} Bounded velocity gauges for the realized blow-down};
-\node[dec] (n138) at (0,2.2) {\textbf{[138]} Bounded-origin realization or routed lower branch?};
-\node[term] (n139) at (-5.0,-0.5) {\textbf{[139]} Domain-realization failure routed to an already closed row};
-\node[box] (n140) at (5.0,-0.5) {\textbf{[140]} Bounded-origin realization of the coherent tail};
-\node[dec] (n141) at (5.0,-3.0) {\textbf{[141]} Amplitude-normalized heredity survives?};
-\node[term] (n142) at (1.0,-5.6) {\textbf{[142]} Heredity failure routed by its named local alternative};
-\node[box] (n143) at (9.0,-5.6) {\textbf{[143]} Realized amplitude-normalized log-hull heredity};
-\node[box] (n144) at (9.0,-7.6) {\textbf{[144]} Realized coherent log-hull ready for classification};
-\node[dec] (n148) at (9.0,-10.0) {\textbf{[148]} Which coherent logarithmic type occurs?};
-\node[box] (n145) at (3.0,-12.8) {\textbf{[145]} Homogeneous-tail bounded-origin incompatibility};
-\node[box] (n146) at (9.0,-12.8) {\textbf{[146]} Log-periodic bounded-origin incompatibility};
-\node[box] (n147) at (15.0,-12.8) {\textbf{[147]} Aperiodic log-hull minimality incompatibility};
-\node[term] (n20) at (3.0,-15.2) {\textbf{[20]} homogeneous terminal};
-\node[term] (n21) at (9.0,-15.2) {\textbf{[21]} log-periodic terminal};
-\node[term] (n22) at (15.0,-15.2) {\textbf{[22]} aperiodic terminal};
-\draw[arrow] (in136)--(n136); \draw[arrow] (n136)--(n137); \draw[arrow] (n137)--(n138);
-\draw[arrow] (n138)--(n139); \draw[arrow] (n138)--(n140); \draw[arrow] (n140)--(n141);
-\draw[arrow] (n141)--(n142); \draw[arrow] (n141)--(n143); \draw[arrow] (n143)--(n144);
-\draw[arrow] (n144)--(n148); \draw[arrow] (n148)--(n145); \draw[arrow] (n148)--(n146);
-\draw[arrow] (n148)--(n147); \draw[arrow] (n145)--(n20); \draw[arrow] (n146)--(n21);
-\draw[arrow] (n147)--(n22);
+\node[font=\small] (in136) at (0,7.7) {selected coherent tail from [13] or [98]};
+\node[box] (n125) at (0,6.2) {\textbf{[125]} Current realized coherent critical tail};
+\node[box] (n126) at (0,4.5) {\textbf{[126]} Bounded velocity gauges for the realized blow-down};
+\node[dec] (n127) at (0,2.2) {\textbf{[127]} Bounded-origin realization or routed lower branch?};
+\node[term] (n128) at (-5.0,-0.5) {\textbf{[128]} Domain-realization failure routed to an already closed row};
+\node[box] (n129) at (5.0,-0.5) {\textbf{[129]} Bounded-origin realization of the coherent tail};
+\node[dec] (n130) at (5.0,-3.0) {\textbf{[130]} Amplitude-normalized heredity survives?};
+\node[term] (n131) at (1.0,-5.6) {\textbf{[131]} Heredity failure routed by its named local alternative};
+\node[box] (n132) at (9.0,-5.6) {\textbf{[132]} Realized amplitude-normalized log-hull heredity};
+\node[box] (n133) at (9.0,-7.6) {\textbf{[133]} Realized coherent log-hull ready for classification};
+\node[dec] (n134) at (9.0,-10.0) {\textbf{[134]} Which coherent logarithmic type occurs?};
+\node[box] (n135) at (3.0,-12.8) {\textbf{[135]} Homogeneous-tail bounded-origin incompatibility};
+\node[box] (n136) at (9.0,-12.8) {\textbf{[136]} Log-periodic bounded-origin incompatibility};
+\node[box] (n137) at (15.0,-12.8) {\textbf{[137]} Aperiodic log-hull minimality incompatibility};
+\node[term] (n138) at (3.0,-15.2) {\textbf{[138]} homogeneous terminal};
+\node[term] (n139) at (9.0,-15.2) {\textbf{[139]} log-periodic terminal};
+\node[term] (n140) at (15.0,-15.2) {\textbf{[140]} aperiodic terminal};
+\draw[arrow] (in136)--(n125); \draw[arrow] (n125)--(n126); \draw[arrow] (n126)--(n127);
+\draw[arrow] (n127)--(n128); \draw[arrow] (n127)--(n129); \draw[arrow] (n129)--(n130);
+\draw[arrow] (n130)--(n131); \draw[arrow] (n130)--(n132); \draw[arrow] (n132)--(n133);
+\draw[arrow] (n133)--(n134); \draw[arrow] (n134)--(n135); \draw[arrow] (n134)--(n136);
+\draw[arrow] (n134)--(n137); \draw[arrow] (n135)--(n138); \draw[arrow] (n136)--(n139);
+\draw[arrow] (n137)--(n140);
 \end{tikzpicture}}
-\caption{Proof flow, Part XI: bounded-origin realization and the three
+\caption{Proof flow, Part VIII: bounded-origin realization and the three
 coherent critical-tail closures.  The homogeneous, log-periodic, and
 aperiodic outputs remain distinct through their terminal contradictions.}
 \label{fig:typeI-proof-flow-coherent}
 \end{figure}
 \clearpage
 
-\begin{landscape}
 \begin{figure}[H]
 \centering
-\resizebox{0.95\linewidth}{!}{%
+\resizebox{!}{0.77\textheight}{%
 \begin{tikzpicture}[
-box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,text width=4.0cm},
-dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.4pt,text width=3.6cm},
-term/.style={ellipse,draw,align=center,inner sep=3pt,text width=3.5cm},
-route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,text width=3.3cm},
-arrow/.style={-{Latex[length=2mm]},thick},edge/.style={font=\tiny,fill=white,inner sep=1pt},
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,text width=5.2cm},
+dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.4pt,text width=4.5cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,text width=5.0cm},
+route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,text width=4.2cm},
+arrow/.style={-{Latex[length=2mm]},thick},edge/.style={font=\scriptsize,fill=white,inner sep=1pt},
 every node/.style={font=\scriptsize}
 ]
-\node[font=\small,align=center] (in149) at (-9.0,5.4)
-   {selected infinite-chain route from [25] or [26]};
-\node[box] (n149) at (-9.0,4.0) {\textbf{[149]} Realized infinite retained descendant chain};
-\node[box] (n150) at (-9.0,2.3) {\textbf{[150]} Closed retained-successor relation};
-\node[box] (n151) at (-9.0,0.6) {\textbf{[151]} Recurrence on the active path space};
-\node[box] (n152) at (-9.0,-1.1) {\textbf{[152]} Recurrent path produces a compact retained core};
-\node[box] (n153) at (-9.0,-2.8) {\textbf{[153]} No infinite retained concentration chain};
-\node[route] (p31xii) at (-9.0,-4.8) {\textbf{[31]} infinite-chain terminal};
+\node[font=\small] (in147) at (0,10.6) {single/atomic route from [58] or [60]};
+\node[box] (n147) at (0,9.0)
+   {\textbf{[147]} Selected single retained terminal profile after routed lower alternatives};
+\node[dec] (n148) at (0,6.2)
+   {\textbf{[148]} Does a retained concentrating tail limit remain?};
+\node[font=\scriptsize,align=center] (c149) at (-5.0,3.2)
+   {yes: finite separated family\\continue at [149] in Part IV};
+\node[box] (n154) at (4.5,3.2)
+   {\textbf{[154]} Terminally indecomposable realized profile};
+\node[box] (n155) at (4.5,1.0)
+   {\textbf{[155]} Selected realized terminally indecomposable profile};
+\node[box] (n156) at (4.5,-1.2)
+   {\textbf{[156]} Backward sequence-\(L^3\) produced for this profile};
+\node[dec] (n157) at (4.5,-4.0)
+   {\textbf{[157]} Affine/parasitic endpoint or non-affine mild branch?};
+\node[route] (p17d) at (-1.5,-7.0)
+   {\textbf{[16]} affine/parasitic terminal};
+\node[box] (n158) at (5.5,-7.0)
+   {\textbf{[158]} Finite-shift bounded mild physical pullback\\
+    with the transported selected sequence};
+\node[term] (n159) at (5.5,-10.0)
+   {\textbf{[159]} Endpoint Liouville gives zero, contradicting\\
+    this profile's retained velocity concentration};
 
-\node[font=\small,align=center] (in154) at (0,5.4)
-   {selected finite separated family from [25], [26], or [159]};
-\node[box] (n154) at (0,4.0) {\textbf{[154]} Finite separated retained family};
-\node[dec] (n155) at (0,1.8) {\textbf{[155]} Indecomposable component or retained chain?};
-\node[box] (n156) at (-2.4,-0.8) {\textbf{[156]} Previously produced no-atomic conclusion closes this output};
-\node[box] (n157) at (2.4,-0.8) {\textbf{[157]} Previously produced no-infinite-chain conclusion closes this output};
-\node[route] (p30xii) at (0,-3.3) {\textbf{[30]} finite-family terminal};
-
-\node[font=\small] (in158) at (9.0,5.4) {single/atomic route from [24] or [26]};
-\node[box] (n158) at (9.0,4.0) {\textbf{[158]} Selected single retained terminal profile after routed lower alternatives};
-\node[dec] (n159) at (9.0,1.8) {\textbf{[159]} Does a retained concentrating tail limit remain?};
-\node[box] (n160) at (9.0,-0.8) {\textbf{[160]} Terminally indecomposable realized profile};
-\coordinate (c16033) at (9.0,-2.6);
-
-\draw[arrow] (in149)--(n149); \draw[arrow] (n149)--(n150); \draw[arrow] (n150)--(n151);
-\draw[arrow] (n151)--(n152); \draw[arrow] (n152)--(n153); \draw[arrow] (n153)--(p31xii);
-\draw[arrow] (in154)--(n154); \draw[arrow] (n154)--(n155); \draw[arrow] (n155)--(n156);
-\draw[arrow] (n155)--(n157); \draw[arrow] (n156)--(p30xii); \draw[arrow] (n157)--(p30xii);
-\draw[arrow] (in158)--(n158); \draw[arrow] (n158)--(n159);
-\draw[arrow] (n159)--node[edge,above]{yes; continue at [154]}(n154);
-\draw[arrow] (n159)--node[edge,right]{no}(n160); \draw[arrow] (n160)--node[right]{continue at [33]}(c16033);
+\draw[arrow] (in147)--(n147); \draw[arrow] (n147)--(n148);
+\draw[arrow] (n148)--node[edge,above,sloped]{yes}(c149);
+\draw[arrow] (n148)--node[edge,above,sloped]{no}(n154);
+\draw[arrow] (n154)--(n155); \draw[arrow] (n155)--(n156);
+\draw[arrow] (n156)--(n157); \draw[arrow] (n157)--(p17d);
+\draw[arrow] (n157)--node[edge,right]{non-affine mild branch}(n158);
+\draw[arrow] (n158)--(n159);
 \end{tikzpicture}}
-\caption{Proof flow, Part XII: recurrence, finite separated-family exclusion,
-and production of the terminally indecomposable input.  Sequence-\(L^3\) and
-mildness are still downstream: they are produced at [34] and [36] only after
-the route reaches [33].}
+\caption{Proof flow, Part IX: the complete single/atomic and endpoint route.
+The yes branch at \textbf{[148]} enters the fully displayed finite-family
+branch at \textbf{[149]} in Part IV.  On the no branch, sequence-\(L^3\) is
+produced for the selected realized profile at \textbf{[156]}, and finite-shift
+mildness is produced only on the non-affine branch at \textbf{[158]}.  The
+endpoint theorem and the final residual/setup assemblies are downstream
+consumers of the displayed closures.}
 \label{fig:typeI-proof-flow-recurrence}
+\label{fig:typeI-proof-flow-endpoint}
 \end{figure}
-\end{landscape}
 \clearpage
 
 \subsection{Node-by-node audit table}
@@ -2159,478 +2153,475 @@ Ordered selection [13].\\
 \relax
 [13] & Ten-state ordered refined selection. &
 \Cref{def:refined-decomposition,eq:complete-residual-decomposition}. &
-[14]--[23].\\
+[14]--[18], [85], [99], or [125].\\
 \relax
-[14] & Current profile selected into \(\Cax\). &
-\Cref{thm:R1-exclusion}. &
-Axisymmetric branch contradiction.\\
-\relax
-[15] & Current profile selected into \(\Crot\). &
+[14] & Current profile selected into \(\Crot\). &
 \Cref{prop:R2-reduction-to-terminal}. &
-Localized rotational reduction [44].\\
+Localized rotational reduction [24].\\
 \relax
-[16] & Current profile selected into \(\Cstat\). &
+[15] & Current profile selected into \(\Cstat\). &
 \Cref{prop:R3-stationary-hull-reduction,prop:R3S-R3-terminal-reduction}. &
-Stationary-hull reselection [51].\\
+Stationary-hull reselection [31].\\
 \relax
-[17] & Current representative selected into \(\Caff\). &
+[16] & Current representative selected into \(\Caff\). &
 \Cref{thm:affine-normalization-dichotomy,thm:oscillatory-entry-normalization}. &
 No retained representative.\\
 \relax
-[18] & Current realized log-diffuse defect and its selected windows. &
-\Cref{lem:log-window-support-transfer,lem:renormalized-log-window-heredity,cor:log-diffuse-branch-exclusion}. &
-Selected defect excluded.\\
-\relax
-[19] & Current realized Young or pressure/viscous defect datum. &
-\Cref{thm:no-hidden-scale-variance-realized-defects,lem:critical-tail-defect-coordinate-closure,cor:young-branch-exclusion}. &
-Selected datum excluded.\\
-\relax
-[20] & Current realized homogeneous coherent tail. &
-\Cref{thm:bounded-origin-realization-coherent-tails,cor:coherent-critical-tail-branch-closure}. &
-Selected tail excluded.\\
-\relax
-[21] & Current realized log-periodic coherent tail. &
-\Cref{thm:realized-critical-tail-rigidity,cor:coherent-critical-tail-branch-closure}. &
-Selected tail excluded.\\
-\relax
-[22] & Current realized aperiodic coherent tail. &
-\Cref{thm:realized-critical-tail-rigidity,cor:coherent-critical-tail-branch-closure}. &
-Selected tail excluded.\\
-\relax
-[23] & Current profile selected into \(\Cgen\). &
+[17] & Current profile selected into \(\Cgen\). &
 \Cref{thm:generic-terminal-exhaustion}. &
-Covariant tail and recentering route [58].\\
+Covariant tail and recentering route [38].\\
 \relax
-[24] & Eight terminal alternatives for the selected realized extraction. &
+[18] & Selected axisymmetric bounded-circulation profile. &
+\Cref{def:refined-decomposition,thm:R1-exclusion}. & Circulation equation [19].\\
+\relax
+[19] & Centered angular-circulation equation. &
+\Cref{lem:centered-circulation-equation}. & Killed absorption [20].\\
+\relax
+[20] & One-dimensional killed radial absorption. &
+\Cref{lem:one-dimensional-killed-radial-absorption}. & Axis Liouville [21].\\
+\relax
+[21] & Axis-absorption Liouville output. &
+\Cref{lem:axis-absorption-liouville}. & No-swirl routing [22].\\
+\relax
+[22] & No-swirl output in the closed structured row. &
+\Cref{thm:R1-exclusion}. & Terminal [23].\\
+\relax
+[23] & Current profile selected into \(\Cax\). &
+\Cref{thm:R1-exclusion}. &
+Axisymmetric branch contradiction.\\
+\relax
+[24] & Selected rotational relative-equilibrium profile. &
+\Cref{def:R2-relative-profile-safe,prop:R2-reduction-to-terminal}. & Co-rotating equation [25].\\
+\relax
+[25] & Co-rotating stationary equation. &
+\Cref{lem:co-rotating-equation-safe}. & Bernoulli identity [26].\\
+\relax
+[26] & Coriolis Bernoulli identity. &
+\Cref{lem:R2-coriolis-bernoulli}. & Localized flux [27].\\
+\relax
+[27] & Localized Coriolis-flux identity. &
+\Cref{lem:R2-coriolis-flux-localization}. & Active concentration [28].\\
+\relax
+[28] & Non-small flux produces retained local velocity concentration. &
+\Cref{lem:R2-annular-flux-active-concentration}. & Reduction test [29].\\
+\relax
+[29] & Exhaustive local Coriolis-flux reduction. &
+\Cref{lem:R2-flux-reduction-dichotomy,prop:R2-reduction-to-terminal}. &
+Lower terminals [6]/[8] or [30].\\
+\relax
+[30] & Selected realized rotational terminal profile. &
+\Cref{prop:R2-reduction-to-terminal}. & Common recentering interface [52].\\
+\relax
+[31] & Selected degenerate stationary-hull profile. &
+\Cref{def:R3-active-class}. & Phase-space realization [32].\\
+\relax
+[32] & Stationary phase space and hull realization. &
+\Cref{def:R3-stationary-phase-space,def:R3-stationary-family}. & Scale reselection [33].\\
+\relax
+[33] & Centered scale reselection produces a Seregin limit. &
+\Cref{lem:R3-hull-is-seregin}. & Family degeneracy [34].\\
+\relax
+[34] & Stationary-family degeneracy and exact-family consequences. &
+\Cref{lem:R3-family-kernel,lem:R3-family-constrained-stationary,cor:R3-exact-family-subcase}. & Test [35].\\
+\relax
+[35] & Lower integrable/exact row or retained stationary carrier. &
+\Cref{prop:R3-stationary-hull-reduction,prop:R3-L3-subcase}. &
+Lower terminals [6]/[8] or [36].\\
+\relax
+[36] & Selected stationary Seregin limit retains unit velocity concentration. &
+\Cref{thm:R3-no-attainable-degenerate-family,thm:R3S-terminal-theorem}. & Reduction [37].\\
+\relax
+[37] & Stationary-hull reduction to terminal stratification. &
+\Cref{prop:R3S-R3-terminal-reduction}. & Common recentering interface [52].\\
+\relax
+[38] & Selected generic profile with its fixed realization ledger. &
+\Cref{def:R4-profile-main,thm:generic-terminal-exhaustion}. & Covariance [39].\\
+\relax
+[39] & Covariant translation invariance. &
+\Cref{def:covariant-translations,lem:covariant-translation-invariance}. & Observer calculus [40].\\
+\relax
+[40] & Semidirect covariant observer calculus. &
+\Cref{def:spacetime-covariant-action,lem:semidirect-covariance,thm:covariant-observer-calculus}. & State space [41].\\
+\relax
+[41] & Compact normalized local profile state space. &
+\Cref{def:terminal-state-space,lem:state-space-local-compactness,lem:compact-normalized-state-space}. & Pressure atlas [42].\\
+\relax
+[42] & Pressure representative on the current local chart. &
+\Cref{def:pressure-gauge-affine-quotient,lem:typeI-pressure-atlas-compatibility}. & Affine quotient [43].\\
+\relax
+[43] & Affine symmetry and pressure quotient. &
+\Cref{def:affine-symmetry,lem:affine-symmetry,lem:homogeneous-gauges-are-affine-stratum}. & Activity [44].\\
+\relax
+[44] & Closed non-affine oscillation functional. &
+\Cref{thm:closed-nonaffine-activity,cor:compact-normalized-activity-set}. & Affine test [45].\\
+\relax
+[45] & Affine collapse versus retained non-affine activity. &
+\Cref{thm:affine-normalization-dichotomy}. & [16] or [46].\\
+\relax
+[46] & Compact normalized escaping covariant hull. &
+\Cref{def:escaping-covariant-hull,thm:escaping-covariant-hull-compactness,lem:escaping-covariant-hull-invariance}. & Tail test [47].\\
+\relax
+[47] & Tail-zero route versus recurrent tail core. &
+\Cref{def:R4-tail-strata,prop:tail-dichotomy}. & [48] or [49].\\
+\relax
+[48] & Tail-zero normalized route. &
+\Cref{prop:tail-dichotomy}. & Recentring interface [52].\\
+\relax
+[49] & Tail-minimal recurrent core. &
+\Cref{def:tail-minimal-core}. & Pressure averages [50].\\
+\relax
+[50] & Pressure gradients in invariant local averages. &
+\Cref{lem:recurrent-core-pressure-gauges}. & Core rigidity [51].\\
+\relax
+[51] & Recurrent profile tail-core rigidity. &
+\Cref{thm:recurrent-tail-core-rigidity}. & Recentring interface [52].\\
+\relax
+[52] & Selected parabolic recentering sequence. &
+\Cref{def:parabolic-recentering-sequence}. & Combined recentering [53].\\
+\relax
+[53] & Combined parabolic--covariant descendant recentering. &
+\Cref{def:combined-raw-covariant-recentering}. & Raw measures [54].\\
+\relax
+[54] & Raw atlas defect measure and active windows. &
+\Cref{def:terminal-measures}. & Gauge/velocity semicontinuity [55].\\
+\relax
+[55] & Gauge compatibility and retained-velocity semicontinuity. &
+\Cref{lem:gauge-compatibility}. & Local-window compactness [56].\\
+\relax
+[56] & First-generation local-window compactness. &
+\Cref{def:first-generation-local-window-condition,lem:first-generation-local-window-compactness}. & Alternative test [57].\\
+\relax
+[57] & Compact, diffuse, critical, or pressure recentering alternative. &
+\Cref{lem:ancient-profile-covariant-compactness,lem:escaping-first-generation-alternatives,lem:retained-recentering-alternatives}. &
+[58], [64], [77], or [62].\\
+\relax
+[58] & Eight terminal alternatives for the selected realized extraction. &
 \Cref{thm:terminal-stratification}; for the generic owner,
 \Cref{thm:generic-terminal-exhaustion}. &
-[25], [28], [17], [78], [90], or [158].\\
+[59], [61], [16], [64], [77], or [147].\\
 \relax
-[25] & Compact active alternatives: descendant, finite family, or chain. &
+[59] & Compact active alternatives: descendant, finite family, or chain. &
 \Cref{thm:terminal-stratification,lem:closed-active-locus-single-finite-chain}. &
-[26], [154], or [149].\\
+[60], [149], or [141].\\
 \relax
-[26] & Iterated retained descendant with realization and heredity. &
+[60] & Iterated retained descendant with realization and heredity. &
 \Cref{thm:descendant-heredity,thm:active-path-space-recurrence,thm:terminal-stratification}. &
-[154], [149], [78], [90], [17], [32], or [158].\\
+[149], [141], [64], [77], [16], [62], or [147].\\
 \relax
-[27] & Diffuse or mixed compact--diffuse selected row. &
-\Cref{thm:terminal-inactive-exclusion,thm:diffuse-defect-trichotomy,thm:no-mixed-compact-diffuse}. &
-Selected row excluded.\\
-\relax
-[28] & Pressure/noncompact datum on its own local chart. &
+[61] & Pressure/noncompact datum on its own local chart. &
 \Cref{lem:retained-recentering-alternatives,lem:escaping-retained-recentering-routing,lem:no-pressure-only-retained-profile}. &
-Routing decision [32].\\
+Routing decision [62].\\
 \relax
-[29] & Selected critical-tail datum. &
-\Cref{thm:realized-critical-tail-rigidity,cor:critical-tail-exclusion-complete}. &
-Selected datum excluded.\\
-\relax
-[30] & Selected finite separated retained family. &
-\Cref{thm:no-finite-separated-profile-family}. &
-Selected family excluded.\\
-\relax
-[31] & Selected infinite retained descendant chain. &
-\Cref{thm:compact-active-descendant}. &
-Selected chain excluded.\\
-\relax
-[32] & Pressure/noncompact routing outcome. &
+[62] & Pressure/noncompact routing outcome. &
 \Cref{lem:no-pressure-only-retained-profile,lem:escaping-retained-recentering-routing}. &
-[17], [78], [90], or recovered-velocity terminal [37].\\
+[16], [64], [77], or recovered-velocity terminal [63].\\
 \relax
-[33] & Remaining selected single retained profile. &
-\Cref{prop:no-multi-implies-atomic}. &
-Terminal indecomposable state [34].\\
-\relax
-[34] & Backward sequence-\(L^3\) for the selected terminal profile. &
-\Cref{lem:atomic-sequence-L3}. &
-Endpoint branch decision [35].\\
-\relax
-[35] & Affine/parasitic or non-affine mild endpoint branch. &
-\Cref{thm:mildness-inheritance-main}. &
-[17] or [36].\\
-\relax
-[36] & Finite-shift bounded mild pullback and transported selected sequence. &
-\Cref{prop:bounded-mild-stability,lem:no-atomic-active}. &
-Endpoint contradiction [38].\\
-\relax
-[37] & Retained velocity recovered from the pressure/product route. &
+[63] & Retained velocity recovered from the pressure/product route. &
 \Cref{thm:terminal-stratification}. &
 Selected terminal input excluded.\\
 \relax
-[38] & Endpoint zero conclusion contradicts the retained obstruction of the
+[64] & Selected realized diffuse-defect chart. &
+\Cref{def:observer-compactification,thm:diffuse-defect-compactness}. & Observer compactification [65].\\
+\relax
+[65] & Covariant observer compactification. &
+\Cref{def:observer-compactification}. & Diffuse compactness [66].\\
+\relax
+[66] & Diffuse-defect compactness on escaping windows. &
+\Cref{thm:diffuse-defect-compactness}. & Window selection [67].\\
+\relax
+[67] & Finite diffuse-window selection. &
+\Cref{lem:finite-diffuse-window-selection}. & Support transfer [68].\\
+\relax
+[68] & Support transfer for the normalized diffuse defect. &
+\Cref{lem:diffuse-defect-support-transfer}. & Observable closure [69].\\
+\relax
+[69] & Countable defect observables and compact product closure. &
+\Cref{def:diffuse-defect-observables,thm:diffuse-defect-compactification-construction}. & Averaging [70].\\
+\relax
+[70] & Amenable averaging for the selected realized defect. &
+\Cref{prop:amenable-averaging-realized-diffuse-defects}. & Recurrence [71].\\
+\relax
+[71] & Recurrent diffuse-defect probability measure. &
+\Cref{thm:recurrent-diffuse-defect-measure}. & Trichotomy [72].\\
+\relax
+[72] & Exact regenerated/affine/critical diffuse trichotomy. &
+\Cref{thm:diffuse-defect-trichotomy}. & [73], [16], or [75].\\
+\relax
+[73] & Regenerated concentration after concentration-set removal. &
+\Cref{thm:diffuse-defect-trichotomy,thm:no-mixed-compact-diffuse}. & Diffuse terminal [74].\\
+\relax
+[74] & Diffuse or mixed compact--diffuse selected row. &
+\Cref{thm:terminal-inactive-exclusion,thm:diffuse-defect-trichotomy,thm:no-mixed-compact-diffuse}. &
+Selected row excluded.\\
+\relax
+[75] & Nonzero recurrent critical diffuse tail. &
+\Cref{thm:diffuse-defect-trichotomy}. & Critical compactification [77].\\
+\relax
+[76] & Direct critical-tail route from terminal recentering. &
+\Cref{lem:escaping-retained-recentering-routing,thm:terminal-exhaustion-main}. & Critical compactification [77].\\
+\relax
+[77] & Current realized critical-tail datum; the routing goal is to exclude this
+selected datum. &
+\Cref{def:critical-diffuse-tail-strata,thm:critical-tail-compactification-extraction}. & Compactification [78].\\
+\relax
+[78] & Compactness of the critical-tail compactification. &
+\Cref{thm:critical-tail-compactification-compactness}. & Support transfer [79].\\
+\relax
+[79] & Critical-tail support transfer. &
+\Cref{lem:critical-tail-support-transfer}. & Critical coordinates [80].\\
+\relax
+[80] & Log-annular and Young-measure coordinates. &
+\Cref{def:log-annular-compactification,def:young-measure-convergence}. & Pressure convergence [81].\\
+\relax
+[81] & Distributional pressure-gradient convergence on the selected critical chart. &
+\Cref{def:critical-pressure-gradient-convergence}. & Young balance [82].\\
+\relax
+[82] & Critical-tail Young balance with named pressure/viscous defects. &
+\Cref{lem:critical-tail-young-log-transport}. & Virial identity [83].\\
+\relax
+[83] & Log-annular oscillation virial identity. &
+\Cref{lem:log-annular-oscillation-virial}. & Equality test [84].\\
+\relax
+[84] & Log escape versus virial-tight recurrent equality. &
+\Cref{def:scale-critical-virial-tight-subhull,lem:recurrent-virial-equality-reduction}. & [85] or [89].\\
+\relax
+[85] & Selected normalized log-window support profiles. &
+\Cref{def:log-window-descendant,lem:log-window-descendant-selection}. & Support transfer [86].\\
+\relax
+[86] & Log-window support transfer. &
+\Cref{lem:log-window-support-transfer}. & Heredity [87].\\
+\relax
+[87] & Renormalized log-window heredity. &
+\Cref{lem:renormalized-log-window-heredity}. & Hidden-scale reduction [88].\\
+\relax
+[88] & Logarithmic escape reduced to hidden-scale compactness. &
+\Cref{thm:log-diffuse-from-hidden-scale}. & Hidden-scale input [99].\\
+\relax
+[89] & Macroscopic critical-tail blow-down. &
+\Cref{def:macroscopic-critical-tail-blowdown}. & Gauge bridge [90].\\
+\relax
+[90] & Critical-tail homogeneous-gauge bridge. &
+\Cref{lem:critical-tail-homogeneous-gauge-bridge}. & Extraction [91].\\
+\relax
+[91] & Critical-tail compactification extraction. &
+\Cref{thm:critical-tail-compactification-extraction}. & Routing test [92].\\
+\relax
+[92] & Affine, pressure/noncompact, or retained critical-tail route. &
+\Cref{thm:critical-tail-compactification-extraction}. & [16], [63], or [93].\\
+\relax
+[93] & Retained tight critical-tail profile. &
+\Cref{thm:critical-tail-compactification-extraction}. & Defect separation [94].\\
+\relax
+[94] & Defect coordinates separated on the current chart. &
+\Cref{def:young-defect-critical-tail-branch,lem:critical-tail-defect-coordinate-routing}. & Test [95].\\
+\relax
+[95] & Young, pressure/viscous, or coherent critical output. &
+\Cref{lem:critical-tail-defect-coordinate-routing,cor:coherent-critical-tail-extraction}. & [96]--[98].\\
+\relax
+[96] & Selected pressure/viscous defect coordinates. &
+\Cref{lem:no-pure-viscous-defect-tight-dirac,lem:no-pressure-defect-tight-dirac,lem:critical-tail-defect-coordinate-routing}. & Branch contradiction.\\
+\relax
+[97] & Selected Young-variance branch. &
+\Cref{def:young-defect-critical-tail-branch}. & Hidden-scale input [99].\\
+\relax
+[98] & Selected coherent critical tail. &
+\Cref{cor:coherent-critical-tail-extraction}. & Coherent realization [125].\\
+\relax
+[99] & Current selected log-window or Young hidden-scale input. &
+\Cref{def:hidden-scale-variance,lem:hidden-variance-young-obstruction}. & Variance [100].\\
+\relax
+[100] & Hidden-scale variance obstruction for this selected datum. &
+\Cref{def:hidden-scale-variance,lem:hidden-variance-young-obstruction}. & Oscillation [101].\\
+\relax
+[101] & Multiscale affine oscillation. &
+\Cref{def:multiscale-affine-oscillation}. & First bad scale [102].\\
+\relax
+[102] & Minimal first-bad mesoscopic oscillation scale. &
+\Cref{def:first-bad-mesoscopic-scale,lem:h2-failure-first-bad-scale}. & Overlap control [103].\\
+\relax
+[103] & Finite-overlap and spacetime translation control. &
+\Cref{lem:finite-overlap-affine-oscillation,lem:spacetime-finite-overlap-translation}. & Translation test [104].\\
+\relax
+[104] & Concentration, affine collapse, or mesoscopic-radius alternative. &
+\Cref{lem:translation-defect-to-bad-radius}. & [105], [16], or [106].\\
+\relax
+[105] & Earlier concentration contradicts first-bad selection. &
+\Cref{lem:translation-defect-to-bad-radius,lem:h2-failure-first-bad-scale}. & Branch contradiction.\\
+\relax
+[106] & Minimal-scale blow-down equation. &
+\Cref{def:first-bad-spatial-blowdown,lem:first-bad-blowdown-equation}. & Local energy [107].\\
+\relax
+[107] & Local energy inequality under spatial/logarithmic blow-down. &
+\Cref{lem:local-energy-blow-down}. & Quotient [108].\\
+\relax
+[108] & Minimal-scale quotient formulation. &
+\Cref{lem:first-bad-quotient-formulation}. & Pressure structure [109].\\
+\relax
+[109] & Riesz covariance and harmonic-remainder control. &
+\Cref{lem:whole-space-riesz-pressure-covariance,lem:local-harmonic-remainders-affine}. & Representation [110].\\
+\relax
+[110] & Normalized pressure representation with blow-down coefficient. &
+\Cref{prop:normalized-pressure-representation}. & Coefficient test [111].\\
+\relax
+[111] & Affine pressure coefficient versus compact pressure chart. &
+\Cref{lem:affine-pressure-coefficient-dichotomy}. & [16] or [112].\\
+\relax
+[112] & Scaled pressure and pressure--velocity compactness. &
+\Cref{lem:scaled-pressure-compactness-affine,lem:pressure-velocity-product-convergence,lem:first-bad-pressure-compactness}. & Actual pressure [113].\\
+\relax
+[113] & Actual pressure in the minimal-scale energy inequality. &
+\Cref{lem:actual-pressure-minimal-scale-energy}. & Gauge compactness [114].\\
+\relax
+[114] & Compactness modulo homogeneous gauges. &
+\Cref{lem:homogeneous-gauge-compactness}. & Variance transfer [115].\\
+\relax
+[115] & Variance invariance and Young-defect support transfer. &
+\Cref{lem:variance-homogeneous-shift,lem:young-variance-support-transfer}. & Barycenter [116].\\
+\relax
+[116] & Coherent barycenter renormalization. &
+\Cref{lem:coherent-barycenter-renormalization}. & Variance equation [117].\\
+\relax
+[117] & Barycenter equation and variance inequality. &
+\Cref{lem:first-bad-young-variance}. & Variance Liouville [118].\\
+\relax
+[118] & Bounded ancient variance Liouville theorem. &
+\Cref{lem:bounded-variance-liouville}. & Strong compactness [119].\\
+\relax
+[119] & Minimal-scale blow-downs are strongly compact. &
+\Cref{lem:first-bad-strong-compactness}. & Mesoscopic reduction [120].\\
+\relax
+[120] & Minimal mesoscopic oscillation-scale reduction. &
+\Cref{thm:first-bad-mesoscopic-reduction}. & No hidden variance [121].\\
+\relax
+[121] & No hidden-scale variance for this realized defect. &
+\Cref{thm:no-hidden-scale-variance-realized-defects}. & Owner test [122].\\
+\relax
+[122] & Log-diffuse versus Young owner of the selected hidden-scale input. &
+\Cref{cor:log-diffuse-branch-exclusion,cor:young-branch-exclusion}. & [123] or [124].\\
+\relax
+[123] & Current realized log-diffuse defect and its selected windows. &
+\Cref{lem:log-window-support-transfer,lem:renormalized-log-window-heredity,cor:log-diffuse-branch-exclusion}. &
+Selected defect excluded.\\
+\relax
+[124] & Current realized Young or pressure/viscous defect datum. &
+\Cref{thm:no-hidden-scale-variance-realized-defects,lem:critical-tail-defect-coordinate-closure,cor:young-branch-exclusion}. &
+Selected datum excluded.\\
+\relax
+[125] & Current realized coherent critical tail. &
+\Cref{cor:coherent-critical-tail-extraction,thm:realized-critical-tail-rigidity}. & Bounded gauges [126].\\
+\relax
+[126] & Bounded velocity gauges for the realized blow-down. &
+\Cref{lem:bounded-velocity-gauges-blowdown}. & Domain test [127].\\
+\relax
+[127] & Bounded-origin realization versus routed lower branch. &
+\Cref{lem:critical-tail-domain-realization-dichotomy}. & [128] or [129].\\
+\relax
+[128] & Domain-realization failure routed to a named lower row. &
+\Cref{lem:critical-tail-domain-realization-dichotomy}. & Branch contradiction.\\
+\relax
+[129] & Bounded-origin realization of the coherent tail. &
+\Cref{thm:bounded-origin-realization-coherent-tails}. & Heredity test [130].\\
+\relax
+[130] & Amplitude-normalized heredity survives or fails by a routed alternative. &
+\Cref{lem:amplitude-normalized-heredity-failure-routing}. & [131] or [132].\\
+\relax
+[131] & Amplitude-normalized heredity failure routed locally. &
+\Cref{lem:amplitude-normalized-heredity-failure-routing}. & Branch contradiction.\\
+\relax
+[132] & Realized amplitude-normalized log-hull heredity. &
+\Cref{lem:realized-amplitude-log-hull-heredity}. & Realized hull [133].\\
+\relax
+[133] & Realized coherent log-hull ready for classification. &
+\Cref{thm:coherent-critical-tail-classification}. & Type test [134].\\
+\relax
+[134] & Homogeneous, log-periodic, or aperiodic coherent type. &
+\Cref{thm:coherent-critical-tail-classification,cor:coherent-critical-tail-branch-closure}. & [135]--[137].\\
+\relax
+[135] & Homogeneous-tail bounded-origin incompatibility. &
+\Cref{lem:homogeneous-tail-bounded-origin-closure}. & Terminal [138].\\
+\relax
+[136] & Log-periodic bounded-origin incompatibility. &
+\Cref{lem:logperiodic-tail-bounded-origin-closure}. & Terminal [139].\\
+\relax
+[137] & Aperiodic log-hull minimality incompatibility. &
+\Cref{lem:aperiodic-tail-bounded-origin-closure}. & Terminal [140].\\
+\relax
+[138] & Current realized homogeneous coherent tail. &
+\Cref{thm:bounded-origin-realization-coherent-tails,cor:coherent-critical-tail-branch-closure}. &
+Selected tail excluded.\\
+\relax
+[139] & Current realized log-periodic coherent tail. &
+\Cref{thm:realized-critical-tail-rigidity,cor:coherent-critical-tail-branch-closure}. &
+Selected tail excluded.\\
+\relax
+[140] & Current realized aperiodic coherent tail. &
+\Cref{thm:realized-critical-tail-rigidity,cor:coherent-critical-tail-branch-closure}. &
+Selected tail excluded.\\
+\relax
+[141] & Selected realized infinite retained descendant chain. &
+\Cref{thm:descendant-heredity,def:closed-active-successor-relation}. & Closed relation [142].\\
+\relax
+[142] & Closed retained-successor relation. &
+\Cref{lem:closed-active-successor-relation}. & Recurrence [143].\\
+\relax
+[143] & Recurrence on the selected active path space. &
+\Cref{thm:active-path-space-recurrence}. & Compact core [144].\\
+\relax
+[144] & Recurrent path produces a compact retained core with its gauges. &
+\Cref{lem:active-descendant-concatenation,lem:recurrent-path-compact-core,lem:active-core-retention-gauges}. & Chain exclusion [145].\\
+\relax
+[145] & No infinite retained velocity concentration chain. &
+\Cref{thm:compact-active-descendant}. & Terminal [146].\\
+\relax
+[146] & Selected infinite retained descendant chain. &
+\Cref{thm:compact-active-descendant}. &
+Selected chain excluded.\\
+\relax
+[147] & Selected single retained terminal profile after routed lower alternatives. &
+\Cref{prop:no-multi-implies-atomic}. & Tail test [148].\\
+\relax
+[148] & Retained concentrating tail limit remains or not. &
+\Cref{lem:descendant-to-separated-family,prop:no-multi-implies-atomic}. & [149] or [154].\\
+\relax
+[149] & Selected finite separated retained family. &
+\Cref{def:finite-separated-profile-family,lem:finite-successor-alternatives}. & Alternative test [150].\\
+\relax
+[150] & Indecomposable component versus retained chain. &
+\Cref{lem:finite-graph-cycle}. & [151] or [152].\\
+\relax
+[151] & No-atomic conclusion applied to the selected indecomposable component. &
+\Cref{lem:no-atomic-active}. & Finite-family terminal [153].\\
+\relax
+[152] & No-infinite-chain conclusion applied to the selected chain output. &
+\Cref{thm:compact-active-descendant}. & Finite-family terminal [153].\\
+\relax
+[153] & Selected finite separated retained family. &
+\Cref{thm:no-finite-separated-profile-family}. &
+Selected family excluded.\\
+\relax
+[154] & Terminally indecomposable realized profile. &
+\Cref{prop:no-multi-implies-atomic}. & Endpoint production [155].\\
+\relax
+[155] & Remaining selected single retained profile. &
+\Cref{prop:no-multi-implies-atomic}. &
+Terminal indecomposable state [156].\\
+\relax
+[156] & Backward sequence-\(L^3\) for the selected terminal profile. &
+\Cref{lem:atomic-sequence-L3}. &
+Endpoint branch decision [157].\\
+\relax
+[157] & Affine/parasitic or non-affine mild endpoint branch. &
+\Cref{thm:mildness-inheritance-main}. &
+[16] or [158].\\
+\relax
+[158] & Finite-shift bounded mild pullback and transported selected sequence. &
+\Cref{prop:bounded-mild-stability,lem:no-atomic-active}. &
+Endpoint contradiction [159].\\
+\relax
+[159] & Endpoint zero conclusion contradicts the retained obstruction of the
 same realized profile. &
 \Cref{thm:AB-main,lem:no-atomic-active}. &
 Atomic branch contradiction.\\
-\relax
-[39] & Selected axisymmetric bounded-circulation profile. &
-\Cref{def:refined-decomposition,thm:R1-exclusion}. & Circulation equation [40].\\
-\relax
-[40] & Centered angular-circulation equation. &
-\Cref{lem:centered-circulation-equation}. & Killed absorption [41].\\
-\relax
-[41] & One-dimensional killed radial absorption. &
-\Cref{lem:one-dimensional-killed-radial-absorption}. & Axis Liouville [42].\\
-\relax
-[42] & Axis-absorption Liouville output. &
-\Cref{lem:axis-absorption-liouville}. & No-swirl routing [43].\\
-\relax
-[43] & No-swirl output in the closed structured row. &
-\Cref{thm:R1-exclusion}. & Terminal [14].\\
-\relax
-[44] & Selected rotational relative-equilibrium profile. &
-\Cref{def:R2-relative-profile-safe,prop:R2-reduction-to-terminal}. & Co-rotating equation [45].\\
-\relax
-[45] & Co-rotating stationary equation. &
-\Cref{lem:co-rotating-equation-safe}. & Bernoulli identity [46].\\
-\relax
-[46] & Coriolis Bernoulli identity. &
-\Cref{lem:R2-coriolis-bernoulli}. & Localized flux [47].\\
-\relax
-[47] & Localized Coriolis-flux identity. &
-\Cref{lem:R2-coriolis-flux-localization}. & Active concentration [48].\\
-\relax
-[48] & Non-small flux produces retained local velocity concentration. &
-\Cref{lem:R2-annular-flux-active-concentration}. & Reduction test [49].\\
-\relax
-[49] & Exhaustive local Coriolis-flux reduction. &
-\Cref{lem:R2-flux-reduction-dichotomy,prop:R2-reduction-to-terminal}. &
-Lower terminals [6]/[8] or [50].\\
-\relax
-[50] & Selected realized rotational terminal profile. &
-\Cref{prop:R2-reduction-to-terminal}. & Common recentering interface [72].\\
-\relax
-[51] & Selected degenerate stationary-hull profile. &
-\Cref{def:R3-active-class}. & Phase-space realization [52].\\
-\relax
-[52] & Stationary phase space and hull realization. &
-\Cref{def:R3-stationary-phase-space,def:R3-stationary-family}. & Scale reselection [53].\\
-\relax
-[53] & Centered scale reselection produces a Seregin limit. &
-\Cref{lem:R3-hull-is-seregin}. & Family degeneracy [54].\\
-\relax
-[54] & Stationary-family degeneracy and exact-family consequences. &
-\Cref{lem:R3-family-kernel,lem:R3-family-constrained-stationary,cor:R3-exact-family-subcase}. & Test [55].\\
-\relax
-[55] & Lower integrable/exact row or retained stationary carrier. &
-\Cref{prop:R3-stationary-hull-reduction,prop:R3-L3-subcase}. &
-Lower terminals [6]/[8] or [56].\\
-\relax
-[56] & Selected stationary Seregin limit retains unit velocity concentration. &
-\Cref{thm:R3-no-attainable-degenerate-family,thm:R3S-terminal-theorem}. & Reduction [57].\\
-\relax
-[57] & Stationary-hull reduction to terminal stratification. &
-\Cref{prop:R3S-R3-terminal-reduction}. & Common recentering interface [72].\\
-\relax
-[58] & Selected generic profile with its fixed realization ledger. &
-\Cref{def:R4-profile-main,thm:generic-terminal-exhaustion}. & Covariance [59].\\
-\relax
-[59] & Covariant translation invariance. &
-\Cref{def:covariant-translations,lem:covariant-translation-invariance}. & Observer calculus [60].\\
-\relax
-[60] & Semidirect covariant observer calculus. &
-\Cref{def:spacetime-covariant-action,lem:semidirect-covariance,thm:covariant-observer-calculus}. & State space [61].\\
-\relax
-[61] & Compact normalized local profile state space. &
-\Cref{def:terminal-state-space,lem:state-space-local-compactness,lem:compact-normalized-state-space}. & Pressure atlas [62].\\
-\relax
-[62] & Pressure representative on the current local chart. &
-\Cref{def:pressure-gauge-affine-quotient,lem:typeI-pressure-atlas-compatibility}. & Affine quotient [63].\\
-\relax
-[63] & Affine symmetry and pressure quotient. &
-\Cref{def:affine-symmetry,lem:affine-symmetry,lem:homogeneous-gauges-are-affine-stratum}. & Activity [64].\\
-\relax
-[64] & Closed non-affine oscillation functional. &
-\Cref{thm:closed-nonaffine-activity,cor:compact-normalized-activity-set}. & Affine test [65].\\
-\relax
-[65] & Affine collapse versus retained non-affine activity. &
-\Cref{thm:affine-normalization-dichotomy}. & [17] or [66].\\
-\relax
-[66] & Compact normalized escaping covariant hull. &
-\Cref{def:escaping-covariant-hull,thm:escaping-covariant-hull-compactness,lem:escaping-covariant-hull-invariance}. & Tail test [67].\\
-\relax
-[67] & Tail-zero route versus recurrent tail core. &
-\Cref{def:R4-tail-strata,prop:tail-dichotomy}. & [68] or [69].\\
-\relax
-[68] & Tail-zero normalized route. &
-\Cref{prop:tail-dichotomy}. & Recentring interface [72].\\
-\relax
-[69] & Tail-minimal recurrent core. &
-\Cref{def:tail-minimal-core}. & Pressure averages [70].\\
-\relax
-[70] & Pressure gradients in invariant local averages. &
-\Cref{lem:recurrent-core-pressure-gauges}. & Core rigidity [71].\\
-\relax
-[71] & Recurrent profile tail-core rigidity. &
-\Cref{thm:recurrent-tail-core-rigidity}. & Recentring interface [72].\\
-\relax
-[72] & Selected parabolic recentering sequence. &
-\Cref{def:parabolic-recentering-sequence}. & Combined recentering [73].\\
-\relax
-[73] & Combined parabolic--covariant descendant recentering. &
-\Cref{def:combined-raw-covariant-recentering}. & Raw measures [74].\\
-\relax
-[74] & Raw atlas defect measure and active windows. &
-\Cref{def:terminal-measures}. & Gauge/velocity semicontinuity [75].\\
-\relax
-[75] & Gauge compatibility and retained-velocity semicontinuity. &
-\Cref{lem:gauge-compatibility}. & Local-window compactness [76].\\
-\relax
-[76] & First-generation local-window compactness. &
-\Cref{def:first-generation-local-window-condition,lem:first-generation-local-window-compactness}. & Alternative test [77].\\
-\relax
-[77] & Compact, diffuse, critical, or pressure recentering alternative. &
-\Cref{lem:ancient-profile-covariant-compactness,lem:escaping-first-generation-alternatives,lem:retained-recentering-alternatives}. &
-[24], [78], [90], or [32].\\
-\relax
-[78] & Selected realized diffuse-defect chart. &
-\Cref{def:observer-compactification,thm:diffuse-defect-compactness}. & Observer compactification [79].\\
-\relax
-[79] & Covariant observer compactification. &
-\Cref{def:observer-compactification}. & Diffuse compactness [80].\\
-\relax
-[80] & Diffuse-defect compactness on escaping windows. &
-\Cref{thm:diffuse-defect-compactness}. & Window selection [81].\\
-\relax
-[81] & Finite diffuse-window selection. &
-\Cref{lem:finite-diffuse-window-selection}. & Support transfer [82].\\
-\relax
-[82] & Support transfer for the normalized diffuse defect. &
-\Cref{lem:diffuse-defect-support-transfer}. & Observable closure [83].\\
-\relax
-[83] & Countable defect observables and compact product closure. &
-\Cref{def:diffuse-defect-observables,thm:diffuse-defect-compactification-construction}. & Averaging [84].\\
-\relax
-[84] & Amenable averaging for the selected realized defect. &
-\Cref{prop:amenable-averaging-realized-diffuse-defects}. & Recurrence [85].\\
-\relax
-[85] & Recurrent diffuse-defect probability measure. &
-\Cref{thm:recurrent-diffuse-defect-measure}. & Trichotomy [86].\\
-\relax
-[86] & Exact regenerated/affine/critical diffuse trichotomy. &
-\Cref{thm:diffuse-defect-trichotomy}. & [87], [17], or [88].\\
-\relax
-[87] & Regenerated concentration after concentration-set removal. &
-\Cref{thm:diffuse-defect-trichotomy,thm:no-mixed-compact-diffuse}. & Diffuse terminal [27].\\
-\relax
-[88] & Nonzero recurrent critical diffuse tail. &
-\Cref{thm:diffuse-defect-trichotomy}. & Critical compactification [90].\\
-\relax
-[89] & Direct critical-tail route from terminal recentering. &
-\Cref{lem:escaping-retained-recentering-routing,thm:terminal-exhaustion-main}. & Critical compactification [90].\\
-\relax
-[90] & Current realized critical-tail datum. &
-\Cref{def:critical-diffuse-tail-strata,thm:critical-tail-compactification-extraction}. & Compactification [91].\\
-\relax
-[91] & Compactness of the critical-tail compactification. &
-\Cref{thm:critical-tail-compactification-compactness}. & Support transfer [92].\\
-\relax
-[92] & Critical-tail support transfer. &
-\Cref{lem:critical-tail-support-transfer}. & Critical coordinates [93].\\
-\relax
-[93] & Log-annular and Young-measure coordinates. &
-\Cref{def:log-annular-compactification,def:young-measure-convergence}. & Pressure convergence [94].\\
-\relax
-[94] & Distributional pressure-gradient convergence on the selected critical chart. &
-\Cref{def:critical-pressure-gradient-convergence}. & Young balance [95].\\
-\relax
-[95] & Critical-tail Young balance with named pressure/viscous defects. &
-\Cref{lem:critical-tail-young-log-transport}. & Virial identity [96].\\
-\relax
-[96] & Log-annular oscillation virial identity. &
-\Cref{lem:log-annular-oscillation-virial}. & Equality test [97].\\
-\relax
-[97] & Log escape versus virial-tight recurrent equality. &
-\Cref{def:scale-critical-virial-tight-subhull,lem:recurrent-virial-equality-reduction}. & [98] or [102].\\
-\relax
-[98] & Selected normalized log-window support profiles. &
-\Cref{def:log-window-descendant,lem:log-window-descendant-selection}. & Support transfer [99].\\
-\relax
-[99] & Log-window support transfer. &
-\Cref{lem:log-window-support-transfer}. & Heredity [100].\\
-\relax
-[100] & Renormalized log-window heredity. &
-\Cref{lem:renormalized-log-window-heredity}. & Hidden-scale reduction [101].\\
-\relax
-[101] & Logarithmic escape reduced to hidden-scale compactness. &
-\Cref{thm:log-diffuse-from-hidden-scale}. & Hidden-scale input [112].\\
-\relax
-[102] & Macroscopic critical-tail blow-down. &
-\Cref{def:macroscopic-critical-tail-blowdown}. & Gauge bridge [103].\\
-\relax
-[103] & Critical-tail homogeneous-gauge bridge. &
-\Cref{lem:critical-tail-homogeneous-gauge-bridge}. & Extraction [104].\\
-\relax
-[104] & Critical-tail compactification extraction. &
-\Cref{thm:critical-tail-compactification-extraction}. & Routing test [105].\\
-\relax
-[105] & Affine, pressure/noncompact, or retained critical-tail route. &
-\Cref{thm:critical-tail-compactification-extraction}. & [17], [37], or [106].\\
-\relax
-[106] & Retained tight critical-tail profile. &
-\Cref{thm:critical-tail-compactification-extraction}. & Defect separation [107].\\
-\relax
-[107] & Defect coordinates separated on the current chart. &
-\Cref{def:young-defect-critical-tail-branch,lem:critical-tail-defect-coordinate-routing}. & Test [108].\\
-\relax
-[108] & Young, pressure/viscous, or coherent critical output. &
-\Cref{lem:critical-tail-defect-coordinate-routing,cor:coherent-critical-tail-extraction}. & [109]--[111].\\
-\relax
-[109] & Selected pressure/viscous defect coordinates. &
-\Cref{lem:no-pure-viscous-defect-tight-dirac,lem:no-pressure-defect-tight-dirac,lem:critical-tail-defect-coordinate-routing}. & Branch contradiction.\\
-\relax
-[110] & Selected Young-variance branch. &
-\Cref{def:young-defect-critical-tail-branch}. & Hidden-scale input [112].\\
-\relax
-[111] & Selected coherent critical tail. &
-\Cref{cor:coherent-critical-tail-extraction}. & Coherent realization [136].\\
-\relax
-[112] & Current selected log-window or Young hidden-scale input. &
-\Cref{def:hidden-scale-variance,lem:hidden-variance-young-obstruction}. & Variance [113].\\
-\relax
-[113] & Hidden-scale variance obstruction for this selected datum. &
-\Cref{def:hidden-scale-variance,lem:hidden-variance-young-obstruction}. & Oscillation [114].\\
-\relax
-[114] & Multiscale affine oscillation. &
-\Cref{def:multiscale-affine-oscillation}. & First bad scale [115].\\
-\relax
-[115] & Minimal first-bad mesoscopic oscillation scale. &
-\Cref{def:first-bad-mesoscopic-scale,lem:h2-failure-first-bad-scale}. & Overlap control [116].\\
-\relax
-[116] & Finite-overlap and spacetime translation control. &
-\Cref{lem:finite-overlap-affine-oscillation,lem:spacetime-finite-overlap-translation}. & Translation test [117].\\
-\relax
-[117] & Concentration, affine collapse, or mesoscopic-radius alternative. &
-\Cref{lem:translation-defect-to-bad-radius}. & [118], [17], or [119].\\
-\relax
-[118] & Earlier concentration contradicts first-bad selection. &
-\Cref{lem:translation-defect-to-bad-radius,lem:h2-failure-first-bad-scale}. & Branch contradiction.\\
-\relax
-[119] & Minimal-scale blow-down equation. &
-\Cref{def:first-bad-spatial-blowdown,lem:first-bad-blowdown-equation}. & Local energy [120].\\
-\relax
-[120] & Local energy inequality under spatial/logarithmic blow-down. &
-\Cref{lem:local-energy-blow-down}. & Quotient [121].\\
-\relax
-[121] & Minimal-scale quotient formulation. &
-\Cref{lem:first-bad-quotient-formulation}. & Pressure structure [122].\\
-\relax
-[122] & Riesz covariance and harmonic-remainder control. &
-\Cref{lem:whole-space-riesz-pressure-covariance,lem:local-harmonic-remainders-affine}. & Representation [123].\\
-\relax
-[123] & Normalized pressure representation with blow-down coefficient. &
-\Cref{prop:normalized-pressure-representation}. & Coefficient test [124].\\
-\relax
-[124] & Affine pressure coefficient versus compact pressure chart. &
-\Cref{lem:affine-pressure-coefficient-dichotomy}. & [17] or [125].\\
-\relax
-[125] & Scaled pressure and pressure--velocity compactness. &
-\Cref{lem:scaled-pressure-compactness-affine,lem:pressure-velocity-product-convergence,lem:first-bad-pressure-compactness}. & Actual pressure [126].\\
-\relax
-[126] & Actual pressure in the minimal-scale energy inequality. &
-\Cref{lem:actual-pressure-minimal-scale-energy}. & Gauge compactness [127].\\
-\relax
-[127] & Compactness modulo homogeneous gauges. &
-\Cref{lem:homogeneous-gauge-compactness}. & Variance transfer [128].\\
-\relax
-[128] & Variance invariance and Young-defect support transfer. &
-\Cref{lem:variance-homogeneous-shift,lem:young-variance-support-transfer}. & Barycenter [129].\\
-\relax
-[129] & Coherent barycenter renormalization. &
-\Cref{lem:coherent-barycenter-renormalization}. & Variance equation [130].\\
-\relax
-[130] & Barycenter equation and variance inequality. &
-\Cref{lem:first-bad-young-variance}. & Variance Liouville [131].\\
-\relax
-[131] & Bounded ancient variance Liouville theorem. &
-\Cref{lem:bounded-variance-liouville}. & Strong compactness [132].\\
-\relax
-[132] & Minimal-scale blow-downs are strongly compact. &
-\Cref{lem:first-bad-strong-compactness}. & Mesoscopic reduction [133].\\
-\relax
-[133] & Minimal mesoscopic oscillation-scale reduction. &
-\Cref{thm:first-bad-mesoscopic-reduction}. & No hidden variance [134].\\
-\relax
-[134] & No hidden-scale variance for this realized defect. &
-\Cref{thm:no-hidden-scale-variance-realized-defects}. & Owner test [135].\\
-\relax
-[135] & Log-diffuse versus Young owner of the selected hidden-scale input. &
-\Cref{cor:log-diffuse-branch-exclusion,cor:young-branch-exclusion}. & [18] or [19].\\
-\relax
-[136] & Current realized coherent critical tail. &
-\Cref{cor:coherent-critical-tail-extraction,thm:realized-critical-tail-rigidity}. & Bounded gauges [137].\\
-\relax
-[137] & Bounded velocity gauges for the realized blow-down. &
-\Cref{lem:bounded-velocity-gauges-blowdown}. & Domain test [138].\\
-\relax
-[138] & Bounded-origin realization versus routed lower branch. &
-\Cref{lem:critical-tail-domain-realization-dichotomy}. & [139] or [140].\\
-\relax
-[139] & Domain-realization failure routed to a named lower row. &
-\Cref{lem:critical-tail-domain-realization-dichotomy}. & Branch contradiction.\\
-\relax
-[140] & Bounded-origin realization of the coherent tail. &
-\Cref{thm:bounded-origin-realization-coherent-tails}. & Heredity test [141].\\
-\relax
-[141] & Amplitude-normalized heredity survives or fails by a routed alternative. &
-\Cref{lem:amplitude-normalized-heredity-failure-routing}. & [142] or [143].\\
-\relax
-[142] & Amplitude-normalized heredity failure routed locally. &
-\Cref{lem:amplitude-normalized-heredity-failure-routing}. & Branch contradiction.\\
-\relax
-[143] & Realized amplitude-normalized log-hull heredity. &
-\Cref{lem:realized-amplitude-log-hull-heredity}. & Realized hull [144].\\
-\relax
-[144] & Realized coherent log-hull ready for classification. &
-\Cref{thm:coherent-critical-tail-classification}. & Type test [148].\\
-\relax
-[145] & Homogeneous-tail bounded-origin incompatibility. &
-\Cref{lem:homogeneous-tail-bounded-origin-closure}. & Terminal [20].\\
-\relax
-[146] & Log-periodic bounded-origin incompatibility. &
-\Cref{lem:logperiodic-tail-bounded-origin-closure}. & Terminal [21].\\
-\relax
-[147] & Aperiodic log-hull minimality incompatibility. &
-\Cref{lem:aperiodic-tail-bounded-origin-closure}. & Terminal [22].\\
-\relax
-[148] & Homogeneous, log-periodic, or aperiodic coherent type. &
-\Cref{thm:coherent-critical-tail-classification,cor:coherent-critical-tail-branch-closure}. & [145]--[147].\\
-\relax
-[149] & Selected realized infinite retained descendant chain. &
-\Cref{thm:descendant-heredity,def:closed-active-successor-relation}. & Closed relation [150].\\
-\relax
-[150] & Closed retained-successor relation. &
-\Cref{lem:closed-active-successor-relation}. & Recurrence [151].\\
-\relax
-[151] & Recurrence on the selected active path space. &
-\Cref{thm:active-path-space-recurrence}. & Compact core [152].\\
-\relax
-[152] & Recurrent path produces a compact retained core with its gauges. &
-\Cref{lem:active-descendant-concatenation,lem:recurrent-path-compact-core,lem:active-core-retention-gauges}. & Chain exclusion [153].\\
-\relax
-[153] & No infinite retained velocity concentration chain. &
-\Cref{thm:compact-active-descendant}. & Terminal [31].\\
-\relax
-[154] & Selected finite separated retained family. &
-\Cref{def:finite-separated-profile-family,lem:finite-successor-alternatives}. & Alternative test [155].\\
-\relax
-[155] & Indecomposable component versus retained chain. &
-\Cref{lem:finite-graph-cycle}. & [156] or [157].\\
-\relax
-[156] & No-atomic conclusion applied to the selected indecomposable component. &
-\Cref{lem:no-atomic-active}. & Finite-family terminal [30].\\
-\relax
-[157] & No-infinite-chain conclusion applied to the selected chain output. &
-\Cref{thm:compact-active-descendant}. & Finite-family terminal [30].\\
-\relax
-[158] & Selected single retained terminal profile after routed lower alternatives. &
-\Cref{prop:no-multi-implies-atomic}. & Tail test [159].\\
-\relax
-[159] & Retained concentrating tail limit remains or not. &
-\Cref{lem:descendant-to-separated-family,prop:no-multi-implies-atomic}. & [154] or [160].\\
-\relax
-[160] & Terminally indecomposable realized profile. &
-\Cref{prop:no-multi-implies-atomic}. & Endpoint production [33].\\
 \hline
 \end{longtable}
 \endgroup
@@ -2713,7 +2704,7 @@ Selected pullback and selected backward sequence. &
 \Cref{lem:no-atomic-active,thm:AB-main}. &
 The endpoint zero conclusion for that pullback, returned to the same centered
 profile. &
-No endpoint theorem used before nodes [34] and [36] produce its inputs.\\
+No endpoint theorem used before nodes [156] and [158] produce its inputs.\\
 \hline
 \end{longtable}
 \endgroup
@@ -2743,51 +2734,52 @@ Nodes [5]--[8] & Current profile in one of the four setup lower states. &
 \Cref{thm:imported-setup-results,hyp:previous-nonresidual}, using the
 corresponding setup closure for the selected state. &
 Setup final assembly.\\
-Nodes [11] and [17] & Current affine/parasitic representative. &
+Nodes [11] and [16] & Current affine/parasitic representative. &
 \Cref{thm:affine-normalization-dichotomy,thm:oscillatory-entry-normalization}. &
 \Cref{thm:refined-residual-closure,prop:setup-residual-handoff-complete}.\\
-Node [14] & Current \(\Cax\) profile. &
+Node [23] & Current \(\Cax\) profile. &
 \Cref{thm:R1-exclusion}. &
 \Cref{thm:refined-residual-closure}.\\
-Node [18] & Current log-diffuse defect and selected windows. &
+Node [123] & Current log-diffuse defect and selected windows. &
 \Cref{cor:log-diffuse-branch-exclusion}. &
 \Cref{cor:critical-tail-exclusion-complete,thm:R4-final-closure}.\\
-Node [19] & Current Young or pressure/viscous defect datum. &
+Node [124] & Current Young or pressure/viscous defect datum. &
 \Cref{cor:young-branch-exclusion}. &
 \Cref{cor:critical-tail-exclusion-complete,thm:R4-final-closure}.\\
-Nodes [20]--[22] & Current realized coherent critical tail. &
+Nodes [138]--[140] & Current realized coherent critical tail. &
 \Cref{cor:coherent-critical-tail-branch-closure}. &
 \Cref{cor:critical-tail-exclusion-complete,thm:R4-final-closure}.\\
-Node [27] & Current selected diffuse or mixed terminal datum. &
+Node [74] & Current selected diffuse or mixed terminal datum. &
 \Cref{thm:terminal-inactive-exclusion,thm:diffuse-defect-trichotomy,thm:no-mixed-compact-diffuse}. &
 \Cref{thm:terminal-stratification,thm:R4-final-closure}.\\
-Node [29] & Current selected critical-tail datum. &
+Input at node [77] & Current selected critical-tail datum; exclusion is the
+conclusion of the complete routing, not an input hypothesis. &
 \Cref{thm:realized-critical-tail-rigidity,cor:critical-tail-exclusion-complete}. &
 \Cref{thm:terminal-stratification,thm:R4-final-closure}.\\
-Node [30] & Current finite separated retained family. &
+Node [153] & Current finite separated retained family. &
 \Cref{thm:no-finite-separated-profile-family}. &
 \Cref{thm:terminal-stratification,thm:R4-final-closure}.\\
-Node [31] & Current infinite retained descendant chain. &
+Node [146] & Current infinite retained descendant chain. &
 \Cref{thm:compact-active-descendant}. &
 \Cref{thm:terminal-stratification,thm:R4-final-closure}.\\
-Node [37] & Current terminal extraction after pressure routing recovers retained
+Node [63] & Current terminal extraction after pressure routing recovers retained
 velocity concentration. &
 \Cref{thm:terminal-stratification}; the R2 and R3 owners are then discharged
 by \Cref{cor:R2-closure,cor:R3-closure}, while the generic owner is discharged
 by \Cref{thm:R4-final-closure}. &
 \Cref{thm:refined-residual-closure}.\\
-Node [38] & Current realized terminally indecomposable profile. &
+Node [159] & Current realized terminally indecomposable profile. &
 \Cref{lem:atomic-sequence-L3,thm:mildness-inheritance-main,thm:AB-main,lem:no-atomic-active}. &
 \Cref{thm:terminal-stratification,cor:R2-closure,cor:R3-closure,thm:R4-final-closure}.\\
-Node [109] & Current selected pressure or viscous critical-tail defect
+Node [96] & Current selected pressure or viscous critical-tail defect
 coordinate. &
 \Cref{lem:no-pure-viscous-defect-tight-dirac,lem:no-pressure-defect-tight-dirac,lem:critical-tail-defect-coordinate-routing}. &
 \Cref{cor:young-branch-exclusion,cor:critical-tail-exclusion-complete}.\\
-Node [118] & Current first-bad-scale branch in which earlier concentration
+Node [105] & Current first-bad-scale branch in which earlier concentration
 reappears. &
 \Cref{lem:translation-defect-to-bad-radius,lem:h2-failure-first-bad-scale}. &
 \Cref{thm:first-bad-mesoscopic-reduction}.\\
-Nodes [139] and [142] & Current coherent-tail realization whose domain or
+Nodes [128] and [131] & Current coherent-tail realization whose domain or
 amplitude heredity fails. &
 \Cref{lem:critical-tail-domain-realization-dichotomy,lem:amplitude-normalized-heredity-failure-routing}. &
 \Cref{thm:realized-critical-tail-rigidity,cor:critical-tail-exclusion-complete}.\\

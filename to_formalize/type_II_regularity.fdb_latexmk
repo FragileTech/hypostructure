@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex type_II_regularity"] 1786520139.87715 "type_II_regularity.aux" "type_II_regularity.bbl" "type_II_regularity" 1786520222.21571 0
+["bibtex type_II_regularity"] 1786522002.84524 "type_II_regularity.aux" "type_II_regularity.bbl" "type_II_regularity" 1786531123.90951 0
   "./type_II_regularity.bib" 1776978268.87962 6821 2e0a50852c75a24ae012d1707650b680 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/alpha.bst" 1292289607 23907 a5f93555796fb564b924339521f10a7c ""
-  "type_II_regularity.aux" 1786520221.25902 155943 90ac43aaea0bb0a514a1ddc39d466148 "pdflatex"
+  "type_II_regularity.aux" 1786531122.05778 156442 ad2da8729283495c76675e9f8ec95437 "pdflatex"
   (generated)
   "type_II_regularity.bbl"
   "type_II_regularity.blg"
   (rewritten before read)
-["pdflatex"] 1786520211.14521 "type_II_regularity.tex" "type_II_regularity.pdf" "type_II_regularity" 1786520222.21679 0
+["pdflatex"] 1786531095.50748 "type_II_regularity.tex" "type_II_regularity.pdf" "type_II_regularity" 1786531123.91159 0
   "/etc/texmf/web2c/texmf.cnf" 1775461942.93881 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -230,11 +230,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1741904018 41538 c016915c1d51223b6dbbfe27341748a8 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775461957 5467255 9a64d1b40e0b893fc5588ecce9d8accf ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775462000 3347157 e3d55367a58d5fdfabed5b8302e4b102 ""
-  "type_II_regularity.aux" 1786520221.25902 155943 90ac43aaea0bb0a514a1ddc39d466148 "pdflatex"
-  "type_II_regularity.bbl" 1786520140.12558 3745 feaa3101b142a613e7ce6c15e4da440d "bibtex type_II_regularity"
-  "type_II_regularity.out" 1786520221.27302 23708 8f87d8cf66c6afe55b35a6f46f96fbfd "pdflatex"
-  "type_II_regularity.tex" 1786520195.81719 1140114 6007162edad685f1d3950a1ef9d3912f ""
-  "type_II_regularity.toc" 1786520221.27402 9983 dbe6067d0af1c04f0c12b12d3cdddd11 "pdflatex"
+  "type_II_regularity.aux" 1786531122.05778 156442 ad2da8729283495c76675e9f8ec95437 "pdflatex"
+  "type_II_regularity.bbl" 1786522003.27676 3745 feaa3101b142a613e7ce6c15e4da440d "bibtex type_II_regularity"
+  "type_II_regularity.out" 1786531122.10378 23708 8f87d8cf66c6afe55b35a6f46f96fbfd "pdflatex"
+  "type_II_regularity.tex" 1786531089.97101 1156274 641571f0814921d98a6979ccbc07d03e ""
+  "type_II_regularity.toc" 1786531122.10478 9984 e6b9180b5e54763035182329d5d8b5e3 "pdflatex"
   (generated)
   "type_II_regularity.aux"
   "type_II_regularity.log"

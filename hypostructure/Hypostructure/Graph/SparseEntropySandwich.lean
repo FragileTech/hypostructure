@@ -26,11 +26,10 @@ blocker of type (d), or by a boundaried context, which is the blocker of type
 once: neither proof inspects which coordinates the family holds, which is why
 the manuscript gives them the same four cases.
 
-`survives_of_exitFree` is `prop:sparse-pair-independence-dichotomy`: an
-*admissible* quotient carries no such separation — that is what its two
-completeness clauses say — so at a survivor with no blocker no admissible
-quotient reduces the family, and the family is independently target-testable in
-the sense of `def:target-rank`.
+`prop:sparse-pair-independence-dichotomy` is registered at its concrete branch
+decision.  The baseline-family instance is proved directly inside node `[129]`
+from its incoming survivor fact; this module exposes no detached universal
+survival theorem or quotient-system carrier.
 
 **The sandwich.**  `prop:sparse-entropy-sandwich-with-blockers` writes
 
@@ -325,60 +324,6 @@ theorem blockerSeparation_of_reducing
   · exact absurd replacement (noReplacement _)
   · exact absurd (SparseSurplusExit.delocalization representative smaller baseline
       transfer) survives
-
-/-- **`prop:sparse-pair-independence-dichotomy`.**
-
-> If `G` survives the sparse surplus exits and no pair in `C(𝒜₀,2)` has a sparse
-> surplus blocker, then the full family `{r_π}` is independently
-> target-testable.
-
-An admissible rank quotient carries no blocker separation: its two completeness
-clauses are exactly the statement that identified realizations share a boundary
-degree profile and are context-equivalent.  So at a survivor with no blocker the
-first two alternatives of `blockerSeparation_of_reducing` are unavailable and
-the remaining two are refuted, whence no member of the system reduces the
-family — which is independent target-testability in the sense of
-`def:target-rank`. -/
-theorem survives_of_exitFree
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}} {Coordinate : Type u}
-    {family : Finset Coordinate}
-    {coordinateSupport : Coordinate → Finset object.Vertex}
-    (survives : SurvivesSparseExits Baseline
-      (Graph.HasCycleWithLength LengthOK) LengthOK object)
-    (noReplacement : ∀ support : Finset object.Vertex,
-      ¬ ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK) object
-        support) :
-    (FiniteObject.declaredQuotientSystem Baseline
-      (Graph.HasCycleWithLength LengthOK) object family
-      coordinateSupport).Survives ↑family := by
-  rintro quotient ⟨⟨admissible, rfl⟩, _functional⟩
-  by_contra reducing
-  rcases admissible.localize reducing with replacement |
-    ⟨representative, smaller, baseline, transfer⟩
-  · exact noReplacement _ replacement
-  · exact survives (SparseSurplusExit.delocalization representative smaller
-      baseline transfer)
-
-/-- The independently target-testable family attains full target rank: the
-dichotomy read through `Core.TargetRank`'s own rank apparatus, which is the form
-`def:baseline-spine-demand` consumes. -/
-theorem targetRank_eq_card_of_exitFree
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}} {Coordinate : Type u}
-    {family : Finset Coordinate}
-    {coordinateSupport : Coordinate → Finset object.Vertex}
-    (survives : SurvivesSparseExits Baseline
-      (Graph.HasCycleWithLength LengthOK) LengthOK object)
-    (noReplacement : ∀ support : Finset object.Vertex,
-      ¬ ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK) object
-        support) :
-    Core.TargetRank.targetRank
-        (FiniteObject.declaredQuotientSystem Baseline
-          (Graph.HasCycleWithLength LengthOK) object family coordinateSupport) =
-      family.card :=
-  (Core.TargetRank.targetRank_eq_card_iff_survives _).mpr
-    (survives_of_exitFree survives noReplacement)
 
 /-! ## The entropy sandwich -/
 

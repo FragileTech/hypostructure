@@ -80,4 +80,74 @@ noncomputable def windowOverloadClassDichotomy
                 (Or.inl replacement)⟩⟩)
         .nil)
 
+/-- Node `[144]`: route every declared same-token bottleneck of the current
+residual.  Both hypotheses are read from the incoming exact ledger. -/
+@[reducible] noncomputable def bottleneckRoutingRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.bottleneckRouting
+    { Requires := [K .selection, K .uncompressible]
+      Produces := [K .bottleneckRouting]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selection := (inputs.get (K .selection)).down
+      let uncompressible := (inputs.get (K .uncompressible)).down
+      .cons (key := K .bottleneckRouting)
+        (show Value BranchState Presentation presentation data
+            .bottleneckRouting inputs.current from
+          ⟨by
+            simp only [Holds]
+            intro HighDegree Absorbing bottleneck windowFree
+            exact bottleneck.outcome selection.1 uncompressible windowFree⟩)
+        .nil)
+
+/-- Node `[144]`, survivor arm: eliminate the absorbed outcome locally and
+append the resulting Type-B handoff fact to the same ledger. -/
+@[reducible] noncomputable def typeBHandoffRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeBHandoff
+    { Requires := [K .bottleneckRouting, K .sparseSurplusSurvivor]
+      Produces := [K .typeBHandoff]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let routed := (inputs.get (K .bottleneckRouting)).down
+      let survivor := (inputs.get (K .sparseSurplusSurvivor)).down
+      .cons (key := K .typeBHandoff)
+        (show Value BranchState Presentation presentation data
+            .typeBHandoff inputs.current from
+          ⟨by
+            classical
+            simp only [Holds] at routed ⊢
+            intro HighDegree Absorbing bottleneck windowFree internal baseline
+              contextEquivalent
+            rcases routed HighDegree Absorbing bottleneck windowFree with
+              absorbed | handoff
+            · exfalso
+              apply survivor.1
+              rcases absorbed with defect | complete | delocalizes
+              · obtain ⟨context, separated⟩ := defect
+                exact absurd (contextEquivalent context) separated
+              · refine .compression bottleneck.separation.switchSupport
+                  ⟨bottleneck.separation.switchConnected,
+                    bottleneck.separation.switchProper,
+                    bottleneck.reading.quotient, ?_, baseline,
+                    bottleneck.reading.lexicographicallySmaller, ?_⟩
+                · have registered := bottleneck.reading.registered internal
+                    bottleneck.reading.reduced
+                    bottleneck.reading.reduced_ssubset.subset
+                  exact registered.trans rfl
+                · intro context
+                  have equivalence := complete.2 context
+                  rw [bottleneck.reading.baseIsPiece] at equivalence
+                  simpa [Graph.DecoratedHandoff.Separation.atom] using equivalence
+              · obtain ⟨representative, smaller, baselineObject, transfer⟩ :=
+                  delocalizes
+                exact .delocalization representative smaller baselineObject
+                  transfer
+            · exact handoff⟩)
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine
