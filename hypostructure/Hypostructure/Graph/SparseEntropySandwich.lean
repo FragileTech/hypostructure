@@ -52,13 +52,10 @@ same statement at the *full* pair schedule, and
 `2^{C(|𝒜₀|,2)} ≤ C(N,m)`.
 
 The theorem below is the reusable cancellation step, so its two inputs are the
-two inequalities it cancels.  The strategy does not publish those inputs as an
-obligation: `WindowTargetPackage.mixedSpinePairDemand` constructs the tagged
-mixed family, proves its full rank, obtains its exact entropy count, and applies
-this theorem before node `[131]` is committed.  The framework owns the count
-(`Core.FiniteEntropy.two_pow_le_card_ambient_of_realizes` and
-`Graph.LabelledOn.two_pow_le_card_of_realized`), and `Graph.skeletonBudget` is
-`lem:skeleton-dominates`' own `C(N,m)`.
+two inequalities it cancels.  At node `[131]` the concrete mixed family, its
+full-rank proof, its entropy count, and this cancellation must be derived inside
+the atomic executor from facts on the incoming exact ledger and published as
+the node's semantic output.  None of them is transported in a detached package.
 
 The asymptotic tail of `prop:sparse-entropy-sandwich` — *"consequently, if
 `E_spine(n) = O(n)` and `|𝒜₀| ≥ c₁σ(G)`, then `σ(G) = O(√n)`"* — is not stated

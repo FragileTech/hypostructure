@@ -422,6 +422,104 @@ semantic fact. -/
                 (.delocalization representative smaller baseline transfer)⟩)
         .nil)
 
+/-- `lem:exact-cubic-baseline-budget` at the current residual's order and
+registered baseline.  The result is the manuscript's two-sided estimate with
+logarithms cleared, published from the literal `[131]` residual. -/
+@[reducible] noncomputable def exactCubicBaselineBudgetRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.exactCubicBaselineBudget
+    { Requires := [K .baselineSpineDemand]
+      Produces := [K .exactCubicBaselineBudget]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .exactCubicBaselineBudget)
+        (show Value BranchState Presentation presentation data
+            .exactCubicBaselineBudget inputs.current from
+          ⟨by
+            let _baselineDemand := (inputs.get (K .baselineSpineDemand)).down
+            constructor
+            · exact Graph.cubicBaselineBudget_le_pow
+                inputs.current.object.vertexCount data.three_le_threshold
+            · intro room
+              exact Graph.pow_pred_le_cubicBaselineBudget_mul
+                inputs.current.object.vertexCount room⟩)
+        .nil)
+
+/-- `lem:incremental-skeleton-room` at the current object's edge count.  Both
+the binomial-room estimate and `s ≤ σ/2+1` are stored with logarithms and
+division cleared. -/
+@[reducible] noncomputable def incrementalSkeletonRoomRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.incrementalSkeletonRoom
+    { Requires := [K .exactCubicBaselineBudget, K .baselineSpineDemand]
+      Produces := [K .incrementalSkeletonRoom]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .incrementalSkeletonRoom)
+        (show Value BranchState Presentation presentation data
+            .incrementalSkeletonRoom inputs.current from
+          ⟨by
+            let _cubic := (inputs.get (K .exactCubicBaselineBudget)).down
+            let _demand := (inputs.get (K .baselineSpineDemand)).down
+            let object := inputs.current.object
+            have handshake : data.threshold * object.vertexCount ≤
+                2 * object.edgeCount :=
+              Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
+                object data.threshold fun vertex =>
+                  le_trans inputs.current.baseline
+                    (object.minDegree_le_degree vertex)
+            have above : Graph.cubicBaselineEdgeCount object.vertexCount
+                data.threshold ≤ object.edgeCount :=
+              Graph.cubicBaselineEdgeCount_le_edgeCount_of_handshake
+                object data.threshold handshake
+            refine ⟨above, ?_, ?_⟩
+            · exact Graph.skeletonBudget_le_cubicBaselineBudget_mul_pow
+                object data.three_le_threshold above
+            · have lower : data.threshold * object.vertexCount ≤
+                  2 * Graph.cubicBaselineEdgeCount object.vertexCount
+                    data.threshold := by
+                unfold Graph.cubicBaselineEdgeCount
+                omega
+              unfold Graph.FiniteObject.degreeSurplus
+              omega⟩)
+        .nil)
+
+/-- `lem:skeleton-dominates` at the current residual's exact edge stratum.
+The fixed-edge labelled skeleton count and the canonical-state pigeonhole are
+proved inside this executor and published on the same exact ledger. -/
+@[reducible] noncomputable def skeletonDominatesRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.skeletonDominates
+    { Requires := [K .incrementalSkeletonRoom]
+      Produces := [K .skeletonDominates]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .skeletonDominates)
+        (show Value BranchState Presentation presentation data
+            .skeletonDominates inputs.current from
+          ⟨by
+            let _room := (inputs.get (K .incrementalSkeletonRoom)).down
+            let object := inputs.current.object
+            have count : Nat.card
+                (Graph.PackedWindowRealization.Skeleton
+                  object.vertexCount object.edgeCount) =
+                Graph.skeletonBudget object := by
+              simpa [Graph.skeletonBudget, Graph.edgeStratumCount] using
+                Graph.PackedWindowRealization.card_skeleton
+                  object.vertexCount object.edgeCount
+            refine ⟨count, ?_⟩
+            intro State stateOf
+            have realized :=
+              Core.FiniteEntropy.card_range_le_card_ambient stateOf
+            simpa [count] using realized⟩)
+        .nil)
+
 /-- `lem:sparse-pair-dependence-exit` on the literal residual produced by
 node `[130]`.  The attempted quotient and its failure of injectivity are read
 from that residual's exact ledger.  The two conclusions are distinct decision

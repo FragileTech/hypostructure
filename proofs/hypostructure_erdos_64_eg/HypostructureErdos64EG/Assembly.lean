@@ -218,6 +218,87 @@ noncomputable def selectedMixedSparseSpineDependence
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
       simp [mixedSparseSpineDependenceRow, K_eq_iff])
 
+/-- Node `[131]`, `lem:exact-cubic-baseline-budget` on the literal residual
+already carrying the mixed sparse-spine dependence fact. -/
+noncomputable def selectedExactCubicBaselineBudget
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .mixedSparseSpineDependence, K .independentPairFamily,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .exactCubicBaselineBudget, K .mixedSparseSpineDependence,
+        K .independentPairFamily, K .baselineSpineDemand,
+        K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (exactCubicBaselineBudgetRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
+      simp [exactCubicBaselineBudgetRow, K_eq_iff])
+
+/-- Node `[131]`, `lem:incremental-skeleton-room` on the literal residual
+carrying the exact cubic baseline evaluation. -/
+noncomputable def selectedIncrementalSkeletonRoom
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .exactCubicBaselineBudget, K .mixedSparseSpineDependence,
+        K .independentPairFamily, K .baselineSpineDemand,
+        K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .incrementalSkeletonRoom, K .exactCubicBaselineBudget,
+        K .mixedSparseSpineDependence, K .independentPairFamily,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (incrementalSkeletonRoomRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
+      simp [incrementalSkeletonRoomRow, K_eq_iff])
+
+/-- Node `[131]`, `lem:skeleton-dominates` on the literal residual carrying
+the incremental-room fact. -/
+noncomputable def selectedSkeletonDominates
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .incrementalSkeletonRoom, K .exactCubicBaselineBudget,
+        K .mixedSparseSpineDependence, K .independentPairFamily,
+        K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .skeletonDominates, K .incrementalSkeletonRoom,
+        K .exactCubicBaselineBudget, K .mixedSparseSpineDependence,
+        K .independentPairFamily, K .baselineSpineDemand,
+        K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection] :=
+  (skeletonDominatesRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
+      simp [skeletonDominatesRow, K_eq_iff])
+
 /-- Node `[132]`, the sparse-pair routing split after baseline demand. -/
 noncomputable def selectedBlockedPairRoutingDichotomy
     {selected : EGInput.{u}}
@@ -876,7 +957,8 @@ noncomputable def selectedCompletedSpinePrefix
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
+      [K .curvatureTargetRank, K .admissibleRankQuotient,
+        K .exactResponseProfile, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
@@ -902,12 +984,28 @@ noncomputable def selectedCompletedSpinePrefix
       h3 (by
         simp [wedgeSupply, boundaryDemand, remainderNormalization,
           selectedDensityBudget, K_eq_iff])
+  let h5 :=
+    (exactResponseProfile (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h4 (by
+        simp [exactResponseProfile, wedgeSupply, boundaryDemand,
+          remainderNormalization, selectedDensityBudget, K_eq_iff])
+  let h6 :=
+    (admissibleRankQuotient (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h5 (by
+        simp [admissibleRankQuotient, exactResponseProfile, wedgeSupply,
+          boundaryDemand, remainderNormalization, selectedDensityBudget,
+          K_eq_iff])
   exact
     (curvatureTargetRank (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h4 (by
-        simp [curvatureTargetRank, wedgeSupply, boundaryDemand,
+      h6 (by
+        simp [curvatureTargetRank, admissibleRankQuotient,
+          exactResponseProfile, wedgeSupply, boundaryDemand,
           remainderNormalization, selectedDensityBudget, K_eq_iff])
 
 /-- Node `[32]`, run on the completed near-cubic prefix. -/

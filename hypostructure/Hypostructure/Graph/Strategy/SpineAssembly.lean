@@ -209,6 +209,19 @@ noncomputable instance typeAExitFiveClosed :
       omega)
     (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
 
+/-- `def:exact-response-profile` at the concrete remainder entering node `[31]`. -/
+@[reducible] noncomputable def exactResponseProfile :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  exactResponseProfileRow (K .maximalPacking) (K .exactResponseProfile)
+    (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
+
+/-- `def:admissible-rank-quotient` on the exact profile entering node `[31]`. -/
+@[reducible] noncomputable def admissibleRankQuotient :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  admissibleRankQuotientRow (K .exactResponseProfile)
+    (K .admissibleRankQuotient) (by simp)
+    (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
+
 /-- Node `[31]`. -/
 @[reducible] noncomputable def curvatureTargetRank :
     AtomicStrategy (Input BranchState Presentation presentation data) :=

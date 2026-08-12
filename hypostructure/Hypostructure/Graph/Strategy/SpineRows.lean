@@ -862,6 +862,86 @@ exact threshold rather than a constant copied from a manuscript. -/
             omega)
           .nil))
 
+/-! ## `def:exact-response-profile` on the concrete remainder
+
+The incoming maximal-packing fact owns the one concrete packing.  This row
+forms its remainder and publishes the exact four-component profile used at
+node `[31]`: boundary degrees, the literal all-context target profile, the raw
+D4 coordinate family, and its embedded `Unit` value map.  Exactness is label
+injectivity of the raw wedge coordinates even though those embedded values all
+coincide. -/
+@[reducible] noncomputable def exactResponseProfileRow
+    (maximalPacking exactResponseProfile :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : maximalPacking ≠ exactResponseProfile)
+    (decode : (input : Input BranchState Presentation presentation data) →
+      maximalPacking.At input →
+        Holds BranchState Presentation presentation data .maximalPacking
+          input.object)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      Holds BranchState Presentation presentation data .exactResponseProfile
+          input.object →
+        exactResponseProfile.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.exactResponseProfile
+    (rowManifest maximalPacking exactResponseProfile distinct)
+    (fun inputs =>
+      let inherited := decode inputs.current (inputs.get maximalPacking)
+      .cons (key := exactResponseProfile)
+        (encode inputs.current (by
+          rcases inherited with ⟨_positive, packing, valid, card, _maximal⟩
+          refine ⟨packing, valid, card, ?_⟩
+          dsimp
+          refine ⟨rfl, rfl, rfl, ?_, ?_⟩
+          · intro coordinate _member
+            rfl
+          · intro left _leftMember right _rightMember equal
+            exact equal))
+        .nil)
+
+/-! ## `def:admissible-rank-quotient` on the concrete exact profile
+
+The incoming exact-profile fact fixes the remainder and its declared raw D4
+family.  This row publishes the paper's admissible quotient family on exactly
+that remainder.  Membership is existence of a `DeclaredQuotient`; its fields
+are precisely the connected carrying support, boundary-degree fibre,
+all-context target-completeness, and proper/closed representative requirements
+of the manuscript definition.  Functionality is deliberately absent here and
+belongs only to `def:functional-rank-quotient`. -/
+@[reducible] noncomputable def admissibleRankQuotientRow
+    (exactResponseProfile admissibleRankQuotient :
+      FactKey (Input BranchState Presentation presentation data))
+    (distinct : exactResponseProfile ≠ admissibleRankQuotient)
+    (decode : (input : Input BranchState Presentation presentation data) →
+      exactResponseProfile.At input →
+        Holds BranchState Presentation presentation data .exactResponseProfile
+          input.object)
+    (encode : (input : Input BranchState Presentation presentation data) →
+      Holds BranchState Presentation presentation data .admissibleRankQuotient
+          input.object →
+        admissibleRankQuotient.At input) :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.admissibleRankQuotient
+    (rowManifest exactResponseProfile admissibleRankQuotient distinct)
+    (fun inputs =>
+      let inherited := decode inputs.current (inputs.get exactResponseProfile)
+      .cons (key := admissibleRankQuotient)
+        (encode inputs.current (by
+          rcases inherited with ⟨packing, valid, card, _profile⟩
+          refine ⟨packing, valid, card, ?_⟩
+          dsimp
+          let admissible := fun quotient =>
+            ∃ declared : Graph.DeclaredQuotient
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) inputs.current.object
+                (inputs.current.object.internalWedgeFamily
+                  (inputs.current.object.remainderSupport packing))
+                (Graph.FiniteObject.internalWedgeSupport
+                  (region := inputs.current.object.remainderSupport packing)),
+              declared.toRankQuotient = quotient
+          exact ⟨admissible, fun _quotient => Iff.rfl⟩))
+        .nil)
+
 /-! ## Node `[31]`: the curvature target-rank of the remainder
 
 `def:curvature-target-rank`.  `𝒲₂(R)` is the family of raw internal length-two

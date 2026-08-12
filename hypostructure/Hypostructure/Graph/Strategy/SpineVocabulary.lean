@@ -485,6 +485,16 @@ inductive Key where
   with the boundary-demand ceiling substituted for the deficiency.  This is
   invariant 28, the demand side of the final collision. -/
   | curvatureDemandFloor
+  /-- `def:exact-response-profile` at the concrete remainder selected from the
+  incoming maximal-packing fact.  The fact stores the boundary-degree profile,
+  the literal all-context obstruction profile, the raw D4 coordinate family,
+  its embedded values, and label exactness. -/
+  | exactResponseProfile
+  /-- `def:admissible-rank-quotient` for the exact response profile of the
+  concrete remainder.  The fact publishes precisely the quotients represented
+  by a connected, carrying, boundary-fibre preserving, context-universal
+  `DeclaredQuotient` with the paper's proper and closed representative clauses. -/
+  | admissibleRankQuotient
   /-- Node `[31]`: the curvature target-rank of the remainder is attained by a
   subfamily of raw internal curvature tests that survives every functional
   admissible rank quotient, and every test outside that subfamily is
@@ -1155,6 +1165,17 @@ inductive Key where
   /-- Node `[131]`, `lem:mixed-sparse-spine-dependence` on the concrete
   baseline spine family and full pair-response schedule. -/
   | mixedSparseSpineDependence
+  /-- Node `[131]`, the two-sided exact cubic baseline budget at the current
+  residual's order and registered baseline. -/
+  | exactCubicBaselineBudget
+  /-- Node `[131]`, the incremental skeleton room above the exact cubic
+  baseline and its surplus-slack bound. -/
+  | incrementalSkeletonRoom
+  /-- `lem:skeleton-dominates` at the current residual's exact order and edge
+  count: the fixed-edge labelled skeleton class has exactly the registered
+  skeleton budget, and every canonical state map realizes at most that many
+  states. -/
+  | skeletonDominates
   deriving DecidableEq
 
 /-- **`𝒲₂(R)`**: the raw internal length-two curvature tests carried by the
@@ -2108,6 +2129,55 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               2 * (data.threshold * (data.windowOrder * packing.card) +
                 object.ambientSurplus
                   (Graph.FiniteObject.windowSupport packing) data.threshold))
+  | .exactResponseProfile, object =>
+      -- `def:exact-response-profile` on the one concrete remainder inherited
+      -- from `maximalPacking`.  Raw D4 coordinates all carry the common
+      -- presence value `Unit`; exactness means their wedge labels remain
+      -- distinct despite that equality of embedded numerical values.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          let support := object.remainderSupport packing
+          let boundary :=
+            Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object support
+          let piece :=
+            Graph.Strategy.InterfaceReplacement.SupportAtom.piece object support
+          let family := object.internalWedgeFamily support
+          let profile :
+              Graph.BoundaryDegreeProfile boundary ×
+                (Graph.OutsideContext boundary → Prop) ×
+                Finset (object.InternalWedge support) ×
+                (object.InternalWedge support → Unit) :=
+            (piece.boundaryDegreeProfile,
+              (fun outside => Graph.HasCycleWithLength data.LengthOK
+                (Graph.glue piece outside)), family, fun _ => ())
+          profile.1 = piece.boundaryDegreeProfile ∧
+            profile.2.1 = (fun outside =>
+              Graph.HasCycleWithLength data.LengthOK (Graph.glue piece outside)) ∧
+            profile.2.2.1 = family ∧
+            (∀ coordinate ∈ profile.2.2.1, profile.2.2.2 coordinate = ()) ∧
+            Set.InjOn (fun coordinate => coordinate) ↑profile.2.2.1)
+  | .admissibleRankQuotient, object =>
+      -- `def:admissible-rank-quotient` on the exact response profile already
+      -- selected for the concrete remainder.  Membership is exactly existence
+      -- of the paper's declared quotient datum: its fields are the connected
+      -- carrying support, boundary-degree fibre preservation, all-context
+      -- target-completeness, and the proper/closed representative clauses.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          let support := object.remainderSupport packing
+          let family := object.internalWedgeFamily support
+          ∃ admissible :
+              Core.TargetRank.RankQuotient.{u, u + 1}
+                  (object.InternalWedge support) → Prop,
+            ∀ quotient,
+              admissible quotient ↔
+                ∃ declared : Graph.DeclaredQuotient
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) object family
+                    (Graph.FiniteObject.internalWedgeSupport (region := support)),
+                  declared.toRankQuotient = quotient)
   | .curvatureTargetRank, object =>
       -- `def:curvature-target-rank` with `lem:target-rank-circuit`.  `r_Ω(R)`
       -- is attained by a subfamily of `𝒲₂(R)` surviving every functional
@@ -4472,6 +4542,35 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                           (Graph.MinimumDegreeAtLeast data.threshold)
                           (Graph.HasCycleWithLength data.LengthOK) object
                           attempt.support)
+  | .exactCubicBaselineBudget, object =>
+      Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
+          (2 * object.vertexCount) ^
+            Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ∧
+        (2 * Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
+            object.vertexCount.choose 2 →
+          (object.vertexCount - 1) ^
+              Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
+            Graph.cubicBaselineBudget object.vertexCount data.threshold *
+              (2 * (data.threshold + 1)) ^
+                Graph.cubicBaselineEdgeCount object.vertexCount data.threshold)
+  | .incrementalSkeletonRoom, object =>
+      Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
+          object.edgeCount ∧
+        Graph.skeletonBudget object ≤
+          Graph.cubicBaselineBudget object.vertexCount data.threshold *
+            object.vertexCount ^
+              (object.edgeCount -
+                Graph.cubicBaselineEdgeCount object.vertexCount data.threshold) ∧
+        2 * (object.edgeCount -
+              Graph.cubicBaselineEdgeCount object.vertexCount data.threshold) ≤
+          object.degreeSurplus data.threshold + 2
+  | .skeletonDominates, object =>
+      Nat.card (Graph.PackedWindowRealization.Skeleton
+          object.vertexCount object.edgeCount) = Graph.skeletonBudget object ∧
+        ∀ (State : Type u)
+          (stateOf : Graph.PackedWindowRealization.Skeleton
+            object.vertexCount object.edgeCount → State),
+          Nat.card (Set.range stateOf) ≤ Graph.skeletonBudget object
   | .sparseUpperEnvelope, object =>
       (object.edgeCount + 2 ≤ (data.threshold - 1) * object.vertexCount) ∧
         ∃ packing : Finset (Finset object.Vertex),
@@ -4634,6 +4733,8 @@ def label : Key → String
   | .stubSupply => "stubSupply"
   | .wedgeSupply => "wedgeSupply"
   | .curvatureDemandFloor => "curvatureDemandFloor"
+  | .exactResponseProfile => "exactResponseProfile"
+  | .admissibleRankQuotient => "admissibleRankQuotient"
   | .curvatureTargetRank => "curvatureTargetRank"
   | .curvatureRankDrop => "curvatureRankDrop"
   | .curvatureFullRank => "curvatureFullRank"
@@ -4790,6 +4891,9 @@ def label : Key → String
   | .dependentPairFamily => "dependentPairFamily"
   | .independentPairFamily => "independentPairFamily"
   | .mixedSparseSpineDependence => "mixedSparseSpineDependence"
+  | .exactCubicBaselineBudget => "exactCubicBaselineBudget"
+  | .incrementalSkeletonRoom => "incrementalSkeletonRoom"
+  | .skeletonDominates => "skeletonDominates"
 
 /-! ### Label pins
 
@@ -4987,6 +5091,11 @@ example : label .activeSurplusDemands = "activeSurplusDemands" := rfl
 example : label .dependentPairFamily = "dependentPairFamily" := rfl
 example : label .independentPairFamily = "independentPairFamily" := rfl
 example : label .mixedSparseSpineDependence = "mixedSparseSpineDependence" := rfl
+example : label .exactCubicBaselineBudget = "exactCubicBaselineBudget" := rfl
+example : label .incrementalSkeletonRoom = "incrementalSkeletonRoom" := rfl
+example : label .skeletonDominates = "skeletonDominates" := rfl
+example : label .exactResponseProfile = "exactResponseProfile" := rfl
+example : label .admissibleRankQuotient = "admissibleRankQuotient" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -5175,6 +5284,11 @@ def idx : Key → Nat
   | .dependentPairFamily => 201
   | .independentPairFamily => 202
   | .mixedSparseSpineDependence => 203
+  | .exactCubicBaselineBudget => 204
+  | .incrementalSkeletonRoom => 205
+  | .skeletonDominates => 206
+  | .exactResponseProfile => 207
+  | .admissibleRankQuotient => 208
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -5352,6 +5466,11 @@ def ofIdx : Nat → Key
   | 201 => .dependentPairFamily
   | 202 => .independentPairFamily
   | 203 => .mixedSparseSpineDependence
+  | 204 => .exactCubicBaselineBudget
+  | 205 => .incrementalSkeletonRoom
+  | 206 => .skeletonDominates
+  | 207 => .exactResponseProfile
+  | 208 => .admissibleRankQuotient
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -5765,6 +5884,19 @@ def name : Key → Lean.Name
   | .mixedSparseSpineDependence =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "mixedSparseSpineDependence") 203
+  | .exactCubicBaselineBudget =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "exactCubicBaselineBudget") 204
+  | .incrementalSkeletonRoom =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "incrementalSkeletonRoom") 205
+  | .skeletonDominates =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "skeletonDominates") 206
+  | .exactResponseProfile =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "exactResponseProfile") 207
+  | .admissibleRankQuotient =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "admissibleRankQuotient") 208
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

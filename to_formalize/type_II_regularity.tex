@@ -401,7 +401,7 @@ Terminal ancestry and grouping
 
 Terminal residual completeness
 & \nolinkurl{type_II_regularity.tex}
-& \nolinkurl{thm:local-residual-exhaustion}; \nolinkurl{thm:critical-ns-profile-decomposition-discharged}
+& \nolinkurl{prop:residual-spike-routing}; \nolinkurl{lem:spacetime-small-terminal-residual}; \nolinkurl{thm:local-residual-exhaustion}; \nolinkurl{thm:critical-ns-profile-decomposition-discharged}
 & either a visible residual receives a named first row or belongs to the retained comparable class; on the retained branch \(S_n\to0\) in \(L^\infty(I;L^3(B_R))\), with vanishing stress, pressure, and residual errors in the terminal topology
 & \nolinkurl{thm:terminal-windowed-profile-completeness}; \nolinkurl{thm:terminal-nonlinear-decoupling}; \nolinkurl{thm:terminal-critical-local-compactness}
 & \(Q_{2R,I}\to Q_{R,I}\)
@@ -464,11 +464,15 @@ the admissible-family contract of
 \cref{def:admissible-terminal,def:critical-ns-profile-decomposition-local}.
 The ancestry and grouping rules are proved in
 \cref{lem:retained-frame-maximality,thm:terminal-coordinate-frame-construction-profile-selection}.
-The residual is then either visible in the augmented local coordinates and
-routed by \cref{thm:local-residual-exhaustion}, or it converges to zero
-by \cref{thm:critical-ns-profile-decomposition-discharged}.  Thus the
-terminal completeness conclusion is proved here and is not part of the input
-contract.
+The residual is then routed by
+\cref{prop:residual-spike-routing}: a fixed-window occupation or active
+parabolic rebase enters the augmented local coordinates of
+\cref{thm:local-residual-exhaustion}, while a spacetime-small selected-time
+spike is perturbative by
+\cref{lem:spacetime-small-terminal-residual} and is absorbed during ancestry
+terminalization.  The resulting finalized residual converges to zero by
+\cref{thm:critical-ns-profile-decomposition-discharged}.  Thus the terminal
+completeness conclusion is proved here and is not part of the input contract.
 
 At the assembly level, the preceding first failures enter covered local
 state-space rows by
@@ -1437,13 +1441,13 @@ Node & State or exhaustive test & Source in the proof & Successor or closure \\
 \cref{thm:multibubble,cor:exterior-concentration-exit-discharged} & Terminal profile branch \\
 
 [50] & Residual, critical-tail, or pressure-defect test &
-\cref{thm:local-residual-exhaustion,thm:terminal-adjacent-label-routing} & Defect gives [51]; otherwise [52] \\
+\cref{prop:residual-spike-routing,thm:local-residual-exhaustion,thm:terminal-adjacent-label-routing} & Defect gives [51]; otherwise [52] \\
 
 [51] & Named residual, tail, or pressure row &
 \cref{thm:local-residual-exhaustion,lem:diffuse-critical-tail-row-closed} & Continue to [56] \\
 
 [52] & Retained comparable profile with perturbative residual &
-\cref{thm:terminal-windowed-profile-completeness,thm:terminal-critical-local-compactness} & Apply the retained compact tests at [53] \\
+\cref{lem:spacetime-small-terminal-residual,thm:terminal-windowed-profile-completeness,thm:terminal-critical-local-compactness} & Apply the retained compact tests at [53] \\
 
 [53] & Critical tightness and local windowed $H^1$ control &
 \cref{thm:retained-compact-tests-closed} & Verify the expanded terminal data at [54] \\
@@ -8709,6 +8713,14 @@ and hence the pressure gradients converge locally modulo functions of time on
 the retained branch,
 or the branch has already entered the pressure/exterior row routed by
 \cref{lem:harmonic-cross-pressure-routing}.
+On the non-pressure branch, the ordered modulation, represented-equation, and
+local-energy limit test has the following exhaustive output: either its first
+failure is the corresponding named modulation, representation, or local-energy
+row, or there are limiting repaired-gauge coefficients
+\((a_\infty,b_\infty)\) and a pressure \(P_\infty\), modulo functions of time,
+such that \((V_\infty,P_\infty,a_\infty,b_\infty)\) satisfies the represented
+equation and local energy inequality on every compact subcylinder of
+\(B_R\times I\).
 \end{lemma}
 
 \begin{proof}
@@ -8761,6 +8773,57 @@ so Calder\'on--Zygmund continuity gives strong convergence of the local part in
 the pressure convergence is strong locally modulo functions of time.  In all
 cases pressure compactness has been obtained by a local decomposition or routed
 to a named row; no weak lower-semicontinuity of pressure mass is used.
+
+It remains to identify the represented suitable limit on the non-pressure
+branch.  Apply the local modulation-defect routing of
+\cref{lem:bounded-modulation-defect-routing} on a finite cover of \(I\).
+A visible nonperturbative modulation component is one of the named modulation,
+scale-drift, active-core, or repaired-gauge rows.  Otherwise, after passing to a
+further subsequence, the window averages converge to constants
+\((a_\infty,b_\infty)\), and either
+\[
+  a_n\to a_\infty,\qquad b_n\to b_\infty
+  \quad\text{in }L^1(I),
+\]
+or the nonconstant coefficient contribution tends to zero in the represented
+local residual topology.
+
+In the first case, the uniform \(L^\infty(I;L^2(B_R))\) bound and the
+\(L^1\)-coefficient convergence allow the modulation terms to pass to the
+limit after spatial integration by parts.  For example, for a fixed compactly
+supported test field \(\varphi\),
+\[
+\begin{aligned}
+ &\left|\int_I(a_n-a_\infty)
+   \int_{B_R}V_n\cdot
+   \bigl(3\varphi+y\cdot\nabla\varphi\bigr)\,dy\,ds\right|\\
+ &\qquad\le
+ C_{\varphi,R}
+ \|a_n-a_\infty\|_{L^1(I)}
+ \|V_n\|_{L^\infty(I;L^2(B_R))}\to0,
+\end{aligned}
+\]
+and the \(b_n\)-term is identical.  The constant-coefficient terms pass by
+strong local \(L^2\)-convergence.  In the perturbative alternative, the
+definition of the represented residual topology gives the same conclusion.
+Thus the represented equation passes to
+\((V_\infty,P_\infty,a_\infty,b_\infty)\).  If this passage is unavailable,
+the first unavailable coordinate is the named modulation or
+represented-equation row.
+
+For the local energy inequality, fix nested compact subcylinders and a
+nonnegative compact cutoff.  The cubic velocity terms converge by strong
+\(L^3\)-convergence, the pressure-velocity term converges by the strong
+\(L^{3/2}\) pressure convergence just proved together with strong
+\(L^3\)-convergence, and the dissipation term is lower semicontinuous under
+weak \(L^2H^1\)-convergence.  In the constant-coefficient alternative, the
+modulation energy terms pass by the same \(L^1\)-coefficient estimate, now
+using the uniform \(L^\infty L^2\) bound for the quadratic velocity factors.
+In the perturbative alternative, either the compact-cutoff energy pairings
+vanish as part of the retained local-energy residual topology, or their first
+nonvanishing pairing is the named modulation/local-energy row.  Hence, away
+from that named row, the local energy inequality passes to the limit on every
+smaller cylinder.  This proves the final assertion.
 \end{proof}
 
 \begin{lemma}[Pressure-only compactness failure is a pressure/exterior row]
@@ -15272,15 +15335,25 @@ retained terminal branch.
 
 \begin{proof}
 This is the compact-window form of the local residual exhaustion theorem
-\cref{thm:local-residual-exhaustion}.  If
-\(\mathfrak M_{R,I}(f_n;x_n,\lambda_n)>0\), then a subsequence and a smaller
-compact terminal cylinder carry positive local \(L^3\) mass.  The local
-residual-exhaustion theorem then assigns the resulting positive local defect to
-the first closed local row.  An adjacent label is handled by its local closure
-theorem and is not part of the retained terminal branch.  A retained
-comparable label must already have been grouped into the selected terminal
-class by the terminal frame selection rule.  Thus positive nonretained
-residual mass cannot persist on a retained terminal branch.
+\cref{thm:local-residual-exhaustion}, with selected-time spikes supplied by
+\cref{prop:residual-spike-routing}.  If
+\(\mathfrak M_{R,I}(f_n;x_n,\lambda_n)>0\), select the times carrying this
+lower bound and apply that proposition to the corresponding residual
+coordinate.  A first validation failure is a named adjacent row.  Positive
+spacetime occupation, or a CKN-active parabolic rebase, is an actual descendant
+of the full represented branch and is assigned by local residual exhaustion
+either to a named adjacent row or to the retained comparable class.  An
+adjacent label is handled by its local closure theorem and is not part of the
+retained terminal branch; a retained comparable label was grouped into the
+selected terminal class before the frame was fixed.
+
+The remaining ordered alternative is a selected-time spike with vanishing
+compact spacetime occupation and no active rebase.  By
+\cref{lem:spacetime-small-terminal-residual} it is perturbative in the full
+terminal PDE topology, and the terminal absorption step in
+\cref{prop:residual-spike-routing} removes it before the finalized
+nonretained residual is fixed.  Thus positive nonretained residual mass cannot
+persist on a retained terminal branch.
 \end{proof}
 
 \begin{remark}[Status of \cref{thm:terminal-windowed-profile-completeness}]
@@ -15951,6 +16024,136 @@ harmonic remainder is routed by
 \cref{lem:harmonic-cross-pressure-routing} with \((q,p)=(1,2)\) to the pressure/exterior
 alternative; on a retained branch this alternative is absent.  Therefore the
 cross-pressure gradients vanish in \(L^1H^{-1}(B_R)\).
+\end{proof}
+
+\begin{lemma}[Spacetime-small terminal residuals are perturbative]
+\label{lem:spacetime-small-terminal-residual}
+Let
+\[
+  V_n=U_n+S_n
+\]
+be an ancestry-generated terminal decomposition on a compact cylinder
+\(Q_{2R,I}=B_{2R}\times I\).  Suppose that the repaired-gauge
+representation, bounded modulation, local pressure reconstruction, and the
+compact-window estimates give
+\[
+  \sup_n\Bigl(
+  \|U_n\|_{L^2(I;H^1(B_{2R}))}
+  +\|S_n\|_{L^2(I;H^1(B_{2R}))}
+  \Bigr)<\infty .
+\]
+The ordered represented-equation validation has two outputs.  Its first
+failure is the corresponding representation, equation, or
+componentwise-compactness row.  On the retained output, \(U_n\) satisfies its
+retained equation in the gauge of \(V_n\), with equation error
+\[
+  e_n\to0
+  \quad\text{in }L^1(I;H^{-1}(B_R)).
+\]
+
+If
+\[
+  S_n\to0
+  \quad\text{in }L^3(Q_{2R,I}),
+\]
+then
+\[
+  U_n\otimes S_n+S_n\otimes U_n+S_n\otimes S_n
+  \to0
+  \quad\text{in }L^1(I;L^2(B_R)).
+\]
+Moreover, the ordered pressure reconstruction gives either the named
+pressure/exterior row or
+\[
+  \nabla P_{{\rm cross},n}\to0
+  \quad\text{in }L^1(I;H^{-1}(B_R)).
+\]
+On the retained branch the latter alternative holds, and
+\[
+  \partial_\tau S_n-\nu\Delta S_n
+  -a_n(S_n+y\cdot\nabla S_n)-b_n\cdot\nabla S_n
+  \to0
+  \quad\text{in }L^1(I;H^{-1}(B_R)).
+\]
+All compact-cutoff errors containing \(S_n\) also tend to zero in
+\(L^1(I;H^{-1}(B_R))\).  Thus \(S_n\) is perturbative in every terminal PDE
+topology even when
+\[
+  \limsup_{n\to\infty}
+  \|S_n\|_{L^\infty(I;L^3(B_R))}>0.
+\]
+\end{lemma}
+
+\begin{proof}
+Since \(I\) has finite measure,
+\[
+  \|S_n\|_{L^2(I;L^3(B_{2R}))}
+  \le |I|^{1/6}\|S_n\|_{L^3(Q_{2R,I})}\to0.
+\]
+The uniform \(L^2H^1\) bounds and Sobolev embedding give
+\[
+  \sup_n\Bigl(
+  \|U_n\|_{L^2(I;L^6(B_{2R}))}
+  +\|S_n\|_{L^2(I;L^6(B_{2R}))}
+  \Bigr)<\infty .
+\]
+Consequently,
+\[
+  \|U_n\otimes S_n\|_{L^1(I;L^2(B_R))}
+  \le
+  \|U_n\|_{L^2(I;L^6(B_R))}
+  \|S_n\|_{L^2(I;L^3(B_R))}\to0.
+\]
+The same estimate applies to \(S_n\otimes U_n\), and
+\[
+  \|S_n\otimes S_n\|_{L^1(I;L^2(B_R))}
+  \le
+  \|S_n\|_{L^2(I;L^6(B_R))}
+  \|S_n\|_{L^2(I;L^3(B_R))}\to0.
+\]
+
+Apply the canonical local pressure decomposition to this cross stress.  Its
+Calder\'on--Zygmund component tends to zero in \(L^1(I;L^2(B_R))\).
+By \cref{lem:harmonic-cross-pressure-routing} with \((q,p)=(1,2)\), a
+nonvanishing normalized harmonic component is the pressure/exterior row.  On
+the retained branch that row is absent, so the full normalized cross pressure
+tends to zero in \(L^1(I;L^2(B_R))\), and its gradient tends to zero in
+\(L^1(I;H^{-1}(B_R))\).
+
+Subtract the represented equation for \(U_n\) from the represented equation
+for \(V_n\).  On \(Q_{R,I}\),
+\[
+\begin{aligned}
+  &\partial_\tau S_n-\nu\Delta S_n
+  -a_n(S_n+y\cdot\nabla S_n)-b_n\cdot\nabla S_n\\
+  &\qquad={}
+  -\nabla\cdot\bigl(
+  U_n\otimes S_n+S_n\otimes U_n+S_n\otimes S_n
+  \bigr)
+  -\nabla P_{{\rm cross},n}-e_n .
+\end{aligned}
+\]
+Every term on the right tends to zero in \(L^1(I;H^{-1}(B_R))\).
+
+It remains to verify the cutoff topology.  Spacetime \(L^3\)-convergence on a
+bounded cylinder gives \(S_n\to0\) in \(L^1(I;L^2(B_{2R}))\).  When a
+derivative in a linear cutoff term falls on \(S_n\), integration by parts moves
+it onto the fixed cutoff and the \(H^1_0\) test function.  For example,
+\[
+  \bigl\langle \nabla\chi\cdot\nabla S_n,\varphi\bigr\rangle
+  =-
+  \int S_n\cdot
+  \bigl((\Delta\chi)\varphi+\nabla\chi\cdot\nabla\varphi\bigr).
+\]
+The resulting pointwise dual estimate gives
+\[
+  \|\text{linear cutoff commutator}\|_{L^1(I;H^{-1}(B_R))}
+  \le C_\chi\|S_n\|_{L^1(I;L^2(B_{2R}))}\to0.
+\]
+The bounded modulation terms are handled by the same integration by parts.
+Nonlinear cutoff terms are bounded by the cross stress already shown to
+vanish, and pressure cutoff terms are estimated using the normalized cross
+pressure above.  This proves the cutoff assertion and the lemma.
 \end{proof}
 
 \begin{theorem}[Small local residual components are perturbative]
@@ -20675,10 +20878,10 @@ multibubble/cascade, exterior, or cost/carrier row;
 
 \item none of the above occurs, in which case
 \[
-  S_n\to0
-  \quad\text{in the terminal residual topology recorded by the augmented
-  state space.}
+  S_n\to0\quad\text{in }L^3_{\rm loc},
 \]
+the residual is perturbative in the complete terminal PDE topology, and the
+ancestry terminalization absorbs it before the nonretained residual is fixed.
 \end{enumerate}
 \end{lemma}
 
@@ -20723,10 +20926,15 @@ comparable class.  The retained comparable class is grouped into \(U_n\) by
 \Cref{lem:retained-frame-maximality}.  Thus the diffuse case gives
 \textup{(iv)}.
 
-If none of \textup{(i)}--\textup{(iv)} occurs, then all residual occupation
-coordinates and all mixed-stress coordinates vanish in the augmented topology.
-This is exactly perturbativity of \(S_n\) in the terminal residual topology
-recorded by the augmented state space, giving \textup{(v)}.
+If none of \textup{(i)}--\textup{(iv)} occurs, then all compact spacetime
+occupation coordinates and all mixed-stress coordinates vanish in the
+augmented topology.  The diagonal compact exhaustion in
+\cref{prop:residual-spike-routing}\textup{(iii)} gives
+\(S_n\to0\) in \(L^3_{\rm loc}\), and
+\cref{lem:spacetime-small-terminal-residual} gives perturbativity in every
+terminal PDE topology.  The absorption step of
+\cref{prop:residual-spike-routing} then removes this coordinate before the
+nonretained residual is finalized.  This is \textup{(v)}.
 \end{proof}
 
 \begin{lemma}[Residual concentration is visible in the augmented state]
@@ -20746,7 +20954,8 @@ named adjacent row, grouped into the retained comparable class, recorded as a
 visible diffuse residual coordinate routed by
 \cref{thm:local-residual-exhaustion} to a named adjacent local
 alternative or the retained comparable class, or is perturbative in the
-terminal residual topology.  In particular,
+complete terminal PDE topology and absorbed before the nonretained residual is
+finalized.  In particular,
 residual \(L^3\) concentration cannot be invisible in the augmented local state
 space by cancellation between \(V_n\) and \(U_n\).
 \end{lemma}
@@ -20759,8 +20968,9 @@ same-point comparable retained class grouped into \(U_n\), to a positive
 mixed-stress row, to a visible diffuse residual coordinate routed by
 \cref{thm:local-residual-exhaustion} to a named adjacent local
 alternative or a retained comparable class, or to perturbativity in the
-terminal residual topology.  Thus residual mass is visible in the augmented
-local state and cannot be hidden by cancellation between \(V_n\) and \(U_n\).
+complete terminal PDE topology followed by ancestry terminal absorption.  Thus
+residual mass is visible in the augmented local state and cannot be hidden by
+cancellation between \(V_n\) and \(U_n\).
 \end{proof}
 
 \begin{lemma}[Active-witness compact-chart/tail dichotomy]
@@ -21138,6 +21348,133 @@ mass alternative remains.  This is a compact-cylinder statement; it does not
 require \(V(\tau)\in L^3(\mathbb R^3)\) or a whole-space critical norm bound.
 \end{proof}
 
+\begin{proposition}[Residual-spike routing without pointwise persistence]
+\label{prop:residual-spike-routing}
+Let
+\[
+  V_n=U_n+S_n
+\]
+be an ancestry-generated retained terminal decomposition, and suppose that on
+some compact terminal cylinder
+\[
+  \limsup_{n\to\infty}
+  \|S_n\|_{L^\infty(I;L^3(B_R))}>0 .
+\]
+Choose times \(\tau_n\) carrying a fixed lower bound and apply the admissible
+finite recentering of \cref{lem:interior-time-selection}.  After passing to a
+diagonal subsequence, the following ordered alternatives are exhaustive.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item The ordered representation, pressure, modulation, local-energy,
+rough-core, compact-upper, critical-mass, exterior, scale-center, or
+represented-equation validation first fails on the recentered full branch.
+The corresponding named local row occurs.
+
+\item All preceding validation rows pass, and either a compact subcylinder
+\(Q'\) has positive residual spacetime occupation,
+\[
+  \liminf_{n\to\infty}\int_{Q'}|S_n|^3\,dy\,d\tau>0,
+\]
+or a parabolic rebase of the selected-time spike reaches the fixed local CKN
+activity threshold.  At the first occupation coordinate and first positive
+level detecting this amount, rerun the local state selection on the full
+represented branch \(V_n\).  A candidate leaving every compact relative
+scale-center chart is routed by
+\cref{lem:active-parameter-chart-tail}.  A candidate remaining in a compact
+relative chart is grouped into the existing compound retained class by
+\cref{lem:retained-frame-maximality}, or it produces the corresponding
+multicore, same-point-cascade, gauge-degenerate, bounded-window,
+pressure/exterior, rough-core, or other named local row.
+
+\item All preceding validation rows pass, no compact subcylinder has positive
+limiting residual spacetime occupation, and no parabolic rebase reaches the
+local CKN activity threshold.  Then
+\[
+  S_n\to0\quad\text{in }L^3_{\rm loc},
+\]
+and \cref{lem:spacetime-small-terminal-residual} makes \(S_n\)
+perturbative in every nonlinear-stress, pressure, modulation,
+linear-residual, and cutoff topology used downstream.  The ancestry
+terminalization therefore absorbs this perturbative component before fixing
+the nonretained terminal residual.
+\end{enumerate}
+Thus a selected-time \(L^3\) spike never creates an additional terminal Type
+II branch.  It either has an active descendant of the full represented branch,
+is assigned to an earlier named row, is grouped into the retained comparable
+class, or is removed by perturbative terminal absorption.
+\end{proposition}
+
+\begin{proof}
+Choose \(\delta>0\), a subsequence, and times \(\tau_n\in I\) such that
+\[
+  \|S_n(\tau_n)\|_{L^3(B_R)}\ge\delta .
+\]
+\Cref{lem:interior-time-selection} places these same times in the interior of
+a fixed model window; it does not transfer the lower bound to another time.
+Run the ordinary ordered validation on the full represented branch on the
+recentered windows.  A first failure gives \textup{(i)}.  In particular, the
+represented equation for \(U_n\) used below is either available with its
+vanishing local error, or its failure has already closed the corresponding
+row.
+
+Assume that every preceding local input passes.  Fix a countable exhaustion of
+the selected model window by compact subcylinders and the countable family of
+occupation tests used in the augmented local state space.  Pass diagonally so
+that every nonnegative residual occupation coordinate has a limit.  If one
+such coordinate is positive, choose the first coordinate in the fixed
+enumeration and the first dyadic level below its limiting value.  This gives
+the positive compact spacetime occupation in \textup{(ii)} without selecting a
+new time.
+
+Run the local state selection at that window and level on
+\((V_n,P_n,a_n,b_n)\), retaining \(U_n\) and \(S_n\) only as augmented
+coordinates.  The relative scale-center alternatives are exhaustive by
+\cref{lem:active-parameter-chart-tail}.  Outside all compact charts that lemma
+gives a separated-center, cascade, noncompact, or named analytic row.  Inside
+a compact chart, a candidate carrying the retained activity floor is grouped
+by \cref{lem:retained-frame-maximality}; failure of that floor or of any
+compact local input is routed by
+\cref{lem:terminal-local-critical-mass-routing} and the ordered validation
+rows.  This proves the spacetime-occupation part of \textup{(ii)}.
+
+The same conclusion holds when the fixed-window occupations vanish but a
+smaller parabolic rebase reaches the CKN activity threshold.  Indeed,
+\cref{lem:residual-selected-time-support-transfer} realizes the rebased state
+as an actual descendant of the original represented branch.  Applying the
+same relative scale-center partition and maximality argument to that
+descendant gives \textup{(i)} or \textup{(ii)}.  No Navier--Stokes equation is
+imposed on \(S_n\) as an independent solution.
+
+It remains to consider the case in which all compact residual spacetime
+occupation coordinates vanish and there is no active rebase.  The diagonal
+choice and the compact exhaustion imply
+\[
+  \|S_n\|_{L^3(Q')}\to0
+\]
+for every compact \(Q'\) in the selected terminal window.  Since the
+represented-equation row has passed, all hypotheses of
+\cref{lem:spacetime-small-terminal-residual} hold on nested compact cylinders.
+That lemma proves perturbativity in the complete terminal PDE topology.
+
+For completeness, the terminal absorption in this case preserves the exact
+decomposition and every retained limiting coordinate.  On a fixed compact
+window replace
+\[
+  (U_n,S_n)\quad\text{by}\quad
+  (\widetilde U_n,\widetilde S_n):=(U_n+S_n,0)=(V_n,0).
+\]
+The full represented equation and its pressure belong to \(\widetilde U_n\).
+The difference between the old and new retained equations consists precisely
+of the cross stress, cross pressure, modulation, linear-residual, and cutoff
+terms shown in
+\cref{lem:spacetime-small-terminal-residual} to vanish.  Moreover,
+\(S_n\to0\) in spacetime \(L^3\), so the positive finite spacetime mass of the
+retained class and every compact occupation coordinate are unchanged in the
+limit.  Performing this replacement on the countable compact exhaustion by
+the same diagonal procedure is the perturbative-pruning step of the ancestry
+construction.  Hence such a spike is not left in the finalized nonretained
+residual.  This is \textup{(iii)} and completes the ordered routing.
+\end{proof}
+
 \begin{theorem}[Adjacent terminal labels are locally routed]
 \label{thm:terminal-adjacent-label-routing}
 For every admissible retained terminal decomposition, every first label in the
@@ -21193,7 +21530,8 @@ selected terminal component before the terminal frame is fixed.
 
 \begin{theorem}[Residual local mass gives an admissible augmented state]
 \label{thm:residual-mass-admissible-state}
-Assume the local compact-window estimates of
+Let \(V_n=U_n+S_n\) be an ancestry-generated retained terminal decomposition,
+and assume the local compact-window estimates of
 \cref{def:critical-ns-profile-decomposition-local}\textup{(i)}.  If
 \[
   \limsup_{n\to\infty}\|S_n\|_{L^\infty(I;L^3(B_R))}>0,
@@ -21258,6 +21596,15 @@ bounded modulation, and the compact-cylinder bounds.  The retained component
 \(U_n\) and residual coordinate \(S_n\) are bookkeeping variables in the
 augmented state space.  Thus no step applies the Navier--Stokes decomposition
 theorem to \(S_n\) alone.
+
+Apply \cref{prop:residual-spike-routing} to the selected-time lower bound.
+Its first alternative is already a named adjacent local row.  In its second
+alternative, the positive spacetime occupation or CKN-active rebase is an
+actual descendant of the full represented branch and therefore enters the
+ordered first-row extraction below.  Its third alternative is perturbative in
+the full terminal PDE topology and is absorbed before the ancestry-generated
+nonretained residual is finalized; hence it cannot be the \(S_n\) appearing in
+the conclusion of this theorem.
 
 Evaluate the ordered local validation list of
 \cref{lem:no-unrecorded-cost-escape} on the augmented state.  If a
@@ -21336,11 +21683,24 @@ cylinder satisfies
 \end{lemma}
 
 \begin{proof}
-If the convergence failed, then a subsequence would have positive residual
-mass in the sense of \cref{lem:heat-flow-kato-smallness}.  The preceding
-lemma shows that such mass cannot remain in the retained terminal branch after
-local state-space closure and grouping of comparable retained classes.  This
-contradiction proves the convergence.
+If the convergence failed, then a subsequence and selected times would satisfy
+the positive residual lower bound in
+\cref{prop:residual-spike-routing}.  In alternative \textup{(i)} of that
+proposition, the branch has entered a named adjacent row and is not the
+retained terminal branch.  In alternative \textup{(ii)}, the active descendant
+is either assigned to a named adjacent row or grouped into the retained
+comparable class by \cref{lem:retained-frame-maximality}; in neither case can
+it persist in the finalized nonretained residual.  In alternative
+\textup{(iii)}, \cref{lem:spacetime-small-terminal-residual} proves that the
+spike is perturbative in the complete terminal PDE topology, and the
+ancestry-terminalization step absorbs it before fixing \(S_n\).  All ordered
+alternatives therefore contradict persistence of the selected-time lower
+bound in the finalized nonretained residual.  Hence
+\[
+  S_n\to0
+  \quad\text{in }L^\infty(I;L^3(B_R)),
+\]
+without transferring the lower bound between times.
 \end{proof}
 
 \begin{theorem}[Visible local residual exhaustion theorem]
@@ -21361,6 +21721,10 @@ into the retained terminal class before the frame was fixed.
 
 \begin{proof}
 For positive residual \(L^3\) mass,
+\cref{prop:residual-spike-routing} first separates a fixed-window occupation
+or CKN-active rebase from a spacetime-small selected-time spike.  The latter is
+perturbatively absorbed and therefore is absent from the finalized
+nonretained residual.  In the former case,
 \cref{thm:residual-mass-admissible-state} produces an augmented local
 occupation state for the tuple
 \[

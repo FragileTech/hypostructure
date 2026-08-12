@@ -318,26 +318,4 @@ theorem localize
 
 end DeclaredQuotient
 
-namespace FiniteObject
-
-/-- **The admissible quotient system of `def:curvature-target-rank`, at an
-arbitrary declared coordinate family.**
-
-`def:functional-rank-quotient`'s closing sentence: "the admissible quotient
-system used to compute target-rank consists only of admissible rank quotients
-that are functional on the coordinate family under discussion."  Membership is
-exactly that conjunction. -/
-noncomputable def declaredQuotientSystem
-    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
-    {Coordinate : Type u} (family : Finset Coordinate)
-    (coordinateSupport : Coordinate → Finset object.Vertex) :
-    Core.TargetRank.QuotientSystem.{u, u + 1} Coordinate family where
-  Member quotient :=
-    (∃ admissible : DeclaredQuotient Baseline Target object family
-      coordinateSupport, admissible.toRankQuotient = quotient) ∧
-      quotient.FunctionalOn ↑family
-  functional membership := membership.2
-
-end FiniteObject
-
 end Hypostructure.Graph

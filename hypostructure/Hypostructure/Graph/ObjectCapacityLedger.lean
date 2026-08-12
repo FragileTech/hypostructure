@@ -351,65 +351,6 @@ theorem degreeSurplus_le_mul_ceilSqrt
 
 end CertifiedObjectCapacityLedger
 
-/-- **Node `[136]`'s existence commitment, proved.**
-
-At *every* declared presentation -- every valid packing of induced windows,
-every demand activation, every coordinate/shoulder-chord presentation and every
-role reading -- the object's own capacity-token charge is a capacity-token
-ledger.  The three obligations are the branch's own: node `[130]`'s pair count,
-the vertex the branch's positive surplus exhibits, and
-`lem:capacity-token-supply` at the sparse upper envelope and the registered join
-comparison. -/
-theorem objectCapacityLedgerExists (object : FiniteObject.{u})
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {deficitScale : Nat}
-    {threshold order : Nat}
-    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
-    (vertex : object.Vertex)
-    (scheduleCard : (object.portPairSchedule threshold).card =
-      (object.degreeSurplus threshold).choose 2)
-    (three : 3 ≤ threshold) (orderPos : 0 < order)
-    (handshake : threshold * object.vertexCount ≤ 2 * object.edgeCount)
-    (envelope : object.edgeCount + 2 ≤ (threshold - 1) * object.vertexCount)
-    (joinSlack : threshold * order + 2 ≤ 4 * order)
-    (spine : object.BaselineWindowDemand Baseline LengthOK threshold order
-      deficitScale)
-    (mixed : ∀ declared : CapacityPresentation.{u} object order,
-      object.MixedSpinePairDemand Baseline LengthOK threshold order deficitScale spine
-        declared.activation) :
-    ∀ declared : CapacityPresentation.{u} object order,
-      Nonempty (CertifiedObjectCapacityLedger.{u} object threshold order
-        deficitScale declared) :=
-  fun declared => by
-    let budget :=
-      spineDeficit object.vertexCount threshold spine.bits +
-        (Nat.log2 object.vertexCount + 1) *
-          (object.edgeCount - cubicBaselineEdgeCount object.vertexCount threshold)
-    have freeSubset := declared.freeSide_subset_activationFree threshold
-    have freeBound :
-        (freeSide object.vertexPairDecidableEq (object.portPairSchedule threshold)
-          (declared.tokenOrder threshold) (declared.Eligible threshold)
-          (declared.eligibleDecidable threshold)).card ≤ budget := by
-      calc
-        _ ≤ (declared.activation.freePairs threshold).card :=
-          Finset.card_le_card freeSubset
-        _ ≤ budget := (mixed declared).linearSandwich
-    let ledger := ObjectCapacityLedger.ofCapacityCharge declared scheduleCard
-      (object.capacityTokens_nonempty threshold declared.packing vertex)
-      budget freeBound
-      (object.card_capacityTokens_le declared.packingValid baseline three
-        handshake envelope orderPos joinSlack)
-    exact ⟨{
-      ledger := ledger
-      spineDeficit := spineDeficit object.vertexCount threshold spine.bits
-      edgeSlack := object.edgeCount -
-        cubicBaselineEdgeCount object.vertexCount threshold
-      entropyBudget_eq := rfl
-      spineDeficit_le := spine.deficitBound
-      edgeSlack_le := edgeSlack_le_degreeSurplus object threshold
-        (cubicBaselineEdgeCount_le_edgeCount_of_handshake object threshold
-          handshake) }⟩
-
 /-! ## The statements nodes `[137]`--`[143]` commit -/
 
 /-- **Node `[137]`, first production**: `lem:exact-surplus-pair-charge-partition`

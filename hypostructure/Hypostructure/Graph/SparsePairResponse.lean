@@ -153,9 +153,10 @@ noncomputable def pairBoundary (object : FiniteObject.{u})
 and whose support is `X_π`.
 
 Its kind is clause (D7), which is `def:declared-coordinate-signature`'s own name
-for *"sparse surplus-pair response coordinates"*.  The value is not recorded on
-the coordinate: `def:exact-response-profile` reads a value off a realization,
-and `Core.TargetRank.RankQuotient.value` is that reading. -/
+for *"sparse surplus-pair response coordinates"*.  The value `val_X(r)` is
+read from a realization by `def:exact-response-profile` through
+`Core.TargetRank.RankQuotient.value`; it is retained in the exact-profile fact
+on the incoming ledger, not duplicated on the coordinate or routed separately. -/
 def pairCoordinate (label : Finset (object.Vertex × object.Vertex))
     (support : Finset object.Vertex) : PairCoordinate object :=
   .base .sparseSurplus label support
