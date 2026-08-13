@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **597**.
+Compiled declarations: **629**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 91, **Minimum-degree cycle spine vocabulary** 290, **Sealed total closure** 12.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 94, **Minimum-degree cycle spine vocabulary** 319, **Sealed total closure** 12.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -3115,6 +3115,17 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
+#### `Hypostructure.Graph.Strategy.Spine.AmbientCubicWindow`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset object.Vertex → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.BarrierCapStatement`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3138,6 +3149,17 @@ Graph.Strategy.Spine.Data → Prop
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.BarrierOverflowStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.ColdAmbientCubicStatement`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `definition`
@@ -3181,7 +3203,84 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.ColdGermCandidatesStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.ColdHotEntropyCapStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.ColdHotEntropyOverflowStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.ColdMassStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.ColdRoute8AtOrAboveStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.ColdRoute8BelowStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.ColdSelectedBranchExcessStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.ColdStubExcessStatement`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `definition`
@@ -3758,7 +3857,11 @@ Graph.Strategy.Spine.Data → ℕ
 ```lean
 (data : Graph.Strategy.Spine.Data) →
   (object : Graph.FiniteObject) →
-    (packing : Finset (Finset object.Vertex)) → Graph.Strategy.Spine.remainderQuotient data object packing → Prop
+    (packing : Finset (Finset object.Vertex)) →
+      object.InternalWedge (object.remainderSupport packing) →
+        Set (object.InternalWedge (object.remainderSupport packing)) →
+          Graph.Strategy.Spine.remainderQuotient data object packing →
+            Finset (object.InternalWedge (object.remainderSupport packing)) → Prop
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.ExitSixDelocalizes`
@@ -3933,6 +4036,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.admissibleRankQuotient`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.atomCompression`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -3945,6 +4059,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.barrierCap`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.barrierEnumeration`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4022,6 +4147,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.canonicalBlockerRoute`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldAmbientCubic`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4131,6 +4267,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldGermCandidates`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldGermDistinguished`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4197,7 +4344,62 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldHotEntropyCap`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldHotEntropyOverflow`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldMass`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldPositiveGerm`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldRoute8AtOrAbove`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldRoute8Below`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4230,7 +4432,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.coldTerminalResidual`
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldStubExcess`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4362,6 +4564,28 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.exactCubicBaselineBudget`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.exactResponseProfile`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.fanCertificateCap`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4418,6 +4642,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.forcedCurvatureCost`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.functionalRankQuotient`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4505,6 +4740,28 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.incrementalSkeletonRoom`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.independentPairFamily`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.largeBudgetResidual`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4539,6 +4796,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.maximalPacking`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.mixedSparseSpineDependence`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4967,6 +5235,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.skeletonDominates`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.slackIndependent`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5089,6 +5368,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.surplusAtOrBelow`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.targetRankCircuit`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6011,18 +6301,34 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
           Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation data) → Type
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.WindowPackageStatement`
+### `Hypostructure.Graph.Strategy.SpineRows`
 
-- Category: Minimum-degree cycle spine vocabulary
+#### `Hypostructure.Graph.Strategy.Spine.admissibleRankQuotientRow`
+
+- Category: Minimum-degree cycle spine rows
 - Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
 - Compiled type:
 
 ```lean
-Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
+          (exactResponseProfile admissibleRankQuotient :
+              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
+            exactResponseProfile ≠ admissibleRankQuotient →
+              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  (a : exactResponseProfile.At input),
+                  Graph.Strategy.Spine.Holds BranchState Presentation presentation data
+                    Graph.Strategy.Spine.Key.exactResponseProfile input.object) →
+                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
+                    Graph.Strategy.Spine.Holds BranchState Presentation presentation data
+                        Graph.Strategy.Spine.Key.admissibleRankQuotient input.object →
+                      admissibleRankQuotient.At input) →
+                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
-
-### `Hypostructure.Graph.Strategy.SpineRows`
 
 #### `Hypostructure.Graph.Strategy.Spine.atomCompressionDichotomy`
 
@@ -6036,52 +6342,17 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-              (previous :
-                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    current known) →
-                (branchDependence contextUniversal atomCompression delocalizedSupport :
-                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                  [Core.Residual.FactKeys.Has branchDependence known] →
-                    [Core.Residual.FactKeys.Has contextUniversal known] →
-                      (∀ (a : contextUniversal.At current) (packing : Finset (Finset current.object.Vertex)),
-                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
-                            ∀ (quotient : Graph.Strategy.Spine.remainderQuotient data current.object packing),
-                              Graph.Strategy.Spine.TargetCompleteAt data quotient) →
-                        (∀ (a : branchDependence.At current),
-                            ∃ packing,
-                              Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                                ∃ quotient,
-                                  Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
-                                    ∀ smaller ⊂ quotient.support,
-                                      ∀ (narrower : Graph.Strategy.Spine.remainderQuotient data current.object packing),
-                                        narrower.support = smaller →
-                                          ¬Graph.Strategy.Spine.DeterminationCertificate data current.object packing
-                                              narrower) →
-                          ((∃ packing,
-                                Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                                  ∃ quotient,
-                                    Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
-                                      Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
-                                        quotient.support ⊆ Graph.FiniteObject.remainderSupport current.object packing) →
-                              atomCompression.At current) →
-                            ((∃ packing,
-                                  Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                                    ∃ quotient,
-                                      Graph.Strategy.Spine.DeterminationCertificate data current.object packing
-                                          quotient ∧
-                                        Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
-                                          ¬quotient.support ⊆
-                                                Graph.FiniteObject.remainderSupport current.object packing ∧
-                                            Graph.FiniteObject.remainderSupport current.object packing ⊂
-                                              Graph.Strategy.Spine.delocalizationSupport data current.object packing
-                                                quotient) →
-                                delocalizedSupport.At current) →
-                              atomCompression ∉ known →
-                                delocalizedSupport ∉ known →
-                                  Core.Strategy.Decision atomCompression delocalizedSupport previous
+        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+            (previous :
+                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  current known) →
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.contextUniversal) known] →
+                [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.maximalPacking) known] →
+                  ¬List.Mem (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.atomCompression) known →
+                    ¬List.Mem (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.delocalizedSupport) known →
+                      Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.atomCompression)
+                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.delocalizedSupport) previous
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.b2AssignmentDichotomy`
@@ -6249,42 +6520,7 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (remainderNormalized surplusAtOrBelow boundaryDemand stubSupply :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            remainderNormalized ≠ surplusAtOrBelow →
-              boundaryDemand ≠ remainderNormalized →
-                stubSupply ≠ remainderNormalized →
-                  boundaryDemand ≠ stubSupply →
-                    (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                        (a : surplusAtOrBelow.At input),
-                        Graph.FiniteObject.degreeSurplus input.object data.threshold ≤
-                          data.surplusThreshold (Graph.FiniteObject.vertexCount input.object)) →
-                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                          (∀ (packing : Finset (Finset input.object.Vertex)),
-                              Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                                Graph.FiniteObject.positiveDeficiency input.object
-                                      (Graph.FiniteObject.remainderSupport input.object packing) data.threshold ≤
-                                    Graph.FiniteObject.boundaryIncidence input.object
-                                      (Graph.FiniteObject.remainderSupport input.object packing) ∧
-                                  Graph.FiniteObject.boundaryIncidence input.object
-                                        (Graph.FiniteObject.remainderSupport input.object packing) +
-                                      2 * (data.windowOrder - 1) * packing.card ≤
-                                    data.threshold * (data.windowOrder * packing.card) +
-                                      Graph.FiniteObject.ambientSurplus input.object
-                                        (Graph.FiniteObject.windowSupport packing) data.threshold) →
-                            boundaryDemand.At input) →
-                        ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                            (∀ (packing : Finset (Finset input.object.Vertex)),
-                                Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                                  Graph.FiniteObject.positiveDeficiency input.object
-                                        (Graph.FiniteObject.remainderSupport input.object packing) data.threshold +
-                                      2 * (data.windowOrder - 1) * packing.card ≤
-                                    data.threshold * (data.windowOrder * packing.card) +
-                                      data.surplusThreshold (Graph.FiniteObject.vertexCount input.object)) →
-                              stubSupply.At input) →
-                          Core.Strategy.AtomicStrategy
-                            (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.branchDependenceRow`
@@ -6298,31 +6534,8 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (curvatureRankDrop branchDependence :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            curvatureRankDrop ≠ branchDependence →
-              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  (a : curvatureRankDrop.At input),
-                  ∃ packing,
-                    Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
-                      Graph.Strategy.Spine.remainderCurvatureTargetRank data input.object packing <
-                          Graph.Strategy.Spine.remainderWedgeSupply input.object packing ∧
-                        ∃ test determiners,
-                          Core.TargetRank.Dependence
-                            (Graph.Strategy.Spine.remainderQuotientSystem data input.object packing) test determiners) →
-                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                    (∃ packing,
-                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
-                          ∃ quotient,
-                            Graph.Strategy.Spine.DeterminationCertificate data input.object packing quotient ∧
-                              ∀ smaller ⊂ quotient.support,
-                                ∀ (narrower : Graph.Strategy.Spine.remainderQuotient data input.object packing),
-                                  narrower.support = smaller →
-                                    ¬Graph.Strategy.Spine.DeterminationCertificate data input.object packing narrower) →
-                      branchDependence.At input) →
-                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.branchKillClosedRow`
@@ -6352,142 +6565,43 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (bridgeResidual typeBBridgeMass :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            bridgeResidual ≠ typeBBridgeMass →
-              ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                  bridgeResidual.At input →
-                    ((∀ (packing : Finset (Finset input.object.Vertex)),
-                          Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                            ∀ piece ⊆ Graph.FiniteObject.remainderSupport input.object packing,
-                              Graph.SupportComponents.Connected.ConnectedOn input.object piece →
-                                Graph.FiniteObject.NegativeNetCharge input.object piece data.threshold
-                                    data.dischargeScale →
-                                  0 < Graph.FiniteObject.ambientSurplus input.object piece data.threshold →
-                                    (∀ centre ∈ piece,
-                                        Graph.IsHighCentre input.object data.threshold centre →
-                                          ∀ (envelope : Finset input.object.Vertex),
-                                            Graph.TypeBEnvelopeCharge.envelopeNegativePart input.object data.threshold
-                                                data.dischargeScale envelope centre ≤
-                                              data.bridgeMassFactor * data.dischargeScale *
-                                                (Graph.FiniteObject.degree input.object centre - data.threshold)) ∧
-                                      (Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt input.object piece
-                                          data.threshold data.dischargeScale →
-                                        piece.card +
-                                            data.dischargeScale *
-                                              Graph.FiniteObject.ambientSurplus input.object piece data.threshold ≤
-                                          data.dischargeScale *
-                                              Graph.FiniteObject.positiveDeficiency input.object piece data.threshold +
-                                            data.bridgeMassFactor * data.dischargeScale *
-                                              Graph.FiniteObject.ambientSurplus input.object piece data.threshold)) ∧
-                        (∀ (packing : Finset (Finset input.object.Vertex)),
-                            Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                              ∀
-                                (route8 :
-                                  Finset
-                                    (Graph.SupportComponents.Connected.Component input.object
-                                      (Graph.FiniteObject.remainderSupport input.object packing))),
-                                (∀ piece ∈ route8,
-                                    Graph.FiniteObject.ambientSurplus input.object
-                                        (Graph.FiniteObject.pieceSupport input.object
-                                          (Graph.FiniteObject.remainderSupport input.object packing) piece)
-                                        data.threshold =
-                                      0) →
-                                  (∀
-                                      piece ∈
-                                        Graph.FiniteObject.canonicalPieces input.object
-                                          (Graph.FiniteObject.remainderSupport input.object packing),
-                                      piece ∉ route8 →
-                                        Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt input.object
-                                          (Graph.FiniteObject.pieceSupport input.object
-                                            (Graph.FiniteObject.remainderSupport input.object packing) piece)
-                                          data.threshold data.dischargeScale) →
-                                    ∑
-                                        piece ∈
-                                          Graph.FiniteObject.canonicalPieces input.object
-                                            (Graph.FiniteObject.remainderSupport input.object packing),
-                                        ((Graph.FiniteObject.pieceSupport input.object
-                                                (Graph.FiniteObject.remainderSupport input.object packing) piece).card +
-                                            data.dischargeScale *
-                                              Graph.FiniteObject.ambientSurplus input.object
-                                                (Graph.FiniteObject.pieceSupport input.object
-                                                  (Graph.FiniteObject.remainderSupport input.object packing) piece)
-                                                data.threshold -
-                                          data.dischargeScale *
-                                            Graph.FiniteObject.positiveDeficiency input.object
-                                              (Graph.FiniteObject.pieceSupport input.object
-                                                (Graph.FiniteObject.remainderSupport input.object packing) piece)
-                                              data.threshold) ≤
-                                      Graph.TypeBEnvelopeCharge.route8Deficit input.object
-                                          (Graph.FiniteObject.remainderSupport input.object packing) data.threshold
-                                          data.dischargeScale route8 +
-                                        data.bridgeMassFactor * data.dischargeScale *
-                                          Graph.FiniteObject.degreeSurplus input.object data.threshold) ∧
-                          ∀ (packing : Finset (Finset input.object.Vertex)),
-                            Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                              ∀ (ordinary grouped : Finset input.object.Vertex),
-                                ordinary ⊆ Graph.FiniteObject.remainderSupport input.object packing →
-                                  grouped ⊆ Graph.FiniteObject.remainderSupport input.object packing →
-                                    ∀
-                                      (ordinaryRoute8 :
-                                        Finset (Graph.SupportComponents.Connected.Component input.object ordinary))
-                                      (groupedRoute8 :
-                                        Finset (Graph.SupportComponents.Connected.Component input.object grouped)),
-                                      (∀ piece ∈ ordinaryRoute8,
-                                          Graph.FiniteObject.ambientSurplus input.object
-                                              (Graph.FiniteObject.pieceSupport input.object ordinary piece)
-                                              data.threshold =
-                                            0) →
-                                        (∀ piece ∈ groupedRoute8,
-                                            Graph.FiniteObject.ambientSurplus input.object
-                                                (Graph.FiniteObject.pieceSupport input.object grouped piece)
-                                                data.threshold =
-                                              0) →
-                                          (∀ piece ∈ Graph.FiniteObject.canonicalPieces input.object ordinary,
-                                              piece ∉ ordinaryRoute8 →
-                                                Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt input.object
-                                                  (Graph.FiniteObject.pieceSupport input.object ordinary piece)
-                                                  data.threshold data.dischargeScale) →
-                                            (∀ piece ∈ Graph.FiniteObject.canonicalPieces input.object grouped,
-                                                piece ∉ groupedRoute8 →
-                                                  Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt input.object
-                                                    (Graph.FiniteObject.pieceSupport input.object grouped piece)
-                                                    data.threshold data.dischargeScale) →
-                                              ∑ piece ∈ Graph.FiniteObject.canonicalPieces input.object ordinary,
-                                                    ((Graph.FiniteObject.pieceSupport input.object ordinary
-                                                            piece).card +
-                                                        data.dischargeScale *
-                                                          Graph.FiniteObject.ambientSurplus input.object
-                                                            (Graph.FiniteObject.pieceSupport input.object ordinary
-                                                              piece)
-                                                            data.threshold -
-                                                      data.dischargeScale *
-                                                        Graph.FiniteObject.positiveDeficiency input.object
-                                                          (Graph.FiniteObject.pieceSupport input.object ordinary piece)
-                                                          data.threshold) +
-                                                  ∑ piece ∈ Graph.FiniteObject.canonicalPieces input.object grouped,
-                                                    ((Graph.FiniteObject.pieceSupport input.object grouped piece).card +
-                                                        data.dischargeScale *
-                                                          Graph.FiniteObject.ambientSurplus input.object
-                                                            (Graph.FiniteObject.pieceSupport input.object grouped piece)
-                                                            data.threshold -
-                                                      data.dischargeScale *
-                                                        Graph.FiniteObject.positiveDeficiency input.object
-                                                          (Graph.FiniteObject.pieceSupport input.object grouped piece)
-                                                          data.threshold) ≤
-                                                Graph.TypeBEnvelopeCharge.route8Deficit input.object ordinary
-                                                      data.threshold data.dischargeScale ordinaryRoute8 +
-                                                    Graph.TypeBEnvelopeCharge.route8Deficit input.object grouped
-                                                      data.threshold data.dischargeScale groupedRoute8 +
-                                                  2 *
-                                                    (data.bridgeMassFactor * data.dischargeScale *
-                                                      Graph.FiniteObject.degreeSurplus input.object data.threshold)) →
-                      typeBBridgeMass.At input) →
-                Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.canonicalColdWindows`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.canonicalHotWindows`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.canonicalWindowPacking`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex)
+```
 
 #### `Hypostructure.Graph.Strategy.Spine.closed`
 
@@ -6514,6 +6628,39 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 ```lean
 ∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
   {data : Graph.Strategy.Spine.Data}, Core.Residual.FactSystem.closureKey = Graph.Strategy.Spine.closed
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.coldExternalStubCount`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.coldSkeletonAllowance`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → ℕ
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.coldWindowBitRate`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → ℕ
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows`
@@ -6554,28 +6701,16 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-              (previous :
-                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    current known) →
-                (contextDefect contextUniversal :
-                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                  ((∃ packing,
-                        Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                          ∃ quotient left right,
-                            Graph.Strategy.Spine.Identified quotient left right ∧
-                              (left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
-                                Graph.Response.TargetDefect (Graph.HasCycleWithLength data.LengthOK) left right)) →
-                      contextDefect.At current) →
-                    ((∀ (packing : Finset (Finset current.object.Vertex)),
-                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
-                            ∀ (quotient : Graph.Strategy.Spine.remainderQuotient data current.object packing),
-                              Graph.Strategy.Spine.TargetCompleteAt data quotient) →
-                        contextUniversal.At current) →
-                      contextDefect ∉ known →
-                        contextUniversal ∉ known → Core.Strategy.Decision contextDefect contextUniversal previous
+        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+            (previous :
+                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  current known) →
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.branchDependence) known] →
+                ¬List.Mem (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.contextDefect) known →
+                  ¬List.Mem (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.contextUniversal) known →
+                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.contextDefect)
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.contextUniversal) previous
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.curvatureRankDichotomy`
@@ -6590,45 +6725,16 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-              (previous :
-                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    current known) →
-                (curvatureTargetRank curvatureRankDrop curvatureFullRank :
-                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                  [Core.Residual.FactKeys.Has curvatureTargetRank known] →
-                    (∀ (a : curvatureTargetRank.At current) (packing : Finset (Finset current.object.Vertex)),
-                        Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
-                          ∃ independent ⊆ Graph.Strategy.Spine.remainderCurvatureTests current.object packing,
-                            (Graph.Strategy.Spine.remainderQuotientSystem data current.object packing).Survives
-                                ↑independent ∧
-                              independent.card =
-                                  Graph.Strategy.Spine.remainderCurvatureTargetRank data current.object packing ∧
-                                ∀ test ∈ Graph.Strategy.Spine.remainderCurvatureTests current.object packing,
-                                  test ∉ independent →
-                                    ∃ determiners ⊆ ↑independent,
-                                      Core.TargetRank.Dependence
-                                        (Graph.Strategy.Spine.remainderQuotientSystem data current.object packing) test
-                                        determiners) →
-                      ((∃ packing,
-                            Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                              Graph.Strategy.Spine.remainderCurvatureTargetRank data current.object packing <
-                                  Graph.Strategy.Spine.remainderWedgeSupply current.object packing ∧
-                                ∃ test determiners,
-                                  Core.TargetRank.Dependence
-                                    (Graph.Strategy.Spine.remainderQuotientSystem data current.object packing) test
-                                    determiners) →
-                          curvatureRankDrop.At current) →
-                        ((∀ (packing : Finset (Finset current.object.Vertex)),
-                              Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing →
-                                Graph.Strategy.Spine.remainderCurvatureTargetRank data current.object packing =
-                                  Graph.Strategy.Spine.remainderWedgeSupply current.object packing) →
-                            curvatureFullRank.At current) →
-                          curvatureRankDrop ∉ known →
-                            curvatureFullRank ∉ known →
-                              Core.Strategy.Decision curvatureRankDrop curvatureFullRank previous
+        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+            (previous :
+                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  current known) →
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.targetRankCircuit) known] →
+                ¬List.Mem (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.curvatureRankDrop) known →
+                  ¬List.Mem (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.curvatureFullRank) known →
+                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.curvatureRankDrop)
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.curvatureFullRank) previous
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.curvatureTargetRankRow`
@@ -6642,27 +6748,8 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (curvatureDemandFloor curvatureTargetRank :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            curvatureDemandFloor ≠ curvatureTargetRank →
-              ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                  (∀ (packing : Finset (Finset input.object.Vertex)),
-                      Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                        ∃ independent ⊆ Graph.Strategy.Spine.remainderCurvatureTests input.object packing,
-                          (Graph.Strategy.Spine.remainderQuotientSystem data input.object packing).Survives
-                              ↑independent ∧
-                            independent.card =
-                                Graph.Strategy.Spine.remainderCurvatureTargetRank data input.object packing ∧
-                              ∀ test ∈ Graph.Strategy.Spine.remainderCurvatureTests input.object packing,
-                                test ∉ independent →
-                                  ∃ determiners ⊆ ↑independent,
-                                    Core.TargetRank.Dependence
-                                      (Graph.Strategy.Spine.remainderQuotientSystem data input.object packing) test
-                                      determiners) →
-                    curvatureTargetRank.At input) →
-                Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.degreeFourProfileRow`
@@ -6756,28 +6843,7 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (noProperBaseline tightEndpoint slackIndependent :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            tightEndpoint ≠ noProperBaseline →
-              slackIndependent ≠ noProperBaseline →
-                tightEndpoint ≠ slackIndependent →
-                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                      (a : noProperBaseline.At input) (subgraph : Graph.ProperSubgraph input.object),
-                      ¬Graph.MinimumDegreeAtLeast data.threshold subgraph.value) →
-                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                        (∀ (dart : input.object.graph.Dart),
-                            Graph.FiniteObject.degree input.object dart.toProd.1 = data.threshold ∨
-                              Graph.FiniteObject.degree input.object dart.toProd.2 = data.threshold) →
-                          tightEndpoint.At input) →
-                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                          (∀ (left right : input.object.Vertex),
-                              data.threshold < Graph.FiniteObject.degree input.object left →
-                                data.threshold < Graph.FiniteObject.degree input.object right →
-                                  ¬input.object.graph.Adj left right) →
-                            slackIndependent.At input) →
-                        Core.Strategy.AtomicStrategy
-                          (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.delocalizationScopeDichotomy`
@@ -6792,49 +6858,16 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-              (previous :
-                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    current known) →
-                (delocalizedSupport properDelocalization globalDelocalization :
-                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                  [Core.Residual.FactKeys.Has delocalizedSupport known] →
-                    (∀ (a : delocalizedSupport.At current),
-                        ∃ packing,
-                          Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                            ∃ quotient,
-                              Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
-                                Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
-                                  ¬quotient.support ⊆ Graph.FiniteObject.remainderSupport current.object packing ∧
-                                    Graph.FiniteObject.remainderSupport current.object packing ⊂
-                                      Graph.Strategy.Spine.delocalizationSupport data current.object packing quotient) →
-                      ((∃ packing,
-                            Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                              ∃ quotient,
-                                Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
-                                  Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
-                                    ¬quotient.support ⊆ Graph.FiniteObject.remainderSupport current.object packing ∧
-                                      ∃ vertex,
-                                        vertex ∉
-                                          Graph.Strategy.Spine.delocalizationSupport data current.object packing
-                                            quotient) →
-                          properDelocalization.At current) →
-                        ((∃ packing,
-                              Graph.FiniteObject.IsWindowPacking current.object data.windowOrder packing ∧
-                                ∃ quotient,
-                                  Graph.Strategy.Spine.DeterminationCertificate data current.object packing quotient ∧
-                                    Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
-                                      ¬quotient.support ⊆ Graph.FiniteObject.remainderSupport current.object packing ∧
-                                        ∀ (vertex : current.object.Vertex),
-                                          vertex ∈
-                                            Graph.Strategy.Spine.delocalizationSupport data current.object packing
-                                              quotient) →
-                            globalDelocalization.At current) →
-                          properDelocalization ∉ known →
-                            globalDelocalization ∉ known →
-                              Core.Strategy.Decision properDelocalization globalDelocalization previous
+        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+            (previous :
+                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  current known) →
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.delocalizedSupport) known] →
+                ¬List.Mem (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.properDelocalization) known →
+                  ¬List.Mem (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.globalDelocalization) known →
+                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.properDelocalization)
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.globalDelocalization) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -6867,29 +6900,7 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (barrierCap surplusAtOrBelow densityCap :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            barrierCap ≠ surplusAtOrBelow →
-              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  (a : barrierCap.At input),
-                  2 ^
-                      (data.windowRate * data.separatedScaleCount (Graph.FiniteObject.vertexCount input.object) *
-                        Graph.FiniteObject.windowPackingNumber input.object data.windowOrder) ≤
-                    Graph.skeletonBudget input.object) →
-                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    (a : surplusAtOrBelow.At input),
-                    Graph.FiniteObject.degreeSurplus input.object data.threshold ≤
-                      data.surplusThreshold (Graph.FiniteObject.vertexCount input.object)) →
-                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                      2 *
-                            (data.windowRate * data.separatedScaleCount (Graph.FiniteObject.vertexCount input.object) *
-                              Graph.FiniteObject.windowPackingNumber input.object data.windowOrder) ≤
-                          (Graph.dyadicScaleCount input.object + 1) *
-                            (data.threshold * Graph.FiniteObject.vertexCount input.object +
-                              data.surplusThreshold (Graph.FiniteObject.vertexCount input.object)) →
-                        densityCap.At input) →
-                    Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.directCycleDichotomy`
@@ -7051,6 +7062,21 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
                               data.entropyDenominator) →
                       entropyPackageDemand.At input) →
                   Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.exactResponseProfileRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -7244,6 +7270,21 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
                     Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.functionalRankQuotientRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.globalBarrierRow`
 
 - Category: Minimum-degree cycle spine rows
@@ -7255,45 +7296,8 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (globalDelocalization repairIdentity globalBarrier :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            repairIdentity ≠ globalDelocalization →
-              globalBarrier ≠ globalDelocalization →
-                repairIdentity ≠ globalBarrier →
-                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                      (a : globalDelocalization.At input),
-                      ∃ packing,
-                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
-                          ∃ quotient,
-                            Graph.Strategy.Spine.DeterminationCertificate data input.object packing quotient ∧
-                              Graph.Strategy.Spine.TargetCompleteAt data quotient ∧
-                                ¬quotient.support ⊆ Graph.FiniteObject.remainderSupport input.object packing ∧
-                                  ∀ (vertex : input.object.Vertex),
-                                    vertex ∈
-                                      Graph.Strategy.Spine.delocalizationSupport data input.object packing quotient) →
-                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                        (∀ (component : Graph.OneThreeRepair.Component),
-                            ↑component.internal.card =
-                              ↑component.boundary.card - 2 + 2 * ↑component.cycleRank - ↑component.surplus) →
-                          repairIdentity.At input) →
-                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                          (∃ packing,
-                              Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
-                                ∃ quotient,
-                                  Graph.Strategy.Spine.DeterminationCertificate data input.object packing quotient ∧
-                                    (Graph.Strategy.InterfaceReplacement.ReplacementSupport
-                                        (Graph.MinimumDegreeAtLeast data.threshold)
-                                        (Graph.HasCycleWithLength data.LengthOK) input.object quotient.support ∨
-                                      ∃ representative,
-                                        representative.LexicographicallySmaller input.object ∧
-                                          Graph.MinimumDegreeAtLeast data.threshold representative ∧
-                                            (Graph.HasCycleWithLength data.LengthOK representative →
-                                              Graph.HasCycleWithLength data.LengthOK input.object))) →
-                            globalBarrier.At input) →
-                        Core.Strategy.AtomicStrategy
-                          (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -7714,29 +7718,7 @@ DecidableEq Graph.Strategy.Spine.Key
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (T : Core.Target (Graph.Strategy.Spine.problem BranchState Presentation presentation data)) →
-            Core.TargetInvariant
-                (Graph.isomorphismEquivalenceWithPresentation (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-                  Presentation presentation ⋯)
-                T.Predicate →
-              (selection uncompressible :
-                  Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                selection ≠ uncompressible →
-                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                      (a : selection.At input), ¬T.Predicate input.object) →
-                    (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                        (a : selection.At input) (smaller : Graph.FiniteObject),
-                        (Graph.Strategy.Spine.progress BranchState Presentation presentation data).Smaller smaller
-                            input.object →
-                          Graph.MinimumDegreeAtLeast data.threshold smaller → T.Predicate smaller) →
-                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                          (∀ (support : Finset input.object.Vertex),
-                              ¬Graph.Strategy.InterfaceReplacement.CompressibleSupport
-                                  (Graph.MinimumDegreeAtLeast data.threshold) T.Predicate input.object support) →
-                            uncompressible.At input) →
-                        Core.Strategy.AtomicStrategy
-                          (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -7808,7 +7790,7 @@ Graph.Strategy.Spine.Key → String
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      (data : Graph.Strategy.Spine.Data) →
+      {data : Graph.Strategy.Spine.Data} →
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
@@ -8111,113 +8093,7 @@ Function.Injective Graph.Strategy.Spine.name
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (selection noProperBaseline :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            selection ≠ noProperBaseline →
-              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
-                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    (a : selection.At input) (smaller : Graph.FiniteObject),
-                    smaller.LexicographicallySmaller input.object →
-                      Graph.MinimumDegreeAtLeast data.threshold smaller →
-                        Graph.HasCycleWithLength data.LengthOK smaller) →
-                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                      (∀ (subgraph : Graph.ProperSubgraph input.object),
-                          ¬Graph.MinimumDegreeAtLeast data.threshold subgraph.value) →
-                        noProperBaseline.At input) →
-                    Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.not_branchDCertificate`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
-- Compiled type:
-
-```lean
-∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
-  {data : Graph.Strategy.Spine.Data}
-  [Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)]
-  (residual : Graph.Strategy.Spine.Input BranchState Presentation presentation data),
-  ¬Graph.HasCycleWithLength data.LengthOK residual.object →
-    (∀ (smaller : Graph.FiniteObject),
-        (Graph.Strategy.Spine.progress BranchState Presentation presentation data).Smaller smaller residual.object →
-          Graph.MinimumDegreeAtLeast data.threshold smaller → Graph.HasCycleWithLength data.LengthOK smaller) →
-      (∃ packing,
-          Graph.FiniteObject.IsWindowPacking residual.object data.windowOrder packing ∧
-            ∃ quotient, Graph.Strategy.Spine.DeterminationCertificate data residual.object packing quotient) →
-        False
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.not_contextDefect`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
-- Compiled type:
-
-```lean
-∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
-  {data : Graph.Strategy.Spine.Data}
-  [Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)]
-  (residual : Graph.Strategy.Spine.Input BranchState Presentation presentation data),
-  (∃ packing,
-      Graph.FiniteObject.IsWindowPacking residual.object data.windowOrder packing ∧
-        ∃ quotient left right,
-          Graph.Strategy.Spine.Identified quotient left right ∧
-            (left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
-              Graph.Response.TargetDefect (Graph.HasCycleWithLength data.LengthOK) left right)) →
-    False
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.not_determinationCertificate`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
-- Compiled type:
-
-```lean
-∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
-  {data : Graph.Strategy.Spine.Data}
-  [Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)]
-  (residual : Graph.Strategy.Spine.Input BranchState Presentation presentation data),
-  ¬Graph.HasCycleWithLength data.LengthOK residual.object →
-    (∀ (smaller : Graph.FiniteObject),
-        (Graph.Strategy.Spine.progress BranchState Presentation presentation data).Smaller smaller residual.object →
-          Graph.MinimumDegreeAtLeast data.threshold smaller → Graph.HasCycleWithLength data.LengthOK smaller) →
-      ∀ {packing : Finset (Finset residual.object.Vertex)}
-        {quotient : Graph.Strategy.Spine.remainderQuotient data residual.object packing},
-        Graph.Strategy.Spine.DeterminationCertificate data residual.object packing quotient → False
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.not_globalBarrierReading`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
-- Compiled type:
-
-```lean
-∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
-  {data : Graph.Strategy.Spine.Data}
-  [Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)]
-  (residual : Graph.Strategy.Spine.Input BranchState Presentation presentation data),
-  ¬Graph.HasCycleWithLength data.LengthOK residual.object →
-    (∀ (smaller : Graph.FiniteObject),
-        (Graph.Strategy.Spine.progress BranchState Presentation presentation data).Smaller smaller residual.object →
-          Graph.MinimumDegreeAtLeast data.threshold smaller → Graph.HasCycleWithLength data.LengthOK smaller) →
-      ∀ {support : Finset residual.object.Vertex},
-        (Graph.Strategy.InterfaceReplacement.ReplacementSupport (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) residual.object support ∨
-            ∃ representative,
-              representative.LexicographicallySmaller residual.object ∧
-                Graph.MinimumDegreeAtLeast data.threshold representative ∧
-                  (Graph.HasCycleWithLength data.LengthOK representative →
-                    Graph.HasCycleWithLength data.LengthOK residual.object)) →
-          False
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.obstructionPackingRow`
@@ -8232,22 +8108,7 @@ Function.Injective Graph.Strategy.Spine.name
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (selection maximalPacking :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            selection ≠ maximalPacking →
-              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
-                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                    (0 < Graph.FiniteObject.windowPackingNumber input.object data.windowOrder ∧
-                        ∃ packing,
-                          Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing ∧
-                            packing.card = Graph.FiniteObject.windowPackingNumber input.object data.windowOrder ∧
-                              ∀ (support : Finset input.object.Vertex),
-                                Graph.FiniteObject.InducesWindow input.object data.windowOrder support →
-                                  ∃ member ∈ packing, ¬Disjoint support member) →
-                      maximalPacking.At input) →
-                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -8425,24 +8286,7 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (selection remainderNormalized :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            selection ≠ remainderNormalized →
-              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
-                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                    (∀ (packing : Finset (Finset input.object.Vertex)),
-                        Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                          (∀ (window : Finset input.object.Vertex),
-                              Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
-                                ∃ member ∈ packing, ¬Disjoint window member) →
-                            ∀ support ⊆ Graph.FiniteObject.remainderSupport input.object packing,
-                              ¬Graph.FiniteObject.InducesWindow input.object data.windowOrder support ∧
-                                ¬Graph.MinimumDegreeAtLeast data.threshold
-                                    (Graph.FiniteObject.induce input.object support)) →
-                      remainderNormalized.At input) →
-                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -8456,21 +8300,6 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
 
 ```lean
 Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset object.Vertex) → Type (u + 2)
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.remainderQuotientSystem`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Data →
-  (object : Graph.FiniteObject) →
-    (packing : Finset (Finset object.Vertex)) →
-      Core.TargetRank.QuotientSystem (object.InternalWedge (object.remainderSupport packing))
-        (Graph.Strategy.Spine.remainderCurvatureTests object packing)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.remainderStates`
@@ -8524,6 +8353,21 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
 
 ### `Hypostructure.Graph.Strategy.SpineRows`
 
+#### `Hypostructure.Graph.Strategy.Spine.repairIdentityRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.returnAvoidanceRow`
 
 - Category: Minimum-degree cycle spine rows
@@ -8536,20 +8380,10 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (selection returnAvoidance :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            selection ≠ returnAvoidance →
-              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
-                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                    (∀ (dart : input.object.graph.Dart),
-                        Disjoint (Graph.returnLengthSet input.object dart) (Graph.shiftedAcceptedSet data.LengthOK)) →
-                      returnAvoidance.At input) →
-                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.route8BurdenAndDeficitRow`
+#### `Hypostructure.Graph.Strategy.Spine.route8BasinBurdenRow`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
@@ -8595,6 +8429,21 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.route8GlobalSqueezeRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.route8LargeBudgetDeficitRow`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
@@ -8666,21 +8515,7 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (typeAExitFourFiniteDescent typeASaturatedHandoffSilent typeASaturatedHandoffExitFourFree typeAExitFiveFree
-              typeAExitSixFree typeAExitSevenFree route8Residual :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            [typeAExitFourFiniteDescent, typeASaturatedHandoffSilent, typeASaturatedHandoffExitFourFree,
-                  typeAExitFiveFree, typeAExitSixFree, typeAExitSevenFree].Nodup →
-              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  (a : typeAExitSevenFree.At input),
-                  Graph.Strategy.Spine.SelectedNoExitSixWith data input.object fun packing piece =>
-                    ¬Graph.Strategy.Spine.HandoffProduced data input.object packing piece) →
-                ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                    (Graph.Strategy.Spine.SelectedNoExitSixWith data input.object fun packing piece =>
-                        ¬Graph.Strategy.Spine.HandoffProduced data input.object packing piece) →
-                      route8Residual.At input) →
-                  Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.route8SmallCoreCollapseRow`
@@ -8747,24 +8582,6 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
               Core.Strategy.FactManifest (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
-### `Hypostructure.Graph.Strategy.SpineVocabulary`
-
-#### `Hypostructure.Graph.Strategy.Spine.silentCoreResidualProfile_of_route8Residual`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-∀ {data : Graph.Strategy.Spine.Data} {object : Graph.FiniteObject},
-  (Graph.Strategy.Spine.SelectedNoExitSixWith data object fun packing piece =>
-      ¬Graph.Strategy.Spine.HandoffProduced data object packing piece) →
-    Graph.Strategy.Spine.SilentCoreResidualProfile data object
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows`
-
 #### `Hypostructure.Graph.Strategy.Spine.sourceFreeManifest`
 
 - Category: Minimum-degree cycle spine rows
@@ -8780,6 +8597,21 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
         [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
           Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
             Core.Strategy.FactManifest (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.stubSupplyRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.surplusDichotomy`
@@ -8810,6 +8642,21 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                         surplusAtOrBelow.At current) →
                       surplusAbove ∉ known →
                         surplusAtOrBelow ∉ known → Core.Strategy.Decision surplusAbove surplusAtOrBelow previous
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.targetRankCircuitRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.typeAExitFiveDichotomy`
@@ -9451,40 +9298,6 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                               Core.Strategy.Decision typeAExitOneReturn typeAExitOneFree previous
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.typeAExitSevenDichotomy`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-            {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-              (previous :
-                  Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    current known) →
-                (typeAExitSixFree typeAExitSevenProduced typeAExitSevenFree :
-                    Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-                  [Core.Residual.FactKeys.Has typeAExitSixFree known] →
-                    (∀ (a : typeAExitSixFree.At current),
-                        Graph.Strategy.Spine.SelectedNoExitSixWith data current.object fun x x_1 => True) →
-                      ((Graph.Strategy.Spine.SelectedNoExitSixWith data current.object fun packing piece =>
-                            Graph.Strategy.Spine.HandoffProduced data current.object packing piece) →
-                          typeAExitSevenProduced.At current) →
-                        ((Graph.Strategy.Spine.SelectedNoExitSixWith data current.object fun packing piece =>
-                              ¬Graph.Strategy.Spine.HandoffProduced data current.object packing piece) →
-                            typeAExitSevenFree.At current) →
-                          typeAExitSevenProduced ∉ known →
-                            typeAExitSevenFree ∉ known →
-                              Core.Strategy.Decision typeAExitSevenProduced typeAExitSevenFree previous
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.typeAExitSevenHandoffRow`
 
 - Category: Minimum-degree cycle spine rows
@@ -9955,23 +9768,7 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (selection typeAPortReturn :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            selection ≠ typeAPortReturn →
-              (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  (a : selection.At input), ¬Graph.HasCycleWithLength data.LengthOK input.object) →
-                (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                    (a : selection.At input) (smaller : Graph.FiniteObject),
-                    smaller.LexicographicallySmaller input.object →
-                      Graph.MinimumDegreeAtLeast data.threshold smaller →
-                        Graph.HasCycleWithLength data.LengthOK smaller) →
-                  ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                      (∀ (support : Finset input.object.Vertex) (receiver outside : input.object.Vertex),
-                          outside ∈ Graph.VisibleEntry.completionPorts input.object support receiver →
-                            Nonempty (Graph.VisibleEntry.AnchoredReturn input.object receiver outside)) →
-                        typeAPortReturn.At input) →
-                    Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.typeAReceiverRoutingRow`
@@ -9985,46 +9782,8 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
 {BranchState : Graph.FiniteObject → Type v} →
   {Presentation : Type} →
     {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (remainderNormalized typeAReceiverRouting :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                (a : remainderNormalized.At input) (packing : Finset (Finset input.object.Vertex)),
-                Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                  (∀ (window : Finset input.object.Vertex),
-                      Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
-                        ∃ member ∈ packing, ¬Disjoint window member) →
-                    ∀ support ⊆ Graph.FiniteObject.remainderSupport input.object packing,
-                      ¬Graph.FiniteObject.InducesWindow input.object data.windowOrder support ∧
-                        ¬Graph.MinimumDegreeAtLeast data.threshold (Graph.FiniteObject.induce input.object support)) →
-              ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                  (∀ (packing : Finset (Finset input.object.Vertex)),
-                      Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                        (∀ (window : Finset input.object.Vertex),
-                            Graph.FiniteObject.InducesWindow input.object data.windowOrder window →
-                              ∃ member ∈ packing, ¬Disjoint window member) →
-                          ∀ piece ⊆ Graph.FiniteObject.remainderSupport input.object packing,
-                            Graph.FiniteObject.ambientSurplus input.object piece data.threshold = 0 →
-                              (∀ vertex ∈ piece,
-                                  Graph.FiniteObject.internalDegree input.object piece vertex = data.threshold →
-                                    ∃ receiver,
-                                      Graph.FiniteObject.traceReceiver? input.object piece data.threshold vertex =
-                                          some receiver ∧
-                                        Graph.FiniteObject.IsReceiver input.object piece data.threshold receiver) ∧
-                                ∀ (receiver : input.object.Vertex),
-                                  Graph.FiniteObject.IsReceiver input.object piece data.threshold receiver →
-                                    data.dischargeScale *
-                                          Graph.FiniteObject.missingPorts input.object piece data.threshold receiver =
-                                        data.dischargeScale *
-                                          (data.threshold - 1 -
-                                              Graph.FiniteObject.internalDegree input.object piece receiver +
-                                            1) ∧
-                                      data.dischargeScale *
-                                          Graph.FiniteObject.missingPorts input.object piece data.threshold receiver ≤
-                                        data.dischargeScale * data.threshold) →
-                    typeAReceiverRouting.At input) →
-                Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.typeASaturatedExitEntryRow`
@@ -11045,43 +10804,7 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        [inst : Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)] →
-          (boundaryDemand wedgeSupply curvatureDemandFloor :
-              Core.Residual.FactKey (Graph.Strategy.Spine.Input BranchState Presentation presentation data)) →
-            wedgeSupply ≠ boundaryDemand →
-              curvatureDemandFloor ≠ boundaryDemand →
-                wedgeSupply ≠ curvatureDemandFloor →
-                  (∀ (input : Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                      (a : boundaryDemand.At input) (packing : Finset (Finset input.object.Vertex)),
-                      Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                        Graph.FiniteObject.positiveDeficiency input.object
-                              (Graph.FiniteObject.remainderSupport input.object packing) data.threshold +
-                            2 * (data.windowOrder - 1) * packing.card ≤
-                          data.threshold * (data.windowOrder * packing.card) +
-                            Graph.FiniteObject.ambientSurplus input.object (Graph.FiniteObject.windowSupport packing)
-                              data.threshold) →
-                    ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                        (∀ (packing : Finset (Finset input.object.Vertex)),
-                            Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                              ∀ support ⊆ Graph.FiniteObject.remainderSupport input.object packing,
-                                data.threshold * support.card ≤
-                                  Graph.FiniteObject.internalWedgeCount input.object support +
-                                    2 * Graph.FiniteObject.positiveDeficiency input.object support data.threshold) →
-                          wedgeSupply.At input) →
-                      ((input : Graph.Strategy.Spine.Input BranchState Presentation presentation data) →
-                          (∀ (packing : Finset (Finset input.object.Vertex)),
-                              Graph.FiniteObject.IsWindowPacking input.object data.windowOrder packing →
-                                data.threshold * (Graph.FiniteObject.remainderSupport input.object packing).card +
-                                    2 * (2 * (data.windowOrder - 1) * packing.card) ≤
-                                  Graph.FiniteObject.internalWedgeCount input.object
-                                      (Graph.FiniteObject.remainderSupport input.object packing) +
-                                    2 *
-                                      (data.threshold * (data.windowOrder * packing.card) +
-                                        Graph.FiniteObject.ambientSurplus input.object
-                                          (Graph.FiniteObject.windowSupport packing) data.threshold)) →
-                            curvatureDemandFloor.At input) →
-                        Core.Strategy.AtomicStrategy
-                          (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.windowJoinPressureRow`
@@ -11139,5 +10862,20 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
                                   data.windowOrder * packing.card) →
                         windowJoinPressure.At input) →
                     Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.windowPackageRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      (data : Graph.Strategy.Spine.Data) →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 <!-- END GENERATED API -->

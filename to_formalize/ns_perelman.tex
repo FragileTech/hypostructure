@@ -5,8 +5,11 @@
 \usepackage{amsmath,amssymb,amsthm,mathtools,mathrsfs}
 \usepackage{array,booktabs,longtable}
 \usepackage{enumitem}
+\usepackage{float}
 \usepackage{microtype}
 \usepackage{aliascnt}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
 \usepackage{hyperref}
 \usepackage[nameinlink,capitalize]{cleveref}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
@@ -105,11 +108,17 @@ geometry.
 
 The global implication is proved conditional on two explicit analytic
 statements: construction of a compact target-retaining critical orbit from
-terminal loss, and domination of its aggregate inward flux by critical
-dissipation after true exterior input is removed.  Under these hypotheses,
+terminal loss, and an exhaustive target-relative alternative for its aggregate
+current after true exterior input is removed.  On the flux-dominated branch,
 compactness and zero-production rigidity give a uniform positive net
 dissipation on every retained window, contradicting finiteness on infinitely
-many disjoint windows.  Three parts of the proposed self-contained derivation
+many disjoint windows.  A persistent current which repeatedly regenerates the
+target is treated separately by retaining the observer, scale, pressure gauge,
+and oriented current as marks.  On the record-bounded row, every finite marked
+block is realized inside one uniformly bounded root profile.  Exact
+composition multiplies its quotient amplitude by the product of the scale
+ratios, which tends to zero and contradicts the retained activity floor.
+Three parts of the proposed self-contained derivation
 are proved here.  Ordered active cylinders admit one exact nonincreasing-scale
 chart, eliminating positive scale drift.  Moreover, invariant averaging on
 an autonomous recurrent covariant class cancels convection, translation, and
@@ -119,12 +128,11 @@ pressure and yields
 spatially constant.  In addition, the covariant heat scale cancels scalar
 scale modulation exactly in the Galilean-reduced kinetic--entropy balance,
 and the strain terms form a nonnegative square.  The only unsigned interior
-term left by this calculation is pressure transfer.  The remaining unproved
-step is therefore a Navier--Stokes pressure-transfer and
-concentration--remainder theorem that realizes every persistent noncompact
-descendant as an ordinary target-retaining recurrent class or as quantified
-exterior input.  No termwise pressure estimate is built into the covariant
-identity.
+term left by this calculation is pressure transfer.  The remaining
+equation-specific input is the finite-stage pressure-transfer and
+concentration--remainder alternative, including the routing of every failure
+which occurs before bounded marked realization.  No termwise
+pressure estimate is built into the covariant identity.
 \end{abstract}
 
 \maketitle
@@ -193,6 +201,11 @@ sharp equality value, compactness produces a saturated scale-relative limit;
 the exterior, scale-rigid, and negative-drift reductions force this limit into
 the zero-Dirichlet equality class, which is spatially constant in the
 Galilean quotient.
+\item If positive critical current instead regenerates active centers at
+successively smaller scales, the complete successor marks are retained.  A
+finite block is realized inside one record-point root.  The terminal
+quotient activity is at most a constant times the cube of the product scale,
+and therefore tends to zero, contrary to the fixed activity floor.
 \item Compactness therefore gives a uniform positive net dissipation on every
 target-retaining window.  Countable additivity contradicts the finite total
 net dissipation.
@@ -224,19 +237,21 @@ proved in \cref{sec:recurrent-covariant-rigidity}; it is the structural
 replacement for the compact negative-drift and scale-rigid equality
 calculations.
 
-The global reduction requires one aggregate PDE statement: on the retained
-compact orbit the critical inward flux is dominated by dissipation, and every
-saturation sequence is target-null.  The corrected moving-cutoff energy is
-one realization in which the finite net dissipation is its production
-measure.  Section~\ref{sec:dissipation-reduction} proves the abstract
-flux--dissipation implication.  Appendices~\ref{app:critical-orbit}--
-\ref{app:material-rigidity} isolate the equation-specific derivation that is
-required to make the proof self-contained.
+The global reduction requires one aggregate PDE alternative.  Either the
+critical inward flux is dominated by dissipation and every saturation sequence
+is target-null, or the surviving critical current repeatedly regenerates the
+target.  The corrected moving-cutoff energy realizes the first branch with
+production equal to net dissipation.  The marked successor construction in
+Appendix~\ref{app:marked-regeneration} excludes the record-bounded value of the
+second branch by exact finite-block composition, without replacing the rooted
+event law by a translation-invariant hull.  Section~\ref{sec:dissipation-reduction} proves the
+abstract flux--dissipation implication.  Appendices~\ref{app:critical-orbit}--
+\ref{app:material-rigidity} isolate the remaining equation-specific inputs.
 
 \begin{theorem}[Covariant dissipation-or-reduction criterion for regularity]
 \label{thm:intro-main}
 Assume that the canonical critical-orbit hypothesis
-\cref{hyp:canonical-critical-orbit} and the target-relative flux-domination hypothesis
+\cref{hyp:canonical-critical-orbit} and the target-relative current-alternative hypothesis
 \cref{hyp:covariant-dissipation-reduction} hold for the class of global finite-energy
 suitable weak solutions of \eqref{eq:NS}.  Then every such solution satisfies
 \[
@@ -258,16 +273,19 @@ scale-critical net-dissipation measure.
 \label{rem:logical-scope}
 The material pullback identities, monotone scale interpolation, recurrent
 pressure cancellation, scale-covariant kinetic--entropy identity,
-moving-cutoff monotonicity, zero-production rigidity, and compactness-to-gap
-argument are proved in this paper.  The main theorem is still conditional on
-the two explicitly marked analytic hypotheses.  The unproved part is the
-singular-germ pressure-transfer and concentration--remainder theorem.  It must
-construct a target-retaining compact orbit, control true exterior input, give
-an oriented disjoint-cell realization of internal pressure-flux cancellation,
-and realize every persistent noncompact descendant as an ordinary recurrent
-Navier--Stokes class.  Appendices~\ref{app:critical-orbit}--
-\ref{app:material-rigidity} state this remaining work in equation-specific
-form.  No regularity theorem from another manuscript is an input.
+moving-cutoff monotonicity, zero-production rigidity, compactness-to-gap
+argument, and bounded marked-cascade exclusion are proved in this paper.  The main
+theorem remains conditional on the two explicitly marked analytic hypotheses.
+The remaining input is the finite-stage singular-germ pressure-transfer and
+concentration--remainder alternative.  On the record-point row, bounded
+finite realization follows from the exact observer maps and
+\eqref{eq:record-profile-bound}; it is not an additional compactness
+assumption.  Once that row is selected, an infinite regenerated chain is
+impossible by the product-scale estimate and no
+translation-invariant probability law is required.
+Appendices~\ref{app:critical-orbit}--\ref{app:material-rigidity} state the
+remaining work in equation-specific form.  No regularity theorem from another
+manuscript is an input.
 \end{remark}
 
 \subsection*{Analytic inputs}
@@ -282,10 +300,97 @@ Weak covariant calculus & proved here & Appendix~\ref{app:weak-calculus} \\
 Material stretching--diffusion identities & proved for smooth flow & Appendix~\ref{app:material-pullback} \\
 Canonical critical orbit & analytic hypothesis & Appendix~\ref{app:critical-orbit} \\
 Gauge, pressure, and adjoint control & partly proved under stated local estimates & Appendix~\ref{app:gauge-pressure} \\
-Target-relative flux domination & analytic hypothesis & Appendices~\ref{app:scale-space-current}--\ref{app:material-rigidity} \\
+Target-relative current alternative & analytic hypothesis & Appendices~\ref{app:scale-space-current}--\ref{app:material-rigidity} \\
 Moving-cutoff realization & conditional on the global radius schedule & Appendix~\ref{app:corrected-entropy} \\
+Marked regenerated-current reduction & proved here & Appendix~\ref{app:marked-regeneration} \\
 Monotone recurrent rigidity & proved here & \Cref{sec:recurrent-covariant-rigidity} \\
 Target-visible zero-dissipation rigidity & proved here & Appendix~\ref{app:material-rigidity} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Proof architecture of the current alternative}
+
+The diagram records the logical flow of the conditional regularity theorem.
+Rectangles are live states, the diamond is the exhaustive alternative in
+\cref{hyp:covariant-dissipation-reduction}, solid ellipses are terminal
+outputs.  First failures of the pressure, exterior, scale, or realization
+tests leave through the ordered local terminal [4].  Once a record-bounded
+marked cascade has been selected, its
+product-scale estimate closes the branch internally at [8].
+
+\clearpage
+\noindent\textbf{Proof-dependency diagram.}\par\smallskip
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+ scale=0.97,transform shape,
+ box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,text width=4.1cm},
+ dec/.style={diamond,draw,aspect=2.35,align=center,inner sep=1.5pt,text width=3.2cm},
+ term/.style={ellipse,draw,align=center,inner sep=3pt,text width=3.7cm},
+ arrow/.style={-{Latex[length=2mm]},thick},
+ every node/.style={font=\small}
+]
+\node[box] (n1) at (0,7.4) {\textbf{[1]} Terminal loss with retained oscillation};
+\node[box] (n2) at (0,5.8) {\textbf{[2]} Canonical target-retaining orbit};
+\node[dec] (n3) at (0,3.5) {\textbf{[3]} Target-relative current alternative};
+\node[term] (n4) at (-5.3,0.5) {\textbf{[4]} Local or material reduction};
+\node[box] (n5) at (0,0.8) {\textbf{[5]} Flux-dominated finite net dissipation};
+\node[term] (n6) at (-0.2,-1.4) {\textbf{[6]} Positive gap\\contradicts finite measure};
+\node[box] (n7) at (5.3,0.8) {\textbf{[7]} Marked regenerated-current cascade};
+\node[term] (n8) at (5.6,-1.4) {\textbf{[8]} Product-scale decay\\contradicts retained activity};
+\draw[arrow] (n1)--(n2);
+\draw[arrow] (n2)--(n3);
+\draw[arrow] (n3)--node[above left]{\scriptsize N1}(n4);
+\draw[arrow] (n3)--node[right]{\scriptsize N2}(n5);
+\draw[arrow] (n5)--(n6);
+\draw[arrow] (n3)--node[above right]{\scriptsize N3}(n7);
+\draw[arrow] (n7)--(n8);
+\end{tikzpicture}
+\caption{The repaired target-relative current alternative.  The marked
+record-bounded branch closes by finite-block scale decay.}
+\label{fig:proof-flow-marked-current}
+\end{figure}
+
+\noindent\textbf{Node-by-node audit table.}\par\smallskip
+
+\begin{center}
+\small
+\begin{tabular}{@{}L{0.09\textwidth}L{0.32\textwidth}L{0.46\textwidth}@{}}
+\toprule
+Node & State or test & Exact source and successor \\
+\midrule\relax
+[1] & Terminal loss & \Cref{thm:velocity-concentration}; continue to [2]. \\\relax
+[2] & Compact retained orbit & \Cref{hyp:canonical-critical-orbit}; continue to [3]. \\\relax
+[3] & Exhaustive current split & \Cref{hyp:covariant-dissipation-reduction}; outputs [4], [5], [7]. \\\relax
+[4] & Local terminal & Alternative \textup{(N1)}; terminal in the conditional theorem. \\\relax
+[5] & Dominated current & Alternative \textup{(N2)} and \Cref{prop:finite-critical-net-dissipation}; continue to [6]. \\\relax
+[6] & Finite-measure contradiction & \Cref{thm:normalized-rigidity-gap,thm:dissipation-series-exclusion}; terminal. \\\relax
+[7] & Regenerated current & \Cref{prop:marked-alternative-extraction,def:marked-regenerated-cascade}; continue to [8]. \\\relax
+[8] & Bounded-cascade contradiction & \Cref{lem:record-bound-inherited-by-marked-blocks,lem:bounded-rebase-activity-decay,lem:marked-rebase-composition,thm:no-bounded-marked-regenerated-cascade}; terminal. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The facts carried from [2] through every branch are the fixed oscillation
+floor, realization by the same physical terminal sequence, compatible pressure
+gauges, and the suitable local-energy identity.  The marked branch additionally
+carries the observer increments and complete oriented current.  Thus neither a
+subsequence nor a shift limit is permitted to forget the root or its pressure
+correction.
+
+\medskip\noindent\textbf{Branch-closure audit.}\par\smallskip
+
+\begin{center}
+\small
+\begin{tabular}{@{}L{0.12\textwidth}L{0.31\textwidth}L{0.43\textwidth}@{}}
+\toprule
+Branch & Retained output & Closure used by \cref{thm:intro-main} \\
+\midrule
+N1 & Local, material, exterior, or critical-tail reduction & The exclusion asserted in alternative \textup{(N1)}; this is part of the stated analytic input. \\
+N2 & Finite net-dissipation measure and target-visible window deficit & \Cref{thm:normalized-rigidity-gap,thm:dissipation-series-exclusion}. \\
+N3 & Persistent current supported on regenerated active centers & First failures route to N1 by \Cref{prop:marked-alternative-extraction}; the bounded residual is excluded by \Cref{thm:no-bounded-marked-regenerated-cascade,thm:marked-regenerated-current-routing}. \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1336,7 +1441,7 @@ Both contradict the retained target floor.  Apply
 \cref{lem:uniform-block-deficit}.
 \end{proof}
 
-\begin{remark}[The remaining extraction statement]
+\begin{remark}[Interface with noncompact extraction]
 \label{rem:remaining-recurrent-extraction}
 The theorem closes an \emph{ordinary compact recurrent} scale-collapse or
 scale-rigid limit, including the limiting case \(a_*=0\).  It does not turn a
@@ -1344,9 +1449,11 @@ rough, exterior, diffuse, or noncompact sequence into such a class.  To use it
 in the global proof one must still show, directly from the suitable local
 energy inequality and pressure reconstruction, that repeated target-retaining
 descendants either lose the target, enter a separately removable exterior
-case, or possess a compact autonomous recurrent limit to which the theorem
-applies.  Naming a compactness failure as another state does not prove this
-PDE assertion.
+case, possess a compact autonomous recurrent limit to which the theorem
+applies, or form the marked regenerated-current cascade of
+\cref{def:marked-regenerated-cascade}.  The last case is treated by
+\cref{thm:marked-regenerated-current-routing} and does not require a covariant
+hull retaining a fixed root.
 \end{remark}
 
 \section{Scale-critical quotient geometry}
@@ -2672,7 +2779,7 @@ aggregate feeding is dominated by gross dissipation, and equality is
 target-null.  Appendices~\ref{app:scale-space-current} and
 \ref{app:material-rigidity} give the precise realization.
 
-\begin{hypothesis}[Target-relative flux domination]
+\begin{hypothesis}[Target-relative current alternative]
 \label{hyp:covariant-dissipation-reduction}
 For every terminal-loss orbit supplied by
 \cref{hyp:canonical-critical-orbit}, one of the following alternatives holds.
@@ -2708,6 +2815,13 @@ such that
 Here the closure and its topology are those of
 \cref{hyp:canonical-critical-orbit}, after translating each unit interval to
 \([0,1]\).
+\item The flux-dominated conclusion in \textup{(N2)} fails, and the surviving
+positive critical current generates, from a uniformly record-bounded terminal
+extraction, a marked regenerated-current cascade in the sense of
+\cref{def:record-bounded-terminal-extraction,prop:marked-alternative-extraction,def:marked-regenerated-cascade}.
+Every exterior, pressure-atlas-loss, affine, diffuse, and finite-descendant
+output is assigned
+to \textup{(N1)} before this alternative is selected.
 \end{enumerate}
 \end{hypothesis}
 
@@ -2716,6 +2830,13 @@ critical dissipation after internal signed currents have been canceled.  The fir
 alternative eliminates a component without a dissipation estimate.  On the
 second alternative, compactness supplies a numerical gap directly in the
 finite measure \(\CovDiss\); no scale weight is inserted after normalization.
+The third alternative retains the current which prevents domination.  It is
+subjected to the ordered first-failure tests of
+\cref{prop:marked-alternative-extraction}.  Every failed test is assigned to
+\textup{(N1)}; if no test fails, exact composition of the bounded descendant
+rebases contradicts the retained activity floor by
+\cref{thm:no-bounded-marked-regenerated-cascade}.  Thus no spatial averaging
+is used on this branch.
 
 \begin{theorem}[Normalized covariant rigidity gap]
 \label{thm:normalized-rigidity-gap}
@@ -3325,11 +3446,11 @@ the bound
 nonnegativity.
 \end{proof}
 
-\begin{proposition}[Moving-cutoff implication for flux domination]
+\begin{proposition}[Moving-cutoff implication for the current alternative]
 \label{prop:moving-cutoff-dissipation-reduction}
 Assume the canonical moving-cutoff alternative
 \cref{hyp:corrected-entropy}, including the PDE exclusion asserted in
-alternative~\textup{(C1)}.  Then the target-relative flux-domination hypothesis
+alternative~\textup{(C1)}.  Then the target-relative current-alternative hypothesis
 \cref{hyp:covariant-dissipation-reduction} holds.
 \end{proposition}
 
@@ -3495,14 +3616,18 @@ one forward orbit and normalized target-retaining windows with pairwise disjoint
 \(I_j=[\tau_j,\tau_j+1]\), \(j\ge1\).  Relabel them so that
 \(\tau_j+1\le\tau_{j+1}\).
 
-Apply the target-relative flux-domination hypothesis.  Alternative~\textup{(N1)} is
+Apply the target-relative current-alternative hypothesis.  Alternative~\textup{(N1)} is
 incompatible with retention of the singular target.  In
 alternative~\textup{(N2)}, discard the finite prefix before \(\tau_0\).
 The normalized rigidity theorem gives
 \(\Delta_{\mathrm{crit}}(\mathfrak w_j)\ge
 \delta_{\mathrm{rig}}>0\), while \eqref{eq:window-dissipation-lower-bound} gives
 \(\CovDiss(I_j)\ge\delta_{\mathrm{rig}}\).  This is excluded by
-\cref{thm:dissipation-series-exclusion}.  Hence
+\cref{thm:dissipation-series-exclusion}.  Alternative~\textup{(N3)} is
+excluded by \cref{thm:marked-regenerated-current-routing}: a first failure
+belongs to one of the ordered local alternatives in \textup{(N1)}, whereas
+the bounded marked residual contradicts product-scale decay of quotient
+activity.  Hence
 \(\Sigma_u(T)=\varnothing\).  No density assumption on the selected times is required; only the
 existence of infinitely many disjoint target-retaining windows matters.
 
@@ -3512,8 +3637,8 @@ suitable Leray solution.  It agrees with the classical solution on
 \([0,T_*)\) by weak--strong uniqueness and supplies a suitable continuation
 through \(T_*\).  Apply case~\textup{(b)} of
 \cref{hyp:canonical-critical-orbit}.  It produces a canonical orbit even if
-the concentrating centers escape to spatial infinity.  The two
-flux-domination alternatives give the same contradiction as above.  Hence
+the concentrating centers escape to spatial infinity.  The three
+current alternatives give the same contradiction as above.  Hence
 \(T_*=\infty\).
 Standard parabolic regularity then gives smoothness on every compact positive
 time interval, and weak--strong uniqueness identifies the Leray solution with
@@ -3521,25 +3646,32 @@ this global classical solution.
 \end{proof}
 
 The proof uses each hypothesis once.  The critical-orbit hypothesis turns terminal
-loss into infinitely many compact quotient states.  Target-relative flux
-domination says that a retained state is either reduced or is charged to one
-finite critical net-dissipation measure.  Compactness gives a positive lower
-bound in that measure, and countable additivity gives the contradiction.  The adjoint entropy,
+loss into infinitely many compact quotient states.  The target-relative
+current alternative says that a retained state is reduced, charged to one
+finite critical net-dissipation measure, or carried by regenerated critical
+current.  On the last output, ordered failures return to the first alternative
+and the bounded residual is excluded directly by finite-depth rebase
+composition.
+Compactness gives a positive lower bound in the finite measure on the second
+output, and countable additivity gives the contradiction.  The adjoint entropy,
 pressure atlas, moving radius, and Type~I/Type~II routes are constructions of
 the two hypotheses; they do not appear in the final deduction.
 
 \begin{remark}[Remaining self-contained argument]
-The remaining equation-specific theorem is the concentration--remainder and
-flux alternative.  It must construct the signed localized-energy balance in
-one coherent scale-space chart, prove
+The remaining equation-specific theorem is the finite-stage
+concentration--remainder and current alternative.  It must construct the signed
+localized-energy balance in one coherent scale-space chart and prove
 \(\mathcal F^+\le\mathcal D\) after true exterior input has been separated,
-and show that every persistent noncompact descendant has an ordinary compact
-recurrent realization.  Cancellation alone does not prove the measure
-inequality, and a formal compactification does not prove recurrent PDE
-realization.  Appendix~\ref{app:scale-space-current} records the exact
-flux statement; \cref{sec:recurrent-covariant-rigidity} and
+unless the undominated current has the regenerated support described in
+\cref{def:marked-regenerated-cascade}.  The latter case is now reduced to an
+ordered first-failure output or excluded by
+\cref{thm:no-bounded-marked-regenerated-cascade}; no critical-tail exclusion
+is assumed for the bounded marked residual.
+Cancellation alone does not prove the measure inequality.  Appendix~
+\ref{app:scale-space-current} records the exact flux statement;
+\cref{sec:recurrent-covariant-rigidity} and
 Appendix~\ref{app:material-rigidity} give the target-null equality
-classification once the ordinary recurrent class has been obtained.
+classification on the compact branch.
 \end{remark}
 
 \clearpage
@@ -4147,10 +4279,11 @@ terminal label: it becomes an actual velocity descendant or a homogeneous
 quotient state.  It also isolates the only pressure obstruction as a
 non-affine harmonic tail with exterior ancestry; it does not silently call
 that tail compact.
-It does not yet prove that an \emph{infinite} sequence of such actual
-descendants has a stationary law satisfying all invariances in
-\cref{def:stationary-monotone-ensemble}.  That final passage is a dynamical
-realization theorem, not another local estimate.
+An infinite sequence of such actual descendants need not have a stationary
+law satisfying all invariances in
+\cref{def:stationary-monotone-ensemble}.  The marked construction in
+\cref{app:marked-regeneration} retains the successor witnesses and their
+currents and routes the resulting recurrent path to a critical tail instead.
 \end{remark}
 
 \begin{definition}[Actual target-retaining descendant]
@@ -4194,17 +4327,49 @@ physical pullback is a bounded mild ancient solution and the critical
 \(L^3\)-norm is invariant.
 \end{proof}
 
-\begin{lemma}[Compact path law for an infinite realized chain]
+\begin{lemma}[Event law for an infinite realized chain]
 \label{lem:compact-descendant-path-law}
 Let \(K_\eta\) be a compact metric space of ordinary normalized represented
 solutions on which the quotient target \(\mathcal O\) is continuous and
 \(\mathcal O\ge\eta>0\).  Let
-\(\mathcal R\subset K_\eta\times K_\eta\) be the closed actual-descendant
+\(\mathcal R\subset K_\eta\times K_\eta\) be an actual-descendant
 relation.  If
 \begin{equation}\label{eq:actual-infinite-descendant-chain}
  w_0\mathcal Rw_1\mathcal Rw_2\mathcal R\cdots,
 \end{equation}
-then the path space
+then the event-count measures
+\begin{equation}\label{eq:actual-descendant-event-law}
+ \nu_N:=\frac1N\sum_{j=0}^{N-1}\delta_{w_j}
+\end{equation}
+have weak-* limit points, every one of which is supported on
+\(\{\mathcal O\ge\eta\}\).  The closure of the shift orbit of the given
+one-sided sequence carries a shift-invariant probability measure whose zeroth
+marginal has the same property.  No closedness of the profile-only relation is
+asserted.
+\end{lemma}
+
+\begin{proof}
+Compactness of \(K_\eta\) gives weak-* compactness of
+\(\mathcal P(K_\eta)\).  Every measure in
+\eqref{eq:actual-descendant-event-law} is supported on the closed set
+\(\{\mathcal O\ge\eta\}\), and the Portmanteau theorem preserves this support
+condition under weak-* limits.  The closure of the shift orbit of
+\((w_j)_{j\ge0}\) is compact in \(K_\eta^{\mathbb N}\).  Weak-* limits of the
+shift empirical measures are shift invariant because, for every continuous
+\(F\),
+\[
+ \frac1N\sum_{j=0}^{N-1}
+ \bigl(F(S^{j+1}w)-F(S^jw)\bigr)
+ =\frac{F(S^Nw)-F(w)}N\longrightarrow0.
+\]
+Their zeroth marginals are limits of
+\eqref{eq:actual-descendant-event-law}.  The successor edge can be lost when
+its recentering witness escapes, so the conclusion deliberately concerns the
+event law and not a closed path relation.
+\end{proof}
+
+\begin{remark}[The profile-only path space]
+If the unmarked relation happens to be closed, then the path space
 \begin{equation}\label{eq:actual-descendant-path-space}
  \mathscr P_\eta
  :=\{(v_j)_{j\ge0}\in K_\eta^{\mathbb N}:
@@ -4212,20 +4377,11 @@ then the path space
 \end{equation}
 is nonempty and compact, is invariant under the left shift \(S\), and carries
 an \(S\)-invariant Borel probability measure.  Every coordinate marginal of
-that measure is supported on ordinary target-retaining Navier--Stokes
-solutions.
-\end{lemma}
-
-\begin{proof}
-The product \(K_\eta^{\mathbb N}\) is compact and metrizable.  The path
-space is the intersection of the closed conditions
-\((v_j,v_{j+1})\in\mathcal R\), so it is compact; the given chain makes it
-nonempty.  It is shift invariant.  Empirical measures of the shifted chain
-have weak-* limit points, and the endpoint calculation used in
-\cref{lem:uniform-block-deficit} makes every such limit shift invariant.
-Because every coordinate lies in \(K_\eta\), all coordinate marginals retain
-the target and are supported on ordinary solutions.
-\end{proof}
+that measure is target-retaining.  The hypothesis is not available for the
+profile-only descendant relation: local convergence on fixed cylinders does
+not control observers whose centers escape.  The marked construction below
+restores closedness by retaining those observers.
+\end{remark}
 
 \begin{proposition}[A rooted target is not preserved by an invariant hull]
 \label{prop:rooted-target-not-hull-invariant}
@@ -4256,25 +4412,528 @@ and their local limit points, whereas the successor shift acts on a sequence
 of separately recentered profiles.
 \end{proof}
 
-\begin{remark}[The exact infinite-chain theorem still required]
-\label{rem:exact-infinite-chain-theorem}
-The shift-invariant law in \cref{lem:compact-descendant-path-law} is not, by
-itself, invariant under continuous time and covariant spatial translations.
-Those invariances are the hypotheses used to cancel pressure in
-\cref{thm:stationary-monotone-ensemble-rigidity}.  The missing statement is
-therefore precise: one must prove, using the diagonal lifting of every finite
-descendant block to the same physical solution and the signed local-energy
-balance, that either
-\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.2em]
-\item the path law has sublinear true exterior input and its saturation is a
-stationary monotone covariant ensemble; or
-\item a finite block has a strictly negative signed energy excess, uniformly
-on \(K_\eta\).
+\subsection{Marked descendant structure for regenerated current}
+\label{app:marked-regeneration}
+
+The successor shift and the covariant translation action are different
+dynamical systems.  The preceding proposition prevents replacing one by the
+other.  We instead retain the geometric and local-energy data which realize
+each successor.  The resulting relation is closed because an escaping witness
+is recorded as an exterior, pressure, diffuse, or scale-tail output rather than
+discarded.
+
+Fix once and for all a countable family \(\mathscr T\) of nonnegative smooth
+parabolic cutoffs which is dense in the test-function Fr\'echet topology on
+each member of a compact-cylinder exhaustion.  The stopping radii and times
+are chosen from the full-measure set for which the endpoint energy traces and
+the coarea limits of every test in \(\mathscr T\) exist.  Equivalently, the
+boundary currents below may be defined as limits of smooth collars.  The local
+energy distribution, including its nonnegative Radon defect, then defines for
+every physical parabolic cell \(C\) the coordinates
+\begin{equation}\label{eq:marked-local-energy-coordinates}
+ \mathbf q_C(\psi):=
+ \bigl(K_C^-(\psi),K_C^+(\psi),D_C(\psi)+M_C(\psi),J_C(\psi)\bigr),
+ \qquad \psi\in\mathscr T,
+\end{equation}
+where the endpoint energy traces and the complete signed current are oriented with
+respect to \(C\).  The suitable-energy defect is included in the third
+coordinate, so the balance is an equality.
+
+\begin{definition}[Marked successor record]
+\label{def:marked-successor-record}
+Let \(C_j=Q_{r_j}(z_j)\) and
+\(C_{j+1}=Q_{r_{j+1}}(z_{j+1})\Subset Q_{r_j/2}(z_j)\) be two actual cells cut from the
+same suitable solution.  A marked successor record is
+\begin{equation}\label{eq:marked-successor-tuple}
+ \mathfrak m_j=
+ (\mathfrak w_j,\mathfrak w_{j+1},C_j,
+   \lambda_j,\xi_j,\theta_j,\gamma_j,
+   \mathbf q_j,\mathfrak s_j),
+\end{equation}
+where
+\begin{equation}\label{eq:marked-observer-increments}
+ \lambda_j=\frac{r_{j+1}}{r_j},\qquad
+ \xi_j=\frac{x_{j+1}-x_j}{r_j},\qquad
+ \theta_j=\frac{t_{j+1}-t_j}{r_j^2}.
+\end{equation}
+Here \(\gamma_j\) is the additive pressure gauge on the overlap,
+\(\mathbf q_j\) is the countable vector
+\((\mathbf q_{C_j}(\psi))_{\psi\in\mathscr T}\), and
+\(\mathfrak s_j\) is the inverse-limit support coordinate: for every finite
+block ending at \(j\), every first finite family of cylinders and tests, and
+every \(m\ge1\), it records a terminal-sequence index at least \(m\), a
+composed observer, and a realization error at most \(m^{-1}\) in the strong
+velocity and pressure coordinates.  Compatibility is restriction of the
+\((m+1)\)-st record to the first \(m\) coordinates.  Concatenation
+requires equality of the outgoing window, incoming window, pressure gauge,
+and oriented current trace on the common overlap.
+\end{definition}
+
+The topology of the marked records is strong local \(L^3\) for velocity,
+strong local \(L^{3/2}\) modulo the recorded gauge for pressure, weak local
+\(L^2\) for gradients, weak-* convergence for the suitable defect, Euclidean
+convergence for \((\lambda,\xi,\theta)\), and coordinatewise convergence of
+\(\mathbf q\) and \(\mathfrak s\).  The countable coordinates make this
+topology metrizable on bounded sets.
+
+\begin{definition}[Uniformly record-bounded terminal extraction]
+\label{def:record-bounded-terminal-extraction}
+A terminal extraction \((U_n,P_n)\) on domains \(\mathcal D_n\) is
+\emph{uniformly record-bounded} if each pair is an exact parabolic rescaling
+of the same physical solution, the domains exhaust every compact cylinder
+used by the extraction, and
+\begin{equation}\label{eq:uniform-record-bound}
+ \sup_n\|U_n\|_{L^\infty(\mathcal D_n)}\le M_*
+\end{equation}
+for one \(M_*<\infty\).  The record-point sequence in
+\cref{thm:record-point-ancient-extraction} has this property with \(M_*=1\)
+by \eqref{eq:record-profile-bound}.
+\end{definition}
+
+\begin{definition}[Marked regenerated-current cascade]
+\label{def:marked-regenerated-cascade}
+A marked regenerated-current cascade at level \(\eta>0\) is an infinite
+concatenated sequence \((\mathfrak m_j)_{j\ge0}\) with the following
+properties.  Write \(V_j\) for the velocity component of \(\mathfrak w_j\).
+\begin{enumerate}[label=\textup{(R\arabic*)},leftmargin=2.8em]
+\item The cells are strictly nested and
+\begin{equation}\label{eq:marked-cascade-scale-separation}
+ 0<\lambda_j\le\frac14,
+ \qquad
+ \mathcal O_{Q_1}(V_j)\ge\eta .
+\end{equation}
+Every finite block is simultaneously realized in one member of the original
+terminal sequence by the recorded composed observers.
+\item With \(w_j=r_j^{-1}\), let \(\mathscr J_j\) be the complete oriented
+local-energy current through the stopping surface between \(C_j\) and
+\(C_{j+1}\), including its endpoint energy trace, and let
+\(\mathscr P_j\ge0\) be viscous production plus suitable defect in that shell.
+The scale-critical shell dissipation is
+\begin{equation}\label{eq:marked-critical-dissipation}
+ \mathscr D_j^{\rm crit}:=w_j\mathscr P_j .
+\end{equation}
+It is invariant under Navier--Stokes scaling because physical local-energy
+production has homogeneity one in length.
+There are \(N_k\uparrow\infty\) and \(\delta_D>0\) such that
+\begin{equation}\label{eq:marked-positive-cesaro-dissipation}
+ \frac1{N_k}\sum_{j=0}^{N_k-1}\mathscr D_j^{\rm crit}\ge\delta_D
+ \qquad(k\ge1).
+\end{equation}
+\item Every nonzero sequence-realized support profile of the remaining
+weighted current regenerates a child satisfying
+\eqref{eq:marked-cascade-scale-separation}.
+\item The marked records have compact closure; in particular there are
+\(\lambda_*>0\) and \(B<\infty\)
+such that
+\begin{equation}\label{eq:compact-mark-bounds}
+ \lambda_*\le\lambda_j\le\frac14,
+ \qquad |\xi_j|+|\theta_j|\le B.
+\end{equation}
+\item The original terminal extraction is uniformly record-bounded in the
+sense of \cref{def:record-bounded-terminal-extraction}.  Every finite initial
+block of length \(N\) has a simultaneous realization whose ungauged root velocity
+\(U^{(N)}\) satisfies
+\begin{equation}\label{eq:bounded-root-finite-realization}
+ \|U^{(N)}\|_{L^\infty(\mathcal Q_N)}\le M_*.
+\end{equation}
+Here \(\mathcal Q_N\) contains the images, in root coordinates, of all unit
+cylinders in the block.  The normalized velocity at every descendant is the
+exact parabolic rebase of \(U^{(N)}\), up to an additive constant Galilean
+velocity.  The realization accuracy on the terminal descendant may be chosen
+so that its velocity \(V_N^{(N)}\) satisfies
+\begin{equation}\label{eq:bounded-terminal-realization-accuracy}
+ \|V_N^{(N)}-V_N\|_{L^3(Q_1)}\le\varepsilon_N,
+ \qquad \varepsilon_N\downarrow0.
+\end{equation}
 \end{enumerate}
-The second conclusion closes by summing disjoint blocks, and the first closes
-by \cref{thm:stationary-monotone-ensemble-rigidity}.  This is the
-Navier--Stokes shadowing/passivity theorem.  Neither compactness of the product
-space nor the word ``descendant'' proves it.
+\end{definition}
+
+\begin{proposition}[Extraction of the marked alternative]
+\label{prop:marked-alternative-extraction}
+Consider an infinite nested sequence of target-retaining current events
+furnished by one finite-stage concentration--remainder construction from a
+uniformly record-bounded terminal extraction.  Suppose that each event is
+accompanied by its actual successor witness and the coordinates in
+\eqref{eq:marked-successor-tuple}.  Apply the following tests in order:
+\begin{enumerate}[label=\textup{(E\arabic*)},leftmargin=2.8em]
+\item if the Ces\`aro mean of the scale-critical shell dissipations has a
+subsequence tending to zero, select shells whose normalized dissipation tends
+to zero;
+\item if a nonzero sequence-realized support profile of the remaining current
+has no target-retaining child, select that profile at its first failed
+compactness, pressure, exterior, diffuse, affine, or critical-tail test;
+\item if the radii fail to tend to zero, select the compact
+non-collapsing scale limit; otherwise retain a subsequence with
+\(r_{j+1}/r_j\le1/4\);
+\item if, on this subsequence, the ratios have no positive lower bound, the
+normalized observer increments are unbounded, or the velocity, pressure
+gauge, suitable-defect, current, or realization coordinates have no compact
+closure, select the corresponding scale-tail, exterior, pressure/noncompact,
+defect, or realization-loss profile.
+\end{enumerate}
+If none of these selected outputs occurs, the remaining events contain a
+marked regenerated-current cascade in the sense of
+\cref{def:marked-regenerated-cascade}.  Thus failure of the compact marked
+cascade is an explicit first-failure output; it is not an assumption hidden in
+the conclusion.
+\end{proposition}
+
+\begin{proof}
+Put \(A_N=N^{-1}\sum_{j<N}\mathscr D_j^{\rm crit}\).  If \(\liminf_NA_N=0\), choose
+\(N_k\to\infty\) with \(A_{N_k}\to0\).  Since these dissipations are nonnegative,
+for every \(k\) some \(j_k<N_k\) satisfies
+\(\mathscr D_{j_k}^{\rm crit}\le A_{N_k}\); this is test \textup{(E1)}.
+Otherwise choose \(0<\delta_D<\liminf_NA_N\); then
+\eqref{eq:marked-positive-cesaro-dissipation} holds on every sufficiently long
+initial block.
+
+Starting from the first retained event, follow a target-retaining child of
+each nonzero current-support profile.  If no such child exists, the first
+failed test is exactly \textup{(E2)}.  If a child always exists, recursive
+selection gives an infinite realized chain.  If its radii do not tend
+to zero, a subsequence has a positive limiting radius; after normalization
+this is the compact non-collapsing scale output in \textup{(E3)}.  If the
+radii tend to zero, choose successively the first later radius not exceeding
+one quarter of the preceding selected radius.  Relabeling this subsequence
+gives the upper bound in \eqref{eq:marked-cascade-scale-separation}; finite
+simultaneous realization is preserved under passage to a subsequence and
+composition of the intervening observers.
+
+On the separated chain, failure of any lower scale bound, observer bound, or
+coordinate compactness has a first coordinate in the countable cylinder and
+test exhaustion on which compactness fails.  Selecting that coordinate gives
+the output in \textup{(E4)}.  Diagonal compactness gives the compact closure
+and the bounds in
+\eqref{eq:compact-mark-bounds}.  The retained activity floor and the
+regeneration property are closed because velocity convergence is strong in
+the fixed local \(L^3\) topology and because the complete successor witness is
+one of the marks.  The record bound and the inverse-limit realization
+coordinate give \textup{(R5)} by
+\cref{lem:record-bound-inherited-by-marked-blocks} below.  Thus properties
+\textup{(R1)}--\textup{(R5)} hold, so the
+remaining chain is a marked regenerated-current cascade.
+\end{proof}
+
+\begin{lemma}[Exact scale-critical shell balance]
+\label{lem:marked-critical-shell-balance}
+For every finite initial block of a marked regenerated-current cascade,
+\begin{equation}\label{eq:marked-critical-shell-balance}
+ \sum_{j=0}^{N-1}\mathscr D_j^{\rm crit}
+ =w_0\mathscr J_0-w_{N-1}\mathscr J_N
+  +\sum_{j=1}^{N-1}(w_j-w_{j-1})\mathscr J_j .
+\end{equation}
+Common parent--child currents cancel with opposite orientations.  Viscous
+production and suitable defect remain nonnegative on the disjoint shell
+interiors.
+\end{lemma}
+
+\begin{proof}
+Apply the suitable local energy identity, with its nonnegative defect included,
+to the disjoint regions between consecutive stopping surfaces.  The normal
+trace on a common surface occurs once with each orientation and cancels.
+Writing the resulting shell identity as
+\(\mathscr P_j=\mathscr J_j-\mathscr J_{j+1}\), multiplying by \(w_j\), and
+summing gives
+\[
+ \sum_{j<N}w_j(\mathscr J_j-\mathscr J_{j+1})
+ =w_0\mathscr J_0-w_{N-1}\mathscr J_N
+  +\sum_{j=1}^{N-1}(w_j-w_{j-1})\mathscr J_j.
+\]
+This is \eqref{eq:marked-critical-shell-balance}.  The sign assertion follows
+because the dissipation and defect measures are restricted to disjoint
+interiors; they are not obtained by subtracting a parent localization from its
+children.
+\end{proof}
+
+\begin{lemma}[Finite simultaneous realization]
+\label{lem:marked-finite-simultaneous-realization}
+Every finite set of marked events and every finite set of compact normalized
+cylinders on which their activity and current coordinates are tested are
+realized, with compatible pressure gauges, by one member of the original
+terminal extraction.
+\end{lemma}
+
+\begin{proof}
+This is precisely the finite-block clause in \textup{(R1)}.  More explicitly,
+the inverse-limit coordinate \(\mathfrak s_j\) records, for each block length
+and each finite cylinder-and-test family, one terminal-sequence index and the
+composed observer realizing all of those coordinates.  Restriction
+compatibility of \(\mathfrak s_j\) preserves the same index when coordinates
+are discarded, and the overlap coordinate \(\gamma_j\) makes the pressure
+representatives agree up to their recorded additive gauge.  Hence all members
+of the prescribed finite family occur in one realization.  A diagonal choice
+over the countable exhaustion gives the final assertion.
+\end{proof}
+
+\begin{lemma}[The record bound is inherited by finite marked blocks]
+\label{lem:record-bound-inherited-by-marked-blocks}
+Let the marked events be generated from a uniformly record-bounded terminal
+extraction.  If every finite block has the inverse-limit realization
+coordinate of \cref{def:marked-successor-record}, then clause \textup{(R5)}
+of \cref{def:marked-regenerated-cascade} holds with the same constant \(M_*\)
+as in \eqref{eq:uniform-record-bound}.
+\end{lemma}
+
+\begin{proof}
+Fix \(N\).  The inverse-limit coordinate supplies terminal-sequence indices
+realizing the first \(N\) edges on the finite collection of cylinders needed
+for that block, with error tending to zero in every recorded strong local
+velocity coordinate.  Choose one such index far enough along the sequence
+that the terminal velocity error on \(Q_1\) is at most \(N^{-1}\), and call
+the corresponding extraction member \(U^{(N)}\).  This is the ungauged root
+field: Galilean constants are retained in the composed observer and are not
+added to \(U^{(N)}\).  Since every image cylinder in the finite block lies in
+the domain of this realization,
+\(\mathcal Q_N\subset\mathcal D_{k(N)}\), and hence
+\[
+ \|U^{(N)}\|_{L^\infty(\mathcal Q_N)}
+ \le \|U_{k(N)}\|_{L^\infty(\mathcal D_{k(N)})}
+ \le M_* .
+\]
+Exact composition of translations, constant Galilean changes, and parabolic
+dilations gives the required descendant rebases.  Taking
+\(\varepsilon_N=N^{-1}\) proves
+\eqref{eq:bounded-terminal-realization-accuracy} and therefore \textup{(R5)}.
+\end{proof}
+
+\begin{lemma}[Quotient activity under a bounded parabolic rebase]
+\label{lem:bounded-rebase-activity-decay}
+Let \(Q\) be a bounded spacetime cylinder, let \(U\) be defined on the image
+of an affine parabolic embedding \(\Psi:Q\to\mathbb R^3\times\mathbb R\), and
+suppose \(\|U\|_{L^\infty(\Psi(Q))}\le M\).  For \(0<\lambda\le1\) and
+\(h\in\mathbb R^3\), put
+\begin{equation}\label{eq:bounded-parabolic-rebase}
+ V(y,s):=\lambda U(\Psi(y,s))+h .
+\end{equation}
+Then
+\begin{equation}\label{eq:bounded-rebase-activity-bound}
+ \mathcal O_Q(V)^{1/3}
+ \le |Q|^{1/3}M\lambda .
+\end{equation}
+Moreover, for any \(V_1,V_2\in L^3(Q)\),
+\begin{equation}\label{eq:quotient-activity-lipschitz}
+ \left|\mathcal O_Q(V_1)^{1/3}
+       -\mathcal O_Q(V_2)^{1/3}\right|
+ \le\|V_1-V_2\|_{L^3(Q)}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Choose the constant \(c=h\) in the infimum defining \(\mathcal O_Q(V)\).
+Then
+\[
+ \mathcal O_Q(V)
+ \le\int_Q|V-h|^3
+ =\lambda^3\int_Q|U\circ\Psi|^3
+ \le |Q|M^3\lambda^3,
+\]
+which proves \eqref{eq:bounded-rebase-activity-bound}.  For every constant
+\(c\), Minkowski's inequality gives
+\[
+ \|V_1-c\|_{L^3(Q)}
+ \le\|V_1-V_2\|_{L^3(Q)}+\|V_2-c\|_{L^3(Q)}.
+\]
+Take the infimum over \(c\), and then interchange \(V_1,V_2\), to obtain
+\eqref{eq:quotient-activity-lipschitz}.
+\end{proof}
+
+\begin{lemma}[Composition of marked descendant rebases]
+\label{lem:marked-rebase-composition}
+For a finite concatenated block of marked successors, let
+\begin{equation}\label{eq:marked-composed-scale}
+ \Lambda_N:=\prod_{j=0}^{N-1}\lambda_j .
+\end{equation}
+In every simultaneous realization of that block, its terminal normalized
+velocity has the form
+\begin{equation}\label{eq:marked-composed-rebase}
+ V_N^{(N)}(y,s)
+ =\Lambda_N U^{(N)}(\Psi_N(y,s))+h_N
+ \qquad ((y,s)\in Q_1),
+\end{equation}
+where \(U^{(N)}\) is the ungauged root representative, \(h_N\) is a constant
+Galilean velocity, and \(\Psi_N(Q_1)\subset\mathcal Q_N\).  In particular,
+if the block satisfies \textup{(R5)}, then
+\begin{equation}\label{eq:terminal-block-activity-bound}
+ \mathcal O_{Q_1}(V_N^{(N)})^{1/3}
+ \le |Q_1|^{1/3}M_*\Lambda_N .
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+For one edge, the normalized child velocity is obtained from the normalized
+parent by an exact translation, parabolic dilation of ratio \(\lambda_j\),
+and a constant Galilean change.  It therefore has the form
+\[
+ V_{j+1}(y,s)
+ =\lambda_jV_j(\Psi_j(y,s))+g_j,
+\]
+where \(\Psi_j\) is the affine parabolic embedding determined by
+\((\xi_j,\theta_j)\) and the Galilean spatial drift.  Composition multiplies
+the amplitude factors and again gives an affine parabolic embedding; all
+spatially constant velocity terms combine into one constant vector.  Induction
+proves \eqref{eq:marked-composed-rebase}, with amplitude factor
+\(\Lambda_N\).  The cells are nested, so the image of the terminal unit
+cylinder lies in \(\mathcal Q_N\).  Apply
+\cref{lem:bounded-rebase-activity-decay} with \(M=M_*\) to obtain
+\eqref{eq:terminal-block-activity-bound}.
+\end{proof}
+
+\begin{theorem}[Record-bounded marked cascades are impossible]
+\label{thm:no-bounded-marked-regenerated-cascade}
+There is no marked regenerated-current cascade generated from a uniformly
+record-bounded terminal extraction with a positive activity floor.
+\end{theorem}
+
+\begin{proof}
+Suppose that a cascade exists at level \(\eta>0\).  For each \(N\), use
+\textup{(R5)} to realize the first \(N\) edges with terminal velocity
+\(V_N^{(N)}\) satisfying
+\eqref{eq:bounded-terminal-realization-accuracy}.
+By \textup{(R1)},
+\(\mathcal O_{Q_1}(V_N)\ge\eta\).  On the other hand,
+\cref{lem:bounded-rebase-activity-decay,lem:marked-rebase-composition} give
+\begin{align*}
+ \eta^{1/3}
+ &\le \mathcal O_{Q_1}(V_N)^{1/3}\\
+ &\le \mathcal O_{Q_1}(V_N^{(N)})^{1/3}+\varepsilon_N\\
+ &\le |Q_1|^{1/3}M_*\Lambda_N+\varepsilon_N.
+\end{align*}
+Since \(\lambda_j\le1/4\),
+\(\Lambda_N\le4^{-N}\to0\).  Letting \(N\to\infty\) gives
+\(\eta^{1/3}\le0\), a contradiction.
+\end{proof}
+
+\begin{lemma}[Compact closed marked path space]
+\label{lem:compact-closed-marked-path-space}
+Let \((\mathfrak m_j)_{j\ge0}\) be a marked regenerated-current cascade.
+The closure of its shift orbit is a compact shift-invariant space
+\(X_{\mathrm{mark}}\).  Concatenation and the activity floor are closed there.
+Every weak-* limit of the shift empirical measures is shift invariant and has
+zeroth marginal supported on \(\{\mathcal O_{Q_1}\ge\eta\}\).
+\end{lemma}
+
+\begin{proof}
+Property \textup{(R4)} gives relative compactness of the complete marked
+records, not merely of their profile coordinates.  Take the closure in the
+countable product of the compact coordinate closures.  The inverse-limit
+support coordinate is closed by
+\cref{lem:marked-finite-simultaneous-realization}, so every point of this
+closure is still sequence-realized.
+
+Concatenation is equality of outgoing and incoming overlap coordinates and is
+therefore closed.  Strong local \(L^3\) convergence makes the activity floor
+closed.  Hence the shift-orbit closure is a compact shift-invariant space of
+concatenated marked paths.  The endpoint calculation in the proof of
+\cref{lem:compact-descendant-path-law} gives shift invariance of every
+empirical weak-* limit, and the Portmanteau theorem preserves the activity
+floor.
+\end{proof}
+
+\begin{definition}[Sequence-realized logarithmic critical tail]
+\label{def:sequence-realized-log-tail}
+A sequence-realized logarithmic critical tail is a compatible projective
+family of annular limits on
+\[
+ \{(y,s):e^{-L}<|y|<1,\ -1<s<0\},\qquad L=1,2,\ldots,
+\]
+obtained from one diagonal subsequence of the original terminal extraction.
+The family includes velocity, pressure modulo its compatible additive gauge,
+the suitable defect, and all current coordinates in \(\mathscr T\).  It is
+nonzero when one fixed annular cross-section has quotient oscillation bounded
+below by a positive constant.  Loss of tightness as \(L\to\infty\), survival
+of a pressure or defect coordinate, and strong coherent convergence are,
+respectively, its diffuse, defect, and coherent alternatives.
+\end{definition}
+
+\begin{theorem}[Marked recurrence produces a realized critical tail]
+\label{thm:marked-recurrence-critical-tail}
+Every marked regenerated-current cascade produces a nonzero
+sequence-realized logarithmic critical-tail profile.  More precisely, there
+are a recurrent path \(p\in X_{\mathrm{mark}}\) and integers
+\(n_k\to\infty\) for which the same non-affine marked profile returns through
+observers whose total scale tends to zero.  The associated annular blocks are
+simultaneously realized by the original terminal sequence.
+\end{theorem}
+
+\begin{proof}
+Let \(\varpi\) be a shift-invariant weak-* limit on
+\(X_{\mathrm{mark}}\).  Poincar\'e recurrence gives a recurrent path in the
+support of \(\varpi\), still satisfying the activity floor, and integers
+\(n_k\to\infty\) such that
+\begin{equation}\label{eq:marked-recurrence-return}
+ S^{n_k}p\longrightarrow p\quad\hbox{in }X_{\mathrm{mark}}.
+\end{equation}
+This convergence includes velocity, pressure gauge, defect, current, observer,
+and realization coordinates.
+
+Composing the first \(n\) observer maps gives
+\begin{align}
+ \Lambda_n&=\prod_{j=0}^{n-1}\lambda_j,
+ \label{eq:marked-total-scale}\\
+ X_n-X_0&=r_0\sum_{j=0}^{n-1}
+   \left(\prod_{i=0}^{j-1}\lambda_i\right)\xi_j,
+ \label{eq:marked-total-center}\\
+ T_n-T_0&=r_0^2\sum_{j=0}^{n-1}
+   \left(\prod_{i=0}^{j-1}\lambda_i^2\right)\theta_j.
+ \label{eq:marked-total-time}
+\end{align}
+The bounds \eqref{eq:compact-mark-bounds} make the last two series convergent,
+whereas
+\begin{equation}\label{eq:marked-scale-collapse}
+ 0<\Lambda_{n_k}\le4^{-n_k}\longrightarrow0.
+\end{equation}
+After recentering once at the limits in
+\eqref{eq:marked-total-center}--\eqref{eq:marked-total-time},
+\eqref{eq:marked-recurrence-return} is a return of the same marked profile at
+logarithmic displacements tending to infinity.
+
+Retain the complete blocks between scales \(1\) and \(\Lambda_{n_k}\).
+Their component shells have disjoint logarithmic interiors.  By
+\cref{lem:marked-finite-simultaneous-realization}, every finite family of
+annular velocity, pressure, defect, and current tests is realized by one member
+of the original terminal extraction.  A diagonal extraction therefore gives a
+sequence-realized logarithmic annular state.  It is nonzero because the
+recurrent cross-section retains \(\mathcal O_{Q_1}\ge\eta\).
+
+Loss of logarithmic tightness defines the diffuse critical-tail component.
+Under logarithmic tightness, failure of strong annular compactness or survival
+of a pressure or suitable-defect coordinate defines the defect component.  In
+the remaining case the annular convergence is strong, the pressure gauges are
+compatible, and the limiting state is a coherent sequence-realized critical
+tail.  These alternatives are exhaustive by weak-* compactness of the
+logarithmic mass, local compactness on each fixed annulus, and the dichotomy
+between zero and nonzero defect coordinates.  In every case the output is the
+nonzero critical-tail profile asserted in the theorem.
+\end{proof}
+
+\begin{theorem}[Exclusion of persistent regenerated current]
+\label{thm:marked-regenerated-current-routing}
+Alternative \textup{(N3)} of
+\cref{hyp:covariant-dissipation-reduction} is impossible.  Every failure
+encountered before bounded marked realization is selected is an ordered output
+of alternative \textup{(N1)}; the bounded marked residual is excluded inside
+this paper.
+\end{theorem}
+
+\begin{proof}
+First apply \cref{prop:marked-alternative-extraction}.  Its tests
+\textup{(E1)}--\textup{(E4)} either give one of the ordered local outputs in
+\textup{(N1)}, or produce a marked regenerated-current
+cascade.  The latter is impossible by
+\cref{thm:no-bounded-marked-regenerated-cascade}.  Hence no residual case of
+\textup{(N3)} remains.
+\end{proof}
+
+\begin{remark}[Scope of the marked closure]
+The finite-depth estimate closes the record-bounded regenerated-current row
+before a logarithmic invariant law is needed.  The quotient observable removes
+the accumulated constant Galilean velocity, while exact composition retains
+the product scale \(\Lambda_N\).  The required root bound is inherited from
+\eqref{eq:uniform-record-bound} by
+\cref{lem:record-bound-inherited-by-marked-blocks}.  Pressure created by motion of the root
+remains in \(\mathbf q_j\) and in the exact shell balance
+\eqref{eq:marked-critical-shell-balance}; it is not used in the amplitude
+estimate.
 \end{remark}
 
 \subsection{A single forward orbit}
@@ -4446,11 +5105,11 @@ For diffuse drift blocks, show directly that
 local-energy pairings vanish.  Any compact autonomous recurrent limit then
 has \(a_*=0\) and is covered by the same rigidity theorem.  The only remaining
 case is failure to obtain an ordinary compact recurrent hull while retaining
-the target.  It must be resolved by the concentration--remainder extraction
-specified in \cref{rem:remaining-recurrent-extraction}: either a further
-active parabolic rebase is produced, exterior input is quantified, or the
-target is lost.  Merely adjoining the failed compactness relation as a formal
-limit point would not prove the assertion.  After this extraction is proved,
+the target.  The concentration--remainder extraction in
+\cref{rem:remaining-recurrent-extraction} then produces a further active
+parabolic rebase, quantified exterior input, target loss, or a marked
+regenerated-current cascade.  The last output is routed by
+\cref{thm:marked-regenerated-current-routing}.  After this extraction is proved,
 the negative-drift term contributes no independent terminal branch and the
 moving-cutoff alternative follows without resetting adjoint terminal data.
 

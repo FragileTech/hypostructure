@@ -81,6 +81,64 @@ the canonical counted-label theorem at the current object. -/
             .windowIncidence⟩)
         .nil)
 
+/-- Node `[142]`: the geometric audit of the concrete remainder-surplus class
+selected by `[141]`. -/
+@[reducible] noncomputable def remainderSurplusAuditRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.remainderSurplusAudit
+    { Requires := [K .remainderClassOverload]
+      Produces := [K .remainderSurplusAudit]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let _selectedClass := inputs.get (K .remainderClassOverload)
+      .cons (key := K .remainderSurplusAudit)
+        (show Value BranchState Presentation presentation data
+            .remainderSurplusAudit inputs.current from
+          ⟨Graph.classAuditStatement inputs.current.object data.threshold
+            data.windowOrder
+            (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+              (Graph.WindowCurvature.Label data.windowOrder))
+            .remainderSurplus⟩)
+        .nil)
+
+/-- Node `[143]`: the geometric audit of the concrete primitive-carrier class
+selected after the two negative class tests. -/
+@[reducible] noncomputable def primitiveCarrierAuditRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.primitiveCarrierAudit
+    { Requires := [K .primitiveClassOverload]
+      Produces := [K .primitiveCarrierAudit]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let _selectedClass := inputs.get (K .primitiveClassOverload)
+      .cons (key := K .primitiveCarrierAudit)
+        (show Value BranchState Presentation presentation data
+            .primitiveCarrierAudit inputs.current from
+          ⟨Graph.classAuditStatement inputs.current.object data.threshold
+            data.windowOrder
+            (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+              (Graph.WindowCurvature.Label data.windowOrder))
+            .primitiveCarrier⟩)
+        .nil)
+
+/-- Node `[143]`: normalize node `[141]`'s literal no-remainder residual to the
+canonical primitive-class verdict consumed by the audit. -/
+@[reducible] noncomputable def primitiveClassOverloadRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.primitiveClassOverload
+    { Requires := [K .remainderClassAbsent]
+      Produces := [K .primitiveClassOverload]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .primitiveClassOverload)
+        ⟨(inputs.get (K .remainderClassAbsent)).down⟩ .nil)
+
 /-- Node `[144]`, `cor:homogeneous-same-token-caps-close`: on the literal
 fixed-caps residual, spend the already registered sparse slack identity and
 publish the manuscript's homogeneous-cap closure statement. -/

@@ -61,17 +61,6 @@ variable (T : Core.Target (problem BranchState Presentation presentation data))
 variable (targetPredicate :
   T.Predicate = Graph.HasCycleWithLength data.LengthOK)
 
-/-- `lem:p13-window-package` on the near-cubic residual. -/
-@[reducible] noncomputable def independentWindowPackage :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  windowPackageRow data
-
-/-- Node `[22]`: derive the hot/cold partition from the incoming maximal
-packing on the unchanged residual. -/
-@[reducible] noncomputable def hotColdPartition :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  hotColdPartitionRow data
-
 /-- Node `[91]` closes because its nonnegative discharging conclusion is
 incompatible with the retained negative Type A support. -/
 noncomputable instance typeAUnsaturatedDischargeClosed :
@@ -96,13 +85,6 @@ noncomputable instance typeAExitFiveClosed :
       _noExitFour, support, compressible⟩ := exitFive.down
     exact (uncompressible.down support) compressible
 
-/-- Node `[29]`, `lem:stub-positive`. -/
-/-- Node `[30]`. -/
-@[reducible] noncomputable def wedgeSupply :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  wedgeSupplyRow (K .stubSupply) (K .wedgeSupply) (by simp)
-    (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
-
 /-- `def:exact-response-profile` at the concrete remainder entering node `[31]`. -/
 @[reducible] noncomputable def exactResponseProfile :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
@@ -120,73 +102,20 @@ noncomputable instance typeAExitFiveClosed :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   branchDependenceRow data
 
-/-- Nodes `[47]`--`[48]`. -/
-@[reducible] noncomputable def forcedCurvatureCost :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.forcedCurvatureCost
-    { Requires := [K .curvatureDemandFloor, K .curvatureFullRank]
-      Produces := [K .forcedCurvatureCost]
-      requiresUnique := by simp [K_eq_iff]
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let floor := (inputs.get (K .curvatureDemandFloor)).down
-      let rank := (inputs.get (K .curvatureFullRank)).down
-      .cons (key := K .forcedCurvatureCost)
-        ⟨by
-          rcases rank with ⟨packing, valid, maximal, rankEq⟩
-          refine ⟨packing, valid, maximal, ?_⟩
-          have demand := floor packing valid
-          have supply :
-              remainderWedgeSupply inputs.current.object packing ≤
-                remainderCurvatureTargetRank data inputs.current.object packing :=
-            rankEq.ge
-          calc data.curvatureCost *
-                (data.threshold *
-                    (inputs.current.object.remainderSupport packing).card +
-                  2 * (2 * (data.windowOrder - 1) * packing.card))
-              ≤ data.curvatureCost *
-                  (remainderCurvatureTargetRank data inputs.current.object packing +
-                    2 * (data.threshold * (data.windowOrder * packing.card) +
-                      inputs.current.object.ambientSurplus
-                        (Graph.FiniteObject.windowSupport packing)
-                        data.threshold)) :=
-                Nat.mul_le_mul_left _
-                  (le_trans demand (Nat.add_le_add_right supply _))
-            _ = _ := by ring⟩
-        .nil)
-
 /-- Node `[52]`. -/
 @[reducible] noncomputable def entropyPackage :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  entropyPackageRow (K .remainderEntropyHigh) (K .entropyPackageDemand)
-    (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
-
-/-- Every low-entropy survivor has the same paper continuation.  The optional
-local-type-vector analysis may add curvature information, but
-`rem:closure-robust` records that the later large-budget route does not consume
-that optional fact.  This row therefore commits only the common Residual C
-conclusion and leaves the complete incoming ledger intact. -/
-@[reducible] noncomputable def lowEntropyLargeBudget :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  lowEntropyLargeBudgetRow (K .remainderEntropyLow) (K .largeBudgetResidual)
-    (by simp) (fun _input fact => fact.down)
-    (fun _input low => ⟨Or.inr low⟩)
+  entropyPackageRow data
 
 /-- Node `[60]`: the ordinary eventual net-charge cap. -/
 @[reducible] noncomputable def netChargeCap :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  netChargeCapRow (data := data) (K .densityCap) (K .stubSupply)
-    (K .netChargeLarge) (K .netChargeCap) (by simp)
-    (fun _input fact => fact.down) (fun _input fact => fact.down)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+  netChargeCapRow
 
 /-- Nodes `[57]`--`[58]`. -/
 @[reducible] noncomputable def netChargeLocalization :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  netChargeLocalizationRow (data := data) (K .netChargeLocalization)
-    (fun _input value => ⟨value⟩)
+  netChargeLocalizationRow data
 
 /-- Node `[60]`. -/
 @[reducible] noncomputable def windowJoinPressure :
@@ -199,18 +128,12 @@ conclusion and leaves the complete incoming ledger intact. -/
 /-- Node `[61]`. -/
 @[reducible] noncomputable def negativeSupport :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  negativeSupportRow (K .netChargeNegative) (K .netChargeLocalization)
-    (K .negativeSupport) (by simp) (fun _input fact => fact.down)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+  negativeSupportRow
 
 /-- Node `[68]`, the standing law both arms of the degree split read. -/
 @[reducible] noncomputable def highCentreNormalForm :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  highCentreNormalFormRow (K .selection) (K .tightEndpoint)
-    (K .highCentreNormalForm) (by simp)
-    (fun _input fact => fact.down.1) (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+  highCentreNormalFormRow
 
 /-- Node `[69]`, on the heavy arm of node `[68]`. -/
 @[reducible] noncomputable def heavyCentreLocalDichotomy :
@@ -254,24 +177,6 @@ run after either of the two B2 cursors. -/
     (fun _input fact => fact.down)
     (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
-
-/-- Nodes `[73]`/`[75]` and `[83]`/`[84]`, run on each Type B bridge residual
-cursor that the local fan walk produces. -/
-@[reducible] noncomputable def bridgeFanMass :
-    (bridgeResidual :
-      FactKey (Input BranchState Presentation presentation data)) →
-    bridgeResidual ≠ K .typeBBridgeMass →
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  fun bridgeResidual distinct =>
-  bridgeFanMassRow bridgeResidual (K .typeBBridgeMass) distinct
-    (fun _input _bridgeResidual value => ⟨value⟩)
-
-/-- The paper's Type B bridge sublinearity fact, published as an ordinary
-ledger fact after the bridge mass ledger and the shared budget facts are all
-present. -/
-@[reducible] noncomputable def typeBBridgeSublinear :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeBBridgeSublinearRow
 
 @[reducible] noncomputable def branchKillClosed :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
@@ -384,27 +289,6 @@ noncomputable instance instIncompatibleGlobalBarrier :
     · exact selected.down.1
         (transfer (selected.down.2 representative smaller
           representativeBaseline))
-
-/-- **The node-`[72]` closing arm is uninhabited**, at the spine's own keys.
-
-`lem:typeB-direct-fan-window-cycles` and `lem:typeB-two-window-cycles` *build* a
-cycle from each of the four direct configurations, and its length is the accepted
-one the configuration's own side condition names.  The selected object avoids
-every accepted length.  Registering the collision as `Incompatible` is what lets
-the framework close the arm the moment the branch test takes it, with the closure
-entry naming these two facts and nothing else.
-
-The packing validity the two-window construction needs is the configuration's own
-first component, read back rather than recomputed. -/
-noncomputable instance instIncompatibleDirectCycle :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .selection) (K .typeBDirectCycle) where
-  contradiction := fun _residual selected configuration => by
-    obtain ⟨packing, valid, _maximal, _component, _present, _charge, _positive,
-      _centre, _member, _high, present⟩ := configuration.down
-    exact selected.down.1
-      (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
-        valid present)
 
 noncomputable instance instImpossibleTypeBExcluded :
     Impossible (Input BranchState Presentation presentation data)

@@ -39,6 +39,7 @@ import Hypostructure.Graph.InternalWedgeFamily
 import Hypostructure.Graph.CurvatureTargetRank
 import Hypostructure.Graph.OneThreeRepair
 import Hypostructure.Graph.WindowCurvatureCode
+import Hypostructure.Graph.WindowCurvatureEnumeration
 import Hypostructure.Core.CeilSqrt
 import Hypostructure.Core.Finite.CertifiedTableAggregation
 import Hypostructure.Graph.SeparatedPackageSkeleton
@@ -109,6 +110,8 @@ whose baseline is below it does not reach node `[22]`. -/
 structure Data where
   /-- The registered minimum-degree baseline `δ`. -/
   threshold : Nat
+  /-- The paper's registered cubic baseline. -/
+  threshold_eq_three : threshold = 3
   /-- Stirling's `⌈e⌉` against the registered baseline; see the note above. -/
   three_le_threshold : 3 ≤ threshold
   /-- The accepted cycle lengths the counterexample must avoid. -/
@@ -117,6 +120,13 @@ structure Data where
   the induced-path order; nothing here knows its value. -/
   windowOrder : Nat
   windowOrder_pos : 0 < windowOrder
+  /-- The registered executable census of the legal-label carrier, restricted
+  to the seven sizes displayed by `lem:labels`.  This is a field of the one
+  problem presentation, not branch state or a transported proof package. -/
+  labelCount : (Graph.WindowCurvature.Labels windowOrder).card = 399
+  labelSizeDistribution :
+    (Graph.WindowCurvature.sizeDistribution windowOrder).take 7 =
+      [13, 60, 122, 122, 63, 17, 2]
   /-- The cited external closure law.  An object meeting the baseline with no
   induced window of the registered order has an accepted cycle.  This is the
   only place a result outside the manuscript enters the spine, and it enters at
@@ -288,16 +298,8 @@ structure Data where
   written. -/
   entropyDenominator : Nat
   entropyDenominator_pos : 0 < entropyDenominator
-  /-- **`def:declared-coordinate-signature`, registered.**  The fixed
-  response-coordinate signature the whole proof argues against: the finite
-  alphabets of its generating clauses (D1)--(D7), the label alphabet of its
-  closure clause (D8), and the cut-state bound the local target algebra
-  imposes.  `Q_cold` is `Fintype.card` of the cut-state this signature builds,
-  so it is a constant of the signature and never of a graph. -/
+  /-- The registered fixed response-coordinate signature. -/
   coldSignature : Graph.ColdCorridor.DeclaredSignature
-  /-- The signature's window order is the spine's own registered window order:
-  the cold-window offsets a corridor interface meets are the offsets of the
-  same induced window every earlier node argued about. -/
   coldSignature_windowOrder : coldSignature.windowOrder = windowOrder
   /-- **`F`, the registered Type B bridge-mass factor.**
 
@@ -431,6 +433,9 @@ inductive Key where
   /-- Nodes `[1]`--`[4]`: the selected object avoids the target and every
   strictly smaller baseline object does not. -/
   | selection
+  /-- The registered problem presentation identifies the spine threshold with
+  the paper's cubic baseline. -/
+  | cubicBaseline
   /-- Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted
   accepted set at every oriented edge.  This is the return-set form of target
   avoidance, the standing invariant the rest of the spine consumes. -/
@@ -443,6 +448,10 @@ inductive Key where
   /-- Node `[10]`: vertices strictly above the threshold are pairwise
   nonadjacent. -/
   | slackIndependent
+  /-- Node `[13]`, `lem:replacement`: no proper atom admits a strictly smaller
+  boundary-signature-preserving replacement with one-way obstruction
+  inclusion. -/
+  | replacementExclusion
   /-- Nodes `[11]`--`[14]`: no proper atom admits a nontrivial target-complete
   compression (`cor:uncompressible`). -/
   | uncompressible
@@ -598,6 +607,9 @@ inductive Key where
   /-- Node `[53]`, no arm — node `[55]`, Residual C: the joint package still
   fits the skeleton budget, and the branch is the large-budget residual. -/
   | largeBudgetResidual
+  /-- Node `[56]`: exact cleared finite form of the large-budget
+  net-deficiency cap. -/
+  | netDeficiencyCap
   /-- Node `[60]` is entered in the paper's sufficiently-large regime. -/
   | netChargeLarge
   /-- The exhaustive complement of `netChargeLarge`; the asymptotic endpoint
@@ -761,6 +773,10 @@ inductive Key where
   `rem:typeA-typeB-stratification` no conclusion of `lem:typeB-exclusion` is
   used, and none is available on this cursor. -/
   | typeAExitSevenHandoff
+  /-- The decorated exit-`(7)` envelope's Type-B centres and their assigned
+  first-neighbour supports, extracted on the same residual for nodes
+  `[65]`--`[68]`. -/
+  | typeBDecoratedAssignedSupport
   /-- Node `[107]`, no arm — the entry of node `[109]`: no high-degree decorated
   handoff fan envelope is produced at any visible port of any saturated receiver
   of any Type A support, so exit `(7)` is not the exit this branch realizes and
@@ -966,11 +982,6 @@ inductive Key where
   exits `(4)`--`(6)` have failed, produces the exit-`(7)` decorated handoff
   envelope.  The admissibility interface is committed separately at `[108]`. -/
   | typeAExitSevenProduced
-  /-- Node `[109]`, the route-8 arm: the incoming selected Type A residual has
-  denied exit `(7)` and therefore continues to the route-8 accounting segment.
-  The fact is a ledger refinement of the same residual state, not a secondary
-  route-8 object. -/
-  | route8Residual
   /-- Node `[110]`, exit `(8)`: the selected route-8 residual satisfies the
   silent-core residual profile.  This is a semantic fact about the selected
   residual state, not an indexed carrier or basin transport object. -/
@@ -1718,6 +1729,110 @@ def HandoffAdmissible (data : Data.{u}) (object : Graph.FiniteObject.{u})
         (handoffUncompressible data object) (handoffWindowFree data object)
         envelope
 
+/-- `def:decorated-typeB-envelope-support` / `def:typeB-assigned-ledger` on a
+selected handoff residual: the envelope's high-degree centre set and each
+centre's nonempty assigned first-neighbour support. -/
+def DecoratedTypeBAssignedSupport (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (piece : Finset object.Vertex) : Prop :=
+  ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+      (handoffHighDegree object) (handoffAbsorbing data object packing),
+    envelope.core = piece ∧ envelope.decorations.Nonempty ∧
+      (∀ centre ∈ envelope.decorations,
+        3 < object.degree centre) ∧
+      (∀ centre ∈ envelope.decorations,
+        (envelope.assigned centre).Nonempty ∧
+          ∀ first ∈ envelope.assigned centre,
+            object.graph.Adj centre first)
+
+/-- Node `[68]`, yes arm: the assigned decorated envelope has a centre of
+degree strictly greater than four. -/
+def DecoratedTypeBHeavySupport (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (piece : Finset object.Vertex) : Prop :=
+  ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+      (handoffHighDegree object) (handoffAbsorbing data object packing),
+    envelope.core = piece ∧ envelope.decorations.Nonempty ∧
+      (∀ centre ∈ envelope.decorations,
+        3 < object.degree centre) ∧
+      (∀ centre ∈ envelope.decorations,
+        (envelope.assigned centre).Nonempty ∧
+          ∀ first ∈ envelope.assigned centre,
+            object.graph.Adj centre first) ∧
+      ∃ centre ∈ envelope.decorations, 4 < object.degree centre
+
+/-- Node `[68]`, no arm: every centre of the assigned decorated envelope has
+degree four. -/
+def DecoratedTypeBDegreeFourSupport (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (piece : Finset object.Vertex) : Prop :=
+  ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+      (handoffHighDegree object) (handoffAbsorbing data object packing),
+    envelope.core = piece ∧ envelope.decorations.Nonempty ∧
+      (∀ centre ∈ envelope.decorations,
+        3 < object.degree centre) ∧
+      (∀ centre ∈ envelope.decorations,
+        (envelope.assigned centre).Nonempty ∧
+          ∀ first ∈ envelope.assigned centre,
+            object.graph.Adj centre first) ∧
+      ∀ centre ∈ envelope.decorations, object.degree centre = 4
+
+/-- Node `[69]`: the paper's local alternative at every heavy centre of the
+assigned decorated envelope. -/
+def DecoratedTypeBLocalDichotomySupport (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (piece : Finset object.Vertex) : Prop :=
+  ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+      (handoffHighDegree object) (handoffAbsorbing data object packing),
+    envelope.core = piece ∧ envelope.decorations.Nonempty ∧
+      (∀ centre ∈ envelope.decorations, 3 < object.degree centre) ∧
+      (∀ centre ∈ envelope.decorations,
+        (envelope.assigned centre).Nonempty ∧
+          ∀ first ∈ envelope.assigned centre,
+            object.graph.Adj centre first) ∧
+      (∃ centre ∈ envelope.decorations, 4 < object.degree centre) ∧
+      ∀ centre ∈ envelope.decorations, 4 < object.degree centre →
+        (∃ left right : object.Vertex,
+          Graph.FanCompatible object centre left right) ∨
+        (object.degree centre - 2 ≤
+            (Graph.triangularEndpoints object centre).card ∧
+          3 ≤ (Graph.triangularEndpoints object centre).card)
+
+/-- Node `[78]`: degree-four activation and the assigned fan-incidence profile
+for every centre of the decorated envelope. -/
+def DecoratedTypeBDegreeFourProfileSupport (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (piece : Finset object.Vertex) : Prop :=
+  ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+      (handoffHighDegree object) (handoffAbsorbing data object packing),
+    envelope.core = piece ∧ envelope.decorations.Nonempty ∧
+      (∀ centre ∈ envelope.decorations, 3 < object.degree centre) ∧
+      (∀ centre ∈ envelope.decorations,
+        (envelope.assigned centre).Nonempty ∧
+          ∀ first ∈ envelope.assigned centre,
+            object.graph.Adj centre first) ∧
+      (∀ centre ∈ envelope.decorations, object.degree centre = 4) ∧
+      ∀ centre ∈ envelope.decorations,
+        ((∃ left right : object.Vertex,
+              Graph.FanCompatible object centre left right) ∨
+            2 ≤ (Graph.triangularEndpoints object centre).card) ∧
+          object.degree centre - data.threshold = 1 ∧
+          ∀ fanEnvelope : Finset object.Vertex,
+            Graph.TypeBFanIncidence.closedCount object data.threshold
+                fanEnvelope centre ≤ data.threshold + 1 ∧
+              Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+                  data.dischargeScale fanEnvelope centre =
+                (data.dischargeScale : Int) *
+                    (Graph.TypeBFanIncidence.closedCount object data.threshold
+                      fanEnvelope centre : Int) -
+                  (data.dischargeScale : Int) * (data.threshold : Int) +
+                  ((data.threshold : Int) + 2)
+
 /-- Exit `(6)` at the selected Type A support.
 
 The delocalizing declared response entry is not a free route-8 object: it is
@@ -1839,22 +1954,6 @@ abbrev SilentCoreResidualProfile (data : Data.{u})
   SelectedNoExitSixReceiverWith data object
     (fun packing piece _receiver _peeled =>
       ¬ HandoffProduced data object packing piece)
-
-/-- Node `[110]` from node `[109]`: once exit `(7)` is denied on the selected
-no-exit-`(6)` residual, the receiver-exposed silent-core residual profile is
-the same residual statement with the selected local data brought into scope. -/
-theorem silentCoreResidualProfile_of_route8Residual
-    {data : Data.{u}} {object : Graph.FiniteObject.{u}}
-    (residual :
-      SelectedNoExitSixWith data object
-        (fun packing piece => ¬ HandoffProduced data object packing piece)) :
-    SilentCoreResidualProfile data object := by
-  obtain ⟨packing, valid, maximal, component, present, negative, zero,
-    receiver, isReceiver, peeled, peeledSubset, saturated, routing,
-    noCompression, noDelocalization, noHandoff⟩ := residual
-  exact ⟨packing, valid, maximal, component, present, negative, zero,
-    receiver, isReceiver, peeled, peeledSubset, saturated, routing,
-    noCompression, noDelocalization, noHandoff⟩
 
 /-- The exact finite exit-`(4)` descent theorem committed before the route-`8`
 arm.  This is a schema abbreviation only: the fact is still read from the
@@ -2119,6 +2218,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             smaller object →
           Graph.MinimumDegreeAtLeast data.threshold smaller →
           Graph.HasCycleWithLength data.LengthOK smaller)
+  | .cubicBaseline, _object => data.threshold = 3
   | .returnAvoidance, object =>
       (∀ dart : object.graph.Dart,
         Disjoint (Graph.returnLengthSet object dart)
@@ -2135,11 +2235,22 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         data.threshold < object.degree left →
         data.threshold < object.degree right →
         ¬ object.graph.Adj left right)
-  | .uncompressible, object =>
+  | .replacementExclusion, object =>
       (∀ support : Finset object.Vertex,
-        ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
+        ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
             (Graph.MinimumDegreeAtLeast data.threshold)
             (Graph.HasCycleWithLength data.LengthOK) object support)
+  | .uncompressible, object =>
+      ((∀ support : Finset object.Vertex,
+        ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object support) ∧
+      ∀ (boundary : Graph.Boundary.{u})
+        (left right : Graph.BoundaryPiece boundary),
+        ¬ Graph.Response.ContextEquivalent
+            (Graph.HasCycleWithLength data.LengthOK) left right →
+          Graph.Response.TargetDefect
+            (Graph.HasCycleWithLength data.LengthOK) left right)
   | .maximalPacking, object =>
       (0 < object.windowPackingNumber data.windowOrder ∧
         ∃ packing : Finset (Finset object.Vertex),
@@ -2149,8 +2260,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               object.InducesWindow data.windowOrder support →
               ∃ member ∈ packing, ¬ Disjoint support member)
   | .localAlgebra, _object =>
-      ((Graph.WindowCurvature.legalCodeList data.windowOrder).length =
-          (Graph.WindowCurvature.Labels data.windowOrder).card ∧
+      ((Graph.WindowCurvature.Labels data.windowOrder).card = 399 ∧
+        (Graph.WindowCurvature.sizeDistribution data.windowOrder).take 7 =
+          [13, 60, 122, 122, 63, 17, 2] ∧
+        (∀ (shift : Nat)
+            (source target : Graph.WindowCurvature.Label data.windowOrder),
+          Graph.WindowCurvature.Safe shift source target ↔
+            ∀ i ∈ source, ∀ j ∈ target,
+              ¬ Graph.WindowCurvature.ForbiddenGap shift (Nat.dist i.1 j.1)) ∧
         ∀ source middle target : Graph.WindowCurvature.Label data.windowOrder,
           Graph.WindowCurvature.curvatureTwo source middle target = true ↔
             Graph.WindowCurvature.Safe 1 source middle ∧
@@ -3109,6 +3226,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Residual C.  The high-entropy arm reaches it through the exact
       -- skeleton comparison; the low-entropy arm is routed here unchanged, as `prop:two-budget` prescribes.
       LargeBudgetResidual data object
+  | .netDeficiencyCap, object =>
+      (∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
+        packing.card = object.windowPackingNumber data.windowOrder →
+        Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
+            data.dischargeScale data.windowOrder data.windowRate
+            data.spineScale object.vertexCount →
+          data.dischargeScale *
+              (data.threshold * (data.windowOrder * packing.card) +
+                data.spineScale * Core.ceilSqrt object.vertexCount) <
+            data.dischargeScale *
+                (2 * (data.windowOrder - 1) * packing.card) +
+              (object.remainderSupport packing).card)
   | .netChargeLocalization, object =>
       -- Nodes `[57]`--`[58]`.  `lem:netcharge-superadd`'s only consumed
       -- consequence, at the registered discharge scale: the canonical
@@ -3534,6 +3664,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Type B handoff interface.
       SelectedNoExitSixWith data object
         (fun packing piece => HandoffAdmissible data object packing piece)
+  | .typeBDecoratedAssignedSupport, object =>
+      SelectedNoExitSixWith data object
+        (fun packing piece =>
+          DecoratedTypeBAssignedSupport data object packing piece)
   | .typeAExitSevenFree, object =>
       -- Node `[107]`, no: the same selected residual has no decorated
       -- handoff envelope and therefore enters the route-8 test.
@@ -3588,53 +3722,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         Graph.IsHighCentre object data.threshold centre →
         Graph.NormalForm object data.threshold centre)
   | .typeBHeavyCentre, object =>
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces
-              (object.remainderSupport packing),
-            let piece := object.pieceSupport
-              (object.remainderSupport packing) component
-            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-              0 < object.ambientSurplus piece data.threshold ∧
-              ∃ centre ∈ piece, data.threshold + 1 < object.degree centre)
+      SelectedNoExitSixWith data object
+        (fun packing piece => DecoratedTypeBHeavySupport data object packing piece)
   | .typeBDegreeFourCentres, object =>
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces
-              (object.remainderSupport packing),
-            let piece := object.pieceSupport
-              (object.remainderSupport packing) component
-            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-              0 < object.ambientSurplus piece data.threshold ∧
-              ∀ centre ∈ piece, Graph.IsHighCentre object data.threshold centre →
-                object.degree centre = data.threshold + 1)
+      SelectedNoExitSixWith data object
+        (fun packing piece =>
+          DecoratedTypeBDegreeFourSupport data object packing piece)
   | .typeBLocalDichotomy, object =>
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces
-              (object.remainderSupport packing),
-            let piece := object.pieceSupport
-              (object.remainderSupport packing) component
-            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-              0 < object.ambientSurplus piece data.threshold ∧
-              (∃ centre ∈ piece,
-                data.threshold + 1 < object.degree centre) ∧
-              ∀ centre ∈ piece,
-                data.threshold + 1 < object.degree centre →
-                (∃ left right : object.Vertex,
-                    Graph.FanCompatible object centre left right) ∨
-                  (object.degree centre - 2 ≤
-                      (Graph.triangularEndpoints object centre).card ∧
-                    3 ≤ (Graph.triangularEndpoints object centre).card))
+      SelectedNoExitSixWith data object
+        (fun packing piece =>
+          DecoratedTypeBLocalDichotomySupport data object packing piece)
   | .fanCertificateCap, object =>
       -- Node `[70]`, `lem:fan-certificate`.  The bound is the label algebra's
       -- own packing number at the registered window order, never a numeral: at
@@ -3680,37 +3777,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     (Graph.FanCertificateLabelling object data.windowOrder
                       centre))
   | .typeBDegreeFourProfile, object =>
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces
-              (object.remainderSupport packing),
-            let piece := object.pieceSupport
-              (object.remainderSupport packing) component
-            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-              0 < object.ambientSurplus piece data.threshold ∧
-              (∀ centre ∈ piece,
-                Graph.IsHighCentre object data.threshold centre →
-                object.degree centre = data.threshold + 1) ∧
-              ∀ centre ∈ piece, object.degree centre = data.threshold + 1 →
-                ((∃ left right : object.Vertex,
-                      Graph.FanCompatible object centre left right) ∨
-                    data.threshold - 1 ≤
-                      (Graph.triangularEndpoints object centre).card) ∧
-                  object.degree centre - data.threshold = 1 ∧
-                  ∀ envelope : Finset object.Vertex,
-                    Graph.TypeBFanIncidence.closedCount object data.threshold
-                        envelope centre ≤ data.threshold + 1 ∧
-                      Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                          data.dischargeScale envelope centre =
-                        (data.dischargeScale : Int) *
-                            (Graph.TypeBFanIncidence.closedCount object
-                              data.threshold envelope centre : Int) -
-                          (data.dischargeScale : Int) *
-                            (data.threshold : Int) +
-                          ((data.threshold : Int) + 2))
+      SelectedNoExitSixWith data object
+        (fun packing piece =>
+          DecoratedTypeBDegreeFourProfileSupport data object packing piece)
   | .typeBHybridEntry, object =>
       -- Node `[74]`/`[82]`.  Scoped to the centres of a Type B support, because
       -- `k ≤ α(D)` is available only at a certificate-marked fan, and quantified
@@ -4171,24 +4240,22 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : object.Vertex,
                 object.IsReceiver piece data.threshold receiver ∧
-                  object.Saturated piece data.threshold data.dischargeScale
-                    receiver ∧
-                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                      data.threshold data.dischargeScale receiver ∅,
-                    ∃ witness : Graph.ExitFour.Witness
-                        (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver ∅,
-                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                          piece data.threshold data.dischargeScale receiver
-                          package.outside ∅,
-                        witness.load = load ∧
+                  ∃ peeled : Finset object.Vertex,
+                    peeled ⊆ object.routedLoads piece data.threshold receiver ∧
+                      Graph.ExitFour.SaturatedAfter piece data.threshold
+                        data.dischargeScale receiver peeled ∧
+                      ∃ witness : Graph.ExitFour.Witness
+                          (Graph.HasCycleWithLength data.LengthOK) piece
+                          data.threshold receiver peeled,
+                        witness.load ∈ Graph.ExitFour.unpeeledLoads piece
+                            data.threshold receiver peeled ∧
                           Graph.ExitFour.Witness.nextPeeled witness ⊆
                             object.routedLoads piece data.threshold receiver ∧
                           Graph.ExitFour.residualLoad piece data.threshold
                               receiver
                               (Graph.ExitFour.Witness.nextPeeled witness) + 1 =
                             Graph.ExitFour.residualLoad piece data.threshold
-                              receiver ∅)
+                              receiver peeled)
   | .typeAExitFourFiniteDescent, object =>
       -- `lem:typeA-saturated-handoff`: the finite descent principle read at
       -- the exact selected receiver and current peeling set.  Downstream rows
@@ -4616,12 +4683,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           Graph.MinimumDegreeAtLeast data.threshold representative ∧
             (Graph.HasCycleWithLength data.LengthOK representative →
               Graph.HasCycleWithLength data.LengthOK object))
-  | .route8Residual, object =>
-      -- Node `[109]`: the selected no-exit-`(7)` residual enters the route-8
-      -- arm.  This is only the residual fact; Part IX may later read this
-      -- exact ledger state, but no route-8 carrier package is registered here.
-      SelectedNoExitSixWith data object (fun packing piece =>
-        ¬ HandoffProduced data object packing piece)
   | .route8ResidualProfile, object =>
       -- Node `[110]`: the selected route-8 residual satisfies the
       -- silent-core residual profile, without creating a secondary carrier.
@@ -5038,10 +5099,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
 compares exact keys. -/
 def label : Key → String
   | .selection => "selection"
+  | .cubicBaseline => "cubicBaseline"
   | .returnAvoidance => "returnAvoidance"
   | .noProperBaseline => "noProperBaseline"
   | .tightEndpoint => "tightEndpoint"
   | .slackIndependent => "slackIndependent"
+  | .replacementExclusion => "replacementExclusion"
   | .uncompressible => "uncompressible"
   | .maximalPacking => "maximalPacking"
   | .localAlgebra => "localAlgebra"
@@ -5084,6 +5147,7 @@ def label : Key → String
   | .entropyPackageDemand => "entropyPackageDemand"
   | .entropyCapActive => "entropyCapActive"
   | .largeBudgetResidual => "largeBudgetResidual"
+  | .netDeficiencyCap => "netDeficiencyCap"
   | .netChargeLarge => "netChargeLarge"
   | .netChargeSmall => "netChargeSmall"
   | .netChargeCap => "netChargeCap"
@@ -5110,6 +5174,7 @@ def label : Key → String
   | .typeAExitThreeFree => "typeAExitThreeFree"
   | .typeASaturatedExitEntry => "typeASaturatedExitEntry"
   | .typeAExitSevenHandoff => "typeAExitSevenHandoff"
+  | .typeBDecoratedAssignedSupport => "typeBDecoratedAssignedSupport"
   | .typeAExitSevenFree => "typeAExitSevenFree"
   | .coldFailureCycle => "coldFailureCycle"
   | .coldFailureDefect => "coldFailureDefect"
@@ -5174,7 +5239,6 @@ def label : Key → String
   | .typeAExitSixProper => "typeAExitSixProper"
   | .typeAExitSixGlobal => "typeAExitSixGlobal"
   | .typeAExitSevenProduced => "typeAExitSevenProduced"
-  | .route8Residual => "route8Residual"
   | .route8ResidualProfile => "route8ResidualProfile"
   | .route8GlobalSqueeze => "route8GlobalSqueeze"
   | .route8BasinBurden => "route8BasinBurden"
@@ -5241,6 +5305,7 @@ example : label .returnAvoidance = "returnAvoidance" := rfl
 example : label .noProperBaseline = "noProperBaseline" := rfl
 example : label .tightEndpoint = "tightEndpoint" := rfl
 example : label .slackIndependent = "slackIndependent" := rfl
+example : label .replacementExclusion = "replacementExclusion" := rfl
 example : label .uncompressible = "uncompressible" := rfl
 example : label .maximalPacking = "maximalPacking" := rfl
 example : label .localAlgebra = "localAlgebra" := rfl
@@ -5280,6 +5345,7 @@ example : label .remainderEntropyLow = "remainderEntropyLow" := rfl
 example : label .entropyPackageDemand = "entropyPackageDemand" := rfl
 example : label .entropyCapActive = "entropyCapActive" := rfl
 example : label .largeBudgetResidual = "largeBudgetResidual" := rfl
+example : label .netDeficiencyCap = "netDeficiencyCap" := rfl
 example : label .netChargeLarge = "netChargeLarge" := rfl
 example : label .netChargeSmall = "netChargeSmall" := rfl
 example : label .netChargeCap = "netChargeCap" := rfl
@@ -5366,7 +5432,6 @@ example : label .typeAExitSixFree = "typeAExitSixFree" := rfl
 example : label .typeAExitSixProper = "typeAExitSixProper" := rfl
 example : label .typeAExitSixGlobal = "typeAExitSixGlobal" := rfl
 example : label .typeAExitSevenProduced = "typeAExitSevenProduced" := rfl
-example : label .route8Residual = "route8Residual" := rfl
 example : label .route8ResidualProfile = "route8ResidualProfile" := rfl
 example : label .route8GlobalSqueeze = "route8GlobalSqueeze" := rfl
 example : label .route8BasinBurden = "route8BasinBurden" := rfl
@@ -5446,10 +5511,12 @@ def Value (BranchState : Graph.FiniteObject.{u} → Type v)
 renumber the audit names an earlier run emitted. -/
 def idx : Key → Nat
   | .selection => 0
+  | .cubicBaseline => 221
   | .returnAvoidance => 1
   | .noProperBaseline => 2
   | .tightEndpoint => 3
   | .slackIndependent => 4
+  | .replacementExclusion => 223
   | .uncompressible => 5
   | .maximalPacking => 6
   | .localAlgebra => 7
@@ -5488,6 +5555,7 @@ def idx : Key → Nat
   | .entropyPackageDemand => 40
   | .entropyCapActive => 41
   | .largeBudgetResidual => 42
+  | .netDeficiencyCap => 222
   | .netChargeLarge => 146
   | .netChargeSmall => 147
   | .netChargeCap => 145
@@ -5514,6 +5582,7 @@ def idx : Key → Nat
   | .typeAExitThreeFree => 63
   | .typeASaturatedExitEntry => 123
   | .typeAExitSevenHandoff => 124
+  | .typeBDecoratedAssignedSupport => 220
   | .typeAExitSevenFree => 125
   | .coldFailureCycle => 64
   | .coldFailureDefect => 65
@@ -5577,7 +5646,6 @@ def idx : Key → Nat
   | .typeAExitSixProper => 100
   | .typeAExitSixGlobal => 101
   | .typeAExitSevenProduced => 158
-  | .route8Residual => 102
   | .route8ResidualProfile => 159
   | .route8GlobalSqueeze => 160
   | .route8BasinBurden => 161
@@ -5638,10 +5706,12 @@ def idx : Key → Nat
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
 def ofIdx : Nat → Key
   | 0 => .selection
+  | 221 => .cubicBaseline
   | 1 => .returnAvoidance
   | 2 => .noProperBaseline
   | 3 => .tightEndpoint
   | 4 => .slackIndependent
+  | 223 => .replacementExclusion
   | 5 => .uncompressible
   | 6 => .maximalPacking
   | 7 => .localAlgebra
@@ -5679,6 +5749,7 @@ def ofIdx : Nat → Key
   | 40 => .entropyPackageDemand
   | 41 => .entropyCapActive
   | 42 => .largeBudgetResidual
+  | 222 => .netDeficiencyCap
   | 146 => .netChargeLarge
   | 147 => .netChargeSmall
   | 145 => .netChargeCap
@@ -5763,7 +5834,6 @@ def ofIdx : Nat → Key
   | 100 => .typeAExitSixProper
   | 101 => .typeAExitSixGlobal
   | 158 => .typeAExitSevenProduced
-  | 102 => .route8Residual
   | 159 => .route8ResidualProfile
   | 160 => .route8GlobalSqueeze
   | 161 => .route8BasinBurden
@@ -5809,6 +5879,7 @@ def ofIdx : Nat → Key
   | 122 => .typeAVisibleEntryClause
   | 123 => .typeASaturatedExitEntry
   | 124 => .typeAExitSevenHandoff
+  | 220 => .typeBDecoratedAssignedSupport
   | 125 => .typeAExitSevenFree
   | 126 => .spineSurplusEstimate
   | 127 => .sparsePressureNearCubic
@@ -5839,6 +5910,8 @@ component, so distinctness is inherited from `idx_injective` instead of being
 re-derived by a pairwise comparison of the audit labels. -/
 def name : Key → Lean.Name
   | .selection => .num (.str `Hypostructure.Graph.Strategy.Spine "selection") 0
+  | .cubicBaseline =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "cubicBaseline") 221
   | .returnAvoidance =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "returnAvoidance") 1
   | .noProperBaseline =>
@@ -5847,6 +5920,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "tightEndpoint") 3
   | .slackIndependent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "slackIndependent") 4
+  | .replacementExclusion =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "replacementExclusion") 223
   | .uncompressible =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "uncompressible") 5
   | .maximalPacking =>
@@ -5925,6 +6000,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "entropyCapActive") 41
   | .largeBudgetResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "largeBudgetResidual") 42
+  | .netDeficiencyCap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "netDeficiencyCap") 222
   | .netChargeLarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "netChargeLarge") 146
   | .netChargeSmall =>
@@ -5985,6 +6062,9 @@ def name : Key → Lean.Name
   | .typeAExitSevenHandoff =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeAExitSevenHandoff") 124
+  | .typeBDecoratedAssignedSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBDecoratedAssignedSupport") 220
   | .typeAExitSevenFree =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenFree") 125
   | .coldFailureCycle =>
@@ -6139,8 +6219,6 @@ def name : Key → Lean.Name
   | .typeAExitSevenProduced =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeAExitSevenProduced") 158
-  | .route8Residual =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Residual") 102
   | .route8ResidualProfile =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8ResidualProfile") 159
   | .route8GlobalSqueeze =>

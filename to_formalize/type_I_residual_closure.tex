@@ -106,6 +106,10 @@
 \newcommand{\Cactive}{\mathcal C_{\mathrm{conc}}}
 \newcommand{\Caff}{\mathcal C_{\mathrm{aff}}}
 \newcommand{\Cgen}{\mathcal C_{\mathrm{gen}}}
+\newcommand{\Csparse}{\mathcal C_{\mathrm{sparse\text{-}root}}}
+\newcommand{\Cisf}{\mathcal C_{\mathrm{interscale\text{-}flux}}}
+\newcommand{\Csat}{\mathcal C_{\mathrm{scale\text{-}saturation}}}
+\newcommand{\Cregen}{\mathcal C_{\mathrm{regenerated\text{-}current}}}
 \newcommand{\Ccritdiff}{\mathcal C_{\mathrm{critdiff}}}
 \newcommand{\Ccohcrit}{\mathcal C_{\mathrm{cohcrit}}}
 \newcommand{\Chomcrit}{\mathcal C_{\mathrm{homcrit}}}
@@ -1310,9 +1314,9 @@ IV & \textbf{[58]}--\textbf{[63]}, \textbf{[76]},
 \textbf{[141]}--\textbf{[146]},
 \textbf{[149]}--\textbf{[153]} &
 The eight terminal alternatives, chartwise pressure routing, the direct
-critical-tail bridge, retained-chain recurrence, and the complete finite-family
-and infinite-chain exclusions. &
-\Cref{thm:terminal-exhaustion-main,thm:terminal-stratification,lem:no-pressure-only-retained-profile,lem:escaping-retained-recentering-routing,thm:active-path-space-recurrence,thm:compact-active-descendant,lem:finite-graph-cycle,thm:no-finite-separated-profile-family}.\\
+critical-tail bridge, event-sensitive retained-chain analysis, and the
+critical-shell and moving-cell reduction to the sparse current-saturation branch. &
+\Cref{thm:terminal-exhaustion-main,thm:terminal-stratification,lem:no-pressure-only-retained-profile,lem:escaping-retained-recentering-routing,thm:active-path-space-recurrence,prop:positive-density-active-exclusion,lem:vanishing-event-current-exclusion,lem:weighted-critical-shell-identity,thm:sparse-moving-root-current-exclusion,thm:critical-interscale-flux-exclusion,thm:compact-active-descendant,lem:finite-graph-cycle,thm:no-finite-separated-profile-family}.\\
 V & \textbf{[64]}--\textbf{[75]} &
 Diffuse-defect compactification, recurrence, and its three-way routing. &
 \Cref{thm:diffuse-defect-compactness,thm:diffuse-defect-compactification-construction,thm:diffuse-defect-trichotomy}.\\
@@ -1699,19 +1703,19 @@ and [37].  Pressure remains chartwise at [42] and [55].}
 \node[font=\scriptsize,align=center] (c2633) at (9.0,-5.9)
    {atomic\\continue at [147]};
 
-% Complete infinite-chain branch.
+% Infinite-chain reduction, with one explicitly retained output.
 \node[box] (n141) at (-10.0,-1.9)
    {\textbf{[141]} Realized infinite retained descendant chain};
 \node[box] (n142) at (-10.0,-3.3)
-   {\textbf{[142]} Closed retained-successor relation};
-\node[box] (n143) at (-10.0,-4.7)
-   {\textbf{[143]} Recurrence on the active path space};
-\node[box] (n144) at (-10.0,-6.1)
-   {\textbf{[144]} Recurrent path produces a compact retained core};
-\node[box] (n145) at (-10.0,-7.5)
-   {\textbf{[145]} No infinite retained concentration chain};
-\node[term] (n146) at (-10.0,-9.3)
-   {\textbf{[146]} Infinite retained descendant chain excluded};
+   {\textbf{[142]} Event-count laws retain the active target};
+\node[dec] (n143) at (-10.0,-5.2)
+   {\textbf{[143]} Covariant density and event-balance test};
+\node[term] (n144) at (-14.3,-8.5)
+   {\textbf{[144]} Positive-density\\active orbit excluded};
+\node[term] (n145) at (-10.0,-8.4)
+   {\textbf{[145]} Balanced active\\event law excluded};
+\node[term] (n146) at (-5.7,-8.5)
+   {\textbf{[146]} Regenerated-current\\cascade excluded};
 
 % Complete finite-family branch.
 \node[box] (n149) at (-1.5,-1.9)
@@ -1721,7 +1725,7 @@ and [37].  Pressure remains chartwise at [42] and [55].}
 \node[box] (n151) at (-4.0,-6.3)
    {\textbf{[151]} Previously produced no-atomic conclusion closes this output};
 \node[box] (n152) at (1.0,-6.3)
-   {\textbf{[152]} Previously produced no-infinite-chain conclusion closes this output};
+   {\textbf{[152]} No-infinite-chain conclusion closes this output};
 \node[term] (n153) at (-1.5,-9.3)
    {\textbf{[153]} Finite separated retained family excluded};
 
@@ -1762,8 +1766,10 @@ and [37].  Pressure remains chartwise at [42] and [55].}
 \draw[arrow] (5.0,-3.3)--(p29a); \draw[arrow] (5.0,-4.6)--(p17b);
 \draw[arrow] (5.0,-5.9)--(c2633);
 \draw[arrow] (chainin)--(n141); \draw[arrow] (n141)--(n142);
-\draw[arrow] (n142)--(n143); \draw[arrow] (n143)--(n144);
-\draw[arrow] (n144)--(n145); \draw[arrow] (n145)--(n146);
+\draw[arrow] (n142)--(n143);
+\draw[arrow] (n143)--node[edge,left]{positive density}(n144);
+\draw[arrow] (n143)--node[edge,right]{balanced law}(n145);
+\draw[arrow] (n143)--node[edge,right]{eventwise expense reduction}(n146);
 \draw[arrow] (finitein)--(n149); \draw[arrow] (n149)--(n150);
 \draw[arrow] (n150)--(n151); \draw[arrow] (n150)--(n152);
 \draw[arrow] (n151)--(n153); \draw[arrow] (n152)--(n153);
@@ -1775,10 +1781,12 @@ and [37].  Pressure remains chartwise at [42] and [55].}
 \draw[arrow] (n62) -- (p29c);
 \draw[arrow] (n62) -- (n63);
 \end{tikzpicture}}
-\caption{Proof flow, Part IV: terminal selection and complete compact-active
-exhaustion.  Nodes \textbf{[141]}--\textbf{[146]} and
-\textbf{[149]}--\textbf{[153]} display the infinite-chain and finite-family
-closures in full; nodes \textbf{[62]}--\textbf{[63]} display the complete
+\caption{Proof flow, Part IV: terminal selection and compact-active
+analysis.  Nodes \textbf{[141]}--\textbf{[146]} display the infinite-chain
+exclusion through the critical-shell, moving-cell expense, marked recurrence,
+and realized critical-tail closure.  Nodes
+\textbf{[149]}--\textbf{[153]} display the finite-family
+analysis; nodes \textbf{[62]}--\textbf{[63]} display the complete
 pressure/noncompact route on the chart that produces it.  Node \textbf{[76]}
 is the direct critical-tail bridge for the datum selected at \textbf{[57]} or
 \textbf{[58]}.  The finite-family input also includes \textbf{[148]}; the two
@@ -2559,23 +2567,32 @@ Selected tail excluded.\\
 Selected tail excluded.\\
 \relax
 [141] & Selected realized infinite retained descendant chain. &
-\Cref{thm:descendant-heredity,def:closed-active-successor-relation}. & Closed relation [142].\\
+\Cref{thm:descendant-heredity,def:active-successor-relation,lem:active-descendant-concatenation}. &
+Event laws [142].\\
 \relax
-[142] & Closed retained-successor relation. &
-\Cref{lem:closed-active-successor-relation}. & Recurrence [143].\\
+[142] & Event-count measures whose weak limits retain
+\(\Phi\ge\eta\). &
+\Cref{thm:active-path-space-recurrence}. & Covariant test [143].\\
 \relax
-[143] & Recurrence on the selected active path space. &
-\Cref{thm:active-path-space-recurrence}. & Compact core [144].\\
+[143] & Positive covariant activity density, vanishing event covariance
+defect, or sparse active-chain output. &
+\Cref{def:covariant-activity-density,def:event-covariance-defect,thm:infinite-chain-sparse-reduction,lem:active-chain-center-scale-alternative}. &
+[144]--[146].\\
 \relax
-[144] & Recurrent path produces a compact retained core with its gauges. &
-\Cref{lem:active-descendant-concatenation,lem:recurrent-path-compact-core,lem:active-core-retention-gauges}. & Chain exclusion [145].\\
+[144] & Current active profile has positive covariant activity density. &
+\Cref{prop:positive-density-active-exclusion}. & Selected density branch
+excluded.\\
 \relax
-[145] & No infinite retained velocity concentration chain. &
-\Cref{thm:compact-active-descendant}. & Terminal [146].\\
+[145] & Event-count laws have a covariantly balanced subsequence, or a
+coherent critical-shell family has positive mean production and sublinear
+interscale current. &
+\Cref{lem:vanishing-event-current-exclusion,lem:weighted-critical-shell-identity,cor:no-positive-production-sublinear-current}. & Selected balanced or
+positive-production/sublinear-current branch excluded.\\
 \relax
-[146] & Selected infinite retained descendant chain. &
-\Cref{thm:compact-active-descendant}. &
-Selected chain excluded.\\
+[146] & Zero-density active chain reduced to persistent current-saturated
+moving cells after transverse antichain routing. &
+\Cref{def:sparse-moving-root-current-branch,lem:exact-moving-root-carrier,lem:signed-moving-cell-gluing,prop:longitudinal-current-to-saturation,thm:coherent-current-to-critical-tail,cor:current-saturated-cascade-exclusion,thm:critical-interscale-flux-exclusion}. &
+Selected sparse chain excluded.\\
 \relax
 [147] & Selected single retained terminal profile after routed lower alternatives. &
 \Cref{prop:no-multi-implies-atomic}. & Tail test [148].\\
@@ -2597,7 +2614,8 @@ Selected chain excluded.\\
 \relax
 [153] & Selected finite separated retained family. &
 \Cref{thm:no-finite-separated-profile-family}. &
-Selected family excluded.\\
+Selected family excluded unless its successor graph produces the output at
+[146].\\
 \relax
 [154] & Terminally indecomposable realized profile. &
 \Cref{prop:no-multi-implies-atomic}. & Endpoint production [155].\\
@@ -2689,9 +2707,10 @@ Bounded-origin realization and the realized amplitude-normalized log hull for
 that tail. &
 No bounded-origin assertion for an unrealized support point.\\
 Selected finite family or retained descendant chain. &
-\Cref{thm:descendant-heredity,lem:closed-active-successor-relation}. &
-The named descendant thresholds and gauges at each realized successor. &
-No counting budget and no retained mass for an uncited descendant.\\
+\Cref{thm:descendant-heredity,def:active-successor-relation,lem:active-descendant-concatenation}. &
+The named descendant thresholds, observer witnesses, and gauges at each
+realized successor. &
+No profile-only closedness and no retained mass for an uncited descendant.\\
 Selected terminally indecomposable profile. &
 \Cref{lem:atomic-sequence-L3}. &
 A backward sequence with uniformly bounded \(L^3\) norm for that profile. &
@@ -2759,9 +2778,18 @@ conclusion of the complete routing, not an input hypothesis. &
 Node [153] & Current finite separated retained family. &
 \Cref{thm:no-finite-separated-profile-family}. &
 \Cref{thm:terminal-stratification,thm:R4-final-closure}.\\
-Node [146] & Current infinite retained descendant chain. &
-\Cref{thm:compact-active-descendant}. &
-\Cref{thm:terminal-stratification,thm:R4-final-closure}.\\
+Nodes [144]--[145] & Current positive-density, balanced-event-law, or
+positive-production/sublinear-critical-current output of an infinite retained
+descendant chain. &
+\Cref{prop:positive-density-active-exclusion,lem:vanishing-event-current-exclusion,lem:weighted-critical-shell-identity,cor:no-positive-production-sublinear-current}. &
+Selected output excluded.\\
+Node [146] & Persistent current-saturation output of an infinite retained
+descendant chain after transverse antichain routing.
+&
+\Cref{lem:exact-moving-root-carrier,lem:signed-moving-cell-gluing,lem:positive-price-nonzero-log-current,thm:coherent-current-to-critical-tail,lem:compact-closed-marked-regeneration-paths,thm:marked-regeneration-to-critical-tail,cor:regenerated-current-cascade-exclusion,thm:critical-interscale-flux-exclusion}. &
+Concentration-free current enters the critical-tail closure; regenerated
+current is converted by marked recurrence to a realized critical tail and is
+excluded.\\
 Node [63] & Current terminal extraction after pressure routing recovers retained
 velocity concentration. &
 \Cref{thm:terminal-stratification}; the R2 and R3 owners are then discharged
@@ -14105,8 +14133,8 @@ arguments.  Therefore alternative \emph{(ii)} cannot occur for a refined
 residual family with retained local velocity concentration.
 \end{proof}
 
-\begin{definition}[Closed retained velocity concentration successor relation]
-\label{def:closed-active-successor-relation}
+\begin{definition}[Retained velocity concentration successor relation]
+\label{def:active-successor-relation}
 For a fixed threshold \(\eta>0\), let
 \[
    \mathfrak A_\eta:=\mathfrak A_\eta^\#
@@ -14122,87 +14150,60 @@ if \(U,V\in\mathfrak A_\eta\) and \(V\) is a retained concentrating covariant ta
 descendant of \(U\).
 \end{definition}
 
-\begin{lemma}[Closedness of the retained velocity concentration successor relation]
-\label{lem:closed-active-successor-relation}
-The relation
-\[
-   \mathcal R_\eta\subset\mathfrak A_\eta\times\mathfrak A_\eta
-\]
-is closed in the local \(\mathfrak X_M\) topology.
-\end{lemma}
+\begin{remark}[Why the profile-only relation is not declared closed]
+\label{rem:profile-successor-not-closed}
+Local convergence \(U_m\to U\) controls \(U_m\) only on fixed compact
+cylinders.  A witness for \(U_m\mathcal R_\eta V_m\) may be centered at a
+point escaping with \(m\), outside every cylinder on which \(U_m\to U\) is
+known.  Hence the diagonal argument for closedness requires the observer
+witnesses, their pressure charts, and their realization from the original
+sequence as part of the state.  The argument below uses the given realized
+chain directly and therefore requires no profile-only closedness assertion.
+Loss of compactness of the witnesses is already routed by
+\Cref{lem:retained-recentering-alternatives}; loss of covariant balance after
+the witnesses remain compact is recorded in
+\Cref{def:sparse-moving-root-current-branch}.
+\end{remark}
 
-\begin{proof}
-Let \(U_m\to U\), \(V_m\to V\) in \(\mathfrak X_M^\#\), with
-\(U_m\,\mathcal R_\eta\,V_m\).  For each \(m\), choose a retained covariant tail
-observer sequence \(\zeta_{m,\ell}\) for \(U_m\) whose recentered fields converge
-to \(V_m\) on \(Q_m(0,0)\) to accuracy \(m^{-1}\), after admissible pressure
-gauges.  A diagonal choice in \((m,\ell)\), using
-\Cref{lem:state-space-local-compactness,lem:gauge-compatibility}, gives a
-single escaping covariant tail sequence for \(U\) converging locally to \(V\).
-Closedness of \(\mathfrak A_\eta\) follows from
-\Cref{cor:compact-normalized-activity-set}.  The retained descendant threshold
-is preserved by strong local \(L^3\) convergence for the velocity part, or by
-closedness of the non-affine oscillation functional \(\Phi\) when the successor
-relation is recorded in \(\mathfrak A_\eta\).  No pressure-only lower bound is
-used to keep the edge.
-Hence \(U\,\mathcal R_\eta\,V\).
-\end{proof}
-
-\begin{theorem}[Recurrence for retained velocity concentration chains]
+\begin{theorem}[Compact event laws for a realized active chain]
 \label{thm:active-path-space-recurrence}
-Assume there exists an infinite chain of retained concentrating descendants
-\[
-   U_0\,\mathcal R_\eta\,U_1\,\mathcal R_\eta\,U_2\,
-   \mathcal R_\eta\cdots .
-\]
-Then the path space
-\[
-   \mathscr P_\eta
-   :=
-   \left\{
-      (W_j)_{j\ge0}\in\mathfrak A_\eta^{\mathbb N}:
-      W_j\,\mathcal R_\eta\,W_{j+1}\ \hbox{for all }j
-   \right\}
-\]
-is nonempty and compact, is invariant under the left shift
-\[
-   S(W_0,W_1,W_2,\ldots)=(W_1,W_2,\ldots),
-\]
-and carries an \(S\)-invariant Borel probability measure \(\mathbb P\).  Its
-projected stationary profile measure \(\nu=(\pi_0)_\#\mathbb P\) is supported
-entirely on \(\mathfrak A_\eta\).
+Let
+\begin{equation}\label{eq:realized-active-chain}
+   U_0\mathcal R_\eta U_1\mathcal R_\eta U_2\mathcal R_\eta\cdots
+\end{equation}
+be an actual realized chain.  The event-count measures
+\begin{equation}\label{eq:active-event-count-measures}
+   \nu_N:=\frac1N\sum_{j=0}^{N-1}\delta_{U_j}
+   \qquad(N\ge1)
+\end{equation}
+have weak-* limit points in \(\mathcal P(\mathfrak X_M^\#)\), and every such
+limit \(\nu\) satisfies
+\begin{equation}\label{eq:event-law-retains-activity}
+   \nu(\mathfrak A_\eta)=1.
+\end{equation}
+The same conclusion holds for the shift empirical measures of the single
+given path in the closure of its shift orbit.  No closedness of
+\(\mathcal R_\eta\) is used.
 \end{theorem}
 
 \begin{proof}
-The set \(\mathfrak A_\eta=\mathfrak A_\eta^\#\) is compact by
-\Cref{cor:compact-normalized-activity-set}.  Hence
-\(\mathfrak A_\eta^{\mathbb N}\) is compact and metrizable.  By
-\Cref{lem:closed-active-successor-relation},
+The normalized state space \(\mathfrak X_M^\#\) is compact and metrizable by
+\Cref{lem:compact-normalized-state-space}.  Hence its probability measures are
+weak-* compact.  Every \(\nu_N\) is supported on the closed set
+\(\mathfrak A_\eta\); the Portmanteau theorem therefore gives
+\(\nu(\mathfrak A_\eta)=1\) for every weak-* limit.  The closure of the shift
+orbit of the one-sided sequence \((U_j)_{j\ge0}\) is compact in
+\((\mathfrak X_M^\#)^{\mathbb N}\).  Averaging the Dirac masses of its shifts
+and using the endpoint identity
 \[
-   \mathscr P_\eta
-   =
-   \bigcap_{j=0}^\infty
-   \{(W_k)_{k\ge0}:(W_j,W_{j+1})\in\mathcal R_\eta\}
+ \frac1N\sum_{j=0}^{N-1}\bigl(F(S^{j+1}p)-F(S^jp)\bigr)
+ =\frac{F(S^Np)-F(p)}N
 \]
-is closed, hence compact.  The given infinite chain is an element of
-\(\mathscr P_\eta\), so the path space is nonempty, and it is plainly invariant
-under the left shift.
-
-For the path \(p=(U_0,U_1,\ldots)\), define empirical measures
-\[
-   \mathbb P_N:=\frac1N\sum_{k=0}^{N-1}\delta_{S^kp}.
-\]
-Weak-* compactness of probability measures on compact \(\mathscr P_\eta\) gives
-a convergent subsequence \(\mathbb P_{N_\ell}\rightharpoonup\mathbb P\).  For
-each continuous \(F\) on \(\mathscr P_\eta\),
-\[
-   \int F\circ S\,d\mathbb P_N-\int F\,d\mathbb P_N
-   =
-   \frac{F(S^Np)-F(p)}{N}\to0.
-\]
-Thus \(\mathbb P\) is shift-invariant.  Since every coordinate of every path in
-\(\mathscr P_\eta\) belongs to \(\mathfrak A_\eta\), the projected measure
-\(\nu=(\pi_0)_\#\mathbb P\) is supported in \(\mathfrak A_\eta\).
+gives a shift-invariant limit.  Its zeroth marginal is a limit of
+\eqref{eq:active-event-count-measures} and hence satisfies
+\eqref{eq:event-law-retains-activity}.  A limit path need not retain the
+successor edges, which is why no assertion about the closed path space is
+made.
 \end{proof}
 
 \begin{lemma}[Concatenation of retained concentrating descendants]
@@ -14231,63 +14232,173 @@ together with the pressure-gauge compatibility in
 link lies in \(\mathfrak A_\eta\), the endpoint does too.
 \end{proof}
 
-\begin{lemma}[Recurrent path produces a compact retained velocity concentration core]
-\label{lem:recurrent-path-compact-core}
-Let \(\mathbb P\) be a shift-invariant probability measure on the retained velocity concentration path
-space \(\mathscr P_\eta\).  For \(\mathbb P\)-a.e. recurrent path
-\((W_j)_{j\ge0}\), the orbit closure of its coordinates, together with all
-covariant tail limits generated by the returning blocks, contains a nonempty
-compact invariant set \(\calM_\eta\subset\mathfrak A_\eta\).  Every element of
-\(\calM_\eta\) is a retained descendant of the original profile realized from
-the original blow-up sequence.
+\begin{definition}[Covariant activity density]
+\label{def:covariant-activity-density}
+Let \(G=\mathbb R^3\rtimes\mathbb R\) be the covariant observer group, with
+left Haar measure \(dg\), acting on \(\mathfrak X_M^\#\) by
+\(g\mapsto\mathscr G_g\).  For \(U\in\mathfrak X_M^\#\), define the upper
+covariant activity density
+\begin{equation}\label{eq:upper-covariant-activity-density}
+ d_\eta^*(U):=\sup_{(F_\alpha)}\limsup_\alpha
+ \frac{\bigl|\{g\in F_\alpha:\mathscr G_gU\in\mathfrak A_\eta\}\bigr|}
+ {|F_\alpha|},
+\end{equation}
+where the supremum is over all left F\o lner nets of precompact measurable
+sets of positive Haar measure.  Thus \(d_\eta^*(U)=0\) means that every
+ordinary covariant occupation average loses the rooted activity target.
+\end{definition}
+
+\begin{lemma}[Invariant probability laws cannot retain non-affine activity]
+\label{lem:invariant-active-law-rigidity}
+Let \(\mu\) be a \(G\)-invariant Borel probability measure on a compact
+\(G\)-invariant subset of \(\mathfrak X_M^\#\) carrying the fixed normalized
+pressure atlas and affine/parasitic normalization.  Then
+\begin{equation}\label{eq:invariant-law-zero-activity}
+ \Phi(U)=0\qquad\text{for \(\mu\)-almost every }U.
+\end{equation}
+In particular, \(\mu(\mathfrak A_\eta)=0\) for every \(\eta>0\).
 \end{lemma}
 
 \begin{proof}
-Poincar\'e recurrence for the left shift gives a full-measure set of paths which
-return arbitrarily close to themselves in the product topology.  Fix such a
-path.  For each returning block, use
-\Cref{lem:active-descendant-concatenation} to compose the finitely many concentrating
-successor observers into one covariant recentering of the initial profile.  The
-endpoints of the returning blocks remain in the compact set
-\(\mathfrak A_\eta\).  Taking the closure of all such endpoints and their
-covariant tail limits inside the compact normalized profile class
-\(\mathfrak X_M^\#\) gives a nonempty compact set.  Closedness of
-\(\mathcal R_\eta\) and compactness of \(\mathfrak A_\eta\) keep the closure
-inside \(\mathfrak A_\eta\).  Intersecting over all closed invariant subsets of
-this compact set and applying Zorn's lemma gives a compact invariant
-minimal core \(\calM_\eta\).  The diagonal construction in the concatenation
-lemma preserves realization from the original sequence and retained velocity concentration,
-so every element of \(\calM_\eta\) is realized from the original blow-up sequence.
-\end{proof}
-
-\begin{lemma}[Retention and gauges on the recurrent concentration core]
-\label{lem:active-core-retention-gauges}
-The compact core \(\calM_\eta\) of
-\Cref{lem:recurrent-path-compact-core} carries the same retained oscillation
-threshold:
+Apply the proof of \Cref{thm:recurrent-tail-core-rigidity} on
+\(\operatorname{supp}\mu\).  Minimality and full support were used there only
+to promote an almost-everywhere conclusion to every point of a minimal core.
+The averaged identities themselves require only invariance.  They give
 \[
-   \Phi(U)\ge\eta\qquad (U,\Pi)\in\calM_\eta,
+ \int |\nabla U(0,0)|^2\,d\mu(U)=0,
+ \qquad
+ \int |u-u^0|^2\,d\mu=0.
 \]
-and its pressure gauges are compatible with the invariant averaging used in
-\Cref{thm:recurrent-tail-core-rigidity}.
+Invariance moves the first identity to every rational spacetime point; smoothness
+and a countable intersection give \(\nabla U\equiv0\) for \(\mu\)-almost
+every profile.  For such a profile write \(U(y,\tau)=B(\tau)\).
+By \Cref{thm:mildness-inheritance-main}, either it already belongs to the
+affine/parasitic lower stratum or its normalized physical pullback is bounded
+mild on every finite terminal interval.  In the latter case the nonlinear
+Duhamel term vanishes and the centered Stokes semigroup gives
+\[
+ B(\tau)=e^{-(\tau-\sigma)/2}B(\sigma)
+ \qquad(\sigma<\tau).
+\]
+Boundedness as \(\sigma\to-\infty\) gives \(B(\tau)=0\).  In the former case
+the fixed affine/parasitic normalization also gives the zero representative.
+Thus \(\Phi(U)=0\) for \(\mu\)-almost every profile by
+\Cref{thm:closed-nonaffine-activity,rem:affine-constant-use}.  This proves
+\eqref{eq:invariant-law-zero-activity}.
+\end{proof}
+
+\begin{proposition}[Positive-density active orbits are excluded]
+\label{prop:positive-density-active-exclusion}
+If \(U\in\mathfrak A_\eta\) and \(d_\eta^*(U)>0\), then \(U\) cannot occur as
+a normalized retained residual profile.
+\end{proposition}
+
+\begin{proof}
+Choose a left F\o lner net \((F_\alpha)\) and \(\delta>0\) for which the
+limsup in \eqref{eq:upper-covariant-activity-density} is at least \(\delta\).
+Set
+\[
+ \mu_\alpha:=\frac1{|F_\alpha|}\int_{F_\alpha}
+       \delta_{\mathscr G_gU}\,dg .
+\]
+Compactness of \(\mathfrak X_M^\#\) gives a weak-* convergent subnet.  The
+F\o lner calculation in
+\Cref{prop:amenable-averaging-realized-diffuse-defects} shows that its limit
+\(\mu\) is \(G\)-invariant.  Since \(\mathfrak A_\eta\) is closed, the
+Portmanteau theorem gives
+\[
+ \mu(\mathfrak A_\eta)
+ \ge\limsup_\alpha\mu_\alpha(\mathfrak A_\eta)
+ \ge\delta.
+\]
+This contradicts \Cref{lem:invariant-active-law-rigidity}.
+\end{proof}
+
+\begin{definition}[Event covariance defect and moving-root current]
+\label{def:event-covariance-defect}
+For the event measures \(\nu_N\) in
+\eqref{eq:active-event-count-measures}, \(g\in G\), and
+\(F\in C(\mathfrak X_M^\#)\), set
+\begin{equation}\label{eq:event-covariance-defect}
+ \mathfrak C_N(g,F)
+ :=\int\bigl(F(\mathscr G_gU)-F(U)\bigr)\,d\nu_N(U).
+\end{equation}
+Choose a countable dense subgroup \(G_0\subset G\) and a countable uniformly
+dense subalgebra \(\mathscr F_0\subset C(\mathfrak X_M^\#)\).  The chain is
+\emph{eventwise covariantly balanced} along a subsequence \(N_\ell\) if
+\begin{equation}\label{eq:eventwise-covariant-balance}
+ \mathfrak C_{N_\ell}(g,F)\longrightarrow0
+ \qquad(g\in G_0,\ F\in\mathscr F_0).
+\end{equation}
+For a differentiable local observable and a spatial generator \(D_k\), the
+infinitesimal version is
+\begin{equation}\label{eq:moving-root-current}
+ \mathfrak J_{N,k}(F):=\int D_kF\,d\nu_N.
+\end{equation}
+When \(q_k=D_kh\) is the nonzero spatial pressure mode, choosing
+\(F=hu_k\) gives
+\begin{equation}\label{eq:root-pressure-current}
+ \int u_kq_k\,d\nu_N
+ =\mathfrak J_{N,k}(hu_k),
+\end{equation}
+because \(D_ku_k=0\) after summation in \(k\) by incompressibility.  Thus
+\eqref{eq:moving-root-current} is the pressure correction created by following
+the selected roots.
+\end{definition}
+
+\begin{lemma}[Vanishing event covariance defect closes the chain]
+\label{lem:vanishing-event-current-exclusion}
+No active chain \eqref{eq:realized-active-chain} has a subsequence along which
+\eqref{eq:eventwise-covariant-balance} holds.
 \end{lemma}
 
 \begin{proof}
-The inequality \(\Phi\ge\eta\) is closed under the local topology by
-\Cref{cor:compact-normalized-activity-set}, and all approximating profiles lie in
-\(\mathfrak A_\eta\).  Hence every element of the compact core lies in
-\(\mathfrak A_\eta\).  Gauge compatibility follows from
-\Cref{lem:gauge-compatibility}: on each compact cylinder the pressure gauges are
-chosen by a fixed normalization, and diagonal limits preserve the normalized
-local \(L^{3/2}\) pressure topology.  Therefore the invariant measures on
-\(\calM_\eta\) used in the recurrent-core rigidity theorem average genuine
-normalized profiles with retained oscillation, not untracked pressure representatives.
+Pass to a further subsequence such that \(\nu_{N_\ell}\rightharpoonup\nu\).
+By \Cref{thm:active-path-space-recurrence},
+\(\nu(\mathfrak A_\eta)=1\).  Passing to the limit in
+\eqref{eq:event-covariance-defect} shows
+\[
+ \int F\circ\mathscr G_g\,d\nu=\int F\,d\nu
+ \qquad(g\in G_0,\ F\in\mathscr F_0).
+\]
+Density of \(G_0\), uniform density of \(\mathscr F_0\), and continuity of
+the action extend this identity to every \(g\in G\) and every continuous
+\(F\).  Hence \(\nu\) is \(G\)-invariant, contradicting
+\Cref{lem:invariant-active-law-rigidity} and
+\(\nu(\mathfrak A_\eta)=1\).
 \end{proof}
 
-\begin{theorem}[No infinite retained velocity concentration chain]
-\label{thm:compact-active-descendant}
-No infinite chain of retained concentrating descendants can occur in the refined residual
-class.
+\begin{definition}[Sparse moving-root-current branch]
+\label{def:sparse-moving-root-current-branch}
+The class \(\Csparse\) consists of normalized residual candidates whose
+realized terminal extraction produces a threshold \(\eta>0\) and an active
+chain \eqref{eq:realized-active-chain} with the following two properties:
+\begin{enumerate}[label=\textup{(S\arabic*)}]
+ \item \(d_\eta^*(U_j)=0\) for every \(j\); thus every ordinary covariant
+ occupation average loses the active roots;
+ \item for every subsequence along which \(\nu_N\) converges, eventwise
+ covariant balance fails.  Equivalently, after a further subsequence there
+ are \(g\in G_0\), \(F\in\mathscr F_0\), and \(\delta>0\) such that
+ \begin{equation}\label{eq:persistent-event-current}
+   |\mathfrak C_N(g,F)|\ge\delta.
+ \end{equation}
+ For differentiable pressure-energy observables this defect contains the
+ moving-root current \eqref{eq:root-pressure-current}.
+\end{enumerate}
+All diffuse, pressure-atlas-loss, critical-tail, affine/parasitic, and
+positive-density outputs are removed before a candidate is placed in
+\(\Csparse\).  Thus \(\Csparse\) records one strict failure: a zero-density
+active chain sustained by a nonvanishing covariant root current.
+\end{definition}
+
+\begin{theorem}[Infinite-chain reduction to the sparse moving-root-current branch]
+\label{thm:infinite-chain-sparse-reduction}
+Every infinite chain of retained concentrating descendants in the refined
+residual class is excluded or places its original residual candidate in
+\(\Csparse\).  More precisely, positive covariant activity density and
+vanishing event covariance defect are both impossible; hence every surviving
+chain satisfies \textup{(S1)}--\textup{(S2)} of
+\Cref{def:sparse-moving-root-current-branch}.
 \end{theorem}
 
 \begin{proof}
@@ -14304,16 +14415,1325 @@ By transitivity of retained tail descendants through
 \Cref{lem:diagonal-lifting-descendants}, this ordered subchain is an
 \(\mathcal R_\eta\)-chain.
 
-\Cref{thm:active-path-space-recurrence} gives a compact shift-invariant path
-space and a stationary path measure supported on \(\mathfrak A_\eta\).
-\Cref{lem:active-descendant-concatenation,lem:recurrent-path-compact-core,lem:active-core-retention-gauges}
-turn a recurrent path into a compact tail-minimal recurrent core for
-\eqref{eq:centered-main} whose profiles remain in \(\mathfrak A_\eta\) with
-compatible pressure gauges.  The recurrent-core rigidity theorem
-\Cref{thm:recurrent-tail-core-rigidity} forces this core to be affine-constant
-after the canonical affine normalization.  But affine/parasitic profiles have
-\(\Phi=0\), whereas \(\mathfrak A_\eta=\{\Phi\ge\eta\}\).  This contradiction
-rules out the infinite chain of retained concentrating descendants.
+For each coordinate \(U_j\), either \(d_\eta^*(U_j)>0\), in which case
+\Cref{prop:positive-density-active-exclusion} gives a contradiction, or
+\(d_\eta^*(U_j)=0\).  If the event-count measures have a covariantly balanced
+subsequence, \Cref{lem:vanishing-event-current-exclusion} gives a
+contradiction.  The only remaining case satisfies \textup{(S1)} and
+\textup{(S2)} in \Cref{def:sparse-moving-root-current-branch}; by definition
+the original candidate lies in \(\Csparse\).
+\end{proof}
+
+\subsection{Critical shell accounting for sparse active chains}
+
+The preceding event law identifies the loss of covariant balance but does not
+assign a Navier--Stokes sign to that loss.  We therefore retain the physical
+local energy identity on every selected scale and normalize its production by
+that scale.  The resulting summation-by-parts formula rules out a positive
+mean production with sublinear interscale current.  It does not, by itself,
+identify the expense paid along a moving root.  The moving-chart identity below
+does so without assigning a false sign to pressure, translation, or dilation.
+It closes sublinear signed supply.  The structural reductions below route
+bounded-depth transverse escape and noncompact moving marks into earlier data
+or into the single persistent current-saturation class.
+
+\begin{definition}[Critical parabolic excess]
+\label{def:critical-parabolic-excess}
+Let \((u,p)\) be a locally suitable physical representative, let
+\(z=(x_0,t_0)\), and put
+\[
+ Q_r(z):=B_r(x_0)\times(t_0-r^2,t_0).
+\]
+The velocity and pressure excesses are
+\begin{align}
+ \mathscr C(u;z,r)
+ &:=r^{-2}\inf_{c\in L^3(t_0-r^2,t_0;\mathbb R^3)}
+       \iint_{Q_r(z)}|u-c(t)|^3\,dx\,dt,
+ \label{eq:critical-velocity-excess}\\
+ \mathscr D(p;z,r)
+ &:=r^{-2}\iint_{Q_r(z)}
+       |p-(p)_{B_r}(t)|^{3/2}\,dx\,dt.
+ \label{eq:critical-pressure-excess}
+\end{align}
+Both quantities are invariant under the Navier--Stokes scaling.  Fix nested
+cutoffs \(\psi_{z,r}\in C_c^\infty(Q_r(z))\), equal to one on
+\(Q_{r/2}(z)\), obtained from one fixed cutoff by parabolic scaling.
+
+A finite family
+\begin{equation}\label{eq:coherent-critical-shell-family}
+ Q_{r_N}(z_N)\Subset\cdots\Subset Q_{r_1}(z_1)
+ \Subset Q_{r_0}(z_0),
+ \qquad r_{j+1}\le r_j/4,
+\end{equation}
+is a \emph{coherent critical active-shell family at level \(\eta\)} if
+\begin{equation}\label{eq:critical-shell-activity-floor}
+ \mathscr C(u;z_j,r_j)\ge\eta
+ \qquad(0\le j\le N)
+\end{equation}
+and the cutoffs are chosen so that
+\(0\le\psi_{z_{j+1},r_{j+1}}\le\psi_{z_j,r_j}\).
+The latter condition is automatic for the fixed cutoff convention after
+requiring
+\(Q_{r_{j+1}}(z_{j+1})\Subset Q_{r_j/2}(z_j)\).
+We write \((z',r')\prec(z,r)\) when \(r'\le r/4\) and
+\(Q_{r'}(z')\Subset Q_{r/2}(z)\).  Thus a coherent family is a chain for
+the strict partial order \(\prec\).
+\end{definition}
+
+\begin{lemma}[Exact localized energy balance]
+\label{lem:exact-localized-energy-balance}
+For every locally suitable representative \((u,p)\), there is a nonnegative
+Radon measure \(m_u\) such that, for every nonnegative
+\(\psi\in C_c^\infty\),
+\begin{equation}\label{eq:exact-localized-energy-balance}
+ \mathscr P_u[\psi]=\mathscr J_u[\psi],
+\end{equation}
+where
+\begin{equation}\label{eq:localized-production-functional}
+ \mathscr P_u[\psi]
+ :=2\iint |\nabla u|^2\psi\,dx\,dt+\int\psi\,dm_u
+\end{equation}
+and
+\begin{equation}\label{eq:localized-current-functional}
+ \mathscr J_u[\psi]
+ :=\iint |u|^2(\partial_t\psi+\Delta\psi)\,dx\,dt
+   +\iint (|u|^2+2p)u\cdot\nabla\psi\,dx\,dt .
+\end{equation}
+Both functionals are linear in \(\psi\), and
+\(\mathscr P_u[\psi]\ge0\) when \(\psi\ge0\).  A function of time added to
+the pressure makes no contribution to \(\mathscr J_u\).
+\end{lemma}
+
+\begin{proof}
+For compactly supported nonnegative \(\psi\), the physical local energy
+inequality is
+\[
+ 2\iint|\nabla u|^2\psi\,dx\,dt
+ \le \mathscr J_u[\psi].
+\]
+Move the two sides into one distribution.  Its nonnegativity on nonnegative
+tests makes it a Radon measure \(m_u\).  Writing the inequality as an equality
+with this measure gives
+\eqref{eq:exact-localized-energy-balance}.  The distributional equation and
+the kinetic-energy pairing are linear in the test function, hence so are
+\(\mathscr P_u\) and \(\mathscr J_u\).  If \(p\) is replaced by
+\(p+a(t)\), the additional term is
+\[
+ \iint a(t)u\cdot\nabla\psi\,dx\,dt=0
+\]
+by incompressibility.  This proves the gauge assertion.
+\end{proof}
+
+\begin{lemma}[Zero-cost critical shells]
+\label{lem:critical-shell-zero-cost-limit}
+Let \((u_n,p_n)\) be normalized locally suitable representatives on
+\(Q_2\), and let \(\chi_n=\psi_n^+-\psi_n^-\ge0\) be differences of nested
+cutoffs.  Suppose that the local compactness and pressure-atlas hypotheses of
+the retained branch hold and
+\begin{equation}\label{eq:zero-critical-shell-cost}
+ \mathscr P_{u_n}[\chi_n]\longrightarrow0.
+\end{equation}
+After passage to a subsequence, on every compact set \(K\) for which there is
+\(c_K>0\) such that \(\chi_n\ge c_K\) on \(K\) for all sufficiently large
+\(n\),
+\begin{equation}\label{eq:zero-shell-gradient}
+ \nabla u_n\longrightarrow0\quad\hbox{in }L^2(K),
+ \qquad \nabla U=0\quad\hbox{a.e. on }K,
+\end{equation}
+where \(U\) is the local limit.  Thus a zero-cost shell is spatially
+homogeneous on its open shell region.  This conclusion does not force an
+active profile enclosed by the inner cutoff to vanish.
+\end{lemma}
+
+\begin{proof}
+By \Cref{lem:exact-localized-energy-balance},
+\[
+ 2\iint |\nabla u_n|^2\chi_n\,dx\,dt
+ \le \mathscr P_{u_n}[\chi_n]\longrightarrow0.
+\]
+The lower bound \(\chi_n\ge c_K>0\) on \(K\) gives
+the strong convergence in \eqref{eq:zero-shell-gradient}.  Local compactness
+identifies its limit with \(\nabla U\).  The final assertion records the
+precise scope of the argument: the weight \(\chi_n\) vanishes behind the inner
+cutoff, so no estimate on that enclosed region follows from
+\eqref{eq:zero-critical-shell-cost}.
+\end{proof}
+
+\begin{lemma}[Weighted critical shell identity]
+\label{lem:weighted-critical-shell-identity}
+Let \eqref{eq:coherent-critical-shell-family} be a coherent critical
+active-shell family.  Write
+\(\psi_j=\psi_{z_j,r_j}\), \(w_j=r_j^{-1}\),
+\(J_j=\mathscr J_u[\psi_j]\), and
+\[
+ P_j:=w_j\mathscr P_u[\psi_j-\psi_{j+1}]
+ \qquad(0\le j<N).
+\]
+Then
+\begin{equation}\label{eq:weighted-critical-shell-identity}
+ \sum_{j=0}^{N-1}P_j
+ =w_0J_0-w_{N-1}J_N
+ +\sum_{j=1}^{N-1}(w_j-w_{j-1})J_j.
+\end{equation}
+Each \(P_j\) is nonnegative, and every term in
+\eqref{eq:weighted-critical-shell-identity} is dimensionless under the
+Navier--Stokes scaling.
+\end{lemma}
+
+\begin{proof}
+By \Cref{lem:exact-localized-energy-balance} and linearity,
+\[
+ \mathscr P_u[\psi_j-\psi_{j+1}]=J_j-J_{j+1}.
+\]
+Therefore
+\[
+ \sum_{j=0}^{N-1}P_j
+ =\sum_{j=0}^{N-1}w_j(J_j-J_{j+1}).
+\]
+Discrete summation by parts gives
+\eqref{eq:weighted-critical-shell-identity}.  Since
+\(\psi_j-\psi_{j+1}\ge0\), nonnegativity follows from
+\eqref{eq:localized-production-functional}.  The scale assertion follows by
+changing variables under the Navier--Stokes scaling: both
+\(\mathscr P_u[\psi_j-\psi_{j+1}]\) and
+\(\mathscr J_u[\psi_j-\psi_{j+1}]\) scale like \(r_j\).
+\end{proof}
+
+\begin{corollary}[No positive-production shell family with sublinear current]
+\label{cor:no-positive-production-sublinear-current}
+There is no sequence of coherent critical active-shell families for which
+\begin{equation}\label{eq:positive-mean-shell-production}
+ \liminf_{N\to\infty}\frac1N\sum_{j=0}^{N-1}P_j>0
+\end{equation}
+and, simultaneously,
+\begin{equation}\label{eq:sublinear-critical-current}
+ w_0J_0-w_{N-1}J_N
+ +\sum_{j=1}^{N-1}(w_j-w_{j-1})J_j=o(N).
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+The left side of \eqref{eq:weighted-critical-shell-identity} has a positive
+linear lower bound by \eqref{eq:positive-mean-shell-production}, whereas its
+right side is \(o(N)\) by \eqref{eq:sublinear-critical-current}.
+\end{proof}
+
+\begin{lemma}[Vanishing mean production selects a homogeneous shell]
+\label{lem:vanishing-mean-production-shell}
+Suppose coherent critical active-shell families of lengths \(N\to\infty\)
+satisfy
+\[
+ \frac1N\sum_{j=0}^{N-1}P_j\longrightarrow0.
+\]
+There are indices
+\(j_N<N\) such that, after rescaling the parent cylinder
+\(Q_{r_{j_N}}(z_{j_N})\) to unit size, the corresponding normalized shell
+production tends to zero.  If the local compactness and pressure-atlas
+conditions remain valid, every resulting limit is spatially homogeneous on
+the open region between the two selected cutoffs.  Otherwise the sequence
+enters the corresponding previously classified compactness or pressure
+alternative.
+\end{lemma}
+
+\begin{proof}
+Choose \(j_N\) so that
+\[
+ P_{j_N}\le \frac1N\sum_{j=0}^{N-1}P_j.
+\]
+The right side tends to zero.  Under the Navier--Stokes rescaling based at
+\((z_{j_N},r_{j_N})\), the production between the two cutoffs is exactly
+\(P_{j_N}\), because
+\(P_{j_N}=r_{j_N}^{-1}
+\mathscr P_u[\psi_{j_N}-\psi_{j_N+1}]\).
+The retained compactness branch therefore satisfies the hypotheses of
+\Cref{lem:critical-shell-zero-cost-limit}.  Its conclusion gives spatial
+homogeneity on the open shell.  Failure of either compactness or the pressure
+atlas is routed by
+\Cref{lem:retained-recentering-alternatives,lem:no-pressure-only-retained-profile}.
+\end{proof}
+
+\begin{definition}[Moving parabolic realization]
+\label{def:moving-parabolic-realization}
+Let \(I\subset\mathbb R\) be an interval.  A moving parabolic realization is
+an absolutely continuous scale \(r:I\to(0,\infty)\), center
+\(x:I\to\mathbb R^3\), and physical time \(t:I\to\mathbb R\) satisfying
+\[
+ \dot t=r^2\quad\hbox{a.e. on }I.
+\]
+Set
+\begin{equation}\label{eq:moving-parabolic-chart}
+ V(y,\tau)=r(\tau)u(x(\tau)+r(\tau)y,t(\tau)),
+ \qquad
+ P(y,\tau)=r(\tau)^2p(x(\tau)+r(\tau)y,t(\tau)),
+\end{equation}
+and write
+\[
+ a=\frac{\dot r}{r},\qquad b=\frac{\dot x}{r},
+ \qquad \Lambda V=V+y\cdot\nabla V.
+\]
+It is a \emph{record-scale realization} when \(r\) is nonincreasing, hence
+\(a\le0\) almost everywhere.  The functions \(a\) and \(b\) are determined
+by the selected centers and scales; they are not additional forces.
+\end{definition}
+
+\begin{lemma}[Exact equation and signed carrier in a moving realization]
+\label{lem:exact-moving-root-carrier}
+On every ordinary interval of a moving parabolic realization,
+\begin{equation}\label{eq:moving-root-equation}
+ \partial_\tau V+(V\cdot\nabla)V+\nabla P
+ =\Delta V+a\Lambda V+b\cdot\nabla V,
+ \qquad \nabla\cdot V=0.
+\end{equation}
+Let \(\phi\in C_c^\infty(\mathbb R^3)\), \(\phi\ge0\), be independent of
+\(\tau\), and put
+\[
+ e=\frac{|V|^2}{2},\qquad K_\phi=\int e\phi,
+ \qquad D_\phi=\int|\nabla V|^2\phi.
+\]
+The pushed-forward suitable-energy defect is a nonnegative measure
+\(dM_\phi\), and
+\begin{equation}\label{eq:exact-moving-root-carrier}
+ dK_\phi+D_\phi\,d\tau+dM_\phi
+ =\bigl(F_{\rm int,\phi}+F_{\rm sc,\phi}
+        +F_{\rm tr,\phi}\bigr)d\tau,
+\end{equation}
+where
+\begin{align}
+ F_{\rm int,\phi}
+  &=\int(e+P)V\cdot\nabla\phi+\int e\Delta\phi,
+ \label{eq:moving-root-internal-current}\\
+ F_{\rm sc,\phi}
+  &=-a\int e(\phi+y\cdot\nabla\phi),
+ \label{eq:moving-root-scale-current}\\
+ F_{\rm tr,\phi}
+  &=-\int e\,b\cdot\nabla\phi.
+ \label{eq:moving-root-translation-current}
+\end{align}
+All three terms are signed.  In particular, the condition \(a\le0\) does not
+give a sign to \(F_{\rm sc,\phi}\) for a compactly supported cutoff.
+\end{lemma}
+
+\begin{proof}
+Differentiate \eqref{eq:moving-parabolic-chart}.  The time, amplitude,
+dilation, and center derivatives give respectively
+\(r^3\partial_tu\), \(aV\), \(ay\cdot\nabla V\), and
+\(b\cdot\nabla V\).  Since \(\dot t=r^2\), substitution of the physical
+Navier--Stokes equation gives \eqref{eq:moving-root-equation}.
+
+Test that equation against \(V\phi\).  Incompressibility converts convection
+and pressure into \eqref{eq:moving-root-internal-current}; integration by
+parts gives the viscous terms.  In dimension three,
+\[
+ \int V\cdot\Lambda V\,\phi
+ =-\int e(\phi+y\cdot\nabla\phi),
+ \qquad
+ \int V\cdot(b\cdot\nabla V)\phi
+ =-\int e\,b\cdot\nabla\phi.
+\]
+Writing the suitable local energy inequality as an equality with its
+nonnegative defect measure proves \eqref{eq:exact-moving-root-carrier}.
+The factor \(\phi+y\cdot\nabla\phi\) changes sign on a general cutoff annulus,
+which proves the final assertion.
+\end{proof}
+
+\begin{lemma}[Moving roots do not create a Type~II output]
+\label{lem:moving-roots-remain-typeI}
+Every moving cell obtained from a retained descendant inside the admissible
+local window is an exact recentering and parabolic rescaling of the fixed
+Type~I extraction.  It retains the scale-invariant local energy bounds and the
+pointwise Type~I envelope on each compact subwindow.  If a proposed cell leaves
+the admissible local window, its first exit is an exterior or diffuse
+recentering datum.  Thus neither unbounded chart velocity \((a,b)\) nor
+persistent signed supply is, by itself, a Type~II singularity.  A failure of
+the original pointwise Type~I envelope occurs only at the entry test, before
+the residual class is formed.
+\end{lemma}
+
+\begin{proof}
+The moving chart \eqref{eq:moving-parabolic-chart} is a composition of spatial
+translation, time translation, and Navier--Stokes parabolic scaling.  These
+operations preserve the scale-invariant local energy quantities and transform
+the pointwise envelope covariantly.  The compact-window conclusion follows
+from \Cref{prop:local-typeI-terminal-compactness}.  The expanding-window
+protocol and retained-recentering alternative
+\Cref{lem:compact-window-expanding-region-protocol,lem:retained-recentering-alternatives}
+give the exhaustive alternative: a retained recentering inside the local
+Type~I window has the same compactness, while one which leaves it is assigned
+to the exterior or diffuse terminal remainder.  The quantities
+\(a=\dot r/r\) and \(b=\dot x/r\) describe the selected chart and do not alter
+the physical envelope.  They therefore cannot change a Type~I candidate into
+a Type~II candidate.
+\end{proof}
+
+\begin{definition}[Marked moving cell and its signed supply]
+\label{def:compatible-marked-cell-family}
+A marked moving cell consists of a moving parabolic realization on a compact
+interval \(I_C=[\tau_C^-,\tau_C^+]\), a cutoff \(\phi_C\) equal to one on the
+fixed cylinder on which the cell's activity floor is measured, and the retained
+data
+\[
+ (V,P,M_C,r,x,a,b,\phi_C,K_C^-,K_C^+).
+\]
+The pressure is recorded modulo functions of time.  Define its dissipation,
+defect, and signed supply by
+\begin{align}
+ D_C&:=\int_{I_C}\!D_{\phi_C}\,d\tau,&
+ M_C&:=M_{\phi_C}(I_C),\label{eq:marked-cell-cost}\\
+ H_C&:=\int_{I_C}\!
+   (F_{{\rm int},\phi_C}+F_{{\rm sc},\phi_C}
+       +F_{{\rm tr},\phi_C})\,d\tau .
+ \label{eq:marked-cell-supply}
+\end{align}
+Thus \(D_C,M_C\ge0\), while \(H_C\) is signed.  A marked family is
+\emph{concatenated} when \(K_{C_j}^+=K_{C_{j+1}}^-\).  This condition concerns
+only the kinetic carrier at the common event.  No cancellation between the
+three summands in \eqref{eq:marked-cell-supply} is included in the definition.
+\end{definition}
+
+\begin{lemma}[Exact eventwise expense identity]
+\label{lem:signed-moving-cell-gluing}
+Every marked moving cell satisfies
+\begin{equation}\label{eq:single-moving-cell-expense}
+ D_C+M_C=K_C^--K_C^++H_C.
+\end{equation}
+Consequently, a concatenated family \(C_0,\ldots,C_{N-1}\) satisfies
+\begin{equation}\label{eq:signed-moving-cell-gluing}
+ \sum_{j=0}^{N-1}(D_{C_j}+M_{C_j})
+ =K_{C_0}^--K_{C_{N-1}}^++\sum_{j=0}^{N-1}H_{C_j}.
+\end{equation}
+In particular, if the carriers are uniformly bounded and
+\begin{equation}\label{eq:sublinear-moving-cell-supply}
+ \sum_{j=0}^{N-1}H_{C_j}=o(N),
+\end{equation}
+then
+\begin{equation}\label{eq:vanishing-mean-moving-cell-cost}
+ \frac1N\sum_{j=0}^{N-1}(D_{C_j}+M_{C_j})\longrightarrow0.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Integrate \eqref{eq:exact-moving-root-carrier} over \(I_C\) to obtain
+\eqref{eq:single-moving-cell-expense}.  Summation telescopes the carrier terms
+and gives \eqref{eq:signed-moving-cell-gluing}.  Divide by \(N\); boundedness
+of the two endpoint carriers and \eqref{eq:sublinear-moving-cell-supply} give
+\eqref{eq:vanishing-mean-moving-cell-cost}.
+\end{proof}
+
+\begin{lemma}[Observer currents are the material derivative of the cutoff]
+\label{lem:observer-current-material-cutoff}
+Let \(\phi\) be the fixed cutoff in a moving realization and define the
+corresponding physical cutoff
+\[
+ \psi(x,t(\tau))
+ :=\phi\!\left(\frac{x-x(\tau)}{r(\tau)}\right).
+\]
+Then
+\begin{equation}\label{eq:material-cutoff-derivative}
+ r(\tau)^2\partial_t\psi(x,t(\tau))
+ =-b(\tau)\cdot\nabla_y\phi-a(\tau)y\cdot\nabla_y\phi,
+ \qquad y=\frac{x-x(\tau)}{r(\tau)}.
+\end{equation}
+Consequently \(F_{\rm tr,\phi}\) and the
+\(-a\int e\,y\cdot\nabla\phi\) portion of \(F_{\rm sc,\phi}\) are exactly
+the kinetic-energy pairing with the material derivative of the selected
+physical cutoff.  The remaining term \(-a\int e\phi\) is the amplitude
+Jacobian of the Navier--Stokes scaling.  Neither term is an external energy
+source, and neither has a sign.
+\end{lemma}
+
+\begin{proof}
+Differentiate \(\psi\) at fixed physical \(x\).  Since \(\dot t=r^2\),
+\(\dot x=rb\), and \(\dot r=ar\), the chain rule gives
+\[
+ r^2\partial_t\psi
+ =\partial_\tau\psi
+ =-\frac{\dot x}{r}\cdot\nabla_y\phi
+   -\frac{\dot r}{r}y\cdot\nabla_y\phi
+ =-b\cdot\nabla_y\phi-a y\cdot\nabla_y\phi.
+\]
+Substitution into \eqref{eq:moving-root-scale-current} and
+\eqref{eq:moving-root-translation-current} proves the assertion.
+\end{proof}
+
+\begin{lemma}[Algebraic content of current saturation]
+\label{lem:no-modulation-coercivity-from-energy}
+For every marked cell,
+\begin{equation}\label{eq:saturation-is-carrier-coboundary}
+ H_C-D_C-M_C=K_C^+-K_C^-.
+\end{equation}
+Hence \eqref{eq:scale-saturation-law} is precisely the stationary average of
+a carrier coboundary.  In particular it contains no displayed nonnegative
+remainder controlling the distance between consecutive marked profiles modulo
+the covariant symmetry group.  Any estimate of the form
+\begin{equation}\label{eq:required-modulation-coercivity}
+ \mathcal R_C\ge
+ c\,d_{\mathfrak X/G}(U_C,U_{C^+})^2,
+ \qquad \mathcal R_C\ge0,
+\end{equation}
+must be supplied by a further PDE identity or monotonicity formula; it is not
+a consequence of current saturation.
+\end{lemma}
+
+\begin{proof}
+Equation \eqref{eq:saturation-is-carrier-coboundary} is
+\eqref{eq:single-moving-cell-expense} rearranged.  Integrating it against a
+shift-invariant marked path law makes the mean of
+\(K_C^+-K_C^-\) vanish and gives exactly
+\eqref{eq:scale-saturation-law}.  No other term occurs in this calculation,
+which proves the assertion about its algebraic content.
+\end{proof}
+
+\begin{definition}[Oriented logarithmic shell-current measure]
+\label{def:oriented-log-shell-current-measure}
+Let \(C_j\), \(0\le j<N\), be a coherent concatenated record-scale family,
+with event scales \(r_{j+1}\le r_j/4\), and set
+\[
+ \rho_j=-\log r_j,
+ \qquad I_j=[\rho_j,\rho_{j+1}],
+ \qquad h_j:=H_{C_j}.
+\]
+The complete oriented current of the cell is \(h_j\); its pressure,
+transport, cutoff, translation, and dilation terms are combined before its
+positive part is taken.  Define
+\begin{equation}\label{eq:oriented-log-current-measure}
+ \Lambda_N^{\rm cur}
+ :=\frac1N\sum_{j=0}^{N-1}
+   h_j^+\frac{\mathbf1_{I_j}(\rho)}{|I_j|}\,d\rho .
+\end{equation}
+Since \(|I_j|\ge\log4\), the intervals have disjoint interiors and
+\(\Lambda_N^{\rm cur}\) does not count one log location as two different
+shell currents.
+\end{definition}
+
+\begin{lemma}[Positive event price produces nonzero logarithmic current]
+\label{lem:positive-price-nonzero-log-current}
+Assume every cell of a coherent family retains the fixed non-affine activity
+floor and hence, by \Cref{lem:critical-activity-viscous-price},
+\begin{equation}\label{eq:uniform-cell-price}
+ D_{C_j}+M_{C_j}\ge d_*>0.
+\end{equation}
+If the endpoint carriers are uniformly bounded, then
+\begin{equation}\label{eq:positive-log-current-mass}
+ \liminf_{N\to\infty}
+ \Lambda_N^{\rm cur}(\overline{\mathbb R}_{\log})
+ \ge d_*.
+\end{equation}
+The same conclusion holds for every sequence of consecutive blocks whose
+length tends to infinity.
+\end{lemma}
+
+\begin{proof}
+The exact block identity \eqref{eq:signed-moving-cell-gluing} gives
+\[
+ \sum_{j<N}h_j
+ =\sum_{j<N}(D_{C_j}+M_{C_j})
+   +K_{C_{N-1}}^+-K_{C_0}^-.
+\]
+If \(0\le K_C^\pm\le K_*\), then
+\[
+ \sum_{j<N}h_j^+
+ \ge\sum_{j<N}h_j
+ \ge Nd_*-2K_*.
+\]
+By \eqref{eq:oriented-log-current-measure}, its total mass is
+\(N^{-1}\sum_{j<N}h_j^+\).  Letting \(N\to\infty\) proves
+\eqref{eq:positive-log-current-mass}.  The identical calculation applies
+after replacing the first and last indices by the endpoints of any consecutive
+block.
+\end{proof}
+
+\begin{theorem}[Persistent coherent shell current produces a realized tail or a regenerated center]
+\label{thm:coherent-current-to-critical-tail}
+Let a compact coherent record-scale chain remain after the affine/parasitic,
+pressure/noncompact, diffuse, regenerated-concentration, and previously
+selected critical-tail alternatives have been removed.  Suppose it retains a
+fixed non-affine activity floor in every cell.  Then its logarithmic shell
+currents produce exactly one of the following sequence-realized outputs:
+\begin{enumerate}[label=\textup{(\roman*)}]
+ \item a positive-threshold active observer in a selected bounded logarithmic
+ window, hence a regenerated retained center;
+ \item a nonzero state in the critical-tail compactification \(\Tcrit\) after
+ all such active observers have been removed from the selected windows.
+\end{enumerate}
+No new current coordinate is adjoined to \(\Tcrit\).
+\end{theorem}
+
+\begin{proof}
+Form \(\Lambda_N^{\rm cur}\) from
+\Cref{def:oriented-log-shell-current-measure}.  Compactness of the marked
+cell space bounds the carriers and all current coordinates on the fixed
+countable cutoff family.  By
+\Cref{lem:positive-price-nonzero-log-current}, the measures have uniformly
+positive total mass.  Normalize their restrictions to the support of the
+positive current and pass to the logarithmic annular compactification of
+\Cref{def:log-annular-compactification}.
+
+We verify realization in the critical-tail topology.  Fix a consecutive block
+\(C_m,\ldots,C_{n-1}\) and view it from its deepest child at scale \(r_n\).
+The shell \(I_j\) becomes a macroscopic annulus whose inner and outer radii are
+\(r_{j+1}/r_n\) and \(r_j/r_n\).  Distinct shells have disjoint logarithmic
+interiors.  The moving-chart change of variables and
+\Cref{lem:observer-current-material-cutoff} identify \(h_j\) with the sum of
+the oriented pressure, transport, cutoff, and moving-boundary flux coordinates
+on that annulus.  Write this finite decomposition as
+\[
+ h_j=h_j^{\rm p}+h_j^{\rm nl}+h_j^{\rm cut}+h_j^{\rm mov}.
+\]
+Since
+\[
+ h_j^+\le |h_j^{\rm p}|+|h_j^{\rm nl}|
+              +|h_j^{\rm cut}|+|h_j^{\rm mov}|,
+\]
+the positive mass in \eqref{eq:positive-log-current-mass}, followed by a
+four-way pigeonhole extraction, gives positive limiting mass to at least one
+of these existing annular observables.  The pressure term is an actual
+pressure-flux pairing, the nonlinear term is the transport pairing in the
+annular local-energy identity, and the cutoff and moving-boundary terms are
+the material-cutoff/virial pairings.  On the virial-tight subhull these are
+the bounded rational log-window coordinates of
+\Cref{def:scale-critical-virial-tight-subhull,lem:realized-log-window-virial-compactness}.
+Failure of their boundedness is routed by the same ordered compactness protocol
+to a pressure/noncompact or non-virial-tight critical-tail output.  Thus no
+scalar current coordinate is inserted into the compactification.  For every finite collection of
+shells, \Cref{lem:finite-simultaneous-active-realization} realizes all of them
+in one member of the original terminal extraction with compatible pressure
+gauges.  A diagonal choice over the countable log-window and flux tests
+therefore makes every support limit sequence-realized.
+
+Apply the compactness and support-transfer results
+\Cref{thm:critical-tail-compactification-compactness,lem:critical-tail-support-transfer}.
+If a coordinate loses boundedness, their ordered alternatives give an affine
+pressure or pressure/noncompact descendant.  Those alternatives were removed
+in the hypotheses.  Otherwise remove from each selected log window every
+positive-threshold active observer.  If this removal captures positive
+limiting shell-current mass, support transfer produces a sequence-realized
+active observer and hence alternative \textup{(i)}.  If it does not, the
+remaining normalized current mass is still positive.  The critical-tail
+compactness theorem gives a convergent subsequence in \(\Tcrit\), and the
+positive mass of one of the four displayed existing observables prevents that
+state from vanishing.  This is alternative \textup{(ii)}.
+
+The possible locations of this nonzero support are exhaustive.  Escape through
+the ends of the logarithmic compactification gives \(\Lambda\ne0\), the
+log-diffuse critical-tail state.  Tight support in a bounded log window gives
+an annular pressure/viscous/flux state.  If that window contains a
+positive-threshold unit active observer, alternative \textup{(i)} holds; if its
+spatial quotient oscillation vanishes, the affine/parasitic alternative is
+selected.  In the remaining tight case the Young/defect coordinates are
+nonzero or the support is coherent under log translation, giving respectively
+a Young/defect or coherent critical tail by
+\Cref{thm:critical-tail-compactification-extraction,thm:realized-critical-tail-rigidity}.
+Thus the alternatives in the statement are exhaustive.  In particular, a
+regenerated center is not silently relabelled as a critical-tail profile after
+concentration removal.
+\end{proof}
+
+\begin{definition}[Scale-saturation law]
+\label{def:scale-saturation-law}
+A shift-invariant probability law \(\varpi\) on the marked path space of
+record-scale moving cells is \emph{current saturated} when its one-cell
+marginal retains the activity floor and
+\begin{equation}\label{eq:scale-saturation-law}
+ \int\bigl(H_C-D_C-M_C\bigr)\,d\varpi(C)=0.
+\end{equation}
+The equality uses the distinguished activity cutoff carried by each cell.  It
+is the stationary form of \eqref{eq:signed-moving-cell-gluing}.  It retains
+all pressure, transport, cutoff, translation, and dilation contributions in
+the single signed mark \(H_C\).
+\end{definition}
+
+\begin{proposition}[Longitudinal current reduces to current saturation]
+\label{prop:longitudinal-current-to-saturation}
+Let coherent critical active-shell families of length \(N\to\infty\) remain
+after the pressure/noncompact, diffuse, critical-tail, affine/parasitic, and
+positive-density alternatives have been removed.  Then one of the following
+occurs:
+\begin{enumerate}[label=\textup{(L\arabic*)}]
+ \item no concatenated moving-cell realization with uniformly bounded
+ carriers and locally precompact marks exists;
+ \item such realizations exist and their signed supply is sublinear, in which
+ case \eqref{eq:vanishing-mean-moving-cell-cost} holds;
+ \item such realizations exist and have persistent signed supply:
+ \begin{equation}\label{eq:persistent-moving-cell-supply}
+  \limsup_{N\to\infty}\frac1N\sum_{j=0}^{N-1}H_{C_j}>0;
+ \end{equation}
+ \item a stationary marked limit law exists and satisfies
+ \eqref{eq:scale-saturation-law} while retaining the activity floor.
+\end{enumerate}
+Alternative \textup{(L2)} produces cells with arbitrarily small mean
+dissipation and defect.  If such cells retain activity in their cutoff core,
+their local limits are spatially homogeneous there and are passed to the
+affine/parasitic alternative.  If activity leaves the core, its exit location
+is the next retained recentering datum.  Thus the unresolved longitudinal
+output consists of \textup{(L1)}, or of the persistent-current configuration
+\textup{(L3)}--\textup{(L4)}.
+\end{proposition}
+
+\begin{proof}
+Attempt the moving-cell realization on each coherent family.  Failure of
+uniform carrier bounds, local compactness of the marked variables, or exact
+concatenation is \textup{(L1)}.  Otherwise apply
+\Cref{lem:signed-moving-cell-gluing}.  If the supply is sublinear, that lemma
+gives \textup{(L2)}.  Select a cell whose cost does not exceed the mean cost.
+After rescaling it to the fixed chart, local compactness and lower
+semicontinuity give zero gradient and zero defect on the cutoff core.  Retained
+activity in that core can then arise only from a time-dependent spatially
+homogeneous mode.  The affine normalization dichotomy
+\Cref{thm:affine-normalization-dichotomy,rem:affine-constant-use} assigns that
+mode to \(\Caff\).  Escape from the core is recorded by the retained-recentering alternatives of
+\Cref{lem:retained-recentering-alternatives}.  This proves the asserted
+closure of \textup{(L2)}.
+
+If sublinear supply fails, pass to a subsequence on which
+\eqref{eq:persistent-moving-cell-supply} holds, giving \textup{(L3)}.  When
+the marked records are precompact, take empirical measures on the orbit of the
+one-sided marked path under the left shift.  Their weak limits are shift
+invariant by the endpoint calculation.
+Dividing \eqref{eq:signed-moving-cell-gluing} by \(N\) and passing to the
+limit gives \eqref{eq:scale-saturation-law}.  Closedness of the retained
+activity set preserves the activity floor, giving \textup{(L4)}.
+\end{proof}
+
+\begin{lemma}[Bounded nesting produces transverse active antichains]
+\label{lem:bounded-nesting-active-antichains}
+Suppose realizations of the first \(m\) events have \(\prec\)-chain length at
+most \(L\), independently of \(m\).  Then, for every \(J\), some finite
+realization contains \(J\) pairwise \(\prec\)-incomparable active cylinders.
+For any such sequence of antichains, exactly one of the following occurs after
+diagonal extraction:
+\begin{enumerate}[label=\textup{(A\arabic*)}]
+ \item two cylinder sequences determine inequivalent retained recentering
+ profiles and hence a separated two-profile family;
+ \item every fixed finite subfamily coalesces into one non-separated local
+ profile class after recentering.
+\end{enumerate}
+Thus bounded nesting is structurally either branching concentration or a
+coalescent moving cascade; it is not a compactness conclusion.
+\end{lemma}
+
+\begin{proof}
+Partially order the active cylinders in a realization by \(\prec\).  A finite
+poset of height at most \(L\) is the union of at most \(L\) antichains: assign
+to an element the maximum length of a chain ending there.  Hence a realization
+with \(m\) events contains an antichain of cardinality at least \(m/L\), which
+proves the first assertion.
+
+Choose successively larger antichains and apply the local profile compactness
+and pressure-gauge extraction on each fixed finite collection.  If two
+realizing sequences are inequivalent in the non-separated local profile
+relation of
+\Cref{lem:closed-active-locus-single-finite-chain}, the proof of that lemma
+shows that their covariant distance escapes and that they form a separated
+two-profile family.  If no such pair exists, every fixed finite collection
+belongs to one equivalence class.  A diagonal extraction gives
+\textup{(A2)}.  These alternatives are exhaustive.
+\end{proof}
+
+\begin{lemma}[Noncompact moving marks are geometric escape data]
+\label{lem:moving-mark-defect-routing}
+For coherent nested active families inside the fixed Type~I window, the
+kinetic carriers are uniformly bounded and the velocity, pressure, and defect
+coordinates are locally precompact.  Consequently, failure of precompactness
+of the full moving-cell marks can only occur in the center--scale coordinates.
+After passage to a subsequence, such a failure gives one of:
+\begin{enumerate}[label=\textup{(G\arabic*)}]
+ \item an unbounded normalized center displacement, routed to an exterior,
+ diffuse, pressure/noncompact, or retained separated recentering;
+ \item an unbounded logarithmic scale displacement, routed to the realized
+ critical-tail compactification;
+ \item tight center and logarithmic-scale increments; choosing the canonical
+ shortest bounded-variation path in the finite-dimensional covariant observer
+ group makes the integrated translation and dilation currents tight signed
+ marks and produces a compact marked path law.
+\end{enumerate}
+In particular, marked-realization failure is not an additional terminal
+mechanism.
+\end{lemma}
+
+\begin{proof}
+The fixed Type~I envelope bounds \(V\) on the support of every fixed cutoff,
+so \(K_C^\pm\le C(M,\phi_C)\).  Local velocity and pressure compactness, and
+weak-* compactness of the nonnegative suitable-energy defect measures, follow
+from
+\Cref{prop:local-typeI-terminal-compactness,lem:state-space-local-compactness}.
+Thus only the observer parameters can fail tightness.
+
+Join consecutive observer parameters by the canonical shortest
+bounded-variation path in the spatial-translation/logarithmic-scale
+coordinates.  This removes artificial oscillation of \((a,b)\) between fixed
+endpoints.  If the normalized centers escape, apply
+\Cref{lem:retained-recentering-alternatives,lem:escaping-retained-recentering-routing};
+these give precisely \textup{(G1)}.  If the center increments remain tight but
+the logarithmic scale increments escape every bounded interval, the
+logarithmic compactification in
+\Cref{thm:critical-tail-compactification-compactness,thm:critical-tail-compactification-extraction}
+gives \textup{(G2)}.  In the complementary case both parameter increments are
+tight.  For the canonical paths, their distributional derivatives are finite
+signed measures whose total variations are bounded by the endpoint
+displacements.  Their pairings with the fixed smooth cutoff gradients in
+\eqref{eq:moving-root-scale-current}--\eqref{eq:moving-root-translation-current}
+are then tight scalar marks.  Diagonal compactness on the countable local test
+family gives the marked path law in \textup{(G3)}.
+\end{proof}
+
+\begin{lemma}[Critical activity has a fixed normalized viscous price]
+\label{lem:critical-activity-viscous-price}
+Let \(|V|\le M\) on \(B_2\times I\), and suppose the affine/parasitic
+alternative has been removed.  There is \(c=c(M,B_1,B_2)>0\) such that
+\begin{equation}\label{eq:activity-viscous-price}
+ \oscsp(V;B_1\times I)\ge\eta
+ \quad\Longrightarrow\quad
+ \int_I\int_{B_2}|\nabla V|^2\,dy\,d\tau\ge c\eta.
+\end{equation}
+Consequently every retained non-affine moving cell pays a positive
+scale-invariant viscous price depending only on the fixed activity threshold
+and normalized Type~I bound.
+\end{lemma}
+
+\begin{proof}
+For almost every \(\tau\), take \(c(\tau)=(V)_{B_1}(\tau)\).  Then
+\(|c(\tau)|\le M\), hence \(|V-c(\tau)|\le2M\).  Poincar\'e's inequality and
+enlargement from \(B_1\) to \(B_2\) give
+\[
+ \int_{B_1}|V-c(\tau)|^3
+ \le2M\int_{B_1}|V-c(\tau)|^2
+ \le C M\int_{B_2}|\nabla V|^2.
+\]
+Integrate in time and take the infimum over time-dependent homogeneous gauges.
+This proves \eqref{eq:activity-viscous-price}.  When \(\oscsp=0\), any
+remaining constant-in-time activity is carried by a time-dependent spatially
+homogeneous mode and is assigned to \(\Caff\) by
+\Cref{thm:affine-normalization-dichotomy}.
+\end{proof}
+
+\begin{lemma}[Finite simultaneous realization of selected active events]
+\label{lem:finite-simultaneous-active-realization}
+Let \(U_0\mathcal R_\eta U_1\mathcal R_\eta\cdots\) be a realized retained
+chain, and select finitely many events together with finitely many compact
+normalized cylinders on which their activity is measured.  There is one member
+of the original terminal extraction and one compatible family of composed
+observer maps such that all selected recentered fields approximate their
+corresponding events on the prescribed cylinders, with one common accuracy
+and compatible pressure gauges.  The same conclusion holds for any finite
+antichain selected from one finite realization of the chain.
+\end{lemma}
+
+\begin{proof}
+For one event this is the definition of a realized descendant.  Suppose the
+claim has been arranged for the first \(q\) selected events.  Realize the next
+descendant from its parent on its prescribed compact cylinder, and compose
+that observer with the parent's observer by
+\Cref{lem:semidirect-covariance}.  Only finitely many compact observer images
+have been prescribed.  Local convergence in each preceding descendant limit
+therefore permits one common terminal index large enough that all \(q+1\)
+approximations hold simultaneously.  The pressure gauges are normalized on
+the overlaps and extended to their finite union by
+\Cref{lem:gauge-compatibility}.  Induction proves the assertion.  A finite
+antichain in a finite realization is a finite selection of these composed
+observers, so the same argument applies.
+\end{proof}
+
+\begin{theorem}[Transverse antichains reduce to geometric escape or a coalescent conveyor]
+\label{thm:transverse-antichain-closure}
+Let \(\mathcal A_N\) be simultaneously realized transverse active antichains,
+with \(|\mathcal A_N|\to\infty\), obtained from the first \(m_N\) events of
+one retained descendant chain.  After passage to a subsequence, exactly one of
+the following ordered outputs occurs:
+\begin{enumerate}[label=\textup{(T\arabic*)}]
+ \item normalized centers escape every fixed parent window, producing an
+ exterior, diffuse, pressure/noncompact, or retained separated recentering;
+ \item logarithmic scales escape every bounded interval, producing a realized
+ critical-tail datum;
+ \item for every \(\delta>0\), all but a uniformly bounded number of the
+ events lie in \(\delta\)-clusters in center--scale space.  Each cluster has
+ one non-separated local profile class, and the empirical marked cluster laws
+ form a compact coalescent moving cascade.
+\end{enumerate}
+In particular, the bounded-depth transverse alternative introduces no
+terminal branch: \textup{(T1)}--\textup{(T2)} enter previously defined routes,
+while \textup{(T3)} enters the current-saturated moving-cascade alternative
+after \Cref{prop:longitudinal-current-to-saturation}.
+\end{theorem}
+
+\begin{proof}
+Every \(\mathcal A_N\) is selected inside one finite realization.  Apply
+\Cref{lem:finite-simultaneous-active-realization} to its members and their
+activity cylinders.  They therefore coexist in one normalized representative.
+This is the simultaneous-realization point needed for additive local-energy
+accounting.
+
+If the normalized center parameters are not tight, the first escaping center
+and its retained activity are routed by
+\Cref{lem:retained-recentering-alternatives,lem:escaping-retained-recentering-routing},
+giving \textup{(T1)}.  Under center tightness, failure of logarithmic-scale
+tightness gives \textup{(T2)} by
+\Cref{thm:critical-tail-compactification-compactness,thm:critical-tail-compactification-extraction}.
+It remains to treat a fixed compact center--scale window.  Thus, after one
+normalization, all cylinders under consideration lie in a fixed parent
+cylinder, and their radii lie in \([\lambda,1]\) for some \(\lambda>0\).
+
+Fix \(\delta>0\).  Select a maximal subfamily whose core cylinders are
+pairwise separated by at least \(\delta\) in the normalized parabolic metric.
+Because their radii lie in \([\lambda,1]\), this family has overlap bounded by
+a constant depending only on \(\delta\) and \(\lambda\).  After extraction,
+either the spatial activity has a common positive floor or it tends to zero.
+In the latter case local compactness produces a spatially homogeneous limit,
+which is routed to \(\Caff\) by the affine normalization dichotomy.  In the
+former case every selected member carries the spatial activity floor.  By
+\Cref{lem:critical-activity-viscous-price}, each selected core therefore costs
+at least \(c(M,\lambda,\delta)\eta\) in normalized dissipation.  Since the
+cores coexist with bounded overlap, their costs add up to the overlap
+constant, while the local Type~I energy estimate
+\Cref{thm:local-typeI-terminal-energy-estimates} bounds their sum by the
+dissipation on one fixed enlargement of the parent cylinder.  Consequently
+the cardinality of the separated subfamily is bounded by
+\[
+ N_{\delta}
+ \le
+ \frac{E(M,\lambda,\delta)}{c(M,\lambda,\delta)\eta},
+\]
+independently of \(N\).
+
+Maximality places every remaining event in a \(\delta\)-cluster around one of
+these finitely many representatives.  Let \(\delta_k\downarrow0\) and
+diagonalize.  Local state-space compactness and gauge compatibility show that
+each nested sequence of occupied clusters converges to one non-separated local
+profile class; two inequivalent limits would remain separated at some fixed
+\(\delta_k\) and would have been counted as distinct representatives.  The
+canonical bounded-variation observer interpolation of
+\Cref{lem:moving-mark-defect-routing} makes the associated marked cluster
+paths compact.  Their empirical shift-orbit laws therefore give the
+coalescent moving cascade in \textup{(T3)}.
+
+Apply \Cref{prop:longitudinal-current-to-saturation} to each occupied cluster
+class.  Sublinear signed supply routes to the affine/parasitic or retained
+recentering alternatives; noncompact modulation gives \textup{(T1)} or
+\textup{(T2)} by \Cref{lem:moving-mark-defect-routing}; the remaining output
+is a current-saturated marked law.  Hence no independent transverse branch
+remains.
+\end{proof}
+
+\begin{definition}[Critical interscale-flux branch]
+\label{def:critical-interscale-flux-branch}
+The class \(\Cisf\) consists of the candidates in \(\Csparse\) for which,
+after the previously classified affine/parasitic, pressure/noncompact,
+diffuse, critical-tail, and positive-density alternatives have been removed,
+arbitrarily long concatenated moving-cell realizations exist and every
+ surviving subsequence has persistent signed supply
+ \eqref{eq:persistent-moving-cell-supply}.  Whenever the marked records are
+ precompact, their shift-orbit laws converge to a current-saturated law in the
+ sense of \Cref{def:scale-saturation-law}.  Denote this last subclass by
+ \(\Csat\).  Thus \(\Cisf=\Csat\): the transverse antichain alternative has
+been reduced to this class or to earlier terminal data by
+\Cref{thm:transverse-antichain-closure}.
+The pressure in every supply mark is the actual pressure modulo functions of
+time.  No affine spatial pressure is subtracted inside the local energy
+identity.  By \Cref{lem:moving-roots-remain-typeI}, this class is not a
+concealed Type~II output; an actual loss of
+the Type~I envelope belongs to the entry alternative rather than to
+\(\Cisf\).
+\end{definition}
+
+\begin{corollary}[Current-saturated coherent cascades are excluded]
+\label{cor:current-saturated-cascade-exclusion}
+Every candidate in \(\Csat\) whose logarithmic current has a nonzero component
+after positive-threshold active observers are removed is excluded by the
+complete realized critical-tail closure.
+\end{corollary}
+
+\begin{proof}
+Let a candidate satisfy the hypothesis.  Its affine/parasitic and
+compactness-loss outputs have already been routed.  If the spatial quotient
+activity had no fixed positive floor along a subsequence, local compactness
+would give a spatially homogeneous limit, already assigned to \(\Caff\).
+Thus the retained non-affine branch has a fixed floor after extraction and
+\Cref{lem:critical-activity-viscous-price} supplies
+\eqref{eq:uniform-cell-price}.  Alternative \textup{(ii)} of
+\Cref{thm:coherent-current-to-critical-tail} gives a nonzero realized
+critical-tail state, contradicting
+\Cref{cor:critical-tail-exclusion-complete}.
+\end{proof}
+
+\begin{definition}[Regenerated-current cascade]
+\label{def:regenerated-current-cascade}
+The class \(\Cregen\subset\Csat\) consists of current-saturated coherent
+cascades for which, on every sequence of consecutive blocks with lengths
+tending to infinity, removal of positive-threshold active observers captures
+all limiting positive logarithmic shell-current mass.  Equivalently, every
+nonzero support profile produced by
+\Cref{lem:positive-price-nonzero-log-current} regenerates a retained active
+center before it enters the concentration-free critical-tail
+compactification.  The centers remain separated by
+\(r_{j+1}\le r_j/4\), and the complete oriented current, rather than pressure
+alone, is attached to each parent--child logarithmic interval.
+\end{definition}
+
+\begin{lemma}[Physical weight of normalized regeneration expense]
+\label{lem:physical-weight-regeneration-expense}
+For a normalized moving cell \(C_j\) based at physical radius \(r_j\),
+\begin{equation}\label{eq:physical-weight-regeneration-expense}
+ D_{C_j}^{\rm phys}=r_jD_{C_j},
+ \qquad M_{C_j}^{\rm phys}=r_jM_{C_j}.
+\end{equation}
+Consequently the fixed normalized price
+\(D_{C_j}+M_{C_j}\ge d_*\) gives only
+\begin{equation}\label{eq:geometric-physical-price}
+ D_{C_j}^{\rm phys}+M_{C_j}^{\rm phys}\ge r_jd_*.
+\end{equation}
+If \(r_{j+1}\le r_j/4\), then
+\begin{equation}\label{eq:summable-physical-regeneration-price}
+ \sum_{j=0}^{\infty}r_jd_*
+ \le \frac43r_0d_*<\infty.
+\end{equation}
+Thus finite physical energy does not by itself contradict infinitely many
+geometrically contracting events with fixed normalized expense.
+\end{lemma}
+
+\begin{proof}
+Under
+\[
+ y=\frac{x-x_j}{r_j},\qquad
+ \tau=\frac{t-t_j}{r_j^2},\qquad
+ V_j(y,\tau)=r_ju(x,t),
+\]
+one has \(\nabla_yV_j=r_j^2\nabla_xu\) and
+\(dx\,dt=r_j^5dy\,d\tau\).  Therefore
+\[
+ \iint_{C_j^{\rm phys}}|\nabla_xu|^2\psi_j\,dx\,dt
+ =r_j\iint_{C_j}|\nabla_yV_j|^2\phi_j\,dy\,d\tau
+ =r_jD_{C_j}.
+\]
+The suitable-energy defect has the same homogeneity, since it is the
+nonnegative remainder in an identity all of whose terms scale like length.
+This proves \eqref{eq:physical-weight-regeneration-expense}.  The price bound
+gives \eqref{eq:geometric-physical-price}; \(r_j\le4^{-j}r_0\) and the
+geometric series give \eqref{eq:summable-physical-regeneration-price}.
+\end{proof}
+
+\begin{proposition}[Exact parent--child ledger reduction]
+\label{prop:regenerated-current-ledger-reduction}
+For a candidate in \(\Cregen\), summing the physical local-energy identities
+between consecutive stopping surfaces cancels every common parent--child
+carrier once.  It leaves only the endpoint carriers, the nonnegative expenses
+\(r_j(D_{C_j}+M_{C_j})\), and complete oriented current escaping the selected
+regenerated-center family.  Persistent escaping current is routed to the
+exterior, diffuse, pressure/noncompact, or critical-tail alternatives.  If no
+such current remains, the branch reduces to a geometrically contracting
+active-center chain whose normalized expense stays bounded below but whose
+physical price has the summable weights \(r_j\).  The ledger contains no
+additional nonnegative term controlling the change of normalized profile.
+\end{proposition}
+
+\begin{proof}
+Apply \Cref{lem:exact-localized-energy-balance} to the physical regions between
+successive stopping surfaces, with opposite orientations on shared
+interfaces.  Linearity cancels each shared carrier exactly once.  The resulting
+finite-block identity is the physical version of
+\eqref{eq:signed-moving-cell-gluing}, with the weights from
+\eqref{eq:physical-weight-regeneration-expense}.  Any uncancelled boundary
+current has sequence-realized support by
+\Cref{lem:finite-simultaneous-active-realization}; the existing center--scale
+and critical-tail support alternatives give the stated routing.
+
+In the complementary case only endpoint carriers and nonnegative weighted
+expenses remain.  Their scale lower bounds are summable by
+\eqref{eq:summable-physical-regeneration-price}.  By
+\Cref{lem:no-modulation-coercivity-from-energy}, the identity has no
+nonnegative modulation remainder.  In particular,
+\(r_j(D_{C_j}+M_{C_j})\to0\) cannot be divided by \(r_j\to0\) to infer
+vanishing normalized expense.  This proves the reduction.
+\end{proof}
+
+\begin{theorem}[Critical-currency computation on a regenerated cascade]
+\label{thm:critical-currency-regenerated-cascade}
+Let \(C_0,C_1,\ldots\) be a coherent regenerated-current cascade, and write
+\[
+ w_j=r_j^{-1},\qquad
+ J_j=\mathscr J_u[\psi_j],\qquad
+ P_j=w_j\mathscr P_u[\psi_j-\psi_{j+1}].
+\]
+Then \(P_j\ge0\) is invariant under Navier--Stokes scaling and, for every
+\(N\),
+\begin{equation}\label{eq:regenerated-critical-currency-ledger}
+ \sum_{j=0}^{N-1}P_j
+ =w_0J_0-w_{N-1}J_N
+  +\sum_{j=1}^{N-1}(w_j-w_{j-1})J_j.
+\end{equation}
+After passage to the retained non-affine subchain, either:
+\begin{enumerate}[label=\textup{(\roman*)}]
+ \item the mean critical price tends to zero, and a normalized zero-cost shell
+ is spatially homogeneous on its open shell;
+ \item the mean critical price has a positive lower bound, in which case the
+ nonexact scale current on the right of
+ \eqref{eq:regenerated-critical-currency-ledger} has the same positive linear
+ growth;
+ \item compactness, pressure, realization, or support transfer fails and the
+ corresponding previously defined branch is produced.
+\end{enumerate}
+Thus the scale-invariant price is the correct event currency.  On
+\(\Cregen\), however, its accumulated value is financed exactly by the
+nonexact scale current; the identity does not bound that current by physical
+energy.
+\end{theorem}
+
+\begin{proof}
+Nonnegativity and scale invariance of \(P_j\), as well as
+\eqref{eq:regenerated-critical-currency-ledger}, are precisely the local
+energy equality and discrete summation by parts in
+\Cref{lem:weighted-critical-shell-identity}.  If
+\(N^{-1}\sum_{j<N}P_j\to0\) along a subsequence, choose a term no larger than
+the mean and apply
+\Cref{lem:vanishing-mean-production-shell,lem:critical-shell-zero-cost-limit};
+this gives alternative \textup{(i)}, unless one of their compactness or
+pressure interfaces fails, which is alternative \textup{(iii)}.
+
+If the mean does not tend to zero, pass to a subsequence on which it is bounded
+below by a positive constant.  Equation
+\eqref{eq:regenerated-critical-currency-ledger} then gives identical linear
+growth of its right-hand side.  Sublinear scale current is already impossible
+by \Cref{cor:no-positive-production-sublinear-current}.  In the present
+class, every nonzero support window of the remaining current regenerates the
+next center by \Cref{def:regenerated-current-cascade}; otherwise the support
+protocol yields alternative \textup{(iii)}.  This is alternative
+\textup{(ii)} and proves the exhaustive statement.
+\end{proof}
+
+\begin{lemma}[Compact closed marked regeneration paths]
+\label{lem:compact-closed-marked-regeneration-paths}
+After alternatives \textup{(G1)}--\textup{(G2)} of
+\Cref{lem:moving-mark-defect-routing} have been removed, a regenerated-current
+cascade has a compact marked path space whose \(j\)-th coordinate records
+\[
+ (U_j,\Pi_j,C_j,\lambda_j,\xi_j,\theta_j,\mathfrak s_j),
+ \qquad 0<\lambda_*\le\lambda_j\le\frac14.
+\]
+Here \(\lambda_j=r_{j+1}/r_j\), \(\xi_j\) and \(\theta_j\) are the normalized
+spatial and temporal increments, and \(\mathfrak s_j\) is the
+sequence-realization support datum.  The concatenated regenerated paths form
+a closed shift-invariant subset.  Every shift-invariant limit law furnished by
+\Cref{prop:longitudinal-current-to-saturation} is supported there and retains
+the fixed non-affine activity floor in its zeroth marginal.
+\end{lemma}
+
+\begin{proof}
+Local state-space compactness gives compactness of the velocity, pressure
+atlas, suitable-defect, carrier, and countable cutoff coordinates.
+Alternative \textup{(G1)} removes unbounded normalized center increments, and
+alternative \textup{(G2)} removes logarithmic increments escaping every
+bounded interval.  Hence \(|\xi_j|+|\theta_j|\le B\) and
+\(-\log\lambda_j\) lies in a compact subset of
+\([\log4,\infty)\), which gives the displayed lower bound.  The support
+coordinate lies in the closed sequence-realized support class.
+
+Concatenation is equality of the outgoing and incoming carrier, observer, and
+pressure-gauge overlap coordinates.  Regeneration is the closed
+positive-threshold activity condition on the child.  Thus both are closed in
+the marked product topology.  Retaining the witnesses is essential here: no
+witness can escape while the profile coordinates converge.  Compactness of
+the countable marked product gives the path space.  The shift preserves its
+local defining conditions, and closedness of the activity set preserves the
+activity floor under the empirical-law limit.
+\end{proof}
+
+\begin{theorem}[Marked recurrence produces a realized critical tail]
+\label{thm:marked-regeneration-to-critical-tail}
+Every candidate in \(\Cregen\) produces a nonzero sequence-realized profile in
+\(\Tcrit\).  The profile is log-diffuse, Young/defect, or coherent, and hence
+belongs to one of the realized critical-tail alternatives already classified
+by \Cref{thm:realized-critical-tail-rigidity}.
+\end{theorem}
+
+\begin{proof}
+Let \(X_{\rm mark}\) be the compact closed path space of
+\Cref{lem:compact-closed-marked-regeneration-paths}, let \(S\) be its left
+shift, and let \(\varpi\) be a shift-invariant marked limit law.  Poincar\'e
+recurrence gives a recurrent path \(p\in X_{\rm mark}\), retaining the
+activity floor, and integers \(n_k\to\infty\) such that
+\begin{equation}\label{eq:marked-path-return}
+ S^{n_k}p\longrightarrow p
+ \qquad\hbox{in }X_{\rm mark}.
+\end{equation}
+This returns every fixed finite block of velocities, pressure gauges, defects,
+observer increments, and realization data, not merely the zeroth profile.
+
+Compose the first \(n\) observer maps.  In physical parent coordinates their
+scale, center, and time parameters are
+\begin{align}
+ \Lambda_n&=\prod_{j=0}^{n-1}\lambda_j,
+ \label{eq:marked-return-total-scale}\\
+ X_n-X_0&=r_0\sum_{j=0}^{n-1}
+   \Bigl(\prod_{i=0}^{j-1}\lambda_i\Bigr)\xi_j,
+ \label{eq:marked-return-total-center}\\
+ T_n-T_0&=r_0^2\sum_{j=0}^{n-1}
+   \Bigl(\prod_{i=0}^{j-1}\lambda_i^2\Bigr)\theta_j.
+ \label{eq:marked-return-total-time}
+\end{align}
+These are the physical-coordinate form of
+\eqref{eq:semidirect-group-law}.  Since \(\lambda_j\le1/4\) and the increments
+are bounded, the last two series converge, whereas
+\begin{equation}\label{eq:marked-return-scale-collapse}
+ 0<\Lambda_{n_k}\le4^{-n_k}\longrightarrow0.
+\end{equation}
+After one limiting spacetime recentering,
+\eqref{eq:marked-path-return} is therefore a sequence-realized return of the
+same non-affine marked profile through observers with logarithmic displacement
+tending to \(+\infty\).
+
+Retain the complete marked blocks between scales \(1\) and
+\(\Lambda_{n_k}\), viewed from their deepest children.  Their component shells
+have disjoint logarithmic interiors.  By
+\Cref{lem:finite-simultaneous-active-realization}, compatible pressure gauges,
+and the support coordinates of \(X_{\rm mark}\), every finite family of
+annular tests is realized in one member of the original terminal extraction.
+A diagonal extraction produces a sequence-realized logarithmic annular state.
+It is nonzero because the recurrent cross-section retains the fixed spatial
+quotient activity floor and returns at arbitrarily large logarithmic
+displacements.
+
+Apply the existing critical-tail compactification alternatives.  Failure of
+logarithmic tightness gives \(\Lambda\ne0\), hence a log-diffuse state.
+Under logarithmic tightness, failure of strong annular compactness or survival
+of a pressure or viscous coordinate gives a Young/defect state.  In the
+remaining case the block convergence is strong on compact annuli, the Young
+measure is Dirac, and the pressure and viscous defect coordinates vanish;
+\Cref{cor:coherent-critical-tail-extraction} then gives a nonzero realized
+coherent critical tail.  Affine, pressure/noncompact, and realization failures
+are already classified outputs, having been removed before entry into
+\(\Cregen\).  Thus every retained output is a nonzero realized element of
+\(\Tcrit\), as claimed.
+\end{proof}
+
+\begin{corollary}[Regenerated-current cascade exclusion]
+\label{cor:regenerated-current-cascade-exclusion}
+\[
+ \Cregen=\varnothing.
+\]
+\end{corollary}
+
+\begin{proof}
+A candidate in \(\Cregen\) would produce, by
+\Cref{thm:marked-regeneration-to-critical-tail}, a nonzero sequence-realized
+critical-tail profile.  This contradicts
+\Cref{cor:critical-tail-exclusion-complete}.
+\end{proof}
+
+\begin{remark}[Critical scale current and recurrence closure]
+\label{rem:exact-missing-critical-regeneration-charge}
+The critical ledger identifies the scale current financing regeneration, but
+no independent global bound for that current is needed.  Compactness of the
+marked witnesses and recurrence of their actual successor cocycle convert
+persistent financing into the realized critical tail of
+\Cref{thm:marked-regeneration-to-critical-tail}.  The rooted/full-hull problem
+does not recur: the proof never enlarges the path to all covariant
+translations.  It uses only returns of the closed marked successor shift and
+then the established logarithmic critical-tail compactification.
+\end{remark}
+
+\begin{lemma}[Center--scale alternative for a realized active chain]
+\label{lem:active-chain-center-scale-alternative}
+Let \eqref{eq:realized-active-chain} be a realized active chain.  After a
+diagonal extraction, one of the following occurs:
+\begin{enumerate}[label=\textup{(\roman*)}]
+ \item a previously classified pressure/noncompact, diffuse, affine/parasitic,
+ or critical-tail output occurs;
+ \item coherent nesting has uniformly bounded depth: the \(\prec\)-chain
+ length of every finite realization is bounded by one common integer;
+ \item for every \(N\), it contains a coherent nested family of \(N\)
+ critical active shells.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Use \Cref{lem:active-descendant-concatenation} to realize every finite initial
+segment of the chain from one member of the original terminal sequence and
+attach to each realized event a cylinder on which the fixed activity floor is
+attained.  If local compactness, pressure-gauge compatibility, or the
+expanding-region condition fails in this construction, then
+\Cref{lem:retained-recentering-alternatives,lem:compact-window-expanding-region-protocol}
+gives item \textup{(i)}.
+
+In the remaining case, let \(L_m\) be the maximum cardinality of a
+\(\prec\)-chain among the active cylinders in a realization of the first
+\(m\) events.  If \(\sup_mL_m<\infty\), item \textup{(ii)} holds.  If
+\(\sup_mL_m=\infty\), then for every \(N\) a finite realization contains a
+\(\prec\)-chain of length \(N\), giving item \textup{(iii)}.  The definition
+of \(\prec\) supplies both the scale separation and the nested cutoffs in
+\eqref{eq:coherent-critical-shell-family}.  This alternative is exhaustive
+and does not identify transverse cylinders with one coherent nested family.
+\end{proof}
+
+\begin{theorem}[Critical-shell reduction of the sparse moving-root branch]
+\label{thm:sparse-moving-root-current-exclusion}
+One has
+\begin{equation}\label{eq:sparse-to-interscale-flux}
+ \Csparse\subset\Cisf .
+\end{equation}
+More precisely, every sparse active chain either reaches an already classified
+terminal alternative or belongs to the current-saturated class of
+\Cref{def:critical-interscale-flux-branch}.
+\end{theorem}
+
+\begin{proof}
+Apply \Cref{lem:active-chain-center-scale-alternative}.  Its first alternative
+is handled by the corresponding terminal argument.  In its second alternative,
+\Cref{lem:bounded-nesting-active-antichains,thm:transverse-antichain-closure}
+route the transverse antichains to prior terminal data or to a coalescent
+moving cascade.  Apply \Cref{prop:longitudinal-current-to-saturation} to the
+latter.  In the third alternative first apply
+\Cref{lem:weighted-critical-shell-identity}.  Positive mean shell production
+with sublinear weighted current is excluded by
+\Cref{cor:no-positive-production-sublinear-current}; vanishing mean production
+selects a homogeneous shell or a previously routed compactness/pressure datum
+by \Cref{lem:vanishing-mean-production-shell}.
+
+Apply \Cref{prop:longitudinal-current-to-saturation} to the remaining coherent
+families.  By \Cref{lem:moving-mark-defect-routing}, failure of compact moving
+marks routes to an exterior/diffuse, pressure/noncompact, separated-profile,
+or critical-tail datum and is not a terminal subcase.  Sublinear signed supply
+is alternative \textup{(L2)} and is
+closed in that proposition by zero mean dissipation, unless activity exits the
+cutoff core, in which case
+\Cref{lem:retained-recentering-alternatives} supplies the next previously
+classified datum.  The only longitudinal output left is persistent signed
+supply; compact marked limits lie in \(\Csat\).  This
+proves \eqref{eq:sparse-to-interscale-flux}.
+\end{proof}
+
+\begin{theorem}[Exact reduction of the critical interscale-flux branch]
+\label{thm:critical-interscale-flux-exclusion}
+After all previously classified alternatives and the realized critical-tail
+output have been removed,
+\begin{equation}\label{eq:critical-interscale-flux-closure-target}
+ \Cisf=\Csat=\Cregen=\varnothing .
+\end{equation}
+Thus the sparse moving-root configuration is excluded.
+\end{theorem}
+
+\begin{proof}
+By \Cref{def:critical-interscale-flux-branch}, \(\Cisf=\Csat\).  Apply
+\Cref{thm:coherent-current-to-critical-tail}.  Its critical-tail alternative
+is excluded by \Cref{cor:current-saturated-cascade-exclusion}.  Its other
+alternative says precisely that all surviving positive current is supported
+on regenerated active centers on every long consecutive block, which is the
+definition of \(\Cregen\).  The reverse inclusion is immediate from that
+definition.  Finally \(\Cregen=\varnothing\) by
+\Cref{cor:regenerated-current-cascade-exclusion}.  This proves
+\eqref{eq:critical-interscale-flux-closure-target}.
+\end{proof}
+
+\begin{theorem}[No infinite retained velocity concentration chain]
+\label{thm:compact-active-descendant}
+No infinite chain of retained concentrating descendants can occur in the
+refined residual class.
+\end{theorem}
+
+\begin{proof}
+By \Cref{thm:infinite-chain-sparse-reduction}, every such chain is either
+excluded by the positive-density or covariantly balanced alternatives or
+places the original residual candidate in \(\Csparse\).  The latter
+alternative is reduced by
+\Cref{thm:sparse-moving-root-current-exclusion} to \(\Cisf\).  By
+\Cref{thm:critical-interscale-flux-exclusion}, this class is empty.
 \end{proof}
 
 \begin{lemma}[Finite separated families produce indecomposable profiles or concentration chains]
@@ -14365,8 +15785,8 @@ does not use a global counting or mass budget.
 
 \begin{lemma}[Finite recurrent loops of retained tail limits are impossible]
 \label{lem:no-finite-recurrent-cycle}
-No refined residual terminal extraction contains a finite recurrent loop of retained
-concentrating tail limits.
+No refined residual terminal extraction contains a finite recurrent loop of
+retained concentrating tail limits.
 \end{lemma}
 
 \begin{proof}
@@ -14379,19 +15799,6 @@ be such a loop, and write \((U_\ell,\Pi_\ell)\) for the corresponding retained
 concentration terminal profiles.  Each arrow means that \(U_{\ell+1}\) is a
 retained concentrating tail limit of \(U_\ell\).  Thus, for each \(\ell\), there are escaping
 tail recentering sequences whose recentered fields converge locally to \(U_{\ell+1}\).
-
-Let \(\calK\) be the closure, in the local smooth velocity topology and local
-\(L^{3/2}\) pressure topology modulo gauges, of all profiles obtained from the
-finite set \(\{U_0,\dots,U_{q-1}\}\) by time translations and covariant
-terminal translations.  The boundedness inherited from the Type I Seregin
-extraction theorem and the local pressure compactness from
-the imported setup results give compactness of \(\calK\) on every fixed terminal
-cylinder; a diagonal argument gives compactness of \(\calK\).  The set is
-invariant under the same time and covariant translations by construction.  The
-recurrent-loop relations imply that each \(U_\ell\)
-returns to \(\calK\) through tail limits, so the closed invariant subset of
-\(\calK\) generated by the loop is nonempty, compact, invariant, and contains
-the retained velocity concentration profiles.
 
 Repeating the loop periodically gives an infinite chain of retained concentrating descendants.
 This contradicts \Cref{thm:compact-active-descendant}.  Therefore no finite
@@ -14411,8 +15818,8 @@ retained velocity concentration separated family \(A=\{\mathfrak s_1,\dots,\math
 family is terminally indecomposable or the family generates an infinite chain of
 retained concentrating descendants.  The first alternative contradicts
 \Cref{lem:no-atomic-active}.  The second contradicts
-\Cref{thm:compact-active-descendant}.  Hence the finite retained velocity concentration
-separated family cannot exist.
+\Cref{thm:compact-active-descendant}.  Hence the finite retained velocity
+concentration separated family cannot exist.
 \end{proof}
 
 \begin{proof}[Proof of \Cref{prop:no-multi-implies-atomic}]
@@ -14711,13 +16118,14 @@ with a diffuse tail remainder is ruled out by
 routed by \Cref{lem:escaping-retained-recentering-routing}.  Pressure-only or
 pressure/noncompact defects are assigned by
 \Cref{lem:no-pressure-only-retained-profile}.  Critical tails are closed by
-\Cref{thm:realized-critical-tail-rigidity,cor:critical-tail-exclusion-complete}.  Infinite concentration chains and finite
-recurrent loops are ruled out by the retained-chain recurrence theorem
-\Cref{thm:compact-active-descendant}, while finite separated concentration families are ruled out by
+\Cref{thm:realized-critical-tail-rigidity,cor:critical-tail-exclusion-complete}.
+Infinite concentration chains and finite recurrent loops are ruled out by
+\Cref{thm:compact-active-descendant}, while finite separated concentration
+families are ruled out by
 \Cref{thm:no-finite-separated-profile-family}.  Therefore any retained
-concentration terminal profile that survives the ordered lower-class removals is
-single and has no retained concentrating descendant or diffuse/noncompact tail
-remainder.  By \Cref{prop:no-multi-implies-atomic} it is terminally
+concentration terminal profile that survives the ordered lower-class removals
+is single and has no retained concentrating descendant or diffuse/noncompact
+tail remainder.  By \Cref{prop:no-multi-implies-atomic} it is terminally
 indecomposable, and then
 \Cref{lem:atomic-sequence-L3,thm:mildness-inheritance-main,lem:no-atomic-active}
 give the sequence-\(L^3\), parasitic-free finite-shift mildness, and endpoint
@@ -14772,9 +16180,9 @@ only after all separated, diffuse, noncompact, critical-tail, and affine
 alternatives have been removed.  In that atomic case
 \Cref{lem:atomic-sequence-L3,thm:mildness-inheritance-main,lem:no-atomic-active}
 give the sequence-\(L^3\) bound, finite-shift bounded mildness, and the endpoint
-Albritton--Barker contradiction.  Hence no stationary terminal concentration profile remains.
-This proves the deferred stationary concentration and degenerate stationary-family
-occurrence statements
+Albritton--Barker contradiction.  Hence no stationary terminal concentration
+profile remains.  This proves the deferred stationary concentration and
+degenerate stationary-family occurrence statements
 \Cref{thm:R3S-no-active-stationary-carrier,cor:R3S-no-active-degenerate-family,thm:R3-no-attainable-degenerate-family},
 and therefore the R3 class is empty.
 \end{proof}
@@ -14868,8 +16276,8 @@ The pressure-only case is assigned by
 affine/parasitic lower stratum, both already removed.  In the remaining
 single-profile case, \Cref{prop:no-multi-implies-atomic} gives terminal
 indecomposability and \Cref{lem:no-atomic-active} gives the endpoint
-contradiction.  Every selected alternative in the generic terminal exhaustion is
-impossible, so \(\Cgen=\varnothing\).
+contradiction.  Every selected alternative in the generic terminal exhaustion
+is impossible, so \(\Cgen=\varnothing\).
 \end{proof}
 
 \section{Final assembly}
@@ -15169,8 +16577,7 @@ and the single setup ancestry ledger determining the hull
 Then the residual set for this fixed local ledger satisfies
 \[
    \calR_{\rm setup}(\calS)
-   =
-   \calR\bigl(
+   =\calR\bigl(
       \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
    \bigr)
    =\varnothing .
