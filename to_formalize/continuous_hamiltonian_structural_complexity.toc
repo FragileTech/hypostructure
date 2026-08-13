@@ -1,31 +1,32 @@
 \contentsline {section}{Introduction}{3}{section*.1}%
 \contentsline {section}{Visual architecture and proof-flow guide}{4}{section*.2}%
-\contentsline {subsection}{Diagram map}{4}{section*.3}%
-\contentsline {subsection}{Proof-dependency diagram}{5}{section*.4}%
-\contentsline {subsection}{Node-by-node source audit}{5}{section*.5}%
+\contentsline {subsection}{Diagram map}{5}{section*.3}%
+\contentsline {subsection}{Proof-dependency diagram}{6}{section*.4}%
+\contentsline {subsection}{Node-by-node source audit}{6}{section*.5}%
 \contentsline {subsection}{Monotone retained-fact table}{7}{section*.6}%
 \contentsline {subsection}{Branch-closure audit}{8}{section*.7}%
-\contentsline {part}{I\hspace {1em}Closed Continuum Structural Algebra}{8}{part.1}%
-\contentsline {section}{\numberline {I.1}Physical continuum presentations}{8}{section.1.1}%
-\contentsline {section}{\numberline {I.2}The five-source orbit algebra}{11}{section.1.2}%
-\contentsline {section}{\numberline {I.3}Physical-budget-saturated sourcewise completion}{13}{section.1.3}%
-\contentsline {section}{\numberline {I.4}Target quotient and the null residual}{15}{section.1.4}%
-\contentsline {section}{\numberline {I.5}Prospective contact accountability}{17}{section.1.5}%
-\contentsline {part}{II\hspace {1em}Physical Certificate Calculus}{23}{part.2}%
-\contentsline {section}{\numberline {II.1}Structural invariant reduction of analytic certificates}{23}{section.2.1}%
-\contentsline {section}{\numberline {II.2}Covariant action and the physical budget}{25}{section.2.2}%
-\contentsline {section}{\numberline {II.3}Hamiltonian meanings and chart covariance}{28}{section.2.3}%
-\contentsline {section}{\numberline {II.4}Killed resolvents, resistance, and target realization}{30}{section.2.4}%
-\contentsline {section}{\numberline {II.5}Full-generator response and physical aiming}{33}{section.2.5}%
-\contentsline {section}{\numberline {II.6}Degenerate geometry and commutator-generated carriers}{35}{section.2.6}%
-\contentsline {section}{\numberline {II.7}Compactness and rigidity as a price compiler}{37}{section.2.7}%
-\contentsline {section}{\numberline {II.8}Constraint tails as finite structural obstructions}{39}{section.2.8}%
-\contentsline {section}{\numberline {II.9}Covariant entropy cocycles and physical production}{41}{section.2.9}%
-\contentsline {part}{III\hspace {1em}Structural Reachability and Regularity}{43}{part.3}%
-\contentsline {section}{\numberline {III.1}Singular targets and cascade compilers}{43}{section.3.1}%
-\contentsline {section}{\numberline {III.2}The continuous structural regularity theorem}{48}{section.3.2}%
-\contentsline {section}{\numberline {III.3}Certificate hierarchy and failure semantics}{50}{section.3.3}%
-\contentsline {section}{\numberline {III.4}A reusable PDE instantiation protocol}{52}{section.3.4}%
-\contentsline {section}{\numberline {III.5}Conclusion}{53}{section.3.5}%
-\contentsline {section}{\numberline {A}Dependency table for the main conclusions}{53}{appendix.A}%
-\contentsline {section}{\numberline {B}Notation index}{55}{appendix.B}%
+\contentsline {part}{I\hspace {1em}Closed Continuum Structural Algebra}{9}{part.1}%
+\contentsline {section}{\numberline {I.1}Physical continuum presentations}{9}{section.1.1}%
+\contentsline {section}{\numberline {I.2}The five-source orbit algebra}{13}{section.1.2}%
+\contentsline {section}{\numberline {I.3}Physical-budget-saturated sourcewise completion}{17}{section.1.3}%
+\contentsline {section}{\numberline {I.4}Target quotient and the null residual}{20}{section.1.4}%
+\contentsline {section}{\numberline {I.5}Prospective contact accountability}{23}{section.1.5}%
+\contentsline {part}{II\hspace {1em}Physical Structural-Invariant Calculus}{29}{part.2}%
+\contentsline {section}{\numberline {II.1}Structural invariant reduction of analytic arguments}{29}{section.2.1}%
+\contentsline {section}{\numberline {II.2}Coherent carrier passivity and structural successor closure}{37}{section.2.2}%
+\contentsline {section}{\numberline {II.3}Covariant action and the physical budget}{48}{section.2.3}%
+\contentsline {section}{\numberline {II.4}Hamiltonian meanings and chart covariance}{50}{section.2.4}%
+\contentsline {section}{\numberline {II.5}Killed resolvents, resistance, and target realization}{52}{section.2.5}%
+\contentsline {section}{\numberline {II.6}Full-generator response and physical aiming}{56}{section.2.6}%
+\contentsline {section}{\numberline {II.7}Degenerate geometry and commutator-generated carriers}{58}{section.2.7}%
+\contentsline {section}{\numberline {II.8}Compactness and rigidity as a price compiler}{60}{section.2.8}%
+\contentsline {section}{\numberline {II.9}Constraint tails as finite structural obstructions}{63}{section.2.9}%
+\contentsline {section}{\numberline {II.10}Covariant entropy cocycles and physical production}{64}{section.2.10}%
+\contentsline {part}{III\hspace {1em}Structural Reachability and Regularity}{67}{part.3}%
+\contentsline {section}{\numberline {III.1}Singular targets and cascade compilers}{67}{section.3.1}%
+\contentsline {section}{\numberline {III.2}The continuous structural regularity theorem}{72}{section.3.2}%
+\contentsline {section}{\numberline {III.3}Structural evaluator coverage and failure semantics}{79}{section.3.3}%
+\contentsline {section}{\numberline {III.4}A reusable PDE instantiation protocol}{81}{section.3.4}%
+\contentsline {section}{\numberline {III.5}Conclusion}{82}{section.3.5}%
+\contentsline {section}{\numberline {A}Total branch table for the main conclusions}{83}{appendix.A}%
+\contentsline {section}{\numberline {B}Notation index}{83}{appendix.B}%

@@ -192,7 +192,7 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
         (show Value BranchState Presentation presentation data
             .activeSurplusDemands inputs.current from
           ⟨Graph.surviving_active_family
-            (inputs.get (K .sparseSurplusSurvivor)).down.1
+            (inputs.get (K .sparseSurplusSurvivor)).down
             (inputs.get (K .activeSurplusFamily)).down.1
             (inputs.get (K .sparsePortActivation)).down⟩)
         .nil)
@@ -212,7 +212,8 @@ fact. -/
 @[reducible] noncomputable def baselineSpineDemandRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
-        { Requires := [K .activeSurplusDemands, K .sparseSurplusSurvivor]
+        { Requires := [K .activeSurplusDemands, K .sparseSurplusSurvivor,
+            K .selection]
           Produces := [K .baselineSpineDemand]
           requiresUnique := by simp [K_eq_iff]
           producesUnique := by simp
@@ -254,14 +255,32 @@ fact. -/
                 have familyCard : family.card = bits := by
                   simp [family]
                 let survivor := (inputs.get (K .sparseSurplusSurvivor)).down
+                let selection := (inputs.get (K .selection)).down
                 refine ⟨(inputs.get (K .activeSurplusDemands)).down,
                   Coordinate, family, coordinateSupport, ?_, ?_, ?_⟩
                 · intro declared _functional
                   by_contra reducing
                   rcases declared.localize reducing with replacement |
                     ⟨representative, smaller, baseline, transfer⟩
-                  · exact survivor.2 _ replacement
-                  · exact survivor.1
+                  · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
+                      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+                      (Graph.minimumDegreeAtLeast_isomorphismInvariant
+                        data.threshold)
+                      Presentation presentation
+                      (Core.Target.ofPredicate _
+                        (Graph.HasCycleWithLength data.LengthOK))
+                      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
+                        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+                        Presentation presentation
+                        (Graph.minimumDegreeAtLeast_isomorphismInvariant
+                          data.threshold))
+                      { G := inputs.current.object,
+                        baseline := inputs.current.baseline,
+                        state := inputs.current.branchState,
+                        avoids := selection.1,
+                        minimal := selection.2 }
+                      declared.support replacement
+                  · exact survivor
                       (Graph.SparseSurplusExit.delocalization representative
                         smaller baseline transfer)
                 · rw [familyCard]
@@ -333,7 +352,8 @@ semantic fact. -/
               (inputs.get (K .baselineSpineDemand)).down
             refine ⟨active, Coordinate, family, coordinateSupport, survives,
               demand, deficitBound, ?_⟩
-            intro attempt dependence reducing
+            dsimp only
+            intro notIndependent
             classical
             let object := inputs.current.object
             let activation := Graph.pairResponseActivation active
@@ -346,8 +366,107 @@ semantic fact. -/
               Sum.elim coordinateSupport (by
                 letI := object.vertices.decEq
                 exact Graph.DeclaredSignature.Coordinate.support)
-            obtain ⟨coordinate, coordinateMember, determiners,
-              _determinersSubset, _finite, _proper, _determines⟩ := dependence
+            push Not at notIndependent
+            obtain ⟨attempt, functional, reducing⟩ := notIndependent
+            change ¬ Set.InjOn attempt.label ↑mixedFamily at reducing
+            let quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+                (Sum Coordinate object.PairCoordinate) :=
+              { Label := attempt.Label
+                Value := attempt.Value
+                Realization := Graph.BoundaryPiece
+                  (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
+                    object attempt.support)
+                label := attempt.label
+                value := attempt.value }
+            change quotient.FunctionalOn ↑mixedFamily at functional
+            let candidates :
+                Finset (Finset (Sum Coordinate object.PairCoordinate)) :=
+              mixedFamily.powerset.filter fun independent =>
+                Set.InjOn attempt.label ↑independent
+            have candidatesNonempty : candidates.Nonempty := by
+              refine ⟨∅, ?_⟩
+              simp [candidates]
+            obtain ⟨independent, independentMember, maximum⟩ :=
+              Finset.exists_mem_eq_sup candidates candidatesNonempty Finset.card
+            have independentFacts : independent ⊆ mixedFamily ∧
+                Set.InjOn attempt.label ↑independent := by
+              simpa [candidates] using independentMember
+            obtain ⟨coordinate, coordinateMember, coordinateOutside⟩ :
+                ∃ coordinate ∈ mixedFamily, coordinate ∉ independent := by
+              by_contra absent
+              push Not at absent
+              have equal : independent = mixedFamily :=
+                Finset.Subset.antisymm independentFacts.1 absent
+              apply reducing
+              rw [← equal]
+              exact independentFacts.2
+            let candidate := insert coordinate independent
+            have candidateSubset : candidate ⊆ mixedFamily := by
+              intro member membership
+              simp only [candidate, Finset.mem_insert] at membership
+              rcases membership with rfl | membership
+              · exact coordinateMember
+              · exact independentFacts.1 membership
+            have candidateNotInjective :
+                ¬ Set.InjOn attempt.label ↑candidate := by
+              intro candidateInjective
+              have candidateMember : candidate ∈ candidates := by
+                simp only [candidates, Finset.mem_filter,
+                  Finset.mem_powerset]
+                exact ⟨candidateSubset, candidateInjective⟩
+              have bound := Finset.le_sup (f := Finset.card) candidateMember
+              rw [maximum] at bound
+              have larger : independent.card < candidate.card := by
+                simp [candidate, coordinateOutside]
+              omega
+            have independentInjective :
+                quotient.LabelInjectiveOn ↑independent :=
+              independentFacts.2
+            have candidateReducing :
+                ¬ quotient.LabelInjectiveOn ↑candidate :=
+              candidateNotInjective
+            obtain ⟨determiners, finite, determinersSubset, determines⟩ :=
+              functional independentFacts.1 coordinateMember coordinateOutside
+                independentInjective (by
+                  simpa [candidate] using candidateReducing)
+            let certificates :
+                Finset (Finset (Sum Coordinate object.PairCoordinate)) :=
+              finite.toFinset.powerset.filter fun certificate =>
+                quotient.Determines coordinate ↑certificate
+            have certificatesNonempty : certificates.Nonempty := by
+              refine ⟨finite.toFinset, ?_⟩
+              simp [certificates, determines]
+            obtain ⟨minimalDeterminers, minimal⟩ :=
+              certificates.exists_minimal certificatesNonempty
+            have minimalFacts : minimalDeterminers ⊆ finite.toFinset ∧
+                quotient.Determines coordinate ↑minimalDeterminers := by
+              simpa [certificates] using minimal.1
+            have _inclusionMinimal : ∀ candidate ⊆ minimalDeterminers,
+                quotient.Determines coordinate ↑candidate →
+                  minimalDeterminers ⊆ candidate := by
+              intro candidate candidateSubset candidateDetermines
+              apply minimal.2
+              · simp only [certificates, Finset.mem_filter,
+                  Finset.mem_powerset]
+                exact ⟨candidateSubset.trans minimalFacts.1,
+                  candidateDetermines⟩
+              · exact candidateSubset
+            have _circuit : (↑minimalDeterminers : Set _) ⊆
+                (↑mixedFamily : Set
+                  (Sum Coordinate object.PairCoordinate)) ∧
+                Set.Finite (↑minimalDeterminers : Set
+                  (Sum Coordinate object.PairCoordinate)) ∧
+                  coordinate ∉ minimalDeterminers ∧
+                    quotient.Determines coordinate ↑minimalDeterminers := by
+              refine ⟨?_, minimalDeterminers.finite_toSet, ?_, minimalFacts.2⟩
+              · intro member membership
+                exact independentFacts.1
+                  (determinersSubset (by simpa using minimalFacts.1 membership))
+              · intro coordinateInDeterminers
+                exact coordinateOutside
+                  (determinersSubset (by
+                    apply minimalFacts.1 at coordinateInDeterminers
+                    simpa using coordinateInDeterminers))
             have pair_of_mem (pairCoordinate : object.PairCoordinate)
                 (membership : Sum.inr pairCoordinate ∈ mixedFamily) :
                 ∃ pair ∈ pairs,
@@ -376,7 +495,7 @@ semantic fact. -/
                   obtain ⟨pair, pairMem, pairEq⟩ :=
                     pair_of_mem pairCoordinate coordinateMember
                   subst pairCoordinate
-                  exact Or.inr ⟨pair, pairMem, Or.inl profiles⟩
+                  exact Or.inr ⟨pair, pairMem, attempt, Or.inl profiles⟩
             · cases coordinate with
               | inl spine =>
                   obtain ⟨left, right, identifies, separated⟩ := defect
@@ -386,7 +505,8 @@ semantic fact. -/
                   obtain ⟨pair, pairMem, pairEq⟩ :=
                     pair_of_mem pairCoordinate coordinateMember
                   subst pairCoordinate
-                  exact Or.inr ⟨pair, pairMem, Or.inr (Or.inl defect)⟩
+                  exact Or.inr
+                    ⟨pair, pairMem, attempt, Or.inr (Or.inl defect)⟩
             · cases coordinate with
               | inl spine =>
                   exact Or.inl (.compression attempt.support replacement)
@@ -394,7 +514,8 @@ semantic fact. -/
                   obtain ⟨pair, pairMem, pairEq⟩ :=
                     pair_of_mem pairCoordinate coordinateMember
                   subst pairCoordinate
-                  exact Or.inr ⟨pair, pairMem, Or.inr (Or.inr replacement)⟩
+                  exact Or.inr
+                    ⟨pair, pairMem, attempt, Or.inr (Or.inr replacement)⟩
             · exact Or.inl
                 (.delocalization representative smaller baseline transfer)⟩)
         .nil)
@@ -405,7 +526,7 @@ logarithms cleared, published from the literal `[131]` residual. -/
 @[reducible] noncomputable def exactCubicBaselineBudgetRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.exactCubicBaselineBudget
-    { Requires := [K .baselineSpineDemand]
+    { Requires := []
       Produces := [K .exactCubicBaselineBudget]
       requiresUnique := by simp
       producesUnique := by simp
@@ -415,10 +536,11 @@ logarithms cleared, published from the literal `[131]` residual. -/
         (show Value BranchState Presentation presentation data
             .exactCubicBaselineBudget inputs.current from
           ⟨by
-            let _baselineDemand := (inputs.get (K .baselineSpineDemand)).down
+            have two_le_threshold : 2 ≤ data.threshold :=
+              le_trans (by norm_num) data.three_le_threshold
             constructor
             · exact Graph.cubicBaselineBudget_le_pow
-                inputs.current.object.vertexCount data.three_le_threshold
+                inputs.current.object.vertexCount two_le_threshold
             · intro room
               exact Graph.pow_pred_le_cubicBaselineBudget_mul
                 inputs.current.object.vertexCount room⟩)
@@ -430,9 +552,9 @@ division cleared. -/
 @[reducible] noncomputable def incrementalSkeletonRoomRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.incrementalSkeletonRoom
-    { Requires := [K .exactCubicBaselineBudget, K .baselineSpineDemand]
+    { Requires := []
       Produces := [K .incrementalSkeletonRoom]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -440,9 +562,9 @@ division cleared. -/
         (show Value BranchState Presentation presentation data
             .incrementalSkeletonRoom inputs.current from
           ⟨by
-            let _cubic := (inputs.get (K .exactCubicBaselineBudget)).down
-            let _demand := (inputs.get (K .baselineSpineDemand)).down
             let object := inputs.current.object
+            have two_le_threshold : 2 ≤ data.threshold :=
+              le_trans (by norm_num) data.three_le_threshold
             have handshake : data.threshold * object.vertexCount ≤
                 2 * object.edgeCount :=
               Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
@@ -453,15 +575,19 @@ division cleared. -/
                 data.threshold ≤ object.edgeCount :=
               Graph.cubicBaselineEdgeCount_le_edgeCount_of_handshake
                 object data.threshold handshake
-            refine ⟨above, ?_, ?_⟩
+            constructor
             · exact Graph.skeletonBudget_le_cubicBaselineBudget_mul_pow
-                object data.three_le_threshold above
+                object two_le_threshold above
             · have lower : data.threshold * object.vertexCount ≤
                   2 * Graph.cubicBaselineEdgeCount object.vertexCount
                     data.threshold := by
                 unfold Graph.cubicBaselineEdgeCount
                 omega
-              unfold Graph.FiniteObject.degreeSurplus
+              change 2 * (object.edgeCount -
+                  Graph.cubicBaselineEdgeCount object.vertexCount
+                    data.threshold) ≤
+                (2 * object.edgeCount -
+                  data.threshold * object.vertexCount) + 2
               omega⟩)
         .nil)
 
@@ -471,7 +597,7 @@ proved inside this executor and published on the same exact ledger. -/
 @[reducible] noncomputable def skeletonDominatesRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.skeletonDominates
-    { Requires := [K .incrementalSkeletonRoom]
+    { Requires := []
       Produces := [K .skeletonDominates]
       requiresUnique := by simp
       producesUnique := by simp
@@ -481,7 +607,6 @@ proved inside this executor and published on the same exact ledger. -/
         (show Value BranchState Presentation presentation data
             .skeletonDominates inputs.current from
           ⟨by
-            let _room := (inputs.get (K .incrementalSkeletonRoom)).down
             let object := inputs.current.object
             have count : Nat.card
                 (Graph.PackedWindowRealization.Skeleton
@@ -494,7 +619,7 @@ proved inside this executor and published on the same exact ledger. -/
             intro State stateOf
             have realized :=
               Core.FiniteEntropy.card_range_le_card_ambient stateOf
-            simpa [count] using realized⟩)
+            exact realized.trans_eq count⟩)
         .nil)
 
 /-- `lem:sparse-pair-dependence-exit` on the literal residual produced by

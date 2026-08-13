@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex continuous_hamiltonian_structural_complexity"] 1786571173.8612 "continuous_hamiltonian_structural_complexity.aux" "continuous_hamiltonian_structural_complexity.bbl" "continuous_hamiltonian_structural_complexity" 1786571177.20185 0
-  "./continuous_hamiltonian_structural_complexity.bib" 1786566813.66837 4790 e6d9776d8d0514ea81b1c0ae68e23669 ""
+["bibtex continuous_hamiltonian_structural_complexity"] 1786608915.62672 "continuous_hamiltonian_structural_complexity.aux" "continuous_hamiltonian_structural_complexity.bbl" "continuous_hamiltonian_structural_complexity" 1786608919.69225 0
+  "./continuous_hamiltonian_structural_complexity.bib" 1786604035.25287 4821 a3a077b8281646aef4f55194d0628992 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "continuous_hamiltonian_structural_complexity.aux" 1786571176.83997 72989 b18c09f546aa74f992728ff48cbf9a0f "pdflatex"
+  "continuous_hamiltonian_structural_complexity.aux" 1786608919.26847 104300 1ef50836c149039d6f32eed2139a5dcb "pdflatex"
   (generated)
   "continuous_hamiltonian_structural_complexity.bbl"
   "continuous_hamiltonian_structural_complexity.blg"
   (rewritten before read)
-["pdflatex"] 1786571173.98702 "continuous_hamiltonian_structural_complexity.tex" "continuous_hamiltonian_structural_complexity.pdf" "continuous_hamiltonian_structural_complexity" 1786571177.20211 0
+["pdflatex"] 1786608915.77284 "continuous_hamiltonian_structural_complexity.tex" "continuous_hamiltonian_structural_complexity.pdf" "continuous_hamiltonian_structural_complexity" 1786608919.69256 0
   "/etc/texmf/web2c/texmf.cnf" 1775461942.93881 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1095.tfm" 1136768653 3584 929cdff2b7a8c11bd4d49fd68cb0ae70 ""
@@ -236,6 +236,7 @@
   "/usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb" 1254269338 31113 04b711c9a4c7f8cb4ed784c6fc4cc1c5 ""
   "/usr/share/texmf/fonts/type1/public/lm/lmmi7.pfb" 1254269338 30789 be3ebdf20b6442cc4aaf81a81e17daf4 ""
   "/usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb" 1254269338 30635 833ec815d446ec453a4913fc26d24cbc ""
+  "/usr/share/texmf/fonts/type1/public/lm/lmmib10.pfb" 1254269338 30962 099bdeb826f0ac8e2d3f42a496d47e5f ""
   "/usr/share/texmf/fonts/type1/public/lm/lmr10.pfb" 1255129361 119235 f35b44530a1d90eb90fe15d9cba67ea0 ""
   "/usr/share/texmf/fonts/type1/public/lm/lmr12.pfb" 1255129361 113634 f99c44d58bae0863375faf0e1d74d612 ""
   "/usr/share/texmf/fonts/type1/public/lm/lmr17.pfb" 1255129361 119752 1bd8d06e4079df624bf59ce3ad7c9aa6 ""
@@ -262,11 +263,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1741904018 41538 c016915c1d51223b6dbbfe27341748a8 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775461957 5467255 9a64d1b40e0b893fc5588ecce9d8accf ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775462000 3347157 e3d55367a58d5fdfabed5b8302e4b102 ""
-  "continuous_hamiltonian_structural_complexity.aux" 1786571176.83997 72989 b18c09f546aa74f992728ff48cbf9a0f "pdflatex"
-  "continuous_hamiltonian_structural_complexity.bbl" 1786571173.98099 2359 144a6b1f70a382f85b35ea28560a75b0 "bibtex continuous_hamiltonian_structural_complexity"
-  "continuous_hamiltonian_structural_complexity.out" 1786571176.84397 7402 197d4d800bdb2e682e76fb148108c2c6 "pdflatex"
-  "continuous_hamiltonian_structural_complexity.tex" 1786571158.6811 200584 f9251539f7dc33b9b088d4205074d4a6 ""
-  "continuous_hamiltonian_structural_complexity.toc" 1786571176.84397 2851 77ed873ec92735e7edd4f77e46b86325 "pdflatex"
+  "continuous_hamiltonian_structural_complexity.aux" 1786608919.26847 104300 1ef50836c149039d6f32eed2139a5dcb "pdflatex"
+  "continuous_hamiltonian_structural_complexity.bbl" 1786608915.76649 2390 f6fd7fa011cbba39db83e5a0ea250633 "bibtex continuous_hamiltonian_structural_complexity"
+  "continuous_hamiltonian_structural_complexity.out" 1786608919.27447 7854 506e2ee0122bd34ba51f711da90d1825 "pdflatex"
+  "continuous_hamiltonian_structural_complexity.tex" 1786608891.34167 328481 36e9ddc9801a4071330a991719e732cd ""
+  "continuous_hamiltonian_structural_complexity.toc" 1786608919.27547 2990 7fd3c0a1be317c2bc29c931952e7daff "pdflatex"
   (generated)
   "continuous_hamiltonian_structural_complexity.aux"
   "continuous_hamiltonian_structural_complexity.log"

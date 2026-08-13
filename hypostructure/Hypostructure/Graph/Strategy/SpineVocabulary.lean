@@ -798,7 +798,6 @@ inductive Key where
   | coldGermExtraction
   | coldPositiveGerm
   | coldGermRouted
-  | coldTerminalResidual
   | coldBranchClosed
   /-- Node `[68]`, the standing law: every high centre of the object has its
   neighbourhood in the normal form of `lem:heavy-neighbourhood-normal-form` --
@@ -2237,12 +2236,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- of `R`, and its sum over the components at `R` itself.  Quantified over
       -- every maximal packing, so none has to travel.
       (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        ∀ support : Finset object.Vertex,
-          support ⊆ object.remainderSupport packing →
-          data.threshold * support.card ≤
-            object.internalWedgeCount support +
-              2 * object.positiveDeficiency support data.threshold)
+          object.IsWindowPacking data.windowOrder packing →
+          ∀ support : Finset object.Vertex,
+            support ⊆ object.remainderSupport packing →
+            data.threshold * support.card ≤
+              object.internalWedgeCount support +
+                2 * object.positiveDeficiency support data.threshold) ∧
+        (∀ packing : Finset (Finset object.Vertex),
+          object.IsWindowPacking data.windowOrder packing →
+          data.threshold * (object.remainderSupport packing).card +
+                2 * (2 * (data.windowOrder - 1) * packing.card) ≤
+              object.internalWedgeCount (object.remainderSupport packing) +
+                2 * (data.threshold * (data.windowOrder * packing.card) +
+                  data.surplusThreshold object.vertexCount))
   | .curvatureDemandFloor, object =>
       -- The lemma's "in particular", with the exact boundary-demand ceiling in
       -- place of the manuscript's asymptotic one.  The two doubled terms are
@@ -3031,11 +3037,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               ¬ Graph.Response.TargetComplete profile
                 (Graph.HasCycleWithLength data.LengthOK)
                 germ.piece germ.canonical
-  | .coldTerminalResidual, object =>
-      Graph.ColdCorridor.TerminalColdResidual data.coldSignature
-        data.threshold data.LengthOK
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object
   | .coldBranchClosed, object =>
       -- `thm:cold-branch-quantitative-closure`, in the form consumed by the
       -- cold oval: after the current residual's length-changing germs and
@@ -3047,8 +3048,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .forcedCurvatureCost, object =>
       -- `cor:forced-curvature-cost` after substituting the exact equality
       -- proved by `lem:full-rank` into node `[30]`'s demand floor.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+        packing.card = object.windowPackingNumber data.windowOrder ∧
         data.curvatureCost *
               (data.threshold * (object.remainderSupport packing).card +
                 2 * (2 * (data.windowOrder - 1) * packing.card)) ≤
@@ -4833,43 +4835,44 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             Sum.elim coordinateSupport (by
               letI := object.vertices.decEq
               exact Graph.DeclaredSignature.Coordinate.support)
-          let Determines := fun
+          let Functional := fun
               (attempt : Graph.AttemptedQuotient
                 (Graph.MinimumDegreeAtLeast data.threshold)
                 (Graph.HasCycleWithLength data.LengthOK) object
-                mixedFamily mixedSupport)
-              (coordinate : Sum Coordinate object.PairCoordinate)
-              (determiners : Set (Sum Coordinate object.PairCoordinate)) =>
-            ∀ left right,
-              (∀ determiner ∈ determiners,
-                attempt.value left (attempt.label determiner) =
-                  attempt.value right (attempt.label determiner)) →
-                attempt.value left (attempt.label coordinate) =
-                  attempt.value right (attempt.label coordinate)
-          ∀ attempt : Graph.AttemptedQuotient
+                mixedFamily mixedSupport) =>
+            let quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+                (Sum Coordinate object.PairCoordinate) :=
+              { Label := attempt.Label
+                Value := attempt.Value
+                Realization := Graph.BoundaryPiece
+                  (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
+                    object attempt.support)
+                label := attempt.label
+                value := attempt.value }
+            quotient.FunctionalOn ↑mixedFamily
+          (¬ ∀ attempt : Graph.AttemptedQuotient
               (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object
               mixedFamily mixedSupport,
-            (∃ coordinate ∈ mixedFamily,
-              ∃ determiners : Set (Sum Coordinate object.PairCoordinate),
-                determiners ⊆ ↑mixedFamily ∧ determiners.Finite ∧
-                  coordinate ∉ determiners ∧
-                    Determines attempt coordinate determiners) →
-            ¬ Set.InjOn attempt.label ↑mixedFamily →
+              Functional attempt → Set.InjOn attempt.label ↑mixedFamily) →
             Graph.SparseSurplusExit
                 (Graph.MinimumDegreeAtLeast data.threshold)
                 (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∨
               ∃ pair ∈ pairs,
-                ((∃ left right, attempt.Identifies left right ∧
-                    left.boundaryDegreeProfile ≠
-                      right.boundaryDegreeProfile) ∨
-                  (∃ left right, attempt.Identifies left right ∧
-                    Graph.Response.TargetDefect
-                      (Graph.HasCycleWithLength data.LengthOK) left right) ∨
-                  Graph.Strategy.InterfaceReplacement.ReplacementSupport
+                ∃ attempt : Graph.AttemptedQuotient
                     (Graph.MinimumDegreeAtLeast data.threshold)
                     (Graph.HasCycleWithLength data.LengthOK) object
-                    attempt.support)
+                    mixedFamily mixedSupport,
+                  ((∃ left right, attempt.Identifies left right ∧
+                      left.boundaryDegreeProfile ≠
+                        right.boundaryDegreeProfile) ∨
+                    (∃ left right, attempt.Identifies left right ∧
+                      Graph.Response.TargetDefect
+                        (Graph.HasCycleWithLength data.LengthOK) left right) ∨
+                    Graph.Strategy.InterfaceReplacement.ReplacementSupport
+                      (Graph.MinimumDegreeAtLeast data.threshold)
+                      (Graph.HasCycleWithLength data.LengthOK) object
+                      attempt.support)
   | .exactCubicBaselineBudget, object =>
       Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
           (2 * object.vertexCount) ^
@@ -4882,9 +4885,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               (2 * (data.threshold + 1)) ^
                 Graph.cubicBaselineEdgeCount object.vertexCount data.threshold)
   | .incrementalSkeletonRoom, object =>
-      Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
-          object.edgeCount ∧
-        Graph.skeletonBudget object ≤
+      Graph.skeletonBudget object ≤
           Graph.cubicBaselineBudget object.vertexCount data.threshold *
             object.vertexCount ^
               (object.edgeCount -
@@ -5021,17 +5022,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
           (Graph.WindowCurvature.Label data.windowOrder))
   | .sparseSurplusSurvivor, object =>
-      -- `def:named-surplus-exits`: none of the five conclusions occurs, and
-      -- `lem:replacement` at the same selection: no proper support carries a
-      -- replacement either.  Both halves come from the node-`[1]`--`[4]`
-      -- selection entry, and both are what node `[132]`'s blocker arm needs, so
-      -- neither is left to be assumed downstream.
+      -- `def:named-surplus-exits`: none of the five sparse-surplus conclusions
+      -- occurs on this branch.
       Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∧
-        ∀ support : Finset object.Vertex,
-          ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object support
+        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
   | .activeSurplusDemands, object =>
       -- `def:active-surplus-demands` with `lem:surviving-active-family`.
       Graph.ActiveSurplusDemands (Graph.MinimumDegreeAtLeast data.threshold)
@@ -5138,7 +5132,6 @@ def label : Key → String
   | .coldGermExtraction => "coldGermExtraction"
   | .coldPositiveGerm => "coldPositiveGerm"
   | .coldGermRouted => "coldGermRouted"
-  | .coldTerminalResidual => "coldTerminalResidual"
   | .coldBranchClosed => "coldBranchClosed"
   | .highCentreNormalForm => "highCentreNormalForm"
   | .typeBHeavyCentre => "typeBHeavyCentre"
@@ -5325,7 +5318,6 @@ example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
 example : label .coldGermExtraction = "coldGermExtraction" := rfl
 example : label .coldPositiveGerm = "coldPositiveGerm" := rfl
 example : label .coldGermRouted = "coldGermRouted" := rfl
-example : label .coldTerminalResidual = "coldTerminalResidual" := rfl
 example : label .coldBranchClosed = "coldBranchClosed" := rfl
 example : label .highCentreNormalForm = "highCentreNormalForm" := rfl
 example : label .typeBHeavyCentre = "typeBHeavyCentre" := rfl
@@ -5544,7 +5536,6 @@ def idx : Key → Nat
   | .coldHandoffTransfer => 69
   | .coldGermExtraction => 70
   | .coldGermRouted => 71
-  | .coldTerminalResidual => 183
   | .coldBranchClosed => 176
   | .highCentreNormalForm => 72
   | .typeBHeavyCentre => 73
@@ -5728,7 +5719,6 @@ def ofIdx : Nat → Key
   | 179 => .coldSelectedBranchExcess
   | 180 => .coldAmbientCubicStubExcess
   | 182 => .coldPositiveGerm
-  | 183 => .coldTerminalResidual
   | 69 => .coldHandoffTransfer
   | 70 => .coldGermExtraction
   | 71 => .coldGermRouted
@@ -6045,9 +6035,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldPositiveGerm") 182
   | .coldGermRouted =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermRouted") 71
-  | .coldTerminalResidual =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "coldTerminalResidual") 183
   | .coldBranchClosed =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldBranchClosed") 176
   | .highCentreNormalForm =>

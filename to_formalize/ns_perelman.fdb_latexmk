@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1786568566.32861 "ns_perelman.tex" "ns_perelman.pdf" "ns_perelman" 1786568567.5391 0
+["pdflatex"] 1786608292.08717 "ns_perelman.tex" "ns_perelman.pdf" "ns_perelman" 1786608293.66018 0
   "/etc/texmf/web2c/texmf.cnf" 1775461942.93881 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1246382020 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
@@ -19,7 +19,9 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm" 1246382020 940 228d6584342e91276bf566bcf9716b83 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbsy10.tfm" 1136768653 1116 4e6ba9d7914baa6482fd69f67d126380 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx5.tfm" 1136768653 1332 f817c21a1ba54560425663374f1b651a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm" 1136768653 1344 8a0be4fe4d376203000810ad4dc81558 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx7.tfm" 1136768653 1336 3125ccb448c1a09074e3aa4a9832f130 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx8.tfm" 1136768653 1332 1fde11373e221473104d6cc5993f046e ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx9.tfm" 1136768653 1328 5442e22a7072966dbaf88ca900acf3f0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmcsc10.tfm" 1136768653 1300 63a6111ee6274895728663cf4b4e7e81 ""
@@ -146,10 +148,10 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1741904018 41538 c016915c1d51223b6dbbfe27341748a8 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775461957 5467255 9a64d1b40e0b893fc5588ecce9d8accf ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775462000 3347157 e3d55367a58d5fdfabed5b8302e4b102 ""
-  "ns_perelman.aux" 1786568567.46106 45129 d0167c83d8b2ba1efe7e193810767723 "pdflatex"
-  "ns_perelman.out" 1786568567.46406 14541 b968a2e926ced8b2bd96540e8d47bc4b "pdflatex"
-  "ns_perelman.tex" 1786568556.94814 118631 798e9bf45973c855ea81752a5d9fdff8 ""
-  "ns_perelman.toc" 1786568567.46406 5767 cd1d4fb508236d888475b25173511213 "pdflatex"
+  "ns_perelman.aux" 1786608293.57891 76422 f748959869e336f12c26cea3b6ff6868 "pdflatex"
+  "ns_perelman.out" 1786608293.58391 19425 68bc4da57be7e7c731e53efc37578337 "pdflatex"
+  "ns_perelman.tex" 1786608247.19624 206823 469216fdf209763505b2eccdbe608f81 ""
+  "ns_perelman.toc" 1786608293.58391 7706 55339d7d012645e53de54f70bd4b8aff "pdflatex"
   (generated)
   "ns_perelman.aux"
   "ns_perelman.log"

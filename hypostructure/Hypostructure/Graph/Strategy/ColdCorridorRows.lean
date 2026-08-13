@@ -2,25 +2,12 @@ import Hypostructure.Graph.Strategy.SpineRows
 import Hypostructure.Graph.ColdIncrementArithmetic
 
 /-!
-# The cold return corridor: rows `[145]`--`[157]`
+# The cold branch, nodes `[145]`--`[154]`
 
-Each declaration below is an ordinary atomic Strategy at the spine vocabulary.
-It publishes a concrete `Spine.Key` fact and consumes predecessors only through
-sealed `FactInputs.get`.
-
-`coldCorridorStateRow` commits `def:cold-corridor-first-failure`'s cut-state
-clauses: the cold corridor state is *complete* for the local replacement and
-*bounded* by `Q_cold`.  It reads nothing from the ledger, because neither
-clause depends on anything the earlier nodes proved: both are theorems about
-the registered declared signature.
-
-`sameInterfaceTableRow` commits `lem:cold-same-interface-table` together with
-`lem:cold-short-self-return-filter`.  It reads exactly the two facts the
-manuscript's proof spends -- node `[1]`'s target avoidance and node `[14]`'s
-uncompressibility -- and nothing else.  A realizing row would hand the selected
-object the target it avoids; a row that is neither handed off nor
-distinguishing is a target-complete compression of its own proper support,
-which node `[14]` has excluded.  So no row of the table is terminal.
+This module contains only paper-node operations on the literal current
+`ExactLedger`: two exclusive decisions and the atomic facts currently proved
+through node `[152]`.  No alternate state or detached implication is exported;
+the concrete germ family required at `[153]` remains a fact of that residual.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -35,10 +22,7 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-! ## Figure XI decisions -/
-
-/-- Node `[146]`: decide the route-8 threshold on the canonical packing named
-by the incoming cold ledger. -/
+/-- Node `[146]`: decide the route-8 threshold on node `[145]`'s residual. -/
 noncomputable def coldRoute8Dichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -58,8 +42,7 @@ noncomputable def coldRoute8Dichotomy
       .inr ⟨below⟩)
     belowFresh atOrAboveFresh
 
-/-- Node `[148]`: decide whether the live-hot coordinates overflow the exact
-near-cubic allowance. -/
+/-- Node `[148]`: decide the live-hot entropy comparison on `[146]`'s no arm. -/
 noncomputable def coldHotEntropyDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -79,417 +62,63 @@ noncomputable def coldHotEntropyDichotomy
       .inr ⟨Nat.le_of_not_lt overflow⟩)
     overflowFresh capFresh
 
-/-! ## Nodes `[145]`--`[157]`: the corridor cut-state `T(J)`
-
-`def:cold-corridor-first-failure` fixes, for an initial segment `J` of a cold
-return corridor, its two active boundary interfaces `T(J)` and the cold
-corridor state of `J`: the finite two-boundary cut-state obtained from
-`ρ^ex_{T(J)}(J)` by retaining exactly the boundary-degree profile, the two
-active boundary half-edges, the cold-window offsets met at the two interfaces,
-and the declared local coordinates whose support is contained in the bounded
-active interface.  "It is not the full labelled prefix."
-
-The row commits the two things that retention has to earn.
-
-*Completeness.*  The manuscript's "after excluding (F2), equality of cold
-corridor states is equality for every target-response coordinate used by the
-local replacement".  The state retains no (D8) coordinate at all -- no product,
-labelled copy, restriction, or quotient image -- and it does not need to: an
-(D8) coordinate reads exactly the entries it was generated from, so once the
-generating readings agree the derived reading agrees.  That is
-`Presentation.reading_eq_of_state_eq`, by induction on the generation.
-
-*Boundedness.*  "Since the boundary has size two and the retained window and
-local-coordinate labels are finite, the set of possible cold corridor states is
-bounded by a constant `Q_cold` depending only on the fixed declared signature."
-`Q_cold` is `Fintype.card` of the retained cut-state of the *registered*
-signature, so it mentions no graph, and `Q_cold + 1` segments cannot have
-pairwise distinct states.  That pigeonhole is how
-`lem:cold-corridor-first-failure` reaches the repeat subcase of (F5).
-
-The row quantifies over every presentation of the current object's corridor
-segments and stores that theorem on the literal node-`[22]` cold residual. -/
-@[reducible] noncomputable def coldCorridorStateRow :
+/-- Node `[149]`: on `[148]`'s live-hot closing arm, publish the exact finite
+`P₁₃` density cap on that same residual. -/
+@[reducible] noncomputable def coldHotEntropyDensityCapRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldCorridorState
-    { Requires := [K .hotColdPartition]
-      Produces := [K .coldCorridorState]
-      requiresUnique := by simp
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldHotEntropyDensityCap
+    { Requires := [K .coldHotEntropyOverflow, K .barrierCap,
+        K .surplusAtOrBelow]
+      Produces := [K .densityCap]
+      requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let _partition := (inputs.get (K .hotColdPartition)).down
-      .cons (key := K .coldCorridorState)
-        ⟨fun presentation' =>
-          ⟨fun _left _right same coordinate inside =>
-              presentation'.reading_eq_of_state_eq same coordinate inside,
-            presentation'.exists_state_eq_of_stateBound_lt,
-            fun _boundary _carrier _left _right =>
-              ⟨fun excluded same =>
-                  presentation'.contextEquivalent_of_state_eq excluded same,
-                fun same separated =>
-                  presentation'.firstFailureResponse_of_not_contextEquivalent same
-                    separated⟩⟩⟩
+      let _overflow := (inputs.get (K .coldHotEntropyOverflow)).down
+      let cap := (inputs.get (K .barrierCap)).down
+      let surplus := (inputs.get (K .surplusAtOrBelow)).down
+      .cons (key := K .densityCap)
+        ⟨by
+          let object := inputs.current.object
+          have spine : data.threshold * object.vertexCount ≤
+              2 * object.edgeCount :=
+            Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount object
+              data.threshold fun vertex =>
+                le_trans inputs.current.baseline
+                  (object.minDegree_le_degree vertex)
+          rcases cap with
+            ⟨packing, _valid, packingCard, _maximal, capBound, _stable⟩
+          change 2 * (data.windowRate *
+              data.separatedScaleCount object.vertexCount *
+              object.windowPackingNumber data.windowOrder) ≤
+            (Graph.dyadicScaleCount object + 1) *
+              (data.threshold * object.vertexCount +
+                data.surplusThreshold object.vertexCount)
+          apply Graph.two_mul_exponent_le_scale_mul_edgeBudget object
+            (data.windowRate * data.separatedScaleCount object.vertexCount *
+              object.windowPackingNumber data.windowOrder)
+            data.threshold (data.surplusThreshold object.vertexCount)
+          · simpa [packingCard] using capBound
+          · exact spine
+          · exact data.three_le_threshold
+          · exact surplus⟩
         .nil)
 
-/-! ## Nodes `[145]`--`[157]`: the same-interface table
-
-`def:cold-same-interface-table` is the finite table whose rows are equal-length
-cold bounded germs and the short self-return exceptions of
-`lem:cold-short-self-return-filter`, each row recording (T1) the two boundary
-vertices and their boundary-degree profile, (T2) the two terminal cold-window
-stubs and their offsets, (T3) the exact response profile generated by
-`def:declared-coordinate-signature`, and (T4) the target truth value of every
-compatible completion represented by that exact profile.
-
-`lem:cold-same-interface-table` closes every row of it, and the manuscript's
-proof spends exactly two things this branch already carries.
-
-If a row is *realizing*, "the corresponding completion is a power-of-two cycle
-in `G`, which contradicts the counterexample condition": the corridor
-representative glued to its own outside context *is* the selected object, up to
-the decomposition's reconstruction isomorphism, so the selection's own
-avoidance excludes it.
-
-If a row "first meets a declared Type B or route-8 interface", the handoff
-alternative reads the corresponding support predicate from the incoming ledger.
-The row does not allocate or transport a separate handoff object.
-
-Otherwise the row is *distinguishing* or *neutral*.  Neutrality "means that the
-two representatives have the same boundary-degree profile and the same target
-response against every compatible context", and then
-`def:admissible-rank-quotient` supplies the strictly smaller proper
-representative of `def:proper-quotient-representative`.  Every clause of a
-target-complete proper-support compression is then present, and node `[14]`'s
-`cor:uncompressible` forbids it.  So a row is handed off or distinguishing, and
-no equal-length cold bounded germ is a terminal cold residual.
-
-The second output clause is the filter itself: a cold-window outside
-self-return of outside length `ℓ` is smeared over the window offsets, testing
-`[ℓ, ℓ+order−1]`, and a length that does not survive that test realizes an
-accepted cycle.  The surviving lengths are the exceptional rows of the table,
-which the first clause closes with the germs. -/
-@[reducible] noncomputable def sameInterfaceTableRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldSameInterfaceTable
-    { Requires := [K .selection, K .uncompressible]
-      Produces := [K .coldSameInterfaceTable]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .coldSameInterfaceTable)
-        ⟨
-          ⟨fun _Handoff row =>
-              Graph.ColdCorridor.row_closed
-                (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
-                (inputs.get (K .selection)).down.1
-                (inputs.get (K .uncompressible)).down row,
-            fun _Handoff self =>
-              Graph.ColdCorridor.selfReturn_closed
-                (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
-                (inputs.get (K .selection)).down.1
-                (inputs.get (K .uncompressible)).down self,
-            fun _length failed =>
-              Graph.ColdCorridor.exists_accepted_of_not_survivesSmear failed,
-            rfl,
-            fun _Handoff row => row.increment_eq_zero⟩⟩
-        .nil)
-
-
-/-! ## Nodes `[155]`--`[157]`: `lem:cold-bounded-germ-trichotomy`
-
-*"No length-changing cold bounded germ survives on the cold residual.  More
-explicitly, every such germ falls into one of the following three cases."*
-
-One row per arm, because the manuscript routes the three arms to three
-different places: G1 to the counterexample condition, G2 to the sparse exit or
-exit-(4) ledger, and G3 to `cor:uncompressible`.  G2's local
-`lem:context-universality` theorem is stored only after reading and retaining
-the incoming failed-package witness.
-
-`Graph.ColdCorridor.BoundedGerm` is `def:cold-bounded-germ` itself, and the
-equal-length rows of `def:cold-same-interface-table` are the same structure with
-`δ = 0` added; the two halves of the definition therefore share one shape and
-no germ can be a row of one family and not of the other. -/
-
-/-- **Node `[155]`: the G1 arm, and the exhaustiveness of the trichotomy.**
-
-*"Hit-realized.  Some compatible live completion and window offset close a
-dyadic cycle.  This contradicts the counterexample condition."*  A germ's own
-compatible completion is the selected object up to the decomposition's
-reconstruction isomorphism, so a realizing germ hands it the target node `[1]`
-denies.  Beside it the row commits the split's exhaustiveness, which is what
-makes the routing of G2 and G3 a routing of everything that is left. -/
-@[reducible] noncomputable def coldGermRealizedRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldGermRealized
-    (rowManifest (K .selection) (K .coldGermRealized) (by simp))
-    (fun inputs =>
-      .cons (key := K .coldGermRealized)
-        ⟨
-          ⟨fun germ realizing =>
-              (inputs.get (K .selection)).down.1
-                (germ.target_of_realizing
-                  (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
-                  realizing),
-            fun germ => germ.trichotomy⟩⟩
-        .nil)
-
-/-- **Node `[156]`: the G2 arm.**
-
-*"Hit-distinguished.  Some compatible outside context distinguishes the two
-representatives by dyadic truth value without already realizing the cycle in the
-current graph.  The induced quotient is target-defective, so it is routed to the
-sparse exit or exit-(4) ledger."*  Its proof is `lem:context-universality`: the
-distinguishing context already denies the all-context clause of
-`def:target-complete-quotient`, so the identification fails to be target-complete
-in every immutable profile fibre.
-
-Target-defectiveness is a theorem about the germ's two representatives.  Its
-ledger publication reads node `[22]`'s cold split, so it cannot be used as a
-detached global theorem. -/
-@[reducible] noncomputable def coldGermDistinguishedRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldGermDistinguished
-    (rowManifest (K .hotColdPartition) (K .coldGermDistinguished)
-      (by simp))
-    (fun inputs =>
-      let _partition := (inputs.get (K .hotColdPartition)).down
-      .cons (key := K .coldGermDistinguished)
-        ⟨fun germ _Profile profile distinguishing =>
-          germ.not_targetComplete_of_distinguishing profile distinguishing⟩
-        .nil)
-
-/-- **Node `[157]`: the G3 arm, with `lem:cold-increment-arithmetic`.**
-
-*"Silent.  No compatible outside context and no relevant scale distinguishes the
-two representatives.  Then replacing the longer representative by the shorter one
-… strictly decreases the support.  This is a nontrivial target-complete
-compression of a proper support"*, forbidden by `cor:uncompressible`, which is
-node `[14]`'s fact and the only thing this row reads.
-
-Unlike the equal-length rows of `def:cold-same-interface-table`, the descent is
-the increment's own: the shorter representative has strictly fewer internal
-vertices, so its completion has strictly fewer vertices than the object, and no
-appeal to `def:admissible-rank-quotient` is made.
-
-The remaining outputs are `lem:cold-increment-arithmetic`, which decides which
-arm a length-changing germ falls into: the overlapping blocks of case (a), the
-attainable power of two of case (b), the order criterion `ord_δ(2) > δ − 13`
-that forces (b), the transient reduction of an even modulus to its odd part, and
-case (d)'s equal-length switch back to the same-interface table.  Case (c) is the
-trichotomy's own exhaustiveness, committed at node `[155]`. -/
-@[reducible] noncomputable def coldGermSilentRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldGermSilent
-    (rowManifest (K .uncompressible) (K .coldGermSilent) (by simp))
-    (fun inputs =>
-      .cons (key := K .coldGermSilent)
-        ⟨
-          ⟨fun germ shorter neutral =>
-              (inputs.get (K .uncompressible)).down germ.support
-                (germ.compressibleSupport_of_not_distinguishing shorter neutral.2),
-            fun germ => germ.not_lengthChanging_iff,
-            fun _increment _base _copies _length positive overlapping lower upper
-                accepted =>
-              Graph.ColdCorridor.exists_not_survivesSmear_of_mem_interval
-                positive overlapping lower upper accepted,
-            fun _increment _base _exponent _residue positive small reached
-                congruent accepted =>
-              Graph.ColdCorridor.exists_not_survivesSmear_of_pow_congruent
-                positive small reached congruent accepted,
-            fun _increment _base _nonzero wide criterion =>
-              Graph.ColdCorridor.exists_hit_of_orderOf_lt wide criterion,
-            fun _transient _exponent _odd past =>
-              Graph.ColdCorridor.pow_mod_of_le past⟩⟩
-        .nil)
-
-/-! ## Nodes `[154]`--`[157]`: the four first-failure producers and the routing
-
-`def:cold-corridor-first-failure`'s five alternatives and
-`lem:cold-corridor-first-failure`'s five routings.  Each row commits the clause
-its own node owns, and each reads exactly the ledger facts the manuscript's
-proof spends -- node `[1]`'s target avoidance for (F1), node `[14]`'s
-uncompressibility for (F3), and nothing at all for (F2), (F4) and the existence
-half, which are theorems about the corridor and the registered signature. -/
-
-/-- **Node `[154]`, `[155]`: the (F1) producer.**
-
-An (F1) completion is a closed walk of the object built from the entry stub, the
-corridor prefix, the return adjacency and the window segment; if it is a cycle
-of accepted length then the selected object has an accepted cycle, which node
-`[1]` denies.  So (F1) never occurs. -/
-@[reducible] noncomputable def coldFailureCycleRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureCycle
-    (rowManifest (K .selection) (K .coldFailureCycle) (by simp))
-    (fun inputs =>
-      .cons (key := K .coldFailureCycle)
-        ⟨
-          (fun _windows _component corridor _order window segment failure =>
-            (inputs.get (K .selection)).down.1
-              (Graph.ColdCorridor.Corridor.hasCycleWithLength_of_firstFailureCycle
-                failure))⟩
-        .nil)
-
-/-- **Node `[154]`, `[156]`: the (F2) producer.**
-
-Both directions of `lem:context-universality` at the corridor.  An (F2)
-discrepancy -- same cold corridor state, different target response against some
-compatible outside context -- denies target-completeness of the identification
-in every immutable profile fibre; and with the discrepancy excluded, two
-prefixes carrying the same state are context-equivalent, which is what the local
-replacement of `lem:cold-same-interface-table` consumes.
-
-The row reads nothing: both are theorems about the corridor's own presentation,
-already proved when the cut-state was retained. -/
-@[reducible] noncomputable def coldFailureDefectRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureDefect
-    (rowManifest (K .coldCorridorState) (K .coldFailureDefect) (by simp))
-    (fun inputs =>
-      .cons (key := K .coldFailureDefect)
-        ⟨
-          (fun _windows _component _corridor _presentation _index _boundary
-              _carrier _left _right =>
-            ⟨fun _Profile _profile failure =>
-                Graph.ColdCorridor.Corridor.not_targetComplete_of_firstFailureDefect
-                  failure,
-              fun excluded same =>
-                Graph.ColdCorridor.Corridor.contextEquivalent_of_not_firstFailureDefect
-                  excluded same⟩)⟩
-        .nil)
-
-/-- **Node `[154]`, `[157]`: the (F3) producer.**
-
-An (F3) pair names an earlier prefix whose own boundary piece is a strictly
-smaller proper representative of a later one, with the boundary-degree profile
-preserved and the target response equal against every outside context.  That is
-a target-complete compression of the later prefix's proper support, and node
-`[14]`'s `cor:uncompressible` forbids it.  So (F3) never occurs. -/
-@[reducible] noncomputable def coldFailureCompressionRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureCompression
-    (rowManifest (K .uncompressible) (K .coldFailureCompression) (by simp))
-    (fun inputs =>
-      .cons (key := K .coldFailureCompression)
-        ⟨
-          (fun _windows _component _corridor _presentation _index _support =>
-            Graph.ColdCorridor.Corridor.FirstFailureCompression.not_occurs
-              (inputs.get (K .uncompressible)).down)⟩
-        .nil)
-
-/-- **Node `[154]`, `[156]`: the (F4) producer and its handoff exit.**
-
-A corridor that first enters the declared handoff interfaces already recorded in
-the incoming ledger reaches one such support.  Nothing is closed at the
-corridor.  The handoff predicate is quantified, so no row manufactures a
-handoff object and none is empty by construction. -/
-@[reducible] noncomputable def coldFailureHandoffRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureHandoff
-    (rowManifest (K .coldCorridorState) (K .coldFailureHandoff) (by simp))
-    (fun inputs =>
-      .cons (key := K .coldFailureHandoff)
-        ⟨
-          (fun _windows _component _corridor _handoff _segment failure =>
-            Graph.ColdCorridor.Corridor.handoff_mem failure)⟩
-        .nil)
-
-/-- **Node `[154]`: the classified state.**
-
-`lem:cold-corridor-first-failure`'s existence half, with the two ledgers it is
-counted against.
-
-The existence proof is the manuscript's dichotomy, not a definition: either the
-corridor reaches its successor stub inside `Q_cold` states, or `Q_cold + 1`
-states are read and two are equal by the pigeonhole on `Q_cold`.  (F5) is
-therefore not the complement of the other four clauses, and "a first failure
-always exists" is not a tautology.
-
-Beside it the row commits `M_cold`'s bound on the first-failure cold exchange,
-`def:cold-window-ledger`'s partition `𝒫 = 𝒫_hot ⊔ 𝒫_cold`, and
-`lem:cold-window-stub-excess` in subtraction-free form, with `b(P)` read off the
-registered baseline and window order. -/
-@[reducible] noncomputable def coldSelectedBranchExcessRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldSelectedBranchExcess
-    { Requires := [K .hotColdPartition]
-      Produces := [K .coldSelectedBranchExcess]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let partition := (inputs.get (K .hotColdPartition)).down
-      .cons (key := K .coldSelectedBranchExcess)
-        ⟨fun packing hot cold split =>
-          ⟨Graph.ColdCorridor.branchExcessOf
-              (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) * cold.card,
-            rfl⟩⟩
-        .nil)
-
-@[reducible] noncomputable def coldAmbientCubicStubExcessRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldAmbientCubicStubExcess
-    { Requires := [K .hotColdPartition]
-      Produces := [K .coldAmbientCubicStubExcess]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let partition := (inputs.get (K .hotColdPartition)).down
-      .cons (key := K .coldAmbientCubicStubExcess)
-        ⟨fun packing hot cold split =>
-          ⟨Graph.ColdCorridor.branchExcessOf
-              (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) * cold.card,
-            rfl⟩⟩
-        .nil)
-
-@[reducible] noncomputable def coldFailureRoutingRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureRouting
-    { Requires := [K .hotColdPartition, K .coldAmbientCubicStubExcess]
-      Produces := [K .coldFailureRouting]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let ambient := (inputs.get (K .coldAmbientCubicStubExcess)).down
-      .cons (key := K .coldFailureRouting)
-        ⟨ambient,
-          fun _windows _component corridor presentation index injective =>
-          Graph.ColdCorridor.Corridor.exists_firstFailure corridor
-            presentation index injective⟩
-        .nil)
-
-@[reducible] noncomputable def coldExchangeBoundRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldExchangeBound
-    (rowManifest (K .coldFailureRouting) (K .coldExchangeBound) (by simp))
-    (fun inputs =>
-      let routing := (inputs.get (K .coldFailureRouting)).down
-      .cons (key := K .coldExchangeBound)
-        ⟨⟨routing, fun _windows _component corridor terminal =>
-          Graph.ColdCorridor.Corridor.exchange_card_le corridor terminal⟩⟩
-        .nil)
-
+/-- Node `[145]`: append the canonical hot/cold split. -/
 @[reducible] noncomputable def coldWindowLedgerSplitRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldWindowLedgerSplit
     { Requires := [K .hotColdPartition]
       Produces := [K .coldWindowLedgerSplit]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let partition := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .coldWindowLedgerSplit)
-        ⟨partition⟩
+        ⟨(inputs.get (K .hotColdPartition)).down⟩
         .nil)
 
-/-- Node `[150]`: derive the cleared cold-mass inequality from the no arm of
-the live-hot comparison and the canonical partition stored at `[145]`. -/
+/-- Node `[150]`: derive the exact cleared cold-mass inequality. -/
 @[reducible] noncomputable def coldMassRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldMass
@@ -523,14 +152,110 @@ the live-hot comparison and the canonical partition stored at `[145]`. -/
               hot.card cold.card packing.card count (by simpa using hotBound)⟩
         .nil)
 
-/-- Node `[152]`: multiply node `[151]`'s exact non-cubic loss by the
-per-window branch excess computed from the registered presentation. -/
+/-- Node `[151]`: charge each non-ambient-cubic cold window injectively to a
+positive-surplus vertex of the current object. -/
+@[reducible] noncomputable def coldAmbientCubicRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldAmbientCubic
+    { Requires := [K .coldWindowLedgerSplit, K .surplusAtOrBelow,
+        K .selection]
+      Produces := [K .coldAmbientCubic]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let nearCubic := (inputs.get (K .surplusAtOrBelow)).down
+      let _selected := (inputs.get (K .selection)).down
+      .cons (key := K .coldAmbientCubic)
+        ⟨by
+          classical
+          rcases split with
+            ⟨valid, _attains, _maximal, _hotIff, coldIff, _disjoint, _cover⟩
+          have coldSubset : canonicalColdWindows data inputs.current.object ⊆
+              canonicalWindowPacking data inputs.current.object := by
+            intro window member
+            exact (coldIff window).mp member |>.1
+          change ColdAmbientCubicStatement data inputs.current.object
+          refine ⟨?_, nearCubic⟩
+          let object := inputs.current.object
+          let packing := canonicalWindowPacking data object
+          let cold := canonicalColdWindows data object
+          letI : FinEnum object.Vertex := object.vertices
+          letI : Fintype object.Vertex := inferInstance
+          let ambient : Finset object.Vertex := Finset.univ.filter fun vertex =>
+            data.threshold < object.degree vertex
+          let bad : Finset (Finset object.Vertex) := cold.filter fun window =>
+            ¬ AmbientCubicWindow data object window
+          have baselineDegree : ∀ vertex : object.Vertex,
+              data.threshold ≤ object.degree vertex := fun vertex =>
+            le_trans inputs.current.baseline
+              (object.minDegree_le_degree vertex)
+          have existsHigh (window : {window // window ∈ bad}) :
+              ∃ vertex ∈ window.1, data.threshold < object.degree vertex := by
+            have notCubic := (Finset.mem_filter.mp window.property).2
+            simp only [AmbientCubicWindow] at notCubic
+            push Not at notCubic
+            obtain ⟨vertex, member, different⟩ := notCubic
+            have lower := baselineDegree vertex
+            exact ⟨vertex, member, by omega⟩
+          let chosen : {window // window ∈ bad} → {vertex // vertex ∈ ambient} :=
+            fun window => ⟨Classical.choose (existsHigh window),
+              Finset.mem_filter.mpr ⟨Finset.mem_univ _,
+                (Classical.choose_spec (existsHigh window)).2⟩⟩
+          have chosenMem (window : {window // window ∈ bad}) :
+              (chosen window).1 ∈ window.1 :=
+            (Classical.choose_spec (existsHigh window)).1
+          have chosenInjective : Function.Injective chosen := by
+            intro left right same
+            apply Subtype.ext
+            by_contra different
+            have leftPacking : left.1 ∈ packing :=
+              coldSubset (Finset.mem_filter.mp left.property).1
+            have rightPacking : right.1 ∈ packing :=
+              coldSubset (Finset.mem_filter.mp right.property).1
+            have disjoint := valid.2 left.1 leftPacking right.1 rightPacking different
+            have sameVertex : (chosen left).1 = (chosen right).1 :=
+              congrArg Subtype.val same
+            exact (Finset.disjoint_left.mp disjoint)
+              (chosenMem left) (sameVertex.symm ▸ chosenMem right)
+          have badCard : bad.card ≤ ambient.card := by
+            simpa using Fintype.card_le_of_injective chosen chosenInjective
+          have ambientCard : ambient.card ≤ object.degreeSurplus data.threshold := by
+            calc
+              ambient.card = ∑ _vertex ∈ ambient, 1 := by simp
+              _ ≤ ∑ vertex ∈ ambient,
+                    (object.degree vertex - data.threshold) := by
+                exact Finset.sum_le_sum fun vertex member => by
+                  have high := (Finset.mem_filter.mp member).2
+                  omega
+              _ ≤ ∑ vertex ∈ (Finset.univ : Finset object.Vertex),
+                    (object.degree vertex - data.threshold) := by
+                exact Finset.sum_le_sum_of_subset (Finset.filter_subset _ _)
+              _ = object.degreeSurplus data.threshold := by
+                simpa [Graph.FiniteObject.ambientSurplus] using
+                  object.ambientSurplus_univ_eq_degreeSurplus
+                    data.threshold baselineDegree
+          have badBound : bad.card ≤ object.degreeSurplus data.threshold :=
+            badCard.trans ambientCard
+          have splitCard := cold.card_filter_add_card_filter_not
+            (AmbientCubicWindow data object)
+          change cold.card ≤
+            (cold.filter (AmbientCubicWindow data object)).card +
+              object.degreeSurplus data.threshold
+          rw [← splitCard]
+          convert Nat.add_le_add_left badBound
+            (cold.filter (AmbientCubicWindow data object)).card using 1
+          ⟩
+        .nil)
+
+/-- Node `[152]`: derive the branch-excess inequality from node `[151]`. -/
 @[reducible] noncomputable def coldStubExcessRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldStubExcess
     { Requires := [K .coldAmbientCubic]
       Produces := [K .coldStubExcess]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -545,109 +270,14 @@ per-window branch excess computed from the registered presentation. -/
               ((canonicalColdWindows data inputs.current.object).filter
                 (AmbientCubicWindow data inputs.current.object)).card
               (canonicalColdWindows data inputs.current.object).card
-              (inputs.current.object.degreeSurplus data.threshold) cubic⟩
+              (inputs.current.object.degreeSurplus data.threshold) cubic.1⟩
         .nil)
 
-/-! ## Nodes `[153]`--`[157]`: the dispatch arms and the branch closure
-
-Rows 57--61.  The manuscript's cold branch ends by *closing*, not by returning a
-retained scan, and these three rows are what makes that a theorem: the (F4) arm
-transfers through a support predicate already supplied by the ledger, the (F5)
-arm is unreachable because the extraction always produces a germ, and no
-separate cold-branch record is introduced. -/
-
-/-- **Node `[156]`: the (F4) dispatch arm.**
-
-The corridor reached a declared interface already recorded in the incoming
-ledger, and the charge goes there.  The ledger predicate is quantified, so the
-arm cannot be discharged by an emptiness manufactured at a call site. -/
-@[reducible] noncomputable def coldHandoffTransferRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldHandoffTransfer
-    { Requires := [K .coldFailureHandoff]
-      Produces := [K .coldHandoffTransfer]
-      requiresUnique := by simp [K_eq_iff]
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let failure := (inputs.get (K .coldFailureHandoff)).down
-      .cons (key := K .coldHandoffTransfer)
-        ⟨
-          (fun windows component corridor handoff segment handoffFailure =>
-            failure windows component corridor handoff segment handoffFailure)⟩
-        .nil)
-
-/-- **Nodes `[153]`, `[154]`: the (F5) arm.**
-
-This row commits the local F5 extraction on the current residual.  It reads the
-first-failure dichotomy from `coldFailureRouting`; the extraction itself is over
-actual current-object bounded germs, with overlap tested on their literal
-supports and the disjoint family existentially internal to the fact. -/
-@[reducible] noncomputable def coldGermExtractionRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldGermExtraction
-    { Requires := [K .coldExchangeBound]
-      Produces := [K .coldGermExtraction]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let exchange := (inputs.get (K .coldExchangeBound)).down
-      .cons (key := K .coldGermExtraction)
-        ⟨⟨exchange, Graph.ColdCorridor.coldGermExtractionLocal⟩⟩
-        .nil)
-
-/-- **Nodes `[145]`--`[157]`: `thm:cold-branch-quantitative-closure`.**
-
-The row reads G1, G2, and G3 from the incoming ledger and commits the remaining
-cold germ routing fact: every oriented length-changing bounded germ is routed
-through the target-defect arm.  This fact is published directly on the canonical
-ledger; no branch record, terminal payload, or retired routing object is used. -/
-@[reducible] noncomputable def coldGermRoutedRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldGermRouted
-    { Requires := [K .coldGermRealized, K .coldGermDistinguished,
-        K .coldGermSilent]
-      Produces := [K .coldGermRouted]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let notRealizing := (inputs.get (K .coldGermRealized)).down.1
-      let targetDefect := (inputs.get (K .coldGermDistinguished)).down
-      let notSilent := (inputs.get (K .coldGermSilent)).down.1
-      .cons (key := K .coldGermRouted)
-        ⟨fun germ shorter =>
-          let distinguishing :=
-            Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
-              germ shorter
-          ⟨distinguishing, fun Profile profile =>
-            targetDefect germ Profile profile distinguishing⟩⟩
-        .nil)
-
-/-- **Node `[157]`: the cold oval closes on the current residual.**
-
-The final row reads the length-changing route and the finite same-interface
-table by key, and it also reads the local extraction fact that turns a terminal
-candidate family into a positive extracted subfamily.  It does not transport a
-corridor, a germ family, or a side classifier. -/
-@[reducible] noncomputable def coldBranchClosedRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldBranchClosed
-    { Requires := [K .coldGermExtraction, K .coldGermRouted,
-        K .coldSameInterfaceTable]
-      Produces := [K .coldBranchClosed]
-      requiresUnique := by simp [K_eq_iff]
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let extraction := (inputs.get (K .coldGermExtraction)).down.2
-      let routed := (inputs.get (K .coldGermRouted)).down
-      let table := (inputs.get (K .coldSameInterfaceTable)).down
-      .cons (key := K .coldBranchClosed)
-        ⟨Graph.ColdCorridor.noTerminalColdResidual_of_routing
-          (extraction := extraction) (routed := routed) (table := table.1)
-          (selfReturns := table.2.1)⟩
-        .nil)
+/-!
+Node `[153]` must next read `K .coldStubExcess`, derive the selected
+branch-excess half-edges and their first-failure bounded germs on
+`inputs.current`, extract the disjoint family, and append that concrete fact.
+There is deliberately no implication-only fallback.
+-/
 
 end Hypostructure.Graph.Strategy.Spine

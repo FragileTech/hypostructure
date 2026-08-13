@@ -58,39 +58,72 @@ noncomputable def windowOverloadClassDichotomy
           ⟨(inputs.get (K .sparsePressureNearCubic)).down⟩)
         .nil)
 
-@[reducible] noncomputable def sparseSurplusSurvivorRow :
+/-- Node `[140]`: the geometric audit of the concrete window-incidence class
+selected by `[139]`.  The class fact fixes the routed arm; the audit itself is
+the canonical counted-label theorem at the current object. -/
+@[reducible] noncomputable def windowIncidenceAuditRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.sparseSurplusSurvivor
-    { Requires := [K .selection, K .uncompressible]
-      Produces := [K .sparseSurplusSurvivor]
+  factOnly `Hypostructure.Graph.Strategy.Spine.windowIncidenceAudit
+    { Requires := [K .windowClassOverload]
+      Produces := [K .windowIncidenceAudit]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let _selectedClass := inputs.get (K .windowClassOverload)
+      .cons (key := K .windowIncidenceAudit)
+        (show Value BranchState Presentation presentation data
+            .windowIncidenceAudit inputs.current from
+          ⟨Graph.classAuditStatement inputs.current.object data.threshold
+            data.windowOrder
+            (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+              (Graph.WindowCurvature.Label data.windowOrder))
+            .windowIncidence⟩)
+        .nil)
+
+/-- Node `[144]`, `cor:homogeneous-same-token-caps-close`: on the literal
+fixed-caps residual, spend the already registered sparse slack identity and
+publish the manuscript's homogeneous-cap closure statement. -/
+@[reducible] noncomputable def homogeneousCapsCloseRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.homogeneousCapsClose
+    { Requires := [K .homogeneousCapsHold, K .sparseSlackSurplus]
+      Produces := [K .homogeneousBottleneck]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let selection := (inputs.get (K .selection)).down
-      let _uncompressible := (inputs.get (K .uncompressible)).down
-      .cons (key := K .sparseSurplusSurvivor)
+      .cons (key := K .homogeneousBottleneck)
         (show Value BranchState Presentation presentation data
-            .sparseSurplusSurvivor inputs.current from
-          ⟨⟨Graph.survives_of_selection selection.1 selection.2 uncompressible,
-            fun support replacement =>
-              Graph.Strategy.InterfaceReplacement.not_replacementSupport
-                (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-                (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-                Presentation presentation
-                (Core.Target.ofPredicate _
-                  (Graph.HasCycleWithLength data.LengthOK))
-                ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-                  (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-                  Presentation presentation
-                  (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-                { G := inputs.current.object,
-                  baseline := inputs.current.baseline,
-                  state := inputs.current.branchState,
-                  avoids := selection.1,
-                  minimal := selection.2 }
-                support replacement⟩⟩)
+            .homogeneousBottleneck inputs.current from
+          ⟨Graph.homogeneousCapsCloseStatement inputs.current.object
+            (inputs.get (K .homogeneousCapsHold)).down
+            (inputs.get (K .sparseSlackSurplus)).down⟩)
         .nil)
+
+/-- Node `[125]`, `def:named-surplus-exits`: the literal sparse-exit/survivor
+dichotomy on the incoming residual.  The two arms remain separate exact-ledger
+histories. -/
+noncomputable def sparseSurplusExitDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (exitFresh : K .sparsePairExit ∉ known)
+    (survivorFresh : K .sparseSurplusSurvivor ∉ known) :
+    Decision (K .sparsePairExit) (K .sparseSurplusSurvivor) previous :=
+  Decision.run previous (K .sparsePairExit) (K .sparseSurplusSurvivor)
+    `Hypostructure.Graph.Strategy.Spine.sparseSurplusExitDichotomy
+    (Classical.choice (show Nonempty
+        ((K .sparsePairExit).At current ⊕
+          (K .sparseSurplusSurvivor).At current) from by
+      classical
+      by_cases exit : Graph.SparseSurplusExit
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK current.object
+      · exact ⟨.inl ⟨exit⟩⟩
+      · exact ⟨.inr ⟨exit⟩⟩))
+    exitFresh survivorFresh
 
 /-- Node `[144]`: route every declared same-token bottleneck of the current
 residual.  Both hypotheses are read from the incoming exact ledger. -/
@@ -138,7 +171,7 @@ append the resulting Type-B handoff fact to the same ledger. -/
             rcases routed HighDegree Absorbing bottleneck windowFree with
               absorbed | handoff
             · exfalso
-              apply survivor.1
+              apply survivor
               rcases absorbed with defect | complete | delocalizes
               · obtain ⟨context, separated⟩ := defect
                 exact absurd (contextEquivalent context) separated
@@ -153,8 +186,14 @@ append the resulting Type-B handoff fact to the same ledger. -/
                   exact registered.trans rfl
                 · intro context
                   have equivalence := complete.2 context
-                  rw [bottleneck.reading.baseIsPiece] at equivalence
-                  simpa [Graph.DecoratedHandoff.Separation.atom] using equivalence
+                  intro target
+                  have targetFull := equivalence.mp target
+                  change Graph.HasCycleWithLength data.LengthOK
+                    (Graph.glue
+                      (bottleneck.reading.state bottleneck.reading.base)
+                      context) at targetFull
+                  rw [bottleneck.reading.baseIsPiece] at targetFull
+                  exact targetFull
               · obtain ⟨representative, smaller, baselineObject, transfer⟩ :=
                   delocalizes
                 exact .delocalization representative smaller baselineObject
