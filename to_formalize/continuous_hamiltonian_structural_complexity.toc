@@ -1,55 +1,63 @@
 \contentsline {section}{Introduction}{4}{section*.1}%
-\contentsline {paragraph}{Scope discipline.}{6}{section*.2}%
-\contentsline {section}{Visual architecture and proof-flow guide}{6}{section*.3}%
-\contentsline {subsection}{Diagram map}{6}{section*.4}%
-\contentsline {subsection}{Proof-dependency diagram}{7}{section*.5}%
-\contentsline {subsection}{Node-by-node source audit}{7}{section*.6}%
-\contentsline {subsection}{Monotone retained-fact table}{9}{section*.7}%
-\contentsline {subsection}{Branch-closure audit}{11}{section*.8}%
-\contentsline {part}{I\hspace {1em}Closed Continuum Structural Algebra}{11}{part.1}%
-\contentsline {section}{\numberline {I.1}Physical continuum presentations}{11}{section.1.1}%
-\contentsline {section}{\numberline {I.2}The five-source orbit algebra}{18}{section.1.2}%
-\contentsline {section}{\numberline {I.3}Physical-budget-saturated sourcewise completion}{22}{section.1.3}%
-\contentsline {section}{\numberline {I.4}Target quotient and the null residual}{25}{section.1.4}%
-\contentsline {section}{\numberline {I.5}Prospective contact accountability}{28}{section.1.5}%
-\contentsline {part}{II\hspace {1em}Physical Structural-Invariant Calculus}{35}{part.2}%
-\contentsline {section}{\numberline {II.1}Structural invariant reduction of analytic arguments}{35}{section.2.1}%
-\contentsline {section}{\numberline {II.2}Coherent carrier passivity and structural successor closure}{43}{section.2.2}%
-\contentsline {subsection}{\numberline {II.2.1}Target-aligned dual-carrier compilation}{47}{subsection.2.2.1}%
-\contentsline {section}{\numberline {II.3}Covariant action and the physical budget}{63}{section.2.3}%
-\contentsline {section}{\numberline {II.4}Hamiltonian meanings and chart covariance}{66}{section.2.4}%
-\contentsline {section}{\numberline {II.5}Killed resolvents, resistance, and target realization}{69}{section.2.5}%
-\contentsline {section}{\numberline {II.6}Full-generator response and physical aiming}{72}{section.2.6}%
-\contentsline {section}{\numberline {II.7}Degenerate geometry and commutator-generated carriers}{74}{section.2.7}%
-\contentsline {section}{\numberline {II.8}Compactness and rigidity as a price compiler}{76}{section.2.8}%
-\contentsline {section}{\numberline {II.9}Constraint tails as finite structural obstructions}{79}{section.2.9}%
-\contentsline {section}{\numberline {II.10}Covariant entropy cocycles and physical production}{81}{section.2.10}%
-\contentsline {section}{\numberline {II.11}Wick-rotated compensated quotients and structural-action learning}{83}{section.2.11}%
-\contentsline {subsection}{\numberline {II.11.1}Spectral quotient and real geometric complement}{84}{subsection.2.11.1}%
-\contentsline {subsection}{\numberline {II.11.2}Lumpability defect, self-energy, and memory}{87}{subsection.2.11.2}%
-\contentsline {subsection}{\numberline {II.11.3}Authority-constrained structural action}{89}{subsection.2.11.3}%
-\contentsline {subsection}{\numberline {II.11.4}Positive response kernel and quantitative transfer}{90}{subsection.2.11.4}%
-\contentsline {subsection}{\numberline {II.11.5}Statistically calibrated training objectives}{93}{subsection.2.11.5}%
-\contentsline {subsection}{\numberline {II.11.6}Part~I model choice and the saturated certified frontier}{102}{subsection.2.11.6}%
-\contentsline {subsection}{\numberline {II.11.7}Certified learner and primal--dual profile}{109}{subsection.2.11.7}%
-\contentsline {subsection}{\numberline {II.11.8}Empirical implementation by differentiable linear algebra}{113}{subsection.2.11.8}%
-\contentsline {paragraph}{Dynamics fit.}{116}{section*.9}%
-\contentsline {paragraph}{Unrestricted-Caus fit.}{116}{section*.10}%
-\contentsline {paragraph}{Action-safe RL fit.}{116}{section*.11}%
-\contentsline {subsection}{\numberline {II.11.9}Executable refinement contract}{120}{subsection.2.11.9}%
-\contentsline {subsection}{\numberline {II.11.10}A solvable two-sector model}{126}{subsection.2.11.10}%
-\contentsline {part}{III\hspace {1em}Structural Reachability and Regularity}{127}{part.3}%
-\contentsline {section}{\numberline {III.1}Singular targets and cascade compilers}{127}{section.3.1}%
-\contentsline {section}{\numberline {III.2}The continuous structural regularity theorem}{132}{section.3.2}%
-\contentsline {section}{\numberline {III.3}Structural evaluator coverage and failure semantics}{140}{section.3.3}%
-\contentsline {section}{\numberline {III.4}A reusable PDE instantiation protocol}{142}{section.3.4}%
-\contentsline {subsection}{\numberline {III.4.1}Target-cyclic degeneracy compilation}{143}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {III.4.2}Target-relative resaturation of zero-price dynamics}{146}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {III.4.3}Recurrent passivity and support transfer}{147}{subsection.3.4.3}%
-\contentsline {subsection}{\numberline {III.4.4}Diagonal first-failure closure}{155}{subsection.3.4.4}%
-\contentsline {section}{\numberline {III.5}Specialization examples}{156}{section.3.5}%
-\contentsline {subsection}{\numberline {III.5.1}Specialization example: three-dimensional incompressible Navier--Stokes}{157}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {III.5.2}Regulator-to-continuum spectral problems}{172}{subsection.3.5.2}%
-\contentsline {section}{\numberline {III.6}Conclusion}{174}{section.3.6}%
-\contentsline {section}{\numberline {A}Total branch table for the main conclusions}{175}{appendix.A}%
-\contentsline {section}{\numberline {B}Notation index}{175}{appendix.B}%
+\contentsline {paragraph}{Scope discipline.}{7}{section*.2}%
+\contentsline {section}{Visual architecture and proof-flow guide}{7}{section*.3}%
+\contentsline {subsection}{Diagram map}{7}{section*.4}%
+\contentsline {subsection}{Proof-dependency diagram}{9}{section*.5}%
+\contentsline {subsection}{Node-by-node source audit}{9}{section*.6}%
+\contentsline {subsection}{Monotone retained-fact table}{11}{section*.7}%
+\contentsline {subsection}{Branch-closure audit}{12}{section*.8}%
+\contentsline {part}{I\hspace {1em}Closed Continuum Structural Algebra}{15}{part.1}%
+\contentsline {section}{\numberline {I.1}Physical continuum presentations}{15}{section.1.1}%
+\contentsline {section}{\numberline {I.2}The five-source orbit algebra}{24}{section.1.2}%
+\contentsline {section}{\numberline {I.3}Physical-budget-saturated sourcewise completion}{33}{section.1.3}%
+\contentsline {section}{\numberline {I.4}Target quotient and the null residual}{36}{section.1.4}%
+\contentsline {section}{\numberline {I.5}Prospective contact accountability}{39}{section.1.5}%
+\contentsline {part}{II\hspace {1em}Physical Structural-Invariant Calculus}{48}{part.2}%
+\contentsline {section}{\numberline {II.1}Structural invariant reduction of analytic arguments}{48}{section.2.1}%
+\contentsline {section}{\numberline {II.2}Coherent carrier passivity and structural successor closure}{56}{section.2.2}%
+\contentsline {subsection}{\numberline {II.2.1}Target-aligned dual-carrier compilation}{60}{subsection.2.2.1}%
+\contentsline {section}{\numberline {II.3}Covariant action and the physical budget}{82}{section.2.3}%
+\contentsline {section}{\numberline {II.4}Hamiltonian meanings and chart covariance}{85}{section.2.4}%
+\contentsline {section}{\numberline {II.5}Killed resolvents, resistance, and target realization}{87}{section.2.5}%
+\contentsline {section}{\numberline {II.6}Full-generator response and physical aiming}{90}{section.2.6}%
+\contentsline {section}{\numberline {II.7}Degenerate geometry and commutator-generated carriers}{92}{section.2.7}%
+\contentsline {section}{\numberline {II.8}Compactness and rigidity as a price compiler}{95}{section.2.8}%
+\contentsline {section}{\numberline {II.9}Constraint tails as finite structural obstructions}{98}{section.2.9}%
+\contentsline {section}{\numberline {II.10}Covariant entropy cocycles and physical production}{100}{section.2.10}%
+\contentsline {section}{\numberline {II.11}Wick-rotated compensated quotients and structural-action learning}{102}{section.2.11}%
+\contentsline {subsection}{\numberline {II.11.1}Spectral quotient and real geometric complement}{103}{subsection.2.11.1}%
+\contentsline {subsection}{\numberline {II.11.2}Lumpability defect, self-energy, and memory}{106}{subsection.2.11.2}%
+\contentsline {subsection}{\numberline {II.11.3}Authority-constrained structural action}{108}{subsection.2.11.3}%
+\contentsline {subsection}{\numberline {II.11.4}Positive response kernel and quantitative transfer}{109}{subsection.2.11.4}%
+\contentsline {subsection}{\numberline {II.11.5}Statistically calibrated training objectives}{112}{subsection.2.11.5}%
+\contentsline {subsection}{\numberline {II.11.6}Part~I model choice and the saturated certified frontier}{121}{subsection.2.11.6}%
+\contentsline {subsection}{\numberline {II.11.7}Certified learner and primal--dual profile}{128}{subsection.2.11.7}%
+\contentsline {subsection}{\numberline {II.11.8}Empirical implementation by differentiable linear algebra}{132}{subsection.2.11.8}%
+\contentsline {paragraph}{Dynamics fit.}{135}{section*.9}%
+\contentsline {paragraph}{Unrestricted-Caus fit.}{135}{section*.10}%
+\contentsline {paragraph}{Action-safe RL fit.}{136}{section*.11}%
+\contentsline {subsection}{\numberline {II.11.9}Executable refinement contract}{140}{subsection.2.11.9}%
+\contentsline {paragraph}{Reference implementation plan.}{149}{section*.12}%
+\contentsline {subsection}{\numberline {II.11.10}A solvable two-sector model}{151}{subsection.2.11.10}%
+\contentsline {part}{III\hspace {1em}Structural Reachability and Regularity}{152}{part.3}%
+\contentsline {section}{\numberline {III.1}Singular targets and cascade compilers}{152}{section.3.1}%
+\contentsline {section}{\numberline {III.2}The continuous structural regularity theorem}{158}{section.3.2}%
+\contentsline {section}{\numberline {III.3}Structural evaluator coverage and failure semantics}{167}{section.3.3}%
+\contentsline {section}{\numberline {III.4}A reusable PDE instantiation protocol}{169}{section.3.4}%
+\contentsline {subsection}{\numberline {III.4.1}Target-cyclic degeneracy compilation}{170}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {III.4.2}Target-relative resaturation of zero-price dynamics}{176}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {III.4.3}Recurrent passivity and support transfer}{178}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {III.4.4}Diagonal first-failure closure}{213}{subsection.3.4.4}%
+\contentsline {section}{\numberline {III.5}Target-aligned geometric normal form}{214}{section.3.5}%
+\contentsline {section}{\numberline {III.6}Target-aligned directed-feeding normal form}{215}{section.3.6}%
+\contentsline {section}{\numberline {III.7}Target-aligned quotient and constraint normal form}{216}{section.3.7}%
+\contentsline {section}{\numberline {III.8}Target-aligned lift, scale, and compactness normal form}{218}{section.3.8}%
+\contentsline {section}{\numberline {III.9}Target-aligned boundary and terminal normal form}{219}{section.3.9}%
+\contentsline {section}{\numberline {III.10}The continuum singularity-formation profile}{220}{section.3.10}%
+\contentsline {section}{\numberline {III.11}Specialization examples}{223}{section.3.11}%
+\contentsline {subsection}{\numberline {III.11.1}Specialization example: three-dimensional incompressible Navier--Stokes}{223}{subsection.3.11.1}%
+\contentsline {subsubsection}{\numberline {III.11.1.1}Terminal execution of the Navier--Stokes target program}{244}{subsubsection.3.11.1.1}%
+\contentsline {subsection}{\numberline {III.11.2}Regulator-to-continuum spectral problems}{260}{subsection.3.11.2}%
+\contentsline {section}{\numberline {III.12}Conclusion}{261}{section.3.12}%
+\contentsline {section}{\numberline {A}Total branch table for the main conclusions}{263}{appendix.A}%
+\contentsline {section}{\numberline {B}Notation index}{264}{appendix.B}%

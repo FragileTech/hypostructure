@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1786629458.45239 "ns_perelman.tex" "ns_perelman.pdf" "ns_perelman" 1786629461.72005 0
+["pdflatex"] 1786654026.56316 "ns_perelman.tex" "ns_perelman.pdf" "ns_perelman" 1786654028.59972 0
   "/etc/texmf/web2c/texmf.cnf" 1775461942.93881 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1246382020 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
@@ -58,10 +58,12 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb" 1248133631 36912 b448ef9ad9d7228ec3c6e71005136d55 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1248133631 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb" 1248133631 32734 69e00a6b65cedb993666e42eedb3d48f ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb" 1248133631 32762 224316ccc9ad3ca0423a14971cfa7fc1 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1248133631 32726 0a1aea6fcd6468ee2cf64d891f5c43c8 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb" 1248133631 33993 9b89b85fd2d9df0482bd47194d1d3bf3 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1248133631 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb" 1248133631 32587 1788b0c1c5b39540c96f5e42ccd6dae8 ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1248133631 32716 08e384dc442464e7285e891af9f45947 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb" 1248133631 32626 4f5c1b83753b1dd3a97d1b399a005b4b ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb" 1248133631 32442 c975af247b6702f7ca0c299af3616b80 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1248133631 37944 359e864bd06cde3b1cf57bb20757fb06 ""
@@ -217,10 +219,10 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1741904018 41538 c016915c1d51223b6dbbfe27341748a8 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775461957 5467255 9a64d1b40e0b893fc5588ecce9d8accf ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775462000 3347157 e3d55367a58d5fdfabed5b8302e4b102 ""
-  "ns_perelman.aux" 1786629461.54494 84888 de2545fe8da8fdcf3e051087ddb558d3 "pdflatex"
-  "ns_perelman.out" 1786629461.55394 20076 41d71a0a9a914611ae9c9bc3f74d6678 "pdflatex"
-  "ns_perelman.tex" 1786629451.60001 239140 3b2ccf459068968be675b6a0ecb2cd38 ""
-  "ns_perelman.toc" 1786629461.55394 7945 fadf690a9cde32327db180eac179cfeb "pdflatex"
+  "ns_perelman.aux" 1786654028.49246 89358 26f3b78a0fc1a1ec75d6b840c0cba1eb "pdflatex"
+  "ns_perelman.out" 1786654028.49746 17635 df1ee4dbbd759f5c9a8cc739a3203bac "pdflatex"
+  "ns_perelman.tex" 1786653944.77907 289424 3db6bd2388160b1706bbea75d91c6bd7 ""
+  "ns_perelman.toc" 1786654028.49746 6982 136c1bd7e5feaa4071e6609a620eeb8a "pdflatex"
   (generated)
   "ns_perelman.aux"
   "ns_perelman.log"

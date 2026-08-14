@@ -1,1067 +1,1186 @@
-  - The current framework does not yet prove 3D Navier–Stokes regularity from textbook data alone. It gives a rigorous necessary-mechanism reduction, but the decisive elimination step is
-    presently semantic rather than constructive.
 
-  - It cannot presently prove the Yang–Mills mass gap as a PDE-regularity application. The Clay problem is a quantum-field existence and spectral-gap problem, and the manuscript begins after
-    several objects that must instead be constructed.
+# Continuum-framework gap audit
 
-  The five-channel classification is substantially sound. The remaining problem is not classification; it is evaluation.
+Sections A--G preserve the defects found at the start of the audit.  They are
+not statements about the current manuscript.  The numbered resolution audit
+and verification matrix below give the controlling disposition for every
+item.  A stronger theorem is never inferred merely because the corresponding
+false claim was removed.
 
-  ## Target-aligned reduction is the organizing principle
+## A. Invalid terminal semantics
 
-  Every repair below must preserve the principal reduction already supplied by
-  the structural framework.  The continuum evaluator does not analyze the
-  entire weak current space.  It first constructs the prospective shell
-  covectors descending toward the generated target \(\Sigma\):
+  1. Contact-derived records are incorrectly promoted to independently realized singularities.
 
-  \[
-  \Gamma_\Sigma
-  =\overline{\operatorname{cone}}
-  \{D\Phi:\Phi\text{ is a generated pre-contact cylinder shell}\}.
-  \]
+  The manuscript correctly defines an explicit singular mechanism as requiring independent origin polarity (\mathsf{Ind}) at to_formalize/continuous_hamiltonian_structural_complexity.tex:17007.
+  But the terminalization theorem later—or earlier in logical dependency—uses a contact-derived orbit to declare its diagonal limit an explicit singular mechanism at to_formalize/
+  continuous_hamiltonian_structural_complexity.tex:15669.
 
-  For the saturated current space \(\mathscr J^{\rm sat}\), define
+  These statements are incompatible:
 
-  \[
-  \mathcal N_\Sigma
-  :=\bigcap_{\gamma\in\Gamma_\Sigma}\ker\gamma,
-  \qquad
-  \mathscr J_\Sigma
-  :=\mathscr J^{\rm sat}/\mathcal N_\Sigma.
-  \]
+  [
+  \mathsf{Hyp}\neq\mathsf{Ind}.
+  ]
 
-  A source occurrence is target-aligned when its positive pairing with some
-  \(\gamma\in\Gamma_\Sigma\) is nonzero.  The formation support of an event
-  \(R\) is
+  A contradiction hypothesis cannot be recycled into an independent existence proof.
 
-  \[
-  \operatorname{Align}_\Sigma(R)
-  :=\left\{c\in\{\Geom,\Caus,\Abs,\Lift,\Bdry\}:
-  \sup_{\gamma\in\Gamma_\Sigma}
-  \langle\gamma,J^c(R)\rangle_+>0\right\}.
-  \]
+  2. A nonordinary total-graph value is treated as a realized singularity.
 
-  The derived shell-current identity must prove
+  At to_formalize/continuous_hamiltonian_structural_complexity.tex:15646, a cofinal nonordinary coordinate is called a “singular corona record.” But a nonordinary value only means that an
+  operation failed to have its ordinary graph value. It need not be a PDE solution, continuation germ, defect measure arising from approximations, or physical orbit.
 
-  \[
-  \text{contact with }\Sigma
+  Required repair: a nonordinary value must remain a successor until it is either charged, target-null, or reconstructed from the approximation tower.
+
+  3. A carrier-polar separator is still treated as a terminal mechanism.
+
+  The general evaluator declares a separator part of a “realized singular mechanism” at to_formalize/continuous_hamiltonian_structural_complexity.tex:15781.
+
+  But the earlier, logically correct carrier-polar theorem says a separator is a successor and becomes a singular atom only after independent ordinary realization at to_formalize/
+  continuous_hamiltonian_structural_complexity.tex:5230.
+
+  A separating functional is not a trajectory.
+
+  4. The “binary continuum terminal theorem” is therefore unproved.
+
+  The claimed dichotomy
+
+  [
+  \text{avoidance}\quad\text{or}\quad\text{realized singular mechanism}
+  ]
+
+  at to_formalize/continuous_hamiltonian_structural_complexity.tex:15680 depends on the invalid promotion in holes 1–3.
+
+  The valid output currently is only:
+
+  [
+  \text{avoidance}
+  \quad\text{or}\quad
+  \text{target-aligned prospective structural model}.
+  ]
+
+  5. “Independent realization” is named but not constructed.
+
+  Several sections say that a prospective atom becomes singular “when independently generated,” for example to_formalize/continuous_hamiltonian_structural_complexity.tex:16952. The framework does
+  not provide a general constructor that takes the structural atom and produces such an independent orbit.
+
+  That phrase is currently an external existence requirement in disguise.
+
+  ## B. Reconstruction and compactification holes
+
+  6. Positive-functional reconstruction does not reconstruct a PDE orbit.
+
+  The moment hierarchy reconstructs a measure on a compact total-graph inverse limit at to_formalize/continuous_hamiltonian_structural_complexity.tex:16910. This supplies a relaxed model, not
+  necessarily:
+
+  - a function or distribution;
+  - a coherent time-dependent path;
+  - a solution of the nonlinear weak equation;
+  - a path with the required initial datum;
+  - an orbit reaching the continuation target.
+
+  A measure on graph coordinates is not automatically a PDE solution.
+
+  7. Ordinary values of every finite coordinate do not automatically give one coherent ordinary orbit.
+
+  Finite-coordinate consistency can hold along different approximating subsequences. The manuscript needs a same-origin projective realization theorem proving that all coordinates arise
+  simultaneously from one approximation path.
+
+  Diagonal compactness alone does not prove this.
+
+  8. The compactification contains artificial boundary points.
+
+  The product/order-unit compactification deliberately makes every coordinate bounded. Its spectrum can therefore contain positive functionals that satisfy all finite readouts but do not
+  represent any analytic state.
+
+  Such points are safe for proving target exclusion, because excluding a larger relaxed space is sound. They are not safe for proving singular existence.
+
+  9. Graph completeness preserves information but does not prove physical attainability.
+
+  Recording inputs, outputs, oscillations, concentrations, tails, and graph defects prevents information loss. It does not prove that every compatible collection of those coordinates is
+  dynamically attainable.
+
+  The paper repeatedly moves from “nothing was forgotten” to “therefore this is a physical mechanism.” That implication is missing.
+
+  10. The approximation tower is not yet linked surjectively to terminal atoms.
+
+  The public approximation grammar is defined, but there is no theorem establishing:
+
+  [
+  \text{independently realized terminal atom}
+  \iff
+  \text{coherent zero-defect approximation tower reaching }\Sigma.
+  ]
+
+  Without this, singular terminals remain relaxed models.
+
+  ## C. Ordered-algebra evaluation holes
+
+  11. Carrier-cone membership is semantic.
+
+  The framework says that an owner is charged when
+
+  [
+  Q\in\mathscr D_{\mathfrak b}^{\Phys}.
+  ]
+
+  But general membership in the closed infinite-dimensional carrier cone is not reduced to a finite proof-producing test. Defining the cone as closed makes separation available abstractly; it
+  does not calculate which side contains (Q).
+
+  12. Closedness of the carrier cone is not derived in the required topology.
+
+  Hahn–Banach separation at to_formalize/continuous_hamiltonian_structural_complexity.tex:5237 requires a specified locally convex topology and a closed cone. The manuscript largely obtains
+  closedness by completion, but it does not prove that this completion remains faithful to the PDE and physical-ledger relations.
+
+  13. A continuous separator need not be found by the stated rational enumeration.
+
+  A product-topology continuous functional depends on finitely many coordinates, but its coefficients can be irrational and its separation margin can be zero on the boundary. The manuscript needs
+  a rationalization theorem with a positive separation margin or an exact algebraic representation.
+
+  14. Finite semialgebraic elimination does not cover the full graph language.
+
+  The branch-and-bound theorem invokes exact semialgebraic elimination at to_formalize/continuous_hamiltonian_structural_complexity.tex:16888. The actual language contains:
+
+  - exponentials and resolvents;
+  - unbounded operators;
+  - distributional products;
+  - graph boundaries;
+  - measures;
+  - infinite-dimensional domains;
+  - limiting relations.
+
+  These are not automatically finite rational semialgebraic constraints.
+
+  15. The ordered consequence grammar is not relatively complete for PDE identities.
+
+  The grammar enumerates localizations, commutators, squares, adjoints, scale identities, and polarizations. There is no theorem showing that every true target-local carrier domination or nullity
+  statement has a derivation in this grammar.
+
+  Thus “the proof search did not find an identity” cannot yet imply the existence of a physical countermodel.
+
+  16. Strict positivity and equality are conflated.
+
+  Archimedean Positivstellensatz-style completeness handles strict separation well. PDE regularity frequently sits on a zero-margin equality stratum. The manuscript adds real-radical and
+  resaturation language, but it does not prove a complete real-radical calculus for its infinite graph algebra.
+
+  17. Semantic emptiness still enters through compactness.
+
+  Statements of the form
+
+  [
+  X_\infty=\varnothing
   \Longrightarrow
-  \operatorname{Align}_\Sigma(R_j)\ne\varnothing
-  \quad\text{on every shell-crossing event }R_j.
-  \]
-
-  Graph-complete compactification and source-preserving saturation first fix
-  the ancestry of every limit.  All subsequent carrier comparison, scale
-  cohomology, moment relaxation, and pruning operations are performed
-  sourcewise on \(\mathscr J_\Sigma\).  Currents in \(\mathcal N_\Sigma\) are
-  removed before those calculations.  The post-saturation residual
-  \(J_{\rm res}\) is precisely such a target-null coordinate and never carries
-  a target-bearing alternative.  These currents are the continuum counterpart of computation
-  that expends resources without increasing prospective target success.
-  Consequently, the evaluator asks the narrow question
-
-  \[
-  \boxed{
-  \text{which inherited structure supplies positive pre-contact progress
-  toward the singular target?}}
-  \]
-
-  A regularity proof needs to eliminate only the target-aligned saturation
-  cells.  This quotient is the structural source of the reduction in
-  difficulty; the ordered proof machinery below evaluates that reduced
-  problem rather than replacing it.
-
-  Compactness, moment, and sum-of-squares constructions serve as finite
-  evaluator backends after the structural algebra has performed the reductions
-  specific to this framework:
-
-  1. prospective target-shell accountability identifies structure available
-     before contact;
-  2. five-source compilation assigns complete ancestry before any limit or
-     estimate is taken;
-  3. source-preserving saturation keeps oscillations, concentrations, tails,
-     and graph failures inside inherited cells;
-  4. the target-null quotient removes every current that cannot advance a
-     singular shell;
-  5. signed carrier gluing cancels internal transport, gauge, chart, and
-     interface currents before physical expenditure is measured;
-  6. zero-price first failures generate successor dynamics instead of analytic
-     side conditions; and
-  7. stationary saturation converts an infinite cascade into a finite family
-     of equality, cohomology, and relative-dynamics cells.
-
-  This sequence is the continuum analogue of Part I's reduction of all legal
-  computations to target-aligned represented source occurrences.  Its purpose
-  is to replace global norm control by evaluation of the much smaller quotient
-  of structure that can actually form the target.
-
-  ### Target-alignment implementation checklist
-
-  - [ ] Generate \(\Gamma_\Sigma\) prospectively from finite-cylinder shells
-    and their strictly pre-contact differentials.
-  - [ ] Normalize the shell covectors so that unit shell progress has a fixed
-    scale-independent readout.
-  - [ ] Prove that \(\mathcal N_\Sigma\) is closed under sourcewise limits,
-    successor maps, gauge descent, and signed carrier gluing.
-  - [ ] Form the target-active quotient only after the five-channel ancestry
-    of every current and defect has been fixed.
-  - [ ] Define positive alignment separately in every inherited source cell.
-  - [ ] Prove shell accountability before invoking physical expenditure:
-    contact forces nonempty aligned support without a price hypothesis.
-  - [ ] Propagate the target-null quotient through every later graph,
-    cohomology, moment, and reconstruction operation.
-  - [ ] Run physical-price and saturation calculations only on persistent
-    aligned supports.
-  - [ ] Require every surviving positive functional to carry a normalized
-    target pairing and the pre-contact shell witness that generated it.
-  - [ ] Conclude regularity when all aligned cells vanish, regardless of the
-    size or complexity of target-null dynamics.
-  - [ ] Treat moment, SOS, interval, spectral, and compactness routines only as
-    interchangeable backends for an already source-reduced cell.
-  - [ ] Reject any backend condition that is stated on the full PDE state space
-    when the same condition can be descended to \(\mathscr J_\Sigma\).
-
-  ### Structural fast-track invariant
-
-  Every PDE specialization should reduce a putative contact orbit through the
-  same target-aligned chain.  For disjoint normalized shell events \(R_j\),
-
-  \[
-  1
-  =\operatorname{Prog}_\Sigma(R_j)
-  =\sum_{c\in\Channels}Q_{c,j},
-  \qquad
-  A_j:=\{c:Q_{c,j}^{+}>0\}\ne\varnothing.
-  \]
-
-  Finite source exhaustion selects a persistent nonempty support \(A\).  Signed
-  carrier gluing then assigns the single physical prices
-  \(p_j=\mu_{\rm phys}(R_j)\).  Exactly two cases remain:
-
-  \[
-  \sum_jp_j=\infty
-  \quad\Longrightarrow\quad
-  \text{contact contradicts the finite physical budget},
-  \]
-
-  or
-
-  \[
-  \sum_jp_j<\infty
-  \quad\Longrightarrow\quad
-  p_{j_k}\to0
-  \quad\Longrightarrow\quad
-  \nu_A\text{ is a target-aligned stationary saturation law}.
-  \]
-
-  Source-preserving limit closure keeps \(\nu_A\) in the same ancestry cell.
-  The fixed nonreversible term remains \(\Caus\); it is never replaced by a
-  freely selected transition.  Equality reduction is then performed on
-  \(\Pi_\Sigma\nu_A\), not on the full orbit.  Hence the final task is the
-  finite family of target-aligned kernel problems
-
-  \[
-  \Pi_\Sigma
-  \bigl(ker Q_{\rm phys}\cap
-  \ker I_{\rm PDE}\cap
-  \mathfrak F_A\bigr)=0,
-  \qquad \varnothing\ne A\subseteq\Channels.
-  \]
-
-  This is the continuum fast track.  Classical estimates are used only when
-  they compile one of these reduced kernel identities.  A failed estimate is
-  itself a typed graph value and is passed through the same target quotient;
-  it cannot enlarge the source alphabet or become a target-bearing residual.
-
-  ## Continuum extension principle
-
-  The repair extends Part I; it does not replace its algebra.  The five source
-  families, prospective target accountability, saturation, source ancestry,
-  first-contact reasoning, and target-null residual semantics remain
-  unchanged.  Continuum analysis supplies realizations of the same objects:
-
-  | Part-I object | Continuum realization |
-  |---|---|
-  | finite state or task record | state, germ, jet law, or normalized profile |
-  | finite generator occurrence | distributional current occurrence on a time window |
-  | saturated constructor closure | sourcewise closure under dynamically generated weak limits |
-  | computational resource ceiling | the equation's single finite physical-expenditure measure |
-  | prospective selector advantage | positive pre-contact shell-current pairing |
-  | first hit of the target | first contact or terminal noncontinuation germ |
-  | target-aligned source occurrence | target-aligned Geom/Caus/Abs/Lift/Bdry current occurrence |
-  | exhaustive finite search | exhaustive rational-cylinder ordered consequence search |
-  | post-saturation residual | target-null current in \(\mathcal N_\Sigma\) |
-
-  The continuum completion must therefore be a source- and target-preserving
-  functor \(\mathfrak C\) on the structural algebra.  For every discrete or
-  cylinder-level record \(R\), it must satisfy
-
-  \[
-  \operatorname{Anc}\bigl(\mathfrak C(R)\bigr)
-  =\operatorname{cl}_{\rm src}\operatorname{Anc}(R),
-  \qquad
-  \Pi_\Sigma\mathfrak C(R)
-  =\mathfrak C\bigl(\Pi_\Sigma R\bigr),
-  \]
-
-  and it must preserve composition, signed sums, restriction, first-contact
-  stopping, and physical-ledger addition.  Weakness, concentration,
-  oscillation, escape, loss of trace, and failure of a chain rule change the
-  realization of a record but not the principles governing it.
-
-  ### Extension-preservation checklist
-
-  - [ ] State the continuum extension functor on atomic state, current,
-    target, source, and boundary records.
-  - [ ] Prove that it preserves the five source tags and appends only the
-    already available \(\Abs\), \(\Lift\), and \(\Bdry\) ancestry required by
-    quotient, chart, and terminal operations.
-  - [ ] Prove compatibility with finite sums, signed gluing, composition,
-    restriction, stopping, and successor formation.
-  - [ ] Prove that sourcewise limit closure creates no sixth source.
-  - [ ] Prove that the target-null kernel commutes with continuum completion.
-  - [ ] Derive continuum shell accountability as the limit of finite-cylinder
-    prospective accountability.
-  - [ ] Derive physical countable additivity as the continuum realization of
-    the single additive resource ledger, without introducing a representation
-    budget.
-  - [ ] Prove that restricting the continuum construction to finite state
-    spaces recovers the Part-I definitions and accountability theorem.
-  - [ ] Audit every new analytic constructor against this preservation theorem
-    before it enters the closed algebra.
-  - [ ] Reject any continuum theorem whose statement requires a new primitive
-    source, a target-visible residual, or a target-relative input not generated
-    from the equation and target shells.
-
-  ## What remains assumed or unevaluated
-
-  ### 1. The public inputs
-
-  These are genuine inputs, though reasonable ones:
-
-  - a standard local solution theorem;
-  - a declared regularity and continuation class;
-  - the native formal energy/action/entropy identity;
-  - the equation’s standard symmetries, gauges, and weak formulation.
-
-  They are stated explicitly in the to_formalize/continuous_hamiltonian_structural_complexity.tex:616. For Navier–Stokes these are textbook facts. They are not enough to define quantum Yang–
-  Mills.
-
-  The finite-budget theorem additionally works on branches where
-
-  [
-  K_u\ge K_->-\infty,
-  \qquad
-  W_u^+([0,T_*))<\infty.
+  X_N=\varnothing\text{ for some }N
   ]
 
-  That restriction is explicit in the to_formalize/continuous_hamiltonian_structural_complexity.tex:850. It is satisfied for unforced Navier–Stokes by the energy inequality, but not automatically
-  for every PDE.
+  are topologically correct for decreasing compact sets. But the framework still needs a finite algebraic derivation verifying (X_N=\varnothing). A finite empty cover is not itself a proof unless
+  every deletion edge carries a checked identity.
 
-  #### Recommended fix: generate the solution and carrier graphs from an approximation tower
+  18. The primal–polar fixed point is not evaluated.
 
-  The public presentation should contain the equation, datum, boundary
-  conditions, weak test syntax, native transformations, and native formal
-  balance law.  A local solution theorem may identify an already understood
-  ordinary branch, but the global evaluator must not depend on that theorem.
-  Instead, the equation syntax should generate a countable approximation
-  tower consisting of all rational Galerkin truncations, mollifications,
-  implicit time steps, and domain exhaustions compatible with the displayed
-  equation.  The tower is exhaustive rather than scheme-selective: every
-  approximation assembled from the public operations occurs in it.
-
-  Each approximation carries its exact finite-dimensional evolution relation
-  and its exact tested carrier identity.  Passing through the graph-complete
-  limit construction then produces either an ordinary solution, a typed
-  equation defect, or a typed carrier defect.  Local existence is consequently
-  a value of the generated tower rather than a premise used to suppress an
-  empty solution graph.
-
-  The physical budget remains a single object.  It is the positive production
-  measure in the native signed carrier law.  Auxiliary multipliers may split,
-  localize, or compare this measure, but may not create another budget.  If the
-  carrier has no lower bound or receives infinite exterior work, the generated
-  branch records that physical mechanism.  The framework then makes no
-  finite-expenditure regularity conclusion on that branch.
-
-  #### Implementation checklist
-
-  - [ ] Define a countable grammar of rational spatial truncations, temporal
-    discretizations, mollifiers, boundary exhaustions, and gauge fixings using
-    only operations in the public equation signature.
-  - [ ] Include every grammar word rather than choosing one favorable
-    approximation scheme.
-  - [ ] Solve each finite approximation by its finite-dimensional total
-    evolution graph; retain finite-time escape and nonuniqueness as graph
-    values.
-  - [ ] Test every approximate equation against the enumerated rational test
-    core and generate the approximate signed carrier identity mechanically.
-  - [ ] Construct one projective approximation graph whose compatible paths
-    include all approximation schemes and all refinement subsequences.
-  - [ ] Attach prospective target-shell pairings to approximate events while
-    preserving their strictly pre-contact origin indices.
-  - [ ] Define ordinary continuum solutions as zero-defect projective-limit
-    values and define every failed passage as the first typed graph defect.
-  - [ ] Prove that every classical or standard weak solution embeds in the
-    zero-defect locus of the approximation graph.
-  - [ ] Prove that a zero-defect limit satisfies the public weak equation and
-    native carrier law.
-  - [ ] Derive the single measure \(\mu_{\rm phys}\) from the positive part of
-    that carrier law and prohibit later target-dependent additions.
-  - [ ] Restate all regularity conclusions on the generated finite-carrier
-    locus; route lower-bound and exterior-work failures as physical branches,
-    not as hypotheses or regularity conclusions.
-
-  ### 2. The evaluation compactification is compact but not analytically faithful by itself
-
-  The manuscript embeds bounded evaluation coordinates into ([-1,1]^{\mathbb N}) and takes the closure. Compactness then follows automatically.
-
-  What has not been proved is that this compactification:
-
-  - distinguishes every continuation-critical phenomenon;
-  - passes every nonlinear PDE term in a physically meaningful way;
-  - contains no target-active boundary records that are artifacts of the weak coordinates;
-  - turns every surviving graph-boundary record into an actual generalized orbit.
-
-  Totalizing failed products and chain rules prevents loss of ancestry, but it does not make their limits physical.
-
-  Thus the framework proves
+  After every enumerated successor has been processed, the framework permits a primal–polar fixed atom. Fixedness only means:
 
   [
-  \text{actual contact}\Longrightarrow\text{compact successor mechanism},
+  \text{the current grammar generated no new coordinate}.
   ]
 
-  but not
+  It does not mean:
 
   [
-  \text{compact successor mechanism}\Longrightarrow\text{actual contact}.
+  \text{charged},\quad\text{target-null},\quad\text{or physically realized}.
   ]
 
-  That asymmetry is explicitly visible where surviving cells are only physical “on an ordinary contact origin” to_formalize/continuous_hamiltonian_structural_complexity.tex:6640.
+  This is the current continuous analogue of stopping after discovering a target-aligned algorithm without evaluating what it does.
 
-  #### Recommended fix: replace the product closure by a graph-complete jet-law compactification
+  19. Infinite successor closure prevents loss but not indecision.
 
-  Compactness should be taken in the state space of the full ordered cylinder
-  algebra generated by the PDE, not in a product of readouts that forgets how
-  nonlinear terms were formed.  For every typed operation \(F\) occurring in
-  the equation or carrier law, add coordinates for its inputs, output, graph
-  residual, oscillation law, concentration mass, and exterior tail.  A limit
-  point then retains enough information to evaluate every term of the weak
-  equation without assigning an artificial value to a nonlinear product.
+  The cumulative joint construction correctly prevents infinitely many small contributions from disappearing. However, after preserving their sum, the manuscript still needs to evaluate the
+  resulting joint owner. “The record is fixed under all current constructors” is not a terminal truth theorem.
 
-  The resulting points are normalized positive functionals on this cylinder
-  algebra.  Positivity, marginal consistency, locality, source ancestry, and
-  the weak equation are closed relations.  Ordinary functions embed as Dirac
-  jet laws.  A nonordinary point has a least failed typed relation and hence a
-  concrete oscillation, concentration, tail, gauge, or interface coordinate.
+  20. The consequence algebra has no proved universal truth-evaluation theorem.
 
-  Two conclusions must be distinguished.  Target exclusion may be proved on
-  the larger graph-complete state space; this is sound because it excludes a
-  superset of the actual orbit limits.  A claim that a surviving state produces
-  singular contact requires a coherent approximation path.  Such a path must
-  be extracted from the approximation tower, rather than supplied as a
-  realization certificate.
-
-  #### Implementation checklist
-
-  - [ ] Enumerate every nonlinear product, constitutive map, trace, inverse
-    constraint, chart map, and covariance map appearing in the equation.
-  - [ ] For each operation introduce a closed graph bundle containing ordinary
-    values and separate oscillation, concentration, tail, and domain-defect
-    coordinates.
-  - [ ] Build the rational cylinder algebra from weak jet pairings and all
-    graph-bundle coordinates.
-  - [ ] Impose positivity, normalization, marginal consistency, locality, and
-    sourcewise ancestry as algebraic order relations.
-  - [ ] Define the compact state space as the normalized positive-functional
-    spectrum of this ordered algebra.
-  - [ ] Prove compactness from the order unit and prove that its cylinder
-    coordinates separate states.
-  - [ ] Prove the Dirac embedding theorem for ordinary states and ordinary
-    orbit segments.
-  - [ ] Prove a zero-defect realization theorem: a projectively compatible
-    point with zero operation defects solves the public weak equation.
-  - [ ] Prove a first-failure theorem assigning every nonordinary point to the
-    least failed typed operation and its inherited five-channel ancestry.
-  - [ ] Add continuation-modulus and terminal-germ coordinates so that the
-    target is separated by the same cylinder algebra used for dynamics.
-  - [ ] Prove that graph completion commutes with the target-null quotient:
-    target-visible limits retain inherited source ancestry, while only zero
-    shell pairings enter \(\mathcal N_\Sigma\).
-  - [ ] Formulate regularity as exclusion of the target in the relaxed state
-    space; this direction requires no converse realization theorem.
-  - [ ] Permit a singularity conclusion only when the projective approximation
-    graph itself supplies a coherent realizing path.
-
-  ### 3. The total shell identity classifies failure but does not control it
-
-  For a failed chain rule, the manuscript defines
-
-  [
-  \eta_{r,u}(I)
-
-  \Phi_r(u_b)-\Phi_r(u_a)-\sum_c Q_{c,r}(I).
-  ]
-
-  This is correct as exhaustive accounting: contact cannot disappear merely because differentiability fails. But it is tautological at the quantitative level. A positive (\eta) has inherited
-  ancestry, yet nothing currently forces it to:
-
-  - spend positive physical budget;
-  - descend to a simpler defect;
-  - become target-null;
-  - or generate an actual singular solution.
-
-  See the to_formalize/continuous_hamiltonian_structural_complexity.tex:1850. “Lack of a property is structure” is implemented as classification, but not yet as a terminating evaluator.
-
-  #### Recommended fix: replace the catch-all shell defect by a derived Radon current
-
-  The target shell algebra should be generated by smooth finite-cylinder
-  observables whose evolution is defined by the weak equation.  Along every
-  approximation, the shell derivative is an exact signed measure.  Uniform
-  bounded variation yields a Radon current in the projective limit.  Its
-  Lebesgue, jump, Cantor, oscillation, concentration, and exterior parts are
-  retained separately.  The endpoint shell increment is then the mass of this
-  derived current, rather than the definition of an undifferentiated remainder
-  \(\eta\).
-
-  The cylinder shell family must also be proved cofinal for the continuation
-  target.  Contact then forces unit progress in the limit of finite-cylinder
-  shells.  Each unit is carried either by an ordinary five-channel current or
-  by one of the typed singular parts above.  Every part enters the same carrier
-  comparison and ordered consequence calculus.  A part that has no positive
-  carrier comparison becomes a zero-price successor state with explicit
-  coordinates; it does not remain an unconstrained shell defect.
-
-  #### Implementation checklist
-
-  - [ ] Construct finite-cylinder Urysohn shells from the continuation
-    coordinates and rational smooth ramps.
-  - [ ] Prove that these shells are cofinal: every target contact crosses a
-    sequence whose endpoint progress tends to one.
-  - [ ] Derive the time-distributional derivative of each cylinder shell from
-    the approximate weak equation.
-  - [ ] Decompose that derivative into the five ordinary channel currents
-    before taking limits.
-  - [ ] Pass to a finite signed Radon current and retain its absolutely
-    continuous, jump, Cantor, oscillation, concentration, and exterior parts.
-  - [ ] Assign every singular part to the first failed graph operation and
-    inherit its source word.
-  - [ ] Prove the exact Stieltjes identity equating endpoint progress with the
-    total mass of the derived current.
-  - [ ] Derive \(1\le\sum_c Q^+_{c,r}\) on every normalized contact shell and
-    retain only the source cells with positive summands.
-  - [ ] Remove the definition of \(\eta\) as an arbitrary endpoint difference.
-  - [ ] Generate a joint carrier relation for each singular current part.
-  - [ ] Send carrier-dominated parts to physical-price accounting and send
-    zero-price parts to the ordered successor calculus.
-  - [ ] Prove the no-spontaneous-contact theorem using the derived current:
-    vanishing of every target-active current measure implies constancy of every
-    target shell along the orbit.
-
-  ### 4. The generated consequence algebra is not proved complete
-
-  The consequence algebra enumerates integration by parts, localization, adjoints, completion of squares, graph closure, and related operations. But there is no theorem that these rules derive
-  every structural identity needed to eliminate a target-active zero-price mechanism.
-
-  The passivity theorem itself says that equality forces a production term to vanish only when the algebra already contains a domination identity
-
-  [
-  p=q+r,\qquad q,r\ge0.
-  ]
-
-  That is exactly the remaining pressure point to_formalize/continuous_hamiltonian_structural_complexity.tex:3217. The manuscript does not ask the user to supply (p=q+r), but neither does it give
-  a general procedure that necessarily derives or refutes it.
-
-  #### Recommended fix: use an Archimedean ordered consequence calculus
-
-  The continuous counterpart of exhaustive finite saturation is an ordered
-  algebra with a primal--dual completeness theorem.  Let \(\mathcal A_{\mathbb
-  Q}\) be the rational cylinder algebra of the graph-complete state space.  Let
-  \(I_{\rm PDE}\) be the ideal generated by the weak equation, covariance,
-  consistency, and stationary-successor identities.  Let \(Q_{\rm phys}\) be
-  the quadratic module generated by squares, the nonnegative production
-  atoms, graph-defect masses, and bounded-coordinate order relations.  Bounded
-  coordinates make this order Archimedean.
-
-  Before this algebraic evaluator is formed, every current generator is
-  descended to \(\mathscr J_\Sigma\) and split by its nonempty aligned source
-  support.  The target module \(Q_{\Sigma,\eta}\) records a positive
-  prospective pairing in one such cell.  Consequently, the ordered search
-  evaluates only structure capable of contributing to contact; it does not
-  seek global estimates for target-null dynamics.
-
-  For a rational target floor \(\eta>0\), the calculus must prove the exact
-  alternative
-
-  \[
-  -1\in I_{\rm PDE}+Q_{\rm phys}+Q_{\Sigma,\eta}
-  \quad\text{or}\quad
-  \exists L:\mathcal A_{\mathbb Q}\to\mathbb R
-  \text{ positive, normalized, stationary, and target-active}.
-  \]
-
-  The first outcome is a finite derivation that the target-active zero-price
-  set is empty.  The second is a positive functional; Riesz/GNS reconstruction
-  produces the stationary successor law already required by the continuum
-  algebra.  Compactness of the state space gives completeness: semantic
-  emptiness has a finite algebraic contradiction, while failure of every
-  finite contradiction has a consistent positive-functional model.
-
-  Nonpolynomial operations should be handled by graph variables and rational
-  upper/lower enclosure relations.  The proof search then uses exact rational
-  arithmetic and never asks for a PDE-specific inequality.  Familiar energy,
-  commutator, Pohozaev, Noether, and entropy arguments become derivable words
-  in this calculus.
-
-  #### Implementation checklist
-
-  - [ ] Define the typed rational cylinder algebra
-    \(\mathcal A_{\mathbb Q}\) and its involution, localization, and successor
-    pullback operations.
-  - [ ] Translate every weak equation and graph-consistency relation into
-    generators of an ideal \(I_{\rm PDE}\).
-  - [ ] Translate squares, carrier productions, defect masses, and coordinate
-    bounds into generators of a quadratic module \(Q_{\rm phys}\).
-  - [ ] Add rational graph enclosures for exponential, inverse, determinant,
-    and other nonpolynomial operations used by the equation.
-  - [ ] Prove the Archimedean order-unit property from the bounded graph
-    coordinates.
-  - [ ] Encode zero physical price, successor consistency, stationarity, and a
-    rational target floor as additional algebraic relations.
-  - [ ] Construct those relations separately for every persistent aligned
-    source support and delete target-null generators before degree truncation.
-  - [ ] Prove soundness: every finite ordered derivation is valid on every
-    generated orbit and graph-complete limit.
-  - [ ] Prove compact completeness: if the constrained state space is empty,
-    \(-1\) has a finite derivation from finitely many generators.
-  - [ ] Prove rationalization of strict contradictions: every real-coefficient
-    Archimedean separation of \(-1\) has a rational proof after a controlled
-    perturbation, so the proof enumerator can find it.
-  - [ ] Prove the dual reconstruction theorem: a consistent positive
-    functional gives a probability law on the compact path space and satisfies
-    all successor identities.
-  - [ ] Add real-radical saturation rules so that \(p=0\) automatically forces
-    every generated \(q\) with \(p=q+r\), \(q,r\ge0\), to vanish.
-  - [ ] Enumerate multiplier, polarization, commutator, scale, Noether, and
-    Pohozaev words from the public syntax rather than registering their desired
-    conclusions.
-  - [ ] State a relative-completeness theorem: every strict target separation
-    true in the graph-complete semantics is eventually found by the proof
-    enumerator.
-
-  ### 5. “Canonical finite pruning” is existential, not currently constructive
-
-  This is the largest hidden issue.
-
-  A pruning node must establish facts such as
-
-  [
-  p\ge q \quad\text{on }\overline B_\ell
-  ]
-
-  and
-
-  [
-  \mathcal R_\eta(\overline B_\ell\cap Z_0)
-  \subseteq\bigcup_i B_{\ell_i}.
-  ]
-
-  These are universal analytic assertions over compact sets; see the to_formalize/continuous_hamiltonian_structural_complexity.tex:3664.
-
-  Compactness proves that a finite transcript exists if (Z_N=\varnothing). Choosing the least code among valid transcripts does not supply an algorithm for recognizing validity or proving
-  (Z_N=\varnothing). It is a canonical semantic selection, not a derivation from the PDE syntax.
-
-  Therefore the claim that “no externally supplied emptiness proof” is required to_formalize/continuous_hamiltonian_structural_complexity.tex:3692 is too strong. No user-supplied proof is
-  requested, but the manuscript itself has not performed that proof either.
-
-  The final PDE theorem consequently remains the dichotomy
-
-  [
-  Z_N^\Sigma=\varnothing\text{ for some }N
-  \quad\text{or}\quad
-  Z_n^\Sigma\ne\varnothing\text{ for every }n,
-  ]
-
-  rather than a procedure determining which branch holds; see the to_formalize/continuous_hamiltonian_structural_complexity.tex:6796.
-
-  #### Recommended fix: replace semantic pruning by a proof-producing moment hierarchy
-
-  A pruning node should contain a finite ordered-algebra derivation, not a
-  universal inclusion asserted over a compact set.  At truncation level
-  \((n,d,N)\), retain the first \(n\) cylinder coordinates, products of degree
-  at most \(d\), and successor paths of length at most \(N\).  The primal
-  problem is feasibility of the corresponding positive moment functional.
-  The dual problem is a rational ordered derivation that the cylinder is
-  impossible or has positive physical price.
-
-  The hierarchy is formed on the target-active quotient.  Each primal table
-  contains the normalized shell pairing and its source-resolved positive
-  contributions.  Each dual derivation may close a cell either by positive
-  physical price or by exact target-nullity.  It need not control the full PDE
-  state space.
-
-  This gives two checkable outputs.  Dual infeasibility certificates close
-  cells by exact arithmetic.  A compatible sequence of primal moment tables
-  defines, by projective compactness, a positive functional and hence an
-  infinite successor law.  The hierarchy therefore constructs both sides of
-  the alternative.  “Least-coded” may select the first derivation found by the
-  enumerator, but it may no longer select among semantically valid forests
-  whose validity has not been proved.
-
-  #### Implementation checklist
-
-  - [ ] Replace conditions (T1)--(T3) by formal sequents in the ordered
-    consequence calculus.
-  - [ ] Define finite truncation indices \((n,d,N)\) for coordinates, algebraic
-    degree, and successor depth.
-  - [ ] Construct the primal moment matrix, localizing matrices, consistency
-    constraints, price-zero constraints, and target-floor constraints at each
-    truncation.
-  - [ ] Block-diagonalize the hierarchy by persistent target-aligned source
-    support and remove the common target kernel before forming moment matrices.
-  - [ ] Construct the dual cone of rational sums of squares, carrier atoms,
-    graph relations, and successor telescoping identities.
-  - [ ] Require every pruning edge and every positive-price assertion to carry
-    an explicit dual identity checkable by exact rational arithmetic and
-    certified interval enclosures.
-  - [ ] Allow a dual node to close by an exact target-null identity even when
-    the underlying current or recurrent orbit is nonzero.
-  - [ ] Dovetail the finite searches over \((n,d,N)\); do not invoke a semantic
-    membership or set-inclusion oracle.
-  - [ ] Prove weak and strong dual soundness for every finite truncation.
-  - [ ] Prove hierarchy completeness from the Archimedean compactness theorem:
-    an empty target-active fixed point is detected at a finite truncation.
-  - [ ] Prove projective reconstruction: compatible feasible moment tables
-    yield a stationary zero-price successor law with the recorded target
-    pairing and source ancestry.
-  - [ ] Attach the original approximation indices to every moment coordinate
-    so that an actual contact branch remains diagonally traceable.
-  - [ ] Report certified lower and upper bounds at every finite stage, making
-    the evaluator quantitatively useful before termination.
-  - [ ] Delete the claim that topological compactness alone constructs a
-    pruning proof; compactness supplies completeness only after the formal
-    proof calculus has been defined.
-
-  ## Stress test: 3D Navier–Stokes
-
-  For unforced Navier–Stokes,
-
-  [
-  \partial_tu+(u\cdot\nabla)u+\nabla p
-  =\nu\Delta u,
-  \qquad \nabla\cdot u=0,
-  ]
-
-  the native physical budget is valid:
-
-  [
-  \frac12|u(t)|_2^2
-  +
-  \nu\int_0^t|\nabla u(s)|_2^2,ds
-  \le
-  \frac12|u_0|_2^2.
-  ]
-
-  The framework can derive:
-
-  1. A finite-time failure of strong continuation crosses infinitely many target shells.
-  2. Every crossing contains target-aligned Geom/Caus/Abs/Lift/Bdry ancestry.
-  3. Countable additivity supplies a subsequence of windows with physical price tending to zero.
-  4. Normalization and compact activity lifting produce a stationary zero-price successor law.
-
-  That part is meaningful.
-
-  The decisive obstruction is scaling. Under
-
-  [
-  V_j(y,s)
-
-  r_j u(x_j+r_jy,t_j+r_j^2s),
-  ]
-
-  viscous expenditure transforms as
-
-  [
-  \int_{Q_{r_j}}|\nabla u|^2,dx,dt
-
-  r_j\int_{Q_1}|\nabla V_j|^2,dy,ds.
-  ]
-
-  Even if every normalized window has unit-order dissipation, the physical prices can behave like (r_j), and a geometric sequence satisfies (\sum_jr_j<\infty). The manuscript correctly
-  acknowledges this positive-exponent problem to_formalize/continuous_hamiltonian_structural_complexity.tex:6002.
-
-  So finite kinetic energy alone does not exclude a singular cascade.
-
-  The method would actually prove Navier–Stokes regularity only after deriving, internally,
+  What is missing is precisely:
 
   [
   \boxed{
-  \Pi_{\Sigma_{\rm sing}}\operatorname{supp}\nu=0
-  \quad
-  \text{for every stationary zero-price successor law }\nu.
-  }
+  \begin{aligned}
+  \text{every target-active zero-price joint model}
+  \Longrightarrow
+  &\ \text{finite carrier/nullity derivation}\
+  &\quad\text{or coherent independently realized orbit}.
+  \end{aligned}}
   ]
 
-  Equivalently, it must derive
+  Part II currently asserts variants of this theorem but does not prove either exhaustive reconstruction or exhaustive finite elimination.
+
+  ## D. Physical-financing holes
+
+  21. Uniform finiteness in the covariant financing branch is conditional.
+
+  The evaluator says the generated weighted root, physical, and exterior coordinates are “uniformly finite” at to_formalize/continuous_hamiltonian_structural_complexity.tex:15825. The physical
+  production is bounded by the physical ledger, but the weighted root and adjoint-weighted exterior terms need not be.
+
+  Their boundedness must be derived, not included inside the successful branch description.
+
+  22. Target-visible unbounded weighted-root financing is still unevaluated.
+
+  The latest correction properly removes target-null horizon growth. But a target-visible unbounded weighted-root coordinate is merely retained as a terminal mechanism. The framework still must
+  determine whether it:
+
+  - telescopes after compatible horizon gluing;
+  - belongs to another source-owned carrier;
+  - creates a new scale successor;
+  - is physically singular;
+  - or is inconsistent with the public equation.
+
+  23. Exact financing of the shell current is not guaranteed.
+
+  The relation
 
   [
-  Z_\infty^{\Sigma_{\rm sing}}=\varnothing.
-  ]
-
-  Concretely, that requires the algebra to prove all three of the following from the Navier–Stokes identities:
-
-  - a genuinely scale-critical signed carrier/passivity identity;
-  - saturation implies a finite relative-equilibrium or recurrent scale equation;
-  - every target-active solution of that saturation equation is target-null.
-
-  The current passivity theorem proves only the averaged inequality
-
-  [
-  \int F_{\rm sc},d\nu
+  \mathsf Q_N
   \le
-  \int(D+M),d\nu,
+  \delta\mathscr K_N+\mathsf P_N+\mathsf B_N+\mathsf N_N
   ]
 
-  and sends equality back into the successor fixed point. It does not eliminate equality. At that point the classical scale-soliton, ancient-profile, pressure-tail, and defect-measure
-  difficulties have been reorganized, but not yet dissolved.
+  is an evaluator branch. There is no theorem that every target-active current either admits such an identity or that its separator reconstructs a physical counter-orbit.
 
-  Therefore: the present continuum paper alone does not prove 3D Navier–Stokes regularity. Its current endpoint is a precise zero-price mechanism that still requires substantive elimination. Clay
-  still lists the Navier–Stokes problem as unsolved. Clay Mathematics Institute (https://www.claymath.org/millennium/Navier-Stokes-Equation/)
+  This is the main carrier-polar gap.
 
-  ### Recommended Navier--Stokes repair: compute the scale-carrier cohomology inside the ordered calculus
+  24. Sourcewise signed measures may not exist globally.
 
-  The Navier--Stokes specialization should not attempt to extract a
-  scale-independent price from viscous dissipation.  Its positive scaling
-  exponent makes that route unavailable.  Instead, the compiler should form
-  the signed local-energy current on a coherent tree of parabolic charts and
-  compute the cohomology class of the scale feed after convection, pressure,
-  translation, cutoff motion, and gauge terms have been glued with their
-  signs.  Both the carrier complex and its cohomology are formed after
-  projection to the target-aligned quotient.  Large turbulent currents with
-  zero singular-shell pairing play no role in the regularity calculation.
-
-  There are then two algebraic branches.  If the scale feed is a coboundary,
-  invariant averaging removes it and zero physical price forces the viscous
-  and suitable-energy productions to vanish.  If it is not a coboundary, its
-  finite set of harmonic scale coordinates becomes part of the saturation
-  equation.  Stationarity turns those coordinates into the Euler--Lagrange
-  equation for a scale-relative orbit.  The multiplier enumerator then applies
-  the generated scaling, translation, pressure-constraint, and local-energy
-  identities to that equation.  A positive target separator eliminates the
-  relative orbit; a failure produces a positive functional satisfying the
-  complete scale-relative equations, not an unnamed analytic remainder.
-
-  This is the continuous analogue of reducing a large discrete search to its
-  quotient invariants before exhaustive evaluation.  The difficult estimates
-  are replaced by three finite structural computations: signed-current
-  cancellation, scale-cohomology computation, and ordered-kernel elimination.
-  The Navier--Stokes application is complete only when the generated proof
-  transcript eliminates every target-active kernel; naming the kernel is not
-  a regularity proof.
-
-  ### Navier--Stokes implementation checklist
-
-  - [ ] Generate the Galerkin/mollified approximation tower for divergence-free
-    data and derive the global energy inequality at the approximate level.
-  - [ ] Use the kinetic-energy production
-    \(\nu|\nabla u|^2\,dx\,dt\), including the suitable-energy defect, as the
-    single physical expenditure measure.
-  - [ ] Generate the singular target from failure of strong continuation and
-    add scale-critical local velocity, pressure, vorticity, and continuation
-    coordinates to the graph-complete compactification.
-  - [ ] Generate the prospective singular-shell covectors and compute the
-    sourcewise formation support before estimating any velocity or pressure
-    norm.
-  - [ ] Compile viscosity as \(\Geom\), fixed nonlinear transport as \(\Caus\),
-    Galilean/gauge reduction as \(\Abs\), blow-up charts and scale motion as
-    \(\Lift\), and true exterior or terminal flux as \(\Bdry\).
-  - [ ] Derive pressure from
-    \(-\Delta p=\partial_i\partial_j(u_i u_j)\); route the local singular
-    integral, harmonic gauge, and exterior tail through separate graph
-    coordinates.
-  - [ ] Build the coherent parabolic chart tree from the canonical disjoint
-    shell cascade.
-  - [ ] Restrict the tree to descendants retaining positive target alignment;
-    discard target-null descendants before carrier and scale computations.
-  - [ ] Sum the local-energy identities with their native signs before taking
-    positive parts.
-  - [ ] Verify algebraically that convection, pressure transport, chart
-    translation, cutoff motion, and compatible interior fluxes are edge
-    coboundaries or explicit exterior coordinates.
-  - [ ] Compute the remaining scale-current cohomology using the cellular
-    boundary operator of the target-retaining chart tree.
-  - [ ] On the exact-cohomology branch, use invariant averaging to derive
-    vanishing of viscosity and suitable-energy defect on every zero-price
-    stationary law.
-  - [ ] Propagate \(\nabla V=0\) through incompressibility and the Galilean
-    quotient and prove that the resulting constant class is target-null.
-  - [ ] On each nonexact scale-cohomology branch, derive the corresponding
-    scale-relative Navier--Stokes equation from stationarity rather than
-    declaring a soliton ansatz.
-  - [ ] Enumerate the rational cutoff limits of the scaling, translation,
-    pressure, local-energy, Pohozaev, and Noether multipliers on that equation.
-  - [ ] Route every nonvanishing cutoff boundary term through the pressure-tail
-    and boundary successor graphs; do not assume decay at infinity.
-  - [ ] Encode the resulting equality system and target floor in the ordered
-    moment hierarchy.
-  - [ ] Produce either a finite positive-separator derivation for every
-    source/mode cell or a consistent positive-functional model of the complete
-    scale-relative system.
-  - [ ] Conclude global regularity only after all target-active models have
-    finite elimination transcripts checked by the proof kernel.
-  - [ ] If a model survives, reconstruct its coherent approximation tower and
-    report the exact ancient, recurrent, concentration, tail, and gauge
-    coordinates that remain; this is a mathematically specified candidate
-    singular mechanism rather than an inconclusive branch.
-
-  ## Stress test: Yang–Mills mass gap
-
-  This exposes a different problem.
-
-  The Clay problem is not classical Yang–Mills global regularity. It asks for the existence of a nontrivial quantum Yang–Mills theory on four-dimensional space and a positive mass gap. Clay
-  Mathematics Institute (https://www.claymath.org/millennium/yang-mills-the-maths-gap/)
-
-  The manuscript’s spectral Hamiltonian begins with:
+  The identity
 
   [
-  \text{“Let }\mathfrak q\text{ be a densely defined closed nonnegative form on a Hilbert space.”}
+  \Gamma_\Sigma=\sum_cQ^c
   ]
 
-  See the to_formalize/continuous_hamiltonian_structural_complexity.tex:4309. For the mass-gap problem, constructing the continuum Hilbert space, vacuum, observable algebra, and Hamiltonian is
-  already part of the required theorem. They cannot be textbook presentation inputs without assuming away the existence half of the problem.
+  is proved on finite occurrence sets. Passing to global signed measures requires control preventing both positive and negative variations of some (Q^c) from being infinite on the same set.
 
-  Even after constructing (H), the mass gap is the assertion
+  Without that, the sourcewise Lebesgue decompositions
 
   [
-  \langle\psi,H\psi\rangle
-  \ge
-  \Delta|\psi|^2,
-  \qquad
-  \psi\perp\Omega,
-  \qquad
-  \Delta>0.
+  Q^c=g_c\mu_{\Phys}+S_c
   ]
 
-  A useful structural target would be a sequence
+  at to_formalize/continuous_hamiltonian_structural_complexity.tex:15490 are not automatically defined.
+
+  25. The physical-singular part is classified but not evaluated.
+
+  A target current singular with respect to (\mu_{\Phys}) is correctly assigned a five-source owner. But singularity with respect to the budget measure does not itself prove either PDE
+  singularity or inconsistency. It must enter the same carrier-polar and realization evaluator.
+
+  26. Bounded amplification is an exact criterion, not a computed result.
+
+  The measure-theoretic statement
 
   [
-  |\psi_n|=1,\qquad
-  \psi_n\perp\Omega,\qquad
-  \langle\psi_n,H\psi_n\rangle\to0.
+  \Gamma_\Sigma^\perp=0,\qquad f_\Sigma\in L^\infty
+  \Longrightarrow\text{finitely many crossings}
   ]
 
-  The analogue of the zero-price successor program would have to classify all ways such a sequence can survive:
+  is correct. The framework has not computed those two properties from the PDE syntax in every source cell. Calling them “computed by the algebra” is currently too strong.
 
-  - escape to infinite volume;
-  - ultraviolet concentration;
-  - gauge-null motion;
-  - topological-sector drift;
-  - vacuum degeneracy;
-  - loss of norm in a weak limit;
-  - regulator-dependent boundary states.
+  ## E. Target and continuation holes
 
-  But a classical action budget does not eliminate those possibilities. One must construct regulated theories and derive, uniformly as volume and lattice cutoffs are removed:
+  27. The singular target depends on the declared continuation class.
 
-  1. a nontrivial continuum limit;
-  2. reflection positivity and reconstruction of the physical Hilbert space;
-  3. a vacuum sector;
-  4. a regulator-independent positive spectral gap.
+  A terminal germ is called singular when it fails continuation in the declared regularity class. This is legitimate only after proving that the class matches the intended regularity theorem and
+  that no weaker acceptable continuation has been omitted.
 
-  The current Hamiltonian/resolvent machinery can analyze a Hamiltonian once it exists. It does not construct quantum Yang–Mills or derive the uniform gap. Applying the existing PDE regularity
-  theorem directly would therefore be a category error.
+  Otherwise target contact can be an artifact of the presentation.
 
-  ### Recommended Yang--Mills repair: add a regulator-to-continuum spectral track
+  28. Terminal coverage uses compactified germs.
 
-  Classical Yang--Mills regularity and the quantum mass-gap problem must use
-  different targets.  Classical Yang--Mills fits the physical-reachability
-  track: finite-action or finite-energy orbits are tested against a
-  noncontinuation target.  The quantum mass gap requires a spectral-limit
-  track whose public presentation begins with finite lattice gauge systems,
-  not with an assumed continuum Hilbert space or Hamiltonian.
+  The terminal-coverage proposition obtains a germ by compact metrizability at to_formalize/continuous_hamiltonian_structural_complexity.tex:12697. It still needs to prove that the germ
+  corresponds to actual noncontinuation rather than only convergence in the relaxed evaluation compactification.
 
-  At each finite regulator, Haar measure and the lattice action generate the
-  Euclidean measure, reflection operation, gauge-invariant cylinder algebra,
-  transfer form, and finite-volume Hamiltonian.  Refinement, volume growth,
-  and block-spin maps form a graph-complete regulator tower.  Continuum states
-  are compatible positive functionals on the gauge-invariant cylinder
-  algebra.  Reflection positivity is a closed order relation, so a positive
-  continuum functional generates its Hilbert space, vacuum, semigroup, and
-  Hamiltonian by reconstruction rather than assumption.
+  29. Shell cofinality is presentation-relative.
 
-  Gap failure is the target family
+  The shell cascade is correct once the shell family is genuinely cofinal for the analytic continuation target. The manuscript generates shells from target coordinates, but it needs a separation
+  theorem showing that these coordinates detect every failure relevant to the chosen continuation class.
 
-  \[
-  \|\psi_n\|=1,\qquad \psi_n\perp\Omega,\qquad
-  \langle\psi_n,H\psi_n\rangle\longrightarrow0.
-  \]
+  30. The fundamental shell-current identity is only as faithful as its graph realization.
 
-  The ordered successor calculus must track every way this family can persist
-  through ultraviolet refinement and infinite-volume passage.  The target is
-  excluded only by a regulator-uniform ordered derivation showing that the
-  zero-energy kernel equals the vacuum sector.  The spectral form is a
-  physical energy, but it is not a second PDE reachability budget; the mass-gap
-  theorem is a separate spectral application of the same source, quotient,
-  compactification, and dual-evaluation machinery.
+  Derived Stieltjes shell currents solve the differentiability problem. But if the weak equation, nonlinear product, trace, or chart is nonordinary, the corresponding current is again a graph
+  object. The framework still must evaluate or realize that graph current; source classification alone is insufficient.
 
-  The spectral calculation must retain the same prospective principle.  At
-  finite regulator, low-energy spectral filters and vacuum-orthogonal
-  correlation shells generate a family \(\Gamma_{\rm gap}\).  Only regulator
-  currents and observable directions with positive pairing against
-  \(\Gamma_{\rm gap}\) enter the zero-gap successor problem.  Vacuum motion,
-  pure gauge motion, and regulator changes invisible to every such filter are
-  removed before the uniform-gap calculation.
+  ## F. Navier–Stokes unit-test holes
 
-  ### Yang--Mills implementation checklist
+  31. The NS unit test explicitly remains conditional.
 
-  - [ ] Define the public quantum presentation from a compact simple gauge
-    group, finite lattices, Haar measure, local gauge action, reflection, and
-    gauge-invariant cylinder observables.
-  - [ ] Construct each finite-regulator probability measure and transfer form
-    directly from this presentation.
-  - [ ] Generate gauge reduction as an \(\Abs\) quotient and retain gauge-fixing
-    and Gribov-type graph defects rather than choosing a global gauge slice.
-  - [ ] Prove finite-regulator reflection positivity inside the ordered
-    cylinder algebra.
-  - [ ] Form the refinement, block-spin, and volume-extension graph with
-    ultraviolet, infrared, boundary, topological-sector, and normalization
-    coordinates.
-  - [ ] Apply the graph-complete positive-functional compactification to this
-    regulator tower.
-  - [ ] Require projective consistency, locality, reflection positivity, and
-    nontrivial observable variance as closed order relations.
-  - [ ] Reconstruct the continuum Hilbert space, vacuum vector, transfer
-    semigroup, and self-adjoint Hamiltonian from any zero-defect positive
-    continuum functional.
-  - [ ] Treat failure of tightness, reflection positivity, strong continuity,
-    or nontriviality as a typed regulator-limit mechanism with inherited
-    source ancestry.
-  - [ ] Encode vacuum orthogonality and Rayleigh quotients in the cylinder
-    moment algebra without assuming the existence of a gap.
-  - [ ] Generate prospective low-energy spectral filters and correlation-shell
-    covectors \(\Gamma_{\rm gap}\) at every finite regulator.
-  - [ ] Compile Dirichlet/form geometry as \(\Geom\), directed transfer as
-    \(\Caus\), gauge quotient as \(\Abs\), refinement and block-spin motion as
-    \(\Lift\), and ultraviolet, infrared, and volume faces as \(\Bdry\).
-  - [ ] Quotient all regulator directions annihilated by
-    \(\Gamma_{\rm gap}\) before applying the moment hierarchy.
-  - [ ] Define the target-active zero-gap successor set across simultaneous
-    ultraviolet and infinite-volume limits.
-  - [ ] Derive regulator-uniform correlation, transfer, and reflection-positive
-    inequalities through the ordered consequence enumerator.
-  - [ ] Compile renormalization-scale feeding into a signed cocycle and compute
-    its invariant cohomology before taking absolute values.
-  - [ ] On the zero-price branch, derive the saturation equations for a
-    nonvacuum zero-energy state and reduce them by gauge, locality, cluster,
-    and topological-sector relations generated by the regulator tower.
-  - [ ] Use the proof-producing moment hierarchy to establish either a uniform
-    positive separator from the vacuum or a compatible zero-gap positive
-    functional at every regulator scale.
-  - [ ] Claim a mass gap only after the separator is uniform in volume and
-    ultraviolet cutoff and survives continuum reconstruction.
-  - [ ] Claim existence only after the reconstructed continuum functional is
-    reflection positive, local, nontrivial, and yields a strongly continuous
-    time-translation semigroup.
+  It says regularity holds precisely when its third cell is empty at to_formalize/continuous_hamiltonian_structural_complexity.tex:20227. The example never eliminates that cell.
 
-  For classical Yang--Mills regularity, use the PDE checklist instead: generate
-  curvature-energy shells, quotient gauge motion, retain bubbling and
-  topological charge as explicit target-active mechanisms, and apply the same
-  carrier-cohomology and ordered-kernel elimination.  Instantons or bubbles
-  with finite action are legitimate saturation states; the algebra must retain
-  them whenever the chosen target and topological sector permit them.
+  32. The NS terminal decomposition is circular.
+
+  The objects (f_{\Sigma_{\rm sing}}) and (\Gamma_{\Sigma_{\rm sing}}^\perp) are constructed on a contact-derived occurrence record. The claimed equivalence at to_formalize/
+  continuous_hamiltonian_structural_complexity.tex:20256 does not compute reachability from the initial datum; it characterizes what a hypothetical contact record would have to look like.
+
+  33. The NS “realized singular terminals” have hypothetical origin.
+
+  The critical-tail theorem calls unbounded-amplification and physical-singular tails “realized singular terminals” at to_formalize/continuous_hamiltonian_structural_complexity.tex:20093. Those
+  tails were extracted from the contact hypothesis, so their origin polarity is (\mathsf{Hyp}), not (\mathsf{Ind}).
+
+  34. Uniform normalized (L^2), (L^3), and pressure bounds are not derived.
+
+  The canonical microscope theorem asserts common bounds at to_formalize/continuous_hamiltonian_structural_complexity.tex:19954. Basic kinetic energy does not give a scale-uniform normalized
+  (L^2) bound because
+
+  [
+  |r,u(x_0+r\cdot)|_{L^2(B_2)}^2
+
+  r^{-1}|u|{L^2(B{2r})}^2.
+  ]
+
+  The “first-scale choice” does not by itself repair this.
+
+  35. The claimed uniform critical price depends on that unproved bound.
+
+  The positive constant (d_) at to_formalize/continuous_hamiltonian_structural_complexity.tex:19996 depends on a uniform (M_2). Without a derived scale-uniform (M_2), (d_) can degenerate along
+  the cascade.
+
+  36. Normalized dissipation is not the physical expenditure.
+
+  Even if (D_j^{\rm act}\ge d_*) in normalized coordinates, its physical cost carries a scale factor. Therefore
+
+  [
+  \sum_j D_j^{\rm act}=\infty
+  ]
+
+  does not contradict finite physical kinetic-energy dissipation. The scale current must finance the difference through the exact covariant carrier. That financing has not been closed.
+
+  37. The signed scale remainder is retained but not eliminated.
+
+  The corrected decomposition
+
+  [
+  F_{\rm sc,\phi}
+  =-aK_\phi-aY_\phi
+  ]
+
+  is now right. But the target-visible remainder involving (aY_\phi), pressure transport, cutoff gradients, and exterior flux can still inhabit the separator branch. The example does not prove it
+  is a coboundary, physically charged, or target-null.
+
+  38. Ordinary zero-production tangents are handled; nonordinary ones are not.
+
+  The proof that an ordinary zero-production tangent has (\nabla V=0) and is Galilean-null is good. But the NS proof reaches its difficulty precisely when the tangent is nonordinary. The
+  manuscript then uses the invalid terminalization theorem instead of evaluating that nonordinary branch.
+
+  39. Pressure and harmonic tails remain successor labels.
+
+  The NS sections enumerate local Calderón–Zygmund pressure, harmonic gauges, and exterior tails. They do not provide a completed recursive argument proving every target-aligned tail charged,
+  null, or independently realizable.
+
+  40. The scale-saturation equality state is not eliminated.
+
+  The intended Perelman-style endpoint should be:
+
+  [
+  \Delta_{\rm car}=0
+  \Longrightarrow
+  \text{relative scale equilibrium}
+  \Longrightarrow
+  \text{target-null}.
+  ]
+
+  The manuscript has portions of this mechanism, but no single theorem derives the relative-equilibrium equation and eliminates every target-active ordinary and generalized equality state.
+
+  41. The NS example does not finish the carrier-polar recursion.
+
+  Its final separator is exactly the object the framework says must be recursively expanded. The example instead calls it an explicit singular mechanism.
+
+  ## G. Spectral/Hamiltonian scope holes
+
+  42. The Hamiltonian track begins after the operator has been constructed.
+
+  The resolvent and Hamiltonian machinery analyzes a given closed form or generator. It does not generally construct the Hilbert space, operator domain, vacuum, or continuum limit.
+
+  43. Spectral singularities are not automatically PDE reachability singularities.
+
+  Resolvent poles, pseudospectral growth, loss of closed range, and PDE noncontinuation need explicit realization maps. Without them, the Hamiltonian formulation is an analytical backend, not a
+  complete equivalent formulation of target reachability.
+
+  44. Regulator-to-continuum spectral reconstruction is incomplete.
+
+  For applications such as quantum Yang–Mills, the current framework does not generate the continuum theory, reflection-positive Hilbert space, vacuum, or strongly continuous Hamiltonian.
+  Therefore it cannot yet evaluate the mass-gap target from textbook finite-regulator data.
 
   ## Bottom line
 
-  The remaining hidden difficulty is concentrated in one statement:
+  The root defect is:
 
   [
   \boxed{
-  \text{Every target-active zero-price fixed point must be either
-  finitely eliminable or physically realizable.}
+  \text{Part II exhausts provenance but does not yet exhaust truth evaluation.}
   }
   ]
 
-  The paper currently proves neither half in general:
+  The manuscript correctly ensures that no target-aligned structure disappears into (J_{\rm res}). But it still allows three nonterminal objects to masquerade as conclusions:
 
-  - finite eliminability is defined through semantic inequalities and inclusions;
-  - surviving compact mechanisms need not correspond to actual dynamics.
-
-  For Navier–Stokes, this means the difficulty has moved into eliminating the target-active zero-price scale-saturation law. For Yang–Mills mass gap, the required quantum state space and
-  Hamiltonian are not generated at all.
-
-  So the manuscript has achieved an exhaustive provenance calculus, but it does not yet possess an exhaustive truth-evaluation calculus. That is the precise remaining defect.
-
-  ## Unified implementation order
-
-  The five repairs above should be implemented as one dependency chain:
-
-  \[
-  \text{public equation syntax}
-  \longrightarrow
-  \text{exhaustive approximation tower}
-  \longrightarrow
-  \text{graph-complete ordered cylinder algebra}
-  \longrightarrow
-  \text{five-source compilation and sourcewise saturation}
-  \longrightarrow
-  \text{prospective target-aligned quotient}
-  \longrightarrow
-  \text{signed shell/carrier currents}
-  \longrightarrow
-  \text{zero-price successor/equality reduction}
-  \longrightarrow
-  \text{primal--dual moment evaluator}.
-  \]
-
-  This chain yields the required truth-evaluation theorem:
-
-  \[
+  [
   \boxed{
-  \begin{aligned}
-  &\text{finite ordered derivation excluding every target-active}\\
-  &\text{zero-price successor state},
-  \end{aligned}}
+  \text{positive functional},\qquad
+  \text{polar separator},\qquad
+  \text{nonordinary fixed graph record}.
+  }
+  ]
+
+  All three must be internal successor states. The only permissible final outputs are:
+
+  [
+  \boxed{
+  \text{finite target-local regularity derivation}
   \quad\text{or}\quad
-  \boxed{
-  \begin{aligned}
-  &\text{a compatible positive-functional model carrying the}\\
-  &\text{complete equation, source ancestry, price, and target pairing}.
-  \end{aligned}}
-  \]
+  \text{independently reconstructed singular orbit}.}
+  ]
 
-  The first box proves target avoidance.  The second box is already a complete
-  generalized mechanism.  It supports a physical singularity claim only when
-  the generated approximation graph supplies a coherent realizing path.  No
-  semantic set inclusion, favorable invariant value, compactness theorem,
-  Liouville statement, or PDE-specific certificate is accepted as application
-  data.
+  Until the framework proves that exhaustive truth-evaluation theorem and the NS specialization discharges its scale-financing branch, Part II is not complete and the NS unit test is not closed.
 
-  ### Cross-cutting completion checklist
+## Soundness-repair audit
 
-  - [ ] Implement the approximation grammar before modifying the successor
-    algebra.
-  - [ ] Replace the evaluation product closure with the positive-functional
-    state space of the graph-complete cylinder algebra.
-  - [ ] Replace every catch-all defect by a least typed graph failure and its
-    derived Radon current.
-  - [ ] Compile full five-channel ancestry before taking any target quotient or
-    analytic limit.
-  - [ ] Generate prospective target alignment and delete target-null currents
-    before invoking compactness, cohomology, or moment machinery.
-  - [ ] Glue signed carrier currents before taking positive parts or assigning
-    physical price.
-  - [ ] Implement the Archimedean ordered proof kernel and prove soundness.
-  - [ ] Prove compact completeness and positive-functional reconstruction.
-  - [ ] Replace semantic pruning forests by dual derivation forests.
-  - [ ] Attach exact rational verification data to every finite pruning node.
-  - [ ] Preserve approximation-origin indices through every successor and
-    stationary-law construction.
-  - [ ] Prove relaxed target exclusion without requiring realization of every
-    compactified point.
-  - [ ] Require coherent approximation realization for every affirmative
-    singularity or zero-gap existence claim.
-  - [ ] Instantiate the full pipeline for Navier--Stokes and verify every
-    target-active scale-cohomology cell.
-  - [ ] Keep the quantum Yang--Mills spectral track separate from the PDE
-    physical-reachability theorem while reusing the ordered structural
-    machinery.
-  - [ ] Revise the main continuum manuscript only after these replacement
-    theorems have precise statements and dependency order.
+The descriptions above are the failures as found; the dispositions below
+record the current manuscript.  A defect
+is resolved only by changing the logical type of the relevant theorem or by
+adding the missing construction.  Merely renaming a branch does not count.
+
+Three disposition types are used.  **Closure** means that a proved
+construction supplies the missing implication stated in the numbered item.
+**Typing repair** means that
+an object previously promoted past what was proved is now kept as an internal
+successor and every reachability theorem has been narrowed accordingly.
+**Scope boundary** means that the manuscript explicitly does not claim the
+missing universal capability.  A scope boundary repairs an invalid theorem;
+it is not evidence that the stronger capability has been obtained.
+
+Accordingly, this section is a soundness audit, not a declaration that every
+capability requested in A--G has been constructed.  An item is a closed
+framework capability only when its matrix row says **Closure** without a
+qualification.  A row saying typing repair, exact gate, recursive transition,
+or scope boundary certifies that the manuscript no longer reasons through the
+gap; it does not certify termination of that branch.
+
+1. Contact-derived records retain origin polarity `Hyp` through every join,
+   limit, and corona transition.  The terminal compiler now requires `Ind`
+   and the ordinary approximation--orbit realization criterion.
+2. A nonordinary total-graph value is a typed successor.  It cannot be an
+   existence terminal.
+3. A carrier-polar separator is a dual-graph successor.  It re-enters adjoint,
+   polarization, cone, and realization processing.
+4. The former binary theorem is now a terminal-*soundness* theorem: every
+   verdict actually reached is either checked avoidance or an independently
+   realized ordinary singular orbit.  It does not assert termination.
+5. Independent realization is no longer inferred from a prospective atom.
+   `thm:approximation-orbit-realization-criterion` gives a sufficient test in
+   terms of one coherent zero-defect, zero-variance, ordinary-domain tower,
+   and an exact test for any realization claimed through that tower;
+   `thm:dirac-realization-gate` reconstructs the orbit when the test holds.
+   A direct ordinary value of the total solution graph realizes itself.  The
+   manuscript does **not** claim that every
+   relaxed atom has such a tower or that the hierarchy manufactures one.
+6. Positive-functional reconstruction is explicitly typed as relaxation.
+   The Dirac gate is required to obtain one PDE path.
+7. The approximation--orbit criterion requires convergence of all coordinates
+   along one compatible tower path.  Coordinatewise subsequences do not pass.
+8. Artificial compactification points are harmless for exclusion and barred
+   from existence by the no-compactification-promotion corollary.
+9. Graph completeness now means information preservation only.  Attainability
+   is a separate ordinary realization row.
+10. `thm:approximation-orbit-realization-criterion` proves sufficiency of a
+    coherent zero-defect, zero-variance, ordinary-domain tower and necessity
+    for every realization asserted through the public approximation grammar.
+    It explicitly does not infer that every ordinary solution is approximable
+    by that grammar.  Direct ordinary solution-graph evaluations remain the
+    other realization route.  Target contact additionally uses ordinary shell
+    and continuation rows.
+11. The carrier cone is split into the finite algebraic cone and its
+    topological closure.  Only algebraic membership is a finite charging
+    proof; closure-only membership is a typed cone-boundary successor.
+12. The carrier-current topology is now the initial locally convex topology
+    of bounded rational cylinder seminorms.  Faithfulness is enforced by the
+    approximation--orbit realization gate.
+13. Strict separators are proved to depend on finitely many cylinder
+    coordinates, but their coefficients are not falsely declared rational.
+    Rational enumeration is claimed complete only for rational-polyhedral
+    finite projections.
+14. Finite semialgebraic elimination is restricted to the polynomial moment
+    relaxation.  Exponentials, resolvents, unbounded operations,
+    distributional products, and limits remain total-graph coordinates.
+15. The ordered grammar makes no relative-completeness claim for all true PDE
+    identities.  Failure to derive an identity produces a relaxed positive
+    functional, never a physical counterexample.
+16. Strict positivity and zero-margin equality are separated.  Equality
+    is now tested first by the dyadic ordered-coercivity terminal rule.  A
+    generated finite-coefficient row (A^{2^k}\le CM^aP^b) and zero
+    production force zero target activity directly for every positive
+    functional.  Only an unbounded coefficient, a nonordinary relation, or an
+    equality cell lacking such a generated domination row continues.
+17. Compact semantic emptiness is usable only with the checked finite deletion
+    identities at the finite empty level.
+18. A primal--polar fixed point is a prospective source atom, not a verdict.
+19. Infinite successor closure now uses the exact Part-I backward-frontier
+    mechanism.  Every stopped shell readout factors through a finite joint
+    ancestral cut; nested conditional expectations split its target
+    projection into orthogonal contextual increments.  Across a cofinal shell
+    family these frontiers are joined before projection, so a nonzero limit
+    has a nonzero finite-prefix increment, while the separate unnormalized
+    cocycle retains every crossing and its physical owner.  Actual contact is
+    linked to the projection identity by the canonical two-record law on the
+    source-current frontier (the unit crossing record versus the algebraic
+    zero-current record), so no observer-law hypothesis is used.  The finite
+    occurrence direct sum gives the exact identities
+    `(N/4)=sum_{j<N,l} Delta_{j,l}` and
+    `N=sum_{j<N,l} widehat Delta_{j,l}`; consequently the argument neither
+    identifies distinct shell spaces nor normalizes away their multiplicity.
+    Compact terminal
+    windows, finite local critical norm, and perturbative critical-space
+    bounds are not premises of this extraction.
+20. The manuscript no longer asserts universal analytic truth evaluation.
+    `prop:sound-scope-ordered-hierarchy` states the exact contract: finite
+    identities are proof objects, compatible moment levels reconstruct only
+    relaxed positive functionals, and physical existence requires the
+    separate approximation--orbit criterion.  This repairs the false theorem
+    claim; it does not pretend that a universal PDE decision procedure has
+    been proved.
+21. Covariant financing now splits verified finite endpoint/exterior rows from
+    unbounded weighted-root or exterior coordinates.  Finiteness is derived
+    inside the finite-financing cell, not assumed globally.
+22. Target-visible unbounded financing is projected before interpretation and
+    returned as a source-owned corona successor.
+23. Exact shell financing is one cone value.  Its complement is recursively
+    processed through cone boundary or polar separation and is not called a
+    terminal.
+24. Global sourcewise signed-measure decompositions were removed.  Source
+    extraction is performed on finite occurrence sets before the directed
+    join; only the positive total target measure receives a global Lebesgue
+    decomposition.
+25. Physical-singular target mass enters source-resolved amplification,
+    zero-production, corona, carrier-polar, and realization transitions.
+26. Bounded amplification is an exact recordwise criterion.  The manuscript
+    no longer calls it a reachability computation from the initial datum.
+27. `def:singular-target` defines the physical target as a same-origin finite
+    noncontinuation **event** of an ordinary maximal preterminal path in the
+    declared public continuation class.  The event therefore does not depend
+    on existence of a terminal analytic state.  Its relaxed shell closure is
+    distinguished notationally and logically.
+28. `prop:terminal-coverage` proves that an actual ordinary maximal path with
+    finite noncontinuation reaches that event target.  Compactness yields only
+    relaxed terminal analytic coordinates; those coordinates, and arbitrary
+    compactification points, require the approximation--orbit gate before
+    they are interpreted as PDE states.  Thus neither genuine blow-up nor
+    compactification artifacts are lost.
+29. `prop:shell-cofinality-realization-fidelity` supplies cofinality for the
+    relaxed closed event target, while the same-origin preterminal path and
+    discrete noncontinuation flag provide physical fidelity.  An unrelated
+    relaxed point cannot inherit that flag.
+30. Nonordinary shell currents remain typed graph successors.  The shell
+    identity supplies prospective accountability, not analytic realization.
+31. The Navier--Stokes audit no longer claims a conditional or unconditional
+    regularity conclusion from an unevaluated third cell.
+32. The contact-derived measure decomposition is stated only as a necessary
+    amplification consequence.  The circular reachability equivalence was
+    deleted.
+33. Navier--Stokes critical tails retain `Hyp` origin and are prospective
+    source-owned successors.
+34. Scale-uniform normalized `L2`, `L3`, and pressure bounds were removed from
+    the canonical microscope construction; their failures are amplitude,
+    pressure, or tail coordinates.  The quotient-activity split is also
+    cofinally exhaustive: either a rational positive floor persists or the
+    activity tends to zero while its unnormalized shell ledger survives as a
+    vanishing-activity successor.
+35. The uniform constant price was replaced by the explicit scale-dependent
+    schedule involving the actual normalized `L2` coordinate.
+36. Normalized dissipation is never equated with physical expenditure.  The
+    covariant scale current and original physical denominator are retained.
+37. The signed scale, pressure, cutoff, chart, and exterior remainder is glued
+    before positive parts and passed owner-by-owner through carrier--polar
+    recursion.
+38. Ordinary zero-production tangents are Galilean-null; nonordinary tangents
+    return to their least typed realization successor.
+39. Pressure and harmonic tails are total graphs with recursive successors,
+    not terminal labels.
+40. Scale-saturation equality is processed by the target-cyclic equality and
+    corona queues.  The finite-amplitude equality fiber is now closed directly
+    at the positive-functional level: the generated fourth-power weighted
+    Poincare--Sobolev row and zero production imply zero quotient activity,
+    without Dirac realization.  The complementary unbounded or nonordinary
+    amplitude value is the typed amplitude/scale successor.
+41. The final Navier--Stokes separator now returns to the general
+    carrier--polar queue and ordinary realization gate.
+42. The Hamiltonian track is explicitly conditional on construction of its
+    closed form/generator; it cannot manufacture the operator domain.
+43. Spectral coordinates affect PDE reachability only through an explicit
+    same-origin realization map intertwining evolution, target, and carrier.
+44. Regulator moment models do not establish a quantum continuum.  A mass-gap
+    conclusion additionally requires zero-defect projective consistency,
+    reflection positivity, nontriviality, strong continuity, and the
+    reconstructed Hamiltonian.
+
+The resulting contract has no hidden third terminal.  There are only checked
+finite target exclusion and independently reconstructed ordinary contact.
+Positive functionals, separators, compactified germs, cone-boundary values,
+and fixed prospective atoms are internal states.  This repair makes the
+calculus sound; it deliberately does not relabel a nonterminating internal
+evaluation as a proof of regularity or singularity.
+
+### Verification matrix
+
+The following matrix identifies the exact manuscript interface that now
+controls every numbered defect.  Labels refer to
+`continuous_hamiltonian_structural_complexity.tex`.
+
+| Item | Disposition | Controlling definition/theorem |
+|---:|---|---|
+| 1 | Closure | `thm:no-recycled-contact-realization`, `thm:three-output-target-aligned-current-compiler` |
+| 2 | Typing repair | `thm:approximation-realization-first-failure`, `cor:no-compactification-existence-promotion` |
+| 3 | Typing repair | `def:target-local-carrier-polar-successor`, `cor:no-pre-polar-realization` |
+| 4 | Typing repair | `cor:binary-terminal-semantics`, `cor:binary-continuum-terminal-theorem` |
+| 5 | Scope boundary plus exact gate | `thm:dirac-realization-gate`, `thm:approximation-orbit-realization-criterion` |
+| 6 | Typing repair plus exact Dirac gate | `prop:sound-scope-ordered-hierarchy` (S2), `thm:dirac-realization-gate` |
+| 7 | Closure | `thm:approximation-orbit-realization-criterion` (D1)--(D2) |
+| 8 | Typing repair | `cor:no-compactification-existence-promotion` |
+| 9 | Typing repair | `cor:no-compactification-existence-promotion` |
+| 10 | Exact gate, not universal surjectivity | `thm:approximation-orbit-realization-criterion` |
+| 11 | Closure | `def:target-local-carrier-polar-successor`, `thm:recursive-carrier-polar-exhaustion` |
+| 12 | Closure for topology; realization kept separate | `def:target-local-carrier-polar-successor`, `cor:no-compactification-existence-promotion` |
+| 13 | Closure | `lem:rational-carrier-separation` |
+| 14 | Typing repair | `prop:sound-scope-ordered-hierarchy` (S3) |
+| 15 | Scope boundary | `prop:sound-scope-ordered-hierarchy`, final paragraph |
+| 16 | Constructive closure for generated dyadic coercivity rows; complementary equality remains typed | `thm:dyadic-ordered-coercivity-terminal-rule`, `prop:sound-scope-ordered-hierarchy` (S4), `thm:saturation-equation-compiler` |
+| 17 | Closure | `def:finite-pruning-transcript`, `thm:canonical-finite-pruning-transcript` |
+| 18 | Typing repair plus coercivity/equality transition | `thm:dyadic-ordered-coercivity-terminal-rule`, `thm:three-output-target-aligned-current-compiler`, `thm:no-terminal-zero-price-model` |
+| 19 | Exact finite-prefix backward-frontier and cumulative-accounting closure | `thm:exact-prospective-continuum-backward-factorization`, `thm:cofinal-prospective-frontier-closure`, `thm:continuum-composition-no-creation`, `cor:no-limit-created-target-alignment` |
+| 20 | No-go closure for a universal profile verdict | `thm:quantifier-faithful-continuum-accountability`, `prop:sound-scope-ordered-hierarchy`, `cor:binary-continuum-terminal-theorem` |
+| 21 | Closure | `thm:complete-covariant-corona-evaluator` (V1)/(V3) |
+| 22 | Typing repair as a source-owned successor | `thm:complete-covariant-corona-evaluator` (V3) |
+| 23 | Recursive transition; automatic financing not closed | `thm:target-aligned-carrier-duality`, `thm:complete-covariant-corona-evaluator` |
+| 24 | Closure | `def:same-origin-occurrence-measure`, `thm:prospective-source-amplification-extraction` |
+| 25 | Typing repair plus evaluated transition and finite-coefficient equality closure | `thm:exact-compositional-physical-accounting`, `thm:amplification-zero-production-tangent`, `thm:dyadic-ordered-coercivity-terminal-rule` |
+| 26 | Exact criterion; universal computation not closed | `thm:physical-target-capacity-duality` |
+| 27 | Closure | `def:singular-target` |
+| 28 | Closure | `prop:terminal-coverage`, `cor:no-compactification-existence-promotion` |
+| 29 | Closure | `prop:shell-cofinality-realization-fidelity` |
+| 30 | Typing repair as graph transition | `thm:defect-totalization-five-channel`, `thm:projection-first-saturation` |
+| 31 | Typing repair; no NS regularity claim | `thm:ns-backend-scope`, conclusion after (A10) |
+| 32 | Typing repair | `thm:ns-empty-singular-target-core` |
+| 33 | Closure | `thm:ns-critical-tail-nullity`, `thm:no-recycled-contact-realization` |
+| 34 | Typing repair | `thm:ns-canonical-target-orbit` (C2)--(C3) |
+| 35 | Closure | `lem:ns-computed-critical-price` |
+| 36 | Closure of scale accounting | `prop:ns-no-free-shrinkage`, `thm:ns-signed-covariant-carrier` |
+| 37 | Recursive transition; terminal elimination not closed | `prop:ns-complete-covariant-corona-execution` |
+| 38 | Closure of ordinary/nonordinary split | `prop:ns-ordinary-amplification-tangent-nullity`, `thm:ns-critical-tail-nullity` |
+| 39 | Total-graph recursion; terminal elimination not closed | `def:ns-collapsed-successor-cells`, `thm:ns-critical-tail-nullity` |
+| 40 | Finite-amplitude positive-functional equality fiber closed; the survivor is localized to the joint amplitude--scale cell | `thm:dyadic-ordered-coercivity-terminal-rule`, `prop:ns-ordinary-amplification-tangent-nullity`, `cor:ns-surviving-amplitude-scale-cell`, `thm:complete-covariant-corona-evaluator` |
+| 41 | Routing closure only; termination not closed | `thm:ns-carrier-polar-recursion`, `prop:ns-complete-covariant-corona-execution` |
+| 42 | Scope boundary | `thm:continuum-reconstruction-output`, `cor:spectral-realization-boundary` |
+| 43 | Closure by an explicit interface requirement | `cor:spectral-realization-boundary` |
+| 44 | Scope boundary plus reconstruction gate | `thm:continuum-reconstruction-output`, `thm:uniform-gap-proof-model`, `cor:spectral-realization-boundary` |
+
+This matrix deliberately distinguishes a rigorous repair from a stronger
+result that has not been proved.  Every invalid promotion or inference listed
+in A--G is now blocked.  The stronger termination or reconstruction
+capability requested by items 5, 10, 15--16, 18--19, 22--23, 25--26, 30--31,
+37, 39--44 is not closed.  In those rows the manuscript has a sound gate,
+successor, or scope restriction, but no theorem forcing that successor to
+terminate in finite exclusion or ordinary realization.  The remaining rows
+close the stated local defect.
+
+Therefore the present source is logically sound and type-safe, but the claim
+that every item in A--G has been converted into a terminating universal
+continuum evaluator would be false.  In particular, the manuscript does not
+prove unconditional three-dimensional Navier--Stokes regularity or construct
+a Yang--Mills continuum theory.  Those conclusions cannot be inserted by
+renaming a prospective atom, separator, or reconstruction antecedent as a
+closure theorem.
+
+The quantifier obstruction is now a theorem rather than a scope convention:
+`thm:quantifier-faithful-continuum-accountability` proves that source
+exhaustion yields
+
+[
+\operatorname{Reach}_\Sigma^{\rm Phys}>0
+\Longrightarrow
+\mathsf T_\Sigma^{\rm Phys,Sat}(\mathcal B)\ge 1/5,
+]
+
+and also proves that the framework cannot force the opposite profile bound
+uniformly over public presentations, because presentations with independently
+realized contact are allowed.  Thus a demand that source classification alone
+close every target cell would contradict the framework's explicit allowance
+of singular equations.  A particular specialization closes by a generated
+upper-profile derivation or by an independently realized contacting orbit;
+neither value may be inserted into the public presentation.
+
+### Remaining terminal cell after the coercivity implementation
+
+The general dyadic ordered-coercivity rule now performs the equality step
+constructively.  Whenever the public equation generates
+
+[
+A^{2^k}\le C M^aP^b,
+\qquad M\le M_0<\infty,
+]
+
+zero production forces zero target activity for every graph-complete positive
+functional.  This closes the former generalized-equality loophole without
+ordinary realization.  In the Navier--Stokes specialization the weighted
+Poincare--Sobolev row closes every finite-amplitude amplification tangent.
+
+The surviving positive-activity cell is therefore the joint value
+
+[
+r_j\to0,
+\qquad
+M_{2,j}\to\infty,
+]
+
+with the complete tuple
+
+[
+(r_j,M_{2,j},D_j,M_j,r_j(D_j+M_j),
+  \mathcal O_{\zeta,j},Q_{\Sigma,j},\operatorname{Anc}_j).
+]
+
+`cor:ns-surviving-amplitude-scale-cell` proves this localization.  It also
+proves that the current physical carrier cannot close the cell: the public
+relation (p_j=r_j(D_j+M_j)) admits (r_j\to0), arbitrary normalized
+dissipation, and (p_j\to0).  Thus a scale-independent estimate
+(D_j+M_j\le Cp_j) is not an ordered consequence of the existing algebra.
+
+The fast-track notebook does not repair this missing implication.  Its scale
+module assumes scale stability and a positive per-log-scale dissipation
+quantum, while its conservative-carrier module assumes uniform domination
+constants.  Importing any of those rows as data would reintroduce the exact
+certificate gap being audited.  The remaining terminal construction must
+therefore derive a new scale-critical carrier from the public equation or
+prove the joint amplitude--scale cell target-null.  The present equation and
+energy-carrier relations do not imply either statement.
+
+## Part-I-aligned repair program
+
+This section turns every numbered defect into an implementation task.  The
+translation used throughout is
+
+| Part I | Continuum extension |
+|---|---|
+| first successful test | first completed target-shell crossing |
+| finite computation transcript | finite stopped current history |
+| joint observable frontier | joint pre-contact current frontier |
+| conditional projection increment | conditional shell-current increment |
+| constructor cost | owner-tagged physical valuation |
+| saturated success profile | saturated target-reachability profile |
+| executed algorithm | ordinary same-origin PDE orbit |
+
+The public presentation supplies textbook data: equation, state and
+continuation classes, initial and boundary data, native energy law, covariance
+maps, and standard approximation operators.  It supplies neither a regularity
+conclusion nor a problem-specific estimate.  Every identity below must be
+generated from that presentation by the structural grammar.
+
+### A. Terminal semantics
+
+#### 1. Preserve origin polarity
+
+**Part-I analogue:** a completed success label cannot be an ancestor of the
+selector that produced success.  **Construction:** attach `Hyp/Ind` to every
+shell, limit, corona, separator, and realization record; make joins, limits,
+quotients, and graph completion preserve `Hyp`.  Only a direct ordinary
+solution graph or an approximation tower built independently of assumed
+contact may create `Ind`.  **Closed when:** structural induction over every
+constructor proves `Hyp` can never become `Ind`, and all singular-existence
+theorems require `Ind`.
+
+#### 2. Make nonordinary values proper descendants
+
+**Part-I analogue:** a failed evaluator is a transcript state, not acceptance.
+**Construction:** totalize each partial analytic operation into disjoint
+ordinary, domain-failure, blow-up, oscillation, concentration, and tail
+values; retain the source owner and shell cocycle and reapply target
+projection.  **Closed when:** every such value is charged, target-null,
+strictly refined, or ordinarily realized; none is a singular verdict.
+
+#### 3. Treat separators as dual source records
+
+**Part-I analogue:** a distinguisher exposes useful ancestry but is not an
+execution.  **Construction:** join every polar separator to its primal owner,
+generate adjoint pullbacks and polarizations, and re-enter the joint word into
+the five-source compiler.  **Closed when:** the separator disappears only by
+a finite carrier identity, target-nullity, or ordinary realization of its
+primal owner.
+
+#### 4. Use a sound terminal contract
+
+**Part-I analogue:** accountability does not declare every task hard.
+**Construction:** distinguish internal evaluator states from verdicts.
+Profiles, positive functionals, separators, equality cells, and graph
+descendants are internal.  Verdicts are checked target exclusion and
+independently realized ordinary contact.  **Closed when:** both verdict maps
+are sound; uniform termination over all PDE presentations is not asserted.
+
+#### 5. Construct independent realization
+
+**Part-I analogue:** a legal transcript is executable from the public input.
+**Construction:** build a same-origin approximation path carrying initial
+data, chronology, equation/domain/trace/product defects, physical ledger, and
+shell contact.  A Dirac gate returns an orbit exactly when one coherent path
+has vanishing defects and converges in the weak-equation topology.  **Closed
+when:** this condition is necessary and sufficient for every existence claim
+made through the approximation grammar; direct ordinary solution graphs form
+the second realization route.
+
+### B. Reconstruction and compactification
+
+#### 6. Separate relaxed laws from paths
+
+**Part-I analogue:** a law on transcripts is not one executed transcript.
+**Construction:** disintegrate the positive functional over time and origin;
+test zero conditional variance and every equation/domain graph.  **Closed
+when:** orbit extraction requires a Dirac conditional law, common origin,
+chronological consistency, and vanishing public defects.
+
+#### 7. Enforce one projective branch
+
+**Part-I analogue:** all vertices belong to one transcript.  **Construction:**
+organize approximations as a rooted refinement tree and require one infinite
+branch whose restrictions agree on every earlier cylinder.  **Closed when:**
+the inverse-limit point is proved to arise from one branch; unrelated
+coordinatewise subsequences fail realization.
+
+#### 8. Block artificial compactification points from existence
+
+**Part-I analogue:** inaccessible table entries are not executable advice.
+**Construction:** compactification points may support separation and
+exclusion, but have empty realization fiber until reached by a zero-defect
+branch.  **Closed when:** every existence verdict lies in the image of the
+ordinary realization map.
+
+#### 9. Restrict graph completeness to information preservation
+
+**Part-I analogue:** a complete record preserves provenance but does not make
+an operation executable.  **Construction:** factor terminal evaluation as
+`record -> graph-complete value -> realization gate`.  **Closed when:** no
+graph-compatible value is promoted directly to physical existence.
+
+#### 10. Prove approximation--orbit equivalence
+
+**Part-I analogue:** operational and transcript semantics agree.
+**Construction:** prove stability of the weak equation, initial data, traces,
+products, and physical ledger along a zero-defect branch; compile every orbit
+claimed through the grammar back into compatible prefixes.  **Closed when:**
+the equivalence holds for the declared approximation grammar.  Solutions
+outside that grammar are not claimed.
+
+### C. Ordered-algebra evaluation
+
+#### 11. Replace semantic cone membership by finite-cylinder duality
+
+**Part-I analogue:** source cells are evaluated on finite represented
+frontiers.  **Construction:** project owner and carrier cone to the first
+`n` generated cylinders.  Exact membership returns a finite carrier identity;
+strict nonmembership returns a finite separator; boundary membership appends
+the next cylinder with its error.  **Closed when:** finite primal/dual values
+are monotone and converge, and only finite identities authorize charging.
+
+#### 12. Derive the topology from target tests
+
+**Part-I analogue:** the observable algebra fixes the relevant topology.
+**Construction:** use the initial topology of bounded shell, current, ledger,
+and realization-defect cylinders; complete exact ancestry cells separately,
+then quotient the target-null kernel.  **Closed when:** every limit constructor
+is continuous on its declared cell and ordinary zero-defect branches embed
+faithfully.
+
+#### 13. Make separator discovery coefficient-complete
+
+**Part-I analogue:** a readout retains its actual coefficients.  **Construction:**
+enumerate rational separators only on rational-polyhedral projections;
+otherwise retain the exact real coefficient tuple.  Rationalize only after a
+positive recorded margin.  **Closed when:** every strict separation appears
+on a finite cylinder and approximation error is smaller than its margin.
+
+#### 14. Totalize the non-semialgebraic grammar
+
+**Part-I analogue:** every legal constructor has an operational graph.
+**Construction:** give exponentials, resolvents, unbounded domains,
+distributional products, traces, measures, and limits explicit total graphs;
+use semialgebraic elimination only on polynomial fragments.  **Closed when:**
+every proof expression expands into a finite declared DAG or a typed boundary
+value.
+
+#### 15. Prove the relative completeness Part I requires
+
+**Part-I analogue:** saturation covers the declared grammar, not every
+mathematical truth.  **Construction:** prove that every finite consequence of
+the generated target-local cylinder algebra has a finite derivation or a
+finite positive functional separating it.  The latter remains a profile
+state, not an orbit.  **Closed when:** every generated finite identity is
+accounted for without claiming completeness for all analytic PDE identities.
+
+#### 16. Compile equality ideals
+
+**Part-I analogue:** zero advantage is evaluated on its exact fiber.
+**Construction:** on zero production, generate the finite real radical using
+squares, polarization, adjoints, symmetries, and dyadic coercivity; reproject
+the target after every enlargement.  **Closed when:** each finite equality
+cell becomes target-null or strictly smaller, while nonordinary coefficients
+remain typed descendants.
+
+#### 17. Require checked deletion transcripts
+
+**Part-I analogue:** pruning requires a verifier record.  **Construction:**
+attach a finite ordered emptiness or nullity identity to every deleted cell
+and a checked covering proof to every finite cover.  **Closed when:** replaying
+the transcript verifies all deletions without semantic compactness as an
+oracle.
+
+#### 18. Evaluate fixed atoms as source profiles
+
+**Part-I analogue:** a target-aligned algorithm is a success-profile witness,
+not a seventh mechanism.  **Construction:** insert a primal--polar fixed atom
+into its exact five-source profile with target increment and physical
+valuation, then apply profile duality, equality compilation, and realization.
+**Closed when:** fixedness is never terminal; the atom remains an explicit
+profile lower bound until charged, nulled, or realized.
+
+#### 19. Preserve infinite composition by backward frontiers
+
+**Part-I analogue:** many individually null operations cannot create
+uncharged joint information.  **Construction:** use the implemented canonical
+two-record source-current law, conditional increments, occurrence direct sum,
+and cumulative joint algebra.  **Closed when:**
+`N/4=sum Delta`, `N=sum widehat Delta`, and every nonzero limit has a nonzero
+finite contextual increment.  This item is closed in the manuscript.
+
+#### 20. Replace universal truth evaluation by profile evaluation
+
+**Part-I analogue:** accountability plus a task-specific profile bound proves
+hardness.  **Construction:** derive an exact primal--dual formula for each
+physical source profile.  Each PDE specialization must derive a profile
+ceiling or an independently realized contacting orbit from the same algebra.
+**Closed when:** no third verdict exists.  Uniform termination is not required,
+because singular equations are valid presentations.
+
+### D. Physical financing
+
+#### 21. Derive weighted-root and exterior ceilings
+
+**Part-I analogue:** downstream normalization stays in the constructor ledger.
+**Construction:** solve adjoint weights on finite horizons, retain both
+endpoints, glue horizons before positive parts, and restrict exterior input to
+the public boundary/forcing measure.  **Closed when:** every finite-financing
+verdict contains derived bounds for root, production, and exterior terms;
+unbounded weights enter scale cells.
+
+#### 22. Expand unbounded financing
+
+**Part-I analogue:** an over-budget constructor exposes its responsible
+resource coordinate.  **Construction:** factor the term through scale rate,
+carrier, horizon, and exterior owner; apply the backward frontier and generate
+its adjoint carrier.  **Closed when:** it telescopes, is charged, is null, or
+enters a strictly refined scale/equality cell.
+
+#### 23. Prove source-profile/carrier duality
+
+**Part-I analogue:** capability profiles are inverse resource frontiers.
+**Construction:** for each exact source cell, equate the supremum of normalized
+contextual progress under the physical ceiling with the infimum over generated
+covariant carriers dominating that progress.  Include storage and exterior
+terms.  **Closed when:** finite-cylinder strong duality, monotone passage,
+equality evaluation, and realization typing are proved; separators are dual
+profile witnesses only.
+
+#### 24. Keep signed currents finite-prefix local
+
+**Part-I analogue:** conditional increments are combined before undefined
+cancellation.  **Construction:** define signed source currents on finite
+occurrence algebras, retain total variation, and pass globally only with a
+proved local-finiteness bound; globally decompose only the positive contact
+measure.  **Closed when:** every global signed-measure claim has a variation
+proof.
+
+#### 25. Evaluate physical-singular target mass
+
+**Part-I analogue:** residual-ancestry correlation re-enters a source profile.
+**Construction:** project the component singular to the physical measure into
+five owners and apply amplification, equality, carrier-polar, and realization
+steps owner-by-owner.  **Closed when:** measure singularity is only a typed
+zero-denominator cell, never a blow-up verdict by itself.
+
+#### 26. Compute amplification cellwise
+
+**Part-I analogue:** profiles are bounded through exact source cells.
+**Construction:** totalize target progress divided by production, storage,
+and exterior input in every source/polarity cell; bound finite ratios by
+carrier duality and route infinite ratios through equality and realization.
+**Closed when:** finitely verified cell bounds cover the saturated profile.
+
+### E. Target and continuation
+
+#### 27. Compile the target from the theorem statement
+
+**Part-I analogue:** the accepting set belongs to the task presentation.
+**Construction:** declare the weakest acceptable continuation class, local
+uniqueness, and gauge identifications; define contact as its failure on an
+ordinary maximal path.  **Closed when:** target avoidance is equivalent to the
+stated global-regularity conclusion.
+
+#### 28. Make event contact primary
+
+**Part-I analogue:** first hit is primary and completed quotients are
+accounting.  **Construction:** use the finite noncontinuation flag on the
+same-origin path; compactified germs are shell-support coordinates requiring
+realization.  **Closed when:** every actual noncontinuation triggers the flag
+and no unrelated relaxed point inherits it.
+
+#### 29. Prove shell cofinality by separation
+
+**Part-I analogue:** verifier observables separate target and nontarget.
+**Construction:** generate rational ramps of continuation-defect coordinates
+and prove their joint zero set equals the regular continuation locus.  **Closed
+when:** every ordinary noncontinuation crosses cofinal normalized shells and
+every regular continuation eventually avoids them.
+
+#### 30. Evaluate nonordinary shell currents
+
+**Part-I analogue:** a failed primitive remains in the expanded transcript.
+**Construction:** totalize products, traces, pressure, charts, and Stieltjes
+pairings; retain the first failed graph with target covector, owner, physical
+denominator, and multiplicity; run the same backward/carrier evaluator.
+**Closed when:** every graph current is charged, null, strictly refined, or
+ordinarily realized.
+
+### F. Navier--Stokes unit test
+
+#### 31. Execute the general evaluator, not an NS-specific terminal rule
+
+**Part-I analogue:** LPN instantiates the general profile theorem.
+**Construction:** map viscosity, convection, pressure, gauges, cutoffs, scale,
+exterior flux, and suitable-energy defect into general source cells and run
+the common backward, valuation, equality, and realization compilers.  **Closed
+when:** the example has no conditional conclusion or NS-only terminal branch.
+
+#### 32. Remove contact-derived reachability equivalences
+
+**Part-I analogue:** a successful transcript lower-bounds the success profile;
+it does not prove reachability from unrelated input.  **Construction:** use
+contact-derived decompositions only prospectively and determine reachability
+through the ordinary initial-data realization map.  **Closed when:** no
+post-contact quantity proves its own existence.
+
+#### 33. Preserve `Hyp` in critical tails
+
+**Part-I analogue:** retrospective labels never become selectors.
+**Construction:** propagate `Hyp` through amplification, pressure, scale,
+tail, and corona records.  **Closed when:** singular existence requires a
+separate `Ind` path with the same coordinates.
+
+#### 34. Make failed normalized bounds amplitude cells
+
+**Part-I analogue:** absence of a cheap quotient is retained structure.
+**Construction:** totalize normalized `L2`, `L3`, pressure, and tail values;
+join finite/unbounded/nonordinary cells with scale and unnormalized energy.
+**Closed when:** the microscope assumes no uniform normalized bound and every
+failure is a source-owned amplitude/scale cell.
+
+#### 35. Use the actual scale-dependent price
+
+**Part-I analogue:** constructor cost uses its actual parameters.
+**Construction:** compute coercive price from retained amplitude, scale,
+activity, and carrier coordinates and sum its physical value on disjoint
+occurrences.  **Closed when:** every divergent-price claim follows from this
+schedule and the kinetic-energy ledger.
+
+#### 36. Put the covariant microscope in the valuation
+
+**Part-I analogue:** representation change cannot erase cost.  **Construction:**
+treat scale as `Lift`, differentiate the pulled-back carrier, retain scale
+current and adjoint weight, and glue scale interfaces before comparing
+normalized and physical production.  **Closed when:** shrinkage with zero
+physical price necessarily enters the equality compiler.
+
+#### 37. Aggregate signed transport first
+
+**Part-I analogue:** joint effects are evaluated before coordinatewise norms.
+**Construction:** add convection, pressure, cutoff, translation, scale,
+exterior, and defect currents with signs on compatible interfaces; compare
+only the aggregate inward current with the carrier.  **Closed when:** no proof
+sums absolute internal currents and every remainder re-enters carrier duality.
+
+#### 38. Treat ordinary and nonordinary tangents uniformly
+
+**Part-I analogue:** failure values remain in the same saturated grammar.
+**Construction:** quotient ordinary tangents by Galilean/gradient kernels;
+send nonordinary tangents to their first failed domain, pressure, scale, or
+convergence graph.  **Closed when:** both pass through equality and realization
+and neither is called singular solely from zero production.
+
+#### 39. Compile pressure and harmonic tails
+
+**Part-I analogue:** boundary/oracle calls retain query and readout ancestry.
+**Construction:** split local pressure, harmonic gauge, exterior tail, and
+trace; generate adjoint shell pairings and interface cancellation; retain
+truncation and exterior owners on failures.  **Closed when:** every visible
+tail is charged, null, reduced, or realized.
+
+#### 40. Compile scale equality into relative equilibria
+
+**Part-I analogue:** equality exposes the exact attaining structure.
+**Construction:** saturate equality in the signed covariant carrier, derive
+the relative scale/translation equation, quotient gauges, and apply generated
+coercivity; keep unbounded amplitude joined to scale and price.  **Closed
+when:** every equality cell is null, charged, or independently realized.  The
+finite-amplitude cell is closed; the unbounded amplitude--scale cell remains
+the stress test.
+
+#### 41. Finish the test through the general terminal machinery
+
+**Part-I analogue:** the application substitutes cellwise bounds into general
+accountability.  **Construction:** feed all NS separators, equality cells, and
+tails into the general profile evaluator.  **Closed when:** the example ends
+in checked avoidance or an `Ind` zero-defect contacting orbit, with no
+unevaluated NS successor.
+
+### G. Hamiltonian and spectral reconstruction
+
+#### 42. Construct the operator inside the grammar
+
+**Part-I analogue:** the transition operator is derived from the presented
+computation.  **Construction:** generate Hilbert space, closed form, domain,
+generator, and boundary conditions from the PDE/regulator presentation;
+totalize closability, density, and domain failures.  **Closed when:** spectral
+machinery is used only after this graph has an ordinary value.
+
+#### 43. Add a same-origin spectral-to-reachability map
+
+**Part-I analogue:** a spectral feature counts through the pre-hit selector
+that uses it.  **Construction:** construct an intertwiner preserving time,
+shells, source currents, and carrier; pull spectral covectors back through its
+adjoint.  **Closed when:** poles, pseudospectra, and range defects affect PDE
+reachability only through nonzero same-origin pulled-back pairing.
+
+#### 44. Treat regulator reconstruction as realization
+
+**Part-I analogue:** consistent finite instances do not automatically define
+one uniform infinite execution.  **Construction:** join regulator levels and
+generate projective consistency, reflection positivity, nontriviality,
+cyclic-vacuum, strong-continuity, and Hamiltonian tests.  **Closed when:** a
+zero-defect projective branch constructs the continuum Hilbert space and
+Hamiltonian before the mass-gap target is evaluated.
+
+## Implementation order
+
+1. Retain items 1--4, 8--9, 17, 19, 24, and 27--29 as the soundness and
+   accountability base already implemented.
+2. Complete physical valuation and exact profile duality: items 11--16 and
+   21--26.
+3. Complete equality and covariant-scale evaluation: items 18, 22, 30, and
+   34--40.
+4. Complete same-origin realization: items 5--10.
+5. Re-run the Navier--Stokes backend through items 31--41 without adding
+   application-specific terminal rules.
+6. Apply the realization architecture to operator and regulator presentations:
+   items 42--44.
+
+The accountability layer matches Part I when every target effect is forced
+into a finite contextual source increment.  The operational layer matches
+Part I when physical valuation computes the corresponding saturated source
+profile.  Continuum dynamics additionally needs the realization layer because
+finite structural consistency must be converted into one ordinary
+time-dependent orbit before singular existence is asserted.
