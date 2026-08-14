@@ -3,44 +3,44 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: continuous_hamiltonian_structural_complexity.aux
 The style file: plainnat.bst
 Database file #1: continuous_hamiltonian_structural_complexity.bib
-You've used 18 entries,
+You've used 16 entries,
             2773 wiz_defined-function locations,
-            725 strings with 7489 characters,
-and the built_in function-call counts, 6652 in all, are:
-= -- 596
-> -- 264
-< -- 16
-+ -- 96
-- -- 78
-* -- 464
-:= -- 1046
-add.period$ -- 57
-call.type$ -- 18
-change.case$ -- 76
-chr.to.int$ -- 18
-cite$ -- 36
-duplicate$ -- 351
-empty$ -- 637
-format.name$ -- 104
-if$ -- 1390
+            709 strings with 7144 characters,
+and the built_in function-call counts, 5841 in all, are:
+= -- 522
+> -- 222
+< -- 14
++ -- 82
+- -- 66
+* -- 405
+:= -- 920
+add.period$ -- 51
+call.type$ -- 16
+change.case$ -- 66
+chr.to.int$ -- 16
+cite$ -- 32
+duplicate$ -- 311
+empty$ -- 567
+format.name$ -- 86
+if$ -- 1219
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 23
-newline$ -- 101
-num.names$ -- 72
-pop$ -- 169
+missing$ -- 20
+newline$ -- 91
+num.names$ -- 64
+pop$ -- 150
 preamble$ -- 1
-purify$ -- 62
+purify$ -- 54
 quote$ -- 0
-skip$ -- 246
+skip$ -- 215
 stack$ -- 0
-substring$ -- 230
-swap$ -- 18
+substring$ -- 204
+swap$ -- 16
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 163
+type$ -- 146
 warning$ -- 0
-while$ -- 70
+while$ -- 62
 width$ -- 0
-write$ -- 248
+write$ -- 221

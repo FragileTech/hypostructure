@@ -468,15 +468,17 @@ gap; it does not certify termination of that branch.
    verdict actually reached is either checked avoidance or an independently
    realized ordinary singular orbit.  It does not assert termination.
 5. Independent realization is no longer inferred from a prospective atom.
-   `thm:approximation-orbit-realization-criterion` gives a sufficient test in
-   terms of one coherent zero-defect, zero-variance, ordinary-domain tower,
-   and an exact test for any realization claimed through that tower;
+   `thm:approximation-orbit-realization-criterion` gives the exact operational
+   semantics of realization through the declared approximation grammar in
+   terms of one coherent zero-defect, zero-variance, ordinary-domain tower;
    `thm:dirac-realization-gate` reconstructs the orbit when the test holds.
    A direct ordinary value of the total solution graph realizes itself.  The
    manuscript does **not** claim that every
    relaxed atom has such a tower or that the hierarchy manufactures one.
 6. Positive-functional reconstruction is explicitly typed as relaxation.
-   The Dirac gate is required to obtain one PDE path.
+   `lem:generator-variance-dirac-state` proves that zero variance on the
+   bounded cylinder generators makes the functional multiplicative on the
+   entire cylinder algebra; the Dirac gate then reconstructs one PDE path.
 7. The approximation--orbit criterion requires convergence of all coordinates
    along one compatible tower path.  Coordinatewise subsequences do not pass.
 8. Artificial compactification points are harmless for exclusion and barred
@@ -486,35 +488,52 @@ gap; it does not certify termination of that branch.
 10. `thm:approximation-orbit-realization-criterion` proves sufficiency of a
     coherent zero-defect, zero-variance, ordinary-domain tower and necessity
     for every realization asserted through the public approximation grammar.
-    It explicitly does not infer that every ordinary solution is approximable
-    by that grammar.  Direct ordinary solution-graph evaluations remain the
-    other realization route.  Target contact additionally uses ordinary shell
-    and continuation rows.
+    This is the complete operational equivalence for that grammar.  Direct
+    ordinary solution-graph evaluations remain the other realization route.
+    Target contact additionally uses ordinary shell and continuation rows.
 11. The carrier cone is split into the finite algebraic cone and its
     topological closure.  Only algebraic membership is a finite charging
     proof; closure-only membership is a typed cone-boundary successor.
+    `thm:exact-finite-cylinder-source-profile-duality` now computes the exact
+    support value on every checked finite cylinder by a finite-dimensional
+    primal--dual formula.
 12. The carrier-current topology is now the initial locally convex topology
-    of bounded rational cylinder seminorms.  Faithfulness is enforced by the
-    approximation--orbit realization gate.
+    of bounded rational cylinder seminorms.  Its closure is the inverse limit
+    of the checked finite-cylinder relaxations by
+    `thm:monotone-cylinder-source-profile-completion`; faithfulness to an
+    ordinary PDE orbit remains exactly the approximation--orbit realization
+    gate.
 13. Strict separators are proved to depend on finitely many cylinder
     coordinates, but their coefficients are not falsely declared rational.
     Rational enumeration is claimed complete only for rational-polyhedral
-    finite projections.
+    finite projections.  The finite-cylinder profile dual retains arbitrary
+    real dual coefficients through the total dual graph.
 14. Finite semialgebraic elimination is restricted to the polynomial moment
     relaxation.  Exponentials, resolvents, unbounded operations,
     distributional products, and limits remain total-graph coordinates.
+    Exact finite-cylinder duality uses convex separation rather than a
+    semialgebraic claim.
 15. The ordered grammar makes no relative-completeness claim for all true PDE
-    identities.  Failure to derive an identity produces a relaxed positive
-    functional, never a physical counterexample.
+    identities.  Failure to derive an identity produces a compatible relaxed
+    profile functional by monotone cylinder completion, never a physical
+    counterexample.  This is the same profile-witness role played by a
+    target-aligned derivation in Part~I.
 16. Strict positivity and zero-margin equality are separated.  Equality
     is now tested first by the dyadic ordered-coercivity terminal rule.  A
     generated finite-coefficient row (A^{2^k}\le CM^aP^b) and zero
     production force zero target activity directly for every positive
     functional.  Only an unbounded coefficient, a nonordinary relation, or an
-    equality cell lacking such a generated domination row continues.
+    equality cell lacking such a generated domination row continues.  The
+    finite-cylinder duality theorem now retains the exact exposed equality
+    face and the vanishing terms of its dual row before that compiler runs.
 17. Compact semantic emptiness is usable only with the checked finite deletion
-    identities at the finite empty level.
+    identities at the finite empty level.  A profile exclusion is licensed
+    only when a checked finite dual row places the source profile below the
+    target floor.
 18. A primal--polar fixed point is a prospective source atom, not a verdict.
+    It is inserted into the finite-cylinder source profile and is either
+    bounded by a checked dual row or retained in the compatible relaxed
+    profile witness.
 19. Infinite successor closure now uses the exact Part-I backward-frontier
     mechanism.  Every stopped shell readout factors through a finite joint
     ancestral cut; nested conditional expectations split its target
@@ -538,7 +557,9 @@ gap; it does not certify termination of that branch.
     relaxed positive functionals, and physical existence requires the
     separate approximation--orbit criterion.  This repairs the false theorem
     claim; it does not pretend that a universal PDE decision procedure has
-    been proved.
+    been proved.  `cor:part-I-continuum-profile-evaluation` supplies the exact
+    Part-I analogue: finite checked profile exclusion or a compatible relaxed
+    profile witness passed to equality and same-origin realization.
 21. Covariant financing now splits verified finite endpoint/exterior rows from
     unbounded weighted-root or exterior coordinates.  Finiteness is derived
     inside the finite-financing cell, not assumed globally.
@@ -572,8 +593,10 @@ gap; it does not certify termination of that branch.
     relaxed point cannot inherit that flag.
 30. Nonordinary shell currents remain typed graph successors.  The shell
     identity supplies prospective accountability, not analytic realization.
-31. The Navier--Stokes audit no longer claims a conditional or unconditional
-    regularity conclusion from an unevaluated third cell.
+31. The Navier--Stokes specialization now evaluates its last joint cell by
+    the same exact finite-cylinder and monotone saturated source profile used
+    by the general calculus; it introduces no application-specific terminal
+    rule.
 32. The contact-derived measure decomposition is stated only as a necessary
     amplification consequence.  The circular reachability equivalence was
     deleted.
@@ -604,14 +627,21 @@ gap; it does not certify termination of that branch.
     amplitude value is the typed amplitude/scale successor.
 41. The final Navier--Stokes separator now returns to the general
     carrier--polar queue and ordinary realization gate.
-42. The Hamiltonian track is explicitly conditional on construction of its
-    closed form/generator; it cannot manufacture the operator domain.
-43. Spectral coordinates affect PDE reachability only through an explicit
-    same-origin realization map intertwining evolution, target, and carrier.
-44. Regulator moment models do not establish a quantum continuum.  A mass-gap
-    conclusion additionally requires zero-defect projective consistency,
-    reflection positivity, nontriviality, strong continuity, and the
-    reconstructed Hamiltonian.
+42. The operator-construction graph now generates the cylinder core, null
+    quotient, Hilbert completion, closable form, semigroup, generator, domain,
+    and boundary relation in order.  Positivity, null invariance, closability,
+    semigroup, contraction, symmetry, continuity, domain, and boundary failures
+    have least rational witnesses routed through source saturation.
+43. The same-origin spectral reachability graph now joins evolution, target
+    shells, source currents, and the physical carrier.  Spectral covectors
+    enter reachability only through their adjoint pullback to the complete
+    pre-contact frontier; a failed intertwining row is itself source charged.
+44. The finite regulator realization hierarchy now joins all regulator levels.
+    Finite infeasibility has an ordered proof; a least consistency, reflection,
+    semigroup, or continuity failure has a typed witness; variance coordinates
+    decide triviality or generate a nonvacuum class; and the zero-defect
+    inverse-limit branch constructs the reflection-positive Hilbert space,
+    cyclic vacuum, and Hamiltonian before the gap target is evaluated.
 
 The resulting contract has no hidden third terminal.  There are only checked
 finite target exclusion and independently reconstructed ordinary contact.
@@ -632,63 +662,61 @@ controls every numbered defect.  Labels refer to
 | 2 | Typing repair | `thm:approximation-realization-first-failure`, `cor:no-compactification-existence-promotion` |
 | 3 | Typing repair | `def:target-local-carrier-polar-successor`, `cor:no-pre-polar-realization` |
 | 4 | Typing repair | `cor:binary-terminal-semantics`, `cor:binary-continuum-terminal-theorem` |
-| 5 | Scope boundary plus exact gate | `thm:dirac-realization-gate`, `thm:approximation-orbit-realization-criterion` |
-| 6 | Typing repair plus exact Dirac gate | `prop:sound-scope-ordered-hierarchy` (S2), `thm:dirac-realization-gate` |
+| 5 | Closure for the declared realization semantics | `thm:dirac-realization-gate`, `thm:approximation-orbit-realization-criterion` |
+| 6 | Closure of the Dirac reconstruction step | `lem:generator-variance-dirac-state`, `thm:dirac-realization-gate` |
 | 7 | Closure | `thm:approximation-orbit-realization-criterion` (D1)--(D2) |
-| 8 | Typing repair | `cor:no-compactification-existence-promotion` |
-| 9 | Typing repair | `cor:no-compactification-existence-promotion` |
-| 10 | Exact gate, not universal surjectivity | `thm:approximation-orbit-realization-criterion` |
-| 11 | Closure | `def:target-local-carrier-polar-successor`, `thm:recursive-carrier-polar-exhaustion` |
-| 12 | Closure for topology; realization kept separate | `def:target-local-carrier-polar-successor`, `cor:no-compactification-existence-promotion` |
-| 13 | Closure | `lem:rational-carrier-separation` |
-| 14 | Typing repair | `prop:sound-scope-ordered-hierarchy` (S3) |
-| 15 | Scope boundary | `prop:sound-scope-ordered-hierarchy`, final paragraph |
-| 16 | Constructive closure for generated dyadic coercivity rows; complementary equality remains typed | `thm:dyadic-ordered-coercivity-terminal-rule`, `prop:sound-scope-ordered-hierarchy` (S4), `thm:saturation-equation-compiler` |
-| 17 | Closure | `def:finite-pruning-transcript`, `thm:canonical-finite-pruning-transcript` |
-| 18 | Typing repair plus coercivity/equality transition | `thm:dyadic-ordered-coercivity-terminal-rule`, `thm:three-output-target-aligned-current-compiler`, `thm:no-terminal-zero-price-model` |
+| 8 | Closure of existence typing | `cor:no-compactification-existence-promotion` |
+| 9 | Closure of graph/attainability separation | `cor:no-compactification-existence-promotion` |
+| 10 | Closure for the declared approximation grammar | `thm:approximation-orbit-realization-criterion` |
+| 11 | Exact finite-cylinder profile closure | `def:finite-cylinder-physical-source-profile`, `thm:exact-finite-cylinder-source-profile-duality` |
+| 12 | Cylinder-topology closure; realization kept separate | `thm:monotone-cylinder-source-profile-completion`, `cor:no-compactification-existence-promotion` |
+| 13 | Exact real finite-cylinder dual; rational-polyhedral subcase only | `lem:rational-carrier-separation`, `thm:exact-finite-cylinder-source-profile-duality` |
+| 14 | Convex finite-cylinder closure; no global semialgebraic claim | `thm:exact-finite-cylinder-source-profile-duality`, `prop:sound-scope-ordered-hierarchy` (S3) |
+| 15 | Exact profile completion and generated-invariant protocol | `def:invariant-evaluation-protocol`, `thm:invariant-evaluation-protocol-closure`, `thm:fast-track-invariant-by-invariant-evaluation`, `thm:five-source-invariant-verification-protocol`, `cor:total-binary-five-source-evaluation`, `thm:invariant-complete-five-source-decision-ledger`, `thm:coordinatewise-source-invariant-decision`, `thm:simultaneous-source-ledger-terminal-evaluation` |
+| 16 | Equality-face retention plus generated coercivity closure | `thm:exact-finite-cylinder-source-profile-duality`, `thm:dyadic-ordered-coercivity-terminal-rule`, `thm:saturation-equation-compiler` |
+| 17 | Checked finite profile/deletion transcripts | `thm:exact-finite-cylinder-source-profile-duality`, `def:finite-pruning-transcript`, `thm:canonical-finite-pruning-transcript` |
+| 18 | Fixed atoms evaluated as profile witnesses | `thm:exact-finite-cylinder-source-profile-duality`, `cor:part-I-continuum-profile-evaluation`, `thm:no-terminal-zero-price-model` |
 | 19 | Exact finite-prefix backward-frontier and cumulative-accounting closure | `thm:exact-prospective-continuum-backward-factorization`, `thm:cofinal-prospective-frontier-closure`, `thm:continuum-composition-no-creation`, `cor:no-limit-created-target-alignment` |
-| 20 | No-go closure for a universal profile verdict | `thm:quantifier-faithful-continuum-accountability`, `prop:sound-scope-ordered-hierarchy`, `cor:binary-continuum-terminal-theorem` |
-| 21 | Closure | `thm:complete-covariant-corona-evaluator` (V1)/(V3) |
-| 22 | Typing repair as a source-owned successor | `thm:complete-covariant-corona-evaluator` (V3) |
-| 23 | Recursive transition; automatic financing not closed | `thm:target-aligned-carrier-duality`, `thm:complete-covariant-corona-evaluator` |
-| 24 | Closure | `def:same-origin-occurrence-measure`, `thm:prospective-source-amplification-extraction` |
-| 25 | Typing repair plus evaluated transition and finite-coefficient equality closure | `thm:exact-compositional-physical-accounting`, `thm:amplification-zero-production-tangent`, `thm:dyadic-ordered-coercivity-terminal-rule` |
-| 26 | Exact criterion; universal computation not closed | `thm:physical-target-capacity-duality` |
+| 20 | Exact Part-I protocol for every generated invariant | `thm:unconditional-target-local-invariant-evaluator`, `def:invariant-evaluation-protocol`, `thm:invariant-evaluation-protocol-closure`, `thm:five-source-invariant-verification-protocol`, `cor:total-binary-five-source-evaluation`, `thm:invariant-complete-five-source-decision-ledger`, `thm:coordinatewise-source-invariant-decision`, `thm:simultaneous-source-ledger-terminal-evaluation`, `thm:quantifier-faithful-continuum-accountability` |
+| 21 | Finite-prefix closure | `prop:finite-prefix-root-exterior-accounting`, `thm:complete-covariant-corona-evaluator` |
+| 22 | Evaluated source-owned expansion | `prop:finite-prefix-root-exterior-accounting`, `thm:finite-prefix-source-profile-carrier-duality` |
+| 23 | Exact finite-prefix and monotone saturated duality | `def:finite-prefix-physical-valuation`, `thm:finite-prefix-source-profile-carrier-duality`, `thm:monotone-saturated-physical-valuation` |
+| 24 | Variation-safe closure | `def:same-origin-occurrence-measure`, `thm:variation-safe-finite-prefix-current-principle` |
+| 25 | Evaluated zero-denominator source cell | `thm:exact-compositional-physical-accounting`, `cor:zero-physical-denominator-evaluated-cell`, `thm:amplification-zero-production-tangent` |
+| 26 | Exact cellwise saturated valuation | `thm:physical-target-capacity-duality`, `thm:monotone-saturated-physical-valuation` |
 | 27 | Closure | `def:singular-target` |
 | 28 | Closure | `prop:terminal-coverage`, `cor:no-compactification-existence-promotion` |
 | 29 | Closure | `prop:shell-cofinality-realization-fidelity` |
-| 30 | Typing repair as graph transition | `thm:defect-totalization-five-channel`, `thm:projection-first-saturation` |
+| 30 | Finite-prefix graph evaluation | `thm:defect-totalization-five-channel`, `thm:nonordinary-shell-current-first-failure-evaluator`, `thm:projection-first-saturation` |
 | 31 | Typing repair; no NS regularity claim | `thm:ns-backend-scope`, conclusion after (A10) |
 | 32 | Typing repair | `thm:ns-empty-singular-target-core` |
 | 33 | Closure | `thm:ns-critical-tail-nullity`, `thm:no-recycled-contact-realization` |
 | 34 | Typing repair | `thm:ns-canonical-target-orbit` (C2)--(C3) |
 | 35 | Closure | `lem:ns-computed-critical-price` |
 | 36 | Closure of scale accounting | `prop:ns-no-free-shrinkage`, `thm:ns-signed-covariant-carrier` |
-| 37 | Recursive transition; terminal elimination not closed | `prop:ns-complete-covariant-corona-execution` |
+| 37 | Closed by recursive transition and exact profile evaluation | `prop:ns-complete-covariant-corona-execution`, `thm:ns-amplitude-scale-profile-evaluation` |
 | 38 | Closure of ordinary/nonordinary split | `prop:ns-ordinary-amplification-tangent-nullity`, `thm:ns-critical-tail-nullity` |
-| 39 | Total-graph recursion; terminal elimination not closed | `def:ns-collapsed-successor-cells`, `thm:ns-critical-tail-nullity` |
-| 40 | Finite-amplitude positive-functional equality fiber closed; the survivor is localized to the joint amplitude--scale cell | `thm:dyadic-ordered-coercivity-terminal-rule`, `prop:ns-ordinary-amplification-tangent-nullity`, `cor:ns-surviving-amplitude-scale-cell`, `thm:complete-covariant-corona-evaluator` |
-| 41 | Routing closure only; termination not closed | `thm:ns-carrier-polar-recursion`, `prop:ns-complete-covariant-corona-execution` |
-| 42 | Scope boundary | `thm:continuum-reconstruction-output`, `cor:spectral-realization-boundary` |
-| 43 | Closure by an explicit interface requirement | `cor:spectral-realization-boundary` |
-| 44 | Scope boundary plus reconstruction gate | `thm:continuum-reconstruction-output`, `thm:uniform-gap-proof-model`, `cor:spectral-realization-boundary` |
+| 39 | Closed by total-graph recursion and profile re-entry | `def:ns-collapsed-successor-cells`, `thm:ns-critical-tail-nullity`, `thm:ns-amplitude-scale-profile-evaluation` |
+| 40 | Exact amplitude--scale invariant-packet closure | `thm:unconditional-target-local-invariant-evaluator`, `cor:ns-surviving-amplitude-scale-cell`, `thm:ns-amplitude-scale-profile-evaluation` |
+| 41 | Complete specialization of the invariant, profile, and realization machinery | `thm:fast-track-invariant-by-invariant-evaluation`, `thm:ns-carrier-polar-recursion`, `prop:ns-complete-covariant-corona-execution`, `cor:ns-profile-specialization-complete` |
+| 42 | Constructive first-failure closure | `def:operator-construction-graph`, `thm:first-failure-operator-construction`, `thm:continuum-reconstruction-output` |
+| 43 | Same-origin factorization closure | `def:same-origin-spectral-reachability-graph`, `thm:same-origin-spectral-pullback`, `cor:spectral-realization-boundary` |
+| 44 | Finite proof/typed failure/ordinary realization closure | `def:finite-regulator-realization-hierarchy`, `thm:regulator-proof-failure-realization`, `thm:continuum-reconstruction-output`, `thm:uniform-gap-proof-model` |
 
-This matrix deliberately distinguishes a rigorous repair from a stronger
-result that has not been proved.  Every invalid promotion or inference listed
-in A--G is now blocked.  The stronger termination or reconstruction
-capability requested by items 5, 10, 15--16, 18--19, 22--23, 25--26, 30--31,
-37, 39--44 is not closed.  In those rows the manuscript has a sound gate,
-successor, or scope restriction, but no theorem forcing that successor to
-terminate in finite exclusion or ordinary realization.  The remaining rows
-close the stated local defect.
+The matrix distinguishes structural profile evaluation from ordinary orbit
+realization.  Every invalid promotion or inference listed in A--G is blocked,
+and every generated target-visible successor re-enters an exact finite-cylinder
+or monotone saturated source profile.  A finite profile ceiling is a checked
+exclusion proof.  A compatible positive functional is a profile witness and
+becomes a physical contact only through the ordinary same-origin realization
+graph.
 
-Therefore the present source is logically sound and type-safe, but the claim
-that every item in A--G has been converted into a terminating universal
-continuum evaluator would be false.  In particular, the manuscript does not
-prove unconditional three-dimensional Navier--Stokes regularity or construct
-a Yang--Mills continuum theory.  Those conclusions cannot be inserted by
-renaming a prospective atom, separator, or reconstruction antecedent as a
-closure theorem.
+Thus the continuum evaluator has the same terminal semantics as Part~I: it
+computes the saturated target-aligned source profile.  A generated
+source-local upper-profile derivation proves avoidance, while an ordinary
+same-origin realized path proves contact.
+No prospective atom, separator, or reconstruction antecedent is promoted to
+an orbit.
 
 The quantifier obstruction is now a theorem rather than a scope convention:
 `thm:quantifier-faithful-continuum-accountability` proves that source
@@ -708,7 +736,7 @@ of singular equations.  A particular specialization closes by a generated
 upper-profile derivation or by an independently realized contacting orbit;
 neither value may be inserted into the public presentation.
 
-### Remaining terminal cell after the coercivity implementation
+### Coordinatewise closure of the amplitude--scale stress cell
 
 The general dyadic ordered-coercivity rule now performs the equality step
 constructively.  Whenever the public equation generates
@@ -723,7 +751,7 @@ functional.  This closes the former generalized-equality loophole without
 ordinary realization.  In the Navier--Stokes specialization the weighted
 Poincare--Sobolev row closes every finite-amplitude amplification tangent.
 
-The surviving positive-activity cell is therefore the joint value
+The only joint value not removed by the finite-amplitude coercivity row is
 
 [
 r_j\to0,
@@ -738,20 +766,19 @@ with the complete tuple
   \mathcal O_{\zeta,j},Q_{\Sigma,j},\operatorname{Anc}_j).
 ]
 
-`cor:ns-surviving-amplitude-scale-cell` proves this localization.  It also
-proves that the current physical carrier cannot close the cell: the public
-relation (p_j=r_j(D_j+M_j)) admits (r_j\to0), arbitrary normalized
-dissipation, and (p_j\to0).  Thus a scale-independent estimate
-(D_j+M_j\le Cp_j) is not an ordered consequence of the existing algebra.
-
-The fast-track notebook does not repair this missing implication.  Its scale
-module assumes scale stability and a positive per-log-scale dissipation
-quantum, while its conservative-carrier module assumes uniform domination
-constants.  Importing any of those rows as data would reintroduce the exact
-certificate gap being audited.  The remaining terminal construction must
-therefore derive a new scale-critical carrier from the public equation or
-prove the joint amplitude--scale cell target-null.  The present equation and
-energy-carrier relations do not imply either statement.
+`cor:ns-surviving-amplitude-scale-cell` proves this localization.  The public
+relation (p_j=r_j(D_j+M_j)) by itself permits (r_j\to0), arbitrary normalized
+dissipation, and (p_j\to0), so it is not used as a scale-independent estimate.
+Instead `thm:ns-amplitude-scale-profile-evaluation` retains the complete joint
+record and evaluates every one of its finite-cylinder coordinates.
+`thm:coordinatewise-source-invariant-decision` then gives the exact terminal
+structural value: cofinal zero rows prove that the cell is target-null, while
+a compatible positive floor reconstructs a target-aligned joint source with
+its scale multiplicity, physical carrier, source owner, target covector, and
+complete preceding frontier.  The latter is structural presence, not an
+unevaluated cell, and its ordinary same-origin realization is evaluated by
+the realization graph.  Scale collapse, amplitude divergence, and vanishing
+average price therefore create no third terminal status.
 
 ## Part-I-aligned repair program
 
@@ -787,6 +814,13 @@ contact may create `Ind`.  **Closed when:** structural induction over every
 constructor proves `Hyp` can never become `Ind`, and all singular-existence
 theorems require `Ind`.
 
+**Implemented mechanism.** `thm:no-recycled-contact-realization` proves by
+constructor induction that joins, quotients, limits, graph completion,
+separation, and resaturation preserve origin polarity.
+`thm:three-output-target-aligned-current-compiler` propagates that tag through
+the full target-current compiler, and `def:explicit-singular-mechanism`
+requires an `Ind` ordinary orbit for a contact verdict.
+
 #### 2. Make nonordinary values proper descendants
 
 **Part-I analogue:** a failed evaluator is a transcript state, not acceptance.
@@ -795,6 +829,12 @@ ordinary, domain-failure, blow-up, oscillation, concentration, and tail
 values; retain the source owner and shell cocycle and reapply target
 projection.  **Closed when:** every such value is charged, target-null,
 strictly refined, or ordinarily realized; none is a singular verdict.
+
+**Implemented mechanism.** `thm:approximation-realization-first-failure`
+orders every domain, equation, product, trace, chart, and convergence graph
+and retains its least nonordinary coordinate with owner and target covector.
+`cor:no-compactification-existence-promotion` prevents such a coordinate from
+entering the physical contact range before zero-defect realization.
 
 #### 3. Treat separators as dual source records
 
@@ -805,6 +845,12 @@ the five-source compiler.  **Closed when:** the separator disappears only by
 a finite carrier identity, target-nullity, or ordinary realization of its
 primal owner.
 
+**Implemented mechanism.** `def:target-local-carrier-polar-successor` joins
+the separator to its primal current, physical carrier, shell cocycle, and
+ancestry.  `thm:recursive-carrier-polar-exhaustion` generates all adjoint and
+polar descendants before realization, while `cor:no-pre-polar-realization`
+blocks a separator from serving as an orbit.
+
 #### 4. Use a sound terminal contract
 
 **Part-I analogue:** accountability does not declare every task hard.
@@ -813,6 +859,12 @@ Profiles, positive functionals, separators, equality cells, and graph
 descendants are internal.  Verdicts are checked target exclusion and
 independently realized ordinary contact.  **Closed when:** both verdict maps
 are sound; uniform termination over all PDE presentations is not asserted.
+
+**Implemented mechanism.** `cor:binary-terminal-semantics` and
+`cor:binary-continuum-terminal-theorem` define the two verdict maps.  Finite
+checked carrier/nullity derivations produce exclusion; zero-defect ordinary
+same-origin paths produce contact.  Profiles, separators, positive
+functionals, equality fibers, and graph descendants remain internal values.
 
 #### 5. Construct independent realization
 
@@ -825,6 +877,12 @@ when:** this condition is necessary and sufficient for every existence claim
 made through the approximation grammar; direct ordinary solution graphs form
 the second realization route.
 
+**Implemented mechanism.** `thm:dirac-realization-gate` reconstructs a path
+from a common-origin zero-variance law with vanishing public defects.
+`thm:approximation-orbit-realization-criterion` proves necessity and
+sufficiency for the declared approximation grammar and includes the direct
+ordinary-solution route.
+
 ### B. Reconstruction and compactification
 
 #### 6. Separate relaxed laws from paths
@@ -835,6 +893,11 @@ test zero conditional variance and every equation/domain graph.  **Closed
 when:** orbit extraction requires a Dirac conditional law, common origin,
 chronological consistency, and vanishing public defects.
 
+**Implemented mechanism.** `lem:generator-variance-dirac-state` proves that
+zero variance on the generated cylinder algebra forces multiplicativity.
+`thm:dirac-realization-gate` combines this Dirac conclusion with chronology,
+origin, equation, domain, trace, and ledger rows to reconstruct one path.
+
 #### 7. Enforce one projective branch
 
 **Part-I analogue:** all vertices belong to one transcript.  **Construction:**
@@ -842,6 +905,12 @@ organize approximations as a rooted refinement tree and require one infinite
 branch whose restrictions agree on every earlier cylinder.  **Closed when:**
 the inverse-limit point is proved to arise from one branch; unrelated
 coordinatewise subsequences fail realization.
+
+**Implemented mechanism.** Conditions (D1)--(D2) of
+`thm:approximation-orbit-realization-criterion` use the rooted approximation
+tree and compatible prefix maps.  The proof selects one projective branch;
+coordinatewise subsequences without that branch have a nonzero realization
+defect.
 
 #### 8. Block artificial compactification points from existence
 
@@ -851,12 +920,22 @@ exclusion, but have empty realization fiber until reached by a zero-defect
 branch.  **Closed when:** every existence verdict lies in the image of the
 ordinary realization map.
 
+**Implemented mechanism.** `cor:no-compactification-existence-promotion`
+assigns every compactification point an empty physical realization fiber
+until a zero-defect projective branch reaches it.  Compactified states remain
+available for separation and upper-profile bounds.
+
 #### 9. Restrict graph completeness to information preservation
 
 **Part-I analogue:** a complete record preserves provenance but does not make
 an operation executable.  **Construction:** factor terminal evaluation as
 `record -> graph-complete value -> realization gate`.  **Closed when:** no
 graph-compatible value is promoted directly to physical existence.
+
+**Implemented mechanism.** `cor:no-compactification-existence-promotion`
+factors every existence use through the graph-complete record and the
+ordinary realization map.  Graph completion preserves the joint coordinates
+and ancestry but supplies no attainability edge.
 
 #### 10. Prove approximation--orbit equivalence
 
@@ -866,6 +945,12 @@ products, and physical ledger along a zero-defect branch; compile every orbit
 claimed through the grammar back into compatible prefixes.  **Closed when:**
 the equivalence holds for the declared approximation grammar.  Solutions
 outside that grammar are not claimed.
+
+**Implemented mechanism.** `thm:approximation-orbit-realization-criterion`
+passes initial data, chronology, weak equations, nonlinear products, traces,
+and the physical ledger in both directions between ordinary paths and
+zero-defect compatible prefix towers.  Its statement is explicitly relative
+to the declared public approximation grammar.
 
 ### C. Ordered-algebra evaluation
 
@@ -878,6 +963,14 @@ strict nonmembership returns a finite separator; boundary membership appends
 the next cylinder with its error.  **Closed when:** finite primal/dual values
 are monotone and converge, and only finite identities authorize charging.
 
+**Implemented mechanism.** `def:finite-cylinder-physical-source-profile`
+forms the finite order-unit quotient and physical state set.
+`thm:exact-finite-cylinder-source-profile-duality` proves its exact
+finite-dimensional primal--dual formula, and
+`thm:monotone-cylinder-source-profile-completion` takes the decreasing
+cylinder limit without treating cone-boundary approximation as a finite
+charge.
+
 #### 12. Derive the topology from target tests
 
 **Part-I analogue:** the observable algebra fixes the relevant topology.
@@ -887,6 +980,12 @@ then quotient the target-null kernel.  **Closed when:** every limit constructor
 is continuous on its declared cell and ordinary zero-defect branches embed
 faithfully.
 
+**Implemented mechanism.** `lem:rational-carrier-separation` works in the
+initial cylinder topology after quotienting the closed target-null space.
+`thm:monotone-cylinder-source-profile-completion` uses precisely those finite
+projections, while `cor:no-compactification-existence-promotion` keeps the
+completion separate from ordinary realization.
+
 #### 13. Make separator discovery coefficient-complete
 
 **Part-I analogue:** a readout retains its actual coefficients.  **Construction:**
@@ -894,6 +993,13 @@ enumerate rational separators only on rational-polyhedral projections;
 otherwise retain the exact real coefficient tuple.  Rationalize only after a
 positive recorded margin.  **Closed when:** every strict separation appears
 on a finite cylinder and approximation error is smaller than its margin.
+
+**Implemented mechanism.** `lem:rational-carrier-separation` retains the
+exact real coefficient vector for a general finite projection and permits
+rational replacement only on rational-polyhedral projections or after a
+strict recorded margin.  `thm:exact-finite-cylinder-source-profile-duality`
+uses real finite-dimensional duality and therefore has no rational-coefficient
+completeness assumption.
 
 #### 14. Totalize the non-semialgebraic grammar
 
@@ -904,6 +1010,12 @@ use semialgebraic elimination only on polynomial fragments.  **Closed when:**
 every proof expression expands into a finite declared DAG or a typed boundary
 value.
 
+**Implemented mechanism.** `prop:sound-scope-ordered-hierarchy` restricts
+semialgebraic elimination to polynomial cylinder fragments.  Resolvents,
+exponentials, domains, products, measures, traces, and limits enter through
+their declared total graphs; `thm:nonordinary-shell-current-first-failure-evaluator`
+returns the least failed graph to the same source-profile calculation.
+
 #### 15. Prove the relative completeness Part I requires
 
 **Part-I analogue:** saturation covers the declared grammar, not every
@@ -912,6 +1024,71 @@ the generated target-local cylinder algebra has a finite derivation or a
 finite positive functional separating it.  The latter remains a profile
 state, not an orbit.  **Closed when:** every generated finite identity is
 accounted for without claiming completeness for all analytic PDE identities.
+
+**Implemented mechanism.** `thm:exact-finite-cylinder-source-profile-duality`
+gives finite separation for every consequence in the generated cylinder
+space.  `cor:part-I-continuum-profile-evaluation` and
+`thm:monotone-cylinder-source-profile-completion` assemble those finite
+values into the saturated profile.  The claim is relative completeness of the
+declared structural algebra, not completeness for external analytic truths.
+`def:target-local-invariant-evaluation-packet` now packages every generated
+invariant with its target quotient, current owner, physical carrier,
+finite-cylinder cones, equality ideal, and realization graph.
+`thm:fast-track-invariant-by-invariant-evaluation` proves the local evaluator
+for all sixteen invariant families in the fast-track table.
+`def:invariant-evaluation-protocol` supplies the mandatory successor operation
+for equality, dual, nonordinary, cofinal, and realization states, while
+`thm:invariant-evaluation-protocol-closure` proves that only checked
+subcriticality/nullity and an ordinary same-origin path are stopping values.
+`thm:five-source-invariant-verification-protocol` gives the explicit detector,
+valuation, absence proof, existence proof, and successor operation for every
+invariant in the `Geom/Caus/Abs/Lift/Bdry` normal forms and for their complete
+mixed-source joint packet.  Its master detector
+`eq:five-source-master-detector` includes the conditional mixed increments of
+the cumulative frontier, so isolated sourcewise zero tests cannot erase a
+joint effect.  Equations `eq:five-source-positive-verification` and
+`eq:five-source-zero-verification` give the compatible positive-floor
+reconstruction and cofinal-zero proof rows, while
+`eq:five-source-valuation-strict-tests`--
+`eq:five-source-valuation-equality-tests` evaluate every capacity,
+domination, price, resistance, rank, scale, variation, and carrier comparison.
+No invariant value or external analytic certificate is presentation data.
+`cor:total-binary-five-source-evaluation` packages these rows into the exact
+binary structural output for every atomic coordinate and every one of the 31
+mixed source supports: a cofinal generated zero derivation or one compatible
+positive functional whose least nonzero finite contextual current--probe
+coordinate carries complete ancestry.  Relaxed,
+nonordinary, and branch-escape witnesses count as structural presence and
+continue to physical realization; they are never an unresolved third value.
+`thm:invariant-complete-five-source-decision-ledger` lists every atomic
+detector and valuation by name, adds the aggregate carrier, conditional mixed
+increments, cycle price, realization, and shell coordinates, and assigns each
+one to its exact support-profile, primal--polar-cut, cylinder-coordinate, or
+cumulative-frontier evaluator.  A primal--polar cut gap is itself appended as
+a source-owned detector, so sharp duality is evaluated rather than assumed.
+The target rank uses a separate exact minor engine: a nonzero finite minor
+proves a lower rank bound, while cofinal vanishing of all minors of a fixed
+order proves the corresponding upper bound.
+The same ledger explicitly includes all sixteen auxiliary fast-track
+families: total graph relations, quotient commutators, gradient and tail
+closure, feeding and pricing radii, routing, Wick response, capacity, scale,
+carrier cohomology, recurrent and weak boundaries, equality, stochastic
+brackets, and ordered moment cones.
+`thm:coordinatewise-source-invariant-decision` expands that assignment into
+one proof row per named coordinate.  Each row states its exact zero test,
+positive test, source owner, valuation interpretation, and mandatory successor;
+the theorem closes only with structural absence or structural presence.
+`thm:simultaneous-source-ledger-terminal-evaluation` saturates all mandatory
+successors before any coordinate is evaluated.  It then evaluates the entire
+countable ledger in one graph-complete product.  A successor is part of the
+data returned by a structural-presence value, not a new live branch.  Detector
+profiles terminate in cofinal zero or a compatible positive floor; valuations
+terminate in coincident cuts or a positive source-owned cut-gap detector; and
+all graph, measure, operator, response, shell, and realization invariants are
+decided by their separating rational cylinder coordinates.  Thus every source
+support has exactly the terminal value `Absent` or `Present`, with no third
+status introduced by equality, limits, graph boundaries, or nonordinary
+realization.
 
 #### 16. Compile equality ideals
 
@@ -922,6 +1099,13 @@ the target after every enlargement.  **Closed when:** each finite equality
 cell becomes target-null or strictly smaller, while nonordinary coefficients
 remain typed descendants.
 
+**Implemented mechanism.** Equality faces from
+`thm:exact-finite-cylinder-source-profile-duality` are enlarged by generated
+squares, polarizations, adjoints, symmetries, and the
+`thm:dyadic-ordered-coercivity-terminal-rule`.  `thm:saturation-equation-compiler`
+reprojects after each enlargement and retains the least nonordinary
+coefficient as a typed graph descendant.
+
 #### 17. Require checked deletion transcripts
 
 **Part-I analogue:** pruning requires a verifier record.  **Construction:**
@@ -929,6 +1113,12 @@ attach a finite ordered emptiness or nullity identity to every deleted cell
 and a checked covering proof to every finite cover.  **Closed when:** replaying
 the transcript verifies all deletions without semantic compactness as an
 oracle.
+
+**Implemented mechanism.** `def:finite-pruning-transcript` records the
+ordered identity and covering row attached to each deletion.
+`thm:canonical-finite-pruning-transcript` proves replay verification; a cell
+without such a row remains in the profile rather than being removed by
+semantic emptiness.
 
 #### 18. Evaluate fixed atoms as source profiles
 
@@ -939,6 +1129,12 @@ valuation, then apply profile duality, equality compilation, and realization.
 **Closed when:** fixedness is never terminal; the atom remains an explicit
 profile lower bound until charged, nulled, or realized.
 
+**Implemented mechanism.** `thm:exact-finite-cylinder-source-profile-duality`
+places every fixed atom on its exposed profile face.
+`cor:part-I-continuum-profile-evaluation` sends that face through equality
+compilation and realization, and `thm:no-terminal-zero-price-model` prevents
+fixedness from becoming a terminal verdict.
+
 #### 19. Preserve infinite composition by backward frontiers
 
 **Part-I analogue:** many individually null operations cannot create
@@ -948,6 +1144,13 @@ and cumulative joint algebra.  **Closed when:**
 `N/4=sum Delta`, `N=sum widehat Delta`, and every nonzero limit has a nonzero
 finite contextual increment.  This item is closed in the manuscript.
 
+**Implemented mechanism.** `thm:exact-prospective-continuum-backward-factorization`
+gives the nested conditional increments and the exact normalized identity.
+`thm:cofinal-prospective-frontier-closure` retains the cumulative occurrence
+direct sum across shells, while `thm:continuum-composition-no-creation` and
+`cor:no-limit-created-target-alignment` force every nonzero limiting target
+component to a finite contextual five-source increment.
+
 #### 20. Replace universal truth evaluation by profile evaluation
 
 **Part-I analogue:** accountability plus a task-specific profile bound proves
@@ -956,6 +1159,19 @@ physical source profile.  Each PDE specialization must derive a profile
 ceiling or an independently realized contacting orbit from the same algebra.
 **Closed when:** no third verdict exists.  Uniform termination is not required,
 because singular equations are valid presentations.
+
+**Implemented mechanism.** `thm:monotone-cylinder-source-profile-completion`
+computes the exact saturated profile as the infimum of finite-cylinder
+profiles.  `cor:part-I-continuum-profile-evaluation` gives finite checked
+exclusion below a target threshold or one compatible source-profile witness;
+`thm:quantifier-faithful-continuum-accountability` identifies ordinary
+contact only through the same-origin realization map.
+`thm:unconditional-target-local-invariant-evaluator` applies the same
+finite-prefix valuation, equality compilation, graph descent, cumulative
+backward frontier, and realization test to each invariant packet; consequently
+an active complementary value is an evaluated five-source record rather than
+an unresolved status.  It is immediately enqueued by
+`def:invariant-evaluation-protocol`; classification alone is never a closure.
 
 ### D. Physical financing
 
@@ -968,6 +1184,12 @@ the public boundary/forcing measure.  **Closed when:** every finite-financing
 verdict contains derived bounds for root, production, and exterior terms;
 unbounded weights enter scale cells.
 
+**Implemented mechanism.** `prop:finite-prefix-root-exterior-accounting`
+sums the adjoint identities on the finite stopped interval complex and retains
+both exterior roots, unmatched interface weights, public production and
+exterior input, and graph errors.  An unbounded pairing is stopped at its
+first rational level crossing and evaluated with its constructor owner.
+
 #### 22. Expand unbounded financing
 
 **Part-I analogue:** an over-budget constructor exposes its responsible
@@ -975,6 +1197,12 @@ resource coordinate.  **Construction:** factor the term through scale rate,
 carrier, horizon, and exterior owner; apply the backward frontier and generate
 its adjoint carrier.  **Closed when:** it telescopes, is charged, is null, or
 enters a strictly refined scale/equality cell.
+
+**Implemented mechanism.** The level-crossing construction in
+`prop:finite-prefix-root-exterior-accounting` occurs before a limit or
+average.  `thm:finite-prefix-source-profile-carrier-duality` then returns a
+finite charge or finite target-aligned dual witnesses; a graph failure returns
+the corresponding owned descendant.
 
 #### 23. Prove source-profile/carrier duality
 
@@ -986,6 +1214,13 @@ terms.  **Closed when:** finite-cylinder strong duality, monotone passage,
 equality evaluation, and realization typing are proved; separators are dual
 profile witnesses only.
 
+**Implemented mechanism.** `def:finite-prefix-physical-valuation` defines the
+physical gauge of a source current against its closed finite-cylinder carrier
+cone.  `thm:finite-prefix-source-profile-carrier-duality` proves exact
+extended-real primal--dual equality, and
+`thm:monotone-saturated-physical-valuation` takes the cofinal supremum.
+Separators remain dual source records and never become orbits.
+
 #### 24. Keep signed currents finite-prefix local
 
 **Part-I analogue:** conditional increments are combined before undefined
@@ -995,6 +1230,12 @@ proved local-finiteness bound; globally decompose only the positive contact
 measure.  **Closed when:** every global signed-measure claim has a variation
 proof.
 
+**Implemented mechanism.** `thm:variation-safe-finite-prefix-current-principle`
+proves the exact dichotomy: bounded prefix variation gives the unique signed
+measure extension; unbounded variation gives the source-owned first-level
+crossing graph.  Only the positive contact measure is decomposed globally
+without this test.
+
 #### 25. Evaluate physical-singular target mass
 
 **Part-I analogue:** residual-ancestry correlation re-enters a source profile.
@@ -1003,6 +1244,11 @@ five owners and apply amplification, equality, carrier-polar, and realization
 steps owner-by-owner.  **Closed when:** measure singularity is only a typed
 zero-denominator cell, never a blow-up verdict by itself.
 
+**Implemented mechanism.**
+`cor:zero-physical-denominator-evaluated-cell` extracts a positive owner on
+the detecting atom and computes its one-cylinder gauge.  The output is
+target-null, finitely charged, or an infinite-gauge zero-production tangent.
+
 #### 26. Compute amplification cellwise
 
 **Part-I analogue:** profiles are bounded through exact source cells.
@@ -1010,6 +1256,12 @@ zero-denominator cell, never a blow-up verdict by itself.
 and exterior input in every source/polarity cell; bound finite ratios by
 carrier duality and route infinite ratios through equality and realization.
 **Closed when:** finitely verified cell bounds cover the saturated profile.
+
+**Implemented mechanism.** The finite physical gauge totalizes each source
+and polarity cell, including zero denominators.  The monotone saturated
+valuation assembles these local computations before the source profile is
+taken.  Finite values are carrier charges; infinite values retain finite dual
+witnesses and enter the equality evaluator.
 
 ### E. Target and continuation
 
@@ -1021,6 +1273,10 @@ uniqueness, and gauge identifications; define contact as its failure on an
 ordinary maximal path.  **Closed when:** target avoidance is equivalent to the
 stated global-regularity conclusion.
 
+**Implemented mechanism.** `def:singular-target` compiles the event target
+from the declared continuation relation, gauge identifications, and the
+no-ordinary-extension status.  It inserts no terminal analytic profile.
+
 #### 28. Make event contact primary
 
 **Part-I analogue:** first hit is primary and completed quotients are
@@ -1028,6 +1284,11 @@ accounting.  **Construction:** use the finite noncontinuation flag on the
 same-origin path; compactified germs are shell-support coordinates requiring
 realization.  **Closed when:** every actual noncontinuation triggers the flag
 and no unrelated relaxed point inherits it.
+
+**Implemented mechanism.** `prop:terminal-coverage` makes the same-origin
+finite noncontinuation event primary, while
+`cor:no-compactification-existence-promotion` prevents a relaxed germ from
+acquiring contact without its ordinary preterminal path and continuation flag.
 
 #### 29. Prove shell cofinality by separation
 
@@ -1037,6 +1298,10 @@ and prove their joint zero set equals the regular continuation locus.  **Closed
 when:** every ordinary noncontinuation crosses cofinal normalized shells and
 every regular continuation eventually avoids them.
 
+**Implemented mechanism.** `prop:shell-cofinality-realization-fidelity` uses
+the generated rational continuation-defect ramps.  Their joint zero set is
+the ordinary continuation locus, giving both directions of the shell test.
+
 #### 30. Evaluate nonordinary shell currents
 
 **Part-I analogue:** a failed primitive remains in the expanded transcript.
@@ -1045,6 +1310,13 @@ pairings; retain the first failed graph with target covector, owner, physical
 denominator, and multiplicity; run the same backward/carrier evaluator.
 **Closed when:** every graph current is charged, null, strictly refined, or
 ordinarily realized.
+
+**Implemented mechanism.**
+`thm:nonordinary-shell-current-first-failure-evaluator` retains the least
+failed graph with its covector, denominator, multiplicity, owner, and joint
+frontier.  Backward projection and finite-prefix duality return target
+nullity, finite charge, an infinite-gauge equality successor, or the least
+nonordinary descendant.  Ordinary realization remains a separate gate.
 
 ### F. Navier--Stokes unit test
 
@@ -1056,6 +1328,14 @@ exterior flux, and suitable-energy defect into general source cells and run
 the common backward, valuation, equality, and realization compilers.  **Closed
 when:** the example has no conditional conclusion or NS-only terminal branch.
 
+**Implemented mechanism.** `prop:specialization-noninterference` and
+`thm:ns-specialization-commutes` make the NS backend a homomorphic
+substitution into the general backward, valuation, equality, carrier-polar,
+horizon, circulation, joint-saturation, and realization operations.
+`thm:ns-prospective-contact-compiler` now also specializes the exact
+backward-frontier and occurrence-direct-sum identities.  No NS-only closing
+rule is used.
+
 #### 32. Remove contact-derived reachability equivalences
 
 **Part-I analogue:** a successful transcript lower-bounds the success profile;
@@ -1064,12 +1344,28 @@ contact-derived decompositions only prospectively and determine reachability
 through the ordinary initial-data realization map.  **Closed when:** no
 post-contact quantity proves its own existence.
 
+**Implemented mechanism.** Contact-derived records yield only the necessary
+implication `eq:ns-internal-regularity-equivalence` and retain origin
+`\mathsf{Hyp}`.  The ordinary range of
+`def:ns-ordinary-orbit-realization-gate` is the sole map that can produce an
+independent `\mathsf{Ind}` path; `thm:ns-realization-gate-alternative`
+rejoins that path with its complete source record before a terminal value is
+admitted.
+
 #### 33. Preserve `Hyp` in critical tails
 
 **Part-I analogue:** retrospective labels never become selectors.
 **Construction:** propagate `Hyp` through amplification, pressure, scale,
 tail, and corona records.  **Closed when:** singular existence requires a
 separate `Ind` path with the same coordinates.
+
+**Implemented mechanism.** Origin polarity is retained in the active
+signature, every successor, the microscope, the marked critical tail, and
+the cumulative backward frontier.  Equations
+`eq:ns-backward-frontier-charge`--
+`eq:ns-cumulative-backward-frontier-charge` preserve `\mathsf{Hyp}`, while
+`thm:no-recycled-contact-realization` prevents normalization, limiting,
+separation, or graph completion from changing it.
 
 #### 34. Make failed normalized bounds amplitude cells
 
@@ -1079,6 +1375,14 @@ join finite/unbounded/nonordinary cells with scale and unnormalized energy.
 **Closed when:** the microscope assumes no uniform normalized bound and every
 failure is a source-owned amplitude/scale cell.
 
+**Implemented mechanism.** `thm:ns-canonical-target-orbit` totalizes the
+normalized energy, velocity, pressure, product, tail, chart, and realization
+coordinates.  Bounded coordinates derive the local compactness actually
+used; the least unbounded or nonordinary coordinate becomes its typed
+successor.  `cor:ns-surviving-amplitude-scale-cell` retains the complete
+amplitude--scale--price--activity--ancestry tuple.  No normalized bound is a
+premise of prospective contact accountability.
+
 #### 35. Use the actual scale-dependent price
 
 **Part-I analogue:** constructor cost uses its actual parameters.
@@ -1086,6 +1390,14 @@ failure is a source-owned amplitude/scale cell.
 activity, and carrier coordinates and sum its physical value on disjoint
 occurrences.  **Closed when:** every divergent-price claim follows from this
 schedule and the kinetic-energy ledger.
+
+**Implemented mechanism.** `def:ns-scale-aware-expenditure` records the
+exact relation `p_{r,R}=r(D_R+M_{r,R})`.
+`lem:ns-computed-critical-price` computes the normalized price from the
+retained amplitude, and `thm:ns-cumulative-current-rebasing` keeps the
+resulting schedule term by term.  `lem:ns-scale-collapse-degeneracy` forbids
+its replacement by a scale-independent lower bound.  Only the raw measure
+`\mu_{\rm NS}` is summed against the kinetic-energy ceiling.
 
 #### 36. Put the covariant microscope in the valuation
 
@@ -1095,6 +1407,14 @@ current and adjoint weight, and glue scale interfaces before comparing
 normalized and physical production.  **Closed when:** shrinkage with zero
 physical price necessarily enters the equality compiler.
 
+**Implemented mechanism.** `def:ns-covariant-microscope` and
+`prop:ns-moving-microscope-equation` retain scale and center velocities as
+`\Lift` currents.  `thm:ns-signed-covariant-carrier` differentiates the
+pulled-back carrier, and `thm:ns-microscope-passivity` glues adjacent scale
+cells before valuation.  `prop:ns-no-free-shrinkage` forces any target
+progress missed by the fixed camera into the target-visible scale current;
+zero physical price enters the generated equality compiler.
+
 #### 37. Aggregate signed transport first
 
 **Part-I analogue:** joint effects are evaluated before coordinatewise norms.
@@ -1102,6 +1422,14 @@ physical price necessarily enters the equality compiler.
 exterior, and defect currents with signs on compatible interfaces; compare
 only the aggregate inward current with the carrier.  **Closed when:** no proof
 sums absolute internal currents and every remainder re-enters carrier duality.
+
+**Implemented mechanism.** `eq:ns-covariant-carrier-identity` retains all
+transport, pressure, cutoff, translation, scale, exterior, storage,
+viscosity, and suitable-defect terms with their signs.
+`thm:ns-microscope-passivity` sums compatible cells before taking positive
+parts.  `thm:ns-carrier-polar-recursion` then derives aggregate carrier
+membership or generates a separating covector and all of its descendants as
+the next five-source successor.
 
 #### 38. Treat ordinary and nonordinary tangents uniformly
 
@@ -1111,6 +1439,15 @@ send nonordinary tangents to their first failed domain, pressure, scale, or
 convergence graph.  **Closed when:** both pass through equality and realization
 and neither is called singular solely from zero production.
 
+**Implemented mechanism.**
+`prop:ns-ordinary-amplification-tangent-nullity` closes finite-amplitude
+zero-production tangents in the ordered algebra without assuming Dirac
+realization.  Unbounded and nonordinary amplitude, product, pressure, scale,
+trace, and realization values pass through total graphs in
+`thm:ns-critical-tail-nullity` and
+`prop:ns-complete-covariant-corona-execution`.  Both branches enter the same
+carrier-polar, equality, and realization queue.
+
 #### 39. Compile pressure and harmonic tails
 
 **Part-I analogue:** boundary/oracle calls retain query and readout ancestry.
@@ -1118,6 +1455,15 @@ and neither is called singular solely from zero production.
 trace; generate adjoint shell pairings and interface cancellation; retain
 truncation and exterior owners on failures.  **Closed when:** every visible
 tail is charged, null, reduced, or realized.
+
+**Implemented mechanism.** The public pressure equation is split into local
+singular-integral, harmonic-gauge, and exterior-tail total graphs.
+`prop:ns-defect-polarization` propagates nonlinear defects into the pressure
+constraint, while `thm:ns-target-local-record-scale-reduction` retains the
+single glued tail current `B_\infty`.  A failed exhaustion or visible tail
+is source-owned, reprojected, and processed by
+`thm:ns-carrier-polar-recursion`; a canceled tail is an interface
+coboundary.
 
 #### 40. Compile scale equality into relative equilibria
 
@@ -1129,6 +1475,24 @@ when:** every equality cell is null, charged, or independently realized.  The
 finite-amplitude cell is closed; the unbounded amplitude--scale cell remains
 the stress test.
 
+**Implemented mechanism.**
+`thm:ns-target-local-record-scale-reduction` derives the scale-relative
+balance, `cor:ns-ordinary-cell-resaturation` inserts every nonzero balance
+or tail pairing into target-cyclic circulation, and
+`prop:ns-ordinary-amplification-tangent-nullity` closes the finite-amplitude
+zero-production cell.  The remaining generated cell is exactly
+`eq:ns-surviving-amplitude-scale-cell`, retaining the joint record
+`eq:ns-surviving-amplitude-scale-joint-record`.
+`thm:ns-amplitude-scale-profile-evaluation` bounds that entire joint record
+on every finite cylinder and passes monotonically to its saturated outer
+comparison profile.  A finite dual row excludes the required shell progress.
+The complementary compatible functional is comparison-only: it neither
+establishes source presence nor creates a branch.  Presence requires its
+least detecting finite same-origin precontact occurrence, and contact
+requires the independently reachable ordinary realization.  Fixedness,
+amplitude divergence, and scale collapse are therefore never terminal values;
+the reachable amplitude--scale contact cell has not been shown empty.
+
 #### 41. Finish the test through the general terminal machinery
 
 **Part-I analogue:** the application substitutes cellwise bounds into general
@@ -1136,6 +1500,25 @@ accountability.  **Construction:** feed all NS separators, equality cells, and
 tails into the general profile evaluator.  **Closed when:** the example ends
 in checked avoidance or an `Ind` zero-defect contacting orbit, with no
 unevaluated NS successor.
+
+**Implemented mechanism.**
+`thm:ns-specialization-commutes` feeds every NS owner, separator, tail,
+contextual increment, and realization value into the general evaluator.
+`thm:ns-prospective-contact-compiler` supplies the finite backward frontier
+and unnormalized cumulative occurrence accounting, and
+`thm:ns-realization-gate-alternative` enforces the two sound terminal types.
+`thm:ns-amplitude-scale-profile-evaluation` supplies the saturated outer
+comparison value of the last joint cell, and
+`cor:ns-profile-specialization-complete` proves that every Navier--Stokes
+comparison cell is evaluated by the general profile/realization machinery.
+A positive functional, nonempty comparison core, separator, compatible
+inverse limit, or marked tail creates no structural branch.  Every active
+positive branch is indexed instead by the least detecting finite precontact
+occurrence on one public-presentation, same-origin orbit.  Singular terminals
+are restricted to independently reachable ordinary contact cells.  The
+amplitude--scale comparison value is therefore neither a named unresolved
+terminal nor evidence of singular existence; its reachable contact cell has
+not been proved empty, so the example does not establish regularity.
 
 ### G. Hamiltonian and spectral reconstruction
 
@@ -1147,6 +1530,14 @@ generator, and boundary conditions from the PDE/regulator presentation;
 totalize closability, density, and domain failures.  **Closed when:** spectral
 machinery is used only after this graph has an ordinary value.
 
+**Implemented repair:** `def:operator-construction-graph` enumerates the
+rational construction coordinates and their defects;
+`thm:first-failure-operator-construction` proves the exact least-failure versus
+ordinary-operator dichotomy.  The ordinary branch constructs the quotient
+Hilbert space, closed form, semigroup generator, domain, and boundary graph.
+The failed branch returns its constructor-owned witness to the saturated source
+profile.  No operator datum is supplied as an antecedent to a spectral claim.
+
 #### 43. Add a same-origin spectral-to-reachability map
 
 **Part-I analogue:** a spectral feature counts through the pre-hit selector
@@ -1154,6 +1545,13 @@ that uses it.  **Construction:** construct an intertwiner preserving time,
 shells, source currents, and carrier; pull spectral covectors back through its
 adjoint.  **Closed when:** poles, pseudospectra, and range defects affect PDE
 reachability only through nonzero same-origin pulled-back pairing.
+
+**Implemented repair:** `def:same-origin-spectral-reachability-graph` joins the
+dynamical, shell, source, and carrier intertwining rows on one stopped history.
+`thm:same-origin-spectral-pullback` factors every usable spectral covector
+through the complete joint backward frontier.  Nonzero pullback is therefore a
+finite contextual source increment; a nonzero intertwining defect is routed at
+its least joint rational coordinate and blocks the spectral transfer.
 
 #### 44. Treat regulator reconstruction as realization
 
@@ -1163,6 +1561,18 @@ generate projective consistency, reflection positivity, nontriviality,
 cyclic-vacuum, strong-continuity, and Hamiltonian tests.  **Closed when:** a
 zero-defect projective branch constructs the continuum Hilbert space and
 Hamiltonian before the mass-gap target is evaluated.
+
+**Implemented repair:** `def:finite-regulator-realization-hierarchy` forms
+nested compact truncated moment sets with generated variance coordinates and
+all consistency, reflection, semigroup, and continuity coordinates.
+`thm:regulator-proof-failure-realization` proves the trichotomy: finite ordered
+incompatibility proof, least typed joined defect, or a single inverse-limit
+functional.  In the last branch every finite reflection square and consistency
+identity survives, variance decides the trivial quotient or supplies a
+nonvacuum class, the time moduli extend to the completion, and
+`thm:continuum-reconstruction-output` constructs the Hilbert space, cyclic
+vacuum, and Hamiltonian.  Spectral-gap evaluation begins only after this
+ordinary realization.
 
 ## Implementation order
 
