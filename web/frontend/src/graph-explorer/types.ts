@@ -132,6 +132,24 @@ export interface ProofEquation {
   chapter?: string;
 }
 
+/**
+ * One of the paper's own cross-reference tables, published as written.
+ *
+ * These index the argument — nodes against the results, constraints and routes
+ * behind them — so a reader can navigate from the index rather than the canvas.
+ */
+export interface ProofTable {
+  id: string;
+  title: string;
+  /** The section a run of related tables sits under, when there is one. */
+  group: string;
+  chapter?: string;
+  sourceLine: number;
+  headers: string[];
+  /** Cells exactly as the paper writes them, LaTeX and all. */
+  rows: string[][];
+}
+
 export interface Invariant {
   /** Unique across the document; a constraint number alone is not, because
    * every manuscript numbers its own from one. */
@@ -170,6 +188,7 @@ export interface ProofGraphDocument {
   equations: ProofEquation[];
   invariants: Invariant[];
   constants: NamedConstant[];
+  tables: ProofTable[];
 }
 
 /** Direction to follow when highlighting the branches around a node. */

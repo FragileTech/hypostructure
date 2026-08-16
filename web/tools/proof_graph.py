@@ -10,12 +10,14 @@ the dataclasses below and :func:`build_document` reads it.
 from __future__ import annotations
 
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
 from latex_source import (
     clean_table_body,
+    head_end,
     crefs,
     iter_environments,
     iter_statements,
@@ -79,6 +81,9 @@ class ChapterSpec:
     part_summaries: dict[str, str] = field(default_factory=dict)
     #: The paper's own map of its panels: Part | Nodes | Branch resolved | ...
     map_tables: tuple[TableSpec, ...] = ()
+    #: Headings bounding the chapter whose tables index the argument. Every
+    #: table in it is published as written, for readers who navigate by index.
+    reference_region: tuple[str, str] | None = None
     node_tables: tuple[TableSpec, ...] = ()
     result_tables: tuple[TableSpec, ...] = ()
     ledger_tables: tuple[TableSpec, ...] = ()
@@ -363,6 +368,91 @@ def cell(row: list[str], index: int | None) -> str:
 
 
 # ---------------------------------------------------------------------------
+# The paper's own tables, published as written
+# ---------------------------------------------------------------------------
+
+#: A longtable body opens with its column specification, which would otherwise
+#: be read as part of the first heading cell.
+_COLUMN_SPEC = re.compile(r"^\s*(?:\{(?:[^{}]|\{[^{}]*\})*\}|\[[^\]]*\])\s*")
+_ROW_NOISE = re.compile(
+    r"\\(?:toprule|midrule|bottomrule|hline|endhead|endfirsthead|endfoot"
+    r"|endlastfoot|relax|caption\{[^}]*\}|label\{[^}]*\})"
+)
+_HEADING = re.compile(
+    r"\\(?:subsection\*?|section\*?|paragraph)\{((?:[^{}]|\{[^{}]*\})*)\}"
+)
+_SUBSECTION = re.compile(r"\\subsection\*?\{((?:[^{}]|\{[^{}]*\})*)\}")
+
+
+def _table_headings(body: str, width: int) -> list[str]:
+    """The column headings of a table, however the paper marks them off.
+
+    The heading sits between rule markers rather than before them, so the slice
+    that precedes the end of the heading is searched for its last row of the
+    right width.
+    """
+    text = _COLUMN_SPEC.sub("", body, count=1)
+    text = text[: head_end(text)]
+
+    headings: list[str] = []
+    for row in split_rows(_ROW_NOISE.sub("", text)):
+        cells = split_cells(row)
+        if len(cells) == width and len([c for c in cells if c.strip()]) >= 2:
+            headings = [to_plain(c) for c in cells]
+    return headings
+
+
+def parse_tables(text: str, chapter: ChapterSpec) -> list[dict[str, Any]]:
+    """Every table of the chapter that indexes the argument, as written."""
+    if chapter.reference_region is None:
+        return []
+    try:
+        start = text.index(chapter.reference_region[0])
+        stop = text.index(chapter.reference_region[1], start)
+    except ValueError:
+        return []
+
+    headings = [(match.start(), to_plain(match.group(1))) for match in _HEADING.finditer(text)]
+    sections = [(match.start(), to_plain(match.group(1))) for match in _SUBSECTION.finditer(text)]
+
+    def preceding(offsets: list[tuple[int, str]], position: int) -> str:
+        found = [name for at, name in offsets if at < position]
+        return found[-1] if found else ""
+
+    tables: list[dict[str, Any]] = []
+    for body, offset in iter_environments(text, "longtable"):
+        if not start <= offset < stop:
+            continue
+
+        rows = [
+            cells
+            for cells in (split_cells(row) for row in split_rows(clean_table_body(body)))
+            if len(cells) > 1 and any(cells)
+        ]
+        if not rows:
+            continue
+        width = Counter(len(row) for row in rows).most_common(1)[0][0]
+        rows = [row for row in rows if len(row) == width]
+
+        # A `\paragraph` heading ends in a full stop; a title does not need one.
+        title = preceding(headings, offset).rstrip(". ")
+        section = preceding(sections, offset).rstrip(". ")
+        tables.append(
+            {
+                "id": f"{chapter.id}/{len(tables) + 1}",
+                "title": title or f"Table {len(tables) + 1}",
+                # A run of blocks under one heading reads as one group.
+                "group": section if section and section != title else "",
+                "chapter": chapter.id,
+                "sourceLine": line_of(text, offset),
+                "headers": _table_headings(body, width) or [""] * width,
+                "rows": rows,
+            }
+        )
+    return tables
+
+
+# ---------------------------------------------------------------------------
 # Labelled results
 # ---------------------------------------------------------------------------
 
@@ -581,6 +671,7 @@ def _read_chapter(chapter: ChapterSpec, root: Path) -> dict[str, Any]:
     panels = parse_panels(text, chapter)
     items = parse_items(text)
     equations = parse_equations(text)
+    tables = parse_tables(text, chapter)
 
     groups: list[dict[str, Any]] = []
     nodes: list[dict[str, Any]] = []
@@ -658,6 +749,7 @@ def _read_chapter(chapter: ChapterSpec, root: Path) -> dict[str, Any]:
         "edges": edges,
         "items": items,
         "equations": equations,
+        "tables": tables,
         "macros": parse_macros(text),
     }
 
@@ -876,6 +968,7 @@ def build_document(spec: ProofSpec, root: Path) -> dict[str, Any]:
     edges: list[dict] = []
     invariants: list[dict] = []
     constants: list[dict] = []
+    tables: list[dict] = []
     items: dict[str, dict] = {}
     equations: dict[str, dict] = {}
 
@@ -899,6 +992,7 @@ def build_document(spec: ProofSpec, root: Path) -> dict[str, Any]:
         constants.extend(chapter_constants)
 
         groups.extend(part["groups"])
+        tables.extend(part["tables"])
         nodes.extend(part["nodes"])
         edges.extend(part["edges"])
         for name, body in part["macros"].items():
@@ -975,6 +1069,7 @@ def build_document(spec: ProofSpec, root: Path) -> dict[str, Any]:
         "equations": list(equations.values()),
         "invariants": invariants,
         "constants": constants,
+        "tables": tables,
     }
     if multi:
         document["chapters"] = [part["chapter"] for part in parts]

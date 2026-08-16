@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom";
 
+import { MethodologySection } from "../components/MethodologySection";
+import { DOCS_ROOT } from "../docs/registry";
 import { PROOFS } from "../proofs/registry";
+
+/**
+ * The site uses a hash router, so an `href="#methodology"` would be read as a
+ * route. The jump is done by hand instead.
+ */
+function scrollToMethodology() {
+  document.getElementById("methodology")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 export function LandingPage() {
   return (
@@ -13,6 +23,11 @@ export function LandingPage() {
           numbered steps. Here those diagrams are navigable: pick a step and see
           what it asserts, which results stand behind it, and where the argument
           goes next.
+        </p>
+        <p className="hero-actions">
+          <button type="button" className="button button-quiet" onClick={scrollToMethodology}>
+            Read the methodology
+          </button>
         </p>
       </header>
 
@@ -30,6 +45,25 @@ export function LandingPage() {
           </li>
         ))}
       </ul>
+
+      <aside className="framework-callout">
+        <span className="proof-grid-glyph" aria-hidden="true">
+          λ
+        </span>
+        <div>
+          <h2>Lean Framework</h2>
+          <p>
+            The reference for formalizing structural exhaustion proofs in Lean
+            with the hypostructure framework: the ledger that carries a branch,
+            how steps read and write facts, and the API as it stands.
+          </p>
+        </div>
+        <Link to={DOCS_ROOT} className="button">
+          Read the docs
+        </Link>
+      </aside>
+
+      <MethodologySection />
     </div>
   );
 }

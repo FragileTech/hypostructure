@@ -22,11 +22,53 @@ The divider between the diagram and the detail column can be dragged to resize
 it; double-clicking it, or pressing `Home` while it has focus, restores the
 default, and the width is remembered.
 
-Nothing on the site is hand-written mathematics, with two stated exceptions:
-each proof's introduction, in `frontend/src/proofs/registry.ts`, and the panel
-names and Erdős panel summaries in `web/tools/papers/`. The Navier–Stokes panel
-summaries are the manuscripts' own — they live in each paper's *Diagram map*, so
-improving them there improves both the paper and this site.
+Nothing on the site is hand-written mathematics, with four stated exceptions:
+each proof's introduction, in `frontend/src/proofs/registry.ts`; the panel
+names and Erdős panel summaries in `web/tools/papers/`; the landing page's
+*The methodology* section, `frontend/src/components/MethodologySection.tsx`, a
+condensed reading of `to_formalize/structural_exhaustion.tex` — the account of
+Structural Exhaustion, the method both proofs were built with — together with
+a table of the proof moves, drawn from the tactic library of
+`branch_closure_methodology_extended.tex` and each proof's chapter 1; and the *Lean
+Framework* documentation under `frontend/src/docs/`, described below. The
+Navier–Stokes panel summaries are the manuscripts' own — they live in each
+paper's *Diagram map*, so improving them there improves both the paper and this
+site.
+
+## The Lean Framework section
+
+`/#/lean` is the reference for formalizing structural exhaustion proofs with
+the hypostructure Lean framework (`hypostructure/Hypostructure/Core/`). It is
+reached from the header on every page. The section has its own left rail and
+is written by hand as TSX, since its source is the Lean code rather than a
+manuscript:
+
+```
+frontend/src/docs/
+  registry.ts          the pages, in reading order, and their rail groups
+  DocsLayout.tsx       the rail and the content column
+  DocsHomePage.tsx     the section's front page
+  DocsPage.tsx         one page by slug, with the previous/next pager
+  LeanCode.tsx         <LeanCode> blocks and <L> inline code
+  lean-highlight.ts    the small Lean tokenizer behind them
+  content/*.tsx        one file per page
+```
+
+Today it documents four groups, in reading order: **The ledger**
+(`ExactLedger`, reading facts, writing facts, closing a branch), **Defining a
+problem** (`Core.Problem`, `Target`, `Progress`, the `ProblemInput` residual,
+the fact vocabulary, opening the minimal-counterexample scope), **Assembling a
+proof** (how steps, decisions and closures compose into the public statement,
+and the interface-replacement exclusion), and **Reference** (verbatim
+signatures for the ledger/execution, problem, semantics/replacement and utility
+modules). Only live, current-API code is documented, and always in a
+problem-agnostic way; when a framework signature changes, the reference pages
+under `content/*Api.tsx` are the place to update.
+
+To add a page: write `content/YourPage.tsx` exporting a component whose first
+element is a `.docs-header` with the page's `<h1>`, then add an entry to
+`DOCS_PAGES` in `registry.ts` (slug, title, summary, group). The rail, the
+front-page cards, the pager and the tests pick it up from the registry.
 
 ## Running it
 
@@ -68,7 +110,16 @@ reads:
 | Every `\begin{lemma}…\label{…}` and friends | the verbatim statement, and the proof that follows it |
 | Every labelled display equation | so that `\eqref` in a statement or proof can show the mathematics |
 | The constants or glossary table | the numerical constants and symbols |
+| Every table of the paper's chapter 1 | published as written, as the **Tables** section |
 | The preamble `\newcommand`s | a macro table, so each paper's notation renders |
+
+**The paper's own index is a section of its own.** Chapter 1 of each manuscript
+tabulates the argument — a dependency table, a constraint ledger, per-result
+requirements, node-by-node audits — and *Tables* shows all of them as written,
+one at a time, with a row filter. Every bracketed step number and every `\cref`
+in a cell links into the diagram, so the proof can be navigated from the index
+as well as from the canvas. Sixteen tables for Erdős, four per Navier–Stokes
+paper.
 
 **References are navigable.** A `\cref`, `\ref` or `\eqref` inside a statement
 or a proof is resolved against the paper it was written in. One naming a result
@@ -103,9 +154,11 @@ web/
     test_extract_proof_graph.py  structural assertions, over every proof
   frontend/
     public/data/*.json           generated, committed
+    public/papers/*.pdf          the manuscripts, for the header's download link
     src/
       graph-explorer/            the reusable explorer (see below)
       proofs/                    the registry, the loader and their tests
+      docs/                      the Lean Framework documentation section
       pages/ components/ styles/ the site around it
 ```
 
@@ -119,7 +172,11 @@ Two steps.
    numbers, the prose and the `\cref`s. A `ProofSpec` collects the chapters and
    any joins between them. Register it in `papers/__init__.py`.
 2. Add an entry to `frontend/src/proofs/registry.ts` with the question the paper
-   answers and a few paragraphs of introduction.
+   answers, a few paragraphs of introduction, and its `papers` — the compiled
+   PDFs, copied into `frontend/public/papers/`, which the header offers for
+   download (one link for a single manuscript, a small menu for several). After
+   a manuscript changes, recompile it (`latexmk -pdf` in `to_formalize/`) and
+   copy the PDF over again; a test checks every listed file is really there.
 
 Nothing else changes: the routes, the switcher and the explorer are driven by
 the registry and the document.

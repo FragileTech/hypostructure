@@ -22652,6 +22652,2756 @@
    "chapter": "type-i"
   }
  ],
+ "tables": [
+  {
+   "id": "setup/1",
+   "title": "Diagram map",
+   "group": "",
+   "chapter": "setup",
+   "sourceLine": 269,
+   "headers": [
+    "Part",
+    "Nodes",
+    "Branch resolved",
+    "Principal sources"
+   ],
+   "rows": [
+    [
+     "I",
+     "[1]--[13]",
+     "Turns a suspected singular point into a concrete object to\nargue about.  Assuming the point is not regular, the local Type I bound forces a\nsequence of rescalings along which velocity concentrates and cannot escape;\ncompactness then extracts an ancient profile that is bounded, centred and not\nidentically zero.  Normalizing that profile fixes the data every later part\nreasons about.",
+     "\\Cref{p0:cor:velocity-concentration,p0:thm:local-weak-serrin-typeI,p0:lem:local-seregin-extraction,p1:def:raw-generated-seregin-space}"
+    ],
+    [
+     "II",
+     "[14]--[39]",
+     "Puts that profile through an exhaustive list of classes and\nempties all but one.  Small-amplitude, stationary, uniformly tight and the five\nstructured classes each close by their own Liouville theorem, leaving a single\nresidual family; the companion paper is what shows the residual family is empty\ntoo, and the contradiction follows.",
+     "\\Cref{p1:prop:exhaustion,p1:thm:classical-classes,p2:thm:tight-liouville,p3:thm:typeI-zero-hypotheses,p1:hyp:no-remainder}"
+    ]
+   ]
+  },
+  {
+   "id": "setup/2",
+   "title": "Node-by-node audit table",
+   "group": "",
+   "chapter": "setup",
+   "sourceLine": 451,
+   "headers": [
+    "Node",
+    "State or exhaustive test",
+    "Source in the proof",
+    "Successor or closure"
+   ],
+   "rows": [
+    [
+     "[1]",
+     "Finite-energy suitable solution and a terminal local pointwise Type I point",
+     "\\Cref{p1:thm:final-assembly}",
+     "Test regularity at [2]"
+    ],
+    [
+     "[2]",
+     "Regular-versus-singular test at the terminal point",
+     "Proof of \\Cref{p1:thm:final-assembly}",
+     "Regular gives [3]; singular gives [4]"
+    ],
+    [
+     "[3]",
+     "Local Type I regularity conclusion",
+     "\\Cref{p1:thm:final-assembly}",
+     "Terminal theorem conclusion"
+    ],
+    [
+     "[4]",
+     "Hypothetical singular local Type I point",
+     "Proof of \\Cref{p1:thm:final-assembly}",
+     "Extract velocity concentration at [5]"
+    ],
+    [
+     "[5]",
+     "Positive velocity concentration sequence",
+     "\\Cref{p0:cor:velocity-concentration}",
+     "Apply the terminal \\(A\\)-estimate at [6]"
+    ],
+    [
+     "[6]",
+     "Terminal local \\(A\\)-bound",
+     "\\Cref{p0:lem:terminal-A-from-weak-serrin}",
+     "Derive no-escape at [7]"
+    ],
+    [
+     "[7]",
+     "Terminal velocity no-escape",
+     "\\Cref{p0:thm:local-weak-serrin-typeI}",
+     "Verify admissibility at [8]"
+    ],
+    [
+     "[8]",
+     "Admissible local Type I concentration sequence",
+     "\\Cref{p0:def:paper0-admissible-local-typeI-sequence,p0:cor:paper0-local-typeI-admissible}",
+     "Retain negative-time mass at [9]"
+    ],
+    [
+     "[9]",
+     "Positive \\(L^3\\) mass away from the terminal slice",
+     "\\Cref{p0:lem:paper0-local-typeI-into-terminal-dichotomy}",
+     "Run local compactness at [10]"
+    ],
+    [
+     "[10]",
+     "Local compactness, pressure gauges, and Seregin extraction",
+     "\\Cref{p0:prop:paper0-local-typeI-terminal-compactness,p0:lem:local-seregin-extraction}",
+     "Obtain [11]"
+    ],
+    [
+     "[11]",
+     "Smooth bounded nonzero raw centered Seregin profile",
+     "\\Cref{p1:def:seregin-limit,p1:cor:raw-extracted-nonzero}",
+     "Convert the normalization at [12]"
+    ],
+    [
+     "[12]",
+     "Time-translation invariant local nonvanishing",
+     "\\Cref{p1:lem:compact-to-invariant-nonzero}",
+     "Form the fixed raw hull at [13]"
+    ],
+    [
+     "[13]",
+     "Raw generated descendant hull containing \\(V\\) and retaining nonvanishing",
+     "\\Cref{p1:def:raw-generated-seregin-space,p1:lem:raw-generated-closure-stability,p1:cor:normalized-nonzero}",
+     "Continue to [14]"
+    ],
+    [
+     "[14]",
+     "Small-amplitude membership test",
+     "\\Cref{p1:def:small-class,p1:prop:exhaustion}",
+     "Yes gives [19]; no gives [15]"
+    ],
+    [
+     "[15]",
+     "Stationary \\(L^3\\) membership test",
+     "\\Cref{p1:def:stationary-class,p1:prop:exhaustion}",
+     "Yes gives [22]; no gives [16]"
+    ],
+    [
+     "[16]",
+     "Uniform \\(L^3\\)-tightness membership test",
+     "\\Cref{p1:def:tight-class,p1:prop:exhaustion}",
+     "Yes gives [24]; no gives [17]"
+    ],
+    [
+     "[17]",
+     "Structure and decay membership test",
+     "\\Cref{p1:def:known-structure-decay-class,p1:prop:exhaustion}",
+     "Yes gives [28]; no gives [18]"
+    ],
+    [
+     "[18]",
+     "Literal residual complement",
+     "\\Cref{p1:def:remaining-class,p1:prop:exhaustion}",
+     "Continue to [35]"
+    ],
+    [
+     "[19]",
+     "Mild small-amplitude class data",
+     "\\Cref{p1:def:small-class,p1:lem:mild-representation}",
+     "Apply the Duhamel estimate at [20]"
+    ],
+    [
+     "[20]",
+     "Small-data Duhamel inequality",
+     "\\Cref{p1:lem:centered-stokes-estimates,p1:lem:small-liouville}",
+     "Force the closure [21]"
+    ],
+    [
+     "[21]",
+     "Small profile vanishes",
+     "\\Cref{p1:lem:small-liouville,p1:thm:classical-classes}",
+     "Terminal contradiction to [12]--[13]"
+    ],
+    [
+     "[22]",
+     "Stationary \\(L^3\\) centered profile",
+     "\\Cref{p1:def:stationary-class,p1:lem:stationary-profile}",
+     "Apply stationary rigidity at [23]"
+    ],
+    [
+     "[23]",
+     "Stationary profile vanishes",
+     "\\Cref{p2:thm:NRS,p1:thm:classical-classes}",
+     "Terminal contradiction to [12]--[13]"
+    ],
+    [
+     "[24]",
+     "Bounded mild uniformly \\(L^3\\)-tight centered state",
+     "\\Cref{p1:def:tight-class,p2:thm:tight-liouville}",
+     "Pull back physically at [25]"
+    ],
+    [
+     "[25]",
+     "Bounded mild physical pullback on a truncated ancient interval",
+     "\\Cref{p2:lem:physical-pullback,p2:lem:physical-mild}",
+     "Establish the endpoint data at [26]"
+    ],
+    [
+     "[26]",
+     "Terminal \\(L^3\\) datum and bounded backward \\(L^3\\) sequence",
+     "\\Cref{p2:lem:L3-pullback-invariance,p2:lem:tail-tight-sequence-L3}",
+     "Apply endpoint rigidity at [27]"
+    ],
+    [
+     "[27]",
+     "Uniformly tight profile vanishes",
+     "\\Cref{p2:thm:AB-endpoint,p2:thm:tight-liouville,p1:thm:tight-liouville}",
+     "Terminal contradiction to [12]--[13]"
+    ],
+    [
+     "[28]",
+     "Mild physical Type I representative in the structure and decay class",
+     "\\Cref{p1:def:known-structure-decay-class,p1:thm:known-structure-decay-liouville}",
+     "Classify the listed hypothesis at [29]"
+    ],
+    [
+     "[29]",
+     "Five-way structural hypothesis test",
+     "\\Cref{p1:def:known-structure-decay-class,p3:thm:typeI-zero-hypotheses}",
+     "At least one applicable closure [30]--[34]"
+    ],
+    [
+     "[30]",
+     "Axisymmetric no-swirl closure",
+     "\\Cref{p3:prop:noswirl-typeI,p3:thm:typeI-zero-hypotheses}",
+     "Terminal zero contradiction"
+    ],
+    [
+     "[31]",
+     "Axisymmetric pointwise \\(1/r\\) closure",
+     "\\Cref{p3:prop:pointwise-typeI,p3:thm:typeI-zero-hypotheses}",
+     "Terminal zero contradiction"
+    ],
+    [
+     "[32]",
+     "Finite-\\(L^p\\) swirl closure",
+     "\\Cref{p3:prop:lp-swirl-typeI,p3:thm:typeI-zero-hypotheses}",
+     "Terminal zero contradiction"
+    ],
+    [
+     "[33]",
+     "Periodic bounded-swirl closure",
+     "\\Cref{p3:prop:periodic-swirl-typeI,p3:thm:typeI-zero-hypotheses}",
+     "Terminal zero contradiction"
+    ],
+    [
+     "[34]",
+     "Anchored Gallay--Wayne perturbative closure",
+     "\\Cref{p3:prop:gw-anchored-typeI-zero,p3:thm:typeI-zero-hypotheses}",
+     "Terminal zero contradiction"
+    ],
+    [
+     "[35]",
+     "Hypothetical residual profile with unchanged raw hull and ledger",
+     "\\Cref{p1:def:remaining-class,p1:hyp:no-remainder}",
+     "Run the companion interface at [36]"
+    ],
+    [
+     "[36]",
+     "Exhaustive companion residual-interface row",
+     "Proof of \\Cref{p1:hyp:no-remainder}",
+     "Affine/parasitic gives [37]; retained residual gives [38]"
+    ],
+    [
+     "[37]",
+     "Affine/parasitic residual-interface closure",
+     "\\Cref{p1:hyp:no-remainder}",
+     "Terminal local companion closure"
+    ],
+    [
+     "[38]",
+     "Retained residual row on the same profile and ledger",
+     "\\Cref{p1:hyp:no-remainder,p1:prop:remainder-equivalence}",
+     "Apply the companion residual theorem at [39]"
+    ],
+    [
+     "[39]",
+     "Retained residual closure",
+     "\\Cref{p1:hyp:no-remainder,p1:cor:remainder-rigidity}",
+     "Terminal emptiness of the residual row"
+    ]
+   ]
+  },
+  {
+   "id": "setup/3",
+   "title": "Monotone proof ledger",
+   "group": "",
+   "chapter": "setup",
+   "sourceLine": 602,
+   "headers": [
+    "Fact",
+    "Established by",
+    "Retained through",
+    "Terminal use"
+   ],
+   "rows": [
+    [
+     "Finite-energy suitability and the local pointwise Type I bound",
+     "Input of \\Cref{p1:thm:final-assembly}",
+     "Rescaling and local extraction [1]--[11]",
+     "Supplies the local endpoint and compactness interfaces"
+    ],
+    [
+     "Positive local velocity signal",
+     "\\Cref{p0:cor:velocity-concentration}",
+     "No-escape, negative-time selection, and strong local \\(L^3\\) convergence [5]--[11]",
+     "Prevents the extracted profile from vanishing"
+    ],
+    [
+     "Local pressure gauges and suitable compactness",
+     "\\Cref{p0:prop:paper0-local-typeI-terminal-compactness}",
+     "The ancient extraction on compact negative-time cylinders [10]--[13]",
+     "Supplies the centered local-pressure formulation"
+    ],
+    [
+     "Fixed ancestry and invariant data \\((R_0,\\eta_*)\\)",
+     "\\Cref{p1:lem:compact-to-invariant-nonzero,p1:def:raw-generated-seregin-space}",
+     "Time translations and permitted locally smooth generated limits [12]--[39]",
+     "Contradicts every zero closure and fixes the residual interface"
+    ],
+    [
+     "Projected mildness only on its stated stratum",
+     "\\Cref{p1:def:mild-stratum}",
+     "Small, tight, and structure/decay branches only",
+     "Non-mild unclassified states remain available to [18], not silently excluded"
+    ],
+    [
+     "Exact raw residual complement",
+     "\\Cref{p1:def:remaining-class,p1:hyp:no-remainder}",
+     "Companion routing of the same incoming profile [35]--[39]",
+     "Gives literal emptiness without a new global hypothesis"
+    ]
+   ]
+  },
+  {
+   "id": "setup/4",
+   "title": "Branch-closure audit ledger",
+   "group": "",
+   "chapter": "setup",
+   "sourceLine": 649,
+   "headers": [
+    "State or exit",
+    "Diagram route",
+    "Closure source",
+    "Terminal output"
+   ],
+   "rows": [
+    [
+     "Point already regular",
+     "[1]--[3]",
+     "\\Cref{p1:thm:final-assembly}",
+     "[3]"
+    ],
+    [
+     "Small-amplitude mild state",
+     "[14], [19]--[21]",
+     "\\Cref{p1:lem:mild-representation,p1:lem:small-liouville,p1:thm:classical-classes}",
+     "[21]"
+    ],
+    [
+     "Stationary \\(L^3\\) state",
+     "[15], [22]--[23]",
+     "\\Cref{p1:lem:stationary-profile,p2:thm:NRS,p1:thm:classical-classes}",
+     "[23]"
+    ],
+    [
+     "Uniformly \\(L^3\\)-tight mild state",
+     "[16], [24]--[27]",
+     "\\Cref{p2:lem:physical-mild,p2:lem:tail-tight-sequence-L3,p2:thm:AB-endpoint,p2:thm:tight-liouville}",
+     "[27]"
+    ],
+    [
+     "Axisymmetric no-swirl state",
+     "[17], [28]--[30]",
+     "\\Cref{p3:prop:noswirl-typeI,p3:thm:typeI-zero-hypotheses}",
+     "[30]"
+    ],
+    [
+     "Axisymmetric pointwise \\(1/r\\) state",
+     "[17], [28]--[31]",
+     "\\Cref{p3:prop:pointwise-typeI,p3:thm:typeI-zero-hypotheses}",
+     "[31]"
+    ],
+    [
+     "Finite-\\(L^p\\) swirl state",
+     "[17], [28]--[32]",
+     "\\Cref{p3:prop:lp-swirl-typeI,p3:thm:typeI-zero-hypotheses}",
+     "[32]"
+    ],
+    [
+     "Periodic bounded-swirl state",
+     "[17], [28]--[33]",
+     "\\Cref{p3:prop:periodic-swirl-typeI,p3:thm:typeI-zero-hypotheses}",
+     "[33]"
+    ],
+    [
+     "Anchored perturbative-vorticity state",
+     "[17], [28]--[34]",
+     "\\Cref{p3:prop:gw-anchored-typeI-zero,p3:thm:typeI-zero-hypotheses}",
+     "[34]"
+    ],
+    [
+     "Affine/parasitic residual-interface row",
+     "[18], [35]--[37]",
+     "\\Cref{p1:hyp:no-remainder}",
+     "[37]"
+    ],
+    [
+     "Retained residual row",
+     "[18], [35]--[39]",
+     "\\Cref{p1:hyp:no-remainder,p1:prop:remainder-equivalence,p1:cor:remainder-rigidity}",
+     "[39]"
+    ]
+   ]
+  },
+  {
+   "id": "type-i/1",
+   "title": "Diagram map",
+   "group": "",
+   "chapter": "type-i",
+   "sourceLine": 1287,
+   "headers": [
+    "Part",
+    "Nodes",
+    "Branch resolved",
+    "Principal internal sources"
+   ],
+   "rows": [
+    [
+     "I",
+     "\\textbf{[1]}--\\textbf{[12]}",
+     "Receives the profile the setup paper hands over and pins down exactly what is\nstill open.  The four classes the setup paper already closed are discharged on\nsight; what survives is the raw residual class, and this part fixes the\nstatement of it that the rest of the paper must empty.",
+     "\\Cref{thm:local-typeI-entry-or-exclusion,thm:imported-setup-results,prop:setup-residual-handoff-complete}."
+    ],
+    [
+     "II",
+     "\\textbf{[13]}--\\textbf{[37]}",
+     "Splits the residual class into ten refined states and works through them in\norder.  Axisymmetric profiles are killed outright by the axis closure; the\nrotational and stationary-hull states are reduced to terminal forms that later\nparts dispose of.  Only the affine and generic states leave the panel alive.",
+     "\\Cref{def:refined-decomposition,lem:centered-circulation-equation,lem:one-dimensional-killed-radial-absorption,lem:axis-absorption-liouville,thm:R1-exclusion,lem:R2-coriolis-bernoulli,lem:R2-flux-reduction-dichotomy,lem:R3-hull-is-seregin,prop:R2-reduction-to-terminal,prop:R3S-R3-terminal-reduction,thm:R4-final-closure}."
+    ],
+    [
+     "III",
+     "\\textbf{[38]}--\\textbf{[57]}",
+     "Asks what a surviving profile can look like far from the origin.  A covariant\ncalculus makes the question independent of the observer, affine normalization\nremoves the parasitic pressure freedom, and a pressure atlas keeps the gauge\nconsistent chart to chart.  What comes out is a short list of tail geometries\nand recentering alternatives.",
+     "\\Cref{thm:covariant-observer-calculus,thm:affine-normalization-dichotomy,prop:tail-dichotomy,lem:retained-recentering-alternatives}."
+    ],
+    [
+     "IV",
+     "\\textbf{[58]}--\\textbf{[63]}, \\textbf{[76]},\n\\textbf{[141]}--\\textbf{[146]},\n\\textbf{[149]}--\\textbf{[153]}",
+     "The dispatcher.  Everything the earlier parts leave alive arrives here as one of\neight terminal alternatives, and each is routed to the panel that closes it:\npressure-only data goes chartwise, critical tails take the direct bridge, and\nretained chains are followed until a critical shell or a moving cell reduces\nthem to the sparse current-saturation branch.",
+     "\\Cref{thm:terminal-exhaustion-main,thm:terminal-stratification,lem:no-pressure-only-retained-profile,lem:escaping-retained-recentering-routing,thm:active-path-space-recurrence,prop:positive-density-active-exclusion,lem:vanishing-event-current-exclusion,lem:weighted-critical-shell-identity,thm:sparse-moving-root-current-exclusion,thm:critical-interscale-flux-exclusion,thm:compact-active-descendant,lem:finite-graph-cycle,thm:no-finite-separated-profile-family}."
+    ],
+    [
+     "V",
+     "\\textbf{[64]}--\\textbf{[75]}",
+     "Handles the case where the defect spreads out instead of concentrating.\nCompactifying such a profile makes it recurrent, and recurrence forces one of\nthree outcomes, each of which is sent on to a closure.",
+     "\\Cref{thm:diffuse-defect-compactness,thm:diffuse-defect-compactification-construction,thm:diffuse-defect-trichotomy}."
+    ],
+    [
+     "VI",
+     "\\textbf{[77]}--\\textbf{[98]}",
+     "Does the same for a profile whose mass sits in a critical tail.  Compactifying\nit and reading off a virial identity classifies the defect coordinate, and the\nclassification decides which closure the branch belongs to.",
+     "\\Cref{thm:critical-tail-compactification-compactness,lem:critical-tail-young-log-transport,lem:recurrent-virial-equality-reduction,thm:critical-tail-compactification-extraction}."
+    ],
+    [
+     "VII",
+     "\\textbf{[99]}--\\textbf{[124]}",
+     "Attacks a tail that hides its failure at some intermediate scale.  Choosing the\nsmallest scale at which control is lost makes the pressure compact there; the\nvariance of the profile is then rigid, and that rigidity closes the log-periodic\nand Young alternatives.",
+     "\\Cref{lem:h2-failure-first-bad-scale,lem:first-bad-pressure-compactness,lem:bounded-variance-liouville,thm:first-bad-mesoscopic-reduction}."
+    ],
+    [
+     "VIII",
+     "\\textbf{[125]}--\\textbf{[140]}",
+     "Deals with tails that stay coherent rather than dispersing.  Such a profile can\nbe realized with a bounded origin, and once it is there are exactly three\ncoherent critical-tail shapes left, all three of which are excluded.",
+     "\\Cref{thm:bounded-origin-realization-coherent-tails,thm:coherent-critical-tail-classification,cor:coherent-critical-tail-branch-closure}."
+    ],
+    [
+     "IX",
+     "\\textbf{[147]}--\\textbf{[148]}, \\textbf{[154]}--\\textbf{[159]}",
+     "The last route out.  A profile that is not separated into several pieces must be\na single atom; testing its retained tail produces an endpoint estimate, and that\nestimate contradicts the atom's own concentration.  With this the residual class\nis empty and the setup paper's argument resumes.",
+     "\\Cref{lem:descendant-to-separated-family,prop:no-multi-implies-atomic,lem:atomic-sequence-L3,thm:mildness-inheritance-main,thm:AB-main,lem:no-atomic-active}."
+    ]
+   ]
+  },
+  {
+   "id": "type-i/2",
+   "title": "Node-by-node audit table",
+   "group": "",
+   "chapter": "type-i",
+   "sourceLine": 2117,
+   "headers": [
+    "Node",
+    "State or test",
+    "Exact proof source",
+    "Successor or closure"
+   ],
+   "rows": [
+    [
+     "[1]",
+     "Fixed candidate singular point and local pointwise Type~I envelope.",
+     "\\Cref{def:pointwise-typeI-convention,thm:local-typeI-entry-or-exclusion}.",
+     "Selected admissible sequence [2]."
+    ],
+    [
+     "[2]",
+     "Fixed rescaling sequence with concentration and terminal no-escape.",
+     "\\Cref{thm:AB-weak-serrin-typeI-estimate,thm:local-typeI-terminal-energy-estimates}.",
+     "Seregin extraction [3]."
+    ],
+    [
+     "[3]",
+     "Selected normalized centered profile with the fixed setup ledger.",
+     "\\Cref{thm:imported-setup-results,hyp:base-seregin-hypotheses,tab:setup-export-interface}.",
+     "Setup-state decision [4]."
+    ],
+    [
+     "[4]",
+     "Exhaustive setup lower-state or raw-residual selection.",
+     "\\Cref{hyp:previous-nonresidual,def:exact-setup-residual-handoff}.",
+     "[5]--[9]."
+    ],
+    [
+     "[5]",
+     "Selected small setup state.",
+     "\\Cref{thm:imported-setup-results,hyp:previous-nonresidual}.",
+     "Corresponding setup closure."
+    ],
+    [
+     "[6]",
+     "Selected stationary \\(L^3\\) setup state.",
+     "\\Cref{thm:imported-setup-results,hyp:previous-nonresidual}.",
+     "Corresponding setup closure."
+    ],
+    [
+     "[7]",
+     "Selected uniformly \\(L^3\\)-tight setup state.",
+     "\\Cref{thm:imported-setup-results,hyp:previous-nonresidual}.",
+     "Corresponding setup closure."
+    ],
+    [
+     "[8]",
+     "Selected closed structured/decay setup state.",
+     "\\Cref{thm:imported-setup-results,hyp:previous-nonresidual}.",
+     "Corresponding setup closure."
+    ],
+    [
+     "[9]",
+     "Raw-residual membership tested for the same arbitrary profile.",
+     "\\Cref{def:exact-setup-residual-handoff,thm:typeI-residual-closure}.",
+     "Exact handoff [10]."
+    ],
+    [
+     "[10]",
+     "Affine-or-retained handoff for the current candidate.",
+     "\\Cref{prop:setup-residual-handoff-complete}.",
+     "[11] or [12]."
+    ],
+    [
+     "[11]",
+     "Raw affine/parasitic quotient route.",
+     "\\Cref{prop:setup-residual-handoff-complete,thm:oscillatory-entry-normalization}.",
+     "No retained representative."
+    ],
+    [
+     "[12]",
+     "Retained canonical representative in the refined class.",
+     "\\Cref{prop:setup-residual-handoff-complete,def:coarse-residual}.",
+     "Ordered selection [13]."
+    ],
+    [
+     "[13]",
+     "Ten-state ordered refined selection.",
+     "\\Cref{def:refined-decomposition,eq:complete-residual-decomposition}.",
+     "[14]--[18], [85], [99], or [125]."
+    ],
+    [
+     "[14]",
+     "Current profile selected into \\(\\Crot\\).",
+     "\\Cref{prop:R2-reduction-to-terminal}.",
+     "Localized rotational reduction [24]."
+    ],
+    [
+     "[15]",
+     "Current profile selected into \\(\\Cstat\\).",
+     "\\Cref{prop:R3-stationary-hull-reduction,prop:R3S-R3-terminal-reduction}.",
+     "Stationary-hull reselection [31]."
+    ],
+    [
+     "[16]",
+     "Current representative selected into \\(\\Caff\\).",
+     "\\Cref{thm:affine-normalization-dichotomy,thm:oscillatory-entry-normalization}.",
+     "No retained representative."
+    ],
+    [
+     "[17]",
+     "Current profile selected into \\(\\Cgen\\).",
+     "\\Cref{thm:generic-terminal-exhaustion}.",
+     "Covariant tail and recentering route [38]."
+    ],
+    [
+     "[18]",
+     "Selected axisymmetric bounded-circulation profile.",
+     "\\Cref{def:refined-decomposition,thm:R1-exclusion}.",
+     "Circulation equation [19]."
+    ],
+    [
+     "[19]",
+     "Centered angular-circulation equation.",
+     "\\Cref{lem:centered-circulation-equation}.",
+     "Killed absorption [20]."
+    ],
+    [
+     "[20]",
+     "One-dimensional killed radial absorption.",
+     "\\Cref{lem:one-dimensional-killed-radial-absorption}.",
+     "Axis Liouville [21]."
+    ],
+    [
+     "[21]",
+     "Axis-absorption Liouville output.",
+     "\\Cref{lem:axis-absorption-liouville}.",
+     "No-swirl routing [22]."
+    ],
+    [
+     "[22]",
+     "No-swirl output in the closed structured row.",
+     "\\Cref{thm:R1-exclusion}.",
+     "Terminal [23]."
+    ],
+    [
+     "[23]",
+     "Current profile selected into \\(\\Cax\\).",
+     "\\Cref{thm:R1-exclusion}.",
+     "Axisymmetric branch contradiction."
+    ],
+    [
+     "[24]",
+     "Selected rotational relative-equilibrium profile.",
+     "\\Cref{def:R2-relative-profile-safe,prop:R2-reduction-to-terminal}.",
+     "Co-rotating equation [25]."
+    ],
+    [
+     "[25]",
+     "Co-rotating stationary equation.",
+     "\\Cref{lem:co-rotating-equation-safe}.",
+     "Bernoulli identity [26]."
+    ],
+    [
+     "[26]",
+     "Coriolis Bernoulli identity.",
+     "\\Cref{lem:R2-coriolis-bernoulli}.",
+     "Localized flux [27]."
+    ],
+    [
+     "[27]",
+     "Localized Coriolis-flux identity.",
+     "\\Cref{lem:R2-coriolis-flux-localization}.",
+     "Active concentration [28]."
+    ],
+    [
+     "[28]",
+     "Non-small flux produces retained local velocity concentration.",
+     "\\Cref{lem:R2-annular-flux-active-concentration}.",
+     "Reduction test [29]."
+    ],
+    [
+     "[29]",
+     "Exhaustive local Coriolis-flux reduction.",
+     "\\Cref{lem:R2-flux-reduction-dichotomy,prop:R2-reduction-to-terminal}.",
+     "Lower terminals [6]/[8] or [30]."
+    ],
+    [
+     "[30]",
+     "Selected realized rotational terminal profile.",
+     "\\Cref{prop:R2-reduction-to-terminal}.",
+     "Common recentering interface [52]."
+    ],
+    [
+     "[31]",
+     "Selected degenerate stationary-hull profile.",
+     "\\Cref{def:R3-active-class}.",
+     "Phase-space realization [32]."
+    ],
+    [
+     "[32]",
+     "Stationary phase space and hull realization.",
+     "\\Cref{def:R3-stationary-phase-space,def:R3-stationary-family}.",
+     "Scale reselection [33]."
+    ],
+    [
+     "[33]",
+     "Centered scale reselection produces a Seregin limit.",
+     "\\Cref{lem:R3-hull-is-seregin}.",
+     "Family degeneracy [34]."
+    ],
+    [
+     "[34]",
+     "Stationary-family degeneracy and exact-family consequences.",
+     "\\Cref{lem:R3-family-kernel,lem:R3-family-constrained-stationary,cor:R3-exact-family-subcase}.",
+     "Test [35]."
+    ],
+    [
+     "[35]",
+     "Lower integrable/exact row or retained stationary carrier.",
+     "\\Cref{prop:R3-stationary-hull-reduction,prop:R3-L3-subcase}.",
+     "Lower terminals [6]/[8] or [36]."
+    ],
+    [
+     "[36]",
+     "Selected stationary Seregin limit retains unit velocity concentration.",
+     "\\Cref{thm:R3-no-attainable-degenerate-family,thm:R3S-terminal-theorem}.",
+     "Reduction [37]."
+    ],
+    [
+     "[37]",
+     "Stationary-hull reduction to terminal stratification.",
+     "\\Cref{prop:R3S-R3-terminal-reduction}.",
+     "Common recentering interface [52]."
+    ],
+    [
+     "[38]",
+     "Selected generic profile with its fixed realization ledger.",
+     "\\Cref{def:R4-profile-main,thm:generic-terminal-exhaustion}.",
+     "Covariance [39]."
+    ],
+    [
+     "[39]",
+     "Covariant translation invariance.",
+     "\\Cref{def:covariant-translations,lem:covariant-translation-invariance}.",
+     "Observer calculus [40]."
+    ],
+    [
+     "[40]",
+     "Semidirect covariant observer calculus.",
+     "\\Cref{def:spacetime-covariant-action,lem:semidirect-covariance,thm:covariant-observer-calculus}.",
+     "State space [41]."
+    ],
+    [
+     "[41]",
+     "Compact normalized local profile state space.",
+     "\\Cref{def:terminal-state-space,lem:state-space-local-compactness,lem:compact-normalized-state-space}.",
+     "Pressure atlas [42]."
+    ],
+    [
+     "[42]",
+     "Pressure representative on the current local chart.",
+     "\\Cref{def:pressure-gauge-affine-quotient,lem:typeI-pressure-atlas-compatibility}.",
+     "Affine quotient [43]."
+    ],
+    [
+     "[43]",
+     "Affine symmetry and pressure quotient.",
+     "\\Cref{def:affine-symmetry,lem:affine-symmetry,lem:homogeneous-gauges-are-affine-stratum}.",
+     "Activity [44]."
+    ],
+    [
+     "[44]",
+     "Closed non-affine oscillation functional.",
+     "\\Cref{thm:closed-nonaffine-activity,cor:compact-normalized-activity-set}.",
+     "Affine test [45]."
+    ],
+    [
+     "[45]",
+     "Affine collapse versus retained non-affine activity.",
+     "\\Cref{thm:affine-normalization-dichotomy}.",
+     "[16] or [46]."
+    ],
+    [
+     "[46]",
+     "Compact normalized escaping covariant hull.",
+     "\\Cref{def:escaping-covariant-hull,thm:escaping-covariant-hull-compactness,lem:escaping-covariant-hull-invariance}.",
+     "Tail test [47]."
+    ],
+    [
+     "[47]",
+     "Tail-zero route versus recurrent tail core.",
+     "\\Cref{def:R4-tail-strata,prop:tail-dichotomy}.",
+     "[48] or [49]."
+    ],
+    [
+     "[48]",
+     "Tail-zero normalized route.",
+     "\\Cref{prop:tail-dichotomy}.",
+     "Recentring interface [52]."
+    ],
+    [
+     "[49]",
+     "Tail-minimal recurrent core.",
+     "\\Cref{def:tail-minimal-core}.",
+     "Pressure averages [50]."
+    ],
+    [
+     "[50]",
+     "Pressure gradients in invariant local averages.",
+     "\\Cref{lem:recurrent-core-pressure-gauges}.",
+     "Core rigidity [51]."
+    ],
+    [
+     "[51]",
+     "Recurrent profile tail-core rigidity.",
+     "\\Cref{thm:recurrent-tail-core-rigidity}.",
+     "Recentring interface [52]."
+    ],
+    [
+     "[52]",
+     "Selected parabolic recentering sequence.",
+     "\\Cref{def:parabolic-recentering-sequence}.",
+     "Combined recentering [53]."
+    ],
+    [
+     "[53]",
+     "Combined parabolic--covariant descendant recentering.",
+     "\\Cref{def:combined-raw-covariant-recentering}.",
+     "Raw measures [54]."
+    ],
+    [
+     "[54]",
+     "Raw atlas defect measure and active windows.",
+     "\\Cref{def:terminal-measures}.",
+     "Gauge/velocity semicontinuity [55]."
+    ],
+    [
+     "[55]",
+     "Gauge compatibility and retained-velocity semicontinuity.",
+     "\\Cref{lem:gauge-compatibility}.",
+     "Local-window compactness [56]."
+    ],
+    [
+     "[56]",
+     "First-generation local-window compactness.",
+     "\\Cref{def:first-generation-local-window-condition,lem:first-generation-local-window-compactness}.",
+     "Alternative test [57]."
+    ],
+    [
+     "[57]",
+     "Compact, diffuse, critical, or pressure recentering alternative.",
+     "\\Cref{lem:ancient-profile-covariant-compactness,lem:escaping-first-generation-alternatives,lem:retained-recentering-alternatives}.",
+     "[58], [64], [77], or [62]."
+    ],
+    [
+     "[58]",
+     "Eight terminal alternatives for the selected realized extraction.",
+     "\\Cref{thm:terminal-stratification}; for the generic owner,\n\\Cref{thm:generic-terminal-exhaustion}.",
+     "[59], [61], [16], [64], [77], or [147]."
+    ],
+    [
+     "[59]",
+     "Compact active alternatives: descendant, finite family, or chain.",
+     "\\Cref{thm:terminal-stratification,lem:closed-active-locus-single-finite-chain}.",
+     "[60], [149], or [141]."
+    ],
+    [
+     "[60]",
+     "Iterated retained descendant with realization and heredity.",
+     "\\Cref{thm:descendant-heredity,thm:active-path-space-recurrence,thm:terminal-stratification}.",
+     "[149], [141], [64], [77], [16], [62], or [147]."
+    ],
+    [
+     "[61]",
+     "Pressure/noncompact datum on its own local chart.",
+     "\\Cref{lem:retained-recentering-alternatives,lem:escaping-retained-recentering-routing,lem:no-pressure-only-retained-profile}.",
+     "Routing decision [62]."
+    ],
+    [
+     "[62]",
+     "Pressure/noncompact routing outcome.",
+     "\\Cref{lem:no-pressure-only-retained-profile,lem:escaping-retained-recentering-routing}.",
+     "[16], [64], [77], or recovered-velocity terminal [63]."
+    ],
+    [
+     "[63]",
+     "Retained velocity recovered from the pressure/product route.",
+     "\\Cref{thm:terminal-stratification}.",
+     "Selected terminal input excluded."
+    ],
+    [
+     "[64]",
+     "Selected realized diffuse-defect chart.",
+     "\\Cref{def:observer-compactification,thm:diffuse-defect-compactness}.",
+     "Observer compactification [65]."
+    ],
+    [
+     "[65]",
+     "Covariant observer compactification.",
+     "\\Cref{def:observer-compactification}.",
+     "Diffuse compactness [66]."
+    ],
+    [
+     "[66]",
+     "Diffuse-defect compactness on escaping windows.",
+     "\\Cref{thm:diffuse-defect-compactness}.",
+     "Window selection [67]."
+    ],
+    [
+     "[67]",
+     "Finite diffuse-window selection.",
+     "\\Cref{lem:finite-diffuse-window-selection}.",
+     "Support transfer [68]."
+    ],
+    [
+     "[68]",
+     "Support transfer for the normalized diffuse defect.",
+     "\\Cref{lem:diffuse-defect-support-transfer}.",
+     "Observable closure [69]."
+    ],
+    [
+     "[69]",
+     "Countable defect observables and compact product closure.",
+     "\\Cref{def:diffuse-defect-observables,thm:diffuse-defect-compactification-construction}.",
+     "Averaging [70]."
+    ],
+    [
+     "[70]",
+     "Amenable averaging for the selected realized defect.",
+     "\\Cref{prop:amenable-averaging-realized-diffuse-defects}.",
+     "Recurrence [71]."
+    ],
+    [
+     "[71]",
+     "Recurrent diffuse-defect probability measure.",
+     "\\Cref{thm:recurrent-diffuse-defect-measure}.",
+     "Trichotomy [72]."
+    ],
+    [
+     "[72]",
+     "Exact regenerated/affine/critical diffuse trichotomy.",
+     "\\Cref{thm:diffuse-defect-trichotomy}.",
+     "[73], [16], or [75]."
+    ],
+    [
+     "[73]",
+     "Regenerated concentration after concentration-set removal.",
+     "\\Cref{thm:diffuse-defect-trichotomy,thm:no-mixed-compact-diffuse}.",
+     "Diffuse terminal [74]."
+    ],
+    [
+     "[74]",
+     "Diffuse or mixed compact--diffuse selected row.",
+     "\\Cref{thm:terminal-inactive-exclusion,thm:diffuse-defect-trichotomy,thm:no-mixed-compact-diffuse}.",
+     "Selected row excluded."
+    ],
+    [
+     "[75]",
+     "Nonzero recurrent critical diffuse tail.",
+     "\\Cref{thm:diffuse-defect-trichotomy}.",
+     "Critical compactification [77]."
+    ],
+    [
+     "[76]",
+     "Direct critical-tail route from terminal recentering.",
+     "\\Cref{lem:escaping-retained-recentering-routing,thm:terminal-exhaustion-main}.",
+     "Critical compactification [77]."
+    ],
+    [
+     "[77]",
+     "Current realized critical-tail datum; the routing goal is to exclude this\nselected datum.",
+     "\\Cref{def:critical-diffuse-tail-strata,thm:critical-tail-compactification-extraction}.",
+     "Compactification [78]."
+    ],
+    [
+     "[78]",
+     "Compactness of the critical-tail compactification.",
+     "\\Cref{thm:critical-tail-compactification-compactness}.",
+     "Support transfer [79]."
+    ],
+    [
+     "[79]",
+     "Critical-tail support transfer.",
+     "\\Cref{lem:critical-tail-support-transfer}.",
+     "Critical coordinates [80]."
+    ],
+    [
+     "[80]",
+     "Log-annular and Young-measure coordinates.",
+     "\\Cref{def:log-annular-compactification,def:young-measure-convergence}.",
+     "Pressure convergence [81]."
+    ],
+    [
+     "[81]",
+     "Distributional pressure-gradient convergence on the selected critical chart.",
+     "\\Cref{def:critical-pressure-gradient-convergence}.",
+     "Young balance [82]."
+    ],
+    [
+     "[82]",
+     "Critical-tail Young balance with named pressure/viscous defects.",
+     "\\Cref{lem:critical-tail-young-log-transport}.",
+     "Virial identity [83]."
+    ],
+    [
+     "[83]",
+     "Log-annular oscillation virial identity.",
+     "\\Cref{lem:log-annular-oscillation-virial}.",
+     "Equality test [84]."
+    ],
+    [
+     "[84]",
+     "Log escape versus virial-tight recurrent equality.",
+     "\\Cref{def:scale-critical-virial-tight-subhull,lem:recurrent-virial-equality-reduction}.",
+     "[85] or [89]."
+    ],
+    [
+     "[85]",
+     "Selected normalized log-window support profiles.",
+     "\\Cref{def:log-window-descendant,lem:log-window-descendant-selection}.",
+     "Support transfer [86]."
+    ],
+    [
+     "[86]",
+     "Log-window support transfer.",
+     "\\Cref{lem:log-window-support-transfer}.",
+     "Heredity [87]."
+    ],
+    [
+     "[87]",
+     "Renormalized log-window heredity.",
+     "\\Cref{lem:renormalized-log-window-heredity}.",
+     "Hidden-scale reduction [88]."
+    ],
+    [
+     "[88]",
+     "Logarithmic escape reduced to hidden-scale compactness.",
+     "\\Cref{thm:log-diffuse-from-hidden-scale}.",
+     "Hidden-scale input [99]."
+    ],
+    [
+     "[89]",
+     "Macroscopic critical-tail blow-down.",
+     "\\Cref{def:macroscopic-critical-tail-blowdown}.",
+     "Gauge bridge [90]."
+    ],
+    [
+     "[90]",
+     "Critical-tail homogeneous-gauge bridge.",
+     "\\Cref{lem:critical-tail-homogeneous-gauge-bridge}.",
+     "Extraction [91]."
+    ],
+    [
+     "[91]",
+     "Critical-tail compactification extraction.",
+     "\\Cref{thm:critical-tail-compactification-extraction}.",
+     "Routing test [92]."
+    ],
+    [
+     "[92]",
+     "Affine, pressure/noncompact, or retained critical-tail route.",
+     "\\Cref{thm:critical-tail-compactification-extraction}.",
+     "[16], [63], or [93]."
+    ],
+    [
+     "[93]",
+     "Retained tight critical-tail profile.",
+     "\\Cref{thm:critical-tail-compactification-extraction}.",
+     "Defect separation [94]."
+    ],
+    [
+     "[94]",
+     "Defect coordinates separated on the current chart.",
+     "\\Cref{def:young-defect-critical-tail-branch,lem:critical-tail-defect-coordinate-routing}.",
+     "Test [95]."
+    ],
+    [
+     "[95]",
+     "Young, pressure/viscous, or coherent critical output.",
+     "\\Cref{lem:critical-tail-defect-coordinate-routing,cor:coherent-critical-tail-extraction}.",
+     "[96]--[98]."
+    ],
+    [
+     "[96]",
+     "Selected pressure/viscous defect coordinates.",
+     "\\Cref{lem:no-pure-viscous-defect-tight-dirac,lem:no-pressure-defect-tight-dirac,lem:critical-tail-defect-coordinate-routing}.",
+     "Branch contradiction."
+    ],
+    [
+     "[97]",
+     "Selected Young-variance branch.",
+     "\\Cref{def:young-defect-critical-tail-branch}.",
+     "Hidden-scale input [99]."
+    ],
+    [
+     "[98]",
+     "Selected coherent critical tail.",
+     "\\Cref{cor:coherent-critical-tail-extraction}.",
+     "Coherent realization [125]."
+    ],
+    [
+     "[99]",
+     "Current selected log-window or Young hidden-scale input.",
+     "\\Cref{def:hidden-scale-variance,lem:hidden-variance-young-obstruction}.",
+     "Variance [100]."
+    ],
+    [
+     "[100]",
+     "Hidden-scale variance obstruction for this selected datum.",
+     "\\Cref{def:hidden-scale-variance,lem:hidden-variance-young-obstruction}.",
+     "Oscillation [101]."
+    ],
+    [
+     "[101]",
+     "Multiscale affine oscillation.",
+     "\\Cref{def:multiscale-affine-oscillation}.",
+     "First bad scale [102]."
+    ],
+    [
+     "[102]",
+     "Minimal first-bad mesoscopic oscillation scale.",
+     "\\Cref{def:first-bad-mesoscopic-scale,lem:h2-failure-first-bad-scale}.",
+     "Overlap control [103]."
+    ],
+    [
+     "[103]",
+     "Finite-overlap and spacetime translation control.",
+     "\\Cref{lem:finite-overlap-affine-oscillation,lem:spacetime-finite-overlap-translation}.",
+     "Translation test [104]."
+    ],
+    [
+     "[104]",
+     "Concentration, affine collapse, or mesoscopic-radius alternative.",
+     "\\Cref{lem:translation-defect-to-bad-radius}.",
+     "[105], [16], or [106]."
+    ],
+    [
+     "[105]",
+     "Earlier concentration contradicts first-bad selection.",
+     "\\Cref{lem:translation-defect-to-bad-radius,lem:h2-failure-first-bad-scale}.",
+     "Branch contradiction."
+    ],
+    [
+     "[106]",
+     "Minimal-scale blow-down equation.",
+     "\\Cref{def:first-bad-spatial-blowdown,lem:first-bad-blowdown-equation}.",
+     "Local energy [107]."
+    ],
+    [
+     "[107]",
+     "Local energy inequality under spatial/logarithmic blow-down.",
+     "\\Cref{lem:local-energy-blow-down}.",
+     "Quotient [108]."
+    ],
+    [
+     "[108]",
+     "Minimal-scale quotient formulation.",
+     "\\Cref{lem:first-bad-quotient-formulation}.",
+     "Pressure structure [109]."
+    ],
+    [
+     "[109]",
+     "Riesz covariance and harmonic-remainder control.",
+     "\\Cref{lem:whole-space-riesz-pressure-covariance,lem:local-harmonic-remainders-affine}.",
+     "Representation [110]."
+    ],
+    [
+     "[110]",
+     "Normalized pressure representation with blow-down coefficient.",
+     "\\Cref{prop:normalized-pressure-representation}.",
+     "Coefficient test [111]."
+    ],
+    [
+     "[111]",
+     "Affine pressure coefficient versus compact pressure chart.",
+     "\\Cref{lem:affine-pressure-coefficient-dichotomy}.",
+     "[16] or [112]."
+    ],
+    [
+     "[112]",
+     "Scaled pressure and pressure--velocity compactness.",
+     "\\Cref{lem:scaled-pressure-compactness-affine,lem:pressure-velocity-product-convergence,lem:first-bad-pressure-compactness}.",
+     "Actual pressure [113]."
+    ],
+    [
+     "[113]",
+     "Actual pressure in the minimal-scale energy inequality.",
+     "\\Cref{lem:actual-pressure-minimal-scale-energy}.",
+     "Gauge compactness [114]."
+    ],
+    [
+     "[114]",
+     "Compactness modulo homogeneous gauges.",
+     "\\Cref{lem:homogeneous-gauge-compactness}.",
+     "Variance transfer [115]."
+    ],
+    [
+     "[115]",
+     "Variance invariance and Young-defect support transfer.",
+     "\\Cref{lem:variance-homogeneous-shift,lem:young-variance-support-transfer}.",
+     "Barycenter [116]."
+    ],
+    [
+     "[116]",
+     "Coherent barycenter renormalization.",
+     "\\Cref{lem:coherent-barycenter-renormalization}.",
+     "Variance equation [117]."
+    ],
+    [
+     "[117]",
+     "Barycenter equation and variance inequality.",
+     "\\Cref{lem:first-bad-young-variance}.",
+     "Variance Liouville [118]."
+    ],
+    [
+     "[118]",
+     "Bounded ancient variance Liouville theorem.",
+     "\\Cref{lem:bounded-variance-liouville}.",
+     "Strong compactness [119]."
+    ],
+    [
+     "[119]",
+     "Minimal-scale blow-downs are strongly compact.",
+     "\\Cref{lem:first-bad-strong-compactness}.",
+     "Mesoscopic reduction [120]."
+    ],
+    [
+     "[120]",
+     "Minimal mesoscopic oscillation-scale reduction.",
+     "\\Cref{thm:first-bad-mesoscopic-reduction}.",
+     "No hidden variance [121]."
+    ],
+    [
+     "[121]",
+     "No hidden-scale variance for this realized defect.",
+     "\\Cref{thm:no-hidden-scale-variance-realized-defects}.",
+     "Owner test [122]."
+    ],
+    [
+     "[122]",
+     "Log-diffuse versus Young owner of the selected hidden-scale input.",
+     "\\Cref{cor:log-diffuse-branch-exclusion,cor:young-branch-exclusion}.",
+     "[123] or [124]."
+    ],
+    [
+     "[123]",
+     "Current realized log-diffuse defect and its selected windows.",
+     "\\Cref{lem:log-window-support-transfer,lem:renormalized-log-window-heredity,cor:log-diffuse-branch-exclusion}.",
+     "Selected defect excluded."
+    ],
+    [
+     "[124]",
+     "Current realized Young or pressure/viscous defect datum.",
+     "\\Cref{thm:no-hidden-scale-variance-realized-defects,lem:critical-tail-defect-coordinate-closure,cor:young-branch-exclusion}.",
+     "Selected datum excluded."
+    ],
+    [
+     "[125]",
+     "Current realized coherent critical tail.",
+     "\\Cref{cor:coherent-critical-tail-extraction,thm:realized-critical-tail-rigidity}.",
+     "Bounded gauges [126]."
+    ],
+    [
+     "[126]",
+     "Bounded velocity gauges for the realized blow-down.",
+     "\\Cref{lem:bounded-velocity-gauges-blowdown}.",
+     "Domain test [127]."
+    ],
+    [
+     "[127]",
+     "Bounded-origin realization versus routed lower branch.",
+     "\\Cref{lem:critical-tail-domain-realization-dichotomy}.",
+     "[128] or [129]."
+    ],
+    [
+     "[128]",
+     "Domain-realization failure routed to a named lower row.",
+     "\\Cref{lem:critical-tail-domain-realization-dichotomy}.",
+     "Branch contradiction."
+    ],
+    [
+     "[129]",
+     "Bounded-origin realization of the coherent tail.",
+     "\\Cref{thm:bounded-origin-realization-coherent-tails}.",
+     "Heredity test [130]."
+    ],
+    [
+     "[130]",
+     "Amplitude-normalized heredity survives or fails by a routed alternative.",
+     "\\Cref{lem:amplitude-normalized-heredity-failure-routing}.",
+     "[131] or [132]."
+    ],
+    [
+     "[131]",
+     "Amplitude-normalized heredity failure routed locally.",
+     "\\Cref{lem:amplitude-normalized-heredity-failure-routing}.",
+     "Branch contradiction."
+    ],
+    [
+     "[132]",
+     "Realized amplitude-normalized log-hull heredity.",
+     "\\Cref{lem:realized-amplitude-log-hull-heredity}.",
+     "Realized hull [133]."
+    ],
+    [
+     "[133]",
+     "Realized coherent log-hull ready for classification.",
+     "\\Cref{thm:coherent-critical-tail-classification}.",
+     "Type test [134]."
+    ],
+    [
+     "[134]",
+     "Homogeneous, log-periodic, or aperiodic coherent type.",
+     "\\Cref{thm:coherent-critical-tail-classification,cor:coherent-critical-tail-branch-closure}.",
+     "[135]--[137]."
+    ],
+    [
+     "[135]",
+     "Homogeneous-tail bounded-origin incompatibility.",
+     "\\Cref{lem:homogeneous-tail-bounded-origin-closure}.",
+     "Terminal [138]."
+    ],
+    [
+     "[136]",
+     "Log-periodic bounded-origin incompatibility.",
+     "\\Cref{lem:logperiodic-tail-bounded-origin-closure}.",
+     "Terminal [139]."
+    ],
+    [
+     "[137]",
+     "Aperiodic log-hull minimality incompatibility.",
+     "\\Cref{lem:aperiodic-tail-bounded-origin-closure}.",
+     "Terminal [140]."
+    ],
+    [
+     "[138]",
+     "Current realized homogeneous coherent tail.",
+     "\\Cref{thm:bounded-origin-realization-coherent-tails,cor:coherent-critical-tail-branch-closure}.",
+     "Selected tail excluded."
+    ],
+    [
+     "[139]",
+     "Current realized log-periodic coherent tail.",
+     "\\Cref{thm:realized-critical-tail-rigidity,cor:coherent-critical-tail-branch-closure}.",
+     "Selected tail excluded."
+    ],
+    [
+     "[140]",
+     "Current realized aperiodic coherent tail.",
+     "\\Cref{thm:realized-critical-tail-rigidity,cor:coherent-critical-tail-branch-closure}.",
+     "Selected tail excluded."
+    ],
+    [
+     "[141]",
+     "Selected realized infinite retained descendant chain.",
+     "\\Cref{thm:descendant-heredity,def:active-successor-relation,lem:active-descendant-concatenation}.",
+     "Event laws [142]."
+    ],
+    [
+     "[142]",
+     "Event-count measures whose weak limits retain\n\\(\\Phi\\ge\\eta\\).",
+     "\\Cref{thm:active-path-space-recurrence}.",
+     "Covariant test [143]."
+    ],
+    [
+     "[143]",
+     "Positive covariant activity density, vanishing event covariance\ndefect, or sparse active-chain output.",
+     "\\Cref{def:covariant-activity-density,def:event-covariance-defect,thm:infinite-chain-sparse-reduction,lem:active-chain-center-scale-alternative}.",
+     "[144]--[146]."
+    ],
+    [
+     "[144]",
+     "Current active profile has positive covariant activity density.",
+     "\\Cref{prop:positive-density-active-exclusion}.",
+     "Selected density branch\nexcluded."
+    ],
+    [
+     "[145]",
+     "Event-count laws have a covariantly balanced subsequence, or a\ncoherent critical-shell family has positive mean production and sublinear\ninterscale current.",
+     "\\Cref{lem:vanishing-event-current-exclusion,lem:weighted-critical-shell-identity,cor:no-positive-production-sublinear-current}.",
+     "Selected balanced or\npositive-production/sublinear-current branch excluded."
+    ],
+    [
+     "[146]",
+     "Zero-density active chain reduced to persistent current-saturated\nmoving cells after transverse antichain routing.",
+     "\\Cref{def:sparse-moving-root-current-branch,lem:exact-moving-root-carrier,lem:signed-moving-cell-gluing,prop:longitudinal-current-to-saturation,thm:coherent-current-to-critical-tail,cor:current-saturated-cascade-exclusion,thm:critical-interscale-flux-exclusion}.",
+     "Selected sparse chain excluded."
+    ],
+    [
+     "[147]",
+     "Selected single retained terminal profile after routed lower alternatives.",
+     "\\Cref{prop:no-multi-implies-atomic}.",
+     "Tail test [148]."
+    ],
+    [
+     "[148]",
+     "Retained concentrating tail limit remains or not.",
+     "\\Cref{lem:descendant-to-separated-family,prop:no-multi-implies-atomic}.",
+     "[149] or [154]."
+    ],
+    [
+     "[149]",
+     "Selected finite separated retained family.",
+     "\\Cref{def:finite-separated-profile-family,lem:finite-successor-alternatives}.",
+     "Alternative test [150]."
+    ],
+    [
+     "[150]",
+     "Indecomposable component versus retained chain.",
+     "\\Cref{lem:finite-graph-cycle}.",
+     "[151] or [152]."
+    ],
+    [
+     "[151]",
+     "No-atomic conclusion applied to the selected indecomposable component.",
+     "\\Cref{lem:no-atomic-active}.",
+     "Finite-family terminal [153]."
+    ],
+    [
+     "[152]",
+     "No-infinite-chain conclusion applied to the selected chain output.",
+     "\\Cref{thm:compact-active-descendant}.",
+     "Finite-family terminal [153]."
+    ],
+    [
+     "[153]",
+     "Selected finite separated retained family.",
+     "\\Cref{thm:no-finite-separated-profile-family}.",
+     "Selected family excluded unless its successor graph produces the output at\n[146]."
+    ],
+    [
+     "[154]",
+     "Terminally indecomposable realized profile.",
+     "\\Cref{prop:no-multi-implies-atomic}.",
+     "Endpoint production [155]."
+    ],
+    [
+     "[155]",
+     "Remaining selected single retained profile.",
+     "\\Cref{prop:no-multi-implies-atomic}.",
+     "Terminal indecomposable state [156]."
+    ],
+    [
+     "[156]",
+     "Backward sequence-\\(L^3\\) for the selected terminal profile.",
+     "\\Cref{lem:atomic-sequence-L3}.",
+     "Endpoint branch decision [157]."
+    ],
+    [
+     "[157]",
+     "Affine/parasitic or non-affine mild endpoint branch.",
+     "\\Cref{thm:mildness-inheritance-main}.",
+     "[16] or [158]."
+    ],
+    [
+     "[158]",
+     "Finite-shift bounded mild pullback and transported selected sequence.",
+     "\\Cref{prop:bounded-mild-stability,lem:no-atomic-active}.",
+     "Endpoint contradiction [159]."
+    ],
+    [
+     "[159]",
+     "Endpoint zero conclusion contradicts the retained obstruction of the\nsame realized profile.",
+     "\\Cref{thm:AB-main,lem:no-atomic-active}.",
+     "Atomic branch contradiction."
+    ]
+   ]
+  },
+  {
+   "id": "type-i/3",
+   "title": "Monotone retained-fact ledger",
+   "group": "",
+   "chapter": "type-i",
+   "sourceLine": 2672,
+   "headers": [
+    "Current owner",
+    "Named producer",
+    "Fact carried for that owner",
+    "No inference made"
+   ],
+   "rows": [
+    [
+     "Fixed singular point \\(z_*\\).",
+     "\\Cref{thm:imported-setup-results}.",
+     "Positive local velocity concentration at the fixed point.",
+     "No property of another point or solution."
+    ],
+    [
+     "Selected rescaling sequence.",
+     "\\Cref{thm:AB-weak-serrin-typeI-estimate,thm:local-typeI-terminal-energy-estimates}.",
+     "Admissibility, local energy control, and terminal no-escape for that sequence.",
+     "No assertion about an unselected sequence."
+    ],
+    [
+     "Selected normalized profile \\(V_0\\).",
+     "\\Cref{hyp:base-seregin-hypotheses,tab:setup-export-interface}.",
+     "Bounded ancient suitability, retained compact velocity concentration, fixed\nnormalization data, and the setup pressure atlas.",
+     "Mildness only if the selected profile enters the mild branch."
+    ],
+    [
+     "Current raw-residual candidate under the antecedent at [9].",
+     "\\Cref{prop:setup-residual-handoff-complete}.",
+     "The same setup ledger through the affine-or-retained handoff.",
+     "No residual element is postulated and no replacement state space is formed."
+    ],
+    [
+     "Realized retained descendant.",
+     "\\Cref{thm:ancestor-realization-inheritance,thm:descendant-heredity}.",
+     "Ancestry and retained velocity at the stated descendant threshold.",
+     "No retained mass from descendant status alone."
+    ],
+    [
+     "Selected normalized defect window or support profile.",
+     "\\Cref{lem:compact-defect-support-transfer,lem:renormalized-log-window-heredity}.",
+     "Normalized positive defect mass and a support point when the cited support\ntheorem produces it.",
+     "No conversion of defect mass into retained velocity concentration."
+    ],
+    [
+     "Current pressure-dependent profile or window.",
+     "\\Cref{lem:typeI-pressure-atlas-compatibility,tab:local-coordinate-pressure-directory}.",
+     "The representative and time gauge valid on that local chart.",
+     "No transport of one representative through an uncited recentering or\nblow-down."
+    ],
+    [
+     "Selected first-bad mesoscopic blow-down.",
+     "\\Cref{lem:first-bad-quotient-formulation,prop:normalized-pressure-representation,lem:first-bad-pressure-compactness}.",
+     "The quotient equation, pressure coefficient, and energy inequality on the\nselected normalized blow-down chart.",
+     "No pressure coefficient or compactness assertion for another scale."
+    ],
+    [
+     "Selected coherent critical tail.",
+     "\\Cref{thm:bounded-origin-realization-coherent-tails,lem:realized-amplitude-log-hull-heredity}.",
+     "Bounded-origin realization and the realized amplitude-normalized log hull for\nthat tail.",
+     "No bounded-origin assertion for an unrealized support point."
+    ],
+    [
+     "Selected finite family or retained descendant chain.",
+     "\\Cref{thm:descendant-heredity,def:active-successor-relation,lem:active-descendant-concatenation}.",
+     "The named descendant thresholds, observer witnesses, and gauges at each\nrealized successor.",
+     "No profile-only closedness and no retained mass for an uncited descendant."
+    ],
+    [
+     "Selected terminally indecomposable profile.",
+     "\\Cref{lem:atomic-sequence-L3}.",
+     "A backward sequence with uniformly bounded \\(L^3\\) norm for that profile.",
+     "No sequence-\\(L^3\\) input at R2 or R3 entry."
+    ],
+    [
+     "Same terminal profile on the non-affine branch.",
+     "\\Cref{thm:mildness-inheritance-main,prop:bounded-mild-stability}.",
+     "Finite-shift bounded mild physical pullbacks.",
+     "No mild identity assigned to the affine branch or to unrelated profiles."
+    ],
+    [
+     "Selected pullback and selected backward sequence.",
+     "\\Cref{lem:no-atomic-active,thm:AB-main}.",
+     "The endpoint zero conclusion for that pullback, returned to the same centered\nprofile.",
+     "No endpoint theorem used before nodes [156] and [158] produce its inputs."
+    ]
+   ]
+  },
+  {
+   "id": "type-i/4",
+   "title": "Branch-closure audit table",
+   "group": "",
+   "chapter": "type-i",
+   "sourceLine": 2756,
+   "headers": [
+    "Terminal route",
+    "Selected owner",
+    "Closure source",
+    "Downstream consumer only"
+   ],
+   "rows": [
+    [
+     "Nodes [5]--[8]",
+     "Current profile in one of the four setup lower states.",
+     "\\Cref{thm:imported-setup-results,hyp:previous-nonresidual}, using the\ncorresponding setup closure for the selected state.",
+     "Setup final assembly."
+    ],
+    [
+     "Nodes [11] and [16]",
+     "Current affine/parasitic representative.",
+     "\\Cref{thm:affine-normalization-dichotomy,thm:oscillatory-entry-normalization}.",
+     "\\Cref{thm:refined-residual-closure,prop:setup-residual-handoff-complete}."
+    ],
+    [
+     "Node [23]",
+     "Current \\(\\Cax\\) profile.",
+     "\\Cref{thm:R1-exclusion}.",
+     "\\Cref{thm:refined-residual-closure}."
+    ],
+    [
+     "Node [123]",
+     "Current log-diffuse defect and selected windows.",
+     "\\Cref{cor:log-diffuse-branch-exclusion}.",
+     "\\Cref{cor:critical-tail-exclusion-complete,thm:R4-final-closure}."
+    ],
+    [
+     "Node [124]",
+     "Current Young or pressure/viscous defect datum.",
+     "\\Cref{cor:young-branch-exclusion}.",
+     "\\Cref{cor:critical-tail-exclusion-complete,thm:R4-final-closure}."
+    ],
+    [
+     "Nodes [138]--[140]",
+     "Current realized coherent critical tail.",
+     "\\Cref{cor:coherent-critical-tail-branch-closure}.",
+     "\\Cref{cor:critical-tail-exclusion-complete,thm:R4-final-closure}."
+    ],
+    [
+     "Node [74]",
+     "Current selected diffuse or mixed terminal datum.",
+     "\\Cref{thm:terminal-inactive-exclusion,thm:diffuse-defect-trichotomy,thm:no-mixed-compact-diffuse}.",
+     "\\Cref{thm:terminal-stratification,thm:R4-final-closure}."
+    ],
+    [
+     "Input at node [77]",
+     "Current selected critical-tail datum; exclusion is the\nconclusion of the complete routing, not an input hypothesis.",
+     "\\Cref{thm:realized-critical-tail-rigidity,cor:critical-tail-exclusion-complete}.",
+     "\\Cref{thm:terminal-stratification,thm:R4-final-closure}."
+    ],
+    [
+     "Node [153]",
+     "Current finite separated retained family.",
+     "\\Cref{thm:no-finite-separated-profile-family}.",
+     "\\Cref{thm:terminal-stratification,thm:R4-final-closure}."
+    ],
+    [
+     "Nodes [144]--[145]",
+     "Current positive-density, balanced-event-law, or\npositive-production/sublinear-critical-current output of an infinite retained\ndescendant chain.",
+     "\\Cref{prop:positive-density-active-exclusion,lem:vanishing-event-current-exclusion,lem:weighted-critical-shell-identity,cor:no-positive-production-sublinear-current}.",
+     "Selected output excluded."
+    ],
+    [
+     "Node [146]",
+     "Persistent current-saturation output of an infinite retained\ndescendant chain after transverse antichain routing.",
+     "\\Cref{lem:exact-moving-root-carrier,lem:signed-moving-cell-gluing,lem:positive-price-nonzero-log-current,thm:coherent-current-to-critical-tail,lem:compact-closed-marked-regeneration-paths,thm:marked-regeneration-to-critical-tail,cor:regenerated-current-cascade-exclusion,thm:critical-interscale-flux-exclusion}.",
+     "Concentration-free current enters the critical-tail closure; regenerated\ncurrent is converted by marked recurrence to a realized critical tail and is\nexcluded."
+    ],
+    [
+     "Node [63]",
+     "Current terminal extraction after pressure routing recovers retained\nvelocity concentration.",
+     "\\Cref{thm:terminal-stratification}; the R2 and R3 owners are then discharged\nby \\Cref{cor:R2-closure,cor:R3-closure}, while the generic owner is discharged\nby \\Cref{thm:R4-final-closure}.",
+     "\\Cref{thm:refined-residual-closure}."
+    ],
+    [
+     "Node [159]",
+     "Current realized terminally indecomposable profile.",
+     "\\Cref{lem:atomic-sequence-L3,thm:mildness-inheritance-main,thm:AB-main,lem:no-atomic-active}.",
+     "\\Cref{thm:terminal-stratification,cor:R2-closure,cor:R3-closure,thm:R4-final-closure}."
+    ],
+    [
+     "Node [96]",
+     "Current selected pressure or viscous critical-tail defect\ncoordinate.",
+     "\\Cref{lem:no-pure-viscous-defect-tight-dirac,lem:no-pressure-defect-tight-dirac,lem:critical-tail-defect-coordinate-routing}.",
+     "\\Cref{cor:young-branch-exclusion,cor:critical-tail-exclusion-complete}."
+    ],
+    [
+     "Node [105]",
+     "Current first-bad-scale branch in which earlier concentration\nreappears.",
+     "\\Cref{lem:translation-defect-to-bad-radius,lem:h2-failure-first-bad-scale}.",
+     "\\Cref{thm:first-bad-mesoscopic-reduction}."
+    ],
+    [
+     "Nodes [128] and [131]",
+     "Current coherent-tail realization whose domain or\namplitude heredity fails.",
+     "\\Cref{lem:critical-tail-domain-realization-dichotomy,lem:amplitude-normalized-heredity-failure-routing}.",
+     "\\Cref{thm:realized-critical-tail-rigidity,cor:critical-tail-exclusion-complete}."
+    ],
+    [
+     "All residual terminals",
+     "The same arbitrary incoming profile and fixed setup\nledger from nodes [9]--[12].",
+     "\\Cref{thm:refined-residual-closure,thm:typeI-residual-closure}.",
+     "\\Cref{cor:setup-residual-hypothesis-proof,cor:two-paper-local-typeI-exclusion}, in that order."
+    ]
+   ]
+  },
+  {
+   "id": "type-ii/1",
+   "title": "Diagram map",
+   "group": "",
+   "chapter": "type-ii",
+   "sourceLine": 574,
+   "headers": [
+    "Part",
+    "Nodes",
+    "Branch resolved",
+    "Principal internal sources"
+   ],
+   "rows": [
+    [
+     "I",
+     "[1]--[16]",
+     "Turns a suspected Type II singularity into a workable object.\nThe concentration is checked against the physical admissibility conditions,\nrewritten in a repaired gauge that removes the gauge freedom, and reduced to a\nsingle core; what leaves the panel is one retained velocity carrier that the\nrest of the paper argues about.",
+     "\\cref{def:physical-local-typeII-germ,thm:typeII-analytic-data-exhaustive,thm:repaired-gauge-representation,thm:multibubble}"
+    ],
+    [
+     "II",
+     "[17]--[41]",
+     "Tests that carrier against the compactness the argument\nneeds from it.  The ways it can fail are enumerated: a rough core with no local\nenergy control, a compact core whose dissipation degenerates, a scale that\ncollapses, and a cost channel that stops being canonical.  Each failure is\ndispatched to the panel that closes it.",
+     "\\cref{thm:rough-core,lem:compact-core-dissipation-dichotomy,thm:scale-stratification,thm:cost-divergence-exclusion-discharged}"
+    ],
+    [
+     "III",
+     "[42]--[55]",
+     "Asks what the carrier looks like in the limit.  Sampling\nits terminal orbit gives a short list of compactness alternatives, and the\nprofile list is shown to be complete, so no limit escapes classification.  The\nresidual entries are then exhausted and the retained terminal excluded.",
+     "\\cref{thm:representation-gives-terminal-orbit-sampling,thm:terminal-boundedness-alternatives,thm:terminal-windowed-profile-completeness,thm:expanded-terminal-typeII}"
+    ],
+    [
+     "IV",
+     "[56]--[63]",
+     "The dispatcher.  Whatever survives the earlier panels fails\nin exactly one identifiable way first, and this panel names that row and sends\nthe branch to the panel that closes it.  The ordering is what makes the case\nanalysis exhaustive rather than merely long.",
+     "\\cref{lem:acyclic-terminal-ledger,def:remaining-named-exits}"
+    ],
+    [
+     "V",
+     "[64]--[70]",
+     "Handles a bounded window.  Regularizing it locally removes\nthe regular part, and what concentration survives is reselected; the reselection\nis well-founded, so the process cannot cycle forever and must terminate in a\nclosure.",
+     "\\cref{lem:bounded-window-local-regularization,lem:bounded-window-reselection-well-founded,thm:bounded-selected-window-physical-routing}"
+    ],
+    [
+     "VI",
+     "[71]--[78]",
+     "Handles the opposite case, where the modulation parameters\nrun away.  An unbounded window fails either with a definite sign or for a\ngeometric reason, and both alternatives are closed.",
+     "\\cref{lem:modulation-window-bound-or-exit,thm:autonomous-modulation-failure-closed}"
+    ],
+    [
+     "VII",
+     "[79]--[87]",
+     "Handles a window whose modulation stays bounded but leaves\na defect behind.  The possible defects form a short list, and each is routed to\nits exclusion.",
+     "\\cref{lem:bounded-modulation-defect-routing,thm:autonomous-modulation-failure-closed}"
+    ],
+    [
+     "VIII",
+     "[88]--[95]",
+     "Checks the cost functional itself.  Either the cost stays\ncanonical, in which case earlier estimates apply unchanged, or it fails to be\ncanonical at an identifiable first point, and that failure is what closes the\nbranch.",
+     "\\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed}"
+    ],
+    [
+     "IX",
+     "[96]--[110]",
+     "Follows a core that stays active.  Reselecting the frame\nfinitely many times either exhausts the alternatives or forces a local critical\nmass, and the critical-mass alternatives are then closed one by one.",
+     "\\cref{lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed}"
+    ],
+    [
+     "X",
+     "[111]--[116]",
+     "Reconstructs the pressure when the velocity alone no longer\ndecides matters.  Working through the reconstruction in order leaves a local\nsource term or a velocity label to account for, and each is excluded.",
+     "\\cref{lem:pressure-only-critical-mass-routing,thm:active-core-loss-closed}"
+    ],
+    [
+     "XI",
+     "[117]--[127]",
+     "Handles data carried by the pressure alone.  Such rows\nnest, and the nesting is well-founded, so it bottoms out; a pressure that\ninstead spreads out diffusely is shown not to be terminal.",
+     "\\cref{lem:nested-pressure-only-well-founded,lem:diffuse-pressure-only-not-terminal}"
+    ],
+    [
+     "XII",
+     "[128]--[135]",
+     "The last two ways out.  A profile is either critically\ntight, which fails its own tightness test, or its critical tail is diffuse,\nwhich is closed directly.  With both gone no Type II exit remains.",
+     "\\cref{lem:critical-tightness-failure-row,lem:diffuse-critical-tail-row-closed}"
+    ]
+   ]
+  },
+  {
+   "id": "type-ii/2",
+   "title": "Node-by-node audit table",
+   "group": "",
+   "chapter": "type-ii",
+   "sourceLine": 1346,
+   "headers": [
+    "Node",
+    "State or exhaustive test",
+    "Source in the proof",
+    "Successor or closure"
+   ],
+   "rows": [
+    [
+     "[1]",
+     "Residual or singular profile at a possible terminal point",
+     "\\cref{def:physical-local-typeII-germ,lem:physical-typeII-germ-admissible}",
+     "Test the physical entry at [2]"
+    ],
+    [
+     "[2]",
+     "Physical local Type II germ test",
+     "\\cref{def:physical-local-typeII-germ,thm:local-typeI-typeII-dichotomy}",
+     "Yes gives [4]; no closes at [3]"
+    ],
+    [
+     "[3]",
+     "Regular or local Type I closure",
+     "\\cref{thm:local-typeI-typeII-dichotomy}",
+     "Terminal entry branch"
+    ],
+    [
+     "[4]",
+     "Positive CKN concentration sequence",
+     "\\cref{lem:physical-typeII-germ-concentration-sequence,def:local-typeII-sequence}",
+     "Run the ordered C1 test [5]"
+    ],
+    [
+     "[5]",
+     "C1 admissibility test",
+     "\\cref{thm:typeII-analytic-data-exhaustive,thm:ordered-local-state-space-exhaustion}",
+     "Pass gives [7]; first failure gives [6]"
+    ],
+    [
+     "[6]",
+     "C1 first-failure row",
+     "\\cref{lem:no-extra-outside-class-row,cor:covered-class-entry-discharged}",
+     "Continue to the classifier [56]"
+    ],
+    [
+     "[7]",
+     "Retained analytic data",
+     "\\cref{thm:physical-typeII-covered-entry,cor:covered-class-entry-discharged}",
+     "Test representation at [8]"
+    ],
+    [
+     "[8]",
+     "Repaired representation and strong-chart test",
+     "\\cref{cor:c2r-ordered-classification,lem:strong-gauge-chart-entry-test}",
+     "Pass gives [10]; first failure gives [9]"
+    ],
+    [
+     "[9]",
+     "Representation or gauge first failure",
+     "\\cref{cor:c2-ordered-representation,cor:c2r-ordered-classification}",
+     "Continue to [56]"
+    ],
+    [
+     "[10]",
+     "Canonical represented local equation, pressure atlas, and suitability",
+     "\\cref{thm:canonical-repaired-gauge-equation,thm:pressure-decomp,prop:ren-suitable}",
+     "Test core uniqueness at [11]"
+    ],
+    [
+     "[11]",
+     "Unique nondegenerate core test",
+     "\\cref{thm:repaired-gauge-representation,thm:multibubble}",
+     "Yes gives [13]; no closes at [12]"
+    ],
+    [
+     "[12]",
+     "Multibubble, cascade, or gauge-degenerate closure",
+     "\\cref{thm:multibubble}",
+     "Terminal structural branch"
+    ],
+    [
+     "[13]",
+     "One retained active core",
+     "\\cref{thm:core-retention,lem:retained-frame-maximality}",
+     "Test the velocity carrier at [14]"
+    ],
+    [
+     "[14]",
+     "Retained velocity-carrier test",
+     "\\cref{lem:pressure-only-critical-mass-routing}",
+     "Yes gives [16]; no gives [15]"
+    ],
+    [
+     "[15]",
+     "Pressure-only, exterior, or active-core-loss row",
+     "\\cref{lem:pressure-only-critical-mass-routing,cor:exterior-concentration-exit-discharged}",
+     "Continue to [56]"
+    ],
+    [
+     "[16]",
+     "Represented retained velocity core",
+     "\\cref{thm:core-retention,prop:selected-window-suitable-estimates}",
+     "Continue to [17]"
+    ],
+    [
+     "[17]",
+     "Compact upper-estimate and pressure-stability test",
+     "\\cref{prop:selected-window-suitable-estimates,thm:pressure-decomp}",
+     "Pass gives [19]; failure gives [18]"
+    ],
+    [
+     "[18]",
+     "Compact, pressure, or ambient first failure",
+     "\\cref{thm:ordered-local-state-space-exhaustion,cor:ambient-adjacent-wrapper-discharged}",
+     "Continue to [56]"
+    ],
+    [
+     "[19]",
+     "Retained compact-cylinder estimates",
+     "\\cref{prop:selected-window-suitable-estimates}",
+     "Test windowed $H^1$ at [20]"
+    ],
+    [
+     "[20]",
+     "Local windowed $H^1$ test",
+     "\\cref{thm:canonical-local-caccioppoli,thm:rough-core}",
+     "Pass gives [22]; failure closes at [21]"
+    ],
+    [
+     "[21]",
+     "Rough-core/$H^1$-loss closure",
+     "\\cref{thm:rough-core,prop:state-elimination}",
+     "Terminal rough-core branch"
+    ],
+    [
+     "[22]",
+     "Represented compact retained core",
+     "\\cref{lem:compact-core-dissipation-dichotomy,thm:state-decomposition}",
+     "Test the scale state at [23]"
+    ],
+    [
+     "[23]",
+     "Compact-core versus scale-collapse/scale-rigid test",
+     "\\cref{thm:state-decomposition,thm:scale-stratification}",
+     "No gives [24]; yes gives [35]"
+    ],
+    [
+     "[24]",
+     "Compact-core dissipation alternatives",
+     "\\cref{lem:compact-core-dissipation-dichotomy}",
+     "Vanishing gives [25], adjacent gives [29], divergent cost gives [30]"
+    ],
+    [
+     "[25]",
+     "Spatially constant compact limit",
+     "\\cref{thm:single-core-criterion,thm:single-core}",
+     "Test its value at [26]"
+    ],
+    [
+     "[26]",
+     "Zero-versus-nonzero constant test",
+     "\\cref{thm:single-core}",
+     "Zero closes at [27]; nonzero gives [28]"
+    ],
+    [
+     "[27]",
+     "Retained mass contradiction",
+     "\\cref{thm:single-core}",
+     "Terminal compact single-core branch"
+    ],
+    [
+     "[28]",
+     "Nonzero bounded selected-window row",
+     "\\cref{lem:scale-rigid-bounded-limit-exit,thm:bounded-selected-window-physical-routing}",
+     "Continue to [56]"
+    ],
+    [
+     "[29]",
+     "Adjacent compact-core first failure",
+     "\\cref{lem:compact-core-dissipation-dichotomy,cor:ambient-adjacent-wrapper-discharged}",
+     "Continue to [56]"
+    ],
+    [
+     "[30]",
+     "Divergent canonical localized cost",
+     "\\cref{thm:c3-local-retained-mass-cost-divergence}",
+     "Validate the canonical channel at [31]"
+    ],
+    [
+     "[31]",
+     "Canonical identity-cost validation",
+     "\\cref{lem:canonical-identity-cost-available,lem:no-unrecorded-cost-escape}",
+     "Pass gives [33]; failure gives [32]"
+    ],
+    [
+     "[32]",
+     "Noncanonical carrier or cost-validation row",
+     "\\cref{thm:noncanonical-cost-routing-closed}",
+     "Continue to [56]"
+    ],
+    [
+     "[33]",
+     "Corrected monotonicity and carrier routing",
+     "\\cref{thm:windowwise-routing-gives-stratified-routing}",
+     "Apply the carrier closures at [34]"
+    ],
+    [
+     "[34]",
+     "Cost-divergence closure",
+     "\\cref{thm:cost-divergence-exclusion-discharged,cor:cost-divergence-exclusion-unconditional}",
+     "Terminal retained-cost branch"
+    ],
+    [
+     "[35]",
+     "Scale-collapse stratification",
+     "\\cref{thm:scale-stratification}",
+     "Produces exactly one of [36]--[41]"
+    ],
+    [
+     "[36]",
+     "Finite signed or absolute scale-cost closure",
+     "\\cref{thm:scale-cost}",
+     "Terminal finite-cost branch"
+    ],
+    [
+     "[37]",
+     "Thin-drift routing test",
+     "\\cref{thm:thin-negative-drift-closed}",
+     "Closed retained row gives [38]; another named row goes to [56]"
+    ],
+    [
+     "[38]",
+     "Already closed retained scale row",
+     "\\cref{thm:thin-negative-drift-closed,thm:compact-scale-collapse-rigidity-discharged}",
+     "Terminal thin-drift route"
+    ],
+    [
+     "[39]",
+     "Autonomous-modulation first failure",
+     "\\cref{thm:autonomous-modulation-failure-closed}",
+     "Continue to [56]"
+    ],
+    [
+     "[40]",
+     "Compactness-package first failure",
+     "\\cref{thm:selected-compactness-failure-routed}",
+     "Continue to [56]"
+    ],
+    [
+     "[41]",
+     "Retained terminal tail after all earlier local exits",
+     "\\cref{thm:ordered-local-state-space-exhaustion,lem:regular-singular-compact-limit-routing,thm:expanded-terminal-data-branchwise}",
+     "Construct its terminal frames at [42]"
+    ],
+    [
+     "[42]",
+     "Terminal coordinate frames constructed locally from retained state selection",
+     "\\cref{thm:terminal-coordinate-frame-construction-profile-selection}",
+     "Apply orbit sampling at [43]"
+    ],
+    [
+     "[43]",
+     "Terminal active sequence sampled from the represented orbit",
+     "\\cref{thm:representation-gives-terminal-orbit-sampling}",
+     "Run the local compactness alternatives at [44]"
+    ],
+    [
+     "[44]",
+     "Local PDE and terminal $L^3$ bounds test",
+     "\\cref{thm:terminal-boundedness-alternatives}",
+     "Pass gives [46]; failure gives [45]"
+    ],
+    [
+     "[45]",
+     "Terminal compactness first-failure row",
+     "\\cref{thm:terminal-boundedness-alternatives,lem:terminal-local-critical-mass-routing}",
+     "Continue to [56]"
+    ],
+    [
+     "[46]",
+     "Local compact terminal-window hypothesis",
+     "\\cref{thm:bounded-terminal-sequences-from-l3}",
+     "Extract the complete profile family at [47]"
+    ],
+    [
+     "[47]",
+     "Local compact-window profile decomposition, ancestry, and active frames",
+     "\\cref{thm:critical-ns-profile-decomposition-discharged,thm:terminal-windowed-profile-completeness}",
+     "Test additional profiles at [48]"
+    ],
+    [
+     "[48]",
+     "Noncomparable active, separated, cascade, or exterior profile test",
+     "\\cref{thm:terminal-windowed-profile-completeness,thm:exterior-stratification}",
+     "Yes closes at [49]; no gives [50]"
+    ],
+    [
+     "[49]",
+     "Structural or exterior closure",
+     "\\cref{thm:multibubble,cor:exterior-concentration-exit-discharged}",
+     "Terminal profile branch"
+    ],
+    [
+     "[50]",
+     "Residual, critical-tail, or pressure-defect test",
+     "\\cref{prop:residual-spike-routing,lem:strong-diffuse-tail-limit-row,cor:no-unclassified-compact-limit-obstruction,thm:local-residual-exhaustion,thm:terminal-adjacent-label-routing}",
+     "Defect gives [51]; otherwise [52]"
+    ],
+    [
+     "[51]",
+     "Named residual, tail, or pressure row",
+     "\\cref{thm:local-residual-exhaustion,lem:diffuse-critical-tail-row-closed}",
+     "Continue to [56]"
+    ],
+    [
+     "[52]",
+     "Retained comparable profile with perturbative residual",
+     "\\cref{lem:spacetime-small-terminal-residual,cor:no-unclassified-compact-limit-obstruction,thm:terminal-windowed-profile-completeness,thm:terminal-critical-local-compactness}",
+     "Apply the retained compact tests at [53]"
+    ],
+    [
+     "[53]",
+     "Critical tightness and local windowed $H^1$ control",
+     "\\cref{thm:retained-compact-tests-closed}",
+     "Verify the expanded terminal data at [54]"
+    ],
+    [
+     "[54]",
+     "All nine expanded terminal data on the retained tail",
+     "\\cref{def:expanded-terminal-data,thm:expanded-terminal-data-branchwise}",
+     "Apply the terminal exclusion at [55]"
+    ],
+    [
+     "[55]",
+     "Retained terminal Type II exclusion",
+     "\\cref{thm:expanded-terminal-typeII,cor:expanded-terminal-wrapper-discharged}",
+     "Terminal retained branch"
+    ],
+    [
+     "[56]",
+     "Unique first-failure closure classifier",
+     "\\cref{cor:covered-class-entry-discharged,lem:acyclic-terminal-ledger,def:remaining-named-exits}",
+     "Exactly one closure class [57], [58], or [60]--[63]"
+    ],
+    [
+     "[57]",
+     "Class-incompatible closure",
+     "\\cref{lem:physical-typeII-germ-admissible,lem:no-extra-outside-class-row}",
+     "Terminal contradiction to physical Type II entry"
+    ],
+    [
+     "[58]",
+     "Deterministic lookup of an earlier row's recorded closure theorem",
+     "\\cref{prop:state-elimination,cor:ambient-adjacent-wrapper-discharged}",
+     "Apply that theorem at [59]"
+    ],
+    [
+     "[59]",
+     "Closure of the uniquely selected earlier row",
+     "\\cref{prop:state-elimination,cor:ambient-adjacent-wrapper-discharged}",
+     "Terminal previously closed row"
+    ],
+    [
+     "[60]",
+     "Bounded selected-window row",
+     "\\cref{thm:bounded-selected-window-physical-routing}",
+     "Continue to its alternatives at [64]"
+    ],
+    [
+     "[61]",
+     "Autonomous-modulation row",
+     "\\cref{thm:autonomous-modulation-failure-closed}",
+     "Continue to the window-integral test [71]"
+    ],
+    [
+     "[62]",
+     "Noncanonical cost-validation row",
+     "\\cref{thm:noncanonical-cost-routing-closed}",
+     "Continue to the validation test [88]"
+    ],
+    [
+     "[63]",
+     "Final active-core ledger family",
+     "\\cref{def:remaining-named-exits,thm:active-core-loss-closed}",
+     "Continue to the family classifier [96]"
+    ],
+    [
+     "[64]",
+     "Survival of positive local CKN concentration after bounded-window regularization",
+     "\\cref{lem:bounded-window-local-regularization,thm:bounded-selected-window-physical-routing}",
+     "No closes at [65]; yes gives [66]"
+    ],
+    [
+     "[65]",
+     "No surviving local CKN signal",
+     "\\cref{lem:bounded-window-local-regularization,thm:bounded-selected-window-physical-routing}",
+     "Terminal local Type I contradiction"
+    ],
+    [
+     "[66]",
+     "Removal of the regular portion and local reselection",
+     "\\cref{lem:bounded-window-local-regularization,lem:bounded-window-reselection-well-founded}",
+     "Test the reselection outcome at [67]"
+    ],
+    [
+     "[67]",
+     "Well-founded bounded-window reselection outcome",
+     "\\cref{lem:bounded-window-reselection-well-founded}",
+     "Exactly one of [68]--[70]"
+    ],
+    [
+     "[68]",
+     "Local regularity below a fixed physical scale",
+     "\\cref{lem:bounded-window-reselection-well-founded}",
+     "Terminal regular branch"
+    ],
+    [
+     "[69]",
+     "Finite reselection reaches its unique named row",
+     "\\cref{lem:bounded-window-reselection-well-founded,thm:bounded-selected-window-physical-routing}",
+     "Terminal through that row's recorded closure"
+    ],
+    [
+     "[70]",
+     "Infinite reselection reaches its unique named row",
+     "\\cref{lem:bounded-window-reselection-well-founded,lem:diffuse-reselection-tree-row-closed,thm:bounded-selected-window-physical-routing}",
+     "Terminal through that row's recorded closure"
+    ],
+    [
+     "[71]",
+     "Bounded-versus-unbounded modulation-window test",
+     "\\cref{lem:modulation-window-bound-or-exit,thm:autonomous-modulation-failure-closed}",
+     "Unbounded gives [72]; bounded gives [78]"
+    ],
+    [
+     "[72]",
+     "Unbounded signed or geometric modulation component",
+     "\\cref{lem:modulation-window-bound-or-exit,thm:autonomous-modulation-failure-closed}",
+     "Exactly one closure [73]--[77]"
+    ],
+    [
+     "[73]",
+     "Negative scale-drift closure",
+     "\\cref{thm:thin-negative-drift-closed}",
+     "Terminal modulation row"
+    ],
+    [
+     "[74]",
+     "Positive scale-shell closure",
+     "\\cref{cor:windowwise-positive-scale-routing-holds}",
+     "Terminal modulation row"
+    ],
+    [
+     "[75]",
+     "Modulation-driven recentering closure",
+     "\\cref{def:stratified-moving-carrier-routing,cor:ambient-adjacent-wrapper-discharged}",
+     "Terminal modulation row"
+    ],
+    [
+     "[76]",
+     "Repaired-gauge first-failure closure",
+     "\\cref{cor:c2-ordered-representation,cor:c2r-ordered-classification}",
+     "Terminal representation row"
+    ],
+    [
+     "[77]",
+     "Exterior modulation closure",
+     "\\cref{cor:exterior-concentration-exit-discharged}",
+     "Terminal exterior row"
+    ],
+    [
+     "[78]",
+     "Bounded modulation windows",
+     "\\cref{lem:modulation-window-bound-or-exit}",
+     "Continue to the bounded-defect alternatives [79]"
+    ],
+    [
+     "[79]",
+     "Bounded modulation-defect outcome",
+     "\\cref{lem:bounded-modulation-defect-routing,thm:autonomous-modulation-failure-closed}",
+     "Constant gives [80], perturbative gives [81], visible gives [82]"
+    ],
+    [
+     "[80]",
+     "Constant-coefficient autonomous limit",
+     "\\cref{lem:bounded-modulation-defect-routing,thm:scale-collapse-stratification}",
+     "Terminal contradiction to alternative \\textup{(v)}"
+    ],
+    [
+     "[81]",
+     "Perturbative modulation defect",
+     "\\cref{lem:bounded-modulation-defect-routing,thm:autonomous-modulation-failure-closed}",
+     "Terminal through the same autonomous-limit contradiction"
+    ],
+    [
+     "[82]",
+     "Visible nonperturbative modulation component",
+     "\\cref{lem:bounded-modulation-defect-routing}",
+     "Exactly one of [83]--[87]"
+    ],
+    [
+     "[83]",
+     "Visible negative scale-drift closure",
+     "\\cref{thm:thin-negative-drift-closed}",
+     "Terminal modulation row"
+    ],
+    [
+     "[84]",
+     "Visible positive scale-shell closure",
+     "\\cref{cor:windowwise-positive-scale-routing-holds}",
+     "Terminal modulation row"
+    ],
+    [
+     "[85]",
+     "Visible recentering closure",
+     "\\cref{def:stratified-moving-carrier-routing,cor:ambient-adjacent-wrapper-discharged}",
+     "Terminal modulation row"
+    ],
+    [
+     "[86]",
+     "Visible repaired-gauge closure",
+     "\\cref{cor:c2-ordered-representation,cor:c2r-ordered-classification}",
+     "Terminal representation row"
+    ],
+    [
+     "[87]",
+     "Visible loss of the selected active core",
+     "\\cref{lem:bounded-modulation-defect-routing}",
+     "Continue to [96]"
+    ],
+    [
+     "[88]",
+     "Ordered noncanonical cost-validation test",
+     "\\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed}",
+     "Pass gives [89]; first failure gives [91]"
+    ],
+    [
+     "[89]",
+     "Comparable-cost identification with the canonical identity channel",
+     "\\cref{lem:comparable-cost-compatibility,lem:canonical-cost-channel-available}",
+     "Apply the retained exclusion at [90]"
+    ],
+    [
+     "[90]",
+     "Canonical retained cost-divergence exclusion",
+     "\\cref{cor:retained-stratum-cost-exclusion}",
+     "Terminal cost row"
+    ],
+    [
+     "[91]",
+     "First-failure layer in noncanonical validation",
+     "\\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed}",
+     "Exactly one of [92]--[95]"
+    ],
+    [
+     "[92]",
+     "Class-side first failure",
+     "\\cref{cor:covered-class-entry-discharged,cor:c2r-ordered-classification}",
+     "Terminal earlier closure"
+    ],
+    [
+     "[93]",
+     "State-decomposition or compact-test first failure",
+     "\\cref{prop:state-elimination,cor:ambient-adjacent-wrapper-discharged}",
+     "Terminal earlier closure"
+    ],
+    [
+     "[94]",
+     "Modulation-integrability first failure",
+     "\\cref{thm:autonomous-modulation-failure-closed}",
+     "Terminal by the alternatives [71]--[87]"
+    ],
+    [
+     "[95]",
+     "Irreducible cost-side first failure",
+     "\\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed}",
+     "Terminal by the canonical-channel rule"
+    ],
+    [
+     "[96]",
+     "Final active-core ledger family classifier",
+     "\\cref{def:remaining-named-exits,thm:active-core-loss-closed,lem:critical-tightness-failure-row}",
+     "Active loss gives [97], pressure gives [111], nested pressure gives [117], critical tightness gives [128], exterior gives [110]"
+    ],
+    [
+     "[97]",
+     "Local critical-mass outcome",
+     "\\cref{lem:terminal-local-critical-mass-routing}",
+     "Positive finite gives [98], floor failure gives [99], upper failure gives [103]"
+    ],
+    [
+     "[98]",
+     "Positive finite local critical mass",
+     "\\cref{lem:terminal-local-critical-mass-routing}",
+     "Terminal contradiction to the loss-row classification"
+    ],
+    [
+     "[99]",
+     "Removal of an activity-floor-failing candidate",
+     "\\cref{lem:retained-frame-maximality,thm:active-core-loss-closed}",
+     "Exhaust the remaining finite local frame list at [100]"
+    ],
+    [
+     "[100]",
+     "Outcome after finite ordered frame reselection",
+     "\\cref{lem:retained-frame-maximality,lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed}",
+     "Positive finite gives [98], upper failure gives [103], no velocity frame gives [101]"
+    ],
+    [
+     "[101]",
+     "Carrier of the original CKN signal when no velocity frame remains",
+     "\\cref{thm:active-core-loss-closed}",
+     "Pressure gives [111], exterior gives [110], rough core gives [109], subthreshold regularity gives [102]"
+    ],
+    [
+     "[102]",
+     "All smaller admissible cylinders below the CKN threshold",
+     "\\cref{thm:terminal-ckn-regularity,thm:active-core-loss-closed}",
+     "Terminal contradiction to singular CKN concentration"
+    ],
+    [
+     "[103]",
+     "First label produced by local critical-mass upper-bound failure",
+     "\\cref{lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed}",
+     "Exactly one closure [104]--[110]"
+    ],
+    [
+     "[104]",
+     "Same-frame critical-mass adjacent face",
+     "\\cref{lem:terminal-local-critical-mass-routing}",
+     "Terminal nonretained label"
+    ],
+    [
+     "[105]",
+     "Comparable finite-mass class",
+     "\\cref{lem:retained-frame-maximality}",
+     "Terminal by prior grouping into the retained class"
+    ],
+    [
+     "[106]",
+     "Multibubble row",
+     "\\cref{thm:multibubble}",
+     "Terminal multibubble closure"
+    ],
+    [
+     "[107]",
+     "Multicore row",
+     "\\cref{thm:single-core}",
+     "Terminal multicore closure"
+    ],
+    [
+     "[108]",
+     "Cascade row",
+     "\\cref{thm:multibubble,thm:scale-cost,cor:multi-removal}",
+     "Terminal cascade closure"
+    ],
+    [
+     "[109]",
+     "Rough-core row",
+     "\\cref{thm:rough-core,prop:state-elimination}",
+     "Terminal rough-core closure"
+    ],
+    [
+     "[110]",
+     "Pressure or exterior active-profile row",
+     "\\cref{lem:harmonic-cross-pressure-routing,cor:exterior-concentration-exit-discharged}",
+     "Terminal pressure/exterior closure"
+    ],
+    [
+     "[111]",
+     "Availability of the local pressure reconstruction and gauge",
+     "\\cref{lem:pressure-only-critical-mass-routing}",
+     "Available gives [112]; first failure gives [114]"
+    ],
+    [
+     "[112]",
+     "Persistence of the localized velocity-stress source",
+     "\\cref{lem:pressure-only-critical-mass-routing}",
+     "Persistent gives [113]; vanishing leaves the harmonic row [110]"
+    ],
+    [
+     "[113]",
+     "Local CKN outcome for a persistent velocity-stress source",
+     "\\cref{lem:pressure-only-critical-mass-routing}",
+     "Regular gives [115]; a velocity carrier gives [116]"
+    ],
+    [
+     "[114]",
+     "Pressure reconstruction or gauge first failure",
+     "\\cref{thm:pressure-decomp,cor:c2r-ordered-classification}",
+     "Terminal representation closure"
+    ],
+    [
+     "[115]",
+     "Regular localized velocity-stress source",
+     "\\cref{lem:pressure-only-critical-mass-routing}",
+     "Terminal regular absorption"
+    ],
+    [
+     "[116]",
+     "Velocity-supported pressure label",
+     "\\cref{lem:pressure-only-critical-mass-routing,lem:retained-frame-maximality}",
+     "Comparable gives [105]; otherwise one of [106]--[110]"
+    ],
+    [
+     "[117]",
+     "Well-founded nested pressure-only classifier",
+     "\\cref{lem:nested-pressure-only-well-founded}",
+     "Velocity gives [116], harmonic tail gives [118], gauge gives [114], same-point gives [119], diffuse gives [121]"
+    ],
+    [
+     "[118]",
+     "Far-field harmonic pressure-tail row",
+     "\\cref{lem:harmonic-cross-pressure-routing,lem:diffuse-pressure-only-not-terminal}",
+     "Terminal pressure-tail closure"
+    ],
+    [
+     "[119]",
+     "Same-point nested pressure classifier",
+     "\\cref{lem:nested-pressure-only-well-founded}",
+     "Cascade gives [108]; scale collapse gives [120]"
+    ],
+    [
+     "[120]",
+     "Pressure scale-collapse row",
+     "\\cref{thm:scale-cost,thm:compact-scale-collapse-rigidity-discharged}",
+     "Terminal scale closure"
+    ],
+    [
+     "[121]",
+     "Atomic/activity versus genuinely diffuse pressure defect",
+     "\\cref{lem:normalized-defect-atomic-or-diffuse,lem:diffuse-pressure-only-not-terminal}",
+     "Atomic/activity gives [122]; genuinely diffuse gives [127]"
+    ],
+    [
+     "[122]",
+     "Closure produced by the realized atomic support profile",
+     "\\cref{thm:pressure-defect-compactification-support-transfer,lem:diffuse-pressure-only-not-terminal}",
+     "Regular gives [115], velocity gives [116], non-affine harmonic gives [118], constant gives [123], affine gives [124]"
+    ],
+    [
+     "[123]",
+     "Constant harmonic pressure",
+     "\\cref{lem:diffuse-pressure-only-not-terminal}",
+     "Terminal removal by the pressure gauge"
+    ],
+    [
+     "[124]",
+     "Affine harmonic pressure absorption test",
+     "\\cref{lem:affine-harmonic-pressure-absorption,lem:diffuse-pressure-only-not-terminal}",
+     "Absorbed gives [125]; failure gives [126]"
+    ],
+    [
+     "[125]",
+     "Affine pressure absorbed by accelerating rebasement",
+     "\\cref{lem:affine-harmonic-pressure-absorption}",
+     "Terminal pressure closure"
+    ],
+    [
+     "[126]",
+     "Affine-pressure modulation failure",
+     "\\cref{lem:affine-harmonic-pressure-absorption,thm:autonomous-modulation-failure-closed}",
+     "Terminal by the alternatives [71]--[87]"
+    ],
+    [
+     "[127]",
+     "Visible diffuse pressure residual",
+     "\\cref{lem:diffuse-pressure-only-not-terminal,thm:local-residual-exhaustion}",
+     "Terminal through its unique named-row closure"
+    ],
+    [
+     "[128]",
+     "Critical-tightness first-row classifier",
+     "\\cref{lem:critical-tightness-failure-row}",
+     "Cascade gives [108], exterior gives [110], pressure gives [114], compact failure gives [129], diffuse gives [131]"
+    ],
+    [
+     "[129]",
+     "Compact-package first-failure classifier",
+     "\\cref{lem:critical-tightness-failure-row}",
+     "Rough core gives [109]; local-energy or compact-upper failure gives [130]"
+    ],
+    [
+     "[130]",
+     "Selected compact-package first failure",
+     "\\cref{thm:selected-compactness-failure-routed,cor:ambient-adjacent-wrapper-discharged}",
+     "Terminal compact closure"
+    ],
+    [
+     "[131]",
+     "First lower-face test for a diffuse critical tail",
+     "\\cref{lem:logarithmic-tail-shell-realization,lem:diffuse-critical-tail-row-closed}",
+     "A lower named face gives [132]; otherwise continue to [133]"
+    ],
+    [
+     "[132]",
+     "First lower named failure face",
+     "\\cref{lem:diffuse-critical-tail-row-closed}",
+     "Terminal through its recorded closure"
+    ],
+    [
+     "[133]",
+     "Atomic/activity versus genuinely diffuse residual tail defect",
+     "\\cref{lem:normalized-defect-atomic-or-diffuse,lem:diffuse-critical-tail-row-closed}",
+     "Atomic/activity gives [134]; genuinely diffuse gives [135]"
+    ],
+    [
+     "[134]",
+     "Atomic carrier in the diffuse-tail case",
+     "\\cref{thm:logarithmic-tail-support-transfer,lem:diffuse-critical-tail-row-closed}",
+     "Terminal contradiction to the diffuse alternative"
+    ],
+    [
+     "[135]",
+     "Visible diffuse critical-tail residual",
+     "\\cref{thm:local-residual-exhaustion,lem:diffuse-critical-tail-row-closed}",
+     "Terminal through its unique named-row closure"
+    ]
+   ]
+  },
+  {
+   "id": "type-ii/3",
+   "title": "Monotone retained-obstruction ledger",
+   "group": "",
+   "chapter": "type-ii",
+   "sourceLine": 1785,
+   "headers": [
+    "Invariant",
+    "Established by",
+    "Retained through",
+    "Failure or terminal use"
+   ],
+   "rows": [
+    [
+     "Physical Type II status",
+     "\\cref{def:physical-local-typeII-germ,lem:physical-typeII-germ-admissible}",
+     "Covered entry and ordered C1 tests [1]--[7]",
+     "Class-incompatible failure closes at [57]"
+    ],
+    [
+     "Positive local critical signal",
+     "\\cref{lem:physical-typeII-germ-concentration-sequence,thm:active-profile-mass-floor}",
+     "Core selection, scale analysis, terminal profiles, and the final ledger [4]--[135]",
+     "The zero limit closes at [27]; loss of the selected signal is classified at [96]--[116]"
+    ],
+    [
+     "Nonzero compact-limit dichotomy",
+     "\\cref{lem:selected-compactness-aubin-lions,lem:regular-singular-compact-limit-routing}",
+     "Selected compactness, terminal descendants, and diffuse-tail routing [40]--[52], [128]--[135]",
+     "A first interface failure is named; a singular limit gives an active descendant; a regular nonzero limit enters the bounded-window row"
+    ],
+    [
+     "Buffered locality and suitable energy",
+     "\\cref{prop:compact-support-transport,prop:ren-suitable}",
+     "Every compact-cylinder restriction after [10]",
+     "The first domain, energy, or compact-upper failure goes to [56]"
+    ],
+    [
+     "Pressure representative",
+     "\\cref{thm:pressure-decomp}",
+     "Carrier selection, compactness, Caccioppoli, and residual exhaustion",
+     "Pressure-only rows are expanded at [111]--[127], and reconstruction failure closes at [114]"
+    ],
+    [
+     "Retained ancestry",
+     "\\cref{lem:retained-frame-maximality,cor:no-unclassified-compact-limit-obstruction,thm:terminal-windowed-profile-completeness}",
+     "Core selection, terminal descendants, and residual coordinates",
+     "Noncomparable descendants close at [49], [59], or [106]--[110]"
+    ],
+    [
+     "Canonical chart and modulation convention",
+     "\\cref{def:canonical-chart-notation,thm:canonical-repaired-gauge-equation}",
+     "Scale cost, carrier extraction, and terminal sampling",
+     "The first chart, modulation, or cost failure closes through [56]"
+    ],
+    [
+     "First-failure order and rank",
+     "\\cref{thm:ordered-local-state-space-exhaustion,lem:acyclic-terminal-ledger}",
+     "Every routing test [5]--[135]",
+     "Exactly one named row occurs, and every displayed ellipse is terminal"
+    ]
+   ]
+  },
+  {
+   "id": "type-ii/4",
+   "title": "Branch-closure audit ledger",
+   "group": "",
+   "chapter": "type-ii",
+   "sourceLine": 1857,
+   "headers": [
+    "State or exit",
+    "Diagram route",
+    "Closure source",
+    "Terminal output"
+   ],
+   "rows": [
+    [
+     "Regular or local Type I entry",
+     "[2]--[3]",
+     "\\cref{thm:local-typeI-typeII-dichotomy}",
+     "[3]"
+    ],
+    [
+     "Multibubble, cascade, or gauge degeneracy",
+     "[11]--[12]",
+     "\\cref{thm:multibubble}",
+     "[12]"
+    ],
+    [
+     "Loss of local windowed $H^1$ control",
+     "[20]--[21]",
+     "\\cref{thm:canonical-local-caccioppoli,thm:rough-core,prop:state-elimination}",
+     "[21]"
+    ],
+    [
+     "Compact single core with vanishing dissipation",
+     "[24]--[27]",
+     "\\cref{thm:single-core}",
+     "[27]"
+    ],
+    [
+     "Compact single core with divergent retained cost",
+     "[30]--[34]",
+     "\\cref{thm:windowwise-routing-gives-stratified-routing,thm:cost-divergence-exclusion-discharged}",
+     "[34]"
+    ],
+    [
+     "Finite signed or absolute scale cost",
+     "[35]--[36]",
+     "\\cref{thm:scale-cost}",
+     "[36]"
+    ],
+    [
+     "Thin drift reaching an already closed retained state",
+     "[35], [37]--[38]",
+     "\\cref{thm:thin-negative-drift-closed,thm:compact-scale-collapse-rigidity-discharged}",
+     "[38]"
+    ],
+    [
+     "Structural or exterior terminal profile",
+     "[48]--[49]",
+     "\\cref{thm:multibubble,cor:exterior-concentration-exit-discharged}",
+     "[49]"
+    ],
+    [
+     "Retained comparable terminal profile",
+     "[52]--[55]",
+     "\\cref{thm:expanded-terminal-data-branchwise,thm:expanded-terminal-typeII}",
+     "[55]"
+    ],
+    [
+     "Class-incompatible first failure",
+     "[6], [56]--[57]",
+     "\\cref{lem:physical-typeII-germ-admissible,lem:no-extra-outside-class-row}",
+     "[57]"
+    ],
+    [
+     "Earlier local or ambient first failure",
+     "[56], [58]--[59]",
+     "\\cref{prop:state-elimination,cor:ambient-adjacent-wrapper-discharged}",
+     "[59]"
+    ],
+    [
+     "Bounded selected-window limit",
+     "[28], [56], [60], [64]--[70]",
+     "\\cref{lem:bounded-window-vmo-pressure,lem:bounded-window-reselection-well-founded,thm:bounded-selected-window-physical-routing}",
+     "[65], [68]--[70]"
+    ],
+    [
+     "Autonomous-modulation failure",
+     "[39], [56], [61], [71]--[87]",
+     "\\cref{lem:modulation-window-bound-or-exit,lem:bounded-modulation-defect-routing,thm:autonomous-modulation-failure-closed}",
+     "[73]--[77], [80]--[81], [83]--[86]; [87] continues to [96]"
+    ],
+    [
+     "Noncanonical carrier or cost-validation failure",
+     "[32], [56], [62], [88]--[95]",
+     "\\cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed}",
+     "[90], [92]--[95]"
+    ],
+    [
+     "Loss of the retained active core",
+     "[15], [45], [51], [56], [63], [96]--[116]",
+     "\\cref{lem:retained-frame-maximality,lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed}",
+     "[98], [102], [104]--[110], [114]--[115]"
+    ],
+    [
+     "Nested pressure-only behavior",
+     "[117]--[127]",
+     "\\cref{lem:nested-pressure-only-well-founded,lem:diffuse-pressure-only-not-terminal}",
+     "[105]--[110], [114]--[115], [118], [120], [123], [125]--[127]"
+    ],
+    [
+     "Critical-tightness and diffuse-tail failure",
+     "[128]--[135]",
+     "\\cref{lem:critical-tightness-failure-row,lem:regular-singular-compact-limit-routing,lem:strong-diffuse-tail-limit-row,lem:diffuse-critical-tail-row-closed}",
+     "[108]--[110], [114], [130], [132], [134]--[135]"
+    ]
+   ]
+  }
+ ],
  "chapters": [
   {
    "id": "setup",

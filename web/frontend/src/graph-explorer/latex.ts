@@ -12,7 +12,19 @@ export type Segment =
   | { kind: "math"; value: string; display: boolean }
   | { kind: "break" }
   | { kind: "item" }
-  | { kind: "ref"; key: string };
+  | { kind: "ref"; key: string }
+  | { kind: "node"; id: string };
+
+export interface ParseOptions {
+  /**
+   * Read a bracketed integer as a diagram step.
+   *
+   * Off by default. The papers reserve bracketed integers for diagram nodes in
+   * their diagrams and index tables, but a `[12]` inside a theorem statement is
+   * as likely to be something else, so only those tables ask for this.
+   */
+  nodes?: boolean;
+}
 
 interface Delimiter {
   open: string;
@@ -197,8 +209,10 @@ const REF = /\\(?:[cC]ref|eqref|ref)\{([^}]*)\}/;
 const STRIPPED_ENVIRONMENTS =
   /\\(?:begin|end)\{(?:enumerate|itemize|description|remark|proof|center|small|scriptsize)\}(?:\[[^\]]*\])?/g;
 
+const NODE = /^\[(\d+)\]/;
+
 /** Turn one prose chunk into text, break, item and reference segments. */
-function readProse(source: string): Segment[] {
+function readProse(source: string, options: ParseOptions): Segment[] {
   let text = unwrapTextMacros(source);
   text = text.replace(STRIPPED_ENVIRONMENTS, "");
   text = text.replace(/\\label(?:\[[^\]]*\])?\{[^}]*\}/g, "");
@@ -239,6 +253,15 @@ function readProse(source: string): Segment[] {
       cursor += reference[0].length;
       continue;
     }
+    if (options.nodes && text[cursor] === "[") {
+      const node = NODE.exec(text.slice(cursor));
+      if (node) {
+        flush();
+        segments.push({ kind: "node", id: node[1] });
+        cursor += node[0].length;
+        continue;
+      }
+    }
     if (text.startsWith("\n\n", cursor)) {
       flush();
       segments.push({ kind: "break" });
@@ -253,14 +276,14 @@ function readProse(source: string): Segment[] {
 }
 
 /** Parse a LaTeX fragment into renderable segments. */
-export function parseLatex(source: string): Segment[] {
+export function parseLatex(source: string, options: ParseOptions = {}): Segment[] {
   const segments: Segment[] = [];
   for (const segment of splitMath(source ?? "")) {
     if (segment.kind !== "text") {
       segments.push(segment);
       continue;
     }
-    segments.push(...readProse(segment.value));
+    segments.push(...readProse(segment.value, options));
   }
   // A reference is followed by its sentence's punctuation; drop the space the
   // surrounding LaTeX left between them.
@@ -289,6 +312,8 @@ export function latexToPlainText(source: string): string {
           return segment.value.replace(/\\[a-zA-Z]+|[{}]/g, "").replace(/\s+/g, " ");
         case "ref":
           return segment.key;
+        case "node":
+          return `[${segment.id}]`;
         default:
           return " ";
       }

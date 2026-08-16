@@ -15,6 +15,11 @@
   --decision: #a2681a;
   --terminal: #2f7d52;
   --continuation: #7a52a0;
+  --code-keyword: #8a3b6b;
+  --code-comment: #6f7a6a;
+  --code-string: #2f7d52;
+  --code-name: #1f5c8b;
+  --code-sort: #a2681a;
   --shadow: 0 1px 2px rgb(27 28 30 / 6%), 0 8px 24px rgb(27 28 30 / 6%);
   --radius: 10px;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
@@ -39,6 +44,11 @@
     --decision: #d9a86a;
     --terminal: #71c295;
     --continuation: #b393d8;
+    --code-keyword: #d98cc0;
+    --code-comment: #8b9587;
+    --code-string: #71c295;
+    --code-name: #7fb6e0;
+    --code-sort: #d9a86a;
     --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 10px 30px rgb(0 0 0 / 35%);
     color-scheme: dark;
   }
@@ -154,6 +164,67 @@ code {
   font-weight: 600;
 }
 
+/* The manuscripts, to download from the header. */
+.paper-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--ink-muted);
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.paper-download::-webkit-details-marker {
+  display: none;
+}
+
+.paper-download:hover,
+.paper-downloads[open] > .paper-download {
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.paper-downloads {
+  position: relative;
+}
+
+.paper-downloads ul {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  min-width: 220px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.app-header .paper-downloads ul a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.app-header .paper-downloads ul a small {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
 .app-main {
   flex: 1;
   min-height: 0;
@@ -218,7 +289,11 @@ code {
 .button {
   display: inline-block;
   padding: 10px 18px;
+  border: 0;
   border-radius: 999px;
+  font: inherit;
+  line-height: normal;
+  cursor: pointer;
   background: var(--accent);
   color: #fff;
   text-decoration: none;
@@ -990,7 +1065,18 @@ code {
 .branch-none {
   font-size: 13px;
   color: var(--ink-faint);
-  padding-top: 3px;
+}
+
+/* With nothing to list, the label and the note read as one line: the fixed
+   label column exists to align chips, and there are none to align. */
+.branch-row.is-empty {
+  align-items: baseline;
+  gap: 6px;
+}
+
+.branch-row.is-empty .branch-title {
+  width: auto;
+  padding-top: 0;
 }
 
 .branch-items {
@@ -1442,6 +1528,431 @@ code {
   color: var(--ink-muted);
 }
 
+/* ----------------------------------------------------------- methodology -- */
+
+.methodology {
+  margin-top: 72px;
+  padding-top: 48px;
+  border-top: 1px solid var(--line);
+}
+
+.methodology-header {
+  margin-bottom: 40px;
+}
+
+.methodology-header h2 {
+  margin: 0 0 16px;
+  font-family: var(--serif);
+  font-size: clamp(26px, 3.6vw, 36px);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.methodology-lead {
+  margin: 0 0 14px;
+  max-width: 64ch;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+.methodology-source {
+  margin: 0;
+  max-width: 64ch;
+  font-size: 13.5px;
+  color: var(--ink-faint);
+}
+
+/* The rail sits in the page's left margin, so the text column keeps its width.
+   The margin is (viewport − 1040px) / 2 minus the page padding; the rail needs
+   about 260px of it (rail 220px, gap 40px), so it fits from 1500px up. */
+.methodology-layout {
+  position: relative;
+}
+
+.methodology-rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 100%;
+  width: 220px;
+  margin-right: 40px;
+}
+
+.methodology-rail-inner {
+  position: sticky;
+  top: 84px;
+  max-height: calc(100vh - 108px);
+  overflow-y: auto;
+}
+
+.methodology-rail-lead {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+
+.methodology-rail ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.methodology-rail button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.4;
+  padding: 6px 10px;
+  margin-bottom: 1px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.methodology-rail button:hover {
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.methodology-rail button.is-current {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Not enough margin for the rail: a row of chips above the text instead. */
+@media (max-width: 1499px) {
+  .methodology-rail {
+    position: static;
+    width: auto;
+    margin: 0 0 32px;
+  }
+
+  .methodology-rail-inner {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .methodology-rail-lead {
+    margin-bottom: 8px;
+  }
+
+  .methodology-rail ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .methodology-rail button {
+    width: auto;
+    margin: 0;
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+
+  .methodology-rail button.is-current {
+    border-color: var(--accent);
+  }
+}
+
+/* Each part starts just under the sticky header when jumped to. */
+.methodology-part {
+  scroll-margin-top: 84px;
+}
+
+.methodology-body {
+  display: grid;
+  gap: 36px;
+}
+
+/* A grid item is as wide as its widest unbreakable child by default; the
+   display equations must not be allowed to set the page's width. */
+.methodology-body > * {
+  min-width: 0;
+}
+
+.methodology-part h3 {
+  margin: 0 0 12px;
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.methodology-part p {
+  margin: 0 0 12px;
+  max-width: 72ch;
+  font-size: 15.5px;
+  line-height: 1.65;
+}
+
+.methodology-part p:last-child {
+  margin-bottom: 0;
+}
+
+/* A display equation is a block of its own, and scrolls rather than widens
+   the page on a narrow screen. */
+.methodology-display {
+  display: block;
+  max-width: 72ch;
+  margin: 4px 0 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.methodology-cycle {
+  margin: 4px 0 16px;
+  padding-left: 0;
+  max-width: 72ch;
+  counter-reset: cycle;
+  list-style: none;
+}
+
+.methodology-cycle li {
+  position: relative;
+  padding: 8px 0 8px 44px;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+  line-height: 1.55;
+  counter-increment: cycle;
+}
+
+.methodology-cycle li:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.methodology-cycle li::before {
+  content: counter(cycle);
+  position: absolute;
+  left: 0;
+  top: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* The three ways a counterexample pays. */
+/* Wider than the prose on purpose: the three blocks read as one line. */
+.methodology-costs {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 8px 0 20px;
+}
+
+@media (max-width: 760px) {
+  .methodology-costs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.methodology-costs > div {
+  padding: 14px 16px;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  background: var(--surface-sunken);
+}
+
+.methodology-costs dt {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.methodology-costs dd {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+/* Working practices against the capability each rests on. */
+.methodology-table-wrap {
+  margin: 4px 0 16px;
+  overflow-x: auto;
+}
+
+.methodology-map {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.methodology-map th {
+  text-align: left;
+  padding: 0 12px 8px 0;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.methodology-map td {
+  vertical-align: top;
+  padding: 12px 12px 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.methodology-map td:first-child {
+  width: 58%;
+}
+
+.methodology-map td:last-child {
+  color: var(--ink-muted);
+}
+
+/* The proof moves: four columns, and wide enough that it scrolls in its
+   wrapper on a phone rather than crushing the cells. */
+.methodology-moves {
+  min-width: 880px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.methodology-moves td:first-child {
+  width: 16%;
+}
+
+.methodology-moves td:nth-child(2) {
+  width: 27%;
+}
+
+.methodology-moves td:last-child {
+  color: inherit;
+}
+
+.methodology-steps {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+.methodology-steps .chip {
+  text-decoration: none;
+  padding: 1px 7px;
+  font-size: 11px;
+}
+
+.methodology-move-origin {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+.methodology-controls {
+  display: grid;
+  gap: 12px 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin: 4px 0 18px;
+}
+
+.methodology-controls > div {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--surface-sunken);
+}
+
+.methodology-controls dt {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.methodology-controls dd {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+/* The long form: each failure explained, then its discipline. Two columns
+   where there is room, so the cards stay readable. */
+.methodology-controls-wide {
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 14px;
+}
+
+.methodology-controls-wide > div {
+  padding: 16px 18px;
+}
+
+.methodology-controls-wide dt {
+  font-family: var(--serif);
+  font-size: 16px;
+}
+
+.methodology-part .methodology-controls-wide dd p {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+.methodology-controls-wide dd em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.methodology-cases {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.methodology-cases a {
+  display: block;
+  height: 100%;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: inherit;
+}
+
+.methodology-cases a:hover {
+  border-color: var(--accent);
+}
+
+.methodology-cases h4 {
+  margin: 12px 0 8px;
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.methodology-cases p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
 .panel-count {
   font-family: var(--mono);
   font-size: 13px;
@@ -1532,4 +2043,652 @@ code {
 .explorer-empty-summary {
   font-size: 15px;
   color: var(--ink);
+}
+
+/* --------------------------------------------------- the tables section -- */
+
+.page-tables {
+  display: grid;
+  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+  gap: clamp(16px, 3vw, 36px);
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 36px) clamp(16px, 3vw, 32px) 64px;
+  align-items: start;
+}
+
+.table-rail {
+  position: sticky;
+  top: 76px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.table-rail-lead {
+  margin: 0 0 18px;
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+
+.table-rail h2 {
+  margin: 18px 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 600;
+}
+
+.table-rail ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.table-rail button {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  font-size: 13.5px;
+  padding: 6px 10px;
+  margin-bottom: 1px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.table-rail button:hover {
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.table-rail button.is-current {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.table-rail button small {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+}
+
+.table-view {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(18px, 2.4vw, 28px);
+  box-shadow: var(--shadow);
+}
+
+.table-view-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.table-view-group {
+  margin: 0 0 2px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.table-view h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.table-view-count {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+/* The table scrolls inside its own box; the page never scrolls sideways. */
+.table-view-scroll {
+  margin-top: 8px;
+  overflow-x: auto;
+}
+
+.table-view-scroll .data-table {
+  display: table;
+  width: 100%;
+  overflow: visible;
+  font-size: 13px;
+}
+
+.table-view-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+
+.table-view-scroll td {
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.table-view-scroll td .chip-node {
+  margin: 0 2px 2px 0;
+}
+
+.table-view-empty {
+  margin: 16px 0 0;
+  color: var(--ink-faint);
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .page-tables {
+    grid-template-columns: 1fr;
+  }
+
+  .table-rail {
+    position: static;
+    max-height: none;
+  }
+}
+
+/* --------------------------------------------------- lean framework docs -- */
+
+.app-header-end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.framework-link a {
+  font-weight: 600;
+}
+
+.framework-callout {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 28px 0 0;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.framework-callout > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.framework-callout h2 {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.framework-callout p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+  max-width: 64ch;
+}
+
+.framework-callout .button {
+  flex: none;
+}
+
+.page-docs {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 44px);
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 36px) clamp(16px, 3vw, 32px) 64px;
+  align-items: start;
+}
+
+.docs-rail {
+  position: sticky;
+  top: 76px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.docs-rail-lead {
+  margin: 0 0 18px;
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+
+.docs-rail h2 {
+  margin: 18px 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 600;
+}
+
+.docs-rail ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.docs-rail a {
+  display: block;
+  font-size: 13.5px;
+  padding: 6px 10px;
+  margin-bottom: 1px;
+  border-radius: 7px;
+  text-decoration: none;
+  color: var(--ink-muted);
+}
+
+.docs-rail a:hover {
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.docs-rail a.is-current {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.docs-content {
+  min-width: 0;
+}
+
+.docs-article {
+  max-width: 78ch;
+}
+
+.docs-article .hero {
+  padding-top: 0;
+}
+
+.docs-header {
+  margin: 0 0 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.docs-header h1,
+.docs-home .hero h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(28px, 4vw, 38px);
+  line-height: 1.15;
+  margin: 4px 0 12px;
+}
+
+.docs-lead {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+.docs-article section {
+  margin: 0 0 36px;
+}
+
+.docs-article h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 23px;
+  line-height: 1.25;
+  margin: 32px 0 10px;
+}
+
+.docs-article h3 {
+  font-size: 15.5px;
+  font-weight: 600;
+  margin: 22px 0 8px;
+}
+
+.docs-article p,
+.docs-article li {
+  font-size: 15px;
+  line-height: 1.68;
+}
+
+.docs-article p {
+  margin: 0 0 12px;
+}
+
+.docs-article ul,
+.docs-article ol {
+  padding-left: 22px;
+  margin: 0 0 12px;
+}
+
+.docs-article li {
+  margin-bottom: 6px;
+}
+
+.docs-article li strong {
+  font-weight: 600;
+}
+
+.lean-inline {
+  white-space: nowrap;
+}
+
+.lean-code {
+  margin: 12px 0 16px;
+}
+
+.lean-code pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  font-family: var(--mono);
+  font-size: 12.75px;
+  line-height: 1.55;
+  tab-size: 2;
+}
+
+.lean-code pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: var(--ink);
+}
+
+.lean-code figcaption {
+  margin: 5px 2px 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+.tok-keyword {
+  color: var(--code-keyword);
+  font-weight: 600;
+}
+
+.tok-comment {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+.tok-string {
+  color: var(--code-string);
+}
+
+.tok-name {
+  color: var(--code-name);
+}
+
+.tok-attribute {
+  color: var(--code-sort);
+}
+
+.tok-sort {
+  color: var(--code-sort);
+}
+
+.tok-hole {
+  color: var(--decision);
+  font-weight: 600;
+}
+
+.docs-properties {
+  margin: 12px 0 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.docs-properties > div {
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent-soft);
+  background: var(--surface);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.docs-properties dt {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.docs-properties dd {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.docs-cards {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.docs-cards a {
+  display: block;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.docs-cards a:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow);
+}
+
+.docs-card-group h3 {
+  margin: 20px 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 600;
+}
+
+.docs-cards h4 {
+  margin: 0 0 6px;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.docs-cards p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+
+.docs-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.docs-badge.is-framework {
+  background: color-mix(in srgb, var(--decision) 16%, transparent);
+  color: var(--decision);
+}
+
+.docs-legend {
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+
+.docs-toc ul {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.docs-toc li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.docs-toc button {
+  font: inherit;
+  font-size: 14.5px;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.docs-toc small {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.docs-module {
+  scroll-margin-top: 84px;
+}
+
+.docs-module-path {
+  margin: -6px 0 10px;
+}
+
+.docs-module-path code {
+  font-size: 12px;
+  color: var(--ink-faint);
+  background: none;
+  padding: 0;
+}
+
+.docs-entry {
+  margin: 0 0 22px;
+  padding: 0 0 6px;
+  scroll-margin-top: 84px;
+}
+
+.docs-entry h3 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 6px;
+}
+
+.docs-entry h3 code {
+  font-size: 14px;
+  background: none;
+  padding: 0;
+}
+
+.docs-entry-kind {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--code-keyword);
+  font-weight: 600;
+}
+
+.docs-entry .lean-code {
+  margin: 6px 0 8px;
+}
+
+.docs-entry p {
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+
+.docs-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.docs-pager a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 600;
+  min-width: 160px;
+}
+
+.docs-pager a:hover {
+  background: var(--surface-sunken);
+}
+
+.docs-pager a.is-next {
+  margin-left: auto;
+  text-align: right;
+}
+
+.docs-pager small {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+@media (max-width: 900px) {
+  .page-docs {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-rail {
+    position: static;
+    max-height: none;
+  }
+
+  .framework-callout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
