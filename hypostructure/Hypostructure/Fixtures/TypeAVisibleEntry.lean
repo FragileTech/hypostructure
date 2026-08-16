@@ -56,11 +56,8 @@ noncomputable def portReturn
     ExactLedger (Input BranchState Presentation presentation data) selected
       typeAPortReturnKeys :=
   (typeAPortReturnRow (BranchState := BranchState)
-    (presentation := presentation) (data := data)
-    (K .selection) (K .typeAPortReturn) (by simp)
-    (fun _input fact => fact.down.1)
-    (fun _input fact => fact.down.2)
-    (fun _input value => ⟨value⟩)).run history (by simp)
+    (presentation := presentation) (data := data)).run history (by
+      simp [typeAPortReturnRow, K_eq_iff])
 
 /-! ## Node `[93]`, asked on the port-return cursor -/
 

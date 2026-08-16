@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2025/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: type_II_regularity.aux
+The style file: alpha.bst
+Database file #1: type_II_regularity.bib
+You've used 18 entries,
+            2543 wiz_defined-function locations,
+            692 strings with 7319 characters,
+and the built_in function-call counts, 6430 in all, are:
+= -- 650
+> -- 239
+< -- 11
++ -- 76
+- -- 73
+* -- 454
+:= -- 1071
+add.period$ -- 54
+call.type$ -- 18
+change.case$ -- 94
+chr.to.int$ -- 18
+cite$ -- 18
+duplicate$ -- 269
+empty$ -- 505
+format.name$ -- 101
+if$ -- 1290
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 24
+newline$ -- 93
+num.names$ -- 54
+pop$ -- 86
+preamble$ -- 1
+purify$ -- 118
+quote$ -- 0
+skip$ -- 203
+stack$ -- 0
+substring$ -- 426
+swap$ -- 18
+text.length$ -- 11
+text.prefix$ -- 10
+top$ -- 0
+type$ -- 120
+warning$ -- 0
+while$ -- 67
+width$ -- 21
+write$ -- 236

@@ -7,6 +7,7 @@ import Hypostructure.Graph.SparseEntropySandwich
 import Hypostructure.Graph.CapacityTokenAssignment
 import Hypostructure.Graph.SparseUpperEnvelope
 import Hypostructure.Graph.ObjectCapacityLedger
+import Hypostructure.Graph.Induced
 
 /-!
 # The sparse surplus branch: the activation rows
@@ -52,7 +53,6 @@ universe u v
 variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
-variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! ## Node `[126]`: the sparse slack identity -/
 
@@ -63,17 +63,14 @@ The manuscript writes `m = (3/2)n + (1/2)σ(G)` and, with `λ = 2n − 3 − m`,
 the first, and doubling the first is the exact `Nat` identity committed here.
 The only input is the standing baseline, which the executor reads off the
 residual rather than from a fact. -/
-@[reducible] noncomputable def sparseSlackSurplusRow
-    (sparseSlackSurplus :
-      FactKey (Input BranchState Presentation presentation data))
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (2 * input.object.edgeCount =
-        data.threshold * input.object.vertexCount +
-          input.object.degreeSurplus data.threshold) →
-      sparseSlackSurplus.At input) :
+@[reducible] noncomputable def sparseSlackSurplusRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseSlackSurplus
-    (sourceFreeManifest sparseSlackSurplus)
+    { Requires := []
+      Produces := [K .sparseSlackSurplus]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let handshake : data.threshold * inputs.current.object.vertexCount ≤
           2 * inputs.current.object.edgeCount :=
@@ -81,10 +78,13 @@ residual rather than from a fact. -/
           inputs.current.object data.threshold fun vertex =>
             le_trans inputs.current.baseline
               (inputs.current.object.minDegree_le_degree vertex)
-      .cons (key := sparseSlackSurplus)
-        (encode inputs.current (by
-          unfold Graph.FiniteObject.degreeSurplus
-          omega))
+      .cons (key := K .sparseSlackSurplus)
+        (show Value BranchState Presentation presentation data
+            .sparseSlackSurplus inputs.current from
+          ⟨by
+            simp only [Holds]
+            unfold Graph.FiniteObject.degreeSurplus
+            omega⟩)
         .nil)
 
 /-! ## Node `[127]`: the excess selector and its count -/
@@ -100,44 +100,30 @@ degree `3`, and `N_G(x) = {h, a_p, b_p}`"*, stated at the registered baseline as
 Node `[10]`'s independence is consumed, not re-proved: it is the committed
 slack-independence fact, and it is exactly what forces a port's endpoint down to
 the baseline. -/
-@[reducible] noncomputable def activeSurplusFamilyRow
-    (slackIndependent activeSurplusFamily :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : slackIndependent ≠ activeSurplusFamily)
-    (independentOf : (input : Input BranchState Presentation presentation data) →
-      slackIndependent.At input →
-      ∀ left right : input.object.Vertex,
-        data.threshold < input.object.degree left →
-        data.threshold < input.object.degree right →
-        ¬ input.object.graph.Adj left right)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      ((input.object.excessPorts data.threshold).card =
-          input.object.degreeSurplus data.threshold ∧
-        ∀ pair : input.object.Vertex × input.object.Vertex,
-          ∀ member : pair ∈ input.object.excessPorts data.threshold,
-            data.threshold < input.object.degree pair.1 ∧
-              input.object.degree pair.2 = data.threshold ∧
-              (input.object.surplusPortOfMem member).shoulders.card =
-                data.threshold - 1) →
-      activeSurplusFamily.At input) :
+@[reducible] noncomputable def activeSurplusFamilyRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.activeSurplusFamily
-    (rowManifest slackIndependent activeSurplusFamily distinct)
+    { Requires := [K .slackIndependent]
+      Produces := [K .activeSurplusFamily]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let object := inputs.current.object
       let baseline : ∀ vertex : object.Vertex,
           data.threshold ≤ object.degree vertex :=
         fun vertex => le_trans inputs.current.baseline
           (object.minDegree_le_degree vertex)
-      let independent := independentOf inputs.current (inputs.get slackIndependent)
-      .cons (key := activeSurplusFamily)
-        (encode inputs.current
-          ⟨object.card_excessPorts baseline, fun _pair member =>
+      let independent := (inputs.get (K .slackIndependent)).down
+      .cons (key := K .activeSurplusFamily)
+        (show Value BranchState Presentation presentation data
+            .activeSurplusFamily inputs.current from
+          ⟨⟨object.card_excessPorts baseline, fun _pair member =>
             ⟨Graph.FiniteObject.centre_high_of_mem_excessPorts member,
               (object.surplusPortOfMem member).endpoint_degree_eq baseline
                 independent,
               (object.surplusPortOfMem member).card_shoulders baseline
-                independent⟩⟩)
+                independent⟩⟩⟩)
         .nil)
 
 /-! ## Node `[128]`: port activation -/
@@ -161,47 +147,23 @@ each port.  Clause (b) is the return path `R_p ⊆ G − c(p)x(p)`: the port's o
 edge is not a bridge, because contracting it gives a strictly smaller object
 still meeting the baseline, and minimality and avoidance close it exactly as
 they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
-@[reducible] noncomputable def sparsePortActivationRow
-    (selection sparsePortActivation :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : selection ≠ sparsePortActivation)
-    (avoidsOf : (input : Input BranchState Presentation presentation data) →
-      selection.At input →
-      ¬ Graph.HasCycleWithLength data.LengthOK input.object)
-    (minimalOf : (input : Input BranchState Presentation presentation data) →
-      selection.At input →
-      ∀ smaller : Graph.FiniteObject.{u},
-        smaller.LexicographicallySmaller input.object →
-        data.threshold ≤ smaller.minDegree →
-        Graph.HasCycleWithLength data.LengthOK smaller)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (∀ pair : input.object.Vertex × input.object.Vertex,
-        ∀ member : pair ∈ input.object.excessPorts data.threshold,
-          ∀ left right : input.object.Vertex,
-            (∀ vertex : input.object.Vertex,
-              vertex ∈ (input.object.surplusPortOfMem member).shoulders ↔
-                (vertex = left ∨ vertex = right)) →
-            left ≠ right →
-            Nonempty (Graph.FiniteObject.SurplusPort.PortReturn
-                input.object pair.1 pair.2 left right) ∧
-              (¬ input.object.graph.Adj left right →
-                Nonempty (Graph.FiniteObject.SurplusPort.OpenPortWitness
-                  input.object data.LengthOK pair.2 left right)) ∧
-              (input.object.graph.Adj left right →
-                input.object.graph.Adj pair.2 left ∧
-                  input.object.graph.Adj left right ∧
-                  input.object.graph.Adj right pair.2)) →
-      sparsePortActivation.At input) :
+@[reducible] noncomputable def sparsePortActivationRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparsePortActivation
-    (rowManifest selection sparsePortActivation distinct)
+    { Requires := [K .selection]
+      Produces := [K .sparsePortActivation]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       let object := inputs.current.object
-      let fact := inputs.get selection
-      let avoids := avoidsOf inputs.current fact
-      let minimal := minimalOf inputs.current fact
-      .cons (key := sparsePortActivation)
-        (encode inputs.current fun _pair member left right shoulders distinct =>
+      let fact := (inputs.get (K .selection)).down
+      let avoids := fact.1
+      let minimal := fact.2
+      .cons (key := K .sparsePortActivation)
+        (show Value BranchState Presentation presentation data
+            .sparsePortActivation inputs.current from
+          ⟨fun _pair member left right shoulders distinct =>
           ⟨(object.surplusPortOfMem member).portReturn_of_minimal
               shoulders inputs.current.baseline avoids minimal,
             fun openPort =>
@@ -211,583 +173,811 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
             fun adjacent =>
               (object.surplusPortOfMem member).triangle_of_shoulders_adj
                 (shoulders left |>.2 (Or.inl rfl))
-                (shoulders right |>.2 (Or.inr rfl)) adjacent⟩)
+                (shoulders right |>.2 (Or.inr rfl)) adjacent⟩
+          ⟩)
         .nil)
 
-/-! ## Node `[129]`: the baseline spine demand -/
+/-- The completed active family, read only from the three incoming facts. -/
+@[reducible] noncomputable def activeSurplusDemandsRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.activeSurplusDemands
+    { Requires := [K .sparseSurplusSurvivor, K .activeSurplusFamily,
+        K .sparsePortActivation]
+      Produces := [K .activeSurplusDemands]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .activeSurplusDemands)
+        (show Value BranchState Presentation presentation data
+            .activeSurplusDemands inputs.current from
+          ⟨Graph.surviving_active_family
+            (inputs.get (K .sparseSurplusSurvivor)).down
+            (inputs.get (K .activeSurplusFamily)).down.1
+            (inputs.get (K .sparsePortActivation)).down⟩)
+        .nil)
 
-/-- `def:baseline-spine-demand` with `lem:exact-cubic-baseline-budget`,
-`lem:incremental-skeleton-room` and `def:spine-lower-bound-deficits`.
+/-! ## Node `[129]`: the active family and baseline demand -/
 
-The manuscript fixes `N = C(n,2)`, `m₀ = ⌈(3/2)n⌉` and `B₀(n) = log₂ C(N,m₀)`,
-calls a family `ℐ_spine` of declared target coordinates a baseline spine demand
-with deficit `E_spine(n)` when it is independently target-testable and
-`|ℐ_spine| ≥ B₀(n) − E_spine(n)`, evaluates `B₀(n) = (3/2)n log₂ n + O(n)`,
-bounds the room a larger edge count buys by `s·log₂ n`, and records three
-lower-bound packages whose deficits are admissible `E_spine`.
+/-- `def:baseline-spine-demand` at the strict branch's already-built active
+family.
 
-Every display is committed with the logarithms cleared, so the branch carries
-exact `Nat` inequalities rather than asymptotic ones:
-
-* `C(N,m₀+s) ≤ C(N,m₀)·n^s` and that estimate spent at the object's own edge
-  count;
-* `(n−1)^{m₀} ≤ C(N,m₀)·(2(δ+1))^{m₀} ≤ C(N,m₀)·(2n)^{m₀}·…`, i.e. both halves
-  of `lem:exact-cubic-baseline-budget`, whose logarithms are `B₀(n) =
-  (δ/2)n log₂ n + O(n)`.  The lower half carries the manuscript's own
-  nonemptiness hypothesis `2m₀ ≤ N`, without which the baseline stratum is
-  empty and `B₀(n)` is unbounded below;
-* `def:baseline-spine-demand` at every family of declared target coordinates the
-  branch may present, with `E_spine(n) = spineDeficit` -- this node's own
-  *output*, computed from the object's order and the package's lower bound,
-  never a constant carried in;
-* `def:spine-lower-bound-deficits`' three packages, at the registered window
-  rate, entropy denominator and curvature cost, with their deficits ordered.
-
-`m₀ = ⌈δn/2⌉` is the least edge count a `δ`-regular object can carry.  The
-concrete family is read from node `[21]`; the remaining numerical clauses are
-generic theorems about the residual object's counting observables and the
-registered rates. -/
-@[reducible] noncomputable def baselineSpineDemandRow
-    (windowPackageSeparated baselineSpineDemand :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : windowPackageSeparated ≠ baselineSpineDemand)
-    (packageOf : (input : Input BranchState Presentation presentation data) →
-      windowPackageSeparated.At input →
-      WindowPackageStatement data input.object)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (Nonempty (input.object.BaselineWindowDemand
-          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-          data.threshold data.windowOrder data.surplusScale) ∧
-      ((∀ increment : Nat,
-          Graph.cubicBaselineEdgeCount input.object.vertexCount
-              data.threshold + increment ≤ 2 * input.object.vertexCount - 2 →
-          (input.object.vertexCount.choose 2).choose
-              (Graph.cubicBaselineEdgeCount input.object.vertexCount
-                data.threshold + increment) ≤
-            (input.object.vertexCount.choose 2).choose
-                (Graph.cubicBaselineEdgeCount input.object.vertexCount
-                  data.threshold) *
-              input.object.vertexCount ^ increment) ∧
-        (Graph.cubicBaselineEdgeCount input.object.vertexCount
-              data.threshold ≤ input.object.edgeCount →
-          Graph.skeletonBudget input.object ≤
-            Graph.cubicBaselineBudget input.object.vertexCount
-                data.threshold *
-              input.object.vertexCount ^
-                (input.object.edgeCount -
-                  Graph.cubicBaselineEdgeCount input.object.vertexCount
-                    data.threshold)) ∧
-        (Graph.cubicBaselineBudget input.object.vertexCount data.threshold ≤
-            (2 * input.object.vertexCount) ^
-              Graph.cubicBaselineEdgeCount input.object.vertexCount
-                data.threshold ∧
-          (2 * Graph.cubicBaselineEdgeCount input.object.vertexCount
-                data.threshold ≤ input.object.vertexCount.choose 2 →
-            (input.object.vertexCount - 1) ^
-                Graph.cubicBaselineEdgeCount input.object.vertexCount
-                  data.threshold ≤
-              Graph.cubicBaselineBudget input.object.vertexCount
-                  data.threshold *
-                (2 * (data.threshold + 1)) ^
-                  Graph.cubicBaselineEdgeCount input.object.vertexCount
-                    data.threshold)) ∧
-        (∀ packing remainder scaleCount : Nat,
-          Graph.spineDeficit input.object.vertexCount data.threshold
-              (Graph.curvaturePackageBound data.windowRate packing scaleCount
-                remainder data.entropyDenominator data.curvatureCost) ≤
-            Graph.spineDeficit input.object.vertexCount data.threshold
-              (Graph.highEntropyPackageBound data.windowRate packing scaleCount
-                remainder data.entropyDenominator) ∧
-          Graph.spineDeficit input.object.vertexCount data.threshold
-              (Graph.highEntropyPackageBound data.windowRate packing scaleCount
-                remainder data.entropyDenominator) ≤
-            Graph.spineDeficit input.object.vertexCount data.threshold
-              (Graph.windowPackageBound data.windowRate packing scaleCount)))) →
-      baselineSpineDemand.At input) :
+The paper does not obtain this demand from node `[21]`.  The completed active
+family of `[128]` and the sparse-exit survivor of `[125]` are read from the
+incoming exact ledger.  Exit-freeness makes the concrete baseline family
+independently target-testable; choosing the cubic baseline exponent itself as
+its cardinality gives canonical deficit zero, hence the required linear bound.
+The witness, deficit, and bound are all registered in this node's one paper
+fact. -/
+@[reducible] noncomputable def baselineSpineDemandRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
-    { Requires := [windowPackageSeparated]
-      Produces := [baselineSpineDemand]
+        { Requires := [K .activeSurplusDemands, K .sparseSurplusSurvivor,
+            K .selection]
+          Produces := [K .baselineSpineDemand]
+          requiresUnique := by simp [K_eq_iff]
+          producesUnique := by simp
+          producesNonempty := by simp }
+        (fun inputs =>
+          .cons (key := K .baselineSpineDemand)
+            (show Value BranchState Presentation presentation data .baselineSpineDemand
+                inputs.current from
+              ⟨by
+                classical
+                simp only [Holds]
+                change Graph.ActiveSurplusDemands
+                    (Graph.MinimumDegreeAtLeast data.threshold)
+                    (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
+                    inputs.current.object data.threshold ∧
+                  ∃ (Coordinate : Type u) (family : Finset Coordinate)
+                    (coordinateSupport : Coordinate →
+                      Finset inputs.current.object.Vertex),
+                    (∀ declared : Graph.DeclaredQuotient
+                        (Graph.MinimumDegreeAtLeast data.threshold)
+                        (Graph.HasCycleWithLength data.LengthOK)
+                        inputs.current.object family coordinateSupport,
+                      declared.toRankQuotient.FunctionalOn ↑family →
+                        declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+                      Graph.cubicBaselineBudget inputs.current.object.vertexCount
+                          data.threshold ≤
+                        2 ^ (family.card + Graph.spineDeficit
+                          inputs.current.object.vertexCount data.threshold
+                          family.card) ∧
+                      Graph.spineDeficit inputs.current.object.vertexCount
+                          data.threshold family.card ≤
+                        data.surplusScale * inputs.current.object.vertexCount
+                let bits := Graph.cubicBaselineExponent
+                  inputs.current.object.vertexCount data.threshold
+                let Coordinate := inputs.current.object.BaselineSpineCoordinate bits
+                let family := inputs.current.object.baselineSpineFamily bits
+                let coordinateSupport := inputs.current.object.baselineSpineSupport
+                  (bits := bits)
+                have familyCard : family.card = bits := by
+                  simp [family]
+                let survivor := (inputs.get (K .sparseSurplusSurvivor)).down
+                let selection := (inputs.get (K .selection)).down
+                refine ⟨(inputs.get (K .activeSurplusDemands)).down,
+                  Coordinate, family, coordinateSupport, ?_, ?_, ?_⟩
+                · intro declared _functional
+                  by_contra reducing
+                  rcases declared.localize reducing with replacement |
+                    ⟨representative, smaller, baseline, transfer⟩
+                  · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
+                      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+                      (Graph.minimumDegreeAtLeast_isomorphismInvariant
+                        data.threshold)
+                      Presentation presentation
+                      (Core.Target.ofPredicate _
+                        (Graph.HasCycleWithLength data.LengthOK))
+                      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
+                        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+                        Presentation presentation
+                        (Graph.minimumDegreeAtLeast_isomorphismInvariant
+                          data.threshold))
+                      { G := inputs.current.object,
+                        baseline := inputs.current.baseline,
+                        state := inputs.current.branchState,
+                        avoids := selection.1,
+                        minimal := selection.2 }
+                      declared.support replacement
+                  · exact survivor
+                      (Graph.SparseSurplusExit.delocalization representative
+                        smaller baseline transfer)
+                · rw [familyCard]
+                  exact Graph.cubicBaselineBudget_le_two_pow_add_spineDeficit
+                    inputs.current.object.vertexCount
+                    (le_trans (by omega) data.three_le_threshold) bits
+                · rw [familyCard]
+                  simp [bits, Graph.spineDeficit]⟩)
+            .nil)
+
+/-! ## Node `[132]`: route the dependent pair family -/
+
+/-- Node `[130]`: construct the full response family from the active-family
+fact on the literal `[129]` ledger, then retain exactly the paper's independent
+or dependent arm. -/
+noncomputable def pairResponseIndependenceDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    [FactKeys.Has (K .activeSurplusDemands) known]
+    (independentFresh : K .independentPairFamily ∉ known)
+    (dependentFresh : K .dependentPairFamily ∉ known) :
+    Decision (K .independentPairFamily) (K .dependentPairFamily) previous :=
+  Decision.run previous (K .independentPairFamily) (K .dependentPairFamily)
+    `Hypostructure.Graph.Strategy.Spine.pairResponseIndependenceDichotomy
+    (Classical.choice (show Nonempty
+        ((K .independentPairFamily).At current ⊕
+          (K .dependentPairFamily).At current) from by
+      let active := (previous.get (K .activeSurplusDemands)).down
+      let activation := Graph.pairResponseActivation active
+      let pairs := current.object.portPairSchedule data.threshold
+      let family := activation.pairFamily pairs
+      let coordinateSupport : current.object.PairCoordinate →
+          Finset current.object.Vertex := by
+        letI := current.object.vertices.decEq
+        exact Graph.DeclaredSignature.Coordinate.support
+      by_cases independent : ∀ attempt : Graph.AttemptedQuotient
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) current.object family
+          coordinateSupport,
+          Set.InjOn attempt.label ↑family
+      · exact ⟨.inl ⟨active, independent⟩⟩
+      · push_neg at independent
+        exact ⟨.inr ⟨active, independent⟩⟩))
+    independentFresh dependentFresh
+
+/-! ## Node `[131]`: mixed sparse-spine dependence -/
+
+/-- `lem:mixed-sparse-spine-dependence` on the literal independent residual of
+`[130]`.  The concrete spine family and active pair schedule are read from the
+same incoming ledger; the four-case circuit proof is published as one exact
+semantic fact. -/
+@[reducible] noncomputable def mixedSparseSpineDependenceRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.mixedSparseSpineDependence
+    { Requires := [K .baselineSpineDemand]
+      Produces := [K .mixedSparseSpineDependence]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .mixedSparseSpineDependence)
+        (show Value BranchState Presentation presentation data
+            .mixedSparseSpineDependence inputs.current from
+          ⟨by
+            obtain ⟨active, Coordinate, family, coordinateSupport, survives,
+                demand, deficitBound⟩ :=
+              (inputs.get (K .baselineSpineDemand)).down
+            refine ⟨active, Coordinate, family, coordinateSupport, survives,
+              demand, deficitBound, ?_⟩
+            dsimp only
+            intro notIndependent
+            classical
+            let object := inputs.current.object
+            let activation := Graph.pairResponseActivation active
+            let pairs := object.portPairSchedule data.threshold
+            let pairFamily := activation.pairFamily pairs
+            let mixedFamily : Finset (Sum Coordinate object.PairCoordinate) :=
+              family.image Sum.inl ∪ pairFamily.image Sum.inr
+            let mixedSupport : Sum Coordinate object.PairCoordinate →
+                Finset object.Vertex :=
+              Sum.elim coordinateSupport (by
+                letI := object.vertices.decEq
+                exact Graph.DeclaredSignature.Coordinate.support)
+            push Not at notIndependent
+            obtain ⟨attempt, functional, reducing⟩ := notIndependent
+            change ¬ Set.InjOn attempt.label ↑mixedFamily at reducing
+            let quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+                (Sum Coordinate object.PairCoordinate) :=
+              { Label := attempt.Label
+                Value := attempt.Value
+                Realization := Graph.BoundaryPiece
+                  (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
+                    object attempt.support)
+                label := attempt.label
+                value := attempt.value }
+            change quotient.FunctionalOn ↑mixedFamily at functional
+            let candidates :
+                Finset (Finset (Sum Coordinate object.PairCoordinate)) :=
+              mixedFamily.powerset.filter fun independent =>
+                Set.InjOn attempt.label ↑independent
+            have candidatesNonempty : candidates.Nonempty := by
+              refine ⟨∅, ?_⟩
+              simp [candidates]
+            obtain ⟨independent, independentMember, maximum⟩ :=
+              Finset.exists_mem_eq_sup candidates candidatesNonempty Finset.card
+            have independentFacts : independent ⊆ mixedFamily ∧
+                Set.InjOn attempt.label ↑independent := by
+              simpa [candidates] using independentMember
+            obtain ⟨coordinate, coordinateMember, coordinateOutside⟩ :
+                ∃ coordinate ∈ mixedFamily, coordinate ∉ independent := by
+              by_contra absent
+              push Not at absent
+              have equal : independent = mixedFamily :=
+                Finset.Subset.antisymm independentFacts.1 absent
+              apply reducing
+              rw [← equal]
+              exact independentFacts.2
+            let candidate := insert coordinate independent
+            have candidateSubset : candidate ⊆ mixedFamily := by
+              intro member membership
+              simp only [candidate, Finset.mem_insert] at membership
+              rcases membership with rfl | membership
+              · exact coordinateMember
+              · exact independentFacts.1 membership
+            have candidateNotInjective :
+                ¬ Set.InjOn attempt.label ↑candidate := by
+              intro candidateInjective
+              have candidateMember : candidate ∈ candidates := by
+                simp only [candidates, Finset.mem_filter,
+                  Finset.mem_powerset]
+                exact ⟨candidateSubset, candidateInjective⟩
+              have bound := Finset.le_sup (f := Finset.card) candidateMember
+              rw [maximum] at bound
+              have larger : independent.card < candidate.card := by
+                simp [candidate, coordinateOutside]
+              omega
+            have independentInjective :
+                quotient.LabelInjectiveOn ↑independent :=
+              independentFacts.2
+            have candidateReducing :
+                ¬ quotient.LabelInjectiveOn ↑candidate :=
+              candidateNotInjective
+            obtain ⟨determiners, finite, determinersSubset, determines⟩ :=
+              functional independentFacts.1 coordinateMember coordinateOutside
+                independentInjective (by
+                  simpa [candidate] using candidateReducing)
+            let certificates :
+                Finset (Finset (Sum Coordinate object.PairCoordinate)) :=
+              finite.toFinset.powerset.filter fun certificate =>
+                quotient.Determines coordinate ↑certificate
+            have certificatesNonempty : certificates.Nonempty := by
+              refine ⟨finite.toFinset, ?_⟩
+              simp [certificates, determines]
+            obtain ⟨minimalDeterminers, minimal⟩ :=
+              certificates.exists_minimal certificatesNonempty
+            have minimalFacts : minimalDeterminers ⊆ finite.toFinset ∧
+                quotient.Determines coordinate ↑minimalDeterminers := by
+              simpa [certificates] using minimal.1
+            have _inclusionMinimal : ∀ candidate ⊆ minimalDeterminers,
+                quotient.Determines coordinate ↑candidate →
+                  minimalDeterminers ⊆ candidate := by
+              intro candidate candidateSubset candidateDetermines
+              apply minimal.2
+              · simp only [certificates, Finset.mem_filter,
+                  Finset.mem_powerset]
+                exact ⟨candidateSubset.trans minimalFacts.1,
+                  candidateDetermines⟩
+              · exact candidateSubset
+            have _circuit : (↑minimalDeterminers : Set _) ⊆
+                (↑mixedFamily : Set
+                  (Sum Coordinate object.PairCoordinate)) ∧
+                Set.Finite (↑minimalDeterminers : Set
+                  (Sum Coordinate object.PairCoordinate)) ∧
+                  coordinate ∉ minimalDeterminers ∧
+                    quotient.Determines coordinate ↑minimalDeterminers := by
+              refine ⟨?_, minimalDeterminers.finite_toSet, ?_, minimalFacts.2⟩
+              · intro member membership
+                exact independentFacts.1
+                  (determinersSubset (by simpa using minimalFacts.1 membership))
+              · intro coordinateInDeterminers
+                exact coordinateOutside
+                  (determinersSubset (by
+                    apply minimalFacts.1 at coordinateInDeterminers
+                    simpa using coordinateInDeterminers))
+            have pair_of_mem (pairCoordinate : object.PairCoordinate)
+                (membership : Sum.inr pairCoordinate ∈ mixedFamily) :
+                ∃ pair ∈ pairs,
+                  Graph.FiniteObject.DemandActivation.pairCoordinate pair
+                      ((activation.pairSupport pair).getD ∅) = pairCoordinate := by
+              change Sum.inr pairCoordinate ∈
+                family.image Sum.inl ∪ pairFamily.image Sum.inr at membership
+              rcases Finset.mem_union.mp membership with spineMem | pairMem
+              · obtain ⟨spine, _, impossible⟩ := Finset.mem_image.mp spineMem
+                cases impossible
+              · obtain ⟨candidate, candidateMem, candidateEq⟩ :=
+                  Finset.mem_image.mp pairMem
+                injection candidateEq with candidateEq
+                subst pairCoordinate
+                change candidate ∈ activation.pairFamily pairs at candidateMem
+                rw [Graph.FiniteObject.DemandActivation.pairFamily] at candidateMem
+                exact Finset.mem_image.mp candidateMem
+            rcases attempt.route reducing with profiles | defect | replacement |
+                ⟨representative, smaller, baseline, transfer⟩
+            · cases coordinate with
+              | inl spine =>
+                  obtain ⟨left, right, identifies, different⟩ := profiles
+                  exact Or.inl (.targetDefect attempt left right identifies
+                    (Or.inl different))
+              | inr pairCoordinate =>
+                  obtain ⟨pair, pairMem, pairEq⟩ :=
+                    pair_of_mem pairCoordinate coordinateMember
+                  subst pairCoordinate
+                  exact Or.inr ⟨pair, pairMem, attempt, Or.inl profiles⟩
+            · cases coordinate with
+              | inl spine =>
+                  obtain ⟨left, right, identifies, separated⟩ := defect
+                  exact Or.inl (.targetDefect attempt left right identifies
+                    (Or.inr separated))
+              | inr pairCoordinate =>
+                  obtain ⟨pair, pairMem, pairEq⟩ :=
+                    pair_of_mem pairCoordinate coordinateMember
+                  subst pairCoordinate
+                  exact Or.inr
+                    ⟨pair, pairMem, attempt, Or.inr (Or.inl defect)⟩
+            · cases coordinate with
+              | inl spine =>
+                  exact Or.inl (.compression attempt.support replacement)
+              | inr pairCoordinate =>
+                  obtain ⟨pair, pairMem, pairEq⟩ :=
+                    pair_of_mem pairCoordinate coordinateMember
+                  subst pairCoordinate
+                  exact Or.inr
+                    ⟨pair, pairMem, attempt, Or.inr (Or.inr replacement)⟩
+            · exact Or.inl
+                (.delocalization representative smaller baseline transfer)⟩)
+        .nil)
+
+/-- `lem:exact-cubic-baseline-budget` at the current residual's order and
+registered baseline.  The result is the manuscript's two-sided estimate with
+logarithms cleared, published from the literal `[131]` residual. -/
+@[reducible] noncomputable def exactCubicBaselineBudgetRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.exactCubicBaselineBudget
+    { Requires := []
+      Produces := [K .exactCubicBaselineBudget]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let baseline : 2 ≤ data.threshold :=
-        le_trans (by omega) data.three_le_threshold
-      let order := inputs.current.object.vertexCount
-      let packageFact :=
-        packageOf inputs.current (inputs.get windowPackageSeparated)
-      let concrete : Nonempty (inputs.current.object.BaselineWindowDemand
-          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-          data.threshold data.windowOrder data.surplusScale) := by
-        obtain ⟨packing, valid, _card⟩ :=
-          inputs.current.object.exists_windowPacking_card_eq data.windowOrder
-        obtain ⟨_coordinateCount, _family, _windowBound, _jointBound,
-          _slotsFit, _poolRoom, targetPackage, deficitBound⟩ :=
-          packageFact packing valid
-        exact ⟨inputs.current.object.baselineWindowDemandOfPackage
-          baseline targetPackage deficitBound⟩
-      .cons (key := baselineSpineDemand)
-        (encode inputs.current
-          ⟨concrete, ⟨fun increment _envelope =>
-              Graph.incremental_skeleton_room order baseline increment,
-            fun above =>
-              Graph.skeletonBudget_le_cubicBaselineBudget_mul_pow
-                inputs.current.object baseline above,
-            ⟨Graph.cubicBaselineBudget_le_pow order baseline,
-              fun room => Graph.pow_pred_le_cubicBaselineBudget_mul order room⟩,
-            fun packing remainder scaleCount =>
-              ⟨Graph.spineDeficit_le_of_le order data.threshold
-                  (Graph.highEntropyPackageBound_le_curvaturePackageBound
-                    data.windowRate packing scaleCount remainder
-                    data.entropyDenominator data.curvatureCost),
-                Graph.spineDeficit_le_of_le order data.threshold
-                  (Graph.windowPackageBound_le_highEntropyPackageBound
-                    data.windowRate packing scaleCount remainder
-                    data.entropyDenominator)⟩⟩⟩)
+      .cons (key := K .exactCubicBaselineBudget)
+        (show Value BranchState Presentation presentation data
+            .exactCubicBaselineBudget inputs.current from
+          ⟨by
+            have two_le_threshold : 2 ≤ data.threshold :=
+              le_trans (by norm_num) data.three_le_threshold
+            constructor
+            · exact Graph.cubicBaselineBudget_le_pow
+                inputs.current.object.vertexCount two_le_threshold
+            · intro room
+              exact Graph.pow_pred_le_cubicBaselineBudget_mul
+                inputs.current.object.vertexCount room⟩)
         .nil)
 
-/-! ## Nodes `[130]`--`[134]`: the canonical pair-response ledger -/
-
-/-- `def:sparse-pair-response`, `def:surplus-blockers`, `def:canonical-blocker-ledger`,
-`lem:sparse-pair-dependence-exit`, `prop:sparse-pair-independence-dichotomy`,
-`prop:sparse-entropy-sandwich` and its blocked refinement.
-
-`Π(𝒜₀) = C(𝒜₀,2)` is the unordered pairs of the active family, and its count is
-`C(σ(G),2)` because `|𝒜₀| = σ(G)` — the same `card_excessPorts` the previous row
-committed, spent again rather than assumed.
-
-Everything else is committed at an arbitrary `DemandActivation`, the canonical
-data `def:active-surplus-demands` equips a selected port with, in the concrete
-form the six clauses read: `T(p) ∪ Γ(p)`, `R_p`, `{a_p, b_p, x(p)}`, and the
-obstruction families the dependence analysis hands back.  At that activation:
-
-* `def:sparse-pair-response` is built — `X_π` is the minimum connected superset
-  of `T(p) ∪ Γ(p) ∪ T(q) ∪ Γ(q)` selected canonically, `∂X_π` is its literal cut
-  boundary, `r_π` is the (D7) declared coordinate labelled `π` and supported on
-  `X_π`, and the pair family carries one coordinate per pair;
-* `def:surplus-blockers` is instantiated — a pair is blocked exactly when it
-  carries one of the six concrete blocker *objects*, which is the definition's
-  own closing paragraph, so `Π_blk` is the manuscript's set and not the set of a
-  quantified relation;
-* `def:canonical-blocker-ledger`'s two identities are read at that set: the split
-  `|Π_blk| + |Π_free| = |Π(𝒜₀)|` and the no-overcount
-  `|Π_blk| = Σ_B μ(B)`, where `Φ_can` is the first clause of
-  `def:canonical-sparse-blocker-order` that applies;
-* `prop:sparse-entropy-sandwich-with-blockers` and `prop:sparse-entropy-sandwich`
-  are the entropy sandwich with the logarithms cleared, and
-  `cor:sparse-pair-entropy-saturation` is its `ℐ_spine = ∅` reading.
-
-`lem:sparse-pair-dependence-exit` is **not** committed here.  It is a
-disjunction about the object — *"either `G` has a sparse surplus exit, or some
-`π ∈ Π` has a blocker of type (d) or (e)"* — so it is node `[132]`'s branch,
-`blockedPairRoutingDichotomy` below, and not a clause of this node's fact.
-Committing it here would discharge the exit alternative silently from node
-`[125]`'s survivor entry, which is exactly the branch the manuscript draws and
-the terminal `[133]` it closes at.
-
-`Π_blk` and `Π_free` are a partition of the one schedule `Π(𝒜₀)`, not two arms:
-`lem:capacity-token-high-load` at node `[137]` reads *both* sides of
-`C(𝒜₀,2) = Π_free ⊔ Π_blk` in the same object.  So node `[130]`'s split is a
-fibre identity and belongs in this fact.
-
-The mixed count is committed as an actual `MixedSpinePairDemand`: node `[129]`
-supplies the concrete baseline object and node `[132]`'s survivor arm supplies
-full rank of its tagged union with the free-pair response family.  The positive
-node-`[21]` package then gives the entropy inequality, and `entropySandwich`
-cancels the spine count.  No entropy or demand antecedent remains. -/
-@[reducible] noncomputable def canonicalPairLedgerRow
-    (activeSurplusFamily sparseSlackSurplus surplusAbove baselineSpineDemand
-      canonicalBlockerRoute canonicalPairLedger :
-      FactKey (Input BranchState Presentation presentation data))
-    (distinct : activeSurplusFamily ≠ canonicalPairLedger)
-    (familyNeSlack : activeSurplusFamily ≠ sparseSlackSurplus)
-    (familyNeAbove : activeSurplusFamily ≠ surplusAbove)
-    (slackNeAbove : sparseSlackSurplus ≠ surplusAbove)
-    (familyNeDemand : activeSurplusFamily ≠ baselineSpineDemand)
-    (familyNeRoute : activeSurplusFamily ≠ canonicalBlockerRoute)
-    (slackNeDemand : sparseSlackSurplus ≠ baselineSpineDemand)
-    (slackNeRoute : sparseSlackSurplus ≠ canonicalBlockerRoute)
-    (aboveNeDemand : surplusAbove ≠ baselineSpineDemand)
-    (aboveNeRoute : surplusAbove ≠ canonicalBlockerRoute)
-    (demandNeRoute : baselineSpineDemand ≠ canonicalBlockerRoute)
-    (slackOf : (input : Input BranchState Presentation presentation data) →
-      sparseSlackSurplus.At input →
-      2 * input.object.edgeCount =
-        data.threshold * input.object.vertexCount +
-          input.object.degreeSurplus data.threshold)
-    (aboveOf : (input : Input BranchState Presentation presentation data) →
-      surplusAbove.At input →
-      data.surplusThreshold input.object.vertexCount <
-        input.object.degreeSurplus data.threshold)
-    (rankOf : (input : Input BranchState Presentation presentation data) →
-      canonicalBlockerRoute.At input →
-      ∀ Coordinate : Type u, ∀ family : Finset Coordinate,
-        ∀ coordinateSupport : Coordinate → Finset input.object.Vertex,
-          Core.TargetRank.targetRank
-              (Graph.FiniteObject.declaredQuotientSystem
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) input.object family
-                coordinateSupport) = family.card)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      ((input.object.portPairSchedule data.threshold).card =
-          (input.object.degreeSurplus data.threshold).choose 2 ∧
-        (∀ Coordinate Chord : Type u,
-          ∀ activation :
-            Graph.FiniteObject.DemandActivation input.object Coordinate Chord,
-            -- `def:canonical-blocker-ledger` at `def:surplus-blockers`' own set.
-            ((activation.chargedPairs data.threshold).card +
-                  (activation.freePairs data.threshold).card =
-                (input.object.portPairSchedule data.threshold).card ∧
-              (activation.chargedPairs data.threshold).card =
-                Graph.SameTokenBlockerRoles.canonicalBlockerOrder.toFinset.sum
-                  (activation.multiplicity data.threshold) ∧
-              ∀ pair : Finset (input.object.Vertex × input.object.Vertex),
-                (∃ kind, activation.Blocks kind pair) ↔
-                  (activation.blockers pair).Nonempty) ∧
-            -- `def:sparse-pair-response`.
-            (∀ pair : Finset (input.object.Vertex × input.object.Vertex),
-              ∀ support : Finset input.object.Vertex,
-                activation.pairSupport pair = some support →
-                  activation.pairSeed pair ⊆ support ∧
-                    Graph.SupportComponents.Connected.ConnectedOn input.object
-                      support ∧
-                    (∀ other : Finset input.object.Vertex,
-                      activation.pairSeed pair ⊆ other →
-                      Graph.SupportComponents.Connected.ConnectedOn input.object
-                        other → support.card ≤ other.card) ∧
-                    ∀ vertex : input.object.Vertex,
-                      vertex ∈
-                          Graph.FiniteObject.DemandActivation.pairBoundary
-                            input.object support ↔
-                        vertex ∈ support ∧
-                          ∃ neighbor, input.object.graph.Adj vertex neighbor ∧
-                            neighbor ∉ support) ∧
-            ∀ family : Finset (Finset (input.object.Vertex × input.object.Vertex)),
-              (activation.pairFamily family).card = family.card) ∧
-        ∀ baseline : input.object.BaselineWindowDemand
-            (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-            data.threshold data.windowOrder data.surplusScale,
-          ∀ Coordinate Chord : Type u,
-            ∀ activation :
-              Graph.FiniteObject.DemandActivation input.object Coordinate Chord,
-              input.object.MixedSpinePairDemand
-                (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-                data.threshold data.windowOrder data.surplusScale
-                baseline activation) →
-      canonicalPairLedger.At input) :
+/-- `lem:incremental-skeleton-room` at the current object's edge count.  Both
+the binomial-room estimate and `s ≤ σ/2+1` are stored with logarithms and
+division cleared. -/
+@[reducible] noncomputable def incrementalSkeletonRoomRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.canonicalPairLedger
-    { Requires := [activeSurplusFamily, sparseSlackSurplus, surplusAbove,
-        baselineSpineDemand, canonicalBlockerRoute]
-      Produces := [canonicalPairLedger]
-      requiresUnique := by
-        simp [familyNeSlack, familyNeAbove, slackNeAbove, familyNeDemand,
-          familyNeRoute, slackNeDemand, slackNeRoute, aboveNeDemand,
-          aboveNeRoute, demandNeRoute]
+  factOnly `Hypostructure.Graph.Strategy.Spine.incrementalSkeletonRoom
+    { Requires := []
+      Produces := [K .incrementalSkeletonRoom]
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let object := inputs.current.object
-      -- `m₀ ≤ m`, read off `[126]` and `[19]` rather than assumed.
-      let above : Graph.cubicBaselineEdgeCount inputs.current.object.vertexCount
-          data.threshold ≤ inputs.current.object.edgeCount := by
-        have slack := slackOf inputs.current (inputs.get sparseSlackSurplus)
-        have positive := aboveOf inputs.current (inputs.get surplusAbove)
-        unfold Graph.cubicBaselineEdgeCount
-        omega
-      let baseline : ∀ vertex : object.Vertex,
-          data.threshold ≤ object.degree vertex :=
-        fun vertex => le_trans inputs.current.baseline
-          (object.minDegree_le_degree vertex)
-      let two_le : 2 ≤ data.threshold := le_trans (by omega) data.three_le_threshold
-      -- The schedule is read at the family the ledger already carries.
-      let _family := inputs.get activeSurplusFamily
-      .cons (key := canonicalPairLedger)
-        (encode inputs.current
-          ⟨Graph.FiniteObject.card_portPairSchedule baseline,
-            fun _Coordinate _Chord activation =>
-              ⟨⟨activation.card_chargedPairs_add_card_freePairs data.threshold,
-                  activation.card_chargedPairs_eq_sum_multiplicity data.threshold,
-                  fun pair => activation.exists_blocks_iff_blockers_nonempty pair⟩,
-                fun _pair _support selected =>
-                  ⟨(Graph.FiniteObject.DemandActivation.pairSupport_mem_candidates
-                      selected).1,
-                    (Graph.FiniteObject.DemandActivation.pairSupport_mem_candidates
-                      selected).2,
-                    fun _other contains connected =>
-                      Graph.FiniteObject.DemandActivation.pairSupport_card_le
-                        selected contains connected,
-                    fun vertex =>
-                      Graph.FiniteObject.DemandActivation.mem_pairBoundary_iff
-                        object _ vertex⟩,
-                fun family => activation.card_pairFamily family⟩,
-            fun concrete _Coordinate _Chord activation =>
-              object.mixedSpinePairDemand two_le above concrete activation
-                (rankOf inputs.current (inputs.get canonicalBlockerRoute)
-                  _ _ _)⟩)
+      .cons (key := K .incrementalSkeletonRoom)
+        (show Value BranchState Presentation presentation data
+            .incrementalSkeletonRoom inputs.current from
+          ⟨by
+            let object := inputs.current.object
+            have two_le_threshold : 2 ≤ data.threshold :=
+              le_trans (by norm_num) data.three_le_threshold
+            have handshake : data.threshold * object.vertexCount ≤
+                2 * object.edgeCount :=
+              Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
+                object data.threshold fun vertex =>
+                  le_trans inputs.current.baseline
+                    (object.minDegree_le_degree vertex)
+            have above : Graph.cubicBaselineEdgeCount object.vertexCount
+                data.threshold ≤ object.edgeCount :=
+              Graph.cubicBaselineEdgeCount_le_edgeCount_of_handshake
+                object data.threshold handshake
+            constructor
+            · exact Graph.skeletonBudget_le_cubicBaselineBudget_mul_pow
+                object two_le_threshold above
+            · have lower : data.threshold * object.vertexCount ≤
+                  2 * Graph.cubicBaselineEdgeCount object.vertexCount
+                    data.threshold := by
+                unfold Graph.cubicBaselineEdgeCount
+                omega
+              change 2 * (object.edgeCount -
+                  Graph.cubicBaselineEdgeCount object.vertexCount
+                    data.threshold) ≤
+                (2 * object.edgeCount -
+                  data.threshold * object.vertexCount) + 2
+              omega⟩)
         .nil)
 
-/-! ## Node `[132]`: the blocked-pair routing branch
+/-- `lem:skeleton-dominates` at the current residual's exact edge stratum.
+The fixed-edge labelled skeleton count and the canonical-state pigeonhole are
+proved inside this executor and published on the same exact ledger. -/
+@[reducible] noncomputable def skeletonDominatesRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.skeletonDominates
+    { Requires := []
+      Produces := [K .skeletonDominates]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .skeletonDominates)
+        (show Value BranchState Presentation presentation data
+            .skeletonDominates inputs.current from
+          ⟨by
+            let object := inputs.current.object
+            have count : Nat.card
+                (Graph.PackedWindowRealization.Skeleton
+                  object.vertexCount object.edgeCount) =
+                Graph.skeletonBudget object := by
+              simpa [Graph.skeletonBudget, Graph.edgeStratumCount] using
+                Graph.PackedWindowRealization.card_skeleton
+                  object.vertexCount object.edgeCount
+            refine ⟨count, ?_⟩
+            intro State stateOf
+            have realized :=
+              Core.FiniteEntropy.card_range_le_card_ambient stateOf
+            exact realized.trans_eq count⟩)
+        .nil)
 
-`lem:sparse-pair-dependence-exit`:
-
-> Suppose the coordinate family `ℛ_Π` does not survive every admissible rank
-> quotient of `ρ^ex_{∂X_Π}(X_Π)`.  Then either `G` has a sparse surplus exit in
-> the sense of `def:named-surplus-exits`, or some `π ∈ Π` has a sparse surplus
-> blocker of type (d) or (e).
-
-That is a disjunction about the object, and it is a `Decision` here for the same
-reason node `[137]` is one: the arm not taken is absent from the taken arm's key
-index, so the canonical blocker ledger `[134]` cannot be levied on a branch
-whose dependence was settled by an exit.
-
-The test is `SurvivesSparseExits` itself, a property of the object, so the split
-is the excluded middle on it and nothing is assumed to make it exhaustive.  The
-exit arm is node `[133]`, *"sparse surplus exit closes"*: it collides with node
-`[125]`'s survivor entry, and the canonical closure key is appended from the two
-committed facts by Core's own `closeIncompatible` at the run site.
-
-The blocker arm carries `lem:mixed-sparse-spine-dependence`'s separated
-realizations and `prop:sparse-pair-independence-dichotomy`'s full target rank,
-both derived from the arm's own `survives` — which is why they are no longer
-hypotheses of a committed implication at node `[130]`. -/
+/-- `lem:sparse-pair-dependence-exit` on the literal residual produced by
+node `[130]`.  The attempted quotient and its failure of injectivity are read
+from that residual's exact ledger.  The two conclusions are distinct decision
+arms, and `Decision.run` preserves the complete incoming ancestry on either
+arm. -/
 noncomputable def blockedPairRoutingDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous :
-      ExactLedger (Input BranchState Presentation presentation data)
-        current known)
-    (sparsePairExit canonicalBlockerRoute :
-      FactKey (Input BranchState Presentation presentation data))
-    (encodeExit :
-      (¬ (Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
-            current.object ∧
-          ∀ support : Finset current.object.Vertex,
-            ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
-              (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) current.object
-              support)) →
-      sparsePairExit.At current)
-    (encodeBlocker :
-      (∀ Coordinate : Type u, ∀ family : Finset Coordinate,
-        ∀ coordinateSupport : Coordinate → Finset current.object.Vertex,
-          (∀ attempt :
-              Graph.AttemptedQuotient
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) current.object family
-                coordinateSupport,
-              ¬ Set.InjOn attempt.label ↑family →
-                (∃ left right, attempt.Identifies left right ∧
-                    left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
-                  (∃ left right, attempt.Identifies left right ∧
-                    Graph.Response.TargetDefect
-                      (Graph.HasCycleWithLength data.LengthOK) left right)) ∧
-            Core.TargetRank.targetRank
-                (Graph.FiniteObject.declaredQuotientSystem
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) current.object family
-                  coordinateSupport) =
-              family.card) →
-      canonicalBlockerRoute.At current)
-    (exitFresh : sparsePairExit ∉ known)
-    (blockerFresh : canonicalBlockerRoute ∉ known) :
-    Decision sparsePairExit canonicalBlockerRoute previous := by
-  classical
-  refine Decision.run previous sparsePairExit canonicalBlockerRoute
-    `Hypostructure.Graph.Strategy.Spine.blockedPairRouting ?_ exitFresh
-    blockerFresh
-  exact
-    if exitFree : Graph.SurvivesSparseExits
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
-          current.object ∧
-        ∀ support : Finset current.object.Vertex,
-          ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) current.object support then
-      .inr (encodeBlocker fun _Coordinate _family _coordinateSupport =>
-        ⟨fun attempt reducing =>
-            Graph.blockerSeparation_of_reducing exitFree.1 exitFree.2 attempt
-              reducing,
-          Graph.targetRank_eq_card_of_exitFree exitFree.1 exitFree.2⟩)
-    else
-      .inl (encodeExit exitFree)
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    [FactKeys.Has (K .dependentPairFamily) known]
+    (exitFresh : K .sparsePairExit ∉ known)
+    (blockerFresh : K .canonicalBlockerRoute ∉ known) :
+    Decision (K .sparsePairExit) (K .canonicalBlockerRoute) previous :=
+  Decision.run previous (K .sparsePairExit) (K .canonicalBlockerRoute)
+    `Hypostructure.Graph.Strategy.Spine.blockedPairRoutingDichotomy
+    (Classical.choice (show Nonempty
+        ((K .sparsePairExit).At current ⊕
+          (K .canonicalBlockerRoute).At current) from by
+      obtain ⟨active, attempt, reducing⟩ :=
+        (previous.get (K .dependentPairFamily)).down
+      let activation := Graph.pairResponseActivation active
+      let pairs := current.object.portPairSchedule data.threshold
+      rcases Graph.sparsePairDependence_exit_or_blocker activation pairs attempt
+          reducing with exit | blocker
+      · exact ⟨.inl ⟨exit⟩⟩
+      · exact ⟨.inr ⟨active, blocker⟩⟩))
+    exitFresh blockerFresh
 
-/-! ## Nodes `[134]`--`[136]`: the sparse upper envelope and the capacity-token
-ledger -/
+/-! ## Node `[134]`: canonical blocker ledger -/
 
-/-- `lem:sparse-upper-envelope`, `def:primitive-sparse-blocker-carrier` with
-`lem:primitive-carrier-supply`, `def:capacity-token-ledger` with
-`lem:capacity-token-supply` and `lem:token-ledger-no-overcount`, and
-`def:same-token-patterns`.
-
-The envelope is proved here rather than carried.  `lem:no-proper-core` is the
-node-`[8]` entry and `lem:deletion-critical` the node-`[9]` one, both read by
-exact key; the branch's own node-`[19]` entry makes the surplus positive, which
-exhibits an edge, which `lem:deletion-critical` puts one end of exactly at the
-baseline; and deleting that vertex leaves a `(δ − 1)`-degenerate graph because
-every proper subgraph misses the baseline.  The result is `m + 2 ≤ (δ − 1)·n`,
-the manuscript's `m ≤ 2n − 2` at its own `δ = 3`, committed as its own fact.
-
-The carrier `𝔘_sp(G) = V(G) ⊔ I_E(G) ⊔ 𝒫_exc` is built from the object's own
-data, and both of the manuscript's supply displays are now *unconditional*: the
-identity `|𝔘_sp(G)| = n + 2m + σ(G)` with the display
-`|𝔘_sp(G)| ≤ 3(δ − 1)n`, and `𝔗_cap`'s exact
-`|𝔗_cap| + 2(order−1)p = |𝔘_sp(G)| + δ·order·p + σ(G)` with the display
-`|𝔗_cap| ≤ (3(δ−1)+2)n + σ(G)`.  The two things the manuscript spends to reach
-them are the envelope just proved and the registered comparison
-`δ·order + 2 ≤ 4·order`, which `Data.joinSlack` relates between the registered
-baseline and the registered window order.
-
-`Θ_cap` is the four-case charge, built from the pair's canonical blocker
-`Φ_can(π)`, that blocker's declared support and its primitive carrier `κ`.  It
-lands in `𝔗_cap`, and `lem:token-ledger-no-overcount` is the blocker ledger's own
-fibre identity read at that charge — the same
-`card_chargedPairs_eq_sum_multiplicity`, not a second implementation — together
-with the clause that makes the identity read at the whole blocked family.
-`def:same-token-patterns`' fibre graph `H_t` is the charge's own fibre, a simple
-graph on `𝒜₀` with `e(H_t) = ℓ_cap(t)`.
-
-Finally the node commits that the object *has* a capacity-token ledger, at every
-declared presentation: every valid packing of induced windows, every demand
-activation, every coordinate/shoulder-chord presentation and every role reading.
-Nothing is selected, so the commitment is a property of the object rather than of
-a choice.  Its entropy budget is node `[131]`'s concrete linear mixed-family
-sandwich, read through the presentation's own activation; it is not the free
-side's count restated as its own bound. -/
-@[reducible] noncomputable def capacityTokenLedgerRow
-    (canonicalPairLedger baselineSpineDemand noProperBaseline tightEndpoint surplusAbove
-      sparseUpperEnvelope capacityTokenLedger :
-      FactKey (Input BranchState Presentation presentation data))
-    (pairNeProper : canonicalPairLedger ≠ noProperBaseline)
-    (pairNeTight : canonicalPairLedger ≠ tightEndpoint)
-    (pairNeAbove : canonicalPairLedger ≠ surplusAbove)
-    (properNeTight : noProperBaseline ≠ tightEndpoint)
-    (properNeAbove : noProperBaseline ≠ surplusAbove)
-    (tightNeAbove : tightEndpoint ≠ surplusAbove)
-    (pairNeDemand : canonicalPairLedger ≠ baselineSpineDemand)
-    (demandNeProper : baselineSpineDemand ≠ noProperBaseline)
-    (demandNeTight : baselineSpineDemand ≠ tightEndpoint)
-    (demandNeAbove : baselineSpineDemand ≠ surplusAbove)
-    (envelopeNeLedger : sparseUpperEnvelope ≠ capacityTokenLedger)
-    (pairCountOf : (input : Input BranchState Presentation presentation data) →
-      canonicalPairLedger.At input →
-      (input.object.portPairSchedule data.threshold).card =
-        (input.object.degreeSurplus data.threshold).choose 2)
-    (baselineOf : (input : Input BranchState Presentation presentation data) →
-      baselineSpineDemand.At input →
-      Nonempty (input.object.BaselineWindowDemand
-        (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-        data.threshold data.windowOrder data.surplusScale))
-    (mixedOf : (input : Input BranchState Presentation presentation data) →
-      canonicalPairLedger.At input →
-      ∀ baseline : input.object.BaselineWindowDemand
-          (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-          data.threshold data.windowOrder data.surplusScale,
-        ∀ Coordinate Chord : Type u,
-          ∀ activation :
-            Graph.FiniteObject.DemandActivation input.object Coordinate Chord,
-            input.object.MixedSpinePairDemand
-              (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-              data.threshold data.windowOrder data.surplusScale
-              baseline activation)
-    (noProperOf : (input : Input BranchState Presentation presentation data) →
-      noProperBaseline.At input →
-      ∀ subgraph : Graph.ProperSubgraph input.object,
-        ¬ Graph.MinimumDegreeAtLeast data.threshold subgraph.value)
-    (tightOf : (input : Input BranchState Presentation presentation data) →
-      tightEndpoint.At input →
-      ∀ dart : input.object.graph.Dart,
-        input.object.degree dart.fst = data.threshold ∨
-          input.object.degree dart.snd = data.threshold)
-    (aboveOf : (input : Input BranchState Presentation presentation data) →
-      surplusAbove.At input →
-      data.surplusThreshold input.object.vertexCount <
-        input.object.degreeSurplus data.threshold)
-    (encodeEnvelope : (input : Input BranchState Presentation presentation data) →
-      (input.object.edgeCount + 2 ≤
-        (data.threshold - 1) * input.object.vertexCount) →
-      sparseUpperEnvelope.At input)
-    (encode : (input : Input BranchState Presentation presentation data) →
-      (((input.object.primitiveCarrier data.threshold).card =
-            input.object.vertexCount + 2 * input.object.edgeCount +
-              input.object.degreeSurplus data.threshold ∧
-          (input.object.primitiveCarrier data.threshold).card ≤
-            input.object.primitiveCarrierSupply data.threshold) ∧
-        Graph.FiniteObject.CapacityTokenLedgerStatement input.object
-          data.threshold data.windowOrder) ∧
-        ((∀ declared :
-            Graph.CapacityPresentation input.object data.windowOrder,
-          Nonempty (Graph.CertifiedObjectCapacityLedger input.object
-            data.threshold data.windowOrder data.surplusScale declared)) ∧
-          Nonempty (Σ declared : Graph.CapacityPresentation input.object
-              data.windowOrder,
-            Graph.CertifiedObjectCapacityLedger input.object data.threshold
-              data.windowOrder data.surplusScale declared)) →
-      capacityTokenLedger.At input) :
+/-- The canonical blocker ledger on the literal blocker residual of `[132]`.
+The executor records that certified type-(d)/(e) obstruction in the same
+activation, then publishes the full-pair count, the blocked/free partition,
+the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
+@[reducible] noncomputable def canonicalPairLedgerRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
-    { Requires :=
-        [canonicalPairLedger, baselineSpineDemand, noProperBaseline,
-          tightEndpoint, surplusAbove]
-      Produces := [sparseUpperEnvelope, capacityTokenLedger]
-      requiresUnique := by
-        simp [pairNeProper, pairNeTight, pairNeAbove, properNeTight,
-          properNeAbove, tightNeAbove, pairNeDemand, demandNeProper,
-          demandNeTight, demandNeAbove]
-      producesUnique := by simp [envelopeNeLedger]
+  factOnly `Hypostructure.Graph.Strategy.Spine.canonicalPairLedger
+    { Requires := [K .canonicalBlockerRoute]
+      Produces := [K .canonicalPairLedger]
+      requiresUnique := by simp
+      producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let object := inputs.current.object
-      let baseline : ∀ vertex : object.Vertex,
-          data.threshold ≤ object.degree vertex :=
-        fun vertex => le_trans inputs.current.baseline
-          (object.minDegree_le_degree vertex)
-      let handshake : data.threshold * object.vertexCount ≤
-          2 * object.edgeCount :=
-        Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount object
-          data.threshold baseline
-      -- The demands the token map charges are the pair ledger's own schedule.
-      let scheduleCard := pairCountOf inputs.current (inputs.get canonicalPairLedger)
-      let spine := (baselineOf inputs.current
-        (inputs.get baselineSpineDemand)).some
-      -- Node `[8]`, node `[9]` and the branch's own node-`[19]` entry.
-      let noProper := noProperOf inputs.current (inputs.get noProperBaseline)
-      let tight := tightOf inputs.current (inputs.get tightEndpoint)
-      let above := aboveOf inputs.current (inputs.get surplusAbove)
-      -- A positive surplus is a positive edge count: `2m > δn ≥ 0`.
-      let edges : 0 < object.edgeCount :=
-        object.edgeCount_pos_of_degreeSurplus_pos
-          (Nat.lt_of_le_of_lt (Nat.zero_le _) above)
-      let envelope : object.edgeCount + 2 ≤
-          (data.threshold - 1) * object.vertexCount :=
-        object.edgeCount_add_two_le data.three_le_threshold noProper tight edges
-      let vertex : object.Vertex :=
-        (object.exists_dart_of_edgeCount_pos edges).some.fst
-      .cons (key := sparseUpperEnvelope)
-        (encodeEnvelope inputs.current envelope)
-        (.cons (key := capacityTokenLedger)
-          (encode inputs.current
-            ⟨⟨⟨object.card_primitiveCarrier baseline,
-                  object.card_primitiveCarrier_le baseline
-                    data.three_le_threshold handshake envelope⟩,
-                Graph.FiniteObject.capacityTokenLedgerStatement object baseline
-                  data.three_le_threshold data.windowOrder_pos handshake envelope
-                  data.joinSlack⟩,
-              let certified := Graph.objectCapacityLedgerExists object baseline
-                vertex scheduleCard
-                data.three_le_threshold data.windowOrder_pos handshake envelope
-                data.joinSlack spine
-                (fun declared => mixedOf inputs.current
-                  (inputs.get canonicalPairLedger) spine declared.Coordinate
-                  declared.Chord declared.activation)
-              ⟨certified,
-                ⟨⟨Graph.CapacityPresentation.canonical object data.windowOrder
-                    data.windowOrder_pos,
-                  (certified (Graph.CapacityPresentation.canonical object
-                    data.windowOrder data.windowOrder_pos)).some⟩⟩⟩⟩)
-          .nil))
+      .cons (key := K .canonicalPairLedger)
+        (show Value BranchState Presentation presentation data
+            .canonicalPairLedger inputs.current from
+          ⟨by
+            obtain ⟨active, certificate⟩ :=
+              (inputs.get (K .canonicalBlockerRoute)).down
+            let activation := Graph.pairResponseActivation active
+            let pairs := inputs.current.object.portPairSchedule data.threshold
+            let recorded := Graph.recordSparsePairDEBlocker activation pairs certificate
+            have baseline : ∀ vertex : inputs.current.object.Vertex,
+                data.threshold ≤ inputs.current.object.degree vertex :=
+              fun vertex => le_trans inputs.current.baseline
+                (inputs.current.object.minDegree_le_degree vertex)
+            refine ⟨active, certificate, rfl,
+              ?_, ?_, ?_, ?_, ?_⟩
+            · exact inputs.current.object.card_portPairSchedule baseline
+            · simpa [recorded] using
+                recorded.card_blockedPairs_add_card_unblockedPairs data.threshold
+            · exact recorded.card_canonicalIncidenceLedger data.threshold
+            · exact recorded.card_blockedPairs_eq_sum_blockerMultiplicity data.threshold
+            · exact Graph.recordedSparsePairDEBlocker_nonempty activation pairs
+                certificate⟩)
+        .nil)
+
+/-! ## Node `[135]`: exact window-join pressure -/
+
+@[reducible] noncomputable def exactWindowJoinPressureRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.exactWindowJoinPressure
+    { Requires := [K .maximalPacking, K .noProperBaseline,
+        K .tightEndpoint, K .surplusAbove]
+      Produces := [K .sparseUpperEnvelope]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .sparseUpperEnvelope)
+        (show Value BranchState Presentation presentation data
+            .sparseUpperEnvelope inputs.current from
+          ⟨by
+            have baseline : ∀ vertex : inputs.current.object.Vertex,
+                data.threshold ≤ inputs.current.object.degree vertex :=
+              fun vertex => le_trans inputs.current.baseline
+                (inputs.current.object.minDegree_le_degree vertex)
+            have surplusPositive :
+                0 < inputs.current.object.degreeSurplus data.threshold :=
+              lt_of_le_of_lt (Nat.zero_le _)
+                (inputs.get (K .surplusAbove)).down
+            have edgePositive : 0 < inputs.current.object.edgeCount :=
+              inputs.current.object.edgeCount_pos_of_degreeSurplus_pos
+                surplusPositive
+            have envelope := inputs.current.object.edgeCount_add_two_le
+              data.three_le_threshold
+              (inputs.get (K .noProperBaseline)).down
+              (inputs.get (K .tightEndpoint)).down edgePositive
+            obtain ⟨_, packing, valid, maximal, _⟩ :=
+              (inputs.get (K .maximalPacking)).down
+            exact ⟨envelope, packing, valid, maximal,
+              inputs.current.object.exact_window_join_identity valid baseline⟩⟩)
+        .nil)
+
+/-! ## Node `[136]`: capacity-token ledger -/
+
+@[reducible] noncomputable def capacityTokenLedgerRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
+    { Requires := [K .canonicalPairLedger, K .sparseUpperEnvelope,
+        K .noProperBaseline]
+      Produces := [K .capacityTokenLedger]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .capacityTokenLedger)
+        (show Value BranchState Presentation presentation data
+            .capacityTokenLedger inputs.current from
+          ⟨by
+            obtain ⟨active, certificate, _pairsEq, scheduleCard,
+                _partition, _incidence, _multiplicity, _blocked⟩ :=
+              (inputs.get (K .canonicalPairLedger)).down
+            obtain ⟨envelope, packing, valid, maximal, _joinIdentity⟩ :=
+              (inputs.get (K .sparseUpperEnvelope)).down
+            let activation := Graph.recordSparsePairDEBlocker
+              (Graph.pairResponseActivation active)
+              (inputs.current.object.portPairSchedule data.threshold) certificate
+            have pairCard : certificate.choose.card = 2 :=
+              Graph.card_of_mem_portPairSchedule inputs.current.object data.threshold
+                certificate.choose_spec.1
+            have pairNonempty : certificate.choose.Nonempty :=
+              Finset.card_pos.mp (by omega : 0 < certificate.choose.card)
+            let port := pairNonempty.choose
+            letI : Nonempty inputs.current.object.Vertex := ⟨port.1⟩
+            have graphConnected : inputs.current.object.graph.Connected := by
+              classical
+              let root : inputs.current.object.Vertex := port.1
+              let support : Finset inputs.current.object.Vertex :=
+                inputs.current.object.vertexFinset.filter fun vertex =>
+                  inputs.current.object.graph.connectedComponentMk vertex =
+                    inputs.current.object.graph.connectedComponentMk root
+              by_contra disconnected
+              have rootMem : root ∈ support := by
+                simp [support]
+              have supportCardLt : support.card < inputs.current.object.vertexCount := by
+                have notAllReachable :
+                    ¬ ∀ vertex : inputs.current.object.Vertex,
+                      inputs.current.object.graph.Reachable root vertex := by
+                  intro allReachable
+                  apply disconnected
+                  exact inputs.current.object.graph.connected_iff_exists_forall_reachable.mpr
+                    ⟨root, allReachable⟩
+                push Not at notAllReachable
+                rcases notAllReachable with ⟨outside, unreachable⟩
+                have outsideNotMem : outside ∉ support := by
+                  simp only [support, Finset.mem_filter,
+                    inputs.current.object.mem_vertexFinset, true_and,
+                    SimpleGraph.ConnectedComponent.eq]
+                  exact fun reachable => unreachable reachable.symm
+                have strict : support ⊂ inputs.current.object.vertexFinset := by
+                  refine Finset.ssubset_iff_subset_ne.mpr ⟨?_, ?_⟩
+                  · intro vertex _
+                    exact inputs.current.object.mem_vertexFinset vertex
+                  · intro equal
+                    exact outsideNotMem
+                      (equal ▸ inputs.current.object.mem_vertexFinset outside)
+                simpa only [inputs.current.object.card_vertexFinset] using
+                  Finset.card_lt_card strict
+              let component : Graph.ProperSubgraph inputs.current.object :=
+                Graph.ProperSubgraph.ofInducedSupport inputs.current.object support
+                  supportCardLt
+              letI : Nonempty component.value.Vertex := ⟨⟨root, rootMem⟩⟩
+              have neighborSubset
+                  (vertex : component.value.Vertex) :
+                  inputs.current.object.graph.neighborSet vertex.1 ⊆
+                    (support : Set inputs.current.object.Vertex) := by
+                intro neighbor adjacent
+                change neighbor ∈ support
+                simp only [support, Finset.mem_filter,
+                  inputs.current.object.mem_vertexFinset, true_and,
+                  SimpleGraph.ConnectedComponent.eq]
+                exact (show inputs.current.object.graph.Adj vertex.1 neighbor from
+                  adjacent).reachable.symm.trans (by
+                    simpa only [support, Finset.mem_filter,
+                      inputs.current.object.mem_vertexFinset, true_and,
+                      SimpleGraph.ConnectedComponent.eq] using vertex.2)
+              have componentMinimumDegree :
+                  data.threshold ≤ component.value.minDegree := by
+                apply component.value.le_minDegree_of_forall_le_degree data.threshold
+                intro vertex
+                rw [show component.value.degree vertex =
+                    inputs.current.object.degree vertex.1 from
+                  inputs.current.object.degree_induce_of_neighborSet_subset
+                    support vertex (neighborSubset vertex)]
+                exact inputs.current.baseline.trans
+                  (inputs.current.object.minDegree_le_degree vertex.1)
+              exact (inputs.get (K .noProperBaseline)).down component
+                componentMinimumDegree
+            have connectedOn :
+                Graph.SupportComponents.Connected.ConnectedOn
+                  inputs.current.object inputs.current.object.vertexFinset := by
+              letI := inputs.current.object.vertices.decEq
+              constructor
+              · exact ⟨port.1, inputs.current.object.mem_vertexFinset _⟩
+              · intro left right _ _
+                obtain ⟨walk⟩ := graphConnected.preconnected left right
+                let path := walk.toPath
+                exact ⟨path, path.isPath, fun vertex _ =>
+                  inputs.current.object.mem_vertexFinset vertex⟩
+            have pairSupportSome :=
+              Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+                (Graph.pairResponseActivation active) certificate.choose connectedOn
+            obtain ⟨pairSupport, pairSupportEq⟩ :=
+              Option.isSome_iff_exists.mp pairSupportSome
+            letI := inputs.current.object.vertices.decEq
+            have pairSupportNonempty : pairSupport.Nonempty :=
+              (Graph.FiniteObject.DemandActivation.pairSupport_mem_candidates
+                pairSupportEq).2.1
+            have coordinateNonempty :
+                (Graph.DeclaredSignature.Coordinate.support
+                  (Graph.sparsePairDECoordinate
+                    (Graph.pairResponseActivation active)
+                    (inputs.current.object.portPairSchedule data.threshold)
+                    certificate)).Nonempty := by
+              letI := inputs.current.object.vertices.decEq
+              simpa [Graph.sparsePairDECoordinate, pairSupportEq] using
+                pairSupportNonempty
+            let presentation : inputs.current.object.CarrierPresentation
+                inputs.current.object.PairCoordinate
+                PEmpty := {
+              coordinateSupport := by
+                letI := inputs.current.object.vertices.decEq
+                exact Graph.DeclaredSignature.Coordinate.support
+              chordEnds := PEmpty.elim
+              chordPort := PEmpty.elim }
+            have carried : ∀ pair ∈
+                inputs.current.object.portPairSchedule data.threshold,
+                ∀ blocker ∈ activation.blockers pair,
+                  (Graph.FiniteObject.Blocker.carrier inputs.current.object
+                    data.threshold presentation.coordinateSupport
+                    presentation.chordPort blocker).isSome := by
+              classical
+              intro pair _pairMem blocker blockerMem
+              cases blocker with
+              | sharedDeclaredSupport item =>
+                  cases item <;> rfl
+              | sharedReturnSupport item =>
+                  cases item <;> rfl
+              | sharedLocalBuffer _ => rfl
+              | boundaryProfile coordinate =>
+                  have coordinateMem :
+                      coordinate ∈ activation.profileObstructions pair := by
+                    simpa [Graph.FiniteObject.DemandActivation.blockers] using
+                      blockerMem
+                  have coordinateEq : coordinate =
+                      Graph.sparsePairDECoordinate
+                        (Graph.pairResponseActivation active)
+                        (inputs.current.object.portPairSchedule data.threshold)
+                        certificate := by
+                    simp only [activation, Graph.recordSparsePairDEBlocker] at coordinateMem
+                    split at coordinateMem
+                    · simpa using coordinateMem
+                    · simp at coordinateMem
+                  subst coordinate
+                  rw [Graph.FiniteObject.Blocker.carrier]
+                  simp only [Option.isSome_map, List.isSome_head?]
+                  exact List.ne_nil_of_mem (by
+                    simpa [presentation] using coordinateNonempty.choose_spec)
+              | targetResponse coordinate =>
+                  have coordinateMem :
+                      coordinate ∈ activation.responseObstructions pair := by
+                    simpa [Graph.FiniteObject.DemandActivation.blockers] using
+                      blockerMem
+                  have coordinateEq : coordinate =
+                      Graph.sparsePairDECoordinate
+                        (Graph.pairResponseActivation active)
+                        (inputs.current.object.portPairSchedule data.threshold)
+                        certificate := by
+                    simp only [activation, Graph.recordSparsePairDEBlocker] at coordinateMem
+                    split at coordinateMem
+                    · simpa using coordinateMem
+                    · simp at coordinateMem
+                  subst coordinate
+                  rw [Graph.FiniteObject.Blocker.carrier]
+                  simp only [Option.isSome_map, List.isSome_head?]
+                  exact List.ne_nil_of_mem (by
+                    simpa [presentation] using coordinateNonempty.choose_spec)
+              | arithmeticChordSet chords =>
+                  have chordMem :
+                      chords ∈ activation.chordObstructions pair := by
+                    simpa [Graph.FiniteObject.DemandActivation.blockers] using
+                      blockerMem
+                  change chords ∈ (Graph.pairResponseActivation active).chordObstructions pair at chordMem
+                  change chords ∈ ∅ at chordMem
+                  simpa using chordMem
+            have baseline : ∀ vertex : inputs.current.object.Vertex,
+                data.threshold ≤ inputs.current.object.degree vertex :=
+              fun vertex => le_trans inputs.current.baseline
+                (inputs.current.object.minDegree_le_degree vertex)
+            have handshake : data.threshold * inputs.current.object.vertexCount ≤
+                2 * inputs.current.object.edgeCount :=
+              Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
+                inputs.current.object data.threshold baseline
+            refine ⟨inputs.current.object.PairCoordinate,
+              PEmpty, activation, presentation,
+              packing, valid, maximal, ⟨?_, ?_⟩, ?_⟩
+            · exact inputs.current.object.card_primitiveCarrier baseline
+            · exact inputs.current.object.card_primitiveCarrier_le baseline
+                data.three_le_threshold handshake envelope
+            · refine ⟨inputs.current.object.card_capacityTokens_add_internalMass
+                  valid baseline, ?_, ?_, ?_, ?_, ?_⟩
+              · exact inputs.current.object.card_capacityTokens_le valid baseline
+                  data.three_le_threshold handshake envelope data.windowOrder_pos
+                  data.joinSlack
+              · intro pair token charged
+                exact Graph.FiniteObject.capacityCharge_mem_capacityTokens
+                  activation presentation data.threshold packing charged
+              · rw [← Graph.FiniteObject.capacityTokenOrder_toFinset
+                    (object := inputs.current.object) (threshold := data.threshold)
+                    (packing := packing)]
+                exact Graph.FiniteObject.card_chargedPairs_eq_sum_load
+                  activation presentation data.threshold packing
+              · exact ⟨carried,
+                  Graph.FiniteObject.chargedPairs_eq_blockedPairs
+                    activation presentation data.threshold packing carried⟩
+              · have rolePartition : ∀ token :
+                    Graph.FiniteObject.CapacityToken inputs.current.object,
+                    (Graph.FiniteObject.tokenFibre activation presentation
+                      data.threshold packing token).card =
+                      ∑ role : Graph.SameTokenBlockerRoles.Role,
+                        (Graph.FiniteObject.tokenRoleFibre activation presentation
+                          data.threshold packing token role).card :=
+                    fun token =>
+                      Graph.FiniteObject.card_tokenFibre_eq_sum_roleFibre
+                        activation presentation data.threshold packing token
+                refine ⟨rolePartition, ?_, ?_⟩
+                · rw [← Graph.FiniteObject.chargedPairs_eq_blockedPairs
+                      activation presentation data.threshold packing carried]
+                  rw [← Graph.FiniteObject.capacityTokenOrder_toFinset
+                    (object := inputs.current.object) (threshold := data.threshold)
+                    (packing := packing)]
+                  rw [Graph.FiniteObject.card_chargedPairs_eq_sum_load
+                    activation presentation data.threshold packing]
+                  apply Finset.sum_congr rfl
+                  intro token _tokenMem
+                  exact rolePartition token
+                · intro token
+                  exact ⟨Graph.FiniteObject.tokenFibre_subset activation presentation
+                      data.threshold packing token,
+                    fun pair member =>
+                      Graph.FiniteObject.card_of_mem_tokenFibre activation presentation
+                        data.threshold packing member,
+                    Graph.FiniteObject.card_tokenFibre_eq_pairMultiplicity activation
+                      presentation data.threshold packing token⟩⟩)
+        .nil)
 
 end Hypostructure.Graph.Strategy.Spine

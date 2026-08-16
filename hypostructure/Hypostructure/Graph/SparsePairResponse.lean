@@ -36,9 +36,9 @@ Every clause is built here from an object the framework already owns.
   boundaried over.
 * `r_π` is a base coordinate of `def:declared-coordinate-signature` at kind
   `sparseSurplus`, which is clause (D7)'s own name for *"sparse surplus-pair
-  response coordinates"*, with label `π` and support `X_π`.  Its value is not a
-  field: `def:exact-response-profile` reads a value off a realization, and the
-  rank calculus of `Core.TargetRank` is where that reading happens.
+  response coordinates"*, with label `π` and support `X_π`.  The manuscript
+  does not give a formula for its pair-specific value, so this file does not
+  replace it by the coordinate-insensitive global target predicate.
 * The manuscript's closing sentence — each `r_π` viewed inside
   `ρ^ex_{∂X_Π}(X_Π)` by restriction — is `support_restrict_pairCoordinate`
   below, a proved equation between the declared support of the (D7) coordinate
@@ -153,9 +153,9 @@ noncomputable def pairBoundary (object : FiniteObject.{u})
 and whose support is `X_π`.
 
 Its kind is clause (D7), which is `def:declared-coordinate-signature`'s own name
-for *"sparse surplus-pair response coordinates"*.  The value is not recorded on
-the coordinate: `def:exact-response-profile` reads a value off a realization,
-and `Core.TargetRank.RankQuotient.value` is that reading. -/
+for *"sparse surplus-pair response coordinates"*.  The coordinate currently
+owns only its declared label and support; the pair-specific `val_X(r_π)` remains
+an explicit missing component of `def:sparse-pair-response`. -/
 def pairCoordinate (label : Finset (object.Vertex × object.Vertex))
     (support : Finset object.Vertex) : PairCoordinate object :=
   .base .sparseSurplus label support

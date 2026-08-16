@@ -189,10 +189,10 @@ The ledger takes only `selection` and `fanCertificateCap`, and
 
 ## Audit
 
-`EG_STRATEGYDAG_AUDIT.md` marks rows 52–61 ✅ on all four columns, including
-row 59 (`boundedGerm_not_survives`) and row 61
-(`coldBranch_no_terminal_survivor`). Those cells do not reflect the gap above.
-Rewrite them from fresh evidence in the same change that closes the branch.
+The paper-label and node rows for `[145]`–`[157]` in
+`Assembly_node_audit.md` must be rewritten from fresh evidence in the same change that
+closes the branch. Update both tables together; do not record progress in a separate
+audit narrative.
 
 ## Working rule
 

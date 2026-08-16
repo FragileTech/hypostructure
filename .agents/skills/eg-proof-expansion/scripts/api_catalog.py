@@ -251,7 +251,7 @@ def validate_root(root: Path) -> Path:
         root / "hypostructure/Hypostructure/Canonical/WebExport.lean",
         root / CATALOG_REL,
         root / "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean",
-        root / "EG_STRATEGYDAG_AUDIT.md",
+        root / "Assembly_node_audit.md",
         root / "to_formalize/original_erdos_64_proof.tex",
     )
     missing = [str(path) for path in required if not path.is_file()]

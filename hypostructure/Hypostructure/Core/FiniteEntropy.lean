@@ -84,6 +84,21 @@ theorem two_pow_le_card_ambient_of_realizes {Ambient State : Type*} [Finite Ambi
     2 ^ k ≤ Nat.card Ambient :=
   realizes.trans (card_range_le_card_ambient stateOf)
 
+/-- A canonically realized family of `k` independent Boolean coordinates
+consumes at least `2 ^ k` ambient states, and hence at least `k` binary digits
+of ambient entropy.  The realization premise is the exact mathematical content
+of independent target-testability; the two conclusions are respectively its
+cardinality and logarithmic readings. -/
+theorem canonicalRealizedStateEntropy {Ambient State : Type*} [Finite Ambient]
+    (stateOf : Ambient → State) {k : Nat}
+    (realizes : 2 ^ k ≤ Nat.card (Set.range stateOf)) :
+    2 ^ k ≤ Nat.card Ambient ∧ k ≤ Nat.log2 (Nat.card Ambient) := by
+  have cardinality : 2 ^ k ≤ Nat.card Ambient :=
+    two_pow_le_card_ambient_of_realizes stateOf realizes
+  refine ⟨cardinality, ?_⟩
+  simpa only [Nat.log2_eq_log_two] using
+    Nat.le_log_of_pow_le (b := 2) (by omega) cardinality
+
 /-! ## Labelled skeleton budget
 
 `lem:skeleton-dominates`'s formula `|G_{n,m}| = \binom{\binom n2}{m}` is an

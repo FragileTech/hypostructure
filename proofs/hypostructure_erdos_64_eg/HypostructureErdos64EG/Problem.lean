@@ -3,7 +3,7 @@ import Mathlib.Combinatorics.SimpleGraph.Paths
 import Hypostructure.Graph.MinimumDegreeCycleTarget
 import Hypostructure.Graph.ReceiverLoad
 import Hypostructure.Graph.SameTokenBlockerRoles
-import Hypostructure.Graph.Strategy.SurplusRun
+import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Core.CeilSqrt
 import Hypostructure.Core.DyadicLength
 import HypostructureErdos64EG.WindowAlgebra
@@ -145,10 +145,15 @@ fields are either problem constants or proofs derived directly from those
 constants; there is no application-owned executor, router, or proof ledger. -/
 noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   threshold := erdosReceiverLoadProfile.baselineDegree
+  threshold_eq_three := by norm_num [erdosReceiverLoadProfile]
   three_le_threshold := by norm_num [erdosReceiverLoadProfile]
   LengthOK := PowerOfTwoLength
   windowOrder := inducedPathOrder
   windowOrder_pos := by norm_num [inducedPathOrder]
+  labelCount := WindowAlgebra.labels_enumeration.1
+  labelSizeDistribution := by
+    rw [WindowAlgebra.labels_enumeration.2]
+    rfl
   freeForcesTarget := fun object baseline free =>
     externalHasCycleWithLength
       (fun _length witness => Core.DyadicLength.powerOfTwoLength_of_exists witness)
@@ -184,6 +189,9 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
       Graph.SameTokenBlockerRoles.card_blockerKind,
       Graph.SameTokenBlockerRoles.card_tokenSubtype]
     norm_num
+  coldSignature := Graph.ColdCorridor.declaredSignature inducedPathOrder
+    (by norm_num [inducedPathOrder])
+  coldSignature_windowOrder := rfl
   surplusScale := surplusScaleCoefficient
   windowRate := FiniteChecks.P13Barrier.windowRate
   windowBarrier :=
@@ -218,9 +226,6 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   entropyDenominator_pos := by norm_num [erdosReceiverLoadProfile]
   dischargeScale := erdosReceiverLoadProfile.loadMultiplier
   dischargeScale_pos := by norm_num [erdosReceiverLoadProfile]
-  coldSignature := Graph.ColdCorridor.declaredSignature inducedPathOrder
-    (by norm_num [inducedPathOrder])
-  coldSignature_windowOrder := rfl
   bridgeMassFactor := 8
   bridgeMassSlack := by norm_num [erdosReceiverLoadProfile]
 

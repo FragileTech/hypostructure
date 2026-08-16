@@ -57,18 +57,14 @@ noncomputable def receiverRouting
       selected typeALowSurplusKeys) :
     ExactLedger (Input BranchState Presentation presentation data) selected
       typeAReceiverRoutingKeys :=
-  (typeAReceiverRoutingRow (K .remainderNormalized) (K .typeAReceiverRouting)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)).run history (by simp)
+  (typeAReceiverRoutingRow (data := data)).run history
+    (by simp [typeAReceiverRoutingRow])
 
 /-- **The row's declared output is exactly the routing key.**  A row that
 committed a second fact, or none, would not have this manifest. -/
 example :
     (typeAReceiverRoutingRow (BranchState := BranchState)
-        (presentation := presentation) (data := data)
-        (K .remainderNormalized) (K .typeAReceiverRouting)
-        (fun _input fact => fact.down)
-        (fun _input value => ⟨value⟩)).manifest.Produces =
+        (presentation := presentation) (data := data)).manifest.Produces =
       [K .typeAReceiverRouting] :=
   rfl
 

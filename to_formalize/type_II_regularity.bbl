@@ -1,0 +1,105 @@
+\begin{thebibliography}{CKN82}
+
+\bibitem[Aub63]{Aubin1963}
+Jean-Pierre Aubin.
+\newblock Un th{\'e}or{\`e}me de compacit{\'e}.
+\newblock {\em Comptes Rendus de l'Acad{\'e}mie des Sciences de Paris},
+  256:5042--5044, 1963.
+
+\bibitem[BL83]{BrezisLieb1983}
+Ha{\"i}m Brezis and Elliott~H. Lieb.
+\newblock A relation between pointwise convergence of functions and convergence
+  of functionals.
+\newblock {\em Proceedings of the American Mathematical Society},
+  88(3):486--490, 1983.
+
+\bibitem[CF88]{ConstantinFoias1988}
+Peter Constantin and Ciprian Foias.
+\newblock {\em Navier--Stokes Equations}.
+\newblock University of Chicago Press, Chicago, 1988.
+
+\bibitem[CKN82]{CaffarelliKohnNirenberg1982}
+Luis Caffarelli, Robert Kohn, and Louis Nirenberg.
+\newblock Partial regularity of suitable weak solutions of the navier--stokes
+  equations.
+\newblock {\em Communications on Pure and Applied Mathematics}, 35(6):771--831,
+  1982.
+
+\bibitem[CZ52]{CalderonZygmund1952}
+Alberto~P. Calderon and Antoni Zygmund.
+\newblock On the existence of certain singular integrals.
+\newblock {\em Acta Mathematica}, 88:85--139, 1952.
+
+\bibitem[ESS03]{EscauriazaSereginSverak2003}
+Luis Escauriaza, Gregory Seregin, and Vladimir Sverak.
+\newblock {$L_{3,\infty}$}-solutions of navier--stokes equations and backward
+  uniqueness.
+\newblock {\em Russian Mathematical Surveys}, 58(2):211--250, 2003.
+
+\bibitem[Gal01]{Gallagher2001}
+Isabelle Gallagher.
+\newblock Profile decomposition for solutions of the navier--stokes equations.
+\newblock {\em Bulletin de la Soci{\'e}t{\'e} Math{\'e}matique de France},
+  129(2):285--316, 2001.
+
+\bibitem[Kat84]{Kato1984}
+Tosio Kato.
+\newblock Strong {$L^p$}-solutions of the navier--stokes equation in {$\mathbb
+  R^m$}, with applications to weak solutions.
+\newblock {\em Mathematische Zeitschrift}, 187:471--480, 1984.
+
+\bibitem[Lad69]{Ladyzhenskaya1969}
+Olga~A. Ladyzhenskaya.
+\newblock {\em The Mathematical Theory of Viscous Incompressible Flow}.
+\newblock Gordon and Breach, New York, 1969.
+
+\bibitem[Ler34]{Leray1934}
+Jean Leray.
+\newblock Sur le mouvement d'un liquide visqueux emplissant l'espace.
+\newblock {\em Acta Mathematica}, 63:193--248, 1934.
+
+\bibitem[Lin98]{Lin1998}
+Fanghua Lin.
+\newblock A new proof of the caffarelli-kohn-nirenberg theorem.
+\newblock {\em Communications on Pure and Applied Mathematics}, 51(3):241--257,
+  1998.
+
+\bibitem[LM72]{LionsMagenes1972}
+Jacques-Louis Lions and Enrico Magenes.
+\newblock {\em Non-Homogeneous Boundary Value Problems and Applications. Vol.
+  I}.
+\newblock Springer, Berlin, 1972.
+
+\bibitem[LR02]{LemarieRieusset2002}
+Pierre~Gilles Lemari{\'e}-Rieusset.
+\newblock {\em Recent Developments in the Navier--Stokes Problem}.
+\newblock Chapman and Hall/CRC, Boca Raton, FL, 2002.
+
+\bibitem[NR{\v S}96]{NecasRuzickaSverak1996}
+Jind{\v r}ich Ne{\v c}as, Michael R{\r u}{\v z}i{\v c}ka, and Vladimir {\v
+  S}ver{\'a}k.
+\newblock On leray's self-similar solutions of the navier--stokes equations.
+\newblock {\em Acta Mathematica}, 176(2):283--294, 1996.
+
+\bibitem[Sch76]{Scheffer1976}
+Vladimir Scheffer.
+\newblock Partial regularity of solutions to the navier-stokes equations.
+\newblock {\em Pacific Journal of Mathematics}, 66(2):535--552, 1976.
+
+\bibitem[Sim87]{Simon1987}
+Jacques Simon.
+\newblock Compact sets in the space {$L^p(0,T;B)$}.
+\newblock {\em Annali di Matematica Pura ed Applicata}, 146:65--96, 1987.
+
+\bibitem[Ste70]{Stein1970}
+Elias~M. Stein.
+\newblock {\em Singular Integrals and Differentiability Properties of
+  Functions}.
+\newblock Princeton University Press, Princeton, NJ, 1970.
+
+\bibitem[Tem77]{Temam1977}
+Roger Temam.
+\newblock {\em Navier--Stokes Equations: Theory and Numerical Analysis}.
+\newblock North-Holland, Amsterdam, 1977.
+
+\end{thebibliography}

@@ -1,4 +1,6 @@
 import Hypostructure.Graph.ColdCorridor
+import Hypostructure.Graph.WindowPacking
+import Hypostructure.Graph.BoundaryDemand
 
 /-!
 # The first failure of a cold return corridor
@@ -890,65 +892,6 @@ section Routing
 
 variable {S : DeclaredSignature} {order : Nat}
 variable {Baseline Target : Graph.FiniteObject.{u} → Prop}
-
-/-! **(v) "case (F5) is a cold bounded germ".**
-
-The first-failure cold exchange is the whole terminal corridor in the first
-subcase and the support between the two equal states in the second, and its size
-is bounded by `M_cold` -- `Corridor.exchange_card_le`, proved where the
-dichotomy is.  With the two boundary interfaces, themselves bounded by
-`Corridor.activeInterface_card_le`, that is `def:cold-bounded-germ`'s "the
-number of internal vertices and all boundary data are bounded by the fixed
-finite cut-state constant", which is what makes the germ types finite.  Neither
-bound is restated here. -/
-
-/-- **`lem:cold-corridor-first-failure` (v): "case (F5) is a cold bounded germ in
-the sense of `def:cold-bounded-germ`".**
-
-The (F5) exchange is a bounded connected proper support of the object -- the
-whole terminal corridor in the first subcase, the span between the two equal
-states in the second -- and `def:cold-bounded-germ` reads it as a germ at that
-support: `Q[x,y]` is the support's own boundary piece, and the germ carries the
-recorded profile.
-
-`baseline` is the object's own: the support's piece glued back to its own
-outside context *is* the object, by the decomposition's reconstruction
-isomorphism, so the standing baseline transports rather than being re-proved.
-Nothing here re-derives the corridor bounds -- `exchange_card_le` and
-`activeInterface_card_le` are where they live. -/
-noncomputable def firstFailureGerm
-    (baselineInvariant : Graph.FiniteObject.IsomorphismInvariant Baseline)
-    (support : Finset object.Vertex)
-    (connected : Graph.SupportComponents.Connected.ConnectedOn object support)
-    (proper : ∃ vertex, vertex ∉ support)
-    (baseline : Baseline object)
-    (record : Record S) :
-    BoundedGerm S Baseline Target object where
-  support := support
-  connected := connected
-  proper := proper
-  canonical := (rowAtom object support connected proper).piece
-  sameProfile := rfl
-  baseline :=
-    (baselineInvariant.iff_of_iso
-      ⟨(rowAtom object support connected proper).reconstructionIso⟩).mpr baseline
-  record := record
-
-/-- The germ `firstFailureGerm` reads off an (F5) exchange is equal-length: its
-two representatives are the same strand, so `δ = 0`.  That is
-`def:cold-bounded-germ`'s equal-length case, the one
-`def:cold-same-interface-table` tabulates -- not a length-changing germ. -/
-@[simp] theorem firstFailureGerm_increment
-    (baselineInvariant : Graph.FiniteObject.IsomorphismInvariant Baseline)
-    (support : Finset object.Vertex)
-    (connected : Graph.SupportComponents.Connected.ConnectedOn object support)
-    (proper : ∃ vertex, vertex ∉ support)
-    (baseline : Baseline object)
-    (record : Record S) :
-    (firstFailureGerm (Target := Target) baselineInvariant support connected
-      proper baseline record).increment = 0 := by
-  unfold BoundedGerm.increment
-  simp [firstFailureGerm, BoundedGerm.piece, BoundedGerm.atom]
 
 end Routing
 
