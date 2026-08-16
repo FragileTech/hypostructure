@@ -1687,6 +1687,25 @@ code {
   font-weight: 600;
 }
 
+.methodology-part h4 {
+  margin: 0 0 10px;
+  font-family: var(--serif);
+  font-size: 17.5px;
+  font-weight: 600;
+}
+
+.methodology-part .methodology-part {
+  margin-top: 30px;
+}
+
+.methodology-rail ul ul {
+  margin: 1px 0 6px 12px;
+}
+
+.methodology-rail ul ul button {
+  font-size: 13px;
+}
+
 .methodology-part p {
   margin: 0 0 12px;
   max-width: 72ch;
@@ -1706,6 +1725,34 @@ code {
   margin: 4px 0 14px;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+/* The eight coordinates of a branch state. */
+.methodology-state {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 8px 22px;
+  margin: 4px 0 16px;
+}
+
+.methodology-state > div {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.methodology-state dt {
+  font-size: 15px;
+}
+
+.methodology-state dd {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-muted);
 }
 
 .methodology-cycle {
@@ -1850,6 +1897,31 @@ code {
   text-decoration: none;
   padding: 1px 7px;
   font-size: 11px;
+}
+
+.methodology-figure {
+  margin: 8px 0 22px;
+  overflow-x: auto;
+}
+
+.methodology-figure svg {
+  display: block;
+  width: 100%;
+  min-width: 620px;
+  max-width: 780px;
+  height: auto;
+}
+
+.methodology-figure figcaption {
+  margin-top: 8px;
+  max-width: 72ch;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.methodology-repairs .methodology-steps {
+  margin-top: 8px;
 }
 
 .methodology-move-origin {

@@ -87,7 +87,7 @@ export function AppShell() {
   const mark = proof
     ? { glyph: proof.glyph, name: proof.name, hint: "a walk through the proof" }
     : onDocs
-      ? { glyph: "λ", name: "Lean Framework", hint: "the framework reference" }
+      ? { glyph: "λ", name: "Hypostructure", hint: "the framework reference" }
       : { glyph: "∎", name: "Proof explorer", hint: "pick a proof to walk through" };
 
   return (
