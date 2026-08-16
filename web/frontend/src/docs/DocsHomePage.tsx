@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import { L, LeanCode } from "./LeanCode";
 import { DOCS_GROUPS, DOCS_PAGES, docsPath } from "./registry";
 
-/** The front page of the Lean Framework section. */
+/** The front page of the Hypostructure section. */
 export function DocsHomePage() {
   return (
     <article className="docs-article docs-home">
       <header className="hero hero-compact">
-        <p className="hero-eyebrow">Lean Framework</p>
+        <p className="hero-eyebrow">Hypostructure</p>
         <h1>The hypostructure framework</h1>
         <p className="hero-lead">
           Hypostructure is a Lean 4 library for writing structural exhaustion

@@ -6,7 +6,7 @@ import { DOCS_GROUPS, DOCS_PAGES, DOCS_ROOT, docsPath } from "./registry";
 export function DocsLayout() {
   return (
     <div className="page page-docs">
-      <nav className="docs-rail" aria-label="Framework docs">
+      <nav className="docs-rail" aria-label="Hypostructure docs">
         <p className="docs-rail-lead">
           The reference for formalizing structural exhaustion proofs with the
           hypostructure framework.

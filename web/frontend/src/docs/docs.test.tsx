@@ -1,5 +1,5 @@
 /**
- * The Lean Framework section: its rail, its pages, and the Lean highlighter
+ * The Hypostructure section: its rail, its pages, and the Lean highlighter
  * the pages are typeset with.
  */
 
@@ -30,7 +30,7 @@ function show(path: string) {
 describe("the framework docs", () => {
   it("lists every page in the rail, and the overview first", () => {
     show("/lean");
-    const rail = screen.getByRole("navigation", { name: "Framework docs" });
+    const rail = screen.getByRole("navigation", { name: "Hypostructure docs" });
     const links = within(rail).getAllByRole("link");
     expect(links[0]).toHaveTextContent("Overview");
     expect(links[0]).toHaveClass("is-current");
@@ -44,7 +44,7 @@ describe("the framework docs", () => {
 
   it("heads the rail with every group", () => {
     show("/lean");
-    const rail = screen.getByRole("navigation", { name: "Framework docs" });
+    const rail = screen.getByRole("navigation", { name: "Hypostructure docs" });
     for (const group of DOCS_GROUPS) {
       expect(within(rail).getByRole("heading", { level: 2, name: group.title })).toBeInTheDocument();
     }
@@ -66,7 +66,7 @@ describe("the framework docs", () => {
     (slug, title) => {
       show(`/lean/${slug}`);
       expect(screen.getByRole("heading", { level: 1, name: title })).toBeInTheDocument();
-      const rail = screen.getByRole("navigation", { name: "Framework docs" });
+      const rail = screen.getByRole("navigation", { name: "Hypostructure docs" });
       expect(within(rail).getByRole("link", { name: title })).toHaveClass("is-current");
     },
   );

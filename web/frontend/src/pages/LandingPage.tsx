@@ -51,11 +51,13 @@ export function LandingPage() {
           λ
         </span>
         <div>
-          <h2>Lean Framework</h2>
+          <h2>Hypostructure</h2>
           <p>
             The reference for formalizing structural exhaustion proofs in Lean
-            with the hypostructure framework: the ledger that carries a branch,
-            how steps read and write facts, and the API as it stands.
+            with the Hypostructure framework: the ledger that carries a branch,
+            how a problem is defined, how steps, decisions and closures
+            assemble into the theorem, and every public declaration as it
+            stands.
           </p>
         </div>
         <Link to={DOCS_ROOT} className="button">

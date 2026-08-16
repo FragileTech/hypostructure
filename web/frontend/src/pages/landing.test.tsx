@@ -31,10 +31,10 @@ describe("the landing page", () => {
     }
   });
 
-  it("points at the Lean Framework docs", () => {
+  it("points at the Hypostructure docs", () => {
     show();
     expect(screen.getByRole("link", { name: "Read the docs" })).toHaveAttribute("href", "/lean");
-    expect(screen.getByRole("heading", { level: 2, name: "Lean Framework" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "Hypostructure" })).toBeInTheDocument();
   });
 
   it("presents the methodology under its own heading", () => {
@@ -158,6 +158,7 @@ describe("the landing page", () => {
 
   it("links every step it names to a real one, in the right proof", () => {
     show();
+    const section = document.getElementById("methodology")!;
     const part = document.getElementById(partAnchor("moves"))!;
     const table = within(part).getByRole("table");
     const rows = within(table).getAllByRole("row");
@@ -167,8 +168,8 @@ describe("the landing page", () => {
       const raw = readFileSync(resolve(process.cwd(), "public", "data", `${proof.slug}.json`), "utf8");
       known[proof.slug] = new Set((JSON.parse(raw).nodes as { id: string }[]).map((n) => n.id));
     }
-    const links = Array.from(table.querySelectorAll("a.chip-node"));
-    expect(links.length).toBeGreaterThan(60);
+    const links = Array.from(section.querySelectorAll("a.chip-node"));
+    expect(links.length).toBeGreaterThan(80);
     for (const link of links) {
       const match = link.getAttribute("href")!.match(/^\/(erdos-gyarfas|navier-stokes)\/explore\?step=(.+)$/);
       expect(match, link.getAttribute("href") ?? "").not.toBeNull();
@@ -179,6 +180,30 @@ describe("the landing page", () => {
     // Every move is used somewhere in at least one proof.
     for (const row of rows.slice(1)) {
       expect(row.querySelectorAll("a.chip-node").length).toBeGreaterThan(0);
+    }
+  });
+
+  it("shows how a failed step is repaired, with three worked repairs", () => {
+    show();
+    const part = document.getElementById(partAnchor("repair"))!;
+    const figure = part.querySelector("svg[role='img']")!;
+    expect(figure).not.toBeNull();
+    expect(figure.querySelector("title")?.textContent).toMatch(/repaired/);
+    const kinds = Array.from(part.querySelectorAll("dt")).map((dt) => dt.textContent);
+    expect(kinds).toEqual([
+      "A compactness claim on too small a state",
+      "An estimate missing a hypothesis",
+      "A budget used outside its regime",
+    ]);
+    for (const entry of part.querySelectorAll("dd")) {
+      const labels = Array.from(entry.querySelectorAll("p > em:first-child")).map((em) => em.textContent);
+      expect(labels).toEqual([
+        "What red-teaming found.",
+        "The hypothesis it exposed.",
+        "The repair.",
+        "What was left untouched.",
+      ]);
+      expect(entry.querySelectorAll("a.chip-node").length).toBeGreaterThan(3);
     }
   });
 
@@ -216,8 +241,40 @@ describe("the landing page", () => {
     for (const part of METHODOLOGY_PARTS) {
       const target = document.getElementById(partAnchor(part.id));
       expect(target, part.id).not.toBeNull();
-      expect(within(target!).getByRole("heading", { level: 3 })).toHaveTextContent(part.title);
+      const level = "parent" in part ? 4 : 3;
+      const heading = target!.querySelector(`h${level}`);
+      expect(heading, `${part.id} heading`).not.toBeNull();
+      expect(heading).toHaveTextContent(part.title);
+      if ("parent" in part) {
+        // A subsection sits inside its parent's article and after its heading.
+        expect(document.getElementById(partAnchor(part.parent))!.contains(target)).toBe(true);
+      }
     }
+  });
+
+  it("opens with the philosophy and its three currencies, then the language-model design", () => {
+    show();
+    const order = METHODOLOGY_PARTS.map((part) => document.getElementById(partAnchor(part.id))!);
+    for (let index = 1; index < order.length; index += 1) {
+      // Document order follows reading order.
+      expect(order[index - 1].compareDocumentPosition(order[index]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    }
+    const ids = METHODOLOGY_PARTS.map((part) => part.id);
+    expect(ids.slice(0, 7)).toEqual([
+      "philosophy",
+      "constraint",
+      "quantity",
+      "compression",
+      "llm",
+      "mechanisms",
+      "controls",
+    ]);
+    const rail = screen.getByRole("navigation", { name: "The methodology" });
+    // Subsections are nested under their parent in the rail.
+    const nested = Array.from(rail.querySelectorAll("ul ul button")).map((b) => b.textContent);
+    expect(nested).toEqual(
+      METHODOLOGY_PARTS.filter((part) => "parent" in part).map((part) => part.title),
+    );
   });
 
   it("scrolls to a part from its rail entry, and marks exactly one part current", () => {

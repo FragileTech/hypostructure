@@ -1,5 +1,5 @@
 /**
- * The Lean Framework documentation: which pages exist, in reading order, and
+ * The Hypostructure documentation: which pages exist, in reading order, and
  * how they group in the rail. Every page is hand-written TSX under
  * `content/`; adding one is an entry here and a file there.
  */

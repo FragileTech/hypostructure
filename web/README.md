@@ -29,16 +29,18 @@ names and Erdős panel summaries in `web/tools/papers/`; the landing page's
 condensed reading of `to_formalize/structural_exhaustion.tex` — the account of
 Structural Exhaustion, the method both proofs were built with — together with
 a table of the proof moves, drawn from the tactic library of
-`branch_closure_methodology_extended.tex` and each proof's chapter 1; and the *Lean
-Framework* documentation under `frontend/src/docs/`, described below. The
+`branch_closure_methodology_extended.tex` and each proof's chapter 1, and an
+account of red-teaming and repair built on three repairs read from the
+manuscripts' history; and the *Hypostructure*
+documentation under `frontend/src/docs/`, described below. The
 Navier–Stokes panel summaries are the manuscripts' own — they live in each
 paper's *Diagram map*, so improving them there improves both the paper and this
 site.
 
-## The Lean Framework section
+## The Hypostructure section
 
 `/#/lean` is the reference for formalizing structural exhaustion proofs with
-the hypostructure Lean framework (`hypostructure/Hypostructure/Core/`). It is
+the Hypostructure Lean framework (`hypostructure/Hypostructure/Core/`). It is
 reached from the header on every page. The section has its own left rail and
 is written by hand as TSX, since its source is the Lean code rather than a
 manuscript:
@@ -83,6 +85,20 @@ cd web/frontend && npm install && npm run dev
 ```
 
 There is no backend. `make web-build` produces a static `frontend/dist/`.
+
+## Deploying
+
+`.github/workflows/deploy-web.yml` publishes the site to GitHub Pages on
+every update of `main` — a direct push or a merged pull request — and can
+also be run by hand from the Actions tab. It installs from
+`frontend/package-lock.json`, runs the typecheck and the test suite, builds,
+and deploys `frontend/dist/` with the official Pages actions; no `gh-pages`
+branch is involved. The site is served at
+`https://fragiletech.github.io/hypostructure/`; the hash router and the
+relative asset base mean nothing in the code depends on that path.
+
+One-time repository setting: *Settings → Pages → Build and deployment →
+Source* must be **GitHub Actions**, or the deploy job fails.
 
 ## Regenerating the data
 
@@ -158,7 +174,7 @@ web/
     src/
       graph-explorer/            the reusable explorer (see below)
       proofs/                    the registry, the loader and their tests
-      docs/                      the Lean Framework documentation section
+      docs/                      the Hypostructure documentation section
       pages/ components/ styles/ the site around it
 ```
 
