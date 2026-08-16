@@ -100,475 +100,348 @@ abbrev visibleExitKeys :
   [K .typeAVisibleEntryClause, K .typeAVisibleEntry,
     K .returnAvoidance, K .selection]
 
-/-! ## Node `[109]` preserves the full incoming ledger prefix
+/-! ## Nodes `[109]`--`[110]`: routing and the first route-8 fact
 
-The route-8 arm is an ordinary one-fact append.  These checks pin the exact
-index shape: `[109]` adds `route8Residual` on top of the no-exit-`(7)` ledger
-and leaves every incoming fact in the prefix available downstream.  The row's
-manifest requires the finite descent, silent residual, and no-exit facts; the
-framework carries them through this prefix, not through a custom payload.
+Node `[109]` is the identity routing edge on the literal no-exit-`(7)` ledger
+and appends no key. Node `[110]` runs directly on that ledger and appends only
+the silent-core profile. The literal list checks below expose the exact output
+types of the canonical rows and the ancestry retained by `AtomicCT.run`.
 -/
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8ResidualKeys (BranchState := BranchState) (presentation := presentation)
-      (data := data) known =
-      K .route8Residual ::
-        typeAExitSevenFreeKeys (BranchState := BranchState)
+    (typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
+      K .typeAExitSevenFree ::
+        typeAExitSixFreeKeys (BranchState := BranchState)
           (presentation := presentation) (data := data) known := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8ResidualProfileKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8ResidualProfile ::
-        route8ResidualKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8GlobalSqueezeKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8GlobalSqueeze ::
-        route8ResidualProfileKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8BurdenAndDeficitKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8BasinBurden :: K .route8LargeBudgetDeficit ::
-        route8GlobalSqueezeKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8CarrierCoreKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8CarrierCore ::
-        route8BurdenAndDeficitKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8SmallCoreCollapseKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8SmallCoreCollapse ::
-        route8CarrierCoreKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8TwoCarrierReductionKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8TwoCarrierReduction ::
-        route8SmallCoreCollapseKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8CarrierDeletionWitnessesKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8CarrierDeletionWitnesses ::
-        route8TwoCarrierReductionKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8PrivateCarrierContradictionKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction ::
-        route8CarrierDeletionWitnessesKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8PressureDescentKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8PressureDescent ::
-        route8PrivateCarrierContradictionKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    route8TerminalNoGoKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known =
+    (K .route8TerminalNoGo :: K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) =
       K .route8TerminalNoGo ::
-        route8PressureDescentKeys (BranchState := BranchState)
-          (presentation := presentation) (data := data) known := rfl
+        (K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := rfl
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8ResidualKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+    fact ∈ (typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
     member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8ResidualProfileKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    fact ∈ (K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8GlobalSqueezeKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8GlobalSqueezeKeys, route8ResidualProfileKeys,
-    route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+    fact ∈ (K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8BurdenAndDeficitKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    fact ∈ (K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8CarrierCoreKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8CarrierCoreKeys, route8BurdenAndDeficitKeys,
-    route8GlobalSqueezeKeys, route8ResidualProfileKeys, route8ResidualKeys,
-    typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+    fact ∈ (K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8SmallCoreCollapseKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    fact ∈ (K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8TwoCarrierReductionKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8TwoCarrierReductionKeys, route8SmallCoreCollapseKeys,
-    route8CarrierCoreKeys, route8BurdenAndDeficitKeys,
-    route8GlobalSqueezeKeys, route8ResidualProfileKeys, route8ResidualKeys,
-    typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+    fact ∈ (K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8CarrierDeletionWitnessesKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8CarrierDeletionWitnessesKeys, route8TwoCarrierReductionKeys,
-    route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    fact ∈ (K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8PrivateCarrierContradictionKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8PrivateCarrierContradictionKeys,
-    route8CarrierDeletionWitnessesKeys, route8TwoCarrierReductionKeys,
-    route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    fact ∈ (K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8PressureDescentKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8PressureDescentKeys, route8PrivateCarrierContradictionKeys,
-    route8CarrierDeletionWitnessesKeys, route8TwoCarrierReductionKeys,
-    route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+    fact ∈ (K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     {fact : FactKey (Input BranchState Presentation presentation data)}
     (member : fact ∈ known) :
-    fact ∈ route8TerminalNoGoKeys (BranchState := BranchState)
-      (presentation := presentation) (data := data) known := by
-  simp [route8TerminalNoGoKeys, route8PressureDescentKeys,
-    route8PrivateCarrierContradictionKeys, route8CarrierDeletionWitnessesKeys,
-    route8TwoCarrierReductionKeys, route8SmallCoreCollapseKeys,
-    route8CarrierCoreKeys, route8BurdenAndDeficitKeys,
-    route8GlobalSqueezeKeys, route8ResidualProfileKeys, route8ResidualKeys,
-    typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+    fact ∈ (K .route8TerminalNoGo :: K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .typeAExitSevenFree ∈
-      route8ResidualKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8ResidualKeys, typeAExitSevenFreeKeys]
+      (typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
-    K .route8Residual ∈
-      route8ResidualProfileKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8ResidualProfileKeys]
+    K .typeAExitSevenFree ∈
+      (K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8ResidualProfile ∈
-      route8GlobalSqueezeKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8GlobalSqueezeKeys]
+      (K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .largeBudgetResidual ∈ known) :
     K .largeBudgetResidual ∈
-      route8GlobalSqueezeKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8GlobalSqueezeKeys, route8ResidualProfileKeys,
-    route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+      (K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8GlobalSqueeze ∈
-      route8BurdenAndDeficitKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8BurdenAndDeficitKeys]
+      (K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8LargeBudgetDeficit ∈
-      route8CarrierCoreKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8CarrierCoreKeys, route8BurdenAndDeficitKeys]
+      (K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8CarrierCore ∈
-      route8SmallCoreCollapseKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8SmallCoreCollapseKeys]
+      (K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8SmallCoreCollapse ∈
-      route8TwoCarrierReductionKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8TwoCarrierReductionKeys]
+      (K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8TwoCarrierReduction ∈
-      route8CarrierDeletionWitnessesKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8CarrierDeletionWitnessesKeys]
+      (K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8CarrierDeletionWitnesses ∈
-      route8CarrierDeletionWitnessesKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8CarrierDeletionWitnessesKeys]
+      (K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8PrivateCarrierBudget ∈
-      route8PrivateCarrierContradictionKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8PrivateCarrierContradictionKeys]
+      (K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8NoTwoCarrierContradiction ∈
-      route8PrivateCarrierContradictionKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8PrivateCarrierContradictionKeys]
+      (K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8PressureDescent ∈
-      route8PressureDescentKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8PressureDescentKeys]
+      (K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8TerminalNoGo ∈
-      route8TerminalNoGoKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8TerminalNoGoKeys]
+      (K .route8TerminalNoGo :: K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8PressureDescent ∈
-      route8TerminalNoGoKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8TerminalNoGoKeys, route8PressureDescentKeys]
+      (K .route8TerminalNoGo :: K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8NoTwoCarrierContradiction ∈
-      route8PressureDescentKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8PressureDescentKeys, route8PrivateCarrierContradictionKeys]
+      (K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8CarrierDeletionWitnesses ∈
-      route8PrivateCarrierContradictionKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8PrivateCarrierContradictionKeys,
-    route8CarrierDeletionWitnessesKeys]
+      (K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8CarrierDeletionWitnesses ∈
-      route8PressureDescentKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8PressureDescentKeys, route8PrivateCarrierContradictionKeys,
-    route8CarrierDeletionWitnessesKeys]
+      (K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8CarrierCore ∈
-      route8TwoCarrierReductionKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8TwoCarrierReductionKeys, route8SmallCoreCollapseKeys]
+      (K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8CarrierCore ∈
-      route8CarrierDeletionWitnessesKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8CarrierDeletionWitnessesKeys, route8TwoCarrierReductionKeys,
-    route8SmallCoreCollapseKeys]
+      (K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8CarrierCore ∈
-      route8PrivateCarrierContradictionKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8PrivateCarrierContradictionKeys,
-    route8CarrierDeletionWitnessesKeys, route8TwoCarrierReductionKeys,
-    route8SmallCoreCollapseKeys]
+      (K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8LargeBudgetDeficit ∈
-      route8SmallCoreCollapseKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys]
+      (K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8BasinBurden ∈
-      route8CarrierCoreKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8CarrierCoreKeys, route8BurdenAndDeficitKeys]
+      (K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .route8BasinBurden ∈
-      route8SmallCoreCollapseKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys]
+      (K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAVisibleFirstExcess ∈ known) :
     K .typeAVisibleFirstExcess ∈
-      route8BurdenAndDeficitKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+      (K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAVisibleFirstExcess ∈ known) :
     K .typeAVisibleFirstExcess ∈
-      route8CarrierCoreKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8CarrierCoreKeys, route8BurdenAndDeficitKeys,
-    route8GlobalSqueezeKeys, route8ResidualProfileKeys, route8ResidualKeys,
-    typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+      (K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAVisibleFirstExcess ∈ known) :
     K .typeAVisibleFirstExcess ∈
-      route8SmallCoreCollapseKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+      (K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAVisibleFirstExcess ∈ known) :
     K .typeAVisibleFirstExcess ∈
-      route8TwoCarrierReductionKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8TwoCarrierReductionKeys, route8SmallCoreCollapseKeys,
-    route8CarrierCoreKeys, route8BurdenAndDeficitKeys,
-    route8GlobalSqueezeKeys, route8ResidualProfileKeys, route8ResidualKeys,
-    typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+      (K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAVisibleFirstExcess ∈ known) :
     K .typeAVisibleFirstExcess ∈
-      route8CarrierDeletionWitnessesKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8CarrierDeletionWitnessesKeys, route8TwoCarrierReductionKeys,
-    route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+      (K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAVisibleFirstExcess ∈ known) :
     K .typeAVisibleFirstExcess ∈
-      route8PrivateCarrierContradictionKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8PrivateCarrierContradictionKeys,
-    route8CarrierDeletionWitnessesKeys, route8TwoCarrierReductionKeys,
-    route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+      (K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAVisibleFirstExcess ∈ known) :
     K .typeAVisibleFirstExcess ∈
-      route8PressureDescentKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8PressureDescentKeys, route8PrivateCarrierContradictionKeys,
-    route8CarrierDeletionWitnessesKeys, route8TwoCarrierReductionKeys,
-    route8SmallCoreCollapseKeys, route8CarrierCoreKeys,
-    route8BurdenAndDeficitKeys, route8GlobalSqueezeKeys,
-    route8ResidualProfileKeys, route8ResidualKeys, typeAExitSevenFreeKeys,
+      (K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys,
     typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAVisibleFirstExcess ∈ known) :
     K .typeAVisibleFirstExcess ∈
-      route8TerminalNoGoKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8TerminalNoGoKeys, route8PressureDescentKeys,
-    route8PrivateCarrierContradictionKeys, route8CarrierDeletionWitnessesKeys,
-    route8TwoCarrierReductionKeys, route8SmallCoreCollapseKeys,
-    route8CarrierCoreKeys, route8BurdenAndDeficitKeys,
-    route8GlobalSqueezeKeys, route8ResidualProfileKeys, route8ResidualKeys,
-    typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
+      (K .route8TerminalNoGo :: K .route8PressureDescent :: K .route8PrivateCarrierBudget :: K .route8NoTwoCarrierContradiction :: K .route8CarrierDeletionWitnesses :: K .route8TwoCarrierReduction :: K .route8SmallCoreCollapse :: K .route8CarrierCore :: K .route8BasinBurden :: K .route8LargeBudgetDeficit :: K .route8GlobalSqueeze :: K .route8ResidualProfile :: typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys, member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)} :
     K .typeAExitSixFree ∈
-      route8ResidualKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys]
+      (typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAExitFourFiniteDescent ∈ known) :
     K .typeAExitFourFiniteDescent ∈
-      route8ResidualKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+      (typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
     member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeASaturatedHandoffSilent ∈ known) :
     K .typeASaturatedHandoffSilent ∈
-      route8ResidualKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+      (typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
     member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeASaturatedHandoffExitFourFree ∈ known) :
     K .typeASaturatedHandoffExitFourFree ∈
-      route8ResidualKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+      (typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
     member]
 
 example {known : FactKeys (Input BranchState Presentation presentation data)}
     (member : K .typeAExitFiveFree ∈ known) :
     K .typeAExitFiveFree ∈
-      route8ResidualKeys (BranchState := BranchState)
-        (presentation := presentation) (data := data) known := by
-  simp [route8ResidualKeys, typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
+      (typeAExitSevenFreeKeys (BranchState := BranchState) (presentation := presentation) (data := data) known) := by
+  simp [typeAExitSevenFreeKeys, typeAExitSixFreeKeys,
     member]
 
 end

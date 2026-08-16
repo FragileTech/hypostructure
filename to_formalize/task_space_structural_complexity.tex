@@ -10,6 +10,7 @@
 \usepackage{bm,mathrsfs}
 \usepackage{booktabs,longtable,array}
 \usepackage{enumitem}
+\usepackage{placeins}
 \usepackage{tocloft}
 \usepackage{xspace}
 \usepackage{xcolor}
@@ -53,6 +54,9 @@
 \newaliascnt{assumption}{theorem}
 \newtheorem{assumption}[assumption]{Assumption}
 \aliascntresetthe{assumption}
+\newaliascnt{certificationtarget}{theorem}
+\newtheorem{certificationtarget}[certificationtarget]{Certification Target}
+\aliascntresetthe{certificationtarget}
 \newaliascnt{convention}{theorem}
 \newtheorem{convention}[convention]{Convention}
 \aliascntresetthe{convention}
@@ -73,6 +77,7 @@
 \crefname{corollary}{Corollary}{Corollaries}
 \crefname{definition}{Definition}{Definitions}
 \crefname{assumption}{Assumption}{Assumptions}
+\crefname{certificationtarget}{Certification Target}{Certification Targets}
 \crefname{convention}{Convention}{Conventions}
 \crefname{example}{Example}{Examples}
 \crefname{remark}{Remark}{Remarks}
@@ -144,13 +149,13 @@
 }
 
 \title{Presentation-Relative Structural Complexity:\\
-Operator Dynamics, Learning, Controlled Systems, Meta-Complexity, and LPN}
+Quantitative Limits for General Intelligent Computation}
 \author{Guillem Duran Ballester\\
 \href{mailto:guillem@fragile.tech}{\texttt{guillem@fragile.tech}}}
 \date{}
 
 \hypersetup{
-  pdftitle={Presentation-Relative Structural Complexity},
+  pdftitle={Presentation-Relative Structural Complexity: Quantitative Limits for General Intelligent Computation},
   pdfauthor={Guillem Duran Ballester}
 }
 
@@ -159,36 +164,338 @@ Operator Dynamics, Learning, Controlled Systems, Meta-Complexity, and LPN}
 \maketitle
 
 \begin{abstract}
-We develop a presentation-relative framework for structural complexity.  A
-task presentation specifies its public observables, terminal data, admissible
-constructors, and resource accounting; the resulting saturated profile records
-the strongest target-aligned structure derivable within a budget.  We prove an
-exhaustive decomposition of represented dynamics into geometric, directed,
-quotient, lifted-state, boundary, and residual components.  A quantitative
-backward cut and structural-charge identity assign every prospective
-target-bearing record to its represented source, while temporal accountability
-separates structure available before a transition from retrospective
-first-hit records.  This yields resource bounds from the saturated profile
-without enumerating computation procedures.
+Can the capabilities of an arbitrary intelligent system be bounded without
+fixing its architecture?  We develop a presentation-relative theory based on
+a saturated structural profile: the strongest target-relevant structure that
+any resource-bounded computation can construct from a public task
+presentation.  Universal accountability theorems convert this profile into
+quantitative bounds that hold simultaneously for every admissible algorithm,
+including algorithms and architectures not known or anticipated in advance.
 
-The same calculus gives source-resolved learning bounds, controlled-system and
-Bellman certificates, attention and compact-belief compilations, black-box
-model audits, and a structural meta-complexity frontier.  We also give a
-proof-grade empirical pipeline: learned certificates provide candidate
-factorizations, while exact or interval verification establishes exhaustive
-source coverage, capacity, attenuation, error, and scale propagation.
+The framework unifies representation, learned features, information
+acquisition, memory, Bayesian inference, control, reinforcement learning, and
+attention in a common cost-, provenance-, temporal-, source-, and noise-aware
+ledger.  Source-resolved Rademacher, sequential Rademacher, PAC--Bayes, and
+effective-dimension bounds keep statistical capacity, structural ancestry,
+noise contraction, construction cost, and deployment attached to the same
+computation.  Statistical, computational, and information-theoretic noise
+thresholds quantify transitions among learnable, resource-limited, and
+information-limited regimes.
 
-For random binary learning parity with noise, the quotient and
-quotient-supported geometric exhaustion, together with a constant-noise
-spectral analysis, exponentially suppresses every explicitly materialized
-located spectral block and isolates one compact residual-ancestry source
-coordinate.  Under its stated bound, the complete saturated value is at most
-\(2^{-n}+(1-\eta)^n\).  The empirical verification theorem gives explicit
-capacity--attenuation and finite-to-asymptotic conditions that discharge this
-coordinate when a proof-grade certificate is supplied.  All statements are
-relative to the declared presentation and its resource-saturated constructor
-closure.
+The theory yields architecture-independent capability envelopes for learning,
+reasoning, inference, control, and target-directed performance; exact Pareto
+inverses of attainable capability; and source-preserving compilations across
+learned, Bayesian, controlled, and attention-based computation.  Its
+finite-to-asymptotic LPN specialization combines exact source exhaustion,
+constant-noise spectral closure, public verification, noise--resource phase
+boundaries, and deterministic finite-to-asymptotic certification.  Together,
+these results provide mathematical machinery for quantifying the structural,
+informational, noise, and resource limits of increasingly general artificial
+intelligence systems.
 \end{abstract}
+
+\section*{Synopsis and Principal Results}
+\addcontentsline{toc}{section}{Synopsis and Principal Results}
+
+\paragraph{Presentation-relative structural complexity.}
+A task presentation fixes the public mathematical object before any solution
+method is chosen: its complete states, public observable interface, declared
+relation slot, terminal interface, admissible constructors, and resource
+account
+(\cref{def-task-space-signature,def-task-terminal-interface,%
+def-budget-constructor-accounting}).  A represented derivation is one
+family-uniform record built from those public data by admissible constructors
+and represented computations; it retains its provenance and complete charged
+execution and representation cost
+(\cref{def-budgeted-derivability-closure,%
+def:uniform-derivation-budget-filtration}).
+At budget \(B\), the saturated derivability closure contains precisely the
+denotations admitting such a derivation with cost \(\preceq B\).
+Runtime-generated features, memories, quotients, kernels, policies, value
+representations, posterior records, and attention maps therefore re-enter the
+same closure with their construction, storage, evaluation, and deployment
+costs (\cref{lem-budgeted-generation-gives-representation}).  The saturated
+cost of a represented object is the Pareto-minimal frontier of its admissible
+budgets, or its infimal scalar cost after a declared scalarization
+(\cref{def:uniform-derivation-budget-filtration}).  The resulting saturated
+profile is the budget-indexed supremum of qualified target-relevant visibility
+over this closure (\cref{def-uniform-saturated-success-profile}).
+
+\begin{center}
+\fbox{%
+  \begin{minipage}{0.91\linewidth}
+  \centering
+  \textbf{Universal capability and accountability bound.}
+
+  \medskip
+  For a task-family functional \(\mathfrak M_n\), define the budgeted
+  capability envelope by
+  \[
+  \operatorname{Cap}_{\mathfrak M,n}(B)
+  :=
+  \operatorname{Succ}_{\mathfrak M,n}(B)
+  =
+  \sup_{\mathcal A\in\mathsf{Alg}_{n,\le B}}
+  \mathfrak M_n\!\left(
+    I\mapsto\alpha_I(\mathcal A)
+  \right).
+  \]
+  For every task family, monotone positively homogeneous family functional
+  \(\mathfrak M_n\), and budget ceiling \(B\) with finite time capacity,
+  \Cref{thm-universal-saturated-profile-accountability} proves
+  \[
+  \boxed{
+  \operatorname{Cap}_{\mathfrak M,n}(B)
+  \le
+  eH_B(n)\,
+  m_{\mathfrak M,n}^{\mathrm{sat}}
+  \bigl(\Psi(B,n)\bigr)
+  }.
+  \]
+  Here \(H_B\) and \(\Psi\) are derived from the same declared resource
+  ledger.  The supremum on the left ranges over every admissible computation,
+  whereas the right-hand side depends only on the public presentation and its
+  cost-filtered saturated closure.  In particular,
+  \[
+  m_{\mathfrak M,n}^{\mathrm{sat}}
+  \bigl(\Psi(B,n)\bigr)
+  <
+  \frac{\varepsilon(n)}{eH_B(n)}
+  \quad\Longrightarrow\quad
+  \operatorname{Cap}_{\mathfrak M,n}(B)<\varepsilon(n).
+  \]
+  \end{minipage}%
+}
+\end{center}
+
+\paragraph{Map of the monograph.}
+The eight parts construct, apply, and invert this universal capability
+envelope.
+
+\begingroup
+\small
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.16}
+\begin{longtable}{@{}p{0.11\linewidth}p{0.81\linewidth}@{}}
+\toprule
+Part & Principal contribution \\
+\midrule
+\endfirsthead
+\toprule
+Part & Principal contribution \textup{(continued)} \\
+\midrule
+\endhead
+
+\PartI &
+Defines task presentations, observable algebras, terminal sectors, static
+target relevance, admissible constructors, and presentation equivalence.  Its
+output is the public structural object from which all subsequent computation
+is generated. \\
+
+\PartII &
+Embeds represented computations as clocked Markov or sub-Markov dynamics and
+decomposes every admissible generator into the five structural channels
+\(\Geom,\Caus,\Abs,\Lift,\Bdry\) and the exhaustive residual channel
+\(\Res\), with source provenance and complete cost retained. \\
+
+\PartIII &
+Defines structural complexity through the spectral geometry and target-hitting
+behavior of the saturated affordable closure.  Traditional resources such as
+circuit size, machine steps, memory, construction, and deployment determine
+which structure is affordable; target-projected resolvents, exact charging,
+and first-hit accounting measure how much of that structure can reach the
+target and convert it into universal capability bounds. \\
+
+\PartIV &
+Compiles saturated structural records into source-resolved Rademacher,
+sequential Rademacher, PAC--Bayes, effective-dimension, neural-kernel,
+dependent-sampling, label-noise, evaluation, and deployment bounds, together
+with statistical, computational, and information-theoretic thresholds. \\
+
+\PartV &
+Extends the common ledger to controlled Markov systems, reinforcement
+learning, committors, reach--avoid probabilities, Bellman quantities, learned
+policies, active information acquisition, Bayesian inference, and compact
+latent beliefs. \\
+
+\PartVI &
+Represents attention as a costed Gibbs selector and retains its scores,
+values, masks, fibers, directed current, provenance, and residual transport.
+Attention and compact Bayesian acquisition therefore enter the same
+source-resolved capability ledger. \\
+
+\PartVII &
+Inverts saturated capability profiles through strict Pareto resource
+frontiers.  These exact generalized inverses separate representation,
+extraction, decision, search, certification, and deployment and recover
+circuit and program minimization as typed specializations. \\
+
+\PartVIII &
+Specializes the framework to Learning Parity with Noise.  It derives
+noise--resource phase boundaries, separates public verification from
+extraction, exhausts the geometric and abstraction-provenance sources,
+isolates the residual-ancestry certification target, and applies the
+finite-to-asymptotic certification machinery. \\
+
+\bottomrule
+\end{longtable}
+\endgroup
+
+\paragraph{Reading paths.}
+The shortest routes through the monograph are:
+\begin{itemize}
+\item \emph{Foundations and structural complexity:} \PartsItoIII and \PartVII.
+\item \emph{Learning and noise:} \PartI, \PartIII, and \PartIV.
+\item \emph{Control, reinforcement learning, Bayesian acquisition, and
+attention:} \PartsItoIII, \PartV, and \PartVI.
+\item \emph{LPN specialization:} \PartsItoIII and \PartVIII.
+\end{itemize}
+
+\clearpage
+\paragraph{Principal theorem spine.}
+The following map identifies the load-bearing results that connect the
+presentation-relative construction grammar to the universal capability
+bounds and their finite certification.
+
+\begin{center}
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.14}
+\begin{tabular}{
+  @{}
+  >{\raggedright\arraybackslash}p{0.22\linewidth}
+  >{\raggedright\arraybackslash}p{0.58\linewidth}
+  >{\raggedright\arraybackslash}p{0.16\linewidth}
+  @{}
+}
+\toprule
+\textbf{Result}
+&
+\textbf{What it establishes}
+&
+\textbf{Location}
+\\
+\midrule
+
+Budgeted derivability closure
+&
+Defines the least presentation-relative grammar generated by the public
+presentation, admissible constructors, and represented computations, with
+nested slices determined by complete charged cost.
+&
+\cref{def-budgeted-derivability-closure,lem-derivability-well-posed}
+\\
+
+Operational computation embedding
+&
+Embeds every represented computation under a finite resource envelope into
+an exact clocked Markov or sub-Markov kernel, while retaining its operational
+law and complete resource ledger.
+&
+\cref{thm-algorithm-kernel-embedding}
+\\
+
+Structural channel exhaustion
+&
+Decomposes every finite search generator into the
+\(\Geom,\Caus,\Abs,\Lift,\Bdry\), and residual channels; unaffordable or
+unrepresented structure remains in the filtered residual.
+&
+\cref{thm-channel-exhaustiveness}
+\\
+
+Exact budget-admissible first-hit quotient
+&
+Converts the first-hit event of any admissible computation into a uniform,
+terminal-compatible, exactly lumpable quotient satisfying
+\(V_{q_{\mathcal A}}\ge \alpha_I/(eH)\), with its full construction cost
+charged.
+&
+\cref{lem:exact-affordable-first-hit}
+\\
+
+Prospective selector accountability
+&
+Decomposes target arrival into neutral enumeration and pre-hit selector
+advantage, so any improvement over neutral search is charged to
+prospectively available target-aligned structure.
+&
+\cref{thm-prospective-selector-accountability}
+\\
+
+Universal saturated-profile accountability
+&
+Bounds the success of every admissible computation, independently of its
+algorithm or architecture, by the saturated structural profile at the
+class-preserving compiled budget.
+&
+\cref{thm-universal-saturated-profile-accountability}
+\\
+
+Source-resolved learning compilation
+&
+Keeps source ancestry, statistical capacity, noise contraction,
+construction cost, and deployment attached to the same learned computation,
+with valid Rademacher, PAC--Bayes, and effective-dimension aggregation.
+&
+\cref{thm-source-resolved-saturated-learning-compilation}
+\\
+
+Optimal active, Bayesian, and control construction
+&
+Constructs the optimal resource-aware active and Bayesian acquisition
+envelopes and compiles represented controlled dynamics into coordinatewise
+arrival, discounted-hit, hitting-time, reach--avoid, mixing, Bellman, and
+learned-control bounds.
+&
+\cref{thm-master-optimal-structural-active-sampling-envelope,%
+thm-optimal-structural-bayesian-acquisition,%
+thm-universal-dynamical-certificate}
+\\
+
+Complete empirical implementation certificate
+&
+Combines the source audit, empirical intervals, optimization certificates,
+loss calibration, functional-inequality audit, and quotient audit into one
+simultaneous implementation-level structural certificate.
+&
+\cref{thm-complete-empirical-structural-proof-package}
+\\
+
+Finite-to-asymptotic structural certification
+&
+Converts a directly verified finite prefix together with certified
+propagation and crossing data into one envelope for every \(n\ge n_0\);
+universal accountability then applies that envelope simultaneously to every
+admissible algorithm.
+&
+\cref{thm-finite-prefix-structural-extension}
+\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+\end{center}
+
+\paragraph{Finite discovery and asymptotic certification.}
+Finite computation may be used to discover a candidate factorization,
+structural recurrence, invariant enclosure, or crossover point.  Mathematical
+validity comes from a different step.  Exact exhaustive evaluation of the
+complete budgeted slices at the audited low sizes establishes the finite base;
+source exhaustion and constructor provenance prove that every admissible
+higher-scale record follows one of the represented recurrence transitions;
+exact symbolic identities or outward-rounded interval inclusions prove that
+the recurrence preserves the asserted envelope; and crossing-cost inequalities
+exclude an affordable transition to a different structural regime.
+Telescoping the verified capacity and attenuation recurrences then proves the
+asymptotic bound by induction.  Because the recurrence covers the complete
+saturated source cells, the conclusion applies to every admissible algorithm,
+not only to the computation that discovered the candidate scaling law.
+\Cref{thm-finite-prefix-structural-extension} proves this
+finite-to-asymptotic implication, and
+\Cref{thm-lpn-proof-grade-empirical-residual-discharge} gives its
+residual-ancestry specialization.
 
 \tableofcontents
 
@@ -206,12 +513,91 @@ Presentations}\label{sec-static-introduction}
 \emph{First pass:} the examples and audit procedures may be skimmed after the
 definitions they illustrate.
 
-The complexity of a problem depends first on the information supplied by
-its presentation. Across theoretical computer science, optimization,
-machine learning, and control, this information comprises a state space,
-an observable interface, and terminal criteria distinguishing success
-from failure. The corresponding terminology differs across fields, but
-the underlying measurable structure is common.
+Most performance analyses begin with a chosen computational method.  They
+inspect its states, representations, and transitions, then derive a bound for
+that method:
+\[
+\text{choose an algorithm}
+\;\longrightarrow\;
+\text{analyze its computation}
+\;\longrightarrow\;
+\text{bound its performance}.
+\]
+Such a bound is tied to the analyzed design.  A different architecture,
+representation, search rule, or controller requires a new analysis unless the
+argument identifies an invariant shared by the entire admissible resource
+class.
+
+This paper reverses this order:
+\[
+\begin{gathered}
+\text{specify the public task presentation}
+\;\longrightarrow\;
+\text{close all affordable structure}\\[2pt]
+\longrightarrow\;
+\text{measure the saturated target-relevant profile}
+\;\longrightarrow\;
+\text{bound every admissible computation}.
+\end{gathered}
+\]
+Here the presentation and resource class are fixed, while the final
+quantification ranges over every admissible represented computation.  The
+budgeted closure and saturated-cost conventions used in the middle two arrows
+are formalized in
+\cref{def-budgeted-derivability-closure,%
+def:uniform-derivation-budget-filtration}.
+
+The exact eight-state calculation in
+\cref{ex-eight-state-affordable-algebra} instantiates this closure at a
+finite budget: it lists the entire affordable quotient slice, computes every
+conditional-algebra increment, and turns their conserved charge into a bound
+for every admissible transition rule in the example.
+
+\medskip
+\noindent\begin{minipage}{\linewidth}
+\textbf{Temporal source typing.}
+Fix a surviving pre-action history \(h_t\).  After the run, let a represented
+terminal evaluator label the next action when the completed trajectory
+succeeds and output \(\bot\) otherwise.  On a successful run this label
+identifies the first action on the successful continuation.  If two legal
+completions of \(h_t\) produce different labels, no function of the available
+history can equal that terminal label on both completions.  Once its terminal
+evaluator and complete derivation are charged, the label is a retrospective
+accounting record for the achieved performance; it is not a prospective source
+for the action selected at \(h_t\).
+
+A representation of the same denotation enters the prospective source profile
+at this use precisely when it independently factors through the pre-action
+history, has no later outcome, verifier flag, terminal record, or oracle answer
+as an ancestor, is evaluated and charged before the action, and is an actual
+ancestor of the selector, transition, or target-aligned represented rule whose
+target progress it is invoked to explain:
+
+\[
+\boxed{\text{prospective source}\ \neq\ \text{retrospective accounting}.}
+\]
+
+The display distinguishes the temporal types of represented derivations at a
+claimed use, rather than extensional denotations.  One denotation may have both
+a retrospective accounting representation and an independent prefix
+representation; each is classified and charged through its own derivation.
+Later verifier outcomes, exact first-hit labels, completed value functions,
+and other terminal postprocessings remain in the accounting profile as
+retrospective accounting records when their representations and complete
+derivations are charged.  An independent prefix derivation re-enters the
+saturated closure with its complete ancestry and cost.  Exact first-hit
+accounting preserves the hitting law already generated, whereas prospective
+selector accountability charges improvement over the declared neutral
+enumeration baseline only to the pre-hit sampler and its temporally admissible
+ancestry.
+\Cref{def-pre-hit-temporally-admissible-source,%
+cor-first-hit-accounting-not-source,%
+cor-no-retrospective-first-hit-source-loophole,%
+def-source-accounting-profile-separation,%
+thm-prospective-selector-accountability,%
+thm-no-uncharged-prospective-value-amplification} formalize this proof
+strategy.
+\end{minipage}
 
 \subsection{What this paper introduces}\label{subsec-overview-general}
 
@@ -228,30 +614,35 @@ unital algebra of bounded observables, a slot for state-to-state
 structure, and a pair of terminal events (success and failure). This is
 the common measurable core of decision problems, optimization
 landscapes, statistical models, and controlled systems; it fixes what is
-public about a problem before any algorithm is chosen.
+public about a problem before any algorithm is chosen
+(\cref{def-task-space-signature,def-observable-algebra,%
+def-task-terminal-interface}).
 
 \emph{The generator decomposition.} Any search procedure, algorithm, or
 stochastic dynamics acting on such a space and respecting a stated
 resource budget induces a positive sub-Markov operator, hence, by the
-positive maximum principle, a generator. The first structural theorem is
-an exhaustive decomposition of every such generator into five
+positive maximum principle, a generator
+(\cref{thm-algorithm-kernel-embedding}).  The first structural theorem is an
+exhaustive decomposition of every such generator into five
 components with distinct classical meanings---a reversible (Dirichlet-form)
 part, a drift part directed by a declared potential, a
 lumping part in the sense of Markov-chain lumpability (quotients of the
 state space), a state-augmentation part (lifts to enlarged carriers), and a
 killing/boundary part---plus a residual term that provably carries no
-structure attributable to the five listed sources. Normal forms are
-proved for each component, and the decomposition is stable under
-composition and under valid lifts.
+structure attributable to the five listed sources
+(\cref{thm-channel-exhaustiveness}).  Normal forms are proved for each
+component, and the decomposition is stable under composition and under valid
+lifts
+(\cref{thm-exhaustive-geom-normal-form,%
+thm-exhaustive-lift-normal-form,thm-exhaustive-bdry-normal-form,%
+thm-exhaustive-residual-normal-form,lem-gaplessness-composition}).
 
-\emph{The cost filtration.} The observable algebra carries a filtration
-indexed by a nonnegative cost: an object lies at level \(B\) when it
-admits a public derivation of total cost at most \(B\) from the declared
-data. The value of this filtration at the working budget---the
-\emph{saturated} cost---measures how much structure is legally available
-to any procedure operating within that budget. All later upper and lower
-bounds are stated against this filtration rather than against a machine
-model.
+\emph{The cost filtration.} Represented derivations induce a filtration of
+the observable algebra by complete charged cost.  A budget slice records the
+structural objects affordable at that resource ceiling, and the later upper
+and lower bounds are indexed by these slices
+(\cref{def-budgeted-derivability-closure,%
+def:uniform-derivation-budget-filtration,lem-derivability-well-posed}).
 
 \emph{Hitting times and hardness.} Complexity is then measured by the
 discounted hitting functional of the target set, equivalently by the
@@ -262,34 +653,187 @@ exact first-hit decomposition, to a specific affordable component of the
 generator. Hardness statements take the form ``the saturated profile is
 negligible, hence the hitting functional is negligible,'' and are
 presentation-relative: they quantify over every procedure representable
-within the declared budget, not over a fixed algorithm.
+within the declared budget, not over a fixed algorithm
+(\cref{def-stopwatch-score,thm-resolvent-stopwatch-identity,%
+thm-quantitative-backward-source-factorization,%
+lem:exact-affordable-first-hit,%
+thm-universal-saturated-profile-accountability}).
 
 \emph{Consequences.} Because the saturated filtration is a
 reproducing-kernel object, the same ledger yields effective-dimension
 and two-sided generalization bounds for kernel and neural-network
 learners, including under label noise and dependent (mixing or adaptive)
-sampling. For controlled Markov systems and partially observed models,
+sampling
+(\cref{thm-krr-effective-dimension-bound,%
+thm-source-resolved-saturated-learning-compilation,%
+thm-structural-pac-bayes-label-noise,%
+thm-beta-mixing-structural-blocking,%
+thm-sequential-learned-operator-cover}).  For controlled Markov systems and
+partially observed models,
 the decomposition of the selected generator produces a coordinatewise
 certificate covering committors, reach--avoid probabilities, Bellman
-error, and learned policies. Softmax attention is identified with a
-Gibbs-measure selector whose normalization satisfies exact
+error, and learned policies
+(\cref{thm-universal-dynamical-certificate}).  Softmax attention is identified
+with a Gibbs-measure selector whose normalization satisfies exact
 Kullback--Leibler and Fisher--Rao identities, so trained attention
-layers are audited by the same accounting. A meta-complexity part
+layers are audited by the same accounting
+(\cref{thm-attention-gibbs-gradient-flow,%
+thm-attention-structural-source-compilation,%
+thm-attention-target-gain-envelope}).  A meta-complexity part
 inverts the picture: strict Pareto frontiers record the least resource
 vectors at which a certificate of prescribed quality exists, are exact
 generalized inverses of the saturated profiles, and specialize to
-circuit and universal-program minimization. Finally, the framework is
+circuit and universal-program minimization
+(\cref{thm-strict-meta-profile-generalized-inverse,%
+thm-circuit-minimization-specialization,%
+thm-program-minimization-specialization}).  Finally, the framework is
 instantiated on Learning Parity with Noise: after all geometric,
 quotient, and provenance sources are exhausted, the surviving
 coordinate of the saturated profile is isolated explicitly.  At fixed
 positive noise, every materialized located spectral block has exponentially
 small alignment, while compact non-lumpable residual-ancestry records form
-the remaining numerical premise.  Under the stated bound
-\((1-\eta)^n\) on that single coordinate---an explicitly isolated
-hypothesis, not a theorem of this paper---the saturated profile is at
-most \(2^{-n}+(1-\eta)^n\), which yields the corresponding
-presentation-relative fixed-noise hardness theorem and, via an
-unconditional prefix-search reduction, \(P\ne NP\).
+one internal certification target.  The paper proves a deterministic
+finite-to-asymptotic verification theorem: exact source coverage, certified
+capacity and attenuation, outward-rounded error bounds, symbolic uniform
+scale laws, a crossover check, and a finite-prefix check together imply the
+required bound \((1-\eta)^n\).  The present manuscript does not execute that
+final certificate analysis.  Consequently, its fixed-noise hardness theorem
+and the resulting \(P\ne NP\) consequence remain conditional on verification
+of these explicit finite-prefix, recurrence, and crossing inequalities.  Such
+verification would discharge
+the sole remaining certification target internally; no external LPN or
+complexity-theoretic hardness assumption is used
+(\cref{thm-lpn-constant-noise-materialized-spectral-closure,%
+thm-lpn-exact-constant-noise-spectral-perimeter,%
+thm-lpn-proof-grade-empirical-residual-discharge,%
+thm-lpn-one-way,cor-lpn-p-not-equal-np}).
+
+\paragraph{Uniformity over new high-\(n\) structure.}
+For a verified finite-prefix structural scale certificate, exact finite
+saturation enumerates
+the complete budgeted structural slice at every size in the audited prefix,
+not the output of one selected optimizer.  Its tail certificate quantifies
+over the complete qualified source cell, and its recurrence cover assigns
+every admissible represented transition in that cell to a verified transition
+map.  A different high-\(n\) regime must therefore enter through a represented
+change of recurrence grammar, acquisition interface, reuse rule, precision,
+or locator.  Such a change has a complete construction and deployment cost;
+the crossing-price certificate excludes it whenever that cost exceeds the
+declared ceiling
+(\cref{def-finite-prefix-structural-scale-certificate,thm-finite-prefix-structural-extension,def-charged-structural-scaling-recurrence-certificate,thm-verified-recurrence-propagation-crossing-exclusion,cor-scaling-breakpoint-structural-price}).
+Every representation constructed by a future admissible algorithm remains in
+the same saturated derivability closure, so the verified source-cell and
+crossing bounds apply to it without naming its architecture in advance.
+Prospective-selector and universal accountability then transfer the certified
+profile bound to the success of every such computation
+(\cref{thm-prospective-selector-accountability,thm-universal-saturated-profile-accountability}).
+
+\begin{center}
+\fbox{%
+  \begin{minipage}{0.91\linewidth}
+  \raggedright
+  \textbf{Representative learning consequences.}
+  The target-qualified prospective source selected by a complete learning
+  record is first assigned to one of the \(4960\) exact structural ancestry
+  cells \(\alpha\in\mathfrak A_{\rm learn}\), indexed by its master mode and
+  state--coefficient provenance.  For losses in \([-1,1]\), the nonempty
+  cell-restricted output or loss classes satisfy the source-resolved
+  Rademacher union bound
+  \[
+  \begin{aligned}
+  \widehat{\mathfrak R}_S
+  \!\left(\bigcup_{\alpha\in\mathfrak A_{\rm learn}}
+  \mathcal H_\alpha(B,m)\right)
+  &\le
+  \max_{\alpha\in\mathfrak A_{\rm learn}}
+  \widehat{\mathfrak R}_S\bigl(\mathcal H_\alpha(B,m)\bigr)\\
+  &\quad+
+  \sqrt{\frac{2\log|\mathfrak A_{\rm learn}|}{m}}.
+  \end{aligned}
+  \]
+  For a cell-mixture prior \(P=\sum_\alpha w_\alpha P_\alpha\) and
+  posterior \(Q=\sum_\alpha q_\alpha Q_\alpha\) with matching conditional
+  cells, the PAC--Bayes complexity decomposes exactly as
+  \[
+  \operatorname{KL}(Q\Vert P)
+  =
+  \operatorname{KL}(q\Vert w)
+  +
+  \sum_\alpha q_\alpha
+  \operatorname{KL}(Q_\alpha\Vert P_\alpha).
+  \]
+  Thus the familiar inequalities are applied after structural ancestry has
+  been resolved: source selection is paid by the finite-cell Rademacher term
+  or by the cell-selection divergence \(\operatorname{KL}(q\Vert w)\).
+  Every complete learning bound assembled from these cellwise estimates
+  retains the sample size \(m\), confidence \(1-\delta\), resource budget
+  \(B\), exact source cell \(\alpha\), noise contraction, representation and
+  optimization cost, decoder or policy deployment, and a represented
+  same-law, same-unit conversion to the target performance quantity.  See
+  \cref{def-complete-source-resolved-learning-ledger,%
+  thm-source-resolved-saturated-learning-compilation}.
+  \end{minipage}%
+}
+\end{center}
+
+\begin{center}
+\begin{minipage}{0.95\linewidth}
+\textbf{Three non-interchangeable noise thresholds.}
+\smallskip
+
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}
+                    >{\raggedright\arraybackslash}p{0.75\linewidth}@{}}
+\toprule
+threshold & quantitative meaning\\
+\midrule
+\textbf{Statistical}
+&
+For a clean separation margin \(\Delta\), exact identification is certified
+when
+\(2\Gamma_m^{\rm Rad}(\mathcal H,\delta)+\varepsilon_{\rm opt}
+<(1-2\eta)\Delta\).
+This is a sufficient \(1-\delta\) sample-and-margin certificate; it does not
+certify that the empirical minimizer is affordable.
+\\[3pt]
+\textbf{Computational}
+&
+\(\displaystyle
+\eta_{\rm comp}^{\rm sat}(n,m;\sigma,\alpha)
+=\sup\{0\le\eta<\tfrac12:
+\operatorname{Succ}^{\kappa}_{\mathfrak M_{n,m,\eta},n}
+(\sigma(n))\ge\alpha\}\).
+The supremum is zero when the affordable region is empty.  When the declared
+ceiling is closed under represented noise degradation, it is the right
+endpoint of the noise region in which target performance \(\alpha\) remains
+affordable under the complete saturated ceiling \(\sigma(n)\).
+\\[3pt]
+\textbf{Information}
+&
+Every estimator, without a computational restriction, needs
+\(m(1-H_2(\eta))\ge\alpha\log_2N-1\) to recover a uniform target among
+\(N\) possibilities with probability at least \(\alpha\).
+Violation of this inequality rules out that recovery level regardless of
+computational resources.
+\\
+\bottomrule
+\end{tabular}
+
+\smallskip
+Put \(\rho=1-2\eta\).  Clean target margins and correlations are attenuated
+by \(\rho\), so recovering a clean quantity from its noisy counterpart
+introduces the inverse correction \(\rho^{-1}\); quadratic error bounds carry
+\(\rho^{-2}\).  The distinct forward coefficient
+\(\vartheta(\eta)=\rho^2=(1-2\eta)^2\) is the admissible
+strong-data-processing coefficient that upper-bounds source information
+transmitted through a binary symmetric reveal.  The computation-unrestricted
+information threshold itself uses the channel capacity term
+\(1-H_2(\eta)\); these coordinates are compared on the same experiment but
+do not replace one another.  See
+\cref{def-noise-indexed-saturated-recovery-cost,%
+thm-three-noise-threshold-comparison,%
+thm-dynamical-noise-three-thresholds}.
+\end{minipage}
+\end{center}
 
 \Cref{fig-intro-channel-dictionary} summarizes the generator
 decomposition together with its classical reading; the internal channel
@@ -332,6 +876,69 @@ provably admits no such attribution.}
 \label{fig-intro-channel-dictionary}
 \end{figure}
 
+The labels in \cref{fig-intro-channel-dictionary} name typed framework
+objects, not only their classical operator cores.  A row of
+\cref{tab-intro-channel-meanings} applies to a complete represented record;
+the classical ingredient in its middle column supplies an algebraic
+coordinate, while the final column states the additional conditions under
+which that coordinate has framework status.
+
+\begin{table}[tbp]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.16}
+\begin{tabular}{@{}
+  >{\raggedright\arraybackslash}p{0.105\linewidth}
+  >{\raggedright\arraybackslash}p{0.255\linewidth}
+  >{\raggedright\arraybackslash}p{0.535\linewidth}@{}}
+\toprule
+Framework term & Classical ingredient & Additional framework meaning \\
+\midrule
+\(\Geom\) &
+reversible or symmetric operator; Dirichlet form &
+represented intrinsic geometry with public provenance, qualification,
+complete representation cost, and target-visibility accounting \\
+
+\(\Caus\) &
+directed current or drift &
+authorized target-oriented use of an exposed source, using the represented
+projection of the actual selected current under a declared authority envelope \\
+
+\(\Abs\) &
+quotient, sufficient statistic, or lumping &
+represented abstraction with explicit fibers, terminal compatibility,
+qualification, temporal availability, and saturated representation cost \\
+
+\(\Lift\) &
+state augmentation &
+represented enlargement with a charged interface that preserves target
+fractions and inherits the provenance and qualification of its base source \\
+
+\(\Bdry\) &
+killing, absorption, or terminal value &
+represented terminal readout that evaluates previously exposed structure and
+creates no independent interior transport source \\
+
+\(\Res\) &
+orthogonal remainder &
+post-saturation transport remaining after all affordable
+channel-qualified target-relevant representatives have been reclassified and
+charged; it carries no prospective structural source charge \\
+\bottomrule
+\end{tabular}
+\caption{What the channel names mean.  The middle column records the
+classical operator ingredient; the final column records the additional typed
+requirements imposed by the framework.  The precise gates are the budgeted
+representative condition of \cref{def-admissible-channel-representatives}, the
+authority condition of \cref{def-caus-authority-envelope}, the quotient and
+lift conditions of \cref{def-abs-lift-split,def-valid-lift}, the boundary
+readout condition of \cref{def-boundary-value-channel}, and the saturated
+residual condition of
+\cref{cor-no-post-saturation-residual-source-alternative}.}
+\label{tab-intro-channel-meanings}
+\end{table}
+
 \PartI formalizes this structure independently of any solution method.
 A task presentation consists of complete states, observables, a declared
 slot for state-to-state structure, and terminal data. Search procedures,
@@ -354,96 +961,586 @@ The static spine is
 \text{the presented task}.
 \]
 
+\clearpage
+\subsection{Architecture-Independent Capability Analysis}
+\label{subsec-architecture-independent-capability-analysis}
+
+\begin{definition}[General intelligent computation relative to a presentation]
+\label{def-general-intelligent-computation}
+
+Fix a presented task family, a declared resource envelope \(B\), and declared
+observation, memory, action, and oracle interfaces.  A \emph{general
+intelligent computation} in this model is an arbitrary family-uniform,
+presentation-relative represented computation
+
+\[
+\mathcal A_n\in\mathsf{Alg}_{n,\le B}
+\]
+
+that interacts with the task only through those interfaces.  Its internal
+architecture, state organization, update rule, learned representations, and
+control strategy are unrestricted within the declared represented-computation
+model.  What is fixed is the public task presentation, the information
+available through the declared interfaces, and the complete resource account,
+including code, initialization, construction, peak memory, updates, oracle
+use, total work, and deployment.  No unpresented observation or uncharged
+interface is part of the admissible class.  This is the architecture-independent
+computational class used throughout the paper; see
+\cref{def-resource-envelope,conv-presentation-relative-budgeted-computation,def-uniform-saturated-success-profile}.
+
+\end{definition}
+
+For a task-family functional \(\mathfrak M_n\), define the corresponding
+budgeted capability envelope by
+
+\[
+\operatorname{Cap}_{\mathfrak M,n}(B)
+:=
+\operatorname{Succ}_{\mathfrak M,n}(B)
+=
+\sup_{\mathcal A\in\mathsf{Alg}_{n,\le B}}
+\mathfrak M_n\!\left(I\mapsto\alpha_I(\mathcal A)\right).
+\]
+
+The universal accountability theorem then gives the architecture-independent
+bound
+
+\begin{equation}
+\label{eq-architecture-independent-capability-envelope}
+\operatorname{Cap}_{\mathfrak M,n}(B)
+\le
+eH_B(n)\,
+m_{\mathfrak M,n}^{\mathrm{sat}}\!\left(\Psi(B,n)\right),
+\end{equation}
+
+where \(H_B\) and \(\Psi\) are derived from the same declared resource
+ledger rather than chosen for a particular algorithm
+(\cref{thm-universal-saturated-profile-accountability}).  The right-hand side
+saturates over all affordable represented structure, including features,
+memories, abstractions, policies, and runtime-generated representations.  It
+therefore applies simultaneously to every architecture in the class of
+\cref{def-general-intelligent-computation}.
+
+Different specializations of this envelope provide:
+
+\begin{itemize}
+\item capability bounds over task families and performance functionals;
+\item learning and inference bounds that retain noise contraction,
+statistical capacity, and complete represented cost
+(\cref{thm-source-resolved-saturated-learning-compilation});
+\item limits on adaptive information acquisition
+(\cref{thm-adaptive-acquisition-information-target-contact});
+\item explicit charges for memory, representation construction, and
+deployment
+(\cref{def-resource-envelope,def-saturated-representation-degree});
+\item controlled target-arrival and reach--avoid bounds
+(\cref{thm-controlled-policy-channel-decomposition,thm-universal-dynamical-certificate});
+\item Bayesian, compact-belief, and attention-based acquisition limits
+(\cref{thm-attention-target-gain-envelope,thm-compact-latent-information-sufficiency,thm-joint-compact-latent-attention-acquisition});
+and
+\item a common comparison of statistical, computational, and
+information-theoretic bottlenecks
+(\cref{thm-three-noise-threshold-comparison,thm-dynamical-noise-three-thresholds}).
+\end{itemize}
+
+Thus the AGI interpretation is a quantified modeling statement: the internal
+architecture is universally quantified while the presentation, access model,
+and resource envelope remain explicit.  The framework supplies mathematical
+language and universal quantitative machinery for analyzing general
+intelligent computation; it does not construct an AGI system or assert that
+the engineering problem of AGI has been solved.
+
+\subsection{Relation to adjacent frameworks}
+\label{subsec-related-framework-comparison}
+
+The framework combines ingredients that also occur separately in complexity
+theory, statistics, learning, control, causality, provenance, and program
+semantics.  \Cref{tab-related-framework-feature-matrix} compares the canonical
+mathematical object in representative primary sources from each area.  A
+checkmark means that the feature is native to that object; a triangle means
+that a restricted analogue is present after fixing a model, grammar,
+hypothesis class, protocol class, proof system, policy class, or programming
+language; and a dash means that the feature is not carried by that canonical
+object.  The entries concern the cited objects, not every extension developed
+in the corresponding research area.
+
+\begin{table}[p]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3.2pt}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.285\linewidth}
+                *{9}{>{\centering\arraybackslash}p{0.045\linewidth}}@{}}
+\toprule
+Canonical framework object
+& AI & PR & Sat & RV & TG & TT & SR & LC & UA \\
+\midrule
+Implicit computational complexity
+\citep{BellantoniCook1992}
+& \(\checkmark\) & -- & \(\triangle\) & \(\triangle\) & -- & -- & -- & -- & -- \\
+Algorithmic statistics and Kolmogorov structure functions
+\citep{VereshchaginVitanyi2004}
+& \(\checkmark\) & \(\triangle\) & \(\triangle\) & -- & \(\triangle\) & -- & -- & -- & -- \\
+MCSP, MKTP, and representation metacomplexity
+\citep{AllenderGrochowVanMelkebeekMooreMorgan2017,LiuPass2020}
+& \(\checkmark\) & \(\triangle\) & \(\triangle\) & \(\triangle\) & \(\checkmark\) & -- & -- & -- & -- \\
+Resource-bounded measure
+\citep{Lutz1990}
+& \(\checkmark\) & -- & -- & \(\triangle\) & -- & -- & -- & -- & -- \\
+Interactive information complexity
+\citep{Braverman2015}
+& \(\checkmark\) & \(\triangle\) & \(\triangle\) & \(\triangle\) & \(\checkmark\) & \(\triangle\) & -- & -- & \(\triangle\) \\
+Computational sufficiency
+\citep{Vu2018}
+& \(\checkmark\) & \(\checkmark\) & \(\triangle\) & -- & \(\checkmark\) & -- & -- & -- & -- \\
+Cook--Reckhow proof complexity
+\citep{CookReckhow1979}
+& \(\triangle\) & \(\triangle\) & \(\triangle\) & -- & \(\checkmark\) & -- & -- & -- & -- \\
+Statistical and sequential learning theory
+\citep{VapnikChervonenkis1971,BartlettMendelson2002,RakhlinSridharanTewari2015}
+& \(\triangle\) & \(\triangle\) & \(\triangle\) & -- & \(\checkmark\) & \(\triangle\) & -- & \(\triangle\) & \(\triangle\) \\
+Dynamic programming, control, and reinforcement learning
+\citep{Bellman1957,Puterman1994,SuttonBarto2018}
+& \(\triangle\) & \(\checkmark\) & \(\triangle\) & -- & \(\checkmark\) & \(\checkmark\) & -- & \(\checkmark\) & \(\triangle\) \\
+Causal models and provenance semirings
+\citep{Pearl1995,GreenKarvounarakisTannen2007}
+& \(\triangle\) & \(\checkmark\) & -- & -- & \(\triangle\) & \(\triangle\) & \(\checkmark\) & -- & -- \\
+Resource-aware program semantics
+\citep{Atkey2011}
+& \(\triangle\) & \(\triangle\) & -- & \(\triangle\) & -- & \(\triangle\) & -- & -- & -- \\
+Presentation-relative structural complexity (this paper)
+& \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) & \(\checkmark\) \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\begin{minipage}{0.96\linewidth}
+\raggedright
+\textbf{Columns.}
+AI: the object is defined independently of a chosen algorithm;
+PR: presentation-relative object;
+Sat: saturation over admissible representations;
+RV: complete resource vector;
+TG: target-specific coordinate;
+TT: temporal availability is typed;
+SR: structural source or ancestry is retained;
+LC: learning and control share one object;
+UA: a universal success-accountability implication.
+Symbols: \(\checkmark\), native; \(\triangle\), restricted analogue or
+available only after fixing an additional class/interface; --, absent from
+the cited canonical object.
+\end{minipage}
+\caption{Feature comparison with adjacent canonical frameworks.  The table
+compares the data retained by one mathematical object, rather than whether an
+area contains a theorem mentioning the feature.  Individual ingredients in
+the final row have substantial prior theories; the distinction is their joint
+attachment to the same cost-, source-, time-, and target-resolved saturated
+record.}
+\label{tab-related-framework-feature-matrix}
+\end{table}
+
+Implicit computational complexity characterizes resource classes through
+restricted recursion, logic, or typing rather than an externally written time
+bound; its canonical object is a function algebra or derivation system, not a
+task-indexed target-gain profile.  Algorithmic statistics minimizes model
+complexity and data-to-model discrepancy for an individual string, while
+MCSP and MKTP minimize exact circuit or program descriptions in a fixed
+grammar.  Resource-bounded measure equips a complexity class with an internal
+measure through resource-bounded martingales.  These theories supply genuine
+algorithm-independent or representation-minimizing objects, but their
+canonical records do not jointly retain target use, temporal availability,
+source ancestry, and a complete construction-to-deployment resource vector.
+
+Information complexity minimizes information revealed by protocols computing
+a declared function, and therefore has target, transcript, and success-error
+analogues.  Computational sufficiency asks for reductions through which every
+procedure in a declared collection factors.  Cook--Reckhow proof complexity
+compares proof lengths and simulations relative to a proof system.  Each is a
+precise universalization over its declared protocol, procedure, or proof
+class; the triangle entries record this restricted quantification rather than
+an absence of universality.
+
+Statistical learning theory gives uniform risk bounds over a declared
+hypothesis class, and sequential variants retain filtration order.  Dynamic
+programming and reinforcement learning optimize target-directed performance
+over policies in a presented controlled model.  Causal models encode
+intervention semantics, while provenance semirings retain algebraic input
+ancestry through a query.  Resource-aware program logics attach consumable
+resources to operational program states and prove sound cost bounds.  The
+present framework uses these roles together: the admissible representation is
+generated from the public presentation, its exact structural ancestry and
+temporal type remain attached, every construction and deployment cost is
+retained, and universal accountability converts the saturated target profile
+into a bound for every admissible computation.
+
+Under the column definitions in
+\cref{tab-related-framework-feature-matrix}, none of the cited canonical
+objects has all nine features natively.  This is a claim about their
+conjunction in one object.  It does not claim priority for representation
+minimization, resource semantics, provenance, learning bounds, Bellman
+recursions, information cost, or any other individual ingredient.
+
 \subsection{Contributions}\label{subsec-contributions}
 
-The main contributions are organized by the dependency chain used in the
-proofs. Each item is stated first in classical language and then keyed
-to the framework results that prove it.
+The contributions form three levels.  The first consists of the framework's
+new mathematical objects.  The second contains the theorems made possible by
+those objects.  The third records the established analytic ingredients used
+inside the proofs.
 
-\begin{enumerate}[label=\textup{C\arabic*.}]
-\item \emph{A machine-free presentation of problems.} A task-space
-signature separates complete states, public observables, the
-state-to-state relation slot, and terminal data, giving a common
-measurable core for decision, optimization, learning, and control
-problems (\cref{def-task-space-signature,def-observable-algebra}).
-\item \emph{An exhaustive generator decomposition.} Every represented
-positive sub-Markov operator splits into a reversible part, a directed
-drift, a lumpability quotient, a valid lift, and a boundary/killing
-part, plus a residual with no structural provenance; each component has
-an explicit normal form
-(\cref{thm-channel-exhaustiveness,thm-exhaustive-geom-normal-form,thm-exhaustive-lift-normal-form,thm-exhaustive-bdry-normal-form,thm-exhaustive-residual-normal-form}).
-\item \emph{A cost filtration on the observable algebra.} Derivability
-closure and saturated representation cost assign to every publicly
-constructible object the least budget at which its complete derivation
-exists, so that all bounds are stated against available structure rather
-than a machine model
+\paragraph{A. New foundational objects.}
+
+\begin{itemize}
+\item \emph{Task presentations as machine-independent computational objects.}
+A task-space signature separates complete states, public observables,
+state-to-state structure, admissible constructors, resource accounting, and
+terminal data
+(\cref{def-task-space-signature,def-observable-algebra}).
+
+\item \emph{Budgeted derivability and saturated represented closure.}
+Budgeted derivability closes the declared presentation under oracle-free
+constructors and represented computations, while saturated representation
+cost records the least complete budget of each derived object
 (\cref{def-budgeted-derivability-closure,def-saturated-representation-degree}).
-\item \emph{A quantitative backward cut.} Each terminal quotient factors
-through a charged joint frontier, localizing where discounted target
-mass can enter
-(\cref{thm-quantitative-backward-source-factorization}).
-\item \emph{Provenance normal forms and exact charging.} The
-five-family provenance normal form accounts for every qualified
-quotient, and an exact state--coefficient reindexing classifies the
-saturated prospective source profile
-(\cref{thm-five-family-abs-provenance,thm-exact-affordable-algebra-structural-charging,thm-universal-state-coefficient-source-decomposition}).
-\item \emph{First-hit accountability.} An exact first-hit decomposition
-converts represented finite-horizon success probability into saturated
-quotient visibility, the inequality on which all hardness statements
-rest
-(\cref{lem:exact-affordable-first-hit,thm-universal-saturated-profile-accountability}).
-\item \emph{Learning bounds from the same ledger.} Read as a
-reproducing-kernel object, the saturated filtration yields operator,
-kernel, and effective-dimension generalization bounds, including
-two-sided bounds under label corruption and dependent sampling
-(\cref{thm-fixed-operator-rademacher-bound,thm-krr-effective-dimension-bound}).
-\item \emph{Certificates for controlled systems.} Every represented
-controlled Markov system has an exhaustive selected-generator
-decomposition and a coordinatewise certificate for arrival, reach--avoid
-probabilities, mixing, hitting times, Bellman loss, and learned control
-(\cref{thm-controlled-policy-channel-decomposition,thm-universal-dynamical-certificate}).
-\item \emph{Attention as a Gibbs selector.} Softmax normalization
-satisfies exact Kullback--Leibler and Fisher--Rao identities, and every
-score, value, head, mask, residual path, and selector of an attention
-layer is compiled into the structural ledger with its source and cost
-(\cref{thm-attention-gibbs-gradient-flow,thm-attention-structural-source-compilation,thm-attention-target-gain-envelope}).
-Optimal structural Bayesian extraction equals the saturated
-represented-computation ceiling and has explicit source, channel, noise,
-drift, lift, boundary, and Bellman coordinates
-(\cref{thm-optimal-structural-extraction-saturated-ceiling,cor-noise-sample-target-size-optimal-extraction}).
-Compact latent beliefs refine this ceiling by code capacity and
-sufficiency defect, and represented attention realizes the exact
-Bayesian Fisher flow and optimal bounded-branch acquisition at the
-corresponding compiled ceiling
-(\cref{thm-compact-latent-information-sufficiency,thm-optimal-compact-latent-acquisition,cor-bayesian-posterior-attention-flow,thm-joint-compact-latent-attention-acquisition}).
-\item \emph{Structural meta-complexity.} Strict Pareto frontiers record the
-least complete resource vectors at which prospective certificates cross a
-declared gain threshold.  These frontiers are exact generalized inverses of
-the corresponding saturated profiles, admit the exact source-cell
-decomposition, and specialize to circuit and universal-program minimization
-under typed representation grammars
-(\cref{thm-strict-meta-profile-generalized-inverse,thm-source-cell-meta-complexity-exhaustion,thm-circuit-minimization-specialization,thm-program-minimization-specialization}).
-\item \emph{Application to Learning Parity with Noise.} The exact quotient
-and quotient-supported geometric exhaustion, together with the constant-noise
-spectral perimeter, isolates a single residual-ancestry numerical premise.  At fixed positive
-noise, the charged aligned-coset calculation exponentially suppresses every
-materialized located spectrum, and the residual-parity rank test shows that
-its natural fibers either fail terminal compatibility or are
-identity-equivalent
-(\cref{thm-lpn-constant-noise-materialized-spectral-closure,lem-lpn-residual-parity-spectral-fibers}).
-Under the remaining compact non-lumpable ambient bound, the complete
-saturated coordinate is at most \(2^{-n}+(1-\eta)^n\), prospective selector
-accountability yields the fixed-noise hardness theorem, and the prefix-search
-reduction gives \(P\ne NP\)
-(\cref{thm-lpn-saturated-floor,thm-lpn-one-way,cor-lpn-p-not-equal-np}).
-The framework empirical machinery gives a proof-grade discharge protocol for
-that sole premise: an empirical learner proposes the source factorization,
-and verification proves its exhaustive coverage, capacity,
-noise attenuation, error, scale law, crossover, and finite prefix, where the
-crossover and prefix checks are finite computations and the scale-law
-bounds are symbolic uniform-in-\(n\) obligations
-(\cref{cor-empirical-discovery-deterministic-universal-closure,thm-lpn-proof-grade-empirical-residual-discharge}).
+
+\item \emph{Typed structural channels.}
+The channels \(\Geom,\Caus,\Abs,\Lift,\Bdry\), and \(\Res\) carry cost,
+provenance, qualification, target-use, and residual semantics in addition to
+their operator-theoretic coordinates
+(\cref{def-admissible-channel-representatives,def-hodge-channel-split,def-abs-lift-split}).
+
+\item \emph{Affordable conditional-algebra frontiers.}
+An affordable frontier records the represented backward slice, its nested
+conditional algebras, complete carrier cost, and contextual target charges
+(\cref{def-affordable-conditional-algebra-frontier}).
+
+\item \emph{Prospective source and retrospective accounting types.}
+The framework distinguishes structure available when a transition is chosen
+from terminal-compatible records constructed after the trajectory is
+complete
+(\cref{def-pre-hit-temporally-admissible-source,cor-first-hit-accounting-not-source}).
+
+\item \emph{Algorithm-independent saturated capability profiles.}
+The master and channelwise profiles optimize over every qualified represented
+structure generated within budget, including structures constructed at
+runtime
+(\cref{def-extraction-functional,def-saturated-representation-degree}).
+
+\item \emph{Structural meta-frontiers.}
+Strict Pareto frontiers are generalized inverses of saturated profiles over
+complete resource vectors and retain their temporal and source types
+(\cref{def-strict-structural-meta-frontier,def-temporally-typed-structural-meta-frontiers}).
+
+\item \emph{Source-resolved saturated learning ledgers.}
+Learning records retain the exact structural source cell, statistical
+capacity, information, noise, selection, dynamics, and deployment costs
+(\cref{def-complete-source-resolved-learning-ledger}).
+\end{itemize}
+
+\paragraph{B. New theorems enabled by these objects.}
+
+\begin{itemize}
+\item \emph{Exhaustive channels and exact structural-charge conservation.}
+Every represented positive sub-Markov operator has the exhaustive channel
+decomposition and explicit normal forms, while every affordable frontier
+satisfies an exact Pythagorean charge identity
+(\cref{thm-channel-exhaustiveness,thm-exhaustive-geom-normal-form,thm-exhaustive-lift-normal-form,thm-exhaustive-bdry-normal-form,thm-exhaustive-residual-normal-form,thm-exact-affordable-algebra-structural-charging}).
+
+\item \emph{Universal algorithm accountability.}
+The quantitative backward cut and exact first-hit ledger bound every
+budget-admissible computation by the corresponding saturated profile
+(\cref{thm-quantitative-backward-source-factorization,lem:exact-affordable-first-hit,thm-universal-saturated-profile-accountability,thm-prospective-selector-accountability}).
+
+\item \emph{No-retrospective-source and no-uncharged-value principles.}
+Completed first-hit labels enter prospective profiles only through an
+independent pre-action representation at complete cost, and represented value
+cannot amplify prospective target gain without a charged source
+(\cref{cor-no-retrospective-first-hit-source-loophole,thm-no-uncharged-prospective-value-amplification}).
+
+\item \emph{Source-cell exhaustion.}
+The five-family provenance normal form and the exact
+state--coefficient classification exhaust the prospective source cells and
+their meta-frontiers
+(\cref{thm-five-family-abs-provenance,thm-universal-state-coefficient-source-decomposition,thm-source-cell-meta-complexity-exhaustion}).
+
+\item \emph{Source-resolved Rademacher and PAC--Bayes compilation.}
+The learning ledger gives cellwise Rademacher union and PAC--Bayes mixture
+bounds, together with operator, effective-dimension, label-noise, and
+dependent-sampling consequences
+(\cref{thm-source-resolved-saturated-learning-compilation,thm-fixed-operator-rademacher-bound,thm-krr-effective-dimension-bound}).
+
+\item \emph{Controlled-system, attention, and compact-belief compilation.}
+Selected generators, Bellman and reach--avoid quantities, attention records,
+and compact latent beliefs compile into the same source- and cost-resolved
+capability ledger
+(\cref{thm-controlled-policy-channel-decomposition,thm-universal-dynamical-certificate,thm-attention-structural-source-compilation,thm-attention-target-gain-envelope,thm-compact-latent-information-sufficiency,thm-joint-compact-latent-attention-acquisition}).
+
+\item \emph{Explicit statistical, computational, and information noise
+thresholds.}
+The source-resolved ledger separates the sample, represented-computation, and
+information limits and compares their phase transitions
+(\cref{thm-three-noise-threshold-comparison,thm-dynamical-noise-three-thresholds}).
+
+\item \emph{Finite-prefix certification of asymptotic structural envelopes.}
+For the LPN application, exact quotient and geometric exhaustion isolates one
+residual-ancestry certification target.  Exact enumeration, deterministic
+verification, symbolic inequalities, outward-rounded interval bounds,
+finite-prefix checks, and uniform scale propagation form a sufficient
+certificate whose verified relations discharge that target.  The paper proves
+this finite-to-asymptotic implication and specifies every required relation;
+it does not execute the final instantiated certificate analysis
+(\cref{def-finite-prefix-structural-scale-certificate,thm-finite-prefix-structural-extension,thm-lpn-constant-noise-materialized-spectral-closure,lem-lpn-residual-parity-spectral-fibers,cor-empirical-discovery-deterministic-universal-closure,thm-lpn-proof-grade-empirical-residual-discharge}).
+\end{itemize}
+
+\paragraph{C. Standard ingredients used inside the proofs.}
+
+\begin{itemize}
+\item Markov and sub-Markov kernels, generators, and killed resolvents;
+\item Dirichlet forms, reversible operators, and Hodge projection;
+\item conditional expectation and projection Pythagoras;
+\item lumpability, quotient operators, and state augmentation;
+\item Rademacher complexity, PAC--Bayes inequalities, effective dimension,
+and concentration bounds;
+\item Bellman equations, Bayesian identities, and Gibbs selectors; and
+\item interval arithmetic, finite enumeration, and induction.
+\end{itemize}
+
+These established ingredients serve inside a presentation-relative
+architecture that assigns complete cost, provenance, temporal availability,
+source type, and deployment semantics before compiling them into universal
+capability bounds.
+
+\subsection{Global Accounting Conventions}
+\label{subsec-global-accounting-conventions}
+
+The following conventions apply to every structural, statistical, control,
+attention, meta-complexity, and LPN record; a statement may refine them through
+a more specialized typed interface.  They collect the formal definitions and
+results cited below; they introduce no additional constructor, source channel,
+admissible record, or hypothesis.
+
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em]
+\item \emph{Complete ledger.}
+Every object credited by the ledger is evaluated through one complete
+represented derivation.  Data access, construction, representation,
+precision, evaluation, storage, optimization or verification, retained state,
+and deployment remain in its accumulated cost
+(\cref{def-budget-constructor-accounting,def-budgeted-derivability-closure}).
+
+\item \emph{Source conservation.}
+Represented postprocessing, directed transport, lifts, and boundary operations
+retain the source ancestry assigned by the exhaustive provenance normal form;
+they do not create a target-qualified source absent from that ancestry
+(\cref{thm-affordable-composition-no-creation,prop-derived-channels-create-no-structure}).
+
+\item \emph{Temporal typing.}
+Source credit at time \(t\) requires a represented prefix evaluator whose
+complete cost is charged before use and whose record is an ancestor of the
+transition being explained.  A completed first-hit or terminal record is
+retrospective accounting unless it has a separate admissible prefix
+representation
+(\cref{def-pre-hit-temporally-admissible-source,cor-first-hit-accounting-not-source,def-source-accounting-profile-separation}).
+
+\item \emph{Residual reclassification.}
+The residual is the complement left after the represented exposed-channel
+projections.  Whenever an affordable target-aligned representative satisfies
+an exposed-channel predicate, its corresponding projection is reclassified
+before the residual profile is evaluated; the prospective full-process bound
+still includes every remaining residual interaction
+(\cref{prop-family-uniform-residual-reclassification,thm-no-uniform-residual-correlation,prop-residual-excess-reclassification}).
+
+\item \emph{Typed conversion.}
+Candidates for one numerical conclusion are combined or minimized only after
+a represented converter puts them on the same complete record, probability
+law, and output unit.  Bounds in distinct statistical, structural,
+information, capacity, risk, value, or arrival coordinates otherwise remain
+separate
+(\cref{def-complete-source-resolved-learning-ledger,def-learned-control-certificate-coordinates}).
+
+\item \emph{Neutral values.}
+An unavailable candidate receives the neutral element of its local
+aggregation: one for a probability upper bound, \(+\infty\) for an unbounded
+error or loss upper bound, and zero for an unavailable lower certificate or
+empty supremum.  The local typed definition fixes the applicable neutral
+value, so absence of a candidate cannot improve a bound
+(\cref{def-complete-source-resolved-learning-ledger,def-learned-control-certificate-coordinates,def-source-resolved-attention-ledger}).
 \end{enumerate}
+
+Subsequent references to the global accounting conventions invoke these six
+rules together.  Whenever a result needs a sharper gate, normalization,
+neutral element, or temporal condition, that requirement is stated locally.
+
+\subsection{Result Nomenclature}
+\label{subsec-result-nomenclature}
+
+The type word in a formal result title records its principal conclusion, not
+the technique used in its proof.
+
+\begin{description}[leftmargin=2.4em]
+\item[Identity.]
+An exact equality, equivalence, decomposition, or generalized-inverse formula.
+
+\item[Bound.]
+An analytical upper or lower inequality, including a concentration,
+comparison, obstruction, or performance envelope.
+
+\item[Certificate theorem.]
+A finite represented proof object or verification procedure together with a
+soundness implication from deterministically verified symbolic, exact, or
+outward-rounded relations to the certified conclusion.
+
+\item[Compilation theorem.]
+A structure-preserving translation between represented formalisms that retains
+the declared law, source ancestry, temporal type, and complete cost.
+
+\item[Exhaustion theorem.]
+A universal classification showing that every admissible object lies in the
+listed cases and that no further case remains.
+
+\item[Specialization.]
+A result obtained by instantiating a preceding framework theorem in a declared
+learning, control, attention, meta-complexity, or LPN presentation.
+\end{description}
+
+A result containing several auxiliary formulas is named by the conclusion
+used downstream.  In particular, an analytical inequality is a bound rather
+than a certificate merely because its hypotheses are checkable, and an
+application-specific result is called a specialization only when it follows
+by instantiation rather than by a new application-level argument.  Auxiliary
+lemmas and propositions retain descriptive titles when their principal role
+is monotonicity, invariance, non-identifiability, or another relation outside
+these six classes.
+
+\clearpage
+\subsection{Executive theorem map}\label{subsec-executive-theorem-map}
+
+Items~1--7 below form the structural spine.  Item~8 is its source-resolved
+learning compilation, Item~9 is its inverse-capability branch, and
+Items~10--11 are the finite-to-asymptotic certification and LPN application
+branch.  Items~1 and~2 are the two faces of the same bridge: operational
+embedding constructs the kernel, while encoding adequacy identifies exactly
+which embedded kernels represent computations in the declared budget class.
+
+\begingroup
+\footnotesize
+\setlength{\abovedisplayskip}{0.25em}
+\setlength{\belowdisplayskip}{0.25em}
+\begin{enumerate}[label=\textbf{\arabic*.},leftmargin=2.2em,itemsep=0.25em,
+                  topsep=0.3em,parsep=0pt]
+
+\item \textbf{Encoding adequacy.}
+A budget-complete presentation identifies its budget-admissible operational
+rules exactly with its budget-admissible embedded generators:
+\(\displaystyle
+  \substack{M\text{ is admissible}\\\text{in }\mathcal B}
+  \Longleftrightarrow
+  \substack{L_M^{[H]}\text{ is represented}\\
+            \text{admissibly in }\mathcal B}
+\)
+(\hyperref[thm-encoding-adequacy]{Compilation: encoding adequacy}).
+
+\item \textbf{Algorithm-to-kernel embedding.}
+Every represented finite-budget computation has an exact clocked Markov or
+sub-Markov realization with generator
+\(\displaystyle L_M^{[H]}=\rho(P_M^{[H]}-I)\)
+(\hyperref[thm-algorithm-kernel-embedding]{Compilation: computation embedding}).
+
+\item \textbf{Channel and residual exhaustiveness.}
+Every represented finite generator is exhausted by the five structural
+projections and their orthogonal residual complement:
+\(\displaystyle
+  L=L^{\Geom}+L^{\Caus}+L^{\Abs}+L^{\Lift}+L^{\Bdry}+L^{\Res}
+\)
+(\hyperref[thm-channel-exhaustiveness]{Exhaustion: channel decomposition}).
+
+\item \textbf{Budgeted derivability and saturation.}
+The smallest represented constructor-and-computation grammar produces nested
+saturated budget slices:
+\(\displaystyle
+  B_1\preceq B_2
+  \Longrightarrow
+  \mathcal D_{n,\le B_1}\subseteq\mathcal D_{n,\le B_2}
+\)
+(\hyperref[lem-derivability-well-posed]{Well-posedness of the derivability filtration}).
+
+\item \textbf{Affordable-algebra structural charging.}
+For every positive-utility terminal-compatible exact quotient, the complete
+affordable conditional-algebra frontier conserves target visibility as
+\(\displaystyle
+  V_I(q_{\widehat\rho})
+  =\sum_{\ell=1}^{|\Gamma|}
+    \operatorname{ch}_I(E_{\widehat\rho,\Gamma,\ell})
+\)
+(\hyperref[thm-exact-affordable-algebra-structural-charging]{Identity: affordable-algebra charging}).
+
+\item \textbf{Temporal source/accounting separation.}
+Whenever two legal continuations share a surviving prefix but have different
+first-hit labels, the completed quotient cannot be a source at that prefix:
+\(\displaystyle
+  \operatorname{pref}_t(\omega)=\operatorname{pref}_t(\omega'),\quad
+  q_{\mathcal A}(\omega)\ne q_{\mathcal A}(\omega')
+  \Longrightarrow
+  \nexists f_t:\ q_{\mathcal A}=f_t\circ\operatorname{pref}_t
+\)
+(\hyperref[cor-first-hit-accounting-not-source]{Retrospective first-hit quotients are accounting records}).
+
+\item \textbf{Universal prospective accountability.}
+Every improvement over the declared neutral baseline is carried by a
+represented pre-hit selector at the complete enlarged budget:
+\(\displaystyle
+  \Pr\{\tau\le H\}
+  \le \operatorname{Enum}_{\nu}(\mathcal A,H)
+     +H\operatorname{Sel}^{\mathrm{sat}}_n(\Psi(B,n))
+\)
+(\hyperref[thm-prospective-selector-accountability]{Bound: prospective selector accountability}).
+
+\item \textbf{Source-resolved learning compilation.}
+For losses in \([-1,1]\), exact ancestry cells retain their individual
+statistical capacity and pay explicitly for source selection through
+\(\displaystyle
+  \widehat{\mathfrak R}_S\!\left(\bigcup_{\alpha\in\mathfrak A_{\rm learn}}
+  \mathcal H_\alpha(B,m)\right)
+  \le \max_\alpha\widehat{\mathfrak R}_S(\mathcal H_\alpha(B,m))
+  +\sqrt{2\log|\mathfrak A_{\rm learn}|/m}
+\)
+(\hyperref[thm-source-resolved-saturated-learning-compilation]{Compilation: source-resolved learning}).
+
+\item \textbf{Structural meta-frontier inversion.}
+The strict Pareto frontier is the exact generalized inverse of the saturated
+capability profile:
+\(\displaystyle
+  P_{\mathfrak D,n}^{\mathrm{sat}}(B)>\theta
+  \Longleftrightarrow
+  B\in\mathfrak P_{\mathfrak D,n}^{>}(\theta)
+\)
+(\hyperref[thm-strict-meta-profile-generalized-inverse]{Identity: strict meta-frontier inverse}).
+
+\item \textbf{Finite-to-asymptotic scale certification.}
+Exact verification of the finite prefix and the exhaustive structural
+recurrence propagates the residual-ancestry envelope to every
+record in the saturated cell at every later size:
+\(\displaystyle
+  G_{X,b,\mathfrak M,n}^{\mathrm{src,sat}}(B_n)
+  \le(1-\eta)^n\quad(n\ge n_0)
+\)
+(\hyperref[thm-lpn-proof-grade-empirical-residual-discharge]{Certificate: residual-ancestry discharge}).
+
+\item \textbf{LPN instantiation.}
+Substitution of the certified complete source envelope into prospective
+accountability bounds every computation in the declared LPN execution class by
+\begin{equation*}
+\begin{aligned}
+\operatorname{Succ}_{\mathfrak M,n,\eta}(\mathcal B_C)
+\le{}&H_C\bigl(2^{1-n}+(1-\eta)^n\bigr)\\[-1mm]
+&+\varepsilon_{\mathrm{rig}}(n,m)
++e^{-mD_{\mathrm{Ber}}(\tau\Vert\eta)}\\[-1mm]
+&+(2^n-1)2^{-m(1-H_2(\tau))}
+\end{aligned}
+\end{equation*}
+(\hyperref[thm-lpn-one-way]{LPN hardness specialization}).
+
+\end{enumerate}
+\endgroup
+\clearpage
 
 \subsection{How to read this paper}\label{subsec-reading-guide}
 
@@ -532,13 +1629,14 @@ with optimal acquisition on its saturated transfer class
 (\cref{cor-bayesian-posterior-attention-flow,thm-joint-compact-latent-attention-acquisition}).
 
 \item[\PartVII: structural meta-complexity.]
-The complete prospective records are indexed by the Pareto cost required to
-cross a target-gain threshold.  The strict structural meta-frontier is the
-exact generalized inverse of the saturated profile in
+This part develops the full inverse capability theory of the saturated
+profile.  Complete prospective records are indexed by the Pareto resource
+vectors at which a target-gain threshold is crossed.  The strict structural
+meta-frontier is the exact generalized inverse of the saturated profile in
 \cref{thm-strict-meta-profile-generalized-inverse}.  The part separates
 representation, extraction, decision, search, certification, and prospective
-deployment; recovers circuit and program minimization as typed
-specializations; and derives the meta-accountability implication in
+deployment; recovers circuit and program minimization as typed projections;
+and derives the meta-accountability implication in
 \cref{thm-structural-meta-accountability}.
 
 \item[\PartVIII: LPN.]
@@ -4304,7 +5402,7 @@ representative space.
 
 \end{proof}
 
-\begin{theorem}[Reversible geometric carrier and exhaustive directed
+\begin{theorem}[Exhaustion: reversible geometric carrier and directed
 classification]
 \label{thm-reversible-geom-exhaustive-directed-classification}
 
@@ -4988,7 +6086,7 @@ lifted data.
 
 \end{proof}
 
-\begin{theorem}[Exhaustive boundary normal form]
+\begin{theorem}[Exhaustion: boundary normal form]
 \label{thm-exhaustive-bdry-normal-form}
 
 Fix the represented boundary space \(\partial X_I\), transfer rates
@@ -5251,7 +6349,7 @@ components.
 The first result gives the exact operator identity and its budget-filtered
 interpretation.
 
-\begin{theorem}[Component exhaustiveness]\label{thm-channel-exhaustiveness}
+\begin{theorem}[Exhaustion: structural channel decomposition]\label{thm-channel-exhaustiveness}
 
 Every finite search generator satisfying the positive maximum principle
 has, relative to any declared finite channel subspaces on
@@ -5351,7 +6449,7 @@ table.
 
 The residual complement has its own canonical normal form within the same
 projection calculus.
-\begin{theorem}[Exhaustive residual normal form]
+\begin{theorem}[Exhaustion: residual normal form]
 \label{thm-exhaustive-residual-normal-form}
 
 Fix the data and projection order of
@@ -6380,7 +7478,7 @@ it does not identify that operator with a single edge gradient.
 \end{definition}
 
 The source classification enumerates the represented configurations available to the two structural channels.
-\begin{theorem}[Classification of represented Geom/Abs source configurations]\label{thm-complete-generic-source-theory}
+\begin{theorem}[Exhaustion: represented Geom/Abs source configurations]\label{thm-complete-generic-source-theory}
 
 For any presented finite task family, every dynamically qualified
 source record in the declared channel calculus whose reusable
@@ -6425,7 +7523,7 @@ affordability is the charged derivation condition of that class.
 
 \begin{proof}\phantomsection\label{proof-complete-generic-source-theory}
 
-Component exhaustiveness leaves local symmetric, local oriented,
+Structural-channel exhaustion leaves local symmetric, local oriented,
 nonlocal quotient, lifted, boundary, and residual pieces. The local
 symmetric piece is \(\Geom\), characterized by
 \Cref{thm-valid-geom-source-characterization}. The represented
@@ -6453,7 +7551,7 @@ statement.
 
 \end{proof}
 
-\begin{theorem}[Exhaustive geometric normal form]
+\begin{theorem}[Exhaustion: geometric normal form]
 \label{thm-exhaustive-geom-normal-form}
 
 Fix the symmetric local relation \(E_I\), reference weight \(m\), and
@@ -6828,7 +7926,7 @@ so \(P_\kappa U=I_{X_I}\).
 
 \end{proof}
 
-\begin{theorem}[Exhaustive finite-Lift normal form]
+\begin{theorem}[Exhaustion: finite-Lift normal form]
 \label{thm-exhaustive-lift-normal-form}
 
 Let \((\Omega,\mathcal G_{\mathrm{obs}},\pi,\Lambda)\) be a finite valid lift
@@ -6916,7 +8014,7 @@ which is \eqref{eq-exhaustive-lift-operator-normal-form}.  This is
 \(\pi\).  The structured nonlocal split of \cref{def-abs-lift-split} first
 projects onto \(\mathcal S_{\mathrm{Abs}}\) and then onto
 \(\mathcal S_{\mathrm{Lift}}\cap\mathcal S_{\mathrm{Abs}}^\perp\), proving
-\eqref{eq-exhaustive-lift-channel-projection}.  Component exhaustiveness
+\eqref{eq-exhaustive-lift-channel-projection}.  Structural-channel exhaustion
 assigns the orthogonal remainder, the defect, and the within-fiber complement
 without adding another Lift class.
 
@@ -7073,7 +8171,7 @@ finiteness axiom for computation.  \Cref{cor-all-turing-machines-represented} re
 unbounded or nonhalting DTM as one countable process; its finite kernels
 are exact stopped restrictions used for finite-budget accounting.
 
-\begin{lemma}[Operational computation embedding]\label{thm-algorithm-kernel-embedding}
+\begin{lemma}[Compilation: operational computation embedding]\label{thm-algorithm-kernel-embedding}
 
 Fix an input instance and a finite resource envelope with horizon \(H\).
 Any represented operational computation embeds as a finite Markov or
@@ -8445,7 +9543,7 @@ clock, work state, outcome record, and transcript under
 
 The five-family normal form exhausts the represented provenance of structural
 source evaluators.
-\begin{theorem}[Budgeted five-family evaluator-provenance normal form]
+\begin{theorem}[Exhaustion: budgeted five-family evaluator provenance]
 \label{thm-five-family-abs-provenance}
 
 For every finite task presentation under the budgeted derivability
@@ -8671,7 +9769,7 @@ overlapping single-tag restrictions above.
 
 \end{definition}
 
-\begin{theorem}[Exhaustive five-family source classification of valid Geom]
+\begin{theorem}[Exhaustion: five-family source classification of valid Geom]
 \label{thm-exhaustive-five-family-geom-source-classification}
 
 For every presented finite task family, every temporally admissible,
@@ -8794,13 +9892,13 @@ finite maxima.
 Finally,
 \cref{prop-derived-channels-create-no-structure,thm-caus-authority-no-substitution,lem-exact-lift-identity}
 preserve the source assignment under authorized orientation, valid lifting,
-and boundary readout.  Component exhaustiveness and the residual normal form
+and boundary readout.  Structural-channel exhaustion and the residual normal form
 \cref{thm-channel-exhaustiveness,thm-exhaustive-residual-normal-form} assign
 the remaining gradient-orthogonal component to \(\Res\).
 
 \end{proof}
 
-\begin{theorem}[Canonical exact-signature decomposition of valid Geom]
+\begin{theorem}[Exhaustion: canonical exact-signature decomposition of valid Geom]
 \label{thm-canonical-exact-signature-geom-decomposition}
 
 For every presented finite task family and saturated budget \(B\), the
@@ -8866,7 +9964,7 @@ is
 
 \end{proof}
 
-\begin{theorem}[No unclassified Geom source remains after quotient
+\begin{theorem}[Exhaustion: no unclassified Geom source after quotient
 assignment]
 \label{thm-no-unclassified-geom-source-after-quotient-assignment}
 
@@ -9097,7 +10195,7 @@ slice.
 
 \end{definition}
 
-\begin{theorem}[Exact state--coefficient decomposition and coefficient
+\begin{theorem}[Identity: state--coefficient decomposition and coefficient
 accountability for Geom]
 \label{thm-exact-state-coefficient-geom-accountability}
 
@@ -9222,7 +10320,7 @@ functional and take the supremum over the refined Geom cell to obtain
 \subsection{Universal source decomposition}
 \label{subsec:universal-state-coefficient-decomposition}
 
-\begin{theorem}[Universal state--coefficient decomposition of affordable
+\begin{theorem}[Exhaustion: state--coefficient decomposition of affordable
 structural sources]
 \label{thm-universal-state-coefficient-source-decomposition}
 
@@ -10016,8 +11114,8 @@ Finally, put
 
 \end{definition}
 
-\begin{theorem}[Exact separation of operational provenance and
-charge-bearing cores]
+\begin{theorem}[Identity: operational provenance and charge-bearing core
+separation]
 \label{thm-operational-core-provenance-separation}
 
 Fix a coefficient-complete normalized record \(\mathscr C\) in the domain of
@@ -10547,7 +11645,7 @@ primitive signature, gives advice, or gives oracle access.
 \end{definition}
 
 Encoding adequacy connects the operational representation to the declared computation model.
-\begin{theorem}[Encoding adequacy]\label{thm-encoding-adequacy}
+\begin{theorem}[Compilation: encoding adequacy]\label{thm-encoding-adequacy}
 
 Fix a budget-complete encoding of the task family. A represented
 operational transition rule is presentation-relative and lies within
@@ -12974,7 +14072,8 @@ The left-hand side is nonnegative, so
 \((a-\delta)\mathbb E_x[t\wedge\tau_T]\le(UV)(x)\).
 Monotone convergence as \(t\to\infty\) proves the first hitting-time
 bound; integration against \(\mu_0\) proves the second
-\citep{Norris1997}.
+by the finite-state stopped Dynkin formula; see
+\citet[Chapters~2--3]{Norris1997}.
 
 \end{proof}
 
@@ -13119,8 +14218,9 @@ theorem.
 
 \begin{proof}
 
-The representation theorem for closed sectorial forms gives the
-generator on the common form domain \citep{Kato1995}.  The symmetric and antisymmetric
+The first representation theorem for closed sectorial forms gives the
+generator on the common form domain
+\citep[Chapter~VI, Theorem~2.1]{Kato1995}.  The symmetric and antisymmetric
 parts are fixed by polarization, and the sector bound makes the selected
 antisymmetric form a form-bounded perturbation of
 \(\mathcal E^{\mathsf s}_1\).  Compression by \(U_q\) gives the three
@@ -15009,7 +16109,7 @@ The charging theorem identifies terminal quotient visibility with its affordable
 \label{sssec-exact-structural-charge}
 \label{subsec:exact-structural-charge}
 
-\begin{theorem}[Exact affordable-algebra structural charging]
+\begin{theorem}[Identity: affordable-algebra structural charging]
 \label{thm-exact-affordable-algebra-structural-charging}
 
 Let \(\widehat\rho^{\Gamma}\) be an affordable
@@ -15146,10 +16246,260 @@ the transfer class under finite sums, maxima, and multiplication by
 
 \end{proof}
 
+\begin{example}[An exact eight-state affordable algebra]
+\label{ex-eight-state-affordable-algebra}
+
+We give a complete finite calculation of the objects in
+\cref{def:affordable-frontier-contextual-charge,thm-exact-affordable-algebra-structural-charging}.
+The carrier is
+
+\[
+\Omega=\{0,1\}^3,
+\qquad x=(c,u,v),
+\qquad \mu_\Omega=\operatorname{Unif}(\Omega),
+\]
+
+with target and failure sectors
+
+\[
+T=\{111\},
+\qquad
+F=\{100,101,110\}.
+\]
+
+Thus the states with \(c=1\) are terminal; \(111\) is success and the
+other three are failure.  The public state observables are the three bit
+reads \(c,u,v\), and the terminal verifier is
+\(t(c,u,v)=cuv=\mathbf 1_T(c,u,v)\).  The legal initialization is
+
+\[
+\mu_0=\operatorname{Unif}\{000,001,010\}.
+\]
+
+The single toy presentation declares exactly three admissible one-step
+transition records, indexed by \(p\in\{0,\tfrac12,1\}\).  They are
+
+\begin{equation}
+\label{eq-eight-state-kernel}
+\begin{array}{c|cccc}
+x&000&001&010&011\\ \hline
+K_p(x,\cdot)&\delta_{100}&\delta_{101}
+&p\delta_{111}+(1-p)\delta_{110}&\delta_{110},
+\end{array}
+\qquad
+K_p(x,\cdot)=\delta_x\quad(c=1).
+\end{equation}
+
+The finite code for \(p\) is part of this transition record.  Every
+terminal state reachable from the support of \(\mu_0\) is reached after
+exactly one transition.
+
+\medskip\noindent\textbf{Grammar, budget, and complete slice.}
+Fix the following finite constructor grammar.  It may read any of
+\(c,u,v\), form ordered tuples of distinct coordinate reads by binary joins,
+apply the downstream verifier \(t\), and attach one of the three records
+\(K_p\) together with the displayed initialization, reference law, and
+discount normalization.  The verifier is a downstream terminal operation:
+the grammar does not feed \(t\) back into an upstream tuple constructor.
+The declared scalar cost ledger for the complete three-coordinate quotient
+record is
+
+\begin{center}
+\begin{tabular}{@{}lr@{}}
+\toprule
+charged field & cost\\
+\midrule
+primitive reads \(c,u,v\) & \(3\)\\
+two nontrivial tuple joins & \(2\)\\
+target and terminal readout & \(1\)\\
+kernel/clock, initialization, reference law, and discount record & \(2\)\\
+represented fibers and exact-intertwining verification & \(1\)\\
+\midrule
+complete carrier cost \(B_0\) & \(9\)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+These are declared representation costs, not operation counts inferred
+after the calculation.  In particular, the finite \(p\)-code is included in
+the transition row, as is the one-step clock needed for the displayed hitting
+functional.  Every contextual extension below retains the complete carrier
+and therefore has cost \(D=9\), rather than the marginal unit cost of the
+newly distinguished read.  At budget \(B_0\), the grammar admits no iteration,
+additional clock extension, feedback of the verifier into a tuple, or other
+quotient constructor; each omitted opcode is assigned declared cost greater
+than \(B_0\).
+
+For each of the three transition records, the affordable quotient-output
+slice at \(B_0=9\), modulo equality of the induced partitions, consists of
+the constant map, the verifier partition, the coordinate reads and their
+proper coordinate tuples, and the full tuple
+
+\[
+q=(c,u,v):\Omega\longrightarrow\{0,1\}^3.
+\]
+
+This list exhausts the affordable derivation slice.  Every derivation attaches
+one of the three \(K_p\) records to a constant, a verifier output, a coordinate
+read, or an ordered binary join of distinct coordinate reads.  Different
+orders for the same coordinate subset induce the same partition and hence
+the same projection and terminal-compatibility test.  The constant fails the
+nontriviality condition.  The verifier partition has zero qualified utility:
+although it separates \(T\), its zero-cell combines \(F\) with nonterminal
+states and hence does not represent the failure sector.  Every proper
+coordinate tuple also fails terminal compatibility.  Indeed, for the three
+two-coordinate tuples, respectively,
+
+\[
+(c,u):110\sim111,
+\qquad
+(c,v):101\sim111,
+\qquad
+(u,v):011\sim111,
+\]
+
+and deleting another coordinate cannot repair the failure.  The full tuple
+\(q\) is the identity partition, so its fibers are represented and both
+terminal sectors are unions of fibers.  If \(\bar K_p\) denotes the induced
+quotient kernel, then \(K_pU_q=U_q\bar K_p\) holds exactly.  The quotient
+strictly refines the verifier partition.  Write \(q_p\) for the complete
+quotient record obtained by attaching \(K_p\) to this map.  Consequently
+\(q_p\) is the sole potentially positive-utility quotient record for each
+\(p\), with positive utility at \(p=\tfrac12,1\); at \(p=0\) the same exact
+quotient map has utility zero.
+
+\medskip\noindent\textbf{Backward cut and conditional algebras.}
+Choose the ordered backward cut
+
+\[
+\Gamma=(c,u,v),
+\qquad
+J_0=*,\quad J_1=c,\quad J_2=(c,u),\quad
+J_3=(c,u,v)=q.
+\]
+
+This cut separates every state-dependent path from the public reads to the
+terminal quotient.  The kernel, normalization, terminal cells, fiber records,
+and exact-intertwining check remain in the downstream carrier.  In the state
+order \(000,001,010,011,100,101,110,111\), the centered target contrast and
+its successive conditional expectations are
+
+\begin{align}
+y&=\mathbf 1_T-\mu_\Omega(T)
+=\frac18(-1,-1,-1,-1,-1,-1,-1,7),
+\label{eq-eight-state-projections-a}\\
+P_{J_1}y&=\frac18(-1,-1,-1,-1,1,1,1,1),\notag\\
+P_{J_2}y&=\frac18(-1,-1,-1,-1,-1,-1,3,3),\notag\\
+P_{J_3}y&=y.\notag
+\end{align}
+
+With the \(L^2(\mu_\Omega)\) norm,
+
+\begin{equation}
+\label{eq-eight-state-projection-norms}
+\|y\|_2^2=\frac7{64},
+\qquad
+\|P_{J_1}y\|_2^2=\frac1{64},
+\qquad
+\|P_{J_2}y\|_2^2=\frac3{64},
+\end{equation}
+
+and orthogonality of the conditional increments gives
+
+\begin{equation}
+\label{eq-eight-state-increment-norms}
+\bigl\|(P_{J_1}-P_{J_0})y\bigr\|_2^2=\frac1{64},
+\quad
+\bigl\|(P_{J_2}-P_{J_1})y\bigr\|_2^2=\frac2{64},
+\quad
+\bigl\|(P_{J_3}-P_{J_2})y\bigr\|_2^2=\frac4{64}.
+\end{equation}
+
+The normalized projection increments are therefore
+\(1/7,2/7,4/7\), whose sum is one.
+
+\medskip\noindent\textbf{Utility, charges, and the rule-uniform bound.}
+For an arbitrary admissible \(K_p\), the one-step success probability is
+
+\begin{equation}
+\label{eq-eight-state-success}
+\alpha_p=\Pr_{\mu_0}\{\tau_T\le1\}=\frac p3.
+\end{equation}
+
+Take \(\lambda=1\).  Since success can occur only on the first transition,
+the uniformized target functional in
+\eqref{eq:first-hit-uniformization} is
+\(A_T^q=\alpha_p/(1+\lambda)=p/6\).  The quotient uses the canonical
+pushforward comparison, so \(C_q=1\), and hence
+
+\[
+A_q=\min\{1,\lambda C_q^{-1}A_T^q\}=\frac p6,
+\qquad
+V(q_p)=A_q\frac{\|P_qy\|_2^2}{\|y\|_2^2}=\frac p6.
+\]
+
+Writing \(E_\ell\) for the complete contextual carrier with
+\(J_{\ell-1}\subset J_\ell\) distinguished, the three charges are exactly
+
+\begin{equation}
+\label{eq-eight-state-contextual-charges}
+\begin{aligned}
+\operatorname{ch}(E_1)&=\frac p6\frac17=\frac p{42},\\
+\operatorname{ch}(E_2)&=\frac p6\frac27=\frac p{21},\\
+\operatorname{ch}(E_3)&=\frac p6\frac47=\frac{2p}{21}.
+\end{aligned}
+\end{equation}
+
+Thus the theorem's remainder vanishes and its charge-conservation identity
+is visible numerically:
+
+\begin{equation}
+\label{eq-eight-state-charge-conservation}
+\sum_{\ell=1}^3\operatorname{ch}(E_\ell)
+=\frac p{42}+\frac p{21}+\frac{2p}{21}
+=\frac p6
+=V(q_p).
+\end{equation}
+
+Let \(m^{\mathrm{sat}}\) denote the saturated profile of this single toy
+presentation.  Its supremum ranges over the three admissible \(K_p\) records.
+Because the exhaustive affordable slice has no other positive-utility
+quotient,
+
+\begin{equation}
+\label{eq-eight-state-saturated-profile}
+m^{\mathrm{sat}}(B_0)
+=\max_{p\in\{0,\frac12,1\}}V(q_p)
+=\frac16.
+\end{equation}
+
+Combining \eqref{eq-eight-state-success} and
+\eqref{eq-eight-state-charge-conservation} yields, simultaneously for every
+admissible transition rule \(K_p\), the exact class bound
+
+\begin{equation}
+\label{eq-eight-state-rule-bound}
+\Pr_{\mu_0}\{\tau_T\le1\}
+=2V(q_p)
+=2\sum_{\ell=1}^3\operatorname{ch}(E_\ell)
+\le 2m^{\mathrm{sat}}(B_0)
+=\frac13,
+\end{equation}
+
+with equality for \(K_1\).  By comparison, applying the generic universal
+accountability estimate \eqref{eq-pointwise-algorithm-profile-bound} with
+\(H=1\) and a declared first-hit compilation ceiling \(B_{\mathcal A}=B_0\)
+gives the valid but coarser bound \(\alpha_p\le e/6\).  The sharper
+\(1/3\) above comes from evaluating the entire finite affordable algebra and
+its exact conditional charges, rather than replacing the one-step discount
+by the universal \(e^{-1}\) lower bound.
+
+\end{example}
+
 \Cref{fig-contextual-charge} records the charge identity in
 \Cref{thm-exact-affordable-algebra-structural-charging}.
 
-\begin{figure}[tbp]
+\begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[fw diagram]
   \node[fw box,minimum width=1.3cm] (j0) at (-5.2,0.6) {\(J_0\)};
@@ -15403,7 +16753,7 @@ frontier only through an independent pre-hit representation.
 
 The five-family normal form gives a finite typed backward slice with
 class-preserving expansion cost. The encoded topological order is
-family uniform. Since the terminal quotient is included,
+family-uniform. Since the terminal quotient is included,
 \(q_{\widehat\rho}\) factors through the represented join of
 \(\Gamma_5\). Every selected state-dependent vertex has at least one
 authenticated five-family tag, and interface vertices have exposed
@@ -16477,7 +17827,7 @@ The resulting profile reductions are
 reduce compensated dynamic success to exact
 quotient visibility through a represented first-hit construction.
 
-\begin{theorem}[Exact quotient geometry is visibility-dominated]
+\begin{theorem}[Bound: exact-quotient geometry visibility domination]
 \label{thm-exact-quotient-geometry-visibility-dominated}
 
 For every budget \(B\),
@@ -17404,7 +18754,10 @@ P_{q_{\mathcal A}}\), and hence
 
 Conditional on requiring \(j\) discrete transitions to hit the target,
 uniformization for \(L_{\Omega_I}=P-I\) gives the discount factor
-\((1+\lambda)^{-j}\) \citep{Jensen1953}. Consequently,
+\((1+\lambda)^{-j}\): the sum of the \(j\) unit-rate holding times is
+Gamma\((j,1)\), whose Laplace transform at \(\lambda\) is exactly this
+factor.  This is Jensen's classical uniformization construction
+\citep{Jensen1953}. Consequently,
 
 \begin{equation}
 \label{eq:first-hit-uniformization}
@@ -17684,7 +19037,7 @@ discussion.
 \subsection{Prospective selector accountability}
 \label{subsec:prospective-selector-accountability}
 
-\begin{theorem}[Prospective selector accountability and no-free
+\begin{theorem}[Bound: prospective selector accountability and no-free
 target-aligned rearrangement]
 \label{thm-prospective-selector-accountability}
 
@@ -18503,7 +19856,7 @@ current is \(\Res\).}
 \begin{definition}[Core-refined first-hit accounting profile]
 \label{def-core-refined-first-hit-accounting-profile}
 
-Fix a saturated ceiling \(B\), a finite horizon bound \(H_B\), and a
+Fix a saturated ceiling \(B\), a finite-horizon bound \(H_B\), and a
 monotone sublinear positively homogeneous family functional
 \(\mathfrak M_n\).  Apply the coefficient-complete five-family
 normalization to the exact first-hit record of a represented computation in
@@ -19312,7 +20665,7 @@ explicit first-hit ledger gives the displayed ceiling
 \label{rem-saturated-residual-accountability}
 
 Apply Theorem
-\hyperref[thm-channel-exhaustiveness]{Component exhaustiveness} to the
+\hyperref[thm-channel-exhaustiveness]{structural-channel exhaustion theorem} to the
 full lifted generator of \(\mathcal A\). Its five structural components
 and the two residual coordinates classified by
 \cref{thm-exhaustive-residual-normal-form} may interact through cancellation, memory,
@@ -19451,7 +20804,7 @@ The first inequality is an accounting identity; prospective hardness uses
 
 \end{definition}
 
-\begin{theorem}[Full cost-tagged saturated-profile decomposition]
+\begin{theorem}[Exhaustion: full cost-tagged saturated-profile decomposition]
 \label{thm-full-saturated-profile-decomposition}
 
 Fix a represented family, its resource algebra, and the budgeted
@@ -21176,7 +22529,8 @@ O\!\left(
 \]
 Choosing
 \(q=C(1+\sqrt{\Lambda/\lambda})\log(2/\varepsilon)\) with \(C\)
-large proves the claim \citep{Trefethen2019}.
+large proves the claim by the Bernstein-ellipse coefficient and truncation
+bounds \citep[Theorems~8.1--8.2]{Trefethen2019}.
 
 \end{proof}
 
@@ -21467,7 +22821,7 @@ profile by the exact first-hit quotient at the enlarged budget
 
 \PartII embeds every presentation-relative uniform oracle-free
 budget-admissible algorithm as a finite Markov generator on each bounded
-clocked transcript carrier. Component exhaustiveness then places
+clocked transcript carrier. Structural-channel exhaustion then places
 every target-relevant part of that generator in \(\Geom\),
 \(\Caus\), \(\Abs\), valid \(\Lift\),
 \(\Bdry\), or \(\Res\). Valid Lift and Bdry retain
@@ -21722,7 +23076,7 @@ support in a declared basis of \(\widehat G\).  It does not alter
 
 \end{definition}
 
-\begin{theorem}[Exact transport and complete charging for noisy combinations]
+\begin{theorem}[Identity: noisy-combination transport and complete charging]
 \label{thm-charged-noisy-combination-transport}
 
 For the record of
@@ -22435,7 +23789,8 @@ y^\mathsf TKy-\operatorname{tr}K
 \le2e^{-t}
 \]
 
-for an absolute \(C\) \citep{RudelsonVershynin2013}. Apply this estimate
+for an absolute \(C\), which is precisely the Hanson--Wright estimate of
+\citet[Theorem~1.1]{RudelsonVershynin2013}. Apply this estimate
 to every member \(K_0\) of the declared net with
 \(t=\log(2M_B/\delta)\), use \(\|K_0\|_{\mathrm{op}}\le1\), and take a
 union bound. For an arbitrary \(K\) choose a net point \(K_0\) with
@@ -22690,7 +24045,7 @@ profile inequality. In the absence of a represented evaluator, the
 \hyperref[prop-oracle-accounting]{Oracle accounting proposition} places
 the output outside the original derivability closure. Once declared
 primitive, the
-\hyperref[thm-channel-exhaustiveness]{Component exhaustiveness theorem}
+\hyperref[thm-channel-exhaustiveness]{structural-channel exhaustion theorem}
 and the
 \hyperref[thm-five-family-abs-provenance]{Universal five-family evaluator
 provenance normal-form theorem} classify its state-dependent
@@ -22766,7 +24121,7 @@ Relativized accountability applies the same derivability ledger after a declared
 \begin{lemma}[Universal derivability accountability relativizes]\label{thm-framework-relativizes}
 
 For every fixed oracle presentation \(\mathcal T^O\), the
-\hyperref[thm-encoding-adequacy]{Encoding adequacy theorem}, the
+\hyperref[thm-encoding-adequacy]{encoding-adequacy compilation theorem}, the
 \hyperref[prop-forced-derivable-witness]{Forced derivable witness
 proposition}, and the
 \hyperref[thm-full-derivability-characterization]{Full derivability
@@ -22884,7 +24239,7 @@ represented derivation in \(\mathcal T\).
 \begin{lemma}[Algebraic-oracle accountability and presentation
 separation]\label{thm-framework-algebrizes}
 
-The \hyperref[thm-encoding-adequacy]{Encoding adequacy theorem}, the
+The \hyperref[thm-encoding-adequacy]{encoding-adequacy compilation theorem}, the
 \hyperref[prop-forced-derivable-witness]{Forced derivable witness
 proposition}, and the
 \hyperref[thm-full-derivability-characterization]{Full derivability
@@ -22906,7 +24261,7 @@ across nonconservative algebraic extensions.
 
 \begin{proof}\phantomsection\label{proof-framework-algebrizes}
 
-The \hyperref[thm-encoding-adequacy]{Encoding adequacy theorem} and the
+The \hyperref[thm-encoding-adequacy]{encoding-adequacy compilation theorem} and the
 \hyperref[lem:exact-affordable-first-hit]{Exact budget-admissible
 first-hit quotient lemma} operate on the finite update induced by the
 declared primitive operations. An
@@ -23236,13 +24591,13 @@ under the declared budget structure \(\mathcal B\), with ceiling
 \(B=b(n)\). This accounting includes public basis changes, represented
 quotients, runtime-generated observables, admissible finite-horizon
 statistics, boundary readouts, and valid lifts. A learning algorithm is
-itself a budget-admissible oracle-free computation on the presented
-data; ordinary polynomial-time learning corresponds to
-\(\mathcal B_{\mathrm{poly}}\). Consequently, generalization within this
-formalism requires a fixed or learned observable algebra that captures
-target mass at a statistical cost within the same saturated represented
-closure. The choice \(\mathcal B=\mathcal B_{\mathrm{poly}}\) yields the
-polynomial-time specialization.
+itself a budget-admissible oracle-free computation on the presented data and
+therefore obeys the global accounting conventions of
+\cref{subsec-global-accounting-conventions}. Consequently, generalization
+within this formalism requires a fixed or learned observable algebra that
+captures target mass at a statistical cost within the same saturated
+represented closure. The choice \(\mathcal B=\mathcal B_{\mathrm{poly}}\)
+yields the ordinary polynomial-time specialization.
 
 We consider three settings.
 
@@ -23280,7 +24635,7 @@ family-uniformity, and monotone terminal filtration.
 
 \textbf{\PartII.} A budget-admissible oracle-free computation becomes a
 positive generator on each finite clocked transcript carrier.
-Component exhaustiveness decomposes every budget-admissible generator
+Structural-channel exhaustion decomposes every budget-admissible generator
 into \(\Geom\), \(\Caus\), \(\Abs\),
 \(\Lift\), \(\Bdry\), plus \(\Res\) residual
 accounting. The term \(\Res\) contains no additional exposed
@@ -23345,21 +24700,19 @@ declared budget.
 \end{proof}
 
 \paragraph{Source-resolved convention for Part~IV.}
+The global accounting conventions of
+\cref{subsec-global-accounting-conventions} apply throughout this part.
 Every hypothesis class, operator, kernel, prior, posterior, learned feature,
-decoder, and deployed selector below is restricted by its exact source index
-when a target-qualified structural use is made.  The complete quantitative
+decoder, and deployed selector is restricted by its exact source index when a
+target-qualified structural use is made.  The complete quantitative
 compilation is
 \cref{def-complete-source-resolved-learning-ledger,%
 thm-source-resolved-saturated-learning-compilation}.  Thus each statistical
-bound retains \(B,m,\delta\), its source cell, and its complete
-construction cost.  A noisy target-dependent reveal additionally retains
-its source-assigned channel coefficient and noise parameter.  Generic
-population--empirical deviations remain in risk units; they enter a
-target-alignment, recovery, selector, or arrival bound only through a
-represented same-law, same-unit converter.  This convention applies to
-every theorem in this part, including fixed and learned kernels, NTK feature
-learning, effective dimension, PAC--Bayes, dependent samples, channel
-learning, active querying, and the complete learning decomposition.
+bound retains \(B,m,\delta\), its source cell, complete construction cost,
+and, for a noisy target-dependent reveal, its source-assigned channel
+coefficient and noise parameter.  Generic population--empirical deviations
+remain in risk units and enter a target-alignment, recovery, selector, or
+arrival bound only through a represented same-law, same-unit converter.
 
 \section{The Observable Algebra Is a Reproducing-Kernel Hilbert
 Space}\label{the-observable-algebra-is-a-reproducing-kernel-hilbert-space}
@@ -23778,9 +25131,12 @@ gain is governed by
 
 \begin{proof}\phantomsection\label{proof-fixed-operator-rademacher-bound}
 
-Apply the standard uniform generalization inequality for an
-\(L_\ell\)-Lipschitz loss
-\citep{BartlettMendelson2002,LedouxTalagrand1991}: with probability at
+Apply the empirical uniform generalization inequality for an
+\(L_\ell\)-Lipschitz loss: the risk step is
+\citet[Theorem~8]{BartlettMendelson2002}, and the scalar contraction step is
+\citet[Theorem~4.12]{LedouxTalagrand1991} (equivalently,
+\citet[Theorem~12(4)]{BartlettMendelson2002}), in the normalization used
+here.  Thus, with probability at
 least \(1-\delta\),
 uniformly over a class \(\mathcal F\),
 \(L(h)\le L_S(h)+2L_\ell\widehat{\mathfrak R}_S(\mathcal F)+3\sqrt{\log(2/\delta)/(2m)}\).
@@ -23910,7 +25266,8 @@ because \(\|\sigma\|_2^2=m\). Moreover
 \(\sup_{f\in\mathcal F_{A_\theta}(R)}\|f\|_2\le R/\sqrt\eta\).
 The finite-union Rademacher lemma therefore contributes
 \(R\sqrt{2\log|\Theta_\rho|}/(m\sqrt\eta)\)
-\citep{Massart2000}. Taking the infimum over
+as the finite-family consequence of
+\citet[Theorem~3]{Massart2000}. Taking the infimum over
 \(\rho\) gives the displayed Rademacher bound, and the same
 symmetrization/contraction inequality used in the fixed-operator theorem
 gives the stated generalization form.
@@ -24409,7 +25766,9 @@ the feature map preserves the observable/terminal interface required by
 
 \begin{proof}\phantomsection\label{proof-kernel-trick-lift}
 
-This is the representer theorem \citep{KimeldorfWahba1971}. Decompose any candidate
+This is the representer conclusion historically associated with
+\citet{KimeldorfWahba1971}; the argument needed here is self-contained.
+Decompose any candidate
 \(f\in\mathcal H_k\) into \(f=f_S+f_\perp\), where \(f_S\) lies in the
 span of \(\{k_{x_i}\}_{i=1}^m\) and \(f_\perp\) is orthogonal to that
 span. Since \(f_\perp(x_i)=\langle f_\perp,k_{x_i}\rangle=0\), it does
@@ -25000,9 +26359,11 @@ Put \(k=\widehat d_{\mathrm{eff}}(\varepsilon)\). By definition,
 \(M_{\mathrm{pop}}(k)\ge1-\varepsilon-\Delta_m\), so the smallest
 population prefix containing mass \(1-(\varepsilon+\Delta_m)\) has
 size at most \(k\). This is the displayed inequality. Matrix Bernstein
-and Davis--Kahan are standard ways to verify the stated event when their
-boundedness and eigengap hypotheses hold
-\citep{Tropp2012,DavisKahan1970}.
+\citep[Theorem~1.4]{Tropp2012} and the Davis--Kahan sin-\(\Theta\) theorem
+\citep[\S3]{DavisKahan1970} are standard ways to verify the stated event
+when their boundedness and eigengap hypotheses hold.  They are cited only
+as verification routes: the concentration event itself is an explicit
+hypothesis of this lemma.
 
 \end{proof}
 
@@ -25131,10 +26492,11 @@ give the explicit simultaneous radius
 \begin{proof}\phantomsection\label{proof-effective-degree-error-bars}
 
 Bounded kernels give operator-norm concentration of the empirical
-Gram/integral operator by matrix Bernstein \citep{Tropp2012}. For a fixed spectral band,
+Gram/integral operator by matrix Bernstein
+\citep[Theorem~1.4]{Tropp2012}. For a fixed spectral band,
 applying the spectral projector to sub-Gaussian labels gives the stated
 square-root concentration; hard cutoffs add the Davis--Kahan projector
-perturbation term \citep{DavisKahan1970}, while smoothed projectors are Lipschitz and avoid
+perturbation term \citep[\S3]{DavisKahan1970}, while smoothed projectors are Lipschitz and avoid
 eigengap denominators. Uniform cutoff control follows by applying a
 DKW-style envelope to the cumulative smoothed spectral distribution, or
 by a union bound over the finite empirical spectrum. The map
@@ -25334,9 +26696,11 @@ divergence and every source-dependent prior construction remain charged.
 
 By hypothesis, the prior is fixed independently of the labeled sample
 to which the inequality is applied. It is therefore an admissible
-PAC--Bayes prior. McAllester's
-PAC-Bayes inequality for bounded losses gives the displayed inequality
-for any fixed legal prior \citep{McAllester1999,Maurer2004}.
+PAC--Bayes prior.  Maurer's bounded-loss PAC--Bayes inequality
+\citep[Theorem~5]{Maurer2004}, followed by Pinsker's inequality and the
+harmless relaxation from \(m\) to \(m-1\), gives the displayed inequality
+for any fixed legal prior.  \citet{McAllester1999} is the historical
+antecedent, not an additional premise.
 Substituting \(P^{\mathsf{str}}_{E,H}\) gives
 the KL in the definition above. The Gaussian KL formula on a positive
 semidefinite precision is the standard finite-dimensional formula
@@ -25608,8 +26972,8 @@ current. Rayleigh monotonicity gives monotonicity for the standard
 grounding order. Submodularity is an explicit additional hypothesis:
 it is not implied by Rayleigh monotonicity for an arbitrary query
 operation or current functional. Under that hypothesis, the
-Nemhauser--Wolsey greedy theorem gives the batch approximation
-\citep{NemhauserWolseyFisher1978}. The stopping rule is the value-of-information inequality
+Nemhauser--Wolsey--Fisher greedy theorem gives the batch approximation
+\citep[Theorem~4.2]{NemhauserWolseyFisher1978}. The stopping rule is the value-of-information inequality
 comparing the best marginal certificate drop with query cost.
 
 \end{proof}
@@ -25979,7 +27343,7 @@ unverified condition caused it.
 
 \end{definition}
 
-\begin{theorem}[Conditional completeness of the geometry evaluation protocol]
+\begin{theorem}[Certificate: conditional completeness of the geometry evaluation protocol]
 \label{thm:conditional-geometry-protocol-completeness}
 
 Assume the protocol of
@@ -27185,7 +28549,7 @@ existing source ledger.}
 \label{fig-learned-readout-provenance-split}
 \end{figure}
 
-\begin{corollary}[Residual-noise-order specialization]
+\begin{corollary}[Specialization: residual-noise order]
 \label{cor-learned-readout-residual-noise-order}
 
 In the setting of
@@ -27873,7 +29237,7 @@ provenance assertions.
 \section{Complete Learned-Source Exhaustion and Noise Degradation}
 \label{sec:learned-source-exhaustion-noise-degradation}
 
-\begin{corollary}[Complete structural exhaustion of learned sources]
+\begin{corollary}[Exhaustion: learned structural sources]
 \label{cor-complete-structural-exhaustion-learned-sources}
 
 Adopt the setting of
@@ -28123,7 +29487,7 @@ a displayed minimum.  This ceiling changes no public constructor algebra.
 
 \end{definition}
 
-\begin{theorem}[Source-resolved compilation of saturated learning]
+\begin{theorem}[Compilation: source-resolved saturated learning]
 \label{thm-source-resolved-saturated-learning-compilation}
 
 Use the ledger of
@@ -28421,7 +29785,7 @@ classification inherited by every prospective learned source.
     \draw[draw=fwInk,line width=.75pt] (\x.east) -| (rightbus);
   \draw[fw arrow] (rightbus) -- (min.west);
 \end{tikzpicture}
-\caption{Complete structural exhaustion of learned sources. The complete
+\caption{Exhaustion of learned structural sources. The complete
 learned record receives one of the 4,960 existing Part~III indices from
 \cref{cor-complete-structural-exhaustion-learned-sources}; its exact source
 visibility is combined recordwise with the applicable statistical,
@@ -29308,7 +30672,8 @@ Berbee coupling, applied separately to the odd and even block sequences,
 couples each sequence to \(\mu_a\) independent blocks with total failure
 probability at most \((\mu_a-1)\beta(a)\).  The union of the two coupling
 failures therefore has probability at most
-\(2(\mu_a-1)\beta(a)\) \citep{Paulin2015}.
+\(2(\mu_a-1)\beta(a)\), by the independent-block coupling of
+\citet[Lemma~4.1]{Yu1994}.
 
 Conditional on successful coupling, apply the two-sided independent-sample
 Rademacher inequality to each parity class at failure probability
@@ -29550,7 +30915,7 @@ gives, for \(0<\lambda<3/c\),
 The same integration, Markov, and change-of-measure steps prove
 \cref{eq-martingale-structural-pac-bayes-bernstein}.  A weighted union bound
 over a represented grid proves the final assertion
-\citep{SeldinEtAl2012}.
+\citep[Theorems~7--8]{SeldinEtAl2012}.
 \end{proof}
 
 \subsection{Online regret and deployment}
@@ -29588,7 +30953,8 @@ contraction for an \(L_\ell\)-Lipschitz loss bounds the symmetrized loss tree
 by \(L_\ell\) times the prediction tree, and the two tangent copies produce
 the factor two.  The normalized prediction-tree supremum is
 \cref{eq-sequential-structural-rademacher}; multiplication by \(T\) proves
-\cref{eq-structural-online-regret} \citep{RakhlinSridharanTewari2015}.
+\cref{eq-structural-online-regret}
+\citep[Theorem~8]{RakhlinSridharanTewari2015}.
 The statistical minimax inequality specifies a strategy on the history tree.
 The framework admits it as a computation only through a represented
 implementation, whose tree, cover, or declared oracle and evaluation cost are
@@ -31799,9 +33165,11 @@ dynamical-system analysis: positive generators, reversible conductance,
 authorized directed current, represented quotients and lifts, boundary
 readouts, killed resolvents, temporal source admissibility, and learned
 geometry.  This part assembles those ingredients for controlled dynamics.
-An action rule selects a represented generator; it creates no additional
-structural channel.  Its geometry is evaluated by the same saturated
-\(\Geom/\Caus/\Abs\) ledger used for search and learning.
+Under the global accounting conventions of
+\cref{subsec-global-accounting-conventions}, an action rule selects a
+represented generator while retaining its complete cost and source ancestry.
+Its geometry is evaluated by the same saturated \(\Geom/\Caus/\Abs\) ledger
+used for search and learning.
 
 The direct setting is a finite represented carrier.  A deterministic system
 is a point kernel, a randomized system is a Markov kernel, and a
@@ -31865,7 +33233,7 @@ the selected finite computation have complete saturated cost at most \(B\).
 
 \end{definition}
 
-\begin{theorem}[Clocked policy embedding and exhaustive channel decomposition]
+\begin{theorem}[Compilation: clocked policies and exhaustive channel decomposition]
 \label{thm-controlled-policy-channel-decomposition}
 
 Fix a controlled dynamical presentation, a horizon \(H\), and a represented
@@ -32544,7 +33912,7 @@ controller.}
 \label{fig-pomdp-one-step-factorization}
 \end{figure}
 
-\begin{theorem}[POMDP Markov embedding, source accounting, and target geometry]
+\begin{theorem}[Compilation: POMDP Markov embedding, source accounting, and target geometry]
 \label{thm-controlled-pomdp-clocked-embedding}
 
 The kernel factorization in
@@ -35299,7 +36667,7 @@ uniformized kernel gives
 \cref{eq-controlled-spectral-profile-mixing}; the factor \(q_\Phi\) is
 already contained in the generator-rate identity
 \(\Lambda_\Phi^{\rm mix}=q_\Phi\Lambda_K^{\rm mix}\)
-\citep{GoelMontenegroTetali2006}.
+\citep[Theorem~2.1]{GoelMontenegroTetali2006}.
 
 The logarithmic Sobolev and modified logarithmic Sobolev conclusions follow
 by differentiating the corresponding norms and entropy along \(S_t\).
@@ -35312,10 +36680,13 @@ is the Dirichlet principle.  Form comparison follows directly from the
 variational definitions.  Finally, Gr\"onwall's inequality applied to
 \(\mathscr H(P_tf)\), followed by the two norm comparisons, proves
 \cref{eq-controlled-hypocoercive-decay}.
-The Nash and weak-Poincar\'e implications use the normalizations of
+The Nash and weak-Poincar\'e formulas use the normalization conventions of
 \citet{CarlenKusuokaStroock1987} and \citet{RocknerWang2001}.
-The transport and hypocoercive entries use, respectively,
+The transport and hypocoercive notation follows, respectively,
 \citet{BobkovGotze1999,OttoVillani2000} and \citet{Villani2009}.
+These citations fix conventions only: the theorem assumes the corresponding
+audited inequality constants, and the implications above were derived
+directly from those assumed inequalities.
 
 \end{proof}
 
@@ -35495,7 +36866,7 @@ charged to the selected-policy derivation.
 
 \end{definition}
 
-\begin{theorem}[Exact controlled Bellman and committor identities]
+\begin{theorem}[Identity: controlled Bellman and committor formulas]
 \label{thm-controlled-committor-bellman}
 
 The finite-horizon committors satisfy
@@ -35547,8 +36918,10 @@ pointwise maximum preserves the same Lipschitz constant.  Hence the reward
 operators are \(\beta\)-contractions and their fixed points equal the usual
 discounted returns by iteration.  Finally, Lagrange multipliers for the
 simplex constraint give \(p_a\propto e^{q_a/\tau}\); substitution proves
-\cref{eq-controlled-soft-bellman-gibbs}
-\citep{Bellman1957,Puterman1994,BertsekasTsitsiklis1996}.
+\cref{eq-controlled-soft-bellman-gibbs}.  The dynamic-programming lineage is
+historically represented by
+\citet{Bellman1957,Puterman1994,BertsekasTsitsiklis1996}; no external result
+from those texts is needed for the displayed derivation.
 
 \end{proof}
 
@@ -35809,8 +37182,10 @@ which proves \cref{eq-controlled-dirichlet-principle}.  Equation
 integrated against \(\mu_0\).  The hitting-time estimate is Dynkin's formula
 applied to \(D(X_{t\wedge\tau_{T^+}})\), followed by monotone convergence;
 the quotient-defect refinement is exactly
-\cref{thm-caus-drift-survives-defect}
-\citep{FukushimaOshimaTakeda2011}.
+\cref{thm-caus-drift-survives-defect}.  The citation
+\citet{FukushimaOshimaTakeda2011} records the Dirichlet-form lineage; the
+finite-state variational and stopped-process identities used here have been
+proved in the preceding lines.
 
 \end{proof}
 
@@ -37187,7 +38562,7 @@ statement.
 
 \end{proof}
 
-\begin{theorem}[Fast-fiber and clocked-defect Lift certificate split]
+\begin{theorem}[Bound: fast-fiber and clocked-defect Lift split]
 \label{thm-controlled-lift-transfer-certificate-split}
 
 Fix one complete valid-Lift record with transported target and failure
@@ -38655,7 +40030,7 @@ single derivation whose cost is displayed in
 
 \end{definition}
 
-\begin{theorem}[Exact resource-valued active-acquisition recursion]
+\begin{theorem}[Identity: resource-valued active-acquisition recursion]
 \label{thm-budgeted-active-acquisition-recursion}
 
 For a represented surviving history \(h\) at time \(t\), let
@@ -38740,7 +40115,7 @@ selector, the resource-valued record recursion remains the exact statement.
 
 \end{proof}
 
-\begin{theorem}[Active optimality equals affordable saturated construction]
+\begin{theorem}[Identity: active optimality and affordable saturated construction]
 \label{thm-active-optimality-saturated-construction}
 
 At every declared \((n,m,\zeta,H,B)\),
@@ -39362,7 +40737,7 @@ an analytic device; it does not supply an affordable mixture or policy.
 
 \end{definition}
 
-\begin{theorem}[Exact affordable occupation-flow primal]
+\begin{theorem}[Identity: affordable occupation-flow primal]
 \label{thm-exact-affordable-occupation-flow-primal}
 
 Every complete active record satisfies
@@ -40305,7 +41680,7 @@ and are used only as a nonnegative cover.
 
 \end{definition}
 
-\begin{theorem}[Exact source-resolved accounting of actionable Bayesian gain]
+\begin{theorem}[Identity: source-resolved accounting of actionable Bayesian gain]
 \label{thm-exact-source-resolved-structural-bayesian-gain}
 
 Let \(H_B(n)\) be the largest refined horizon admitted by the complete
@@ -41180,7 +42555,7 @@ gives \cref{eq-bayes-fisher-rao-action}.  The cost assertion is the complete
 Bayesian-record definition.
 \end{proof}
 
-\begin{theorem}[Optimal structural extraction equals the saturated ceiling]
+\begin{theorem}[Identity: optimal structural extraction and the saturated ceiling]
 \label{thm-optimal-structural-extraction-saturated-ceiling}
 
 Let \(B\) be a declared represented-computation ceiling with refined horizon
@@ -41623,7 +42998,7 @@ utility, survival event, and conditional law unchanged, so it preserves
 \cref{eq-compact-latent-polynomial-gain-ceiling}.
 \end{proof}
 
-\begin{theorem}[Unified latent structural certificate]
+\begin{theorem}[Bound: unified latent structural envelope]
 \label{thm-unified-compact-latent-structural-certificate}
 
 For one complete compact latent-belief record, put
@@ -42155,7 +43530,7 @@ neutral value.
 
 \end{proof}
 
-\begin{theorem}[Saturated same-record prospective certificate envelope]
+\begin{theorem}[Bound: saturated same-record prospective envelope]
 \label{thm-saturated-same-record-prospective-certificate-envelope}
 
 Fix a presented task, a budget \(B\), a refined horizon \(H\), and a time
@@ -42345,7 +43720,7 @@ cross-record certificate is introduced.
 
 \end{proof}
 
-\begin{theorem}[Exhaustive sparse-reward observation-to-transport accounting]
+\begin{theorem}[Exhaustion: sparse-reward observation-to-transport accounting]
 \label{thm-exhaustive-sparse-reward-observation-transport-accounting}
 
 Fix a complete record \(\mathcal R_{\rm cur}\) from
@@ -43076,7 +44451,7 @@ Here each empirical term and class is the represented coordinate from
 these three same-norm candidate minima.
 \end{definition}
 
-\begin{theorem}[Master structural learning certificate for controlled systems]
+\begin{theorem}[Bound: master structural learning envelope for controlled systems]
 \label{thm-master-structural-dynamical-learning-certificate}
 Under the record, rectangularity, confidence, and same-norm aggregation
 hypotheses of
@@ -43877,7 +45252,7 @@ moments, training, audit samples, and deployment are charged separately in
 
 \end{definition}
 
-\begin{theorem}[Canonical architecture implementation and compilation]
+\begin{theorem}[Compilation: canonical architecture implementation]
 \label{thm-canonical-attention-architecture-implementation}
 
 Every module in
@@ -43954,7 +45329,7 @@ belief state, parameters, transition law, precision, and cost ledger.}
 \label{fig-canonical-certified-attention-architecture}
 \end{figure}
 
-\begin{proposition}[Held-out arrival lower certificate]
+\begin{proposition}[Certificate: held-out arrival lower bound]
 \label{prop-held-out-arrival-lower-certificate}
 
 Condition on the complete training record and terminal weights
@@ -44111,7 +45486,7 @@ Taking the supremum over \(R\in\mathscr R_{I,H}^{\rm act}(B)\) proves
 
 \end{proof}
 
-\begin{corollary}[Primal--dual empirical implementation certificate]
+\begin{corollary}[Certificate: primal--dual empirical implementation]
 \label{cor-primal-dual-empirical-implementation-certificate}
 
 Let \(L_{\rm ev}\) and \(U_{\rm Bell}(v)\) be constructed from independent
@@ -44321,7 +45696,7 @@ Substitute the two propagated bounds and
 cell.
 \end{proof}
 
-\begin{theorem}[Empirical-to-asymptotic saturated-source closure]
+\begin{theorem}[Certificate: empirical-to-asymptotic saturated-source closure]
 \label{thm-empirical-asymptotic-saturated-source-closure}
 
 Assume a scale-certified attenuating source audit.  Suppose that, for each
@@ -44501,8 +45876,201 @@ Deterministic verification makes the exported inequalities independent of
 the random search that found them.
 \end{proof}
 
-\subsubsection{Proof-producing verification of structural scaling laws}
-\label{subsubsec-proof-producing-structural-scaling-laws}
+\subsection{Finite-prefix certification of asymptotic structural envelopes}
+\label{subsec-finite-prefix-asymptotic-certification}
+
+Finite computation and asymptotic proof enter at different stages.  Neural
+training, Bayesian search, symbolic regression, combinatorial search, or
+numerical optimization may propose a factorization, recurrence, invariant
+enclosure, or crossover point from a small collection of exactly evaluated
+sizes.  The proposed pattern becomes a theorem when exact finite evaluation
+proves its base cases and the represented constructor grammar proves a closed
+structural recurrence.  The asymptotic conclusion then follows by induction;
+it is not a statistical extrapolation from the discovery computation.
+
+\begin{definition}[Finite-prefix structural scale certificate]
+\label{def-finite-prefix-structural-scale-certificate}
+
+Fix a public presentation, a budget schedule \(B_n\), integers
+\(n_0\le N_0\), and the finite family \(\mathfrak C_{\rm att}\) of qualified
+saturated source cells supplied by the source-exhaustion theorem.  A
+\emph{finite-prefix structural scale certificate} consists of the following
+mathematical data and verified relations.
+Such a certificate exists only when item~\textup{(i)} proves that every
+directly audited budgeted slice is finitely enumerable; a sampled or truncated
+list does not establish this condition.
+
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item \emph{Exact finite prefix.}
+      For every \(n_0\le n\le N_0\), exact enumeration of the complete finite
+      state carrier, the full support and weights of every declared finite
+      law, and the complete derivation slice of saturated cost at most \(B_n\).
+      Closure under every affordable constructor and exclusion of every omitted
+      branch by cost prove that this is the full budgeted slice.  Each
+      derivation carries its exact ancestry, temporal type, provenance
+      signature, and source-cell assignment.  Exact or outward-rounded
+      evaluation proves the asserted prefix bounds on every cell.
+
+\item \emph{Cellwise transfer factorization.}
+      For every \(c\in\mathfrak C_{\rm att}\), the represented quantities
+      \(D_{c,n}\), \(a_{c,n}\), and \(e_{c,n}\) satisfy
+      \cref{eq-scale-audit-factorization,eq-scale-audit-capacity-attenuation}
+      on the complete cell \(\mathcal S_{c,n}(B_n)\).  At \(N_0\), the finite
+      audit proves
+      \begin{equation}
+      \label{eq-finite-prefix-structural-base}
+      D_{c,N_0}\le\overline D_{c,0},\qquad
+      a_{c,N_0}\le\overline a_{c,0},\qquad
+      e_{c,N_0}\le\overline e_{c,N_0}.
+      \end{equation}
+
+\item \emph{Exhaustive structural recurrence.}
+      A finite represented family of monotone transition maps covers every
+      admissible represented transition in each complete qualified source
+      cell, as in
+      \cref{def-charged-structural-scaling-recurrence-certificate}.  Exact
+      symbolic identities or outward-rounded interval inclusions prove the
+      invariant enclosure
+      \cref{eq-structural-scaling-inductive-enclosure}.  Every change of
+      recurrence grammar, acquisition rule, reuse pattern, precision, or
+      locator is itself a represented transition with its complete incremental
+      construction and deployment cost.
+
+\item \emph{Scale and crossing inequalities.}
+      The recurrence gives represented factors \(r_{c,n}\), \(s_{c,n}\) and
+      error envelopes \(\overline e_{c,n}\) satisfying
+      \cref{eq-scale-audit-capacity-recurrence,eq-scale-audit-attenuation-recurrence,eq-scale-audit-error-envelope}.
+      Exact symbolic or outward-rounded comparisons verify constants
+      \(\beta_c\ge0\), \(\gamma_c>\beta_c/2\), positive subexponential functions
+      \(p_c\) normalized by \(p_c(N_0)=1\), and
+      \begin{equation}
+      \label{eq-finite-prefix-structural-rates}
+      r_{c,n}\le
+      e^{\beta_c}\frac{p_c(n+1)}{p_c(n)},\qquad
+      s_{c,n}\le e^{-\gamma_c}
+      \qquad(n\ge N_0).
+      \end{equation}
+      Whenever exclusion of a different structural regime is used, the same
+      calculation proves its crossing-price inequality in
+      \cref{eq-scaling-breakpoint-off-budget}.
+\end{enumerate}
+
+The certificate is \emph{proof-grade} when every finite enumeration,
+inequality, recurrence identity, interval inclusion, source assignment, and
+crossing comparison above is verified exactly, symbolically, or by
+outward-rounded arithmetic.  A random or learned computation may discover the
+displayed data, but its randomness does not occur in any verified relation.
+
+\end{definition}
+
+\begin{theorem}[Finite-prefix certification of an asymptotic structural
+envelope]
+\label{thm-finite-prefix-structural-extension}
+
+Let \cref{def-finite-prefix-structural-scale-certificate} be proof-grade.
+Then, for every \(c\in\mathfrak C_{\rm att}\) and every \(n\ge N_0\),
+\begin{equation}
+\label{eq-finite-prefix-structural-cell-envelope}
+\sup_{R\in\mathcal S_{c,n}(B_n)}V_{c,n}(R)
+\le
+\sqrt{\overline D_{c,0}}\,\overline a_{c,0}
+\sqrt{p_c(n)}
+e^{-(\gamma_c-\beta_c/2)(n-N_0)}
++\overline e_{c,n}.
+\end{equation}
+Consequently,
+\begin{equation}
+\label{eq-finite-prefix-saturated-profile-envelope}
+I_{\mathfrak M,n}^{\rm src,sat}(B_n)
+\le
+\sum_{c\in\mathfrak C_{\rm att}}
+\left[
+\sqrt{\overline D_{c,0}}\,\overline a_{c,0}
+\sqrt{p_c(n)}
+e^{-(\gamma_c-\beta_c/2)(n-N_0)}
++\overline e_{c,n}
+\right].
+\end{equation}
+Together with the directly verified values for \(n_0\le n<N_0\), this is a
+single bound for every \(n\ge n_0\).  If the finite sum of error envelopes is
+negligible, the complete saturated prospective source profile is negligible.
+If, in addition,
+\(B_n<\operatorname{Cross}_{c,n}(q_n)\), no record in the budgeted cell
+reaches progress \(q_n\).
+
+The bound is uniform over algorithms.  Prospective-selector accountability
+therefore applies the certified source envelope to every admissible
+computation.  In the master-profile coordinate, universal saturated-profile
+accountability has the exact form
+\begin{equation}
+\label{eq-finite-prefix-universal-capability-envelope}
+\operatorname{Succ}_{\mathfrak M,n}(B_n)
+\le
+eH_{B_n}(n)
+m_{\mathfrak M,n}^{\rm sat}\!\left(\Psi(B_n,n)\right).
+\end{equation}
+
+\end{theorem}
+
+\begin{proof}
+Fix \(c\in\mathfrak C_{\rm att}\).  The exact prefix proves the asserted
+bounds through \(N_0\).  For \(n\ge N_0\), iteration of the two scale
+recurrences gives
+\[
+D_{c,n}\le\overline D_{c,0}
+\prod_{j=N_0}^{n-1}r_{c,j},\qquad
+a_{c,n}\le\overline a_{c,0}
+\prod_{j=N_0}^{n-1}s_{c,j}.
+\]
+The rate inequalities telescope because \(p_c(N_0)=1\):
+\[
+\prod_{j=N_0}^{n-1}r_{c,j}
+\le e^{\beta_c(n-N_0)}p_c(n),\qquad
+\prod_{j=N_0}^{n-1}s_{c,j}
+\le e^{-\gamma_c(n-N_0)}.
+\]
+For every \(R\in\mathcal S_{c,n}(B_n)\), the cellwise factorization and
+\(\lVert z_{c,n}(R)\rVert\le1\) give
+\[
+V_{c,n}(R)\le\sqrt{D_{c,n}}\,a_{c,n}+e_{c,n}.
+\]
+Substitution of the two telescoped estimates and the error enclosure proves
+\cref{eq-finite-prefix-structural-cell-envelope}.
+
+The recurrence cover is a consequence of the saturated source-exhaustion and
+constructor-provenance theorems: it assigns every qualified record, rather
+than the output of one discovery procedure, to a represented recurrence path.
+Induction in
+\cref{eq-structural-scaling-inductive-enclosure} keeps every state of every
+such path inside the verified enclosure.  If a path reached \(q_n\) while
+\(B_n<\operatorname{Cross}_{c,n}(q_n)\), its complete incremental-cost sum
+would be at least \(\operatorname{Cross}_{c,n}(q_n)\), contradicting its
+membership in the budgeted cell.  This proves the crossing assertion and
+excludes an affordable transition to a different certified regime.
+
+Summing \cref{eq-finite-prefix-structural-cell-envelope} over the exhaustive
+finite source cover proves
+\cref{eq-finite-prefix-saturated-profile-envelope}.  The strict exponent gap
+and subexponential growth of \(p_c\) make each leading term exponentially
+small; the negligibility conclusion follows from finiteness of
+\(\mathfrak C_{\rm att}\).  Every representation constructed by any
+budget-admissible algorithm lies in the same saturated derivability closure,
+so the profile bound applies to it without naming its architecture.
+\Cref{thm-universal-saturated-profile-accountability} then gives
+\cref{eq-finite-prefix-universal-capability-envelope}.
+\end{proof}
+
+\paragraph{Logical role of the finite computation.}
+The finite exhaustive audit supplies the base of the induction.  Empirical or
+learned computation may identify the candidate recurrence and its invariant
+envelope, while exact symbolic or outward-rounded verification proves the
+recurrence relations.  Thus the asymptotic law follows from the finite base,
+the exhaustive structural transition rule, and induction.  It is not inferred
+from curve fitting, confidence, or the behavior of the optimizer that found
+the candidate law.
+
+\subsubsection{Finite verification of structural scaling laws}
+\label{subsubsec-finite-structural-scaling-laws}
 
 Finite-size experiments can discover a useful scaling law, but the
 asymptotic assertion is supplied by a verified structural recurrence.  The
@@ -44583,7 +46151,7 @@ with infimum \(+\infty\) when no covered path reaches \(q\).
 
 \end{definition}
 
-\begin{theorem}[Verified recurrence propagation and crossing exclusion]
+\begin{theorem}[Certificate: verified recurrence propagation and crossing exclusion]
 \label{thm-verified-recurrence-propagation-crossing-exclusion}
 
 Let \cref{def-charged-structural-scaling-recurrence-certificate} be
@@ -44696,7 +46264,7 @@ their dependence and compensation coordinates.
 
 \end{definition}
 
-\begin{theorem}[Exact transport and charged scaling certificate for
+\begin{theorem}[Certificate: exact transport and charged scaling for
 disjoint collision combining]
 \label{thm-exact-scaling-certificate-disjoint-collision-combining}
 
@@ -44790,7 +46358,7 @@ verified lower bound on that path infimum into an exclusion certificate.
   \draw[fw arrow] (charge)--(induct);
 \end{tikzpicture}%
 }
-\caption{Proof-producing scaling-law verification.  Empirical learning
+\caption{Finite-to-asymptotic scaling-law verification.  Empirical learning
 proposes the recurrence and its envelope.  Structural source coverage,
 complete-cost accounting, and symbolic induction establish the tail and the
 price of entering a different scaling regime.}
@@ -45028,7 +46596,7 @@ source-attribution certificate when that intervention gate is absent.
 
 \end{definition}
 
-\begin{theorem}[Simultaneous empirical source-intervention certificate]
+\begin{theorem}[Certificate: simultaneous empirical source intervention]
 \label{thm-simultaneous-empirical-source-intervention-certificate}
 
 For every \(S\subseteq\mathcal A\), evaluate \(R_p^S\) on
@@ -45328,7 +46896,7 @@ cost.
 
 \end{definition}
 
-\begin{theorem}[WAdam descent and global optimization certificate]
+\begin{theorem}[Certificate: WAdam descent and global optimization]
 \label{thm-wadam-descent-global-optimization-certificate}
 
 Let \(\Theta_{\rm cert}\) be a represented region containing every iterate,
@@ -45996,7 +47564,7 @@ The quotient is exactly lumpable precisely when
 
 \end{definition}
 
-\begin{theorem}[Finite-sample lumpability certificate]
+\begin{theorem}[Certificate: finite-sample lumpability]
 \label{thm-finite-sample-lumpability-certificate}
 
 Suppose every \(x\in X\) has at least \(N_{\min}\) independent audited
@@ -46258,7 +47826,7 @@ compiled ceiling.
 
 \end{proof}
 
-\begin{theorem}[Complete empirical structural proof package]
+\begin{theorem}[Certificate: complete empirical structural proof package]
 \label{thm-complete-empirical-structural-proof-package}
 
 Fix a parameter count \(p\) and one complete implementation record.  Suppose
@@ -47192,7 +48760,7 @@ all row evaluations are fields of the complete black-box record.
 
 \end{definition}
 
-\begin{theorem}[Black-box exact and quasi-lumpability compilation]
+\begin{theorem}[Compilation: black-box exact and quasi-lumpability]
 \label{thm-black-box-lumpability-compilation}
 
 Suppose first that the audited carrier \(X_{\rm aud}\) is finite and every
@@ -47289,7 +48857,7 @@ alone does not assert that internal classification.
 
 \end{definition}
 
-\begin{theorem}[Held-out black-box residual certificate]
+\begin{theorem}[Bound: held-out black-box residual]
 \label{thm-held-out-black-box-residual-certificate}
 
 Let the evaluation split contain \(N_{\rm res}\) independent examples and
@@ -47356,7 +48924,7 @@ noise channel, selected diagnostic family, and confidence allocation.
 
 \end{definition}
 
-\begin{theorem}[End-to-end black-box structural certificate]
+\begin{theorem}[Certificate: end-to-end black-box structural audit]
 \label{thm-end-to-end-black-box-structural-certificate}
 
 Consider one complete record from
@@ -47765,7 +49333,7 @@ whereas \(d(\mathfrak U_\infty)\le c_{\mathfrak U}\).
 
 \end{definition}
 
-\begin{theorem}[Length-bounded Levin realization]
+\begin{theorem}[Compilation: length-bounded Levin realization]
 \label{thm-length-bounded-levin-realization}
 
 Let \(q\in\mathscr R_{I,H}^{\rm act}\) satisfy
@@ -48156,7 +49724,7 @@ suppressed only where the displayed record already fixes the coordinates.
 
 \end{definition}
 
-\begin{proposition}[Simultaneous empirical benchmark certificate]
+\begin{proposition}[Certificate: simultaneous empirical benchmark]
 \label{prop-simultaneous-witnessed-effective-length-certificate}
 
 Let \(\mathcal A\) be finite.  Suppose simultaneous evaluation intervals
@@ -48827,9 +50395,10 @@ attention layers and their deployed transition kernels.
 \emph{First pass:} read
 \cref{def-complete-attention-record,thm-attention-gibbs-gradient-flow,thm-attention-structural-source-compilation,thm-attention-target-gain-envelope}.
 
-Attention is used here as a represented mechanism for selecting and
-transporting public values.  It is not adjoined as a new structural channel.
-Every attention coordinate is compiled into the already exhaustive
+By the complete-ledger and source-conservation conventions of
+\cref{subsec-global-accounting-conventions}, attention is a represented
+mechanism for selecting and transporting public values.  Every attention
+coordinate is compiled into the already exhaustive
 \(\Geom,\Caus,\Abs,\Lift,\Bdry,\Res\) ledger and retains the five-family
 constructor provenance of its score and value records.
 The canonical finite-precision realization is
@@ -48911,7 +50480,7 @@ not erase the ancestry or cost of the score used by the deployed selector.}
 \section{Gibbs Geometry and Exact Structural Charging}
 \label{sec-attention-gibbs-geometry}
 
-\begin{theorem}[Gibbs variational identity and Fisher--Rao attention flow]
+\begin{theorem}[Identity: Gibbs variational formula and Fisher--Rao attention flow]
 \label{thm-attention-gibbs-gradient-flow}
 
 Fix a row \(i\), write \(\nu_j=\nu(j\mid i)\), and assume
@@ -49034,7 +50603,7 @@ on the common support.  Taking expectation under \(q_{t+1}\) proves the KL
 bound.  Pinsker's inequality proves the TV bound.
 \end{proof}
 
-\begin{theorem}[Attention structural-source compilation]
+\begin{theorem}[Compilation: attention structural sources]
 \label{thm-attention-structural-source-compilation}
 
 Every temporally and budget-admissible complete attention record has the
@@ -49308,10 +50877,10 @@ are
 \cref{thm-canonical-loss-saturated-arrival-calibration,thm-complete-certified-bias-variance-decomposition}.
 
 \clearpage
-\part{Structural Meta-Complexity and Certificate Minimization}
+\part{Structural Meta-Complexity as Inverse Capability Theory}
 \label{part:structural-metacomplexity}\setcounter{section}{-1}
 
-\section{Introduction: Presentation-Relative Meta-Complexity}
+\section{Introduction: Inverse Capability Frontiers}
 \label{sec-structural-metacomplexity-introduction}
 
 \paragraph{Part contract.}
@@ -49323,31 +50892,53 @@ the exact source-cell decomposition of
 \cref{thm-universal-state-coefficient-source-decomposition}, and the
 length-bounded universal record of
 \cref{def-canonical-complete-active-record-code,thm-length-bounded-levin-realization}.
-\emph{Output:} an exact Pareto meta-frontier for the cost of crossing a
-target-gain threshold, its generalized-inverse relation with saturated
-profiles, typed decision/search/certification/deployment interfaces,
+\emph{Output:} a full inverse capability theory: the exact Pareto resource
+frontier at which a saturated target-gain profile crosses a threshold, its
+generalized-inverse relation with the forward capability profile, typed
+decision/search/certification/deployment interfaces,
 representation-minimization specializations, and a represented
 hardness-magnification rule.
 \emph{First pass:} read
 \cref{def-strict-structural-meta-frontier,thm-strict-meta-profile-generalized-inverse,thm-structural-meta-accountability,thm-source-cell-meta-complexity-exhaustion,thm-represented-profile-magnification}.
 
-Meta-complexity asks for the resources required to recognize, construct, or
-certify a low-complexity representation.  Circuit minimization and
-resource-bounded Kolmogorov complexity are classical instances of this
-question \citep{AllenderGrochowVanMelkebeekMooreMorgan2017,LiuPass2020}.
-The presentation-relative version developed here uses the complete structural
-records already defined in \PartIII and \PartV.  Its threshold object is the least
-saturated resource at which one prospective record attains a prescribed
-target gain.  Description length, construction, data access, retained state,
-evaluation, qualification, and deployment remain separate coordinates of the
-same cost vector.
+Structural meta-complexity is the inverse capability theory of the saturated
+profile.  For a complete datum \(\mathfrak D_n\), the forward profile
+\(P_{\mathfrak D,n}^{\mathrm{sat}}(B)\) asks for the greatest certified
+target gain attainable below the resource vector \(B\).  Its strict inverse
+capability region is
+\begin{equation}
+\label{eq-intro-inverse-capability-frontier}
+\mathfrak P_{\mathfrak D,n}^{>}(\theta)
+=
+\left\{B:P_{\mathfrak D,n}^{\mathrm{sat}}(B)>\theta\right\}.
+\end{equation}
+Its Pareto-minimal elements are therefore exactly the least incomparable
+resource vectors at which the saturated capability crosses \(\theta\).  The
+identity in \cref{eq-intro-inverse-capability-frontier} is proved in
+\cref{thm-strict-meta-profile-generalized-inverse}; strict thresholds make the
+inverse exact without a compactness or attainment convention.
 
-The resulting meta-problem is an inverse description of the saturated
-profile.  The profile asks for the largest certified gain below a budget; the
-meta-frontier asks for the budgets at which a certified gain threshold is
-crossed.  Strict thresholds give an exact inverse without a compactness or
-attainment convention.  Scalar threshold costs are obtained only after the
-same admissible scalarization used by
+The frontier ranges over the complete structural records already defined in
+\PartIII and \PartV.  Each record retains the public presentation, exact
+structural source, construction and extraction history, temporal availability,
+qualification and certification data, decision or search interface when
+present, and deployed use.  Description length, data acquisition, total work,
+precision, retained state, peak memory, verification, and deployment remain
+coordinates of the same resource vector.  The inverse theory consequently
+answers a capability question rather than only a representation-length
+question: which complete resource vectors make a specified target gain
+attainable?
+
+Circuit minimization and resource-bounded program minimization are typed
+specializations \citep{AllenderGrochowVanMelkebeekMooreMorgan2017,LiuPass2020}.
+They restrict the complete record grammar to circuit or universal-program
+evaluators, restrict the gain or feasibility coordinate to exact denotation,
+and then project the complete Pareto vector to gate count or a declared
+program-cost scalarization.  Classical metacomplexity is thus recovered as a
+narrow projection of the inverse capability frontier, while the general
+frontier retains source, construction, extraction, temporal, certification,
+interface, and deployment coordinates.  Scalar threshold costs are formed
+only after an admissible scalarization such as those of
 \cref{def-degree-invariant,def-alignment-complexity} has been fixed.
 
 \section{Structural Certificate Meta-Problems}
@@ -49429,7 +51020,7 @@ denotation.
 \label{def-strict-structural-meta-frontier}
 
 For a complete datum \(\mathfrak D_n=(\mathscr R_n,g_n)\) and
-\(0\le\theta<1\), define its strict Pareto feasibility region by
+\(\theta\ge0\), define its strict Pareto feasibility region by
 \begin{equation}
 \label{eq-strict-structural-meta-frontier}
 \mathfrak P_{\mathfrak D,n}^{>} (\theta)
@@ -49462,8 +51053,8 @@ P_{\mathfrak D,n,\kappa}^{\mathrm{sat}}(b)
 g_n(R).
 \end{equation}
 
-The non-strict feasible region \(\mathfrak P^{\ge}_{\mathfrak D,n}(\theta)\)
-and its scalar threshold cost
+For \(0\le\theta\le1\), the non-strict feasible region
+\(\mathfrak P^{\ge}_{\mathfrak D,n}(\theta)\) and its scalar threshold cost
 \begin{equation}
 \label{eq-nonstrict-scalar-structural-meta-complexity}
 \operatorname{SMC}_{\mathfrak D,n,\kappa}^{\ge}(\theta)
@@ -49483,11 +51074,11 @@ non-strict regions record attained certificate thresholds.
 \subsection{Exact generalized inverse}
 \label{subsec-exact-meta-profile-inverse}
 
-\begin{theorem}[Strict meta-frontier as the exact generalized inverse]
+\begin{theorem}[Identity: strict meta-frontier generalized inverse]
 \label{thm-strict-meta-profile-generalized-inverse}
 
 For every complete saturated meta-profile datum, budget \(B\), and
-\(0\le\theta<1\),
+\(\theta\ge0\),
 \begin{equation}
 \label{eq-exact-strict-profile-frontier-inverse}
 P_{\mathfrak D,n}^{\mathrm{sat}}(B)>\theta
@@ -49618,8 +51209,12 @@ master datum
 \(\mathfrak U_n^{\mathrm{src,sat}}\).  Under the attained non-strict
 convention, write
 \(\operatorname{SMC}_{\mathrm{src},n,\kappa}^{\ge}(\theta)\) for its
-least scalar cost at visibility at least \(\theta\), and define the typed
-prospective threshold
+least scalar cost at visibility at least \(\theta\).  For \(b\ge0\), let
+\(I_{n,\kappa}^{\mathrm{src,sat}}(b)\) denote the existing two-coordinate
+prospective profile \(I_n^{\mathrm{src,sat}}\), with each of its two defining
+suprema restricted to complete prospective records \(R\) satisfying
+\(\operatorname{Cost}_{\mathrm{sat},n}^{\kappa}(R)\le b\).  Define the
+typed prospective threshold
 \begin{equation}
 \label{eq-prospective-source-threshold-cost}
 B_{\eta}^{*,\mathrm{src}}(n)
@@ -49883,7 +51478,7 @@ empty frontier and scalar cost \(\infty\).
 
 \end{definition}
 
-\begin{theorem}[Exact source-cell exhaustion of structural meta-complexity]
+\begin{theorem}[Exhaustion: source cells of structural meta-complexity]
 \label{thm-source-cell-meta-complexity-exhaustion}
 
 The canonical normalized prospective source class is the disjoint union of
@@ -50111,7 +51706,7 @@ majorant.
 
 \end{definition}
 
-\begin{theorem}[Typed compiler calculus for meta-problems]
+\begin{theorem}[Compilation: typed meta-problem calculus]
 \label{thm-typed-meta-compiler-calculus}
 
 Let \(\mathfrak D_n^{\mathsf A}\) and
@@ -50148,6 +51743,16 @@ evaluation, respectively.
 
 \section{Classical Representation-Minimization Specializations}
 \label{sec-classical-metacomplexity-specializations}
+
+The specializations in this section restrict the general inverse capability
+datum in two steps.  First, the admissible record grammar is reduced to one
+representation language, such as Boolean circuits or programs for a declared
+universal interpreter.  Second, the target coordinate is reduced to exact
+denotation of the presented object, after which gate count or program cost is
+read from the complete resource vector.  The resulting minimization problems
+retain their standard meanings, while their construction, extraction,
+verification, evaluation, and deployment costs remain available in the
+unprojected structural frontier.
 
 \subsection{Circuit minimization}
 \label{subsec-circuit-minimization-specialization}
@@ -50192,7 +51797,7 @@ one candidate evaluation.
 
 \end{definition}
 
-\begin{theorem}[Circuit minimization specialization]
+\begin{theorem}[Specialization: circuit minimization]
 \label{thm-circuit-minimization-specialization}
 
 For the presentation of \cref{def-truth-table-circuit-presentation},
@@ -50279,7 +51884,7 @@ The associated minimization language is
 
 \end{definition}
 
-\begin{theorem}[Program-minimization specialization]
+\begin{theorem}[Specialization: program minimization]
 \label{thm-program-minimization-specialization}
 
 The exact-denotation representation complexity of
@@ -50393,7 +51998,7 @@ Apply \cref{thm-prefix-code-random-table-incompressibility} with
 \subsection{Represented coding transfer}
 \label{subsec-represented-meta-coding-transfer}
 
-\begin{theorem}[Charged represented coding transfer]
+\begin{theorem}[Compilation: charged represented coding transfer]
 \label{thm-charged-represented-coding-transfer}
 
 Let \(\mathsf P\) be a represented distribution on a finite complete-record
@@ -50837,13 +52442,17 @@ magnification & represented profile compiler &
 \end{tabular}
 \end{center}
 
-The meta-frontier is a reindexing of complete represented records by the
-least resources needed to cross a numerical threshold.  Its universal
-computational consequence is
-\cref{thm-structural-meta-accountability}; its source decomposition is
-\cref{thm-source-cell-meta-complexity-exhaustion}.  Classical meta-complexity
-appears through exact-denotation grammars, while target-directed structural
-meta-complexity retains temporal availability, qualification, and deployment.
+The structural meta-frontier is the full Pareto inverse of the saturated
+capability profile: it records the least complete resource vectors at which a
+target-gain threshold becomes attainable.  Its universal computational
+consequence is \cref{thm-structural-meta-accountability}; its exact source
+decomposition is \cref{thm-source-cell-meta-complexity-exhaustion}.  The
+frontier retains presentation, source, construction, extraction, temporal
+availability, certification, operational interface, deployment, and the
+complete resource vector.  Circuit and program minimization arise by
+restricting the record grammar to exact-denotation evaluators and projecting
+that vector to their classical cost coordinate
+(\cref{thm-circuit-minimization-specialization,thm-program-minimization-specialization}).
 
 \clearpage
 \part{Resource-Bounded Structural Analysis of LPN}\label{part:lpn}\setcounter{section}{-1}
@@ -50865,9 +52474,10 @@ The strict Pareto frontier and meta-accountability theorem of
 profile into an explicit certificate-extraction lower region.
 \emph{Output:} an exact reduction of the prospective LPN source profile, a
 separate core-refined first-hit accounting bound, an exact constant-noise
-spectral perimeter, the hardness theorem under its isolated residual-ancestry
-bound, a finite proof-grade empirical protocol that discharges precisely that
-bound, the direct implication from fixed-noise LPN hardness to \(P\ne NP\),
+spectral perimeter, the hardness theorem obtained upon certification of its
+isolated residual-ancestry target, a finite-to-asymptotic theorem whose
+verified recurrence and prefix relations discharge precisely that target, the direct
+implication from fixed-noise LPN hardness to \(P\ne NP\),
 the statistical denoising bound, and explicit polynomial, statistical, and
 information-theoretic noise thresholds.
 \emph{First pass:} the reader should retain the presentation, the saturated
@@ -50875,6 +52485,37 @@ statistical-alignment specialization, the quantitative phase diagram, the
 constant-noise spectral ledger, the five source bounds, the core-reduction
 theorem, and the final obstruction criterion.
 
+\begin{center}
+\fbox{%
+  \begin{minipage}{0.91\linewidth}
+  \raggedright
+  \textbf{Finite-to-asymptotic LPN route.}
+  The structural reduction eliminates every quotient-supported and explicitly
+  materialized source mode and isolates one compact residual-ancestry
+  certification target
+  (\cref{thm-lpn-residual-ancestry-attention-bound}).  The proof-grade
+  discharge theorem combines exact finite saturation, exhaustive source-cell
+  coverage, verified capacity, attenuation and error laws, an explicit
+  crossover calculation, and direct finite-prefix verification
+  (\cref{thm-lpn-proof-grade-empirical-residual-discharge}).  A learned or
+  optimized component may propose candidate records; only deterministic exact,
+  symbolic, or outward-rounded interval verification enters the proof.  Once
+  these finite and symbolic relations are verified,
+  \cref{eq-lpn-empirical-discharge-final}
+  establishes the residual bound uniformly for every \(n\ge n_0\) and
+  closes the LPN obstruction at the declared ceiling.  The manuscript proves
+  this finite-to-asymptotic implication and specifies its complete
+  mathematical data in
+  \cref{subsec-finite-prefix-asymptotic-certification}; it does not execute an
+  instantiated certificate analysis, so the downstream LPN hardness
+  consequences remain conditional on verification of those internal
+  finite-prefix and scale relations.
+  \end{minipage}%
+}
+\end{center}
+
+The global accounting conventions of
+\cref{subsec-global-accounting-conventions} apply throughout this part.
 \Cref{part:task-spaces,part:dynamics,part:spectral-complexity,part:learning,part:dynamical-systems,part:attention,part:structural-metacomplexity}
 respectively supply task presentations, the budget-admissible channel
 decomposition, the resource-saturated structural profile, structural learning
@@ -51402,7 +53043,7 @@ cor-first-hit-accounting-not-source}.
 
 \end{proof}
 
-\begin{theorem}[Exact LPN Walsh alignment and charged spectral location]
+\begin{theorem}[Identity: LPN Walsh alignment and charged spectral location]
 \label{thm-lpn-walsh-alignment-charged-location}
 
 Fix \(A\in\mathbb F_2^{m\times n}\), let \(s\) be uniform on
@@ -52239,7 +53880,7 @@ materialized located block, including in the high-sample region.}
 \label{fig-lpn-semantic-cancellation-tradeoff}
 \end{figure}
 
-\begin{theorem}[Exact constant-noise spectral perimeter]
+\begin{theorem}[Identity: constant-noise spectral perimeter]
 \label{thm-lpn-exact-constant-noise-spectral-perimeter}
 
 At fixed \(0<\eta<1/2\), fixed rate, and a polynomial saturated ceiling,
@@ -52370,6 +54011,7 @@ terms in a formal Walsh expansion is not a separate source coordinate.}
 \label{fig-lpn-constant-noise-spectral-routing}
 \end{figure}
 
+\FloatBarrier
 \section{Candidate Recovery and Prospective Selector Accountability}
 \label{sec-lpn-candidate-recovery-selector-accountability}
 
@@ -52808,8 +54450,15 @@ Ax+b=A(x+s)+E=Ah+E.
 
 For the standard uniform row model, \(Ah\) is uniform on
 \(\mathbb F_2^m\) and independent of \(E\). Hence \(Ah+E\) is uniform.
-The Hamming-ball estimate gives
-\citep{Gilbert1952,Varshamov1957}
+For \(0<\tau<1/2\), every \(j\le\lfloor\tau m\rfloor\) satisfies
+\[
+\tau^j(1-\tau)^{m-j}
+\ge
+\tau^{\tau m}(1-\tau)^{(1-\tau)m}
+=2^{-mH_2(\tau)}.
+\]
+Multiplying by \(\binom mj\), summing, and using the binomial theorem
+therefore gives the Hamming-ball estimate
 
 \[
 \Pr\{|Ah+E|_1\le\tau m\}
@@ -52817,6 +54466,9 @@ The Hamming-ball estimate gives
 2^{-m}\sum_{j=0}^{\lfloor\tau m\rfloor}\binom mj
 \le 2^{-m(1-H_2(\tau))}.
 \]
+The names Gilbert--Varshamov record the coding-theoretic lineage
+\citep{Gilbert1952,Varshamov1957}; the entropy estimate used here is the
+preceding direct calculation.
 
 There are at most \(2^n-1\) nonzero choices of \(h\). A union bound
 yields
@@ -53926,8 +55578,7 @@ budgeted algebra is determined by such a represented derivation.
 
 \end{proof}
 
-\begin{lemma}[LPN specialization of the component
-decomposition]\label{lem-lpn-component-decomposition}
+\begin{lemma}[Specialization: LPN component decomposition]\label{lem-lpn-component-decomposition}
 \label{thm-lpn-five-term-partition-final}
 
 Every represented target-relevant LPN term decomposes into
@@ -53944,10 +55595,10 @@ to \(\Geom\) or \(\Abs\).
 
 \begin{proof}\phantomsection\label{proof-lpn-five-term-partition-final}
 
-This is the \hyperref[thm-channel-exhaustiveness]{Component
-exhaustiveness theorem},
-\hyperref[thm-exhaustive-residual-normal-form]{Exhaustive residual normal
-form theorem}, and the
+This is the \hyperref[thm-channel-exhaustiveness]{structural-channel
+exhaustion theorem},
+\hyperref[thm-exhaustive-residual-normal-form]{residual-normal-form
+exhaustion theorem}, and the
 \hyperref[prop-channel-ledger]{Roles of the five structural components
 and the residual term proposition}
 applied to the LPN lifted
@@ -53959,14 +55610,13 @@ projection preserves target fraction. Terminal scores and
 residual-weight predicates are boundary readouts. What remains after all
 represented source projections is one of the two residual coordinates in
 \cref{thm-exhaustive-residual-normal-form}. The decomposition is exhaustive
-by the \hyperref[thm-channel-exhaustiveness]{component exhaustiveness
+by the \hyperref[thm-channel-exhaustiveness]{structural-channel exhaustion
 theorem}.  The following source bounds evaluate these branches in the
 existing saturated \(\Geom/\Abs\) profile.
 
 \end{proof}
 
-\begin{lemma}[\PartII exact Lift identity specialized to
-LPN]\label{lem-lpn-exact-lift-composition}
+\begin{lemma}[Specialization: exact \PartII Lift identity for LPN]\label{lem-lpn-exact-lift-composition}
 
 Let \(\pi:\widetilde X\to X\) be a valid lift with lifted measure
 \(\widetilde\mu\) and target \(T\subseteq X\). Validity gives the exact
@@ -54438,8 +56088,7 @@ not additional structural coordinates.
 
 \end{definition}
 
-\begin{corollary}[Five-family classification of residual-ancestry LPN
-geometry]
+\begin{corollary}[Exhaustion: five-family residual-ancestry LPN geometry]
 \label{cor-lpn-residual-ancestry-five-family-geom-classification}
 
 Every record in \(\mathcal C_{X,b}^{\mathrm{LPN}}(B)\) has the unique ambient
@@ -55534,7 +57183,7 @@ the current lacks the required same-generator authorization.
 
 \end{proof}
 
-\begin{theorem}[Public-ancestry normal form for qualified LPN local geometry]
+\begin{theorem}[Exhaustion: public ancestry of qualified LPN local geometry]
 \label{thm-lpn-public-ancestry-local-geometry-normal-form}
 
 Fix an LPN presentation \(I=(A,b,\eta)\), a charged ceiling \(B\), and a
@@ -56444,7 +58093,7 @@ gives the energy estimate.  The represented Caus action--aiming inequality
 then gives the power bound.
 \end{proof}
 
-\begin{corollary}[Traffic and horizon specialization of residual Caus aiming]
+\begin{corollary}[Specialization: traffic and horizon forms of residual Caus aiming]
 \label{cor-lpn-traffic-horizon-caus-aiming}
 Adopt the hypotheses and potential of
 \cref{thm-lpn-residual-caus-energy-action}.
@@ -57052,7 +58701,7 @@ the last assertion.
 \subsection{Exact hypercube spectrum and functional outputs}
 \label{subsec-lpn-hypercube-spectrum-functional-outputs}
 
-\begin{theorem}[Exact spectrum and functional constants of the public hypercube]
+\begin{theorem}[Identity: spectrum and functional constants of the public hypercube]
 \label{thm-lpn-hypercube-spectrum-functional-constants}
 
 Let \(P_\square\) be the public coordinate-flip kernel
@@ -57395,7 +59044,10 @@ on the same mean-zero domain.  This proves
 Tensorization of the sharp two-point inequalities gives
 \cref{eq-lpn-hypercube-lsi-curvature}; tensorization of the bounded-difference
 subgaussian estimate gives \(T_1(n/4)\) for Hamming distance
-\citep{Gross1975,BobkovGotze1999}.  The kernel is reversible, so the sector
+by Gross's hypercontractive/logarithmic-Sobolev equivalence
+\citep[Theorem~2]{Gross1975} and the Bobkov--G\"otze dual
+characterization of \(T_1\) \citep{BobkovGotze1999}.  The kernel is
+reversible, so the sector
 constant is zero and the Poincar\'e energy itself supplies the displayed
 hypocoercive triple.  The Poincar\'e consequence in
 \cref{thm-controlled-functional-inequality-consequences} gives
@@ -58070,7 +59722,7 @@ the uniform parity generalization estimate with the same confidence
 allocation, clipped by the unit risk bound.
 \end{proof}
 
-\begin{corollary}[LPN committor, safe-spectrum, and dynamical-learning specialization]
+\begin{corollary}[Specialization: LPN committor, safe spectrum, and dynamical learning]
 \label{cor-lpn-complete-controlled-learning-specialization}
 \label{thm-lpn-complete-controlled-learning-specialization}
 The committor, action-safe spectral, dependent-generalization, and clean-risk
@@ -58394,7 +60046,7 @@ therefore has squared sensitivity sum
 \cref{eq-lpn-bkw-correct-score-tail,eq-lpn-bkw-wrong-score-tail}.
 \end{proof}
 
-\begin{theorem}[Exact dependence-aware BKW recovery certificate]
+\begin{theorem}[Bound: exact dependence-aware BKW recovery]
 \label{thm-lpn-dependence-aware-bkw-recovery}
 
 Let \(\widehat s_{S_g}\) maximize
@@ -58564,7 +60216,7 @@ The choice in \cref{eq-lpn-bkw-required-final-rows} makes this at most
 \cref{eq-lpn-bkw-stage-row-recurrence}, completing the proof.
 \end{proof}
 
-\begin{corollary}[Proof-producing scaling audit for materialized BKW]
+\begin{corollary}[Finite-to-asymptotic scaling audit for materialized BKW]
 \label{cor-lpn-proof-producing-bkw-scaling-audit}
 
 Fix \(n,m,\eta,\epsilon\), terminal block size \(k\), and number \(G\) of
@@ -58992,6 +60644,7 @@ Their explicit \(n,m,\eta\) dependence returns to the existing prospective
 \label{fig-lpn-controlled-nonlinear-ambient-dependency}
 \end{figure}
 
+\FloatBarrier
 \section{Readout-Agnostic Capacity, Information, and Blackwell Envelopes}
 \label{sec-lpn-readout-agnostic-envelopes}
 
@@ -59885,7 +61538,7 @@ target-arrival ledger.}
 \label{fig-lpn-readout-agnostic-four-route-envelope}
 \end{figure}
 
-\begin{corollary}[Saturated quantitative prospective certificate envelope for LPN]
+\begin{corollary}[Bound: saturated quantitative prospective envelope for LPN]
 \label{cor-lpn-saturated-quantitative-prospective-certificate-envelope}
 
 Fix \(n,m\ge1\), \(0<\eta<1/2\), budget \(B\), and refined horizon \(H\).
@@ -60076,7 +61729,7 @@ refined step.  Summation gives the success bound.
 \subsection{Sparse-reward observation and transport accounting for LPN}
 \label{subsec-lpn-sparse-reward-observation-transport}
 
-\begin{theorem}[Complete sparse-reward observation accounting for LPN]
+\begin{theorem}[Exhaustion: sparse-reward observation accounting for LPN]
 \label{thm-lpn-complete-sparse-reward-observation-accounting}
 
 Fix \(0<\eta<\tau<1/2\), \(\delta>0\), and a budget in the declared
@@ -60846,7 +62499,7 @@ bounds are the cited LPN active-acquisition estimates.
 
 \end{proof}
 
-\begin{theorem}[LPN occupation-flow and Bellman-support certificate]
+\begin{theorem}[Certificate: LPN occupation flow and Bellman support]
 \label{thm-lpn-occupation-flow-bellman-support-certificate}
 
 Fix the standard-presentation LPN slice
@@ -61048,8 +62701,7 @@ and substitute the LPN finite-description radius.  This proves
 
 \end{proof}
 
-\begin{corollary}[LPN specialization of prospective contact-witness
-coercivity]
+\begin{corollary}[Specialization: prospective contact-witness coercivity for LPN]
 \label{cor-lpn-prospective-contact-witness-coercivity}
 
 Fix the standard LPN presentation, parameters
@@ -62014,6 +63666,7 @@ bounds.  Each interface enters the same master active-sampling ledger.}
 \label{fig-lpn-three-active-acquisition-interfaces}
 \end{figure}
 
+\FloatBarrier
 \section{Charged Decoder Geometry and Current Classification}
 \label{sec-lpn-charged-decoder-current-classification}
 
@@ -62153,7 +63806,7 @@ five gates and regularity \(1/n\); off that event target admissibility is
 zero.  Multiplying the gates yields the exact qualified contribution.
 \end{proof}
 
-\begin{theorem}[Exact decoder level quotient and correction arrival]
+\begin{theorem}[Identity: decoder level quotient and correction arrival]
 \label{thm-lpn-decoder-level-quotient-arrival}
 Adopt the charged decoder construction of
 \cref{thm-lpn-charged-postoutput-decoder-geometry}.
@@ -62503,7 +64156,7 @@ Use
 \subsection{Selected-Current Hodge Classification}
 \label{subsec-lpn-selected-current-hodge}
 
-\begin{theorem}[Selected-current Hodge classification in LPN]
+\begin{theorem}[Exhaustion: selected-current Hodge classification in LPN]
 \label{thm-lpn-off-target-gradual-source-residual-dichotomy}
 
 Work on the LPN verifier good event and fix a saturated budget \(B\).  Let
@@ -63032,9 +64685,20 @@ target-qualified exact or compensated quotient support in the
 
 With probability \(1-o(1)\), the matrix \(A\) has full column rank and
 the public code \(\mathcal C_A\) has trivial permutation automorphism group:
-the rank-failure probability is at most \(2^{n-m}\), and random-code rigidity
-gives the second event at fixed rate \(R\in(0,1)\)
-\citep{LefmannPhelpsRodl1993}. Work on their intersection and let \(q_G\) be
+the rank-failure probability is at most \(2^{n-m}\).  Conditional on full
+column rank, \(\mathcal C_A=\operatorname{Im}(A)\) is uniform over the
+Grassmannian of \(n\)-dimensional binary subspaces of
+\(\mathbb F_2^m\).  At fixed rate \(n/m\to R\in(0,1)\), for every fixed
+\(\varepsilon>0\) and all sufficiently large \(m\),
+\[
+\min\{n,m-n\}\ge(2+\varepsilon)\log_2m.
+\]
+The Main Theorem of \citet{LiWangZhou2026}, with code length \(m\),
+dimension \(n\), and \(q=2\), therefore gives trivial permutation
+automorphism group with probability \(1-o(1)\): over \(\mathbb F_2\) the
+monomial automorphism group is the permutation automorphism group because
+\(\mathbb F_2^\times=\{1\}\). Work on the intersection
+of these two events and let \(q_G\) be
 such a quotient. By
 \hyperref[lem-lpn-symmetry-induces-code-automorphism]{the authenticated
 LPN symmetry lemma}, every \(g\in G\) supplies a permutation
@@ -63066,6 +64730,17 @@ random-presentation conclusion.
 
 \end{proof}
 
+\begin{remark}[Status of the random-code rigidity reference]
+\label{rem-lpn-random-code-rigidity-reference}
+
+The fixed-rate Grassmannian asymptotic used in the preceding proof is supplied
+by the 2026 Main Theorem of \citet{LiWangZhou2026}; it is a theorem
+dependency, not a folklore assumption.  The earlier work on rigid binary
+linear codes by \citet{LefmannPhelpsRodl1993} is historical background, but
+is not used as a source for that asymptotic statement.
+
+\end{remark}
+
 For later family-functional bookkeeping, define the rigidity failure
 probability
 \begin{equation}
@@ -63089,8 +64764,8 @@ The proof of \cref{thm-lpn-random-code-rigidity-final} gives
 at fixed rate \(n/m\to R\in(0,1)\).  Here
 \(\varepsilon_{\mathrm{aut}}\) is the proportion of full-rank binary
 \([m,n]\) codes having a nontrivial permutation automorphism, whose
-vanishing is the random-code rigidity theorem
-\citep{LefmannPhelpsRodl1993}.  This notation records the exceptional
+vanishing follows from the Main Theorem of
+\citet{LiWangZhou2026}.  This notation records the exceptional
 presentation probability; it is not a new structural coordinate.
 
 \begin{corollary}[Closure of symmetry provenance in LPN geometry]
@@ -63608,7 +65283,7 @@ root gives the symmetric statement.
 \section{Residual Ambient Geometry and Five-Family Affordability}
 \label{sec-lpn-residual-ambient-five-family-affordability}
 
-\begin{corollary}[Exhaustive reversible-carrier classification in LPN]
+\begin{corollary}[Exhaustion: reversible-carrier classification in LPN]
 \label{cor-lpn-no-nonreversible-geometric-escape}
 
 On the good-presentation event, every temporally admissible dynamically
@@ -63658,7 +65333,7 @@ quotient classifications.
 
 \end{proof}
 
-\begin{proposition}[Exhaustive reduction to classified ambient provenance]
+\begin{proposition}[Exhaustion: reduction to classified ambient provenance]
 \label{prop-lpn-remaining-syndrome-dependent-geom-branch}
 
 Fix a presented instance \(I_n\) on the good-presentation event.  Its
@@ -64216,7 +65891,7 @@ used here; no LPN-specific replacement coordinate is introduced.
 \subsection{Complete Geom exhaustion and saturated evaluation}
 \label{subsec-lpn-provenance-exhaustion-evaluated-ancestors}
 
-\begin{theorem}[Complete structural exhaustion of LPN Geom]
+\begin{theorem}[Exhaustion: complete structural classification of LPN Geom]
 \label{thm-lpn-complete-geom-structure-exhaustion}
 
 Fix \(0<\eta<1/2\), work on the full-rank random-code-rigidity event
@@ -64380,14 +66055,15 @@ the asserted structural exhaustion.
 
 \end{proof}
 
-\begin{assumption}[Residual-ancestry compact ambient bound for LPN]
+\begin{certificationtarget}[Compact residual-ancestry ambient bound for LPN]
 \label{thm-lpn-residual-ancestry-attention-bound}
 
 Fix \(0<\eta<1/2\), the declared LPN family functional restricted to the
 full-rank and random-code-rigidity event, and a budget \(B\) in the declared
 polynomial saturated ceiling or a class-preserving polynomial enlargement.
 For the residual-ancestry source family of
-\cref{def-lpn-ambient-geom-ancestry-branches}, assume
+\cref{def-lpn-ambient-geom-ancestry-branches}, the remaining certification
+objective is
 \begin{equation}
 \label{eq-lpn-residual-ancestry-attention-bound}
 G_{X,b,\mathfrak M,n}^{\mathrm{src,sat}}(B)
@@ -64396,26 +66072,40 @@ G_{X,b,\mathfrak M,n}^{\mathrm{src,sat}}(B)
 The estimate applies to the complete record: score construction,
 normalization, active acquisition, posterior update, Caus current, valid
 Lift, and deployed transition are all charged at the same ceiling.
-By \cref{thm-lpn-exact-constant-noise-spectral-perimeter}, the premise is
-already discharged for explicitly materialized located spectra and for every
+By \cref{thm-lpn-exact-constant-noise-spectral-perimeter}, the inequality is
+already proved for explicitly materialized located spectra and for every
 residual-parity fiber map that fails the quotient gate or is
 identity-equivalent.  Its remaining content is the numerical evaluation of
 compact, dynamically qualified, non-lumpable residual-ancestry ambient
 records, including any polynomial evaluator with an unmaterialized diffuse
-Walsh expansion.  The proof-grade empirical discharge in
-\cref{thm-lpn-proof-grade-empirical-residual-discharge} lists the source
-cover, capacity, attenuation, error, scale, crossover, and finite-prefix
-certificates that together prove this premise.
+Walsh expansion.
 
-\end{assumption}
+For the finite-prefix discharge and its structural scale certificate, see
+\cref{thm-lpn-proof-grade-empirical-residual-discharge,def-finite-prefix-structural-scale-certificate,thm-finite-prefix-structural-extension}.
+The exact
+finite-population quantities used in the finite-saturation checks are
+evaluated by the finite audits of \cref{sec-finite-target-audits}; complete
+source-cell coverage remains a separate field of the discharge theorem.
+Recurrence and scale certification are specified in
+\cref{def-scale-certified-attenuating-source-audit}, and the uniformly
+propagated conclusion is
+\cref{eq-lpn-empirical-discharge-final}.
 
-This is the only statement in the LPN part declared as an assumption.  The
-next theorem gives a finite proof-grade route for discharging each of its
-fields; a confidence-only empirical estimate does not replace that route.
+\end{certificationtarget}
+
+This is the sole unresolved numerical certification target in the LPN part,
+not an external hardness assumption.  It is not discharged in the present
+manuscript because the instantiated certificate analysis has not been run and
+verified.  The next theorem proves that a record satisfying its complete
+proof-grade fields discharges the target; a confidence-only empirical estimate
+does not satisfy those fields.  Consequently, every later LPN result that
+invokes this target remains conditional on deterministic verification of such
+a record, while the certification machinery and its implication are unconditional
+theorems of the paper.
 \Cref{fig-lpn-proof-grade-empirical-discharge} displays the resulting
 finite-prefix and propagated-tail argument.
 
-\begin{theorem}[Proof-grade empirical discharge of the residual-ancestry
+\begin{theorem}[Certificate: proof-grade discharge of the residual-ancestry
 bound]
 \label{thm-lpn-proof-grade-empirical-residual-discharge}
 
@@ -64506,6 +66196,31 @@ G_{X,b,\mathfrak M,n}^{\mathrm{src,sat}}(B_n)
 Consequently the exported certificate discharges
 \cref{thm-lpn-residual-ancestry-attention-bound} at the audited ceiling.
 
+The proof dependencies are explicit.  Exact source-cell exhaustion is supplied
+by
+\cref{thm-lpn-exact-constant-noise-spectral-perimeter,cor-lpn-residual-ancestry-five-family-geom-classification}.
+For each finite slice covered by that exhaustion, the exact finite-saturation
+and direct finite-prefix fields use complete full-support audit data in the
+sense of \cref{def-computable-observable-audit}, with finite-matrix soundness
+supplied by \cref{thm-computable-audit-soundness}.  This numerical audit does
+not by itself establish that the represented slice is complete, and sampled
+audit data alone do not supply either field.  Capacity factorization,
+attenuation, and error control are
+the verified fields of
+\cref{def-scale-certified-attenuating-source-audit,thm-empirical-asymptotic-saturated-source-closure,cor-empirical-discovery-deterministic-universal-closure},
+specialized here by
+\cref{eq-lpn-empirical-discharge-capacity,eq-lpn-empirical-discharge-noise-attenuation,eq-lpn-empirical-discharge-error}.
+The finite prefix, recurrence cover, invariant propagation, and crossing
+checks instantiate
+\cref{def-finite-prefix-structural-scale-certificate,thm-finite-prefix-structural-extension}.
+The strict phase separation and crossover exclusion are exactly
+\cref{eq-lpn-empirical-discharge-lambda,eq-lpn-empirical-discharge-crossover-monotonicity,eq-lpn-empirical-discharge-crossover-leading,eq-lpn-empirical-discharge-crossover-error};
+the prefix and propagated tail meet in
+\cref{eq-lpn-empirical-discharge-finite-prefix,eq-lpn-empirical-discharge-final}.
+After deterministic verification, the conversion from this source bound to a
+universal success bound is supplied by
+\cref{thm-prospective-selector-accountability,thm-universal-saturated-profile-accountability,thm-lpn-one-way}.
+
 Every premise above has a distinct verification field: source-cell coverage
 comes from the cited LPN exhaustion theorems; the factorization, capacity,
 attenuation, and error bounds come from the scale audit; the polynomial
@@ -64565,7 +66280,7 @@ finite sizes.  Since \(e^{-\lambda_\eta n}=(1-\eta)^n\), the conclusion is
 exactly \cref{eq-lpn-residual-ancestry-attention-bound}.
 \end{proof}
 
-\begin{figure}[tbp]
+\begin{figure}[b]
 \centering
 \resizebox{.98\linewidth}{!}{%
 \begin{tikzpicture}[fw diagram,node distance=7mm and 9mm]
@@ -64691,7 +66406,7 @@ holds there.
 
 \end{proof}
 
-\begin{corollary}[LPN specialization of the ambient obstruction criterion]
+\begin{corollary}[Specialization: ambient obstruction criterion for LPN]
 \label{cor-lpn-complete-ambient-obstruction-criterion}
 
 Fix the LPN presentation, family functional, and saturated ceiling of
@@ -64869,7 +66584,7 @@ Geom.  The separate first-hit accounting ledger is retained by
 thm-core-refined-prospective-accountability}; temporal source admissibility
 forbids an automatic transfer between the two ledgers.
 
-\begin{theorem}[Exact saturated-profile ledger for LPN under the residual-ancestry bound]
+\begin{theorem}[Identity: saturated-profile ledger for LPN under the residual-ancestry bound]
 \label{thm-lpn-saturated-floor}
 
 Fix \(0<\eta<1/2\) and a sample schedule with \(n/m\to R\in(0,1)\).
@@ -65037,7 +66752,7 @@ same represented budget.  The noise schedules
 \(\eta=\eta(n)\), including the zero-noise and polynomial-enumeration scales,
 are localized separately in
 \cref{cor-lpn-quantitative-noise-phase-localization}.
-\begin{theorem}[Admissible-oracle hardness of search-LPN under the residual-ancestry bound]
+\begin{theorem}[Specialization: admissible-oracle hardness of search-LPN under the residual-ancestry bound]
 \label{thm-lpn-one-way}
 
 Fix \(0<\eta<1/2\), choose \(0<\delta<1/2-\eta\), and set
@@ -65485,7 +67200,8 @@ For a represented evaluator \(h\) in the budget-\(B\) class, the
 Goldreich--Levin heavy-Fourier algorithm returns, conditional on
 \(\lvert\widehat h(s)\rvert\ge\varepsilon\), a polynomial-size list
 containing \(s\) with probability at least \(p_{\mathrm{GL}}\)
-\citep{GoldreichLevin1989}.  The standard bounded-score form follows by using
+by the reconstruction procedure in the proof of the main theorem of
+\citet[\S3]{GoldreichLevin1989}.  The standard bounded-score form follows by using
 the represented internal randomness to sample a sign with conditional mean
 \(h(a)\).  Evaluate the public predicate \(V_I\) of
 \cref{thm-lpn-public-verifier} on every returned candidate.  On its
@@ -65564,7 +67280,8 @@ at that fixed noise rate.  Then \(P\ne NP\).
 
 In particular, any unconditional derivation of
 \cref{eq-lpn-one-way-family-obstruction-bound} proves \(P\ne NP\).  Under the
-present residual-ancestry premise, the derivation is supplied by
+current residual-ancestry certification target, the conditional derivation is
+supplied by
 \cref{thm-lpn-residual-ancestry-attention-bound,thm-lpn-one-way}.
 The implication from fixed-noise search-LPN hardness to \(P\ne NP\) itself
 uses no additional complexity-barrier premise.
@@ -65704,145 +67421,248 @@ polynomial-time label to \(\mathcal T_{\mathrm{LPN}}\), contradicting
 \section{Conclusion}\label{sec-lpn-conclusion}
 \label{summary-1}
 
-The LPN specialization begins with the represented channel partition in
-\cref{thm-lpn-five-term-partition-final}; the specialization is introduced
-as a continuous running instance in \cref{ex-lpn-running-part5}.
+This paper constructs a presentation-relative saturated structural profile
+and its strict Pareto inverse.  A public task presentation fixes the
+observables, constructors, terminal data, admissible interfaces, and complete
+resource ledger.  Its cost-filtered saturated closure then contains every
+representation, quotient, learned feature, memory state, posterior update,
+controlled transition, and runtime-generated object produced by the declared
+constructor grammar within budget.  The profile of
+\cref{def-master-saturated-quotient-geometry-profile,def-uniform-saturated-success-profile}
+records the strongest target-relevant structure available in that closure.
+The temporally typed frontiers of
+\cref{def-temporally-typed-structural-meta-frontiers,thm-strict-meta-profile-generalized-inverse}
+invert the profile: they record the Pareto-minimal complete resource vectors
+at which a prescribed source, selector, active-arrival, or accounting level
+becomes attainable.
 
-The public data \((A,b,\eta)\) instantiate the
-\hyperref[part:task-spaces]{Part~I task presentation},
-\hyperref[part:dynamics]{Part~II component decomposition}, and
-\hyperref[part:spectral-complexity]{Part~III saturated profile}; every uniform
-polynomial computation using
-\hyperref[def-lpn-admissible-oracle]{presentation-admissible oracle
-interfaces} lies in its saturated represented closure.
-The
-\hyperref[thm-saturated-statistical-attack-alignment]{uniform saturated
-statistical-attack theorem} specializes in
-\cref{thm-lpn-saturated-statistical-alignment} to control every represented
-LPN predictor on one simultaneous sample event.  Candidate recovery is
-identified with clean parity alignment and transported through the noisy
-sample in
-\cref{cor-lpn-candidate-recovery-noise-accountability}.  The
-exact execution-law identity
-\eqref{eq-lpn-execution-law-recovery-alignment} identifies recovery with
-average population alignment, and
-\cref{thm-lpn-prospective-learning-selector-accountability} identifies
-nonbaseline use of that alignment with the represented pre-hit selector and
-retains its completed five-family accounting ancestry.  A prospective-source
-comparison uses \cref{cor-contextual-structural-charge-transfer}; the
-pointwise and family accounting bounds are
-\cref{cor-lpn-core-refined-first-hit-accountability}.  The
-\hyperref[cor-lpn-universal-statistical-denoising-bound]{LPN denoising
-corollary} combines this statistical control with the saturated prospective
-selector bound and the represented
-heavy-Fourier decoder; it does not use the retrospective
-\(\operatorname{HitCore}\) coordinate as a hardness premise.
+The profile bounds target-directed performance for the entire admissible
+computational class.  For every task-family functional \(\mathfrak M_n\) and
+finite-time budget ceiling \(B\), the capability envelope is
+\[
+\operatorname{Cap}_{\mathfrak M,n}(B)
+=
+\sup_{\mathcal A\in\mathsf{Alg}_{n,\le B}}
+\mathfrak M_n\!\left(I\mapsto\alpha_I(\mathcal A)\right)
+\le
+eH_B(n)\,
+m_{\mathfrak M,n}^{\mathrm{sat}}\!\left(\Psi(B,n)\right),
+\]
+by \cref{thm-universal-saturated-profile-accountability}.  Because the
+left-hand side is already the supremum over all admissible computations, this
+is one simultaneous bound for every architecture, update rule, learned
+representation, memory organization, acquisition policy, and control strategy
+in the declared resource class.  Architecture independence is therefore
+precise and presentation-relative: the public information and interfaces are
+fixed, while the internal computation is unrestricted within the represented
+model of \cref{def-general-intelligent-computation}.  Prospective source,
+pre-hit selector, active-arrival, and retrospective accounting records remain
+separate throughout, so the capability bound retains the temporal origin and
+complete construction cost of the structure on which performance depends.
 
-The controlled-dynamics specialization evaluates the same qualified LPN
-record through target capacity and drift, Caus action--aiming, the complete
-hypercube functional profile, valid-Lift transfer, and the saturated
-dynamical-learning envelope in
-\cref{thm-lpn-controlled-target-capacity-drift,%
-thm-lpn-caus-action-residual-aiming,%
-thm-lpn-hypercube-functional-profile,%
-thm-lpn-valid-lift-quantitative-transfer,%
-cor-lpn-noise-indexed-caus-lift-interfaces,%
-thm-lpn-complete-controlled-learning-specialization}.  The exact subset,
-located-spectral, and threshold-guided checks are
-\cref{cor-lpn-three-dynamical-stress-tests}; their dependency diagram is
-\cref{fig-lpn-controlled-nonlinear-ambient-dependency}.  The resource-matched
-BKW refinement is
-\cref{thm-lpn-dependence-aware-bkw-recovery,thm-lpn-complete-bkw-structural-charging,cor-lpn-quantitative-improvement-over-bkw};
-its numerical grid and noise frontiers are
-\cref{tab-lpn-certified-bkw-grid,fig-lpn-bkw-noise-resource-frontiers}.
-Valid lifted
-selectors inherit the complete prospective routing by
-\cref{cor-lpn-valid-lift-selector-access-seal}.
-Optimal active learning is additionally represented by the stopped
-occupation-flow/Bellman duality of
-\cref{thm-exact-affordable-occupation-flow-primal,thm-bellman-barrier-duality-affordable-arrival}.
-Its LPN specialization
-\cref{thm-lpn-occupation-flow-bellman-support-certificate} gives a
-modewise, parameter-explicit support bound for the best affordable
-standard-presentation controller.  The learned-controller loss is then the
-separate finite-sample term in
-\cref{eq-lpn-complete-learning-control-lower,eq-lpn-complete-learning-control-radius}.
-The structural Bayesian specialization fixes the uniform secret prior,
-places \(b=As+e\) in the first target-dependent reveal slot, and charges
-every likelihood, evidence normalization, belief update, and acquisition
-rule.  Its target-contact and concentration bounds are
-\cref{thm-lpn-quantitative-structural-bayesian-envelope}; the prospective
-concentration readout retains the existing LPN five-mode decomposition, and
-its deployed target gain has the explicit Add/Mult/Ord/Sym/Filt table and
-noise-contracted same-record minimum in
-\cref{thm-lpn-posterior-concentration-five-mode-exhaustion}.  The resulting
-arrival bound is
-\cref{eq-lpn-source-resolved-structural-bayesian-arrival}.  The learned
-structural Bayesian loss is
-\cref{cor-learned-lpn-structural-bayesian-policy}.
+The same ledger supports the paper's quantitative theories of learning,
+noise, active information acquisition, Bayesian inference, controlled
+dynamics, reinforcement learning, attention, and metacomplexity.
+Source-resolved Rademacher, sequential Rademacher, PAC--Bayes, and
+effective-dimension bounds attach statistical capacity, source ancestry,
+noise contraction, construction, and deployment to one computation
+(\cref{thm-source-resolved-saturated-learning-compilation}).  The active and
+Bayesian results charge observation selection, evidence normalization, belief
+updates, and learned policies
+(\cref{thm-structural-active-learning,thm-universal-bayesianization-active-computation}).
+The controlled-system results connect target capacity, drift, information
+contraction, functional inequalities, Bellman duality, and learned-controller
+loss; the attention compilation preserves source and cost through normalized
+selection (\cref{thm-attention-structural-source-compilation}).  Finally,
+structural metacomplexity converts attainable capability levels into exact
+certificate-cost frontiers and universal absence criteria
+(\cref{thm-structural-meta-accountability}).  The statistical,
+computational, and information-theoretic thresholds thereby describe
+different boundaries of the same presentation-relative capability envelope,
+rather than unrelated analyses of selected algorithms.
 
-All LPN learning routes use the common source-resolved ledger of
-\cref{thm-source-resolved-saturated-learning-compilation}: each reveal,
-feature, posterior update, acquisition rule, controlled transition, and
-deployment map retains its Add/Mult/Ord/Sym/Filt charge, binary contraction
-\((1-2\eta)^2\), sample size \(m\), confidence level, horizon, and complete
-cost.  The passive and sequential specialization is
-\cref{eq-lpn-saturated-certificate-source-resolved-learning-candidate}, the
-sparse-reward observation specialization is
-\cref{thm-lpn-complete-sparse-reward-observation-accounting}, and the active
-learning specialization is
-\cref{thm-lpn-complete-master-active-sampling-envelope}.  Each contributes a
-same-record target-contact candidate; none replaces the complete prospective
-source evaluation.
+This organization makes quantitative analysis of general intelligent
+computation possible without choosing an architecture in advance.  The public
+presentation determines what information is available; the saturated profile
+determines what target-relevant structure is constructible; the noise and
+source ledgers determine how that structure survives acquisition and
+deployment; and the Pareto inverse determines the least complete resources at
+which a target capability can appear.  The paper thus replaces
+architecture-specific performance analysis by a universal cost-, provenance-,
+source-, and noise-aware capability envelope for learning, reasoning, and
+control.
 
-The noise--resource comparison in \cref{sec-lpn-noise-resource-phase} gives
-the exact-binomial error-enumeration lower-bound curve, the Rademacher
-sample-resolution endpoint, the saturated computational obstruction, and
-the sharp information threshold.  Their finite-budget relations are
-collected in \cref{thm-lpn-three-threshold-phase-comparison};
-\cref{cor-lpn-quantitative-noise-phase-localization,fig-lpn-three-noise-phases}
-locate the vanishing-noise nonnegligible-success window, the fixed-positive
-hardness region, and the information-impossible region.
+The LPN part is the most detailed finite-to-asymptotic specialization of this
+program.  Its five-channel partition, prospective source reduction,
+statistical denoising theorem, controlled and Bayesian envelopes, and
+three-threshold phase comparison evaluate the same public presentation
+(\cref{thm-lpn-five-term-partition-final,cor-lpn-universal-statistical-denoising-bound,%
+thm-lpn-complete-controlled-learning-specialization,%
+thm-lpn-quantitative-structural-bayesian-envelope,%
+thm-lpn-three-threshold-phase-comparison}).  The exact source-exhaustion and
+constant-noise spectral arguments reduce the fixed-noise obstruction to the
+single residual-ancestry certification target of
+\cref{thm-lpn-residual-ancestry-attention-bound}.  The deterministic
+finite-to-asymptotic implication and every required relation are proved in
+\cref{thm-lpn-proof-grade-empirical-residual-discharge}.  This manuscript does
+not include a verified instantiated record, so its fixed-noise LPN hardness
+and separation consequences remain conditional in this version precisely on
+verification of those internal finite-prefix and scale relations.  Their
+verification would discharge the
+remaining numerical target without importing an LPN or complexity-theoretic
+hardness assumption, after which
+\cref{thm-lpn-one-way,cor-lpn-p-not-equal-np,cor-oracle-blind-classification-unsound}
+give the stated hardness, separation, and classification consequences.
 
-The \hyperref[thm-channel-exhaustiveness]{generic component decomposition},
-\hyperref[thm-lpn-no-independent-geom-final]{LPN geometry theorem},
-\hyperref[thm-lpn-coupled-source-seal-final]{coupled-source theorem}, and
-\hyperref[cor-lpn-abs-source-exhaustion]{LPN exact-\(\Abs\) source-exhaustion
-corollary} reduce the prospective \(\Geom/\Abs\) source profile to the
-ambient Geom coordinate.  Before the remaining compact ambient premise is
-invoked, the constant-noise spectral perimeter
-\cref{thm-lpn-exact-constant-noise-spectral-perimeter} exponentially closes
-materialized located spectra and applies the exact terminal-rank gate to
-residual-parity fiber maps.  The exact-\(\Abs\) and all quotient-supported
-Geom coordinates vanish, and
-\hyperref[cor-lpn-complete-ambient-geom-source-seal]{the complete ambient
-source seal}, using
-\cref{thm-lpn-residual-ancestry-attention-bound}, bounds the remaining coordinate by
-\(2^{-n}+(1-\eta)^n\).  The only formal premise in this chain is therefore
-\cref{thm-lpn-residual-ancestry-attention-bound}.  It is discharged by a
-computer-assisted record exactly when the finite verification fields of
-\cref{thm-lpn-proof-grade-empirical-residual-discharge} pass; no sampled
-failure to find a source is substituted for saturated source coverage.  The
-\hyperref[cor-no-retrospective-first-hit-source-loophole]{no retrospective
-first-hit source loophole corollary} excludes a completed first-hit label as
-an uncharged source and classifies every independent pre-hit representation
-inside that same closure. These results prove the exact source and first-hit
-bounds as separate ledgers in
-\hyperref[thm-lpn-saturated-floor]{the saturated LPN ledger theorem}.
-
-By \cref{thm-lpn-residual-ancestry-attention-bound}, the
-\hyperref[thm-lpn-one-way]{search-LPN hardness theorem}
-applies the complete saturated-profile bound and prospective selector accountability to
-obtain the explicit negligible fixed-noise success bound, including
-presentation-admissible LPN oracle interfaces.  This yields the
-\hyperref[cor-lpn-p-not-equal-np]{separation consequence for
-\(P\ne NP\)} and
-\hyperref[cor-oracle-blind-classification-unsound]{oracle-blind
-classification corollary}.  The roles of relativization, natural proofs,
-and algebrization in these presentation-relative statements are indexed in
-\cref{sec-lpn-complexity-barriers}.
+The remaining computational task is to evaluate the complete finite prefix,
+derive and verify the structural recurrence and invariant enclosure, check the
+crossing inequalities by exact or outward-rounded arithmetic, and instantiate
+the residual-ancestry record.  Those finite calculations supply the base of
+\cref{thm-finite-prefix-structural-extension}; its induction supplies the
+asymptotic envelope.  Completing that calculation will instantiate the paper's
+general methodology: compute a presentation-relative structural profile,
+invert it into a resource frontier, and obtain an architecture-independent
+capability envelope for every admissible computation.
 
 \appendix
+\section{External Theorem-Dependency Audit}
+\label{sec-external-theorem-dependency-audit}
+
+This appendix records every external citation appearing inside a proof.
+It is a provenance audit, not an additional hypothesis ledger: it changes
+neither the assumptions nor the conclusions of any result.  A
+\emph{dependency} supplies an external theorem actually invoked by the
+proof.  A \emph{verification route} supplies one standard way to establish
+an event that the internal theorem already states as a hypothesis.  A
+\emph{historical/convention} citation fixes lineage or normalization after
+the required calculation has been given in the manuscript and therefore
+carries no proof obligation.
+
+\begin{longtable}{@{}
+  >{\raggedright\arraybackslash}p{0.27\textwidth}
+  >{\raggedright\arraybackslash}p{0.15\textwidth}
+  >{\raggedright\arraybackslash}p{0.50\textwidth}@{}}
+\toprule
+Internal use & Status & Audited source and exact role \\
+\midrule
+\endfirsthead
+\toprule
+Internal use & Status & Audited source and exact role \\
+\midrule
+\endhead
+\cref{thm-caus-drift-survives-defect} &
+Dependency &
+The finite-state stopped Dynkin formula; \citet[Chapters~2--3]{Norris1997}.
+The manuscript then performs the stopping and monotone-convergence
+calculation explicitly. \\
+\cref{thm-continuum-caus-authority-bridge} &
+Dependency &
+The first representation theorem for closed sectorial forms;
+\citet[Chapter~VI, Theorem~2.1]{Kato1995}. \\
+\cref{eq:first-hit-uniformization} &
+Historical &
+\citet{Jensen1953} is the classical uniformization attribution.  The proof
+computes the required factor directly as the Laplace transform of a
+Gamma\((j,1)\) holding time. \\
+\cref{lem-reversible-spectral-compression} &
+Dependency &
+Bernstein-ellipse coefficient decay and Chebyshev truncation;
+\citet[Theorems~8.1--8.2]{Trefethen2019}. \\
+\cref{thm-random-regime} &
+Dependency &
+Hanson--Wright for independent sub-Gaussian coordinates;
+\citet[Theorem~1.1]{RudelsonVershynin2013}. \\
+\cref{thm-fixed-operator-rademacher-bound} &
+Dependency &
+The uniform risk step is \citet[Theorem~8]{BartlettMendelson2002}; scalar
+contraction is \citet[Theorem~4.12]{LedouxTalagrand1991}, equivalently
+\citet[Theorem~12(4)]{BartlettMendelson2002}, after translating to the
+manuscript's empirical-complexity normalization. \\
+\cref{thm-learned-operator-union-bound} &
+Dependency &
+The finite-family maximum bound is the finite-union consequence of
+\citet[Theorem~3]{Massart2000}; the radius and evaluation-vector norm are
+identified explicitly in the proof. \\
+\cref{thm-kernel-trick-lift} &
+Historical &
+\citet{KimeldorfWahba1971} records the representer-theorem lineage.  The
+orthogonal decomposition proving the precise statement used here is included
+in full. \\
+\cref{thm-degree-spectrum-upper,prop-effective-degree-error-bars} &
+Verification route &
+Matrix Bernstein is \citet[Theorem~1.4]{Tropp2012}; hard-band projector
+perturbation is the sin-\(\Theta\) theorem of
+\citet[\S3]{DavisKahan1970}.  In the first result the concentration event is
+an explicit hypothesis; the citations do not assert that event without its
+stated boundedness and eigengap conditions. \\
+\cref{thm-structural-pac-bayes} &
+Mixed &
+The quantitative bound follows from
+\citet[Theorem~5]{Maurer2004}, Pinsker's inequality, and the displayed
+\(m\) to \(m-1\) relaxation.  \citet{McAllester1999} is historical
+antecedence only. \\
+\cref{thm-structural-active-learning} &
+Dependency &
+The cardinality-constrained greedy guarantee is
+\citet[Theorem~4.2]{NemhauserWolseyFisher1978}; the manuscript separately
+states monotonicity and submodularity as hypotheses. \\
+\cref{thm-beta-mixing-structural-blocking} &
+Dependency &
+The independent-block coupling is \citet[Lemma~4.1]{Yu1994}.  This replaces
+a concentration reference that did not state the Berbee block lemma used
+in the proof. \\
+\cref{thm-martingale-structural-pac-bayes} &
+Dependency &
+The PAC--Bayes martingale and Bernstein steps are
+\citet[Theorems~7--8]{SeldinEtAl2012}; the manuscript derives the exponential
+supermartingale and change-of-measure steps before invoking the
+predictable-variance form. \\
+\cref{thm-structural-online-regret} &
+Dependency &
+The convex Lipschitz sequential-complexity bound is
+\citet[Theorem~8]{RakhlinSridharanTewari2015}. \\
+\cref{thm-controlled-functional-inequality-consequences} &
+Mixed &
+The evolving-level-set spectral-profile estimate is
+\citet[Theorem~2.1]{GoelMontenegroTetali2006}.  The citations to
+\citet{CarlenKusuokaStroock1987,RocknerWang2001,BobkovGotze1999,OttoVillani2000,Villani2009}
+fix normalization and terminology for the other slots; those implications
+are derived in the proof from the audited constants assumed in the theorem. \\
+\cref{thm-controlled-committor-bellman} &
+Historical &
+\citet{Bellman1957,Puterman1994,BertsekasTsitsiklis1996} record the
+dynamic-programming lineage.  First-step conditioning, contraction, and the
+Gibbs variational identity are proved directly. \\
+\cref{thm-controlled-reach-avoid-dirichlet-drift} &
+Historical &
+\citet{FukushimaOshimaTakeda2011} records the Dirichlet-form lineage.  The
+finite-state Dirichlet principle and stopped Dynkin calculation used here
+are carried out in the proof. \\
+\cref{thm-lpn-public-verifier} &
+Historical &
+\citet{Gilbert1952,Varshamov1957} record the coding-theoretic lineage.  The
+binary Hamming-ball entropy inequality is derived directly from the binomial
+theorem before it is used. \\
+\cref{thm-lpn-hypercube-functional-profile} &
+Dependency &
+The two-point logarithmic-Sobolev/hypercontractive tensorization is tied to
+\citet[Theorem~2]{Gross1975}; the \(T_1\) conversion uses the
+Bobkov--G\"otze dual characterization \citep{BobkovGotze1999}. \\
+\cref{thm-lpn-random-code-rigidity-final} &
+New dependency &
+The required uniform-Grassmannian asymptotic is the Main Theorem of
+\citet{LiWangZhou2026}.  Conditional on full rank, the random matrix image is
+uniform on that Grassmannian, and fixed rate verifies the theorem's
+\(\min\{n,m-n\}\) condition.  \citet{LefmannPhelpsRodl1993} is retained only
+as historical background and is not used for this implication. \\
+\cref{cor-lpn-universal-statistical-denoising-bound} &
+Dependency &
+The heavy-Fourier reconstruction is the procedure in the proof of the main
+theorem of \citet[\S3]{GoldreichLevin1989}; the manuscript explicitly
+implements the bounded-score randomization and public verification pass. \\
+\bottomrule
+\end{longtable}
+
 \section{Index of Notation}\label{sec-index-of-notation}
 \label{index-of-notation}
 
@@ -66450,6 +68270,27 @@ Decoration & Reading \\
 \(\cdot^{\mathrm{ql}}\) & Quasi-lumpable compensated quotient family. \\
 \bottomrule
 \end{tabular}
+
+\section*{Acknowledgments and Author Responsibility}
+
+Text-to-text generative AI tools were used as editorial and critical aids during
+the preparation of this manuscript, including assistance with drafting,
+restructuring, consistency checking, and adversarial red-teaming of the
+exposition and arguments.  This assistance was limited to helping express,
+organize, and critically test material developed and understood by the author.
+The tools did not serve as authors or as independent sources of mathematical
+authority.  The paper presents the author's synthesis and reorganization of
+established mathematical and computational concepts, together with the
+definitions, constructions, derivations, and results developed from that
+synthesis.
+
+The author selected, examined, and accepts sole responsibility for every
+definition, theorem, proof, calculation, citation, interpretation, and claim in
+the manuscript.  The final text is intended to contain only arguments that the
+author understands and is prepared to explain and defend.  The author welcomes
+questions, requests for clarification, and reports of possible errors, and
+remains available to explain the purpose and justification of any claim,
+provide further details where needed, and correct any error that is identified.
 
 \begingroup
 \raggedright

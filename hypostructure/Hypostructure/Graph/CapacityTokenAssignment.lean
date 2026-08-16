@@ -252,38 +252,11 @@ structure CarrierPresentation (object : FiniteObject.{u}) (Coordinate Chord : Ty
   /-- The selected surplus port whose shoulder chord this is. -/
   chordPort : Chord → object.Vertex × object.Vertex
 
-/-! ## `Φ_can(π)` and `supp(B_π)` -/
+/-! ## `supp(B_π)` -/
 
 variable (activation : DemandActivation object Coordinate Chord)
   (presentation : CarrierPresentation object Coordinate Chord)
   (threshold : Nat) (packing : Finset (Finset object.Vertex))
-
-/-- **`Φ_can(π) = min_≺ 𝖡𝗅𝗄(π)`**, the canonical blocker of
-`def:canonical-blocker-ledger`: the first member of the pair's own blocker set in
-the object's enumeration, which is the framework's single reading of the
-manuscript's "the lexicographically first …".  `none` exactly on the free
-pairs. -/
-noncomputable def canonicalBlocker
-    (pair : Finset (object.Vertex × object.Vertex)) :
-    Option (Blocker object Coordinate Chord) :=
-  (activation.blockers pair).toList.head?
-
-theorem canonicalBlocker_mem {pair : Finset (object.Vertex × object.Vertex)}
-    {blocker : Blocker object Coordinate Chord}
-    (selected : canonicalBlocker activation pair = some blocker) :
-    blocker ∈ activation.blockers pair := by
-  simpa using List.mem_of_mem_head? selected
-
-theorem isSome_canonicalBlocker {pair : Finset (object.Vertex × object.Vertex)}
-    (blocked : (activation.blockers pair).Nonempty) :
-    (canonicalBlocker activation pair).isSome := by
-  obtain ⟨blocker, member⟩ := blocked
-  have inside : blocker ∈ (activation.blockers pair).toList :=
-    Finset.mem_toList.2 member
-  rw [canonicalBlocker]
-  cases enumeration : (activation.blockers pair).toList with
-  | nil => rw [enumeration] at inside; cases inside
-  | cons head tail => simp
 
 /-- **`supp(B_π)`**, the declared support of the pair's canonical blocker.  A free
 pair has no canonical blocker and therefore no support, which is why no case of
@@ -622,13 +595,9 @@ theorem capacityTokenOrder_toFinset :
   rw [capacityTokenOrder]
   simp
 
-/-- **The token ledger is total on `Π_blk`.**  Every blocked pair whose canonical
-blocker has a primitive carrier is charged, so the fibre identity above is read at
-the whole blocked family — which is what makes `|Π_blk| = Σ_t ℓ_cap(t)` the
-manuscript's display rather than a statement about a subfamily. -/
-theorem chargedPairs_eq_of_blocked
-    (blocked : ∀ pair ∈ object.portPairSchedule threshold,
-      (activation.blockers pair).Nonempty)
+/-- The paper's capacity charge is total exactly on the concrete blocked-pair
+family when every declared canonical blocker has its prescribed carrier. -/
+theorem chargedPairs_eq_blockedPairs
     (carried : ∀ pair ∈ object.portPairSchedule threshold,
       ∀ blocker ∈ activation.blockers pair,
         (Blocker.carrier object threshold presentation.coordinateSupport
@@ -636,12 +605,56 @@ theorem chargedPairs_eq_of_blocked
     object.chargedPairs threshold (capacityTokenOrder object threshold packing)
         (Charges activation presentation threshold packing)
         (decidableCharges activation presentation threshold packing) =
-      object.portPairSchedule threshold := by
+      activation.blockedPairs threshold := by
   classical
-  rw [chargedPairs_eq_filter]
-  refine Finset.filter_true_of_mem fun pair member => ?_
-  exact isSome_capacityCharge activation presentation threshold packing
-    (blocked pair member) (carried pair member)
+  rw [chargedPairs_eq_filter, DemandActivation.blockedPairs]
+  ext pair
+  simp only [Finset.mem_filter]
+  constructor
+  · rintro ⟨pairMem, charged⟩
+    refine ⟨pairMem, ?_⟩
+    by_contra free
+    have blockerNone : canonicalBlocker activation pair = none := by
+      apply Option.not_isSome_iff_eq_none.mp
+      intro selected
+      obtain ⟨blocker, blockerEq⟩ := Option.isSome_iff_exists.mp selected
+      exact free ⟨blocker, canonicalBlocker_mem activation blockerEq⟩
+    simp [capacityCharge, chargeSupport, blockerNone, windowJoinChoice,
+      crossWindowChoice, remainderVertexChoice] at charged
+  · rintro ⟨pairMem, blocked⟩
+    refine ⟨pairMem, ?_⟩
+    exact isSome_capacityCharge activation presentation threshold packing blocked
+      (carried pair pairMem)
+
+/-- `ρ_t(π)=(type(B_π),sub(t))`; the token class is determined by the
+subtype and therefore is not an independent coordinate. -/
+noncomputable def capacityRole
+    (pair : Finset (object.Vertex × object.Vertex)) :
+    SameTokenBlockerRoles.Role :=
+  let blockerKind := (canonicalBlocker activation pair).map Blocker.kind
+  let tokenSubtype :=
+    (capacityCharge activation presentation threshold packing pair).map
+      CapacityToken.subtype
+  ⟨blockerKind.getD .sharedDeclaredSupport,
+    tokenSubtype.getD .boundaryWindow⟩
+
+/-- `Π_{t,r}` of `def:same-token-blocker-roles` on the concrete charge. -/
+noncomputable def tokenRoleFibre (token : CapacityToken object)
+    (role : SameTokenBlockerRoles.Role) :
+    Finset (Finset (object.Vertex × object.Vertex)) := by
+  classical
+  exact (tokenFibre activation presentation threshold packing token).filter
+    fun pair => capacityRole activation presentation threshold packing pair = role
+
+theorem card_tokenFibre_eq_sum_roleFibre (token : CapacityToken object) :
+    (tokenFibre activation presentation threshold packing token).card =
+      ∑ role : SameTokenBlockerRoles.Role,
+        (tokenRoleFibre activation presentation threshold packing token role).card := by
+  classical
+  exact Finset.card_eq_sum_card_fiberwise
+    (f := capacityRole activation presentation threshold packing)
+    (s := tokenFibre activation presentation threshold packing token)
+    (t := Finset.univ) (fun _ _ => Finset.mem_univ _)
 
 /-! ## The statement nodes `[134]`--`[136]` commit
 
@@ -656,13 +669,11 @@ one -- and the declared coordinate and shoulder-chord presentation of
 `lem:capacity-token-supply`, `lem:token-ledger-no-overcount` and
 `def:same-token-patterns`, at the object's own token universe and its own
 four-case charge. -/
-def CapacityTokenLedgerStatement (object : FiniteObject.{u}) (threshold order : Nat) :
-    Prop :=
-  ∀ (packing : Finset (Finset object.Vertex)),
-    object.IsWindowPacking order packing →
-    ∀ (Coordinate Chord : Type u)
-      (activation : DemandActivation object Coordinate Chord)
-      (presentation : CarrierPresentation object Coordinate Chord),
+def ConcreteCapacityTokenLedgerStatement (object : FiniteObject.{u})
+    (threshold order : Nat) {Coordinate Chord : Type u}
+    (activation : DemandActivation object Coordinate Chord)
+    (presentation : CarrierPresentation object Coordinate Chord)
+    (packing : Finset (Finset object.Vertex)) : Prop :=
       -- `lem:capacity-token-supply`, exact:
       -- `|𝔗_cap| + 2(order−1)p = |𝔘_sp(G)| + δ·order·p + σ(G)`.
       ((object.capacityTokens threshold packing).card +
@@ -687,18 +698,25 @@ def CapacityTokenLedgerStatement (object : FiniteObject.{u}) (threshold order : 
               (decidableCharges activation presentation threshold packing)).card =
           ∑ token ∈ object.capacityTokens threshold packing,
             (tokenFibre activation presentation threshold packing token).card) ∧
-        -- The identity is read at the whole blocked family: `Θ_cap` is total on
-        -- `Π_blk` once every canonical blocker has its primitive carrier.
+        -- `Θ_cap` is total on the concrete `Π_blk`, and on no larger family.
         ((∀ pair ∈ object.portPairSchedule threshold,
-            (activation.blockers pair).Nonempty) →
-          (∀ pair ∈ object.portPairSchedule threshold,
             ∀ blocker ∈ activation.blockers pair,
               (Blocker.carrier object threshold presentation.coordinateSupport
-                presentation.chordPort blocker).isSome) →
-          object.chargedPairs threshold (capacityTokenOrder object threshold packing)
+                presentation.chordPort blocker).isSome) ∧
+        (object.chargedPairs threshold (capacityTokenOrder object threshold packing)
               (Charges activation presentation threshold packing)
               (decidableCharges activation presentation threshold packing) =
-            object.portPairSchedule threshold) ∧
+            activation.blockedPairs threshold)) ∧
+        -- `def:same-token-blocker-roles`: the role fibres partition each token
+        -- fibre, hence the whole blocked family without double counting.
+        (∀ token : CapacityToken object,
+          (tokenFibre activation presentation threshold packing token).card =
+            ∑ role : SameTokenBlockerRoles.Role,
+              (tokenRoleFibre activation presentation threshold packing token role).card) ∧
+        ((activation.blockedPairs threshold).card =
+          ∑ token ∈ object.capacityTokens threshold packing,
+            ∑ role : SameTokenBlockerRoles.Role,
+              (tokenRoleFibre activation presentation threshold packing token role).card) ∧
         -- `def:same-token-patterns`: `H_t` is a simple graph on `𝒜₀` with
         -- `e(H_t) = ℓ_cap(t)`.
         (∀ token : CapacityToken object,
@@ -711,36 +729,6 @@ def CapacityTokenLedgerStatement (object : FiniteObject.{u}) (threshold order : 
                 (capacityTokenOrder object threshold packing)
                 (Charges activation presentation threshold packing)
                 (decidableCharges activation presentation threshold packing) token)
-
-/-- **Nodes `[134]`--`[136]`, proved.**  Every clause is one of the theorems
-above; nothing is assumed about the object beyond the standing baseline, the
-registered `3 ≤ δ` and `0 < order`, and the handshake the baseline gives. -/
-theorem capacityTokenLedgerStatement (object : FiniteObject.{u}) {threshold order : Nat}
-    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
-    (three : 3 ≤ threshold) (orderPos : 0 < order)
-    (handshake : threshold * object.vertexCount ≤ 2 * object.edgeCount)
-    (envelope : object.edgeCount + 2 ≤ (threshold - 1) * object.vertexCount)
-    (joinSlack : threshold * order + 2 ≤ 4 * order) :
-    CapacityTokenLedgerStatement object threshold order := by
-  intro packing valid _Coordinate _Chord activation presentation
-  refine ⟨object.card_capacityTokens_add_internalMass valid baseline, ?_, ?_, ?_, ?_, ?_⟩
-  · exact object.card_capacityTokens_le valid baseline three handshake envelope
-      orderPos joinSlack
-  · intro pair token charged
-    exact capacityCharge_mem_capacityTokens activation presentation threshold packing
-      charged
-  · rw [← capacityTokenOrder_toFinset (object := object) (threshold := threshold)
-      (packing := packing)]
-    exact card_chargedPairs_eq_sum_load activation presentation threshold packing
-  · intro blocked carried
-    exact chargedPairs_eq_of_blocked activation presentation threshold packing blocked
-      carried
-  · intro token
-    exact ⟨tokenFibre_subset activation presentation threshold packing token,
-      fun pair member =>
-        card_of_mem_tokenFibre activation presentation threshold packing member,
-      card_tokenFibre_eq_pairMultiplicity activation presentation threshold packing
-        token⟩
 
 end FiniteObject
 

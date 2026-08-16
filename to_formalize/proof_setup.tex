@@ -5,6 +5,9 @@
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{enumitem}
 \usepackage{array}
+\usepackage{booktabs,longtable,pdflscape}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
 \usepackage{aliascnt}
 \usepackage{microtype}
 \usepackage{hyperref}
@@ -81,8 +84,11 @@
 \newcommand{\calH}{\mathcal H}
 \DeclareMathOperator{\diver}{div}
 
-\title[Conditional Local Type I Navier--Stokes Reduction]
-{Conditional Local Type I Navier--Stokes Reduction: Concentration, Seregin Limits, and Liouville-Class Closures}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\title[Local Type I Navier--Stokes Reduction]
+{Local Type I Navier--Stokes Reduction: Concentration, Seregin Limits, and Liouville-Class Closures}
 
 \author{Guillem Duran Ballester}
 \email{guillem@fragile.tech}
@@ -94,8 +100,8 @@
 \begin{document}
 
 \begin{abstract}
-We prove the concentration, compactness, and Liouville reductions needed for a
-conditional exclusion of local pointwise Type I Navier--Stokes singularities.
+We prove the concentration, compactness, and Liouville reductions used in the
+exclusion of local pointwise Type~I Navier--Stokes singularities.
 Starting from a finite-energy local pointwise Type I singular
 point, we obtain a raw extracted bounded centered Seregin ancient profile
 with positive compact local \(L^3\) velocity mass, then pass to the raw
@@ -106,11 +112,12 @@ perturbative, stationary, endpoint \(L^3\), and axisymmetric or
 weighted-vorticity Liouville theorems.  The exclusion of the uniformly
 \(L^3\)-tight class
 rests on the Albritton--Barker endpoint ancient Liouville theorem after a
-physical pullback on truncated ancient intervals.  The only conditional
-ingredient is the residual closure hypothesis \Cref{p1:hyp:no-remainder}.
-The final Type I exclusion is conditional on residual closure for the
-raw generated Seregin state space
-\(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\) defined below.
+physical pullback on truncated ancient intervals.  The companion residual
+paper proves the remaining raw-class closure
+\Cref{p1:hyp:no-remainder} for the exact generated Seregin state space
+\(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\) defined below.  Inserting
+that theorem into the final local assembly gives the unconditional Type~I
+exclusion.
 \end{abstract}
 
 \maketitle
@@ -118,22 +125,21 @@ raw generated Seregin state space
 
 \section*{Introduction and Structure of the Argument}
 
-The conditional local Type I reduction reduces a local
+The local Type~I reduction sends a hypothetical local
 pointwise Type I singularity to a raw extracted bounded centered ancient
 solution, then to a raw generated Seregin state with invariant local
 nonvanishing, and excludes the non-residual Liouville classes obtained from
 standard local compactness and explicit Liouville theorems.  The residual
-class is handled only by the residual-class hypothesis
-\Cref{p1:hyp:no-remainder}; no unconditional residual exclusion is claimed in
-this paper.
+class is closed by the companion residual theorem
+\Cref{p1:hyp:no-remainder}.
 
 The generated state space used in the final assembly is a raw local Seregin
 state space.  The projected mild formulation is not imposed on every raw
 generated state.  Instead, mildness is treated as a branch condition in those
 Liouville classes whose exclusion theorems require it.  Generated states not
 known to satisfy the full hypotheses of one of the explicit Liouville branches
-belong to the remaining class \(\calR(\calS)\), and are removed only by the
-residual closure hypothesis.
+belong to the remaining class \(\calR(\calS)\), and are removed by the
+companion residual-closure theorem.
 
 The reduction has four components.  First, the local concentration theorem
 shows that a singular point carries positive Caffarelli--Kohn--Nirenberg
@@ -159,12 +165,10 @@ the raw generated Seregin state space.
 
 Consequently, a generated raw Seregin state in
 \(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\) must either belong to one of the excluded
-Liouville classes or to the residual class.  The Type I contradiction is
-therefore conditional on the residual-class hypothesis
-\Cref{p1:hyp:no-remainder}.
-No unconditional Type I regularity theorem is claimed in this paper; the final
-regularity conclusion is conditional on the residual closure hypothesis for the
-raw generated state space.
+Liouville classes or to the residual class.  The companion theorem closes the
+second alternative on the same incoming profile and ledger.  Thus every branch
+from the hypothetical singular profile ends in a contradiction, which proves
+the Type~I exclusion unconditionally.
 
 \subsection*{Dependency table}
 
@@ -185,8 +189,8 @@ Raw generated closure & defined here & gives the ambient state space for residua
 Mild stratum & defined here & supplies the branch condition for mild Liouville theorems \\
 Tight \(L^3\) branch & proved here using Albritton--Barker, Theorem~1.2 & excludes a non-residual class \\
 Structured Liouville branches & imported theorem by theorem plus Type I constant removal & exclude the structured classes \\
-Residual closure & conditional input from the companion residual paper & removes \(\calR(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*))\) \\
-Contradiction & conditional on residual closure & rules out local pointwise Type I singularities \\
+Residual closure & theorem proved in the companion residual paper & removes \(\calR(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*))\) \\
+Contradiction & unconditional two-paper assembly & rules out local pointwise Type~I singularities \\
 \hline
 \end{tabular}
 \end{center}
@@ -196,9 +200,8 @@ Contradiction & conditional on residual closure & rules out local pointwise Type
 Readers interested only in the construction of the ancient limit should read
 Parts I and II together with the final assembly
 \Cref{p1:thm:final-assembly}.  Readers interested in the non-residual
-Liouville exclusions should read Parts III and IV.  The residual closure
-hypothesis \Cref{p1:hyp:no-remainder} is stated as a conditional analytic
-assumption.
+Liouville exclusions should read Parts III and IV.  The exact companion
+residual-closure theorem is recorded in \Cref{p1:hyp:no-remainder}.
 
 \subsection*{Pressure notation}
 
@@ -209,6 +212,495 @@ limit after blow-up.  \(\Pi\) denotes a centered pressure obtained from
 considered modulo functions of time only; this gauge ambiguity is invisible
 to the equations and to the local energy inequality
 (\Cref{p1:lem:gauges,p1:rem:centered-gauge,p1:lem:pressure-atlas,p1:rem:pressure-atlas}).
+
+\section{Architecture and reading guide for the local Type I proof}
+\label{sec:local-typeI-proof-architecture}
+
+This section is a referee-facing guide to the proof of
+\Cref{p1:thm:final-assembly}.  The definitions, statements, and proofs in the
+remainder of the manuscript are the single source of mathematical truth; the
+guide only records their dependency order.  Its input is a finite-energy
+suitable weak solution and a terminal point satisfying the local pointwise
+Type~I bound.  The contradiction branch supposes that this point is singular,
+extracts a nonzero raw centered Seregin profile, and keeps the profile's
+ancestry and invariant-normalization data fixed while forming the raw generated
+descendant hull.
+
+The extraction is local on compact negative-time cylinders.  No whole-space
+critical \(L^3\) estimate for the original solution is introduced.  The
+whole-space \(L^3\) norms in the uniformly tight branch appear only after that
+branch has been selected and after physical pullback, exactly as in
+\Cref{p2:thm:tight-liouville}.  Likewise, projected mildness is not imposed on
+the whole raw hull: it is used only in the classes whose definitions include
+membership in the mild stratum.  A non-mild generated state not otherwise
+classified reaches the residual complement.
+
+Rectangles below are states or interfaces with one incoming and one outgoing
+live edge; node [1] is the unique root.  Diamonds are exhaustive tests.  Solid
+ellipses are terminal closures and have no outgoing edge.  Facts already
+entered into the ancestry and normalization ledger remain available after
+subsequence extraction, time translation, and locally smooth limits, and are
+therefore not redrawn as backward arrows.  Every cross-part continuation has a
+matching unnumbered incoming arrow in the part containing its target.
+
+The four explicit Liouville classes need not be disjoint.  Nodes [14]--[17]
+therefore test membership in a fixed order.  If a state belongs to more than
+one class, the first applicable exclusion already gives the contradiction; if
+all four tests fail, the definition of the remaining class places the state in
+\(\calR(\calS)\).  This ordering is only a diagrammatic realization of the
+set-theoretic exhaustion in \Cref{p1:prop:exhaustion}; it adds no hypothesis.
+The residual closure at [36]--[39] acts on the same incoming profile, raw hull,
+ancestry, and invariant-normalization ledger.  It is the imported theorem
+\Cref{p1:hyp:no-remainder}, not an assumption and not a separate branch created
+later in the proof.
+
+\subsection{Diagram map}
+\label{subsec:local-typeI-diagram-map}
+
+The two parts below form one directed acyclic graph.  Bracketed node numbers
+are unique and consecutive in source order.  An arrow marked ``continue at
+[n]'' and the unnumbered incoming arrow marked ``from [m]'' in the target part
+are the same graph edge.
+
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}C{0.52in}C{0.72in}L{2.20in}L{2.35in}@{}}
+\caption{Map of the two parts of the local Type I proof-dependency diagram.}
+\label{tab:local-typeI-proof-diagram-map}\\
+\toprule
+Part & Nodes & Branch resolved & Principal sources \\
+\midrule
+I & [1]--[13] & Turns a suspected singular point into a concrete object to
+argue about.  Assuming the point is not regular, the local Type I bound forces a
+sequence of rescalings along which velocity concentrates and cannot escape;
+compactness then extracts an ancient profile that is bounded, centred and not
+identically zero.  Normalizing that profile fixes the data every later part
+reasons about. &
+\Cref{p0:cor:velocity-concentration,p0:thm:local-weak-serrin-typeI,p0:lem:local-seregin-extraction,p1:def:raw-generated-seregin-space} \\
+II & [14]--[39] & Puts that profile through an exhaustive list of classes and
+empties all but one.  Small-amplitude, stationary, uniformly tight and the five
+structured classes each close by their own Liouville theorem, leaving a single
+residual family; the companion paper is what shows the residual family is empty
+too, and the contradiction follows. &
+\Cref{p1:prop:exhaustion,p1:thm:classical-classes,p2:thm:tight-liouville,p3:thm:typeI-zero-hypotheses,p1:hyp:no-remainder} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsection{Proof-dependency diagram}
+\label{subsec:local-typeI-proof-diagram}
+
+The live proof begins at [1].  If the terminal point is already regular, the
+theorem is complete at [3].  Otherwise Parts I--II construct one normalized
+generated state and assign it to an exhaustive class.  Part II expands every
+class and residual closure in place.  There is no common assembly node after
+the terminal ellipses: each nonregular path ends by forcing the normalized
+state to vanish or by proving that its residual row is empty, contradicting
+the invariant nonvanishing retained at [12]--[13].
+
+\clearpage
+\begin{figure}[p]
+\centering
+\resizebox{0.98\linewidth}{!}{%
+\begin{tikzpicture}[
+node distance=0.35cm and 0.82cm,
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=3pt,minimum width=4.85cm,minimum height=0.56cm},
+dec/.style={diamond,draw,aspect=2.45,align=center,inner sep=1.5pt,minimum width=4.65cm},
+term/.style={ellipse,draw,align=center,inner sep=3pt,minimum width=3.70cm},
+route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,minimum width=3.20cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\scriptsize}
+]
+\node[box] (n1) {\textbf{[1]}~finite-energy suitable solution and terminal point \(z_*=(x_*,T)\) with the local Type I bound};
+\node[dec,below=of n1] (n2) {\textbf{[2]}~is \(z_*\) regular?};
+\node[term,right=of n2,text width=3.65cm] (n3) {\textbf{[3]}~local Type I regularity conclusion};
+\node[box,below=of n2] (n4) {\textbf{[4]}~hypothetical singular local pointwise Type I terminal point};
+\node[box,below=of n4] (n5) {\textbf{[5]}~positive local velocity concentration scales \(r_n\downarrow0\)};
+\node[box,below=of n5] (n6) {\textbf{[6]}~terminal local \(A\)-bound from the endpoint weak-Serrin estimate};
+\node[box,below=of n6] (n7) {\textbf{[7]}~uniform terminal velocity no-escape for the rescaled sequence};
+\node[box,below=of n7] (n8) {\textbf{[8]}~admissible local Type I concentration sequence};
+\node[box,below=of n8] (n9) {\textbf{[9]}~positive local \(L^3\) mass on a fixed negative-time cylinder};
+\node[box,below=of n9] (n10) {\textbf{[10]}~local compactness, pressure gauges, and Seregin extraction};
+\node[box,below=of n10] (n11) {\textbf{[11]}~smooth bounded raw centered Seregin profile \(V\not\equiv0\)};
+\node[box,below=of n11] (n12) {\textbf{[12]}~time-translation invariant local nonvanishing with fixed \((R_0,\eta_*)\)};
+\node[box,below=of n12] (n13) {\textbf{[13]}~raw generated descendant hull \(\calS\), containing \(V\), with normalized nonvanishing};
+
+\draw[arrow] (n1)--(n2);
+\draw[arrow] (n2)--node[above]{yes}(n3);
+\draw[arrow] (n2)--node[right]{no}(n4);
+\draw[arrow] (n4)--(n5);
+\draw[arrow] (n5)--(n6);
+\draw[arrow] (n6)--(n7);
+\draw[arrow] (n7)--(n8);
+\draw[arrow] (n8)--(n9);
+\draw[arrow] (n9)--(n10);
+\draw[arrow] (n10)--(n11);
+\draw[arrow] (n11)--(n12);
+\draw[arrow] (n12)--(n13);
+\draw[arrow] (n13.south)--++(0,-0.60) node[below]{continue at [14]};
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part I]{Proof-dependency diagram, Part I.
+The theorem input is [1].  The contradiction branch at [4] produces the same
+velocity concentration sequence used in the final proof.  Nodes [6]--[9]
+display the local endpoint weak-Serrin and no-escape interface.  Compactness
+and extraction give the nonzero centered profile [11], whose invariant
+normalization is fixed before the raw generated hull is formed at [13].}
+\label{fig:local-typeI-proof-flow-entry}
+\end{figure}
+
+\clearpage
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\resizebox{0.97\linewidth}{!}{%
+\begin{tikzpicture}[
+box/.style={rectangle,rounded corners,draw,align=center,inner sep=2.5pt,minimum width=3.20cm,minimum height=0.52cm},
+dec/.style={diamond,draw,aspect=5.00,align=center,inner sep=1.2pt,minimum width=4.20cm},
+term/.style={ellipse,draw,align=center,inner sep=2.5pt,minimum width=2.65cm},
+route/.style={ellipse,draw,dashed,align=center,inner sep=2pt,minimum width=2.65cm},
+arrow/.style={-{Latex[length=2mm]},thick},
+every node/.style={font=\tiny}
+]
+\node[dec] (n14) at (-9.00,3.80) {\textbf{[14]}~\(V\) in the small-amplitude class?};
+\coordinate (in14) at ($(n14.north)+(0,0.82)$);
+\draw[arrow] (in14)--node[right]{from [13]}(n14.north);
+\node[dec] (n15) at (-9.00,1.80) {\textbf{[15]}~\(V\) in the stationary \(L^3\) class?};
+\node[dec] (n16) at (-9.00,-0.20) {\textbf{[16]}~\(V\) in the uniformly \(L^3\)-tight class?};
+\node[dec] (n17) at (-9.00,-2.20) {\textbf{[17]}~\(V\) in the structure and decay class?};
+\node[box,text width=3.45cm] (n18) at (-9.00,-4.25) {\textbf{[18]}~\(V\) lies in the literal residual complement \(\calR(\calS)\)};
+
+\node[box,text width=3.25cm] (n19) at (-3.20,3.80) {\textbf{[19]}~small-class data: mildness and \(\lVert V\rVert_\infty\le\varepsilon_{\rm small}\)};
+\node[box,text width=3.25cm] (n20) at (1.35,3.80) {\textbf{[20]}~centered Duhamel estimate gives \(M\le A M^2\), \(M<1/A\)};
+\node[term,text width=2.90cm] (n21) at (5.85,3.80) {\textbf{[21]}~\(V\equiv0\), contradicting normalized nonvanishing};
+
+\node[box,text width=3.30cm] (n22) at (-3.20,1.80) {\textbf{[22]}~stationary \(L^3\) profile \(W\) satisfying the self-similar equation modulo pressure gauge};
+\node[term,text width=2.90cm] (n23) at (1.70,1.80) {\textbf{[23]}~stationary Leray theorem gives \(W\equiv0\), contradicting nonvanishing};
+
+\node[box,text width=3.15cm] (n24) at (-3.20,-0.20) {\textbf{[24]}~bounded mild centered state with uniform \(L^3\)-tail tightness};
+\node[box,text width=3.55cm] (n25) at (1.05,-0.20) {\textbf{[25]}~physical pullback on \((-\infty,T]\), translated to terminal time \(0\)};
+\node[box,text width=3.15cm] (n26) at (5.15,-0.20) {\textbf{[26]}~terminal \(L^3\) datum and a uniformly bounded backward \(L^3\) sequence};
+\node[term,text width=2.95cm] (n27) at (9.15,-0.20) {\textbf{[27]}~Albritton--Barker gives \(V\equiv0\), contradicting nonvanishing};
+
+\node[box,text width=3.30cm] (n28) at (-3.20,-2.20) {\textbf{[28]}~mild generated state whose physical representative \(U\) lies in the structure and decay class};
+\node[dec] (n29) at (3.30,-2.20) {\textbf{[29]}~which listed structural hypothesis holds?};
+\node[term,text width=2.10cm] (n30) at (-5.80,-5.15) {\textbf{[30]}~no-swirl Liouville and Type I constant removal};
+\node[term,text width=2.10cm] (n31) at (-2.30,-5.15) {\textbf{[31]}~pointwise \(1/r\) Liouville closure};
+\node[term,text width=2.10cm] (n32) at (1.20,-5.15) {\textbf{[32]}~finite-\(L^p\) swirl Liouville and constant removal};
+\node[term,text width=2.10cm] (n33) at (4.70,-5.15) {\textbf{[33]}~periodic bounded-swirl Liouville and constant removal};
+\node[term,text width=2.20cm] (n34) at (8.20,-5.15) {\textbf{[34]}~anchored Gallay--Wayne decay, zero vorticity, and Type I constant removal};
+
+\node[box,text width=3.45cm] (n35) at (-9.00,-7.10) {\textbf{[35]}~hypothetical \(V\in\calR(\calS)\) with the same raw hull, ancestry, and invariant-normalization ledger};
+\node[dec,text width=3.10cm] (n36) at (-2.40,-7.10) {\textbf{[36]}~which exhaustive companion-interface row receives this profile?};
+\node[term,text width=2.70cm] (n37) at (4.40,-7.10) {\textbf{[37]}~affine/parasitic row closed locally};
+\node[box,text width=3.05cm] (n38) at (-2.40,-9.15) {\textbf{[38]}~retained residual row for the same profile and ledger};
+\node[term,text width=2.95cm] (n39) at (3.40,-9.15) {\textbf{[39]}~companion Type I residual theorem closes the retained row};
+
+\draw[arrow] (n14)--node[right]{no}(n15);
+\draw[arrow] (n15)--node[right]{no}(n16);
+\draw[arrow] (n16)--node[right]{no}(n17);
+\draw[arrow] (n17)--node[right]{no}(n18);
+\draw[arrow] (n14.east)--node[above]{yes}(n19.west);
+\draw[arrow] (n19)--(n20);
+\draw[arrow] (n20)--(n21);
+\draw[arrow] (n15.east)--node[above]{yes}(n22.west);
+\draw[arrow] (n22)--(n23);
+\draw[arrow] (n16.east)--node[above]{yes}(n24.west);
+\draw[arrow] (n24)--(n25);
+\draw[arrow] (n25)--(n26);
+\draw[arrow] (n26)--(n27);
+\draw[arrow] (n17.east)--node[above]{yes}(n28.west);
+\draw[arrow] (n28)--(n29);
+\draw[arrow] (n29)--node[above,sloped,pos=0.55]{no swirl}(n30.north);
+\draw[arrow] (n29)--node[above,sloped,pos=0.55]{pointwise \(1/r\)}(n31.north);
+\draw[arrow] (n29)--node[above,sloped,pos=0.55]{finite-\(L^p\) swirl}(n32.north);
+\draw[arrow] (n29)--node[above,sloped,pos=0.55]{periodic swirl}(n33.north);
+\draw[arrow] (n29)--node[above,sloped,pos=0.55]{anchored decay}(n34.north);
+\draw[arrow] (n18)--(n35);
+\draw[arrow] (n35)--(n36);
+\draw[arrow] (n36.east)--node[above]{affine/parasitic}(n37.west);
+\draw[arrow] (n36.south)--node[right]{retained residual}(n38.north);
+\draw[arrow] (n38)--(n39);
+\end{tikzpicture}%
+}
+\caption[Proof-dependency diagram, Part II]{Proof-dependency diagram, Part II.
+The ordered tests [14]--[18] realize \Cref{p1:prop:exhaustion} without asserting
+disjointness.  The small, stationary, tight, five structured, and two residual
+rows are all expanded here to the terminal closures [21], [23], [27],
+[30]--[34], [37], and [39].}
+\label{fig:local-typeI-proof-flow-exhaustion}
+\end{figure}
+\end{landscape}
+
+\clearpage
+\begin{landscape}
+\subsection{Node-by-node audit table}
+\label{subsec:local-typeI-node-audit}
+
+The following table identifies the statement in the body of the manuscript
+that supports every numbered node.  Its successor column records the live
+state transition; a terminal entry is a proof closure, not merely a named
+alternative.
+
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{2.8pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}C{0.72cm}L{4.55cm}L{7.25cm}L{6.05cm}@{}}
+\caption{Node-by-node audit ledger for the local Type I proof-dependency diagram.}
+\label{tab:local-typeI-proof-node-ledger}\\
+\toprule
+Node & State or exhaustive test & Source in the proof & Successor or closure \\
+\midrule
+\endfirsthead
+\multicolumn{4}{c}{\tablename\ \thetable\ continued}\\
+\toprule
+Node & State or exhaustive test & Source in the proof & Successor or closure \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+
+[1] & Finite-energy suitable solution and a terminal local pointwise Type I point &
+\Cref{p1:thm:final-assembly} & Test regularity at [2] \\
+
+[2] & Regular-versus-singular test at the terminal point &
+Proof of \Cref{p1:thm:final-assembly} & Regular gives [3]; singular gives [4] \\
+
+[3] & Local Type I regularity conclusion &
+\Cref{p1:thm:final-assembly} & Terminal theorem conclusion \\
+
+[4] & Hypothetical singular local Type I point &
+Proof of \Cref{p1:thm:final-assembly} & Extract velocity concentration at [5] \\
+
+[5] & Positive velocity concentration sequence &
+\Cref{p0:cor:velocity-concentration} & Apply the terminal \(A\)-estimate at [6] \\
+
+[6] & Terminal local \(A\)-bound &
+\Cref{p0:lem:terminal-A-from-weak-serrin} & Derive no-escape at [7] \\
+
+[7] & Terminal velocity no-escape &
+\Cref{p0:thm:local-weak-serrin-typeI} & Verify admissibility at [8] \\
+
+[8] & Admissible local Type I concentration sequence &
+\Cref{p0:def:paper0-admissible-local-typeI-sequence,p0:cor:paper0-local-typeI-admissible} & Retain negative-time mass at [9] \\
+
+[9] & Positive \(L^3\) mass away from the terminal slice &
+\Cref{p0:lem:paper0-local-typeI-into-terminal-dichotomy} & Run local compactness at [10] \\
+
+[10] & Local compactness, pressure gauges, and Seregin extraction &
+\Cref{p0:prop:paper0-local-typeI-terminal-compactness,p0:lem:local-seregin-extraction} & Obtain [11] \\
+
+[11] & Smooth bounded nonzero raw centered Seregin profile &
+\Cref{p1:def:seregin-limit,p1:cor:raw-extracted-nonzero} & Convert the normalization at [12] \\
+
+[12] & Time-translation invariant local nonvanishing &
+\Cref{p1:lem:compact-to-invariant-nonzero} & Form the fixed raw hull at [13] \\
+
+[13] & Raw generated descendant hull containing \(V\) and retaining nonvanishing &
+\Cref{p1:def:raw-generated-seregin-space,p1:lem:raw-generated-closure-stability,p1:cor:normalized-nonzero} & Continue to [14] \\
+
+[14] & Small-amplitude membership test &
+\Cref{p1:def:small-class,p1:prop:exhaustion} & Yes gives [19]; no gives [15] \\
+
+[15] & Stationary \(L^3\) membership test &
+\Cref{p1:def:stationary-class,p1:prop:exhaustion} & Yes gives [22]; no gives [16] \\
+
+[16] & Uniform \(L^3\)-tightness membership test &
+\Cref{p1:def:tight-class,p1:prop:exhaustion} & Yes gives [24]; no gives [17] \\
+
+[17] & Structure and decay membership test &
+\Cref{p1:def:known-structure-decay-class,p1:prop:exhaustion} & Yes gives [28]; no gives [18] \\
+
+[18] & Literal residual complement &
+\Cref{p1:def:remaining-class,p1:prop:exhaustion} & Continue to [35] \\
+
+[19] & Mild small-amplitude class data &
+\Cref{p1:def:small-class,p1:lem:mild-representation} & Apply the Duhamel estimate at [20] \\
+
+[20] & Small-data Duhamel inequality &
+\Cref{p1:lem:centered-stokes-estimates,p1:lem:small-liouville} & Force the closure [21] \\
+
+[21] & Small profile vanishes &
+\Cref{p1:lem:small-liouville,p1:thm:classical-classes} & Terminal contradiction to [12]--[13] \\
+
+[22] & Stationary \(L^3\) centered profile &
+\Cref{p1:def:stationary-class,p1:lem:stationary-profile} & Apply stationary rigidity at [23] \\
+
+[23] & Stationary profile vanishes &
+\Cref{p2:thm:NRS,p1:thm:classical-classes} & Terminal contradiction to [12]--[13] \\
+
+[24] & Bounded mild uniformly \(L^3\)-tight centered state &
+\Cref{p1:def:tight-class,p2:thm:tight-liouville} & Pull back physically at [25] \\
+
+[25] & Bounded mild physical pullback on a truncated ancient interval &
+\Cref{p2:lem:physical-pullback,p2:lem:physical-mild} & Establish the endpoint data at [26] \\
+
+[26] & Terminal \(L^3\) datum and bounded backward \(L^3\) sequence &
+\Cref{p2:lem:L3-pullback-invariance,p2:lem:tail-tight-sequence-L3} & Apply endpoint rigidity at [27] \\
+
+[27] & Uniformly tight profile vanishes &
+\Cref{p2:thm:AB-endpoint,p2:thm:tight-liouville,p1:thm:tight-liouville} & Terminal contradiction to [12]--[13] \\
+
+[28] & Mild physical Type I representative in the structure and decay class &
+\Cref{p1:def:known-structure-decay-class,p1:thm:known-structure-decay-liouville} & Classify the listed hypothesis at [29] \\
+
+[29] & Five-way structural hypothesis test &
+\Cref{p1:def:known-structure-decay-class,p3:thm:typeI-zero-hypotheses} & At least one applicable closure [30]--[34] \\
+
+[30] & Axisymmetric no-swirl closure &
+\Cref{p3:prop:noswirl-typeI,p3:thm:typeI-zero-hypotheses} & Terminal zero contradiction \\
+
+[31] & Axisymmetric pointwise \(1/r\) closure &
+\Cref{p3:prop:pointwise-typeI,p3:thm:typeI-zero-hypotheses} & Terminal zero contradiction \\
+
+[32] & Finite-\(L^p\) swirl closure &
+\Cref{p3:prop:lp-swirl-typeI,p3:thm:typeI-zero-hypotheses} & Terminal zero contradiction \\
+
+[33] & Periodic bounded-swirl closure &
+\Cref{p3:prop:periodic-swirl-typeI,p3:thm:typeI-zero-hypotheses} & Terminal zero contradiction \\
+
+[34] & Anchored Gallay--Wayne perturbative closure &
+\Cref{p3:prop:gw-anchored-typeI-zero,p3:thm:typeI-zero-hypotheses} & Terminal zero contradiction \\
+
+[35] & Hypothetical residual profile with unchanged raw hull and ledger &
+\Cref{p1:def:remaining-class,p1:hyp:no-remainder} & Run the companion interface at [36] \\
+
+[36] & Exhaustive companion residual-interface row &
+Proof of \Cref{p1:hyp:no-remainder} & Affine/parasitic gives [37]; retained residual gives [38] \\
+
+[37] & Affine/parasitic residual-interface closure &
+\Cref{p1:hyp:no-remainder} & Terminal local companion closure \\
+
+[38] & Retained residual row on the same profile and ledger &
+\Cref{p1:hyp:no-remainder,p1:prop:remainder-equivalence} & Apply the companion residual theorem at [39] \\
+
+[39] & Retained residual closure &
+\Cref{p1:hyp:no-remainder,p1:cor:remainder-rigidity} & Terminal emptiness of the residual row \\
+
+\end{longtable}
+\endgroup
+\end{landscape}
+
+\subsection{Monotone proof ledger}
+\label{subsec:local-typeI-monotone-ledger}
+
+The diagram draws only the live state.  The following facts remain available
+after the indicated extractions and translations; their persistence is what
+allows the class and residual closures to act on the original contradiction
+branch without duplicating it.
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}L{1.28in}L{1.62in}L{1.72in}L{1.38in}@{}}
+\caption{Monotone facts retained by the local Type I proof.}
+\label{tab:local-typeI-monotone-ledger}\\
+\toprule
+Fact & Established by & Retained through & Terminal use \\
+\midrule
+\endfirsthead
+\toprule
+Fact & Established by & Retained through & Terminal use \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+
+Finite-energy suitability and the local pointwise Type I bound &
+Input of \Cref{p1:thm:final-assembly} & Rescaling and local extraction [1]--[11] & Supplies the local endpoint and compactness interfaces \\
+
+Positive local velocity signal &
+\Cref{p0:cor:velocity-concentration} & No-escape, negative-time selection, and strong local \(L^3\) convergence [5]--[11] & Prevents the extracted profile from vanishing \\
+
+Local pressure gauges and suitable compactness &
+\Cref{p0:prop:paper0-local-typeI-terminal-compactness} & The ancient extraction on compact negative-time cylinders [10]--[13] & Supplies the centered local-pressure formulation \\
+
+Fixed ancestry and invariant data \((R_0,\eta_*)\) &
+\Cref{p1:lem:compact-to-invariant-nonzero,p1:def:raw-generated-seregin-space} & Time translations and permitted locally smooth generated limits [12]--[39] & Contradicts every zero closure and fixes the residual interface \\
+
+Projected mildness only on its stated stratum &
+\Cref{p1:def:mild-stratum} & Small, tight, and structure/decay branches only & Non-mild unclassified states remain available to [18], not silently excluded \\
+
+Exact raw residual complement &
+\Cref{p1:def:remaining-class,p1:hyp:no-remainder} & Companion routing of the same incoming profile [35]--[39] & Gives literal emptiness without a new global hypothesis \\
+
+\end{longtable}
+\endgroup
+
+\subsection{Branch-closure audit ledger}
+\label{subsec:local-typeI-closure-ledger}
+
+Each nonregular path from [1] reaches exactly one of the closures below.  The
+table distinguishes the class-producing statement from the theorem that
+actually eliminates the class.
+
+\begin{landscape}
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}L{4.20cm}C{2.35cm}L{8.30cm}L{4.50cm}@{}}
+\caption{Closure audit for every terminal class in the local Type I diagram.}
+\label{tab:local-typeI-branch-closure-ledger}\\
+\toprule
+State or exit & Diagram route & Closure source & Terminal output \\
+\midrule
+\endfirsthead
+\toprule
+State or exit & Diagram route & Closure source & Terminal output \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+
+Point already regular & [1]--[3] &
+\Cref{p1:thm:final-assembly} & [3] \\
+
+Small-amplitude mild state & [14], [19]--[21] &
+\Cref{p1:lem:mild-representation,p1:lem:small-liouville,p1:thm:classical-classes} & [21] \\
+
+Stationary \(L^3\) state & [15], [22]--[23] &
+\Cref{p1:lem:stationary-profile,p2:thm:NRS,p1:thm:classical-classes} & [23] \\
+
+Uniformly \(L^3\)-tight mild state & [16], [24]--[27] &
+\Cref{p2:lem:physical-mild,p2:lem:tail-tight-sequence-L3,p2:thm:AB-endpoint,p2:thm:tight-liouville} & [27] \\
+
+Axisymmetric no-swirl state & [17], [28]--[30] &
+\Cref{p3:prop:noswirl-typeI,p3:thm:typeI-zero-hypotheses} & [30] \\
+
+Axisymmetric pointwise \(1/r\) state & [17], [28]--[31] &
+\Cref{p3:prop:pointwise-typeI,p3:thm:typeI-zero-hypotheses} & [31] \\
+
+Finite-\(L^p\) swirl state & [17], [28]--[32] &
+\Cref{p3:prop:lp-swirl-typeI,p3:thm:typeI-zero-hypotheses} & [32] \\
+
+Periodic bounded-swirl state & [17], [28]--[33] &
+\Cref{p3:prop:periodic-swirl-typeI,p3:thm:typeI-zero-hypotheses} & [33] \\
+
+Anchored perturbative-vorticity state & [17], [28]--[34] &
+\Cref{p3:prop:gw-anchored-typeI-zero,p3:thm:typeI-zero-hypotheses} & [34] \\
+
+Affine/parasitic residual-interface row & [18], [35]--[37] &
+\Cref{p1:hyp:no-remainder} & [37] \\
+
+Retained residual row & [18], [35]--[39] &
+\Cref{p1:hyp:no-remainder,p1:prop:remainder-equivalence,p1:cor:remainder-rigidity} & [39] \\
+
+\end{longtable}
+\endgroup
+
+Every path from [1] therefore terminates at [3], [21], [23], [27], one of
+[30]--[34], [37], or [39].  This leaf exhaustion is the diagrammatic reading
+of the contradiction in \Cref{p1:thm:final-assembly}.  The theorem's
+unconditional conclusion is not used to justify any earlier node.
+\end{landscape}
 
 \clearpage
 \section*{Part I. Local Concentration and the Type I/Type II Dichotomy}
@@ -1738,7 +2230,6 @@ bound for \(U\) becomes the displayed local \(L^3\) nonvanishing for \(V\).
 
 \begin{proposition}[Local Type I entry into the final assembly]
 \label{p0:prop:local-typeI-entry-final-assembly}
-Assume the residual-class hypothesis \Cref{p1:hyp:no-remainder}.
 Let \((u,p)\) be a finite-energy suitable weak solution on
 \(\mathbb R^3\times(0,T)\).  Then every terminal point \(z_*=(x_*,T)\) satisfying
 the local pointwise Type I bound \eqref{p0:eq:paper0-local-typeI-bound}
@@ -1751,7 +2242,6 @@ residual class removed by \Cref{p1:hyp:no-remainder}.
 \end{proposition}
 
 \begin{proof}
-Assume \Cref{p1:hyp:no-remainder}.
 Suppose, toward a contradiction, that \(z_*=(x_*,T)\) is a singular point
 satisfying \eqref{p0:eq:paper0-local-typeI-bound}.
 Choose the positive \(Q_1\) velocity concentration sequence supplied by the
@@ -1776,17 +2266,16 @@ classes excluded by the stated Liouville theorems or in the remaining class
 \(\calR(\calS)\).  The Liouville classes are excluded by the small-amplitude,
 stationary, uniformly tight, and structure-and-decay Liouville results; the
 last of these is routed through \Cref{p3:thm:typeI-zero-hypotheses}.  The
-residual alternative is removed by the residual-class
-hypothesis applied to
+residual alternative is removed by the companion residual-closure theorem
+applied to
 \(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\).
 This contradicts the generated nonvanishing guaranteed by
 \Cref{p1:cor:normalized-nonzero}.  Hence \(z_*\) is regular.
 \end{proof}
 
-\begin{corollary}[Conditional exclusion of the local Type I alternative]
+\begin{corollary}[Exclusion of the local Type I alternative]
 \label{p0:cor:paper0-local-typeII-after-local-typeI-reduction}
-Assume the residual-class hypothesis \Cref{p1:hyp:no-remainder}.  Then the
-local Type I alternative is excluded for every finite-energy singular point.
+The local Type~I alternative is excluded for every finite-energy singular point.
 Hence every finite-energy singular point belongs to the local Type II
 alternative in the dichotomy above.
 \end{corollary}
@@ -1812,16 +2301,16 @@ admissible concentration sequence\\
 raw extracted Seregin ancient limit, then raw generated state space and mild strata (Part II)\\
 \(\downarrow\) class decomposition \Cref{p1:def:remaining-class}\\
 non-residual classes (excluded here) \(\cup\) residual class\\
-\(\downarrow\) \Cref{p1:hyp:no-remainder} (conditional residual closure hypothesis)\\
+\(\downarrow\) \Cref{p1:hyp:no-remainder} (companion residual-closure theorem)\\
 contradiction\(\Rightarrow\) \Cref{p1:thm:final-assembly}.
 \end{tabular}
 \end{center}
 
-This is a reduction theorem, not a self-contained residual proof; the residual
-closure assumption is isolated in \Cref{p1:hyp:no-remainder}.
+The local reduction and the companion residual theorem form one acyclic proof
+chain; \Cref{p1:hyp:no-remainder} records the exact imported closure node.
 
 \clearpage
-\section*{Part II. Type I Blow-up Limits and the Residual Hypothesis}
+\section*{Part II. Type I Blow-up Limits and Residual Closure}
 
 \subsection*{Overview}
 
@@ -1844,11 +2333,10 @@ perturbative Liouville theorem in \Cref{p1:lem:small-liouville}, and the station
 the theorem of Ne\v{c}as--R\r{u}\v{z}i\v{c}ka--\v{S}ver\'ak.  The
 structure and decay class contains only hypotheses for which the cited Liouville
 theorems force \(V\equiv0\).  The uniformly \(L^3\)-tight class is excluded in
-\Cref{p2:thm:tight-liouville}.  The residual class is handled only through the
-residual-class hypothesis \Cref{p1:hyp:no-remainder}.
-Consequently the Type I conclusion obtained from this extraction is conditional
-on that residual hypothesis within the raw generated finite-energy and local
-pointwise Type I extraction classes.
+\Cref{p2:thm:tight-liouville}.  The residual class is closed by the companion
+theorem \Cref{p1:hyp:no-remainder}.  Consequently the extraction and companion
+closure give the Type~I conclusion for the raw generated finite-energy and
+local pointwise Type~I extraction classes without an additional assumption.
 
 \section{Introduction and main results}\label{p1:sec:introduction}
 
@@ -1978,16 +2466,15 @@ This exhaustive alternative is recorded in \cref{p1:prop:exhaustion}.  It is a
 direct consequence of the definition of the remaining class, not an
 independent Liouville theorem.
 
-\begin{theorem}[Conditional Type I exclusion]
+\begin{theorem}[Type I exclusion]
 \label{p1:thm:remaining-criterion}
-Assume the residual-class hypothesis \Cref{p1:hyp:no-remainder}.  Then no
-admissible finite-energy Type I singularity exists.
+No admissible finite-energy Type~I singularity exists.
 \end{theorem}
 
-The argument uses one closure theorem and one explicit residual-class
-hypothesis.  The uniformly \(L^3\)-tight class is excluded by
+The argument uses the explicit local class closures and the companion
+residual-closure theorem.  The uniformly \(L^3\)-tight class is excluded by
 \Cref{p2:thm:tight-liouville}.
-The remaining class is excluded only under the residual-class hypothesis
+The remaining class is excluded by the companion theorem
 \Cref{p1:hyp:no-remainder}.  The structure and decay
 class is restricted to hypotheses to which cited Liouville theorems apply.
 
@@ -2010,7 +2497,7 @@ The resulting implication is
 \\
 \Downarrow
 \\
-\text{contradiction by the Liouville-class exclusions and the residual-class hypothesis.}
+\text{contradiction by the Liouville-class exclusions and companion residual closure.}
 \end{array}
 \]
 
@@ -2022,11 +2509,11 @@ The resulting implication is
 \item Structure and decay: routed through
 \Cref{p3:thm:typeI-zero-hypotheses} and excluded in
 \Cref{p1:thm:known-structure-decay-liouville}.
-\item Remaining class: excluded under the residual-class hypothesis
+\item Remaining class: excluded by the companion residual-closure theorem
 \Cref{p1:hyp:no-remainder}.
 \end{itemize}
 
-\subsection{Dependencies and conditional hypothesis}
+\subsection{Dependencies and companion closure}
 
 The proof of the extraction theorem uses the local velocity concentration
 result stated as \cref{p1:prop:local-velocity-concentration}; no other result
@@ -2037,18 +2524,19 @@ lower bound \eqref{p1:eq:nonvanishing}.  The subsequent hull construction uses
 \Cref{p1:lem:raw-generated-closure-stability}, which provide the invariant
 nonvanishing and the raw generated structure.  Mildness is imposed only in the
 branch definitions that need it.  The uniformly \(L^3\)-tight Liouville theorem and the
-residual-class hypothesis are invoked only after this raw generated class is
+companion residual-closure theorem is invoked only after this raw generated class is
 formed and the class exhaustion is applied.  The statement
 \cref{p1:thm:tight-liouville} follows from the endpoint \(L^3\) closure in
 \Cref{p2:thm:tight-liouville}, and \cref{p1:hyp:no-remainder} is the
-residual-class hypothesis for
+residual-closure theorem for
 \(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\).  The
 structure and decay class is routed through
 \Cref{p3:thm:typeI-zero-hypotheses}, whose hypotheses are recorded in the
-structured Liouville section.  Thus the final Type I conclusion is conditional
-on the admissibility condition in \Cref{p0:cor:auto-paperI-admissibility}, the
-extraction theorem, the raw generated closure statements, the Liouville-class
-exclusions, and the residual-class hypothesis.
+structured Liouville section.  Thus the final Type~I conclusion follows from
+the admissible extraction in \Cref{p0:cor:auto-paperI-admissibility}, the raw
+generated closure statements, the local Liouville-class exclusions, and the
+companion residual-closure theorem.  Each input is a proved theorem; none is a
+new analytic assumption on the incoming singular profile.
 
 \subsection{Two entry routes for the reduction}
 \label{p1:sec:two-entry-points}
@@ -2103,9 +2591,9 @@ nontriviality.  \Cref{p1:sec:seregin} derives the centered equation and defines
 raw extracted limits, the raw generated state space, and its mild stratum.
 \Cref{p1:sec:classes} defines the
 Liouville classes and the remaining class.  \Cref{p1:sec:liouville} proves the
-class exclusions and the uniformly tight theorem.  \Cref{p1:sec:criterion} proves
-the conditional remaining-case criterion of
-\Cref{p1:thm:remaining-criterion} and the residual closure hypothesis.
+class exclusions and the uniformly tight theorem.  \Cref{p1:sec:criterion}
+imports the companion residual-closure theorem and proves the remaining-case
+criterion \Cref{p1:thm:remaining-criterion}.
 Appendix \ref{p1:app:centered-symmetries} gives
 the elementary symmetries of the centered equation.
 
@@ -3438,8 +3926,8 @@ in the weak-* topology of \(L^\infty(\R^3)\).
 No assertion is made here that an arbitrary locally smooth limit of translates
 is itself an extracted limit from the original physical sequence without a
 separate diagonal generation argument.  Instead, the raw generated descendant
-hull is included in the definition of the class to which the residual closure
-hypothesis is applied.  This is the class on which the residual set
+hull is included in the definition of the class to which the companion
+residual-closure theorem is applied.  This is the class on which the residual set
 \(\calR(\calS)\) is formed in the final assembly.  The projected mild
 formulation is imposed only on the mild stratum, not on the whole raw hull.
 \end{remark}
@@ -3696,7 +4184,7 @@ The first four classes are not intended to be disjoint.  The remaining class is
 the complement of their union, so overlaps among the Liouville classes cause no
 ambiguity.  The remaining class is a set-theoretic complement, not a new
 structural hypothesis: it carries no analytic content beyond ``not in any of
-the four named classes.''  The residual closure hypothesis
+the four named classes.''  The companion residual-closure theorem
 \Cref{p1:hyp:no-remainder} is the sole input used to remove this complement in
 the final contradiction.
 \end{remark}
@@ -4035,109 +4523,119 @@ and the physical representative satisfies the relevant Type I mild structural
 hypothesis, so \Cref{p1:thm:known-structure-decay-liouville} applies.
 \end{proof}
 
-\section{Residual closure hypothesis}\label{p1:sec:criterion}
+\section{Residual closure imported from the companion paper}
+\label{p1:sec:criterion}
 
 The preceding sections prove that every generated raw Seregin state in a raw
-generated descendant hull associated with an admissible finite-energy Type I
-extraction or an admissible local pointwise Type I concentration
-sequence is either in one of the four non-residual Liouville classes or in the
-complement \(\calR(\calS)\).  The four non-residual classes
+generated descendant hull associated with an admissible finite-energy Type~I
+extraction or an admissible local pointwise Type~I concentration sequence is
+either in one of the four non-residual Liouville classes or in the complement
+\(\calR(\calS)\).  The four non-residual classes
 (\(\calC_{\mathrm{small}}\), \(\calC_{\mathrm{stat},L^3}\),
 \(\calC_{L^3\mathrm{-tight}}\), \(\calC_{\mathrm{sd}}\)) are excluded in
-\Cref{p1:prop:known-class-exclusion}.  The remaining assumption for the Type I
-contradiction is the residual closure statement below.  No result in the
-preceding sections depends on the proof of residual closure; it is invoked
-only in \Cref{p1:thm:remaining-criterion} and in the final assembly
+\Cref{p1:prop:known-class-exclusion}.  The companion residual paper proves the
+literal closure of the remaining raw set.  No result in the preceding sections
+depends on that later theorem; it is used only in
+\Cref{p1:thm:remaining-criterion} and in the final assembly
 \Cref{p1:thm:final-assembly}.
 
-\begin{hypothesis}[Residual closure for raw generated Seregin state spaces]
+\begin{theorem}[Residual closure for raw generated Seregin state spaces]
 \label{p1:hyp:no-remainder}
-For every finite-energy suitable weak solution \((u,p)\), every terminal point
-\(z_*=(x_*,T)\) satisfying the local pointwise Type I bound, and every
-raw generated descendant hull produced by admissible local Type I concentration
-sequences at \(z_*\) with invariant normalization data generated by a raw
-extracted profile,
+Fix a finite-energy suitable weak solution \((u,p)\), a terminal point
+\(z_*=(x_*,T)\) satisfying the local pointwise Type~I bound, and an admissible
+local Type~I concentration sequence at \(z_*\).  Fix the incoming raw extracted
+profile and its single ancestry and invariant-normalization ledger, and form
+the corresponding raw generated descendant hull
 \[
    \calS=\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*),
 \]
 one has
 \[
-   \calR\bigl(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\bigr)=\varnothing .
+   \calR\bigl(
+      \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
+   \bigr)=\varnothing .
 \]
-The same assertion is assumed for raw generated descendant hulls produced by
-admissible finite-energy Type I extractions in the finite-energy criterion
+The identical local conclusion holds when the incoming profile is produced by
+an admissible finite-energy Type~I extraction in
 \Cref{p1:thm:remaining-criterion}.
-The residual class is formed after removing only those states satisfying the
-full hypotheses of the explicit Liouville branches.  Thus the residual closure
-hypothesis also removes any generated raw state for which projected mildness is
-not available and which is not covered by the stationary \(L^3\) branch.
-\end{hypothesis}
 
-\begin{remark}[Residual closure as a conditional assumption]
+The residual complement is formed after removing only states satisfying the
+full hypotheses of the explicit Liouville branches.  The companion proof acts
+locally on a hypothetical incoming residual profile and on realized
+descendants carrying the same ancestry and normalization ledger.  It assumes
+no projected mildness for the raw hull: mildness is used only on the setup mild
+stratum or after the companion paper's local inheritance theorem applies.
+\end{theorem}
+
+\begin{proof}
+Fix the incoming profile, the raw hull, and its normalization ledger.  If
+\(V\in\calR(\calS)\) existed, the exact setup-to-residual interface in the
+companion paper routes this same profile either to its closed affine/parasitic
+row or to its retained residual row
+\cite[Proposition~1.5]{BallesterResidual2026}.  Its Type~I residual closure
+theorem closes the retained row by local estimates on the current profile and
+its realized descendants \cite[Theorem~12.1]{BallesterResidual2026}.  The two
+rows are exhaustive, so neither can contain the hypothetical incoming profile.
+Hence no such \(V\) exists and \(\calR(\calS)=\varnothing\).  This is a
+contrapositive argument from a hypothetical singular profile, not a residual
+existence assumption and not a global ancient-solution estimate.
+\end{proof}
+
+\begin{remark}[Companion-theorem import]
 \label{p1:rem:companion-paper}
-\Cref{p1:hyp:no-remainder} is the only residual-class assumption not established
-from the preceding compactness and Liouville arguments in this paper.  It concerns
-the raw generated descendant hull
-\(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\) after the ordered removal of the
-non-residual classes defined in \Cref{p1:sec:classes}.  The hypothesis is a
-conditional analytic statement about the same raw generated state space
-constructed here.  When this hypothesis is assumed,
-\Cref{p1:thm:remaining-criterion} and
-\Cref{p1:thm:final-assembly} give the Type I exclusions within the stated
-finite-energy Type I extraction and local pointwise Type I concentration
-sequence classes.  All uses of
-\Cref{p1:hyp:no-remainder} are therefore conditional on this residual input.
+\Cref{p1:hyp:no-remainder} is an imported theorem, not an additional analytic
+assumption.  Its producer is the Type~I residual-closure theorem in the
+companion paper, whose conclusion is literal emptiness of the same raw
+generated residual set.  The combined proof is therefore
+unconditional in the stated finite-energy local pointwise Type~I setting.
 \end{remark}
 
 \begin{remark}[Interface with the residual paper]
-\label{p1:rem:paper-IV-interface}
-The companion residual paper is intended to prove
+\label{p1:rem:type-I-residual-interface}
+The companion residual paper proves
 \[
-   \calR\bigl(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\bigr)=\varnothing
+   \calR\bigl(
+      \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
+   \bigr)=\varnothing
 \]
-for the raw generated descendant hull defined in
-\Cref{p1:def:raw-generated-seregin-space}.  The final assembly is formulated
-only for this raw generated state space.
+for the exact raw generated descendant hull defined in
+\Cref{p1:def:raw-generated-seregin-space}.  The final assembly uses this same
+hull and no enlarged or quotient replacement.
 \end{remark}
 
-\begin{corollary}[Rigidity in the remaining case]\label{p1:cor:remainder-rigidity}
-Assume \Cref{p1:hyp:no-remainder}.
+\begin{corollary}[Closure of the remaining raw class]
+\label{p1:cor:remainder-rigidity}
 For every raw generated descendant hull
-\(\calS=\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\) associated with admissible
-finite-energy Type I extractions or admissible local pointwise Type I
-concentration sequences, every
-element of \(\calR(\calS)\) is
-identically zero.
+\(\calS=\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\) associated with an
+admissible finite-energy Type~I extraction or an admissible local pointwise
+Type~I concentration sequence,
+\[
+   \calR(\calS)=\varnothing .
+\]
 \end{corollary}
 
 \begin{proof}
-The assertion follows directly from \cref{p1:hyp:no-remainder}.
+This is \Cref{p1:hyp:no-remainder}.
 \end{proof}
 
-\begin{proposition}[Equivalence on generated raw Seregin states]
+\begin{proposition}[Pointwise contrapositive formulation]
 \label{p1:prop:remainder-equivalence}
-For raw generated descendant hulls of generated raw Seregin states, the
-residual-class hypothesis \cref{p1:hyp:no-remainder} implies
-\cref{p1:cor:remainder-rigidity}.  Conversely, the corresponding rigidity
-assertion removes the remaining class from every raw generated descendant hull.
+Fix a generated raw Seregin hull and its ancestry and normalization ledger.  If
+one supposes that \(V\in\calR(\calS)\), the companion paper's local routing
+closes the unique branch selected for \(V\), giving a contradiction.  Since
+\(V\) is arbitrary, this pointwise contradiction is equivalent to
+\(\calR(\calS)=\varnothing\).
 \end{proposition}
 
 \begin{proof}
-If \cref{p1:hyp:no-remainder} holds, the rigidity statement follows immediately.
-Conversely, assume the residual rigidity assertion for every raw generated
-descendant hull: every element of \(\calR(\calS)\) is identically
-zero.  If some raw generated descendant hull had \(V\in\calR(\calS)\),
-the rigidity assertion would give \(V\equiv0\), directly contradicting the
-invariant nonvanishing normalization of \Cref{p1:cor:normalized-nonzero}.  Hence no
-nonzero generated raw Seregin state can remain in \(\calR(\calS)\).
-By \Cref{p1:cor:normalized-nonzero}, every element of
-\(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\), and hence every element of
-\(\calR(\calS)\), is nonzero.  Therefore \(\calR(\calS)=\varnothing\).
+This is the elementwise form of the proof of
+\Cref{p1:hyp:no-remainder}.  Universal generalization over an arbitrary
+hypothetical \(V\in\calR(\calS)\) is precisely emptiness of that set; no
+existence premise is introduced.
 \end{proof}
 
 \begin{proof}[Proof of \cref{p1:thm:remaining-criterion}]
-Assume \Cref{p1:hyp:no-remainder}.
-Suppose that \((u,p,z_*)\) is an admissible finite-energy Type I singularity.
+Suppose that \((u,p,z_*)\) is an admissible finite-energy Type~I singularity.
 By \cref{p1:thm:extraction}, there exists a raw extracted normalized nonzero
 Seregin ancient limit \(V\).  By
 \Cref{p1:lem:compact-to-invariant-nonzero}, \(V\) satisfies the invariant
@@ -4146,28 +4644,27 @@ local nonvanishing condition.  Let
    \calS=\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
 \]
 be the raw generated descendant hull associated with \(z_*\), the admissible
-extraction scales, and the corresponding fixed invariant normalization
-component.  By construction, \(V\in\calS\).
+extraction scales, and the fixed invariant normalization component.  By
+construction, \(V\in\calS\).
 
-By \cref{p1:prop:exhaustion}, either \(V\) belongs to one of the Liouville classes
-or \(V\in\calR(\calS)\).  The first alternative is impossible by
-\cref{p1:prop:known-class-exclusion}.  The second alternative is impossible by
-\cref{p1:hyp:no-remainder}, applied to
-\(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\).  Hence the assumed admissible finite-energy Type I
-singularity cannot exist.
+By \cref{p1:prop:exhaustion}, either \(V\) belongs to one of the Liouville
+classes or \(V\in\calR(\calS)\).  The first alternative is impossible by
+\cref{p1:prop:known-class-exclusion}.  The second is impossible by
+\cref{p1:hyp:no-remainder}, which states literally that
+\(\calR(\calS)=\varnothing\).  Hence the hypothetical admissible finite-energy
+Type~I singularity cannot exist.
 \end{proof}
 
-The preceding theorem is conditional on the residual-class hypothesis for the
-raw generated descendant hull associated with the finite-energy extraction.  The
-compactness construction, pressure normalization, compact-to-invariant
-nonvanishing passage, raw generated closure stability, and class exhaustion are
-established above, with the local velocity concentration result recorded in
-\cref{p1:prop:local-velocity-concentration}.  The structure and decay class is
-restricted to the assumptions in \cref{p1:def:known-structure-decay-class} and
-is routed through \Cref{p3:thm:typeI-zero-hypotheses}; any other structured
-behavior lies in the remaining class and is addressed only by
-\cref{p1:hyp:no-remainder}.  No whole-space critical-norm estimate on the
-original solution is used in the conditional closure step.
+The preceding theorem uses the companion residual-closure theorem for the raw
+generated hull associated with the finite-energy extraction.  The compactness
+construction, pressure normalization, compact-to-invariant nonvanishing,
+raw-hull stability, and class exhaustion are established above.  The structure
+and decay class is restricted to the assumptions in
+\cref{p1:def:known-structure-decay-class} and is routed through
+\Cref{p3:thm:typeI-zero-hypotheses}; every other structured behavior remains
+in \(\calR(\calS)\) and is closed by \cref{p1:hyp:no-remainder}.  No
+whole-space critical-norm estimate on the original solution is used in this
+local closure.
 
 \section{Elementary symmetries of the centered equation}
 \label{p1:app:centered-symmetries}
@@ -6156,8 +6653,8 @@ the tail condition
 belong to \(\calC_{L^3\mathrm{-tight}}\).
 \end{proof}
 
-The tight-class consequence used in the Type I reduction is therefore proved
-without the residual-class hypothesis.  The proof relies only on boundedness, the
+The tight-class consequence used in the Type~I reduction is proved
+independently of the companion residual closure.  The proof relies only on boundedness, the
 tail-tightness condition of the uniformly \(L^3\)-tight class, the
 local-in-time physical pullback, and the endpoint ancient Liouville theorem of
 Albritton--Barker.
@@ -6173,7 +6670,7 @@ The final part concerns bounded ancient solutions of the three-dimensional
 Navier--Stokes equations arising from Type I blow-up arguments.  Explicit PDE
 hypotheses are stated under which such solutions are spatially constant; in the
 Type I class, these constants vanish.  The perturbative weighted-vorticity
-anchored Gallay--Wayne perturbative exclusion used by the conditional Type I
+anchored Gallay--Wayne perturbative exclusion used by the Type~I
 reduction is also proved.
 
 For the unforced equations, the cited axisymmetric Liouville theorems cover the
@@ -7877,14 +8374,14 @@ Thus every zero conclusion used in the Type I application rests on one of the
 explicit PDE hypotheses in the table.
 
 \clearpage
-\section*{Part V. Final Assembly: Conditional Local Type I Exclusion}
+\section*{Part V. Final Assembly: Local Type I Exclusion}
 \label{p1:sec:final-assembly}
 
 \subsection*{Overview}
 
-This part collects the preceding results and proves the local pointwise Type I
-exclusion conditional on the residual closure hypothesis.  The argument is
-linear: local concentration, local endpoint weak-Serrin no-escape, admissible
+This part collects the preceding results and proves the local pointwise Type~I
+exclusion.  The argument is linear: local concentration, local endpoint
+weak-Serrin no-escape, admissible
 local Type I concentration sequence, raw Seregin extraction, passage to the
 raw generated state space with invariant nonvanishing, exhaustion into
 Liouville classes plus residual class, exclusion of the four non-residual
@@ -7892,7 +8389,7 @@ classes, and residual closure.
 
 \section{Final assembly}
 
-\begin{theorem}[Local Type I regularity under residual closure]
+\begin{theorem}[Local Type I regularity]
 \label{p1:thm:final-assembly}
 Let \((u,p)\) be a finite-energy suitable weak solution on
 \(\R^3\times(0,T)\), and let \(z_*=(x_*,T)\) be a terminal point satisfying
@@ -7901,13 +8398,6 @@ the local pointwise Type I bound, for some \(\rho>0\),
   \esssup_{T-\rho^2<t<T}
   \sqrt{T-t}\,\|u(t)\|_{L^\infty(B_\rho(x_*))}<\infty .
 \]
-Assume the residual closure hypothesis \Cref{p1:hyp:no-remainder} holds for
-every raw generated descendant hull
-\[
-   \calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)
-\]
-associated with invariant normalization data obtained from admissible local
-Type I concentration sequences at \(z_*\).
 Then \(z_*\) is regular.
 \end{theorem}
 
@@ -7976,21 +8466,28 @@ extracted profile \(V\) belongs to \(\calS\).  By \Cref{p1:prop:exhaustion},
 The first four alternatives are excluded by
 \Cref{p1:prop:known-class-exclusion}; each class definition includes exactly
 the hypotheses needed by its corresponding Liouville theorem.  The residual
-alternative is excluded by \Cref{p1:hyp:no-remainder}, applied to the raw
-generated descendant hull
-\(\calS_{\mathrm{raw\text{-}gen}}(u,p,z_*;R_0,\eta_*)\).  No alternative is possible, contradicting
+alternative is excluded by \Cref{p1:hyp:no-remainder}, applied to the same raw
+generated descendant hull, because it states literally that
+\(\calR(\calS)=\varnothing\).  No alternative is possible, contradicting
 the invariant nonvanishing normalization of \Cref{p1:cor:normalized-nonzero}.
 This contradiction proves that \(z_*\) is regular.
 \end{proof}
 
-\begin{remark}[Conditional conclusion]
-Assuming \Cref{p1:hyp:no-remainder}, \Cref{p1:thm:final-assembly} gives the
-local pointwise Type I exclusion within the stated raw generated local pointwise
-Type I extraction class.
+\begin{remark}[Unconditional conclusion]
+\Cref{p1:thm:final-assembly} gives the local pointwise Type~I exclusion within
+the stated raw generated local pointwise Type~I extraction class.  The
+residual input used in its proof is the companion theorem
+\Cref{p1:hyp:no-remainder}, not an added hypothesis.
 \end{remark}
 
 \clearpage
 \begin{thebibliography}{99}
+
+\bibitem{BallesterResidual2026}
+G.~Duran Ballester,
+\emph{Residual Type I Seregin Profiles for the Navier--Stokes Equations:
+Decomposition and Exclusion},
+companion manuscript, 2026.
 
 \bibitem{AlbrittonBarker2019}
 D.~Albritton and T.~Barker,

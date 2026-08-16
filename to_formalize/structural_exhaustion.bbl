@@ -1,0 +1,114 @@
+\begin{thebibliography}{17}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Appel and Haken(1977)]{appel-haken-1977-discharging}
+Kenneth Appel and Wolfgang Haken.
+\newblock Every planar map is four colorable. {I}. {Discharging}.
+\newblock \emph{Illinois Journal of Mathematics}, 21\penalty0 (3):\penalty0
+  429--490, 1977.
+
+\bibitem[Appel et~al.(1977)Appel, Haken, and
+  Koch]{appel-haken-koch-1977-reducibility}
+Kenneth Appel, Wolfgang Haken, and John Koch.
+\newblock Every planar map is four colorable. {II}. {Reducibility}.
+\newblock \emph{Illinois Journal of Mathematics}, 21\penalty0 (3):\penalty0
+  491--567, 1977.
+
+\bibitem[Bodlaender et~al.(2009)Bodlaender, Fomin, Lokshtanov, Penninkx,
+  Saurabh, and Thilikos]{bodlaender-etal-2009-meta-kernelization}
+Hans~L. Bodlaender, Fedor~V. Fomin, Daniel Lokshtanov, Eelko Penninkx, Saket
+  Saurabh, and Dimitrios~M. Thilikos.
+\newblock {(Meta) Kernelization}, 2009.
+
+\bibitem[Bondy and Simonovits(1974)]{bondy-simonovits-1974-even-cycles}
+J.~A. Bondy and M.~Simonovits.
+\newblock Cycles of even length in graphs.
+\newblock \emph{Journal of Combinatorial Theory, Series B}, 16\penalty0
+  (2):\penalty0 97--105, 1974.
+
+\bibitem[Cranston and West(2017)]{cranston-west-2017-discharging}
+Daniel~W. Cranston and Douglas~B. West.
+\newblock An introduction to the discharging method via graph coloring.
+\newblock \emph{Discrete Mathematics}, 340\penalty0 (4):\penalty0 766--793,
+  2017.
+
+\bibitem[Duran-Ballester(2026)]{duran-ballester-2026-eg-candidate}
+Guillem Duran-Ballester.
+\newblock A structural exhaustion proof of the erd{\H{o}}s--gy{\'a}rf{\'a}s
+  power-of-two cycle problem: An {LLM}-assisted minimal-counterexample
+  analysis.
+\newblock Candidate companion manuscript under public review, distributed with
+  the Structural Exhaustion reference manual, 2026.
+
+\bibitem[Gao and Shan(2021)]{gao-shan-2021-p8}
+Yuping Gao and Songling Shan.
+\newblock Erd{\H{o}}s--gy{\'a}rf{\'a}s conjecture for {$P_8$}-free graphs,
+  2021.
+
+\bibitem[Hegde et~al.(2024)Hegde, Sandeep, and Shashank]{hegde-etal-2024-p13}
+Anand~Shripad Hegde, R.~B. Sandeep, and P.~Shashank.
+\newblock Erd{\H{o}}s--gy{\'a}rf{\'a}s conjecture on graphs without long
+  induced paths, 2024.
+
+\bibitem[Hu and Shen(2023)]{hu-shen-2023-p10}
+Zhiquan Hu and Changlong Shen.
+\newblock Erd{\H{o}}s--gy{\'a}rf{\'a}s conjecture for {$P_{10}$}-free graphs,
+  2023.
+
+\bibitem[Jiang et~al.(2022)Jiang, Welleck, Zhou, Li, Liu, Jamnik, Lacroix, Wu,
+  and Lample]{jiang-etal-2022-draft-sketch-prove}
+Albert~Q. Jiang, Sean Welleck, Jin~Peng Zhou, Wenda Li, Jiacheng Liu, Mateja
+  Jamnik, Timoth{\'e}e Lacroix, Yuhuai Wu, and Guillaume Lample.
+\newblock Draft, sketch, and prove: Guiding formal theorem provers with
+  informal proofs, 2022.
+
+\bibitem[Kim et~al.(2012)Kim, Langer, Paul, Reidl, Rossmanith, Sau, and
+  Sikdar]{kim-etal-2012-protrusion}
+Eun~Jung Kim, Alexander Langer, Christophe Paul, Felix Reidl, Peter Rossmanith,
+  Ignasi Sau, and Somnath Sikdar.
+\newblock Linear kernels and single-exponential algorithms via protrusion
+  decompositions, 2012.
+
+\bibitem[Myhill(1957)]{myhill-1957-automata}
+John Myhill.
+\newblock Finite automata and the representation of events.
+\newblock Technical Report WADC Technical Report 57-624, Wright Air Development
+  Center, 1957.
+
+\bibitem[Nerode(1958)]{nerode-1958-linear}
+Anil Nerode.
+\newblock Linear automaton transformations.
+\newblock \emph{Proceedings of the American Mathematical Society}, 9\penalty0
+  (4):\penalty0 541--544, 1958.
+
+\bibitem[Robertson et~al.(1997)Robertson, Sanders, Seymour, and
+  Thomas]{robertson-etal-1997-four-colour}
+Neil Robertson, Daniel~P. Sanders, Paul Seymour, and Robin Thomas.
+\newblock The four-colour theorem.
+\newblock \emph{Journal of Combinatorial Theory, Series B}, 70\penalty0
+  (1):\penalty0 2--44, 1997.
+
+\bibitem[Sudakov and
+  Verstra{\"e}te(2008)]{sudakov-verstraete-2008-cycle-lengths}
+Benny Sudakov and Jacques Verstra{\"e}te.
+\newblock Cycle lengths in sparse graphs.
+\newblock \emph{Combinatorica}, 28\penalty0 (3):\penalty0 357--372, 2008.
+
+\bibitem[Wu et~al.(2022)Wu, Jiang, Li, Rabe, Staats, Jamnik, and
+  Szegedy]{wu-etal-2022-autoformalization}
+Yuhuai Wu, Albert~Q. Jiang, Wenda Li, Markus~N. Rabe, Charles Staats, Mateja
+  Jamnik, and Christian Szegedy.
+\newblock Autoformalization with large language models, 2022.
+
+\bibitem[Yang et~al.(2023)Yang, Swope, Gu, Chalamala, Song, Yu, Godil, Prenger,
+  and Anandkumar]{yang-etal-2023-leandojo}
+Kaiyu Yang, Aidan~M. Swope, Alex Gu, Rahul Chalamala, Peiyang Song, Shixing Yu,
+  Saad Godil, Ryan Prenger, and Anima Anandkumar.
+\newblock Leandojo: Theorem proving with retrieval-augmented language models,
+  2023.
+
+\end{thebibliography}

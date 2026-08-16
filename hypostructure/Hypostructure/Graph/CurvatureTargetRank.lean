@@ -5,9 +5,9 @@ import Hypostructure.Graph.DeclaredRankQuotient
 # The curvature target-rank of a region
 
 `def:curvature-target-rank` computes `r_Ω` over the raw internal length-two
-curvature tests of an atom, against *the* system of admissible rank quotients
-that are functional on that family.  This module builds that system, so `r_Ω`
-is a number and not a quantifier.
+curvature tests of an atom.  A subfamily survives when every admissible quotient
+that is functional on the declared family remains label-injective on it; `r_Ω`
+is the maximum cardinality among those finitely many surviving subfamilies.
 
 Every clause is the manuscript's, at the framework object the manuscript names.
 
@@ -80,44 +80,22 @@ abbrev CurvatureQuotient (Baseline Target : FiniteObject.{u} → Prop)
 
 namespace FiniteObject
 
-/-- **The admissible quotient system of `def:curvature-target-rank`.**
-
-`def:functional-rank-quotient`'s closing sentence: "the admissible quotient
-system used to compute target-rank consists only of admissible rank quotients
-that are functional on the coordinate family under discussion."  Membership is
-exactly that conjunction. -/
-noncomputable def curvatureQuotientSystem
-    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
-    (region : Finset object.Vertex) :
-    Core.TargetRank.QuotientSystem.{u, u + 1} (object.InternalWedge region)
-      (object.internalWedgeFamily region) :=
-  declaredQuotientSystem Baseline Target object (object.internalWedgeFamily region)
-    (FiniteObject.internalWedgeSupport (region := region))
-
 /-- **`r_Ω(X)`**: the curvature target-rank of a region — the maximum size of a
 subfamily of its raw internal curvature tests that survives every functional
 admissible rank quotient. -/
 noncomputable def curvatureTargetRank
     (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
-    (region : Finset object.Vertex) : Nat :=
-  Core.TargetRank.targetRank (curvatureQuotientSystem Baseline Target object region)
-
-/-- `r_Ω` is the rank calculus at the manuscript's own system, definitionally. -/
-theorem curvatureTargetRank_eq_targetRank
-    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
-    (region : Finset object.Vertex) :
-    curvatureTargetRank Baseline Target object region =
-      Core.TargetRank.targetRank
-        (curvatureQuotientSystem Baseline Target object region) := rfl
-
-/-- `r_Ω(X) ≤ W₂(X)`: the rank never exceeds the number of raw tests. -/
-theorem curvatureTargetRank_le_internalWedgeCount
-    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
-    (region : Finset object.Vertex) :
-    curvatureTargetRank Baseline Target object region ≤
-      object.internalWedgeCount region := by
-  rw [← object.internalWedgeFamily_card region]
-  exact Core.TargetRank.targetRank_le_card _
+    (region : Finset object.Vertex) : Nat := by
+  classical
+  let family := object.internalWedgeFamily region
+  let survives := fun subfamily : Finset (object.InternalWedge region) =>
+    ∀ quotient : Core.TargetRank.RankQuotient.{u, u + 1}
+        (object.InternalWedge region),
+      ((∃ declared : CurvatureQuotient Baseline Target object region,
+          declared.toRankQuotient = quotient) ∧
+        quotient.FunctionalOn ↑family) →
+      quotient.LabelInjectiveOn ↑subfamily
+  exact (family.powerset.filter survives).sup Finset.card
 
 end FiniteObject
 

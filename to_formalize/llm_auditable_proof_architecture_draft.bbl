@@ -1,0 +1,102 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\providecommand{\bysame}{\leavevmode\hbox to3em{\hrulefill}\thinspace}
+\providecommand{\MR}{\relax\ifhmode\unskip\space\fi MR }
+% \MRhref is called by the amsart/book/proc definition of \MR.
+\providecommand{\MRhref}[2]{%
+  \href{http://www.ams.org/mathscinet-getitem?mr=#1}{#2}
+}
+\providecommand{\href}[2]{#2}
+\begin{thebibliography}{ABD{\etalchar{+}}25}
+
+\bibitem[ABD{\etalchar{+}}25]{AchimEtAl2025}
+Tudor Achim, Alex Best, Kevin Der, Math{\"i}s F{\'e}d{\'e}rico, Sergei Gukov,
+  et~al., \emph{Aristotle: {IMO}-level automated theorem proving}, 2025.
+
+\bibitem[BG99]{BahouriGerard1999}
+Hajer Bahouri and Patrick G{\'e}rard, \emph{High frequency approximation of
+  solutions to critical nonlinear wave equations}, American Journal of
+  Mathematics \textbf{121} (1999), no.~1, 131--175.
+
+\bibitem[CZ52]{CalderonZygmund1952}
+Alberto~P. Calder{\'o}n and Antoni Zygmund, \emph{On the existence of certain
+  singular integrals}, Acta Mathematica \textbf{88} (1952), 85--139.
+
+\bibitem[DB26]{DuranBallester2026}
+Guillem Duran-Ballester, \emph{Structural exhaustion: A reference manual for
+  {AI}-assisted theorem proving via structural bookkeeping and textbook
+  combinatorial methods}, Manuscript and source repository, 2026.
+
+\bibitem[FRRB23]{FirstEtAl2023}
+Emily First, Markus~N. Rabe, Talia Ringer, and Yuriy Brun, \emph{Baldur:
+  Whole-proof generation and repair with large language models}, 2023.
+
+\bibitem[G{\'e}r98]{Gerard1998}
+Patrick G{\'e}rard, \emph{Description du d{\'e}faut de compacit{\'e} de
+  l'injection de sobolev}, ESAIM: Control, Optimisation and Calculus of
+  Variations \textbf{3} (1998), 213--233.
+
+\bibitem[JWZ{\etalchar{+}}22]{JiangEtAl2022}
+Albert~Q. Jiang, Sean Welleck, Jin~Peng Zhou, Wenda Li, Jiacheng Liu, Mateja
+  Jamnik, Timoth{\'e}e Lacroix, Yuhuai Wu, and Guillaume Lample, \emph{Draft,
+  sketch, and prove: Guiding formal theorem provers with informal proofs},
+  2022.
+
+\bibitem[Ker01]{Keraani2001}
+Sahbi Keraani, \emph{On the defect of compactness for the {Strichartz}
+  estimates of the {Schr{\"o}dinger} equations}, Journal of Differential
+  Equations \textbf{175} (2001), no.~2, 353--392.
+
+\bibitem[LDZ24]{LuEtAl2024}
+Minghai Lu, Benjamin Delaware, and Tianyi Zhang, \emph{Proof automation with
+  large language models}, 2024.
+
+\bibitem[Lio84a]{Lions1984a}
+Pierre-Louis Lions, \emph{The concentration-compactness principle in the
+  calculus of variations. the locally compact case, part 1}, Annales de
+  l'Institut Henri Poincar{\'e} C, Analyse Non Lin{\'e}aire \textbf{1} (1984),
+  no.~2, 109--145.
+
+\bibitem[Lio84b]{Lions1984b}
+\bysame, \emph{The concentration-compactness principle in the calculus of
+  variations. the locally compact case, part 2}, Annales de l'Institut Henri
+  Poincar{\'e} C, Analyse Non Lin{\'e}aire \textbf{1} (1984), no.~4, 223--283.
+
+\bibitem[LMS{\etalchar{+}}25]{LiEtAl2025}
+Shanda Li, Tanya Marwah, Junhong Shen, Weiwei Sun, Andrej Risteski, Yiming
+  Yang, and Ameet Talwalkar, \emph{{CodePDE}: An inference framework for
+  {LLM}-driven {PDE} solver generation}, 2025.
+
+\bibitem[LSU68]{LadyzhenskayaSolonnikovUraltseva1968}
+Olga~A. Ladyzhenskaya, Vsevolod~A. Solonnikov, and Nina~N. Ural'tseva,
+  \emph{Linear and quasilinear equations of parabolic type}, American
+  Mathematical Society, Providence, RI, 1968.
+
+\bibitem[OFS{\etalchar{+}}25]{OspanovEtAl2025}
+Azim Ospanov, Zijin Feng, Jiacheng Sun, Haoli Bai, Xin Shen, and Farzan Farnia,
+  \emph{{HERMES}: Towards efficient and verifiable mathematical reasoning in
+  {LLM}s}, 2025.
+
+\bibitem[Soh01]{Sohr2001}
+Hermann Sohr, \emph{The {Navier--Stokes} equations: An elementary functional
+  analytic approach}, Birkh{\"a}user, Basel, 2001.
+
+\bibitem[SSX{\etalchar{+}}25]{SorocoEtAl2025}
+Mauricio Soroco, Jialin Song, Mengzhou Xia, Kye Emond, Weiran Sun, and Wuyang
+  Chen, \emph{{PDE-Controller}: {LLM}s for autoformalization and reasoning of
+  {PDE}s}, 2025.
+
+\bibitem[Ste70]{Stein1970}
+Elias~M. Stein, \emph{Singular integrals and differentiability properties of
+  functions}, Princeton University Press, Princeton, NJ, 1970.
+
+\bibitem[VVS{\etalchar{+}}25]{VaramballyEtAl2025}
+Sumanth Varambally, Thomas Voice, Yanchao Sun, Zhifeng Chen, Rose Yu, and
+  Ke~Ye, \emph{Hilbert: Recursively building formal proofs with informal
+  reasoning}, 2025.
+
+\bibitem[WJL{\etalchar{+}}22]{WuEtAl2022}
+Yuhuai Wu, Albert~Q. Jiang, Wenda Li, Markus~N. Rabe, Charles Staats, Mateja
+  Jamnik, and Christian Szegedy, \emph{Autoformalization with large language
+  models}, 2022.
+
+\end{thebibliography}

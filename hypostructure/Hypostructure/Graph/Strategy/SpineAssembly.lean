@@ -61,53 +61,6 @@ variable (T : Core.Target (problem BranchState Presentation presentation data))
 variable (targetPredicate :
   T.Predicate = Graph.HasCycleWithLength data.LengthOK)
 
-/-- **The target's isomorphism invariance is derived, not assumed.**
-
-Node `[11]`--`[14]` needs the target predicate to be invariant under the
-problem's own semantic equivalence.  That is not a hypothesis of the spine: the
-graph layer proves it once, in `Graph.hasCycleWithLength_iff_of_iso`, and
-`Graph.minimumDegreeCycleTargetInvariant` packages it as the `Core.TargetInvariant`
-this row consumes.  With `targetPredicate` identifying `T.Predicate` with the
-cycle target, the invariance transports to `T` by rewriting.
-
-An earlier revision took this as a parameter of `run`.  That let a caller supply
-a mathematical fact the framework already owns -- exactly the "supplied field
-standing in for a derivation" the Facts column forbids -- so it is derived
-here. -/
-noncomputable def spineTargetInvariant
-    (T : Core.Target (problem BranchState Presentation presentation data))
-    (targetPredicate : T.Predicate = Graph.HasCycleWithLength data.LengthOK) :
-    Core.TargetInvariant
-      (Graph.isomorphismEquivalenceWithPresentation
-        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-        Presentation presentation
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-      T.Predicate :=
-  targetPredicate ▸
-    Graph.minimumDegreeCycleTargetInvariant data.threshold BranchState
-      Presentation presentation data.LengthOK
-
-/-- Nodes `[5]`--`[7]`, at the spine's own keys. -/
-@[reducible] noncomputable def returnAvoidance :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  returnAvoidanceRow (K .selection) (K .returnAvoidance) (by simp)
-    (fun _input fact => fact.down.1) (fun _input value => ⟨value⟩)
-
-/-- Node `[8]`. -/
-@[reducible] noncomputable def noProperBaseline :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  noProperBaselineRow (K .selection) (K .noProperBaseline) (by simp)
-    (fun _input fact => fact.down.1)
-    (fun _input fact => fact.down.2)
-    (fun _input value => ⟨value⟩)
-
-/-- Node `[21]`: publish the certified finite enumeration on the unchanged
-active residual.  The later independent-window package is not encoded here. -/
-@[reducible] noncomputable def finiteBarrierEnumeration :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  barrierEnumerationRow (K .localAlgebra) (K .windowPackageSeparated)
-    (by simp [K_eq_iff]) (fun _input value => ⟨value⟩)
-
 /-- Node `[91]` closes because its nonnegative discharging conclusion is
 incompatible with the retained negative Type A support. -/
 noncomputable instance typeAUnsaturatedDischargeClosed :
@@ -132,129 +85,37 @@ noncomputable instance typeAExitFiveClosed :
       _noExitFour, support, compressible⟩ := exitFive.down
     exact (uncompressible.down support) compressible
 
-/-- Nodes `[9]`--`[10]`. -/
-@[reducible] noncomputable def deletionCriticality :
+/-- `def:exact-response-profile` at the concrete remainder entering node `[31]`. -/
+@[reducible] noncomputable def exactResponseProfile :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  deletionCriticalityRow (K .noProperBaseline) (K .tightEndpoint)
-    (K .slackIndependent) (by simp) (by simp) (by simp)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
+  exactResponseProfileRow data
 
-/-- Nodes `[11]`--`[14]`. -/
-@[reducible] noncomputable def interfaceReplacement :
+/-- `def:admissible-rank-quotient` on the exact profile entering node `[31]`. -/
+@[reducible] noncomputable def admissibleRankQuotient :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  interfaceReplacementRow T (spineTargetInvariant T targetPredicate)
-    (K .selection) (K .uncompressible)
-    (by simp)
-    (fun _input fact => by rw [targetPredicate]; exact fact.down.1)
-    (fun _input fact smaller smallerLt baseline => by
-      rw [targetPredicate]; exact fact.down.2 smaller smallerLt baseline)
-    (fun _input value =>
-      ⟨show ∀ support : Finset _input.object.Vertex,
-          ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
-              (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) _input.object support
-        from targetPredicate ▸ value⟩)
-
-/-- Nodes `[15]`--`[17]`. -/
-@[reducible] noncomputable def obstructionPacking :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  obstructionPackingRow (K .selection) (K .maximalPacking) (by simp)
-    (fun _input fact => fact.down.1) (fun _input value => ⟨value⟩)
-
-/-- Node `[18]`. -/
-@[reducible] noncomputable def localAlgebra :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  localAlgebraRow (K .localAlgebra)
-    (fun _input value => ⟨value⟩)
-
-/-- Nodes `[25]`--`[27]`. -/
-@[reducible] noncomputable def remainderNormalization :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  remainderNormalizationRow (K .selection) (K .remainderNormalized) (by simp)
-    (fun _input fact => fact.down.1) (fun _input value => ⟨value⟩)
-
-/-- Nodes `[22]`--`[24]`. -/
-@[reducible] noncomputable def densityBudget :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  densityBudgetRow (K .barrierCap) (K .surplusAtOrBelow) (K .densityCap)
-    (by simp)
-    (fun _input fact => fact.down.2.1)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
-
-/-- Nodes `[28]`--`[29]`. -/
-@[reducible] noncomputable def boundaryDemand :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  boundaryDemandRow (K .remainderNormalized) (K .surplusAtOrBelow)
-    (K .boundaryDemand) (K .stubSupply)
-    (by simp) (by simp) (by simp) (by simp)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
-
-/-- Node `[30]`. -/
-@[reducible] noncomputable def wedgeSupply :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  wedgeSupplyRow (K .boundaryDemand) (K .wedgeSupply) (K .curvatureDemandFloor)
-    (by simp) (by simp) (by simp)
-    -- The row-38 chain, composed into the single ceiling this row substitutes.
-    (fun _input fact packing valid => by
-      have chain := fact.down packing valid
-      omega)
-    (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
-
-/-- Node `[31]`. -/
-@[reducible] noncomputable def curvatureTargetRank :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  curvatureTargetRankRow (K .curvatureDemandFloor) (K .curvatureTargetRank)
-    (by simp) (fun _input value => ⟨value⟩)
+  admissibleRankQuotientRow (K .exactResponseProfile)
+    (K .admissibleRankQuotient) (by simp)
+    (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
 
 /-- Nodes `[33]` and `[35]`: Branch D, entered with its certificate. -/
 @[reducible] noncomputable def branchDependence :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  branchDependenceRow (K .curvatureRankDrop) (K .branchDependence) (by simp)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
-
-/-- Nodes `[47]`--`[48]`. -/
-@[reducible] noncomputable def forcedCurvatureCost :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  forcedCurvatureCostRow (K .curvatureDemandFloor) (K .curvatureFullRank)
-    (K .forcedCurvatureCost) (by simp)
-    (fun _input fact => fact.down) (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+  branchDependenceRow data
 
 /-- Node `[52]`. -/
 @[reducible] noncomputable def entropyPackage :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  entropyPackageRow (K .remainderEntropyHigh) (K .entropyPackageDemand)
-    (by simp) (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
-
-/-- Every low-entropy survivor has the same paper continuation.  The optional
-local-type-vector analysis may add curvature information, but
-`rem:closure-robust` records that the later large-budget route does not consume
-that optional fact.  This row therefore commits only the common Residual C
-conclusion and leaves the complete incoming ledger intact. -/
-@[reducible] noncomputable def lowEntropyLargeBudget :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  lowEntropyLargeBudgetRow (K .remainderEntropyLow) (K .largeBudgetResidual)
-    (by simp) (fun _input fact => fact.down)
-    (fun _input low => ⟨Or.inr low⟩)
+  entropyPackageRow data
 
 /-- Node `[60]`: the ordinary eventual net-charge cap. -/
 @[reducible] noncomputable def netChargeCap :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  netChargeCapRow (data := data) (K .densityCap) (K .stubSupply)
-    (K .netChargeLarge) (K .netChargeCap) (by simp)
-    (fun _input fact => fact.down) (fun _input fact => fact.down)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+  netChargeCapRow
 
 /-- Nodes `[57]`--`[58]`. -/
 @[reducible] noncomputable def netChargeLocalization :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  netChargeLocalizationRow (data := data) (K .netChargeLocalization)
-    (fun _input value => ⟨value⟩)
+  netChargeLocalizationRow data
 
 /-- Node `[60]`. -/
 @[reducible] noncomputable def windowJoinPressure :
@@ -267,18 +128,12 @@ conclusion and leaves the complete incoming ledger intact. -/
 /-- Node `[61]`. -/
 @[reducible] noncomputable def negativeSupport :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  negativeSupportRow (K .netChargeNegative) (K .netChargeLocalization)
-    (K .negativeSupport) (by simp) (fun _input fact => fact.down)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+  negativeSupportRow
 
 /-- Node `[68]`, the standing law both arms of the degree split read. -/
 @[reducible] noncomputable def highCentreNormalForm :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  highCentreNormalFormRow (K .selection) (K .tightEndpoint)
-    (K .highCentreNormalForm) (by simp)
-    (fun _input fact => fact.down.1) (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
+  highCentreNormalFormRow
 
 /-- Node `[69]`, on the heavy arm of node `[68]`. -/
 @[reducible] noncomputable def heavyCentreLocalDichotomy :
@@ -323,24 +178,6 @@ run after either of the two B2 cursors. -/
     (fun _input fact => fact.down)
     (fun _input value => ⟨value⟩)
 
-/-- Nodes `[73]`/`[75]` and `[83]`/`[84]`, run on each Type B bridge residual
-cursor that the local fan walk produces. -/
-@[reducible] noncomputable def bridgeFanMass :
-    (bridgeResidual :
-      FactKey (Input BranchState Presentation presentation data)) →
-    bridgeResidual ≠ K .typeBBridgeMass →
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  fun bridgeResidual distinct =>
-  bridgeFanMassRow bridgeResidual (K .typeBBridgeMass) distinct
-    (fun _input _bridgeResidual value => ⟨value⟩)
-
-/-- The paper's Type B bridge sublinearity fact, published as an ordinary
-ledger fact after the bridge mass ledger and the shared budget facts are all
-present. -/
-@[reducible] noncomputable def typeBBridgeSublinear :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeBBridgeSublinearRow
-
 @[reducible] noncomputable def branchKillClosed :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   branchKillClosedRow
@@ -373,143 +210,107 @@ cursor. -/
 
 end Rows
 
-/-- Nodes `[44]` and `[45]`: the repair identity and the global barrier. -/
+/-- Node `[44]`: the repair identity on the whole-graph residual. -/
+@[reducible] noncomputable def repairIdentity :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  repairIdentityRow data
+
+/-- Node `[45]`: the global barrier after the repair identity. -/
 @[reducible] noncomputable def globalBarrier :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  globalBarrierRow (K .globalDelocalization) (K .repairIdentity)
-    (K .globalBarrier) (by simp) (by simp) (by simp)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩) (fun _input value => ⟨value⟩)
+  globalBarrierRow data
 
-/-- **The terminals `[39]`, `[42]` and `[46]` close against the selection.**
+/-- **The terminal `[39]` closes against the selected object.**
 
-Each names a determination certificate on the selected object, and
-`not_branchDCertificate` refutes it: `cor:uncompressible` kills the
-proper-support readings and the selection's own minimality kills the closed
-representative.  Both halves of the selection fact are used -- its avoidance and
-its minimality -- so the closure is genuinely a collision between the terminal
-and the object the block selected, not a fact contradicting itself. -/
+The `K .atomCompression` fact already contains the proper-support replacement
+derived at node `[38]` from its exact rank-reducing certificate.  This
+registration applies the paper's replacement lemma directly to that ledger
+fact; no certificate package or detached Branch-D closure theorem intervenes. -/
 noncomputable instance instIncompatibleAtomCompression :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .atomCompression) where
-  contradiction := fun residual selected compression =>
-    not_branchDCertificate residual selected.down.1 selected.down.2
-      (by
-        obtain ⟨packing, valid, quotient, certified, _complete, _inside⟩ :=
-          compression.down
-        exact ⟨packing, valid, quotient, certified⟩)
+  contradiction := fun residual selected compression => by
+    obtain ⟨_packing, _valid, quotient, _certificate, _complete, _inside,
+      replacement⟩ := compression.down
+    exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
+      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+      Presentation presentation
+      (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
+      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
+        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+        Presentation presentation
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
+      { G := residual.object, baseline := residual.baseline,
+        state := residual.branchState, avoids := selected.down.1,
+        minimal := selected.down.2 }
+      quotient.support replacement
 
 noncomputable instance instIncompatibleProperDelocalization :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .properDelocalization) where
-  contradiction := fun residual selected smearing =>
-    not_branchDCertificate residual selected.down.1 selected.down.2
-      (by
-        obtain ⟨packing, valid, quotient, certified, _complete, _outside,
-          _proper⟩ := smearing.down
-        exact ⟨packing, valid, quotient, certified⟩)
+  contradiction := fun residual selected smearing => by
+    obtain ⟨_packing, _valid, quotient, _certificate, _complete, _outside,
+      _vertex, _vertexOutside, replacement⟩ := smearing.down
+    exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
+      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+      Presentation presentation
+      (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
+      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
+        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+        Presentation presentation
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
+      { G := residual.object, baseline := residual.baseline,
+        state := residual.branchState, avoids := selected.down.1,
+        minimal := selected.down.2 }
+      quotient.support replacement
 
 noncomputable instance instIncompatibleGlobalBarrier :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .globalBarrier) where
   contradiction := fun residual selected barrier => by
-    -- The reading node `[45]` committed is read back, not recomputed: this is
-    -- the one place `lem:no-silent-global-smearing`'s disjunction is consumed,
-    -- and the row that produced it is the one place it was derived.
-    obtain ⟨_packing, _valid, _quotient, _certified, reading⟩ := barrier.down
-    exact not_globalBarrierReading residual selected.down.1 selected.down.2 reading
-
-noncomputable instance instIncompatibleTypeAExitSixProper :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .selection) (K .typeAExitSixProper) where
-  contradiction := fun residual selected proper => by
-    obtain ⟨_support, replacement⟩ := proper.down
-    exact not_globalBarrierReading residual selected.down.1 selected.down.2
-      (Or.inl replacement)
-
-noncomputable instance instIncompatibleTypeAExitSixGlobal :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .selection) (K .typeAExitSixGlobal) where
-  contradiction := fun residual selected global => by
-    exact not_globalBarrierReading residual selected.down.1 selected.down.2
-      (support := (∅ : Finset residual.object.Vertex)) (Or.inr global.down)
-
-/-- **The node-`[72]` closing arm is uninhabited**, at the spine's own keys.
-
-`lem:typeB-direct-fan-window-cycles` and `lem:typeB-two-window-cycles` *build* a
-cycle from each of the four direct configurations, and its length is the accepted
-one the configuration's own side condition names.  The selected object avoids
-every accepted length.  Registering the collision as `Incompatible` is what lets
-the framework close the arm the moment the branch test takes it, with the closure
-entry naming these two facts and nothing else.
-
-The packing validity the two-window construction needs is the configuration's own
-first component, read back rather than recomputed. -/
-noncomputable instance instIncompatibleDirectCycle :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .selection) (K .typeBDirectCycle) where
-  contradiction := fun _residual selected configuration => by
-    obtain ⟨packing, valid, _maximal, _component, _present, _charge, _positive,
-      _centre, _member, _high, present⟩ := configuration.down
-    exact selected.down.1
-      (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
-        valid present)
+    obtain ⟨_packing, _valid, quotient, _certificate, reading⟩ := barrier.down
+    rcases reading with
+      replacement | ⟨representative, smaller, representativeBaseline, transfer⟩
+    · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
+        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+        Presentation presentation
+        (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
+        ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
+          (Graph.MinimumDegreeAtLeast data.threshold) BranchState
+          Presentation presentation
+          (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
+        { G := residual.object, baseline := residual.baseline,
+          state := residual.branchState, avoids := selected.down.1,
+          minimal := selected.down.2 }
+        quotient.support replacement
+    · exact selected.down.1
+        (transfer (selected.down.2 representative smaller
+          representativeBaseline))
 
 noncomputable instance instImpossibleTypeBExcluded :
     Impossible (Input BranchState Presentation presentation data)
       (K .typeBExcluded) where
   contradiction := fun _residual excluded => excluded.down
 
-/-- **The sparse exit arm closes against the surviving sparse-exit ledger.**
-
-Node `[132]`'s exit arm is the negation of the two clauses node `[125]`
-commits: survival of the named sparse exits and absence of proper-support
-replacement.  Both are ordinary spine facts, so the branch closes by Core's
-`closeIncompatible` whenever both keys are present. -/
-noncomputable instance instIncompatibleSparsePairExit :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .sparseSurplusSurvivor) (K .sparsePairExit) where
-  contradiction := fun _residual survivor exit =>
-    exit.down survivor.down
-
 /-- **The terminal `[37]` is uninhabited**, at the spine's own key.
 
-`not_contextDefect` is the mathematics: an admissible rank quotient is
-target-complete, so no pair it identifies is separated by a boundary-degree
-profile or by an outside context.  Registering it as `Impossible` is what lets
-the framework close the arm the moment the branch test takes it, with the
-closure entry naming this fact and nothing else. -/
+The registration consumes the exact `K .contextDefect` value exposed by the
+framework closure boundary.  Its selected admissible quotient is
+context-universal, contradicting the concrete outside-context defect.  The
+caller then uses `closeImpossible` to append only the canonical closure fact to
+the same ledger. -/
 noncomputable instance instImpossibleContextDefect :
     Impossible (Input BranchState Presentation presentation data)
       (K .contextDefect) where
-  contradiction := fun residual value =>
-    not_contextDefect (data := data) residual value.down
-
-/-- **The near-cubic surplus route closes against node `[19]`.**
-
-The branch enters the sparse-pressure block from `surplusAbove`, so a later
-`spineSurplusEstimate` is the exact complementary inequality on the same
-selected object.  The contradiction is registered as a framework
-incompatibility between ordinary keys; callers close it with `closeIncompatible`
-on the incoming ledger and no extra carrier. -/
-noncomputable instance instIncompatibleSurplusAboveSpineSurplusEstimate :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .surplusAbove) (K .spineSurplusEstimate) where
-  contradiction := fun residual above estimate => by
-    have lower :
-        data.surplusThreshold residual.object.vertexCount <
-          residual.object.degreeSurplus data.threshold := by
-      change Holds BranchState Presentation presentation data
-        .surplusAbove residual.object
-      exact above.down
-    have upper :
-        residual.object.degreeSurplus data.threshold ≤
-          data.spineScale * Core.ceilSqrt residual.object.vertexCount := by
-      change Holds BranchState Presentation presentation data
-        .spineSurplusEstimate residual.object
-      exact estimate.down
-    exact Nat.not_lt_of_ge (by
-      simpa [Data.surplusThreshold] using upper) lower
+  contradiction := fun _residual value => by
+    obtain ⟨_packing, _valid, _packingCard, _test, _determiners, quotient,
+      _supportData, _certificate, _minimal, left, right, identified,
+      outside, distinguishes⟩ := value.down
+    exact distinguishes
+      (quotient.contextUniversal left right identified outside)
 
 /-- The key index at the full-rank residual of node `[34]`, Residual B.  This
 is the index nodes `[47]` onwards extend; it is no longer an exit of the run. -/

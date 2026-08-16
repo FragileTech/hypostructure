@@ -351,65 +351,6 @@ theorem degreeSurplus_le_mul_ceilSqrt
 
 end CertifiedObjectCapacityLedger
 
-/-- **Node `[136]`'s existence commitment, proved.**
-
-At *every* declared presentation -- every valid packing of induced windows,
-every demand activation, every coordinate/shoulder-chord presentation and every
-role reading -- the object's own capacity-token charge is a capacity-token
-ledger.  The three obligations are the branch's own: node `[130]`'s pair count,
-the vertex the branch's positive surplus exhibits, and
-`lem:capacity-token-supply` at the sparse upper envelope and the registered join
-comparison. -/
-theorem objectCapacityLedgerExists (object : FiniteObject.{u})
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {deficitScale : Nat}
-    {threshold order : Nat}
-    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
-    (vertex : object.Vertex)
-    (scheduleCard : (object.portPairSchedule threshold).card =
-      (object.degreeSurplus threshold).choose 2)
-    (three : 3 ≤ threshold) (orderPos : 0 < order)
-    (handshake : threshold * object.vertexCount ≤ 2 * object.edgeCount)
-    (envelope : object.edgeCount + 2 ≤ (threshold - 1) * object.vertexCount)
-    (joinSlack : threshold * order + 2 ≤ 4 * order)
-    (spine : object.BaselineWindowDemand Baseline LengthOK threshold order
-      deficitScale)
-    (mixed : ∀ declared : CapacityPresentation.{u} object order,
-      object.MixedSpinePairDemand Baseline LengthOK threshold order deficitScale spine
-        declared.activation) :
-    ∀ declared : CapacityPresentation.{u} object order,
-      Nonempty (CertifiedObjectCapacityLedger.{u} object threshold order
-        deficitScale declared) :=
-  fun declared => by
-    let budget :=
-      spineDeficit object.vertexCount threshold spine.bits +
-        (Nat.log2 object.vertexCount + 1) *
-          (object.edgeCount - cubicBaselineEdgeCount object.vertexCount threshold)
-    have freeSubset := declared.freeSide_subset_activationFree threshold
-    have freeBound :
-        (freeSide object.vertexPairDecidableEq (object.portPairSchedule threshold)
-          (declared.tokenOrder threshold) (declared.Eligible threshold)
-          (declared.eligibleDecidable threshold)).card ≤ budget := by
-      calc
-        _ ≤ (declared.activation.freePairs threshold).card :=
-          Finset.card_le_card freeSubset
-        _ ≤ budget := (mixed declared).linearSandwich
-    let ledger := ObjectCapacityLedger.ofCapacityCharge declared scheduleCard
-      (object.capacityTokens_nonempty threshold declared.packing vertex)
-      budget freeBound
-      (object.card_capacityTokens_le declared.packingValid baseline three
-        handshake envelope orderPos joinSlack)
-    exact ⟨{
-      ledger := ledger
-      spineDeficit := spineDeficit object.vertexCount threshold spine.bits
-      edgeSlack := object.edgeCount -
-        cubicBaselineEdgeCount object.vertexCount threshold
-      entropyBudget_eq := rfl
-      spineDeficit_le := spine.deficitBound
-      edgeSlack_le := edgeSlack_le_degreeSurplus object threshold
-        (cubicBaselineEdgeCount_le_edgeCount_of_handshake object threshold
-          handshake) }⟩
-
 /-! ## The statements nodes `[137]`--`[143]` commit -/
 
 /-- **Node `[137]`, first production**: `lem:exact-surplus-pair-charge-partition`
@@ -565,6 +506,13 @@ beside it, so a token cannot be routed to an audit of a class it is not in. -/
 def SparsePressureOverloadInClass (object : FiniteObject.{u})
     (threshold order : Nat) (value : TokenClass) : Prop :=
   OverloadAtClass object threshold order fun class' => class' = value
+
+/-- The concrete overload witness selected upstream has a token outside the
+given class.  This is the negative residual of the paper's class test; it is
+not the stronger assertion that no overload witness exists in that class. -/
+def SparsePressureOverloadOutsideClass (object : FiniteObject.{u})
+    (threshold order : Nat) (value : TokenClass) : Prop :=
+  OverloadAtClass object threshold order fun class' => class' ≠ value
 
 /-- **Nodes `[140]`, `[142]`, `[143]`: the geometric audit of one token class.**
 
@@ -810,29 +758,24 @@ theorem quantitativeOverloadStatement (object : FiniteObject.{u})
   refine le_trans (Nat.mul_le_mul_left share ?_) absorbs
   exact Nat.mul_le_mul_left _ ledger.tokens_card_le
 
-/-- **The two class tests of nodes `[139]` and `[141]` are exhaustive.**
-
-An overload occurs at a token, a token has a class, and there are three classes,
-so failing both tests leaves the primitive-carrier audit `[143]`.  Nothing else
-remains: the manuscript's "according to the class of the token" is a total case
-split on `TokenClass`. -/
+/-- After node `[139]` records that its concrete overload token is not a window
+token, that same witness lies either in the remainder or primitive class. -/
 theorem overloadClassExhaustive (object : FiniteObject.{u}) (threshold order : Nat)
-    (overload : SparsePressureOverloadStatement object threshold order)
-    (notWindow : ¬ SparsePressureOverloadInClass object threshold order
-      .windowIncidence)
-    (notRemainder : ¬ SparsePressureOverloadInClass object threshold order
-      .remainderSurplus) :
-    SparsePressureOverloadInClass object threshold order .primitiveCarrier := by
-  obtain ⟨data, ledger, routingLabelBound, token, role, tokenMem, _, rest⟩ := overload
+    (notWindow : SparsePressureOverloadOutsideClass object threshold order
+      .windowIncidence) :
+    SparsePressureOverloadInClass object threshold order .remainderSurplus ∨
+      SparsePressureOverloadInClass object threshold order .primitiveCarrier := by
+  obtain ⟨data, ledger, routingLabelBound, token, role, tokenMem,
+    outsideWindow, rest⟩ := notWindow
   cases classified : ledger.presented.tokenClass token with
   | windowIncidence =>
-      exact absurd ⟨data, ledger, routingLabelBound, token, role, tokenMem,
-        classified, rest⟩ notWindow
+      exact absurd classified outsideWindow
   | remainderSurplus =>
-      exact absurd ⟨data, ledger, routingLabelBound, token, role, tokenMem,
-        classified, rest⟩ notRemainder
+      exact Or.inl ⟨data, ledger, routingLabelBound, token, role, tokenMem,
+        classified, rest⟩
   | primitiveCarrier =>
-      exact ⟨data, ledger, routingLabelBound, token, role, tokenMem, classified, rest⟩
+      exact Or.inr ⟨data, ledger, routingLabelBound, token, role, tokenMem,
+        classified, rest⟩
 
 /-- **Node `[144]`, proved.**
 
@@ -876,38 +819,6 @@ theorem homogeneousBottleneckPatternStatement_of_not_caps
     rintro ⟨centre, pattern, subset, star, large⟩
     exact noPattern ⟨declared, ledger, token, tokenMem, role,
       Or.inr ⟨centre, pattern, subset, star, large⟩⟩
-
-/-- **Node `[144]`'s bottleneck arm, proved.**
-
-Every input is a fact the branch already carries: node `[125]`'s survival, the
-selection entry's avoidance, and node `[11]`--`[14]`'s `cor:uncompressible`.
-Nothing is assumed and nothing is reconstructed. -/
-theorem typeBHandoffStatement (object : FiniteObject.{u})
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop} {order : Nat}
-    (survives : Graph.SurvivesSparseExits Baseline
-      (Graph.HasCycleWithLength LengthOK) LengthOK object)
-    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
-    (uncompressible : ∀ piece : Finset object.Vertex,
-      ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline
-        (Graph.HasCycleWithLength LengthOK) object piece) :
-    TypeBHandoffStatement object Baseline LengthOK order :=
-  fun _HighDegree _Absorbing bottleneck windowFree internal baseline
-      contextEquivalent =>
-    bottleneck.typeBHandoff survives avoids uncompressible windowFree internal
-      baseline contextEquivalent
-
-/-- **The first assertion, proved.**  It is
-`lem:same-token-bottleneck-routing` at the declared routed bottleneck; nothing
-about the object is assumed. -/
-theorem bottleneckRoutingStatement (object : FiniteObject.{u})
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop} {order : Nat}
-    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
-    (uncompressible : ∀ piece : Finset object.Vertex,
-      ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline
-        (Graph.HasCycleWithLength LengthOK) object piece) :
-    BottleneckRoutingStatement object Baseline LengthOK order :=
-  fun _HighDegree _Absorbing bottleneck windowFree =>
-    bottleneck.outcome avoids uncompressible windowFree
 
 /-- **`prop:nonnear-cubic-sharp-overload-routing`, the exhaustive outcome at
 node `[144]`.**
