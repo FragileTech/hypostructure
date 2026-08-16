@@ -1,0 +1,802 @@
+Yes. Below is a paragraph-level blueprint: every bullet corresponds to roughly one future paragraph of the 15–20 page paper. The point is that later we can expand each bullet almost mechanically into prose without changing the intellectual structure.
+
+\section*{Working title}
+Structural Exhaustion: Long-Form LLM-Assisted Proof Development by Structural Reasoning and Rigorous Bookkeeping
+
+Central thesis:
+
+Structural Exhaustion weaponizes counterexamples: it uses LLM-supported structural reasoning to turn failed claims into increasingly restrictive information about an adversarial object, while rigorous bookkeeping ensures that this information accumulates until the remaining structure is forced into a standard closure mechanism.
+
+The paper should treat the proposed LLM strengths as design assumptions motivated by development experience, not as universal benchmark claims about every model. That matches the manual's treatment of its observed failure modes.
+
+\chapter*{Abstract}
+\begin{itemize}
+\item A1. Long-form mathematical proof development is a different problem from solving an isolated theorem because hundreds of locally reasonable steps must compose without losing hypotheses, residual cases, or quantitative constraints.
+
+
+\item A2. Structural Exhaustion addresses this by repeatedly converting target avoidance and failed proof attempts into explicit structural information about a counterexample.
+
+
+\item A3. The method is deliberately aligned with five useful LLM capabilities: structural and invariant reasoning, bookkeeping, manipulation of diagrams and tables, familiarity with textbook techniques, and counterexample search.
+
+
+\item A4. Its core machinery consists of minimal counterexamples, backward invariant design, supply–demand ledgers, explicit branch states, first-failure witnesses, local closure patterns, and routed residuals.
+
+
+\item A5. The methodology was generalized from a roughly 240-page Erdős–Gyárfás development and is illustrated further by much larger nonlinear-PDE proof developments.
+
+
+\item A6. The method is intended to make very large LLM-assisted mathematical constructions possible and auditable; it does not treat model output itself as evidence of mathematical correctness.
+
+
+\end{itemize}
+\chapter*{1. Introduction: the problem of long-form LLM mathematics}
+\section*{1.1 Local competence is not long-form proof construction}
+\begin{itemize}
+\item 1.1.1. Modern LLMs can often make useful individual mathematical moves, yet a research proof may require hundreds of mutually dependent moves before the target is reached.
+
+
+\item 1.1.2. The difficulty at long scale is therefore not simply generating more mathematical prose, but ensuring that every local result remains compatible with all earlier exclusions, hypotheses, definitions, and quantitative accounts.
+
+
+\item 1.1.3. Free-form proof development is particularly fragile because an argument can look globally convincing while one difficult case, one boundary correction, or one hidden assumption remains unresolved.
+
+
+\item 1.1.4. Structural Exhaustion arose from attempting to continue proof construction beyond the scale at which ordinary conversational proof development remained dependable.
+
+
+\end{itemize}
+\section*{1.2 The central idea}
+\begin{itemize}
+\item 1.2.1. The method treats a hypothetical counterexample as an adversarial object that must continually pay for avoiding the target.
+
+
+\item 1.2.2. Every useful dichotomy is arranged so that the positive side advances a quantitative or structural argument while the negative side produces a new obstruction that can itself be analyzed.
+
+
+\item 1.2.3. A failed lemma or failed structural guess is therefore not necessarily wasted effort: its counterexample can reveal the next invariant, local witness, label, carrier, or residual class.
+
+
+\item 1.2.4. The proof develops by repeatedly transforming ignorance about the counterexample into explicit restrictions on what the counterexample is still allowed to be.
+
+
+\end{itemize}
+\section*{1.3 What Structural Exhaustion is}
+\begin{itemize}
+\item 1.3.1. Structural Exhaustion combines familiar proof mechanisms rather than proposing a fundamentally new primitive mathematical inference rule.
+
+
+\item 1.3.2. Its novelty lies in organizing those mechanisms into a systematic construction process in which every branch, failure, account, and residual has an explicit mathematical role.
+
+
+\item 1.3.3. The resulting proofs can be extremely large because the method deliberately expands reasoning that expert mathematical prose would often compress into implicit case handling or bookkeeping.
+
+
+\end{itemize}
+\section*{1.4 Contribution and evidence}
+\begin{itemize}
+\item 1.4.1. The paper contributes a practical methodology for generating invariants, budgets, branch orders, residuals, and closure routes from the resources already present in a problem.
+
+
+\item 1.4.2. It explains why this methodology is especially compatible with the kinds of structured mathematical work that LLMs can perform effectively.
+
+
+\item 1.4.3. The methodology was generalized from the Erdős–Gyárfás development, which the manual explicitly says was written first.
+
+
+\item 1.4.4. The accompanying repository, long reference manual, proof manuscripts, diagrams, and webpage provide the detailed mathematical artifacts behind the compact presentation in this paper.
+
+
+\end{itemize}
+\chapter*{2. Why the method is well matched to LLMs}
+This should probably be one of the paper's most important sections.
+
+\section*{2.1 Structural reasoning and invariants}
+\begin{itemize}
+\item 2.1.1. LLMs are useful at reasoning about structural consequences of assumptions: what a graph, profile, decomposition, or counterexample must look like if a given property holds or fails.
+
+
+\item 2.1.2. Structural Exhaustion turns this capability into a systematic operation by promoting strategically useful properties into explicit branch invariants.
+
+
+\item 2.1.3. Instead of asking the model to guess the final structure of a counterexample, the method asks which local or quantitative property would make the next known tool applicable.
+
+
+\item 2.1.4. The positive and negative sides of that property then become separate sources of mathematical progress.
+
+
+\end{itemize}
+\section*{2.2 Bookkeeping and structural accounting}
+\begin{itemize}
+\item 2.2.1. LLMs can manipulate large collections of named quantities, cases, labels, constraints, and cross-references when those objects are explicitly represented.
+
+
+\item 2.2.2. Structural Exhaustion turns such bookkeeping into mathematics by expressing global obstruction through demands, payers, capacities, deficits, surpluses, and other named currencies.
+
+
+\item 2.2.3. The bookkeeping is generative rather than merely clerical: an overloaded payer, exhausted capacity, or unbalanced budget forces new structure.
+
+
+\item 2.2.4. Rigorous accounting therefore converts the ability to maintain many small relationships into a mechanism for discovering the next proof branch.
+
+
+\end{itemize}
+\section*{2.3 Diagrams and tables}
+\begin{itemize}
+\item 2.3.1. LLMs are naturally able to read and generate structured textual objects such as tables, dependency diagrams, case matrices, and finite state descriptions.
+
+
+\item 2.3.2. Structural Exhaustion makes extensive use of exactly these representations because a long proof contains many relationships that are awkward to preserve reliably in compressed prose.
+
+
+\item 2.3.3. Branch tables expose missing cases, dependency tables expose unsupported conclusions, and ledgers expose double counting or unavailable resources.
+
+
+\item 2.3.4. The diagrammatic representation is consequently part of the reasoning process, not merely a presentation device.
+
+
+\end{itemize}
+\section*{2.4 Familiarity with textbook techniques}
+\begin{itemize}
+\item 2.4.1. LLMs have broad familiarity with standard mathematical moves such as minimal-counterexample arguments, pigeonhole principles, charging, switching, first failure, compactness, replacement, and finite enumeration.
+
+
+\item 2.4.2. Structural Exhaustion deliberately builds large arguments from such familiar mechanisms rather than requiring every step to be a novel global insight.
+
+
+\item 2.4.3. Complexity is moved from the primitive moves into their composition: a huge proof can be assembled from many individually recognizable local arguments.
+
+
+\item 2.4.4. The CT1–CT17 library is best understood as a vocabulary for recurring combinations of such standard mechanisms, not as a claim that their instance-specific hypotheses are automatic.
+
+
+\end{itemize}
+\section*{2.5 Counterexample finding}
+\begin{itemize}
+\item 2.5.1. LLMs are often very useful when asked to attack a proposed claim and find a configuration in which it fails.
+
+
+\item 2.5.2. Structural Exhaustion treats that tendency as an asset because a counterexample to an intermediate claim exposes additional structure that the surviving adversarial object must possess.
+
+
+\item 2.5.3. A failed proposed normalization can reveal an exceptional local configuration, a failed estimate can identify a deficient account, and a failed equivalence can expose a distinguishing context.
+
+
+\item 2.5.4. Thus the system repeatedly asks not only “can we prove this?” but also “if this is false, what does the failure give us?”
+
+
+\end{itemize}
+\section*{2.6 The resulting division of labor}
+\begin{itemize}
+\item 2.6.1. The model is used to generate, expand, criticize, classify, and reorganize local mathematics rather than being treated as an oracle issuing globally valid conclusions.
+
+
+\item 2.6.2. The manual explicitly assigns LLMs tasks including maintaining state, proposing case splits, filling ledgers, generating local tests, and drafting named obligations.
+
+
+\item 2.6.3. Human review and mathematical verification remain responsible for deciding whether the proposed local lemmas, routing contracts, computations, and closures are actually valid.
+
+
+\item 2.6.4. Structural Exhaustion therefore attempts to exploit what LLMs do well while placing their characteristic long-form failure modes inside an explicit mathematical discipline.
+
+
+\end{itemize}
+\chapter*{3. Weaponizing the counterexample}
+\section*{3.1 Start from the adversary}
+\begin{itemize}
+\item 3.1.1. For a theorem asserting that every object satisfying (H) contains a target (T), the method begins by assuming a counterexample satisfying (H\land\neg T).
+
+
+\item 3.1.2. Whenever possible, the counterexample is chosen minimal under a well-founded order so that deletion, replacement, or compression immediately becomes available as a contradiction mechanism.
+
+
+\item 3.1.3. Minimality converts many otherwise harmless local modifications into structural restrictions on the counterexample.
+
+
+\end{itemize}
+\section*{3.2 Replace the global target by local tests}
+\begin{itemize}
+\item 3.2.1. The next step is to identify bounded or otherwise tractable tests whose realization implies or detects the desired target.
+
+
+\item 3.2.2. Target avoidance can then be expressed positively as the absence of an explicit family of local events rather than as the amorphous statement (\neg T).
+
+
+\item 3.2.3. Every absent local event becomes information that later branches are allowed to exploit.
+
+
+\end{itemize}
+\section*{3.3 Build a resource inventory}
+\begin{itemize}
+\item 3.3.1. Before inventing branches, list the mathematical resources already available and record exactly what each one can prove.
+
+
+\item 3.3.2. Typical resources include minimality, target algebra, imported theorems, charging schemes, finite label sets, exact types, computational certificates, and branches already known to close.
+
+
+\item 3.3.3. A proposed proof step is useful only if its possible outcomes can eventually be paid for from this inventory.
+
+
+\end{itemize}
+\section*{3.4 Design backwards}
+\begin{itemize}
+\item 3.4.1. The generative question is not “what should the counterexample look like?” but “what hypothesis would allow one of our existing tools to make progress?”
+
+
+\item 3.4.2. Structural Exhaustion therefore designs invariants backwards from the estimates, charging arguments, or closure mechanisms one hopes to apply.
+
+
+\item 3.4.3. This is the manual's explicit organizing principle: “What can I already pay for, and which hypothesis would let me pay for it?”
+
+
+\end{itemize}
+\section*{3.5 The both-sides test}
+\begin{itemize}
+\item 3.5.1. A proposed invariant (P) is admitted only when both (P) and (\neg P) have productive mathematical consequences.
+
+
+\item 3.5.2. The positive side must feed an account, estimate, or closure mechanism.
+
+
+\item 3.5.3. The negative side must force a bounded residual, first-failure witness, structural obstruction, or another named route.
+
+
+\item 3.5.4. The actual admission rule asks what the positive side pays, what the negative side forces, whether the predicate is recorded, and which consumer receives the residual.
+
+
+\item 3.5.5. A distinction with no useful failure side is therefore not yet an invariant; it is merely an unproductive partition of the problem.
+
+
+\end{itemize}
+\section*{3.6 Accumulate an invariant ladder}
+\begin{itemize}
+\item 3.6.1. Each successful dichotomy places another certified restriction on the surviving counterexample.
+
+
+\item 3.6.2. Later estimates are used only after the hypotheses they require have been established along the surviving branch.
+
+
+\item 3.6.3. The resulting “main case” is not guessed in advance but constructed gradually as every alternative to its desired properties is routed elsewhere.
+
+
+\end{itemize}
+\chapter*{4. Structural accounting: making avoidance expensive}
+\section*{4.1 Demands and payers}
+\begin{itemize}
+\item 4.1.1. Once the proof identifies structures that must occur in bulk, those structures are represented as demands that must be assigned to limited resources or payers.
+
+
+\item 4.1.2. A charging scheme specifies the demands, the eligible payers, a canonical assignment rule, and the maximum capacity of each payer.
+
+
+\item 4.1.3. The global inequality then becomes the consequence of many locally justified assignments rather than one unsupported counting leap.
+
+
+\end{itemize}
+\section*{4.2 Overload becomes structure}
+\begin{itemize}
+\item 4.2.1. If total demand exceeds available capacity, some payer or label class is overloaded.
+
+
+\item 4.2.2. Rather than stopping at the numerical contradiction, the method often uses the overloaded class to extract a homogeneous family, matching, star, chain, or repeated local configuration.
+
+
+\item 4.2.3. Quantitative pressure is therefore converted back into structural information.
+
+
+\end{itemize}
+\section*{4.3 Budgets and currencies}
+\begin{itemize}
+\item 4.3.1. Different resources such as deficiency, surplus, entropy, rank, boundary mass, or concentration are treated as distinct currencies unless a proved interface converts one into another.
+
+
+\item 4.3.2. Keeping currencies separate prevents a proof from quietly paying the same obstruction twice.
+
+
+\item 4.3.3. Competing demand families either need disjoint payers or an explicitly recorded split of the common supply.
+
+
+\end{itemize}
+\section*{4.4 Backward rate computation}
+\begin{itemize}
+\item 4.4.1. Numerical coefficients are selected from the gap between what the proof can supply and what the counterexample is forced to demand.
+
+
+\item 4.4.2. The substantive mathematical fact is the existence of a strict gap between the two rates, not the aesthetic choice of one particular coefficient inside that interval.
+
+
+\item 4.4.3. Thresholds can then be obtained by solving the corresponding supply-demand equality.
+
+
+\end{itemize}
+\section*{4.5 Moves × budgets}
+\begin{itemize}
+\item 4.5.1. Every structural move—deletion, replacement, peeling, charge transfer, or handoff—is checked against every quantitative account it may affect.
+
+
+\item 4.5.2. A permitted move may not silently erase a recorded deficit or increase the adversary's available supply.
+
+
+\item 4.5.3. When a move breaks monotonicity, the failure identifies the missing boundary term, surplus correction, or incompatible budget.
+
+
+\item 4.5.4. The manual explicitly treats this moves × budgets table and slack accounting as a design audit.
+
+
+\end{itemize}
+\chapter*{5. Turning structural repetition into closure}
+\section*{5.1 Finite labels}
+\begin{itemize}
+\item 5.1.1. Local states are encoded by finite labels whenever the proof needs a bounded classification rather than complete raw structure.
+
+
+\item 5.1.2. Many objects carrying the same label then create the homogeneous subfamilies on which standard combinatorial mechanisms become applicable.
+
+
+\end{itemize}
+\section*{5.2 Exact external types}
+\begin{itemize}
+\item 5.2.1. For replacement arguments, coarse similarity is insufficient because two pieces may behave differently when embedded into different outside contexts.
+
+
+\item 5.2.2. The method therefore refines pieces by their target-relevant external responses until equality of type is strong enough to support replacement.
+
+
+\item 5.2.3. A shorter representative with the same relevant external behavior contradicts minimality.
+
+
+\end{itemize}
+\section*{5.3 The exchange trichotomy}
+\begin{itemize}
+\item 5.3.1. When two comparable local structures are exchanged or compared, three fundamental outcomes recur.
+
+
+\item 5.3.2. A hit means that the comparison directly realizes the target.
+
+
+\item 5.3.3. A defect means some context distinguishes the two structures and thereby supplies new structural information.
+
+
+\item 5.3.4. A compression means no relevant context distinguishes them, allowing the larger structure to be replaced by a smaller one.
+
+
+\item 5.3.5. This hit/defect/compression trichotomy turns local repetition into an exhaustible proof mechanism.
+
+
+\end{itemize}
+\section*{5.4 First failure}
+\begin{itemize}
+\item 5.4.1. When a desired property fails somewhere along a sequence, chain, scale hierarchy, or iterative construction, the proof selects the first failure rather than reasoning globally about all failures.
+
+
+\item 5.4.2. Everything before the first failure satisfies the desired condition, while the failure itself supplies a bounded local witness.
+
+
+\item 5.4.3. This converts an unbounded negative condition into a finite structural object that can be charged, labelled, or routed.
+
+
+\end{itemize}
+\section*{5.5 Repetition and pumping}
+\begin{itemize}
+\item 5.5.1. Long sequences of finitely typed states eventually repeat, and repeated exact behavior creates an opportunity for compression, periodicity, or a distinguishing witness.
+
+
+\item 5.5.2. Finite-state repetition thus turns long structures into bounded proof obligations.
+
+
+\end{itemize}
+\section*{5.6 Peeling and descent}
+\begin{itemize}
+\item 5.6.1. Some residuals are eliminated iteratively by removing one certified unit of obstruction at a time.
+
+
+\item 5.6.2. Each iteration must re-establish the required branch state and decrease a well-founded measure.
+
+
+\item 5.6.3. Iteration is therefore admitted only when restoration and termination are proved rather than assumed.
+
+
+\end{itemize}
+\chapter*{6. The tactic library as a reusable vocabulary}
+\section*{6.1 Why a tactic vocabulary is useful}
+\begin{itemize}
+\item 6.1.1. The same structural patterns recur across many branches, so giving them stable names reduces the need to rediscover their interfaces repeatedly.
+
+
+\item 6.1.2. CT1–CT17 package recurring operations such as target testing, replacement, charging, exchange, overload, peeling, rank forcing, exact typing, and target thickening.
+
+
+\end{itemize}
+\section*{6.2 What a tactic does and does not mean}
+\begin{itemize}
+\item 6.2.1. A tactic contract states what data a move consumes, what obligations must be proved, and which closure or residual types it may return.
+
+
+\item 6.2.2. The contract does not assert that those obligations hold in an arbitrary mathematical problem.
+
+
+\item 6.2.3. Instance-specific mathematics remains responsible for constructing the definitions, lemmas, bounds, and witnesses required by the tactic.
+
+
+\end{itemize}
+\section*{6.3 Mechanism versus strategy}
+\begin{itemize}
+\item 6.3.1. The tactic library describes mechanisms, whereas the strategy layer decides when to invoke them, how to choose parameters, and how to compose them.
+
+
+\item 6.3.2. This separation keeps a standard local move from silently acquiring problem-specific assumptions or strategic content.
+
+
+\end{itemize}
+\chapter*{7. Running an actual Structural Exhaustion development}
+\section*{7.1 The branch state}
+\begin{itemize}
+\item 7.1.1. A branch is represented by the complete accumulated context rather than by a prose phrase such as “the remaining difficult case.”
+
+
+\item 7.1.2. The manual formalizes this context as (B=(H_0,\preceq,E,I,R,V,Q,A)), containing hypotheses, progress information, exclusions, invariants, residual data, vocabulary, queued payloads, and audit records.
+
+
+\item 7.1.3. Later arguments may consume only information that has actually been established and recorded in the current branch.
+
+
+\end{itemize}
+\section*{7.2 Propose}
+\begin{itemize}
+\item 7.2.1. A new local move begins as a proposal: an invariant, case split, budget, label, local test, exchange, or candidate lemma that might advance the current branch.
+
+
+\end{itemize}
+\section*{7.3 Admit}
+\begin{itemize}
+\item 7.3.1. The proposal is tested for both-sided usefulness, measurability, available resources, and a legitimate route for every non-closing outcome.
+
+
+\item 7.3.2. A proposal that merely imports a powerful undeclared global theorem is rejected as a new theorem problem rather than disguised as bookkeeping.
+
+
+\end{itemize}
+\section*{7.4 Select and execute}
+\begin{itemize}
+\item 7.4.1. Among admitted moves, the strategy chooses one whose prerequisites and parameters are already available or can be legitimately synthesized.
+
+
+\item 7.4.2. The local mathematical obligations are then proved, reviewed, or computed before the move can affect the proof state.
+
+
+\end{itemize}
+\section*{7.5 Route}
+\begin{itemize}
+\item 7.5.1. A successful closure ends the current branch, while any surviving obstruction is emitted as a named residual with a known downstream role.
+
+
+\item 7.5.2. Residuals are not permitted to disappear into phrases such as “the remaining case is similar.”
+
+
+\end{itemize}
+\section*{7.6 Record}
+\begin{itemize}
+\item 7.6.1. Every completed move updates the branch tree, invariant and exclusion records, ledgers, dependency information, and any outstanding residual queue.
+
+
+\item 7.6.2. The complete operational loop is state+queue → propose → admit → select → execute → route → record.
+
+
+\end{itemize}
+\chapter*{8. How the architecture compensates for LLM failure modes}
+\section*{8.1 Omitted difficult steps}
+\begin{itemize}
+\item 8.1.1. Fluent prose can jump over the hardest branch, so Structural Exhaustion requires every leaf to be either explicitly closed or explicitly retained as a residual.
+
+
+\end{itemize}
+\section*{8.2 Unsupported global estimates}
+\begin{itemize}
+\item 8.2.1. A seductive global inequality is decomposed into named local demands, assignments, multiplicity bounds, and budget comparisons before being admitted.
+
+
+\end{itemize}
+\section*{8.3 Re-encoding the original problem}
+\begin{itemize}
+\item 8.3.1. An auxiliary lemma that merely restates the original difficulty without shrinking, charging, routing, or otherwise structuring it is rejected as non-progress.
+
+
+\end{itemize}
+\section*{8.4 Untyped remainders}
+\begin{itemize}
+\item 8.4.1. “None of our current tools apply” is not considered a mathematical conclusion until the obstruction has been converted into a named residual with explicit data.
+
+
+\end{itemize}
+\section*{8.5 Double counting}
+\begin{itemize}
+\item 8.5.1. Canonical charging assignments, separated currencies, and slack records make it harder for different branches to spend the same mathematical resource independently.
+
+
+\end{itemize}
+\section*{8.6 Deferential acceptance}
+\begin{itemize}
+\item 8.6.1. Agreement from the model or user has no mathematical status; a proposed statement only enters the proof when its required obligations have actually been discharged.
+
+
+\end{itemize}
+\section*{8.7 Extrapolation beyond reliable techniques}
+\begin{itemize}
+\item 8.7.1. The method prefers combinations of well-understood local mechanisms and isolates genuinely new global theorems as explicit black-box or research obligations.
+
+
+\end{itemize}
+\chapter*{9. Defects, counterexamples, and repair}
+\section*{9.1 A discovered error is new structural information}
+\begin{itemize}
+\item 9.1.1. When a proposed lemma fails, the first task is to preserve the exact conditions under which it failed rather than discard the entire proof attempt.
+
+
+\item 9.1.2. The resulting counterexample can reveal a missing term, forgotten boundary case, wrong interface, insufficient label, or entirely new residual pattern.
+
+
+\end{itemize}
+\section*{9.2 Numerical repair}
+\begin{itemize}
+\item 9.2.1. Errors confined to constants, finite enumerations, precision, or slack are repaired by recomputing the affected quantitative layer.
+
+
+\end{itemize}
+\section*{9.3 Structural repair}
+\begin{itemize}
+\item 9.3.1. A missing hypothesis, stale invariant, bad route, incorrect type, or accounting defect is repaired inside the existing structural vocabulary.
+
+
+\end{itemize}
+\section*{9.4 Pattern-level repair}
+\begin{itemize}
+\item 9.4.1. If the same legal residual survives repeatedly, the failure itself identifies a reusable proof pattern that should be added to the methodology.
+
+
+\end{itemize}
+\section*{9.5 Language extension}
+\begin{itemize}
+\item 9.5.1. If the necessary obstruction cannot be represented by the existing descriptors, the correct response is to extend the proof language rather than pretend the old vocabulary already handles it.
+
+
+\item 9.5.2. The manual summarizes the hierarchy as numerical repair, structural repair, reusable-pattern creation, and proof-language extension.
+
+
+\end{itemize}
+\section*{9.6 Graceful degradation}
+\begin{itemize}
+\item 9.6.1. Because residual states are explicit, withdrawing a closure can leave a precise weaker statement describing exactly which class of counterexamples remains.
+
+
+\item 9.6.2. The goal is therefore for a defect to weaken the theorem in a localized and intelligible way rather than turn a huge development into an undifferentiated gap.
+
+
+\end{itemize}
+\chapter*{10. Long-form proof artifacts}
+\section*{10.1 Diagrams as reasoning objects}
+\begin{itemize}
+\item 10.1.1. Large branch systems are represented by dependency diagrams whose nodes correspond to mathematical statements, dichotomies, or closures.
+
+
+\item 10.1.2. The diagrams allow both humans and models to reason about branch coverage without reconstructing the entire proof from prose.
+
+
+\end{itemize}
+\section*{10.2 Tables as local proof interfaces}
+\begin{itemize}
+\item 10.2.1. Branch tables make the outcomes of a dichotomy explicit, while requirement tables record what each lemma consumes.
+
+
+\item 10.2.2. Reverse indexes expose which downstream arguments depend on a changed invariant.
+
+
+\end{itemize}
+\section*{10.3 Ledgers as mathematics}
+\begin{itemize}
+\item 10.3.1. Quantitative ledgers record actual proof resources, while exclusion and invariant ledgers record the structural facts accumulated along a surviving branch.
+
+
+\item 10.3.2. The resulting bookkeeping is sufficiently rich that later mathematical deductions can be generated by reading the state of the ledger itself.
+
+
+\end{itemize}
+\section*{10.4 The purpose of the extra volume}
+\begin{itemize}
+\item 10.4.1. Structural Exhaustion deliberately expands information that ordinary proofs often leave implicit.
+
+
+\item 10.4.2. This makes the proofs longer, but it also creates a form of mathematics that is unusually amenable to local LLM reasoning, explicit review, and later repair.
+
+
+\end{itemize}
+\chapter*{11. Case study I: Erdős–Gyárfás and the origin of Structural Exhaustion}
+\section*{11.1 Historical role}
+\begin{itemize}
+\item 11.1.1. The Erdős–Gyárfás development came first, and the Structural Exhaustion manual was subsequently generalized from the recurring moves required to build it.
+
+
+\item 11.1.2. The case study should therefore be presented as the source of the methodology rather than as an experiment performed after the method had already been formalized.
+
+
+\end{itemize}
+\section*{11.2 What the development demonstrates}
+\begin{itemize}
+\item 11.2.1. The proof combines target arithmetic, minimality, induced-path structure, charging, entropy, rank, local exchanges, finite tables, and residual ledgers across roughly 240 pages.
+
+
+\item 11.2.2. Its proof architecture keeps successive structural restrictions alive along a long minimal-counterexample spine rather than attempting to resolve the conjecture through a single global insight.
+
+
+\item 11.2.3. Its residual ledgers and branch diagrams instantiate the manual's principle that every surviving obstruction must preserve the invariants accumulated before it.
+
+
+\end{itemize}
+\section*{11.3 What was abstracted from it}
+\begin{itemize}
+\item 11.3.1. Repeated use of local tests, invariant ladders, charging, first failure, exact types, exchange, compression, and residual routing suggested that these mechanisms could be separated from the particular combinatorial problem.
+
+
+\item 11.3.2. Structural Exhaustion is the resulting attempt to turn that practical proof-development experience into a reusable methodology.
+
+
+\end{itemize}
+\chapter*{12. Case study II: pushing the methodology into nonlinear PDE}
+\section*{12.1 Why the PDE case matters}
+\begin{itemize}
+\item 12.1.1. A substantially different domain tests whether the same structural philosophy can organize arguments involving compactness, concentration, pressure gauges, descendant profiles, and analytic case distinctions rather than graph-theoretic labels and charging alone.
+
+
+\item 12.1.2. The resulting Navier–Stokes development spans three interacting manuscripts and hundreds of pages of local analytic routing.
+
+
+\end{itemize}
+\section*{12.2 Type-I setup}
+\begin{itemize}
+\item 12.2.1. The setup manuscript converts a hypothetical local Type-I singularity into a normalized ancient Seregin state carrying fixed concentration, ancestry, and normalization data.
+
+
+\item 12.2.2. Its 39-node dependency architecture then routes that state through explicit Liouville alternatives and a residual branch.
+
+
+\end{itemize}
+\section*{12.3 Residual closure}
+\begin{itemize}
+\item 12.3.1. The residual manuscript takes the exact generated state space left by the setup paper and refines its remaining case into a sequence of explicitly named residual classes.
+
+
+\item 12.3.2. The manuscript emphasizes that the original raw generated hull and ancestry data are retained rather than silently replacing the unresolved object by a new one.
+
+
+\end{itemize}
+\section*{12.4 Type-II development}
+\begin{itemize}
+\item 12.4.1. The Type-II manuscript expands the same structural philosophy into an even larger local state-space analysis involving repaired gauges, multibubbles, cascades, pressure routing, scale collapse, cost criteria, and terminal residuals.
+
+
+\item 12.4.2. Its proof-dependency diagram is one twelve-part graph with numbered nodes through 135 and a separate first-failure closure layer.
+
+
+\item 12.4.3. This example illustrates what Structural Exhaustion looks like when the local vocabulary becomes highly domain-specific while the general principles of explicit branches, residuals, first failures, and closure accounting remain recognizable.
+
+
+\end{itemize}
+\section*{12.5 What the long developments demonstrate}
+\begin{itemize}
+\item 12.5.1. The methodological significance of these artifacts is not that length by itself proves mathematical quality.
+
+
+\item 12.5.2. Their significance is that LLM-assisted construction can be organized into very large, highly structured mathematical developments instead of remaining confined to isolated short proofs.
+
+
+\item 12.5.3. The detailed mathematical correctness of the headline theorem claims remains a separate review question from the proof-development methodology.
+
+
+\end{itemize}
+\chapter*{13. Relationship to existing mathematics and AI theorem proving}
+\section*{13.1 Classical proof techniques}
+\begin{itemize}
+\item 13.1.1. Structural Exhaustion deliberately draws on established mathematical traditions such as minimal counterexamples, reducibility, discharging, finite-state reasoning, switching, and replacement.
+
+
+\item 13.1.2. The primitive techniques are therefore mostly familiar; the proposed contribution is their systematic organization into an LLM-compatible long-form construction methodology.
+
+
+\end{itemize}
+\section*{13.2 Formal proof and proof planning}
+\begin{itemize}
+\item 13.2.1. Formal systems provide stronger final guarantees, while proof-planning systems similarly represent methods through explicit preconditions and effects.
+
+
+\item 13.2.2. Structural Exhaustion occupies an earlier stage: organizing the discovery, drafting, branching, and repair of the informal mathematics before or alongside final formal verification.
+
+
+\end{itemize}
+\section*{13.3 AI theorem proving}
+\begin{itemize}
+\item 13.3.1. Much AI theorem-proving work focuses on solving individual formal goals, competition problems, or formalizing existing source mathematics.
+
+
+\item 13.3.2. Structural Exhaustion instead targets the construction and maintenance of extremely large new mathematical arguments composed from many interacting local decisions.
+
+
+\item 13.3.3. The paper should make this distinction without claiming that dependency graphs, formal interfaces, or textbook tactics are individually novel.
+
+
+\end{itemize}
+\chapter*{14. Scope and limitations}
+\section*{14.1 No automatic truth guarantee}
+\begin{itemize}
+\item 14.1.1. Structural Exhaustion can make obligations and residuals explicit, but a false local lemma remains false regardless of how carefully it is recorded.
+
+
+\item 14.1.2. The manual explicitly states that model output is not used as evidence of correctness and that human review remains responsible for the mathematical claims.
+
+
+\end{itemize}
+\section*{14.2 No claim that every LLM behaves identically}
+\begin{itemize}
+\item 14.2.1. The strengths and weaknesses motivating the architecture are practical design assumptions derived from development experience rather than universal empirical laws about all models.
+
+
+\end{itemize}
+\section*{14.3 No claim of a universal proof language}
+\begin{itemize}
+\item 14.3.1. Some mathematical problems require descriptors, global witnesses, analytic quantities, or proof mechanisms not present in the current tactic vocabulary.
+
+
+\item 14.3.2. Structural Exhaustion treats such situations as reasons to extend the language rather than reasons to force an inappropriate existing pattern.
+
+
+\end{itemize}
+\section*{14.4 Volume is a real cost}
+\begin{itemize}
+\item 14.4.1. Explicit structural bookkeeping produces much more text, many more tables, and more local obligations than a highly compressed specialist proof.
+
+
+\item 14.4.2. The method accepts this cost because the explicit information is precisely what supports long-form LLM-assisted development and detailed auditing.
+
+
+\end{itemize}
+\chapter*{15. Conclusion}
+\begin{itemize}
+\item 15.1. Structural Exhaustion begins from a simple inversion of ordinary proof search: every unsuccessful attempt to force the target should tell us something new about the counterexample.
+
+
+\item 15.2. LLMs are particularly useful in this setting because structural reasoning, counterexample search, textbook-method recall, diagrammatic organization, and extensive bookkeeping are all repeatedly needed.
+
+
+\item 15.3. Rigorous branch and resource accounting turns those capabilities from disconnected local suggestions into a cumulative proof-development process.
+
+
+\item 15.4. The resulting methodology can be summarized as structural reasoning weaponizing counterexamples, with bookkeeping ensuring that every piece of acquired information is eventually spent.
+
+
+\item 15.5. The large combinatorial and nonlinear-PDE developments motivate the claim that this approach can support LLM-assisted mathematical construction at a scale far beyond isolated short proofs.
+
+
+\item 15.6. The repository, reference manual, proof corpus, and interactive webpage provide the detailed material needed for readers to inspect, use, criticize, and extend the methodology.
+
+
+\end{itemize}
+\section*{The whole paper in one line}
+The narrative arc is now extremely clean:
+
+[
+\boxed{
+\begin{array}{c}
+\text{LLMs are strong at structure + bookkeeping + tables + textbook methods + counterexamples}\
+\Downarrow\
+\text{turn every proposed invariant into a productive two-sided branch}\
+\Downarrow\
+\text{turn failure into a new structural obstruction}\
+\Downarrow\
+\text{record and accumulate those obstructions rigorously}\
+\Downarrow\
+\text{convert accumulated pressure into hit / defect / compression / capacity / finite closure}\
+\Downarrow\
+\text{repeat until the counterexample has nowhere left to exist.}
+\end{array}}
+]
+
+That is the paper I would expand from.
+
