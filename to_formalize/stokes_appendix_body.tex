@@ -84,7 +84,7 @@ Letting \(R\to\infty\) yields \(\nabla H=0\).  An \(L^2(\R^3)\) constant
 field is zero.
 \end{proof}
 
-\begin{lemma}[Local solenoidal bootstrap and its failure mode]
+\begin{lemma}[Local solenoidal bootstrap]
 \label{stokes:lem:local-bootstrap}
 Let \((u,p,F)\) satisfy \Cref{stokes:def:energy-state}.  For nested cylinders
 \(Q_r=B_r\times J_r\Subset B_R\times J_R=Q_R\) and every integer \(m\ge0\),
@@ -103,16 +103,6 @@ where \(\mathcal N_{m,R,J_R}(F)\) contains finitely many local \(L^2\)-norms
 of derivatives of \(F\) on \(Q_R\).  Consequently
 \(u\in C^\infty(Q_r)\).
 
-In the contradiction proof of \eqref{stokes:eq:local-bootstrap}, failure at
-the first derivative order produces, after normalization and exhaustion by
-balls, a field
-\[
- 0\ne H\in L^2(\R^3;\R^3),
- \qquad \divergence H=0,
- \qquad \curl H=0.
-\]
-Thus the failure alternative is excluded by
-\Cref{stokes:lem:finite-energy-kernel}.
 \end{lemma}
 
 \begin{proof}
@@ -136,19 +126,9 @@ difference quotients are then obtained from the same solenoidal weak equation;
 the spatial estimates absorb the Laplacian term.  Iteration over strictly
 nested cylinders proves \eqref{stokes:eq:local-bootstrap}.  This is the local
 cutoff proof of the standard finite-energy Stokes regularity estimate; see
-\cite[Chapters~II--III]{Sohr2001}.
-
-For completeness, consider the first stage at which this iteration could
-fail.  Normalize the failed difference quotients by their first uncontrolled
-local norm and repeat the cutoff estimate on \(B_R\) for successively larger
-\(R\).  The normalized forcing tends to zero, while
-\Cref{stokes:lem:vorticity} makes the normalized curls tend to zero on every
-fixed ball.  The divergence remains zero.  Weak compactness in the
-finite-energy space and a diagonal extraction therefore produce an entire
-limit \(H\) with zero divergence and curl.  The normalization makes its
-\(L^2(B_1)\)-norm nonzero, and the inherited energy bound gives
-\(H\in L^2(\R^3)\).  This is the displayed failure mode.  It contradicts
-\Cref{stokes:lem:finite-energy-kernel}, so every stage of the iteration closes.
+\cite[Chapters~II--III]{Sohr2001}.  In particular, the constants in
+\eqref{stokes:eq:local-bootstrap} come from the cutoff calculation itself; no
+compactness normalization of global difference quotients is used.
 \end{proof}
 
 \begin{lemma}[Local closure of the harmonic pressure tail]
@@ -174,9 +154,11 @@ constructing the pressure outside the cutoff ball.  The additive function
 \begin{proof}[Proof of \Cref{stokes:thm:main}]
 Fix an arbitrary compact cylinder and two buffered cylinders around it.
 \Cref{stokes:lem:local-bootstrap} gives smoothness of the original velocity
-\(u\), not of a quotient representative.  Its only possible failure branch is
-the nonzero finite-energy harmonic field excluded by
-\Cref{stokes:lem:finite-energy-kernel}.
+\(u\), not merely of a quotient representative.  Independently, if two
+whole-space finite-energy representatives had the same divergence and curl,
+their difference would be the field excluded by
+\Cref{stokes:lem:finite-energy-kernel}; thus the global representative audit has
+no residual harmonic branch.
 
 Apply \Cref{stokes:lem:pressure-split} on the buffered spatial balls.  The
 compact-source pressure is smooth.  By

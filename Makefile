@@ -1,4 +1,5 @@
-.PHONY: help build test lint mathlib-cache framework-build erdos-build erdos typeii-paper-check
+.PHONY: help build test lint mathlib-cache framework-build erdos-build erdos typeii-paper-check \
+        web web-install web-data web-build web-test
 
 .DEFAULT_GOAL := help
 
@@ -7,6 +8,16 @@ PYTHON ?= python3
 HYPOSTRUCTURE_DIR := hypostructure
 ERDOS_DIR := proofs/hypostructure_erdos_64_eg
 ERDOS_TARGET := HypostructureErdos64EG
+
+NPM ?= npm
+WEB_DIR := web
+WEB_FRONTEND := $(WEB_DIR)/frontend
+WEB_DATA := $(WEB_FRONTEND)/public/data/erdos-gyarfas.json
+WEB_SOURCES := to_formalize/original_erdos_64_proof.tex \
+               to_formalize/proof_setup.tex \
+               to_formalize/type_I_residual_closure.tex \
+               to_formalize/type_II_regularity.tex
+WEB_TOOLS := $(wildcard $(WEB_DIR)/tools/*.py) $(wildcard $(WEB_DIR)/tools/papers/*.py)
 
 # The sealed-frontend run/export targets (`ab`, `ab-json`, `erdos-json`) drove
 # `reduceDag%` and `ofDag%` over the authored Blueprint
@@ -26,7 +37,12 @@ help:
 	  '  make lint            Run the total-execution and canonical-ledger gates' \
 	  '  make typeii-paper-check  Audit the consolidated Type II manuscript' \
 	  '  make test            Build everything and run the gates' \
-	  '  make mathlib-cache   Fetch prebuilt Mathlib artifacts'
+	  '  make mathlib-cache   Fetch prebuilt Mathlib artifacts' \
+	  '' \
+	  '  make web             Serve the interactive proof explorer' \
+	  '  make web-data        Re-extract both proof diagrams from the manuscripts' \
+	  '  make web-build       Produce the static site in web/frontend/dist' \
+	  '  make web-test        Typecheck and test the explorer'
 
 framework-build:
 	cd $(HYPOSTRUCTURE_DIR) && lake build
@@ -73,3 +89,30 @@ typeii-paper-check:
 	$(PYTHON) to_formalize/check_type_II_regularity.py
 
 test: build lint
+
+# --- Interactive proof explorer (web/) -------------------------------------
+# A static site; no backend and no Lean toolchain involved.
+
+$(WEB_FRONTEND)/node_modules: $(WEB_FRONTEND)/package.json
+	cd $(WEB_FRONTEND) && $(NPM) install
+	@touch $@
+
+web-install: $(WEB_FRONTEND)/node_modules
+
+# The diagrams, statements and constants are read out of the manuscripts.
+$(WEB_DATA): $(WEB_SOURCES) $(WEB_TOOLS)
+	$(PYTHON) $(WEB_DIR)/tools/extract_proof_graph.py
+
+web-data:
+	$(PYTHON) $(WEB_DIR)/tools/extract_proof_graph.py
+	$(PYTHON) $(WEB_DIR)/tools/test_extract_proof_graph.py
+
+web: web-install $(WEB_DATA)
+	cd $(WEB_FRONTEND) && $(NPM) run dev
+
+web-build: web-install $(WEB_DATA)
+	cd $(WEB_FRONTEND) && $(NPM) run build
+
+web-test: web-install $(WEB_DATA)
+	$(PYTHON) $(WEB_DIR)/tools/test_extract_proof_graph.py
+	cd $(WEB_FRONTEND) && $(NPM) run typecheck && $(NPM) run test
