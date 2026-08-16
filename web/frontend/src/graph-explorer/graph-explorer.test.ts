@@ -273,3 +273,26 @@ describe("tracing a diagram with a loop in it", () => {
     expect(traceFrom(LOOPED, "3", "upstream").nodeIds.size).toBe(3);
   });
 });
+
+describe("bracketed step numbers", () => {
+  it("are read as steps only when asked for", () => {
+    const source = "the split at [22] closes";
+    expect(parseLatex(source)).toEqual([{ kind: "text", value: "the split at [22] closes" }]);
+    expect(parseLatex(source, { nodes: true })).toEqual([
+      { kind: "text", value: "the split at " },
+      { kind: "node", id: "22" },
+      { kind: "text", value: " closes" },
+    ]);
+  });
+
+  it("leave a statement alone, where a bracket may mean anything", () => {
+    const item = TEST_DOCUMENT.items.find((entry) => entry.key === "def:even")!;
+    for (const segment of parseLatex(item.statementLatex)) {
+      expect(segment.kind).not.toBe("node");
+    }
+  });
+
+  it("survive a flatten as the paper wrote them", () => {
+    expect(latexToPlainText("see [22]")).toBe("see [22]");
+  });
+});

@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2025/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: structural_exhaustion.aux
+The style file: plainnat.bst
+Database file #1: branch_closure_methodology_extended.bib
+You've used 17 entries,
+            2773 wiz_defined-function locations,
+            678 strings with 7907 characters,
+and the built_in function-call counts, 8044 in all, are:
+= -- 670
+> -- 612
+< -- 10
++ -- 206
+- -- 189
+* -- 678
+:= -- 1266
+add.period$ -- 43
+call.type$ -- 17
+change.case$ -- 114
+chr.to.int$ -- 17
+cite$ -- 34
+duplicate$ -- 297
+empty$ -- 583
+format.name$ -- 218
+if$ -- 1636
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 7
+newline$ -- 85
+num.names$ -- 68
+pop$ -- 241
+preamble$ -- 1
+purify$ -- 97
+quote$ -- 0
+skip$ -- 284
+stack$ -- 0
+substring$ -- 197
+swap$ -- 16
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 187
+warning$ -- 0
+while$ -- 65
+width$ -- 0
+write$ -- 203

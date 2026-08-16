@@ -5,6 +5,7 @@ Run with ``python -m pytest web/tools`` or ``python web/tools/test_extract_proof
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -168,6 +169,42 @@ def test_a_step_is_not_described_twice_over(document) -> None:
 
 
 @every
+def test_the_papers_own_tables_are_published(document) -> None:
+    tables = document["tables"]
+    assert tables
+    assert len({table["id"] for table in tables}) == len(tables)
+
+    for table in tables:
+        assert table["title"].strip(), table["id"]
+        assert table["headers"], table["id"]
+        assert table["rows"], table["id"]
+        width = len(table["headers"])
+        assert width >= 2, table["id"]
+        for row in table["rows"]:
+            assert len(row) == width, (table["id"], row)
+        # A heading read as data would put a column name in the first cell.
+        assert table["rows"][0][:2] != table["headers"][:2], table["id"]
+
+
+@every
+def test_every_step_a_table_names_exists(document) -> None:
+    """Bracketed integers are the papers' node numbers, and the site links them."""
+    prefixes = {chapter["id"]: chapter["prefix"] for chapter in document.get("chapters", [])}
+    ids = {node["id"] for node in document["nodes"]}
+    seen = 0
+
+    for table in document["tables"]:
+        prefix = prefixes.get(table.get("chapter"), "")
+        for row in table["rows"]:
+            for cell in row:
+                for match in re.finditer(r"\[(\d+)\]", cell):
+                    seen += 1
+                    assert f"{prefix}{match.group(1)}" in ids, (table["id"], match.group(0))
+
+    assert seen > 100
+
+
+@every
 def test_panels_are_named_and_described(document) -> None:
     for group in document["groups"]:
         assert group["title"].strip(), group["id"]
@@ -197,6 +234,34 @@ def test_nothing_shown_opens_on_the_drawing_legend(document) -> None:
 
 
 # ------------------------------------------------------- the Erdos-Gyarfas --
+
+
+def test_erdos_publishes_its_sixteen_chapter_one_tables() -> None:
+    titles = [table["title"] for table in ERDOS["tables"]]
+    assert len(titles) == 16
+    assert titles[0] == "Detailed dependency table"
+    ledger = [table for table in ERDOS["tables"] if table["group"] == "The constraint ledger"]
+    assert len(ledger) == 8
+    per_result = [
+        table
+        for table in ERDOS["tables"]
+        if table["group"] == "Per-lemma invariant requirements"
+    ]
+    assert len(per_result) == 7
+
+
+def test_navier_stokes_publishes_four_tables_per_paper() -> None:
+    counts: dict[str, int] = {}
+    for table in NAVIER_STOKES["tables"]:
+        counts[table["chapter"]] = counts.get(table["chapter"], 0) + 1
+    assert counts == {"setup": 4, "type-i": 4, "type-ii": 4}
+    audit = next(
+        table
+        for table in NAVIER_STOKES["tables"]
+        if table["chapter"] == "type-i" and table["title"] == "Node-by-node audit table"
+    )
+    assert len(audit["rows"]) == 159
+    assert audit["headers"][0] == "Node"
 
 
 def test_erdos_has_all_157_steps_across_eleven_panels() -> None:

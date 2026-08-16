@@ -327,7 +327,7 @@ function BranchList({
       <p className="branch-row is-empty">
         <span className="branch-title">{title}</span>
         <span className="branch-none">
-          {endpoint === "source" ? "nothing — this is where the argument starts" : "nothing — the branch ends here"}
+          {endpoint === "source" ? "nothing — the argument starts here" : "nothing — the branch ends here"}
         </span>
       </p>
     );

@@ -18,6 +18,7 @@ import {
   MathProvider,
   NodeDetailPanel,
   buildGraph,
+  TableView,
   createReferenceResolver,
   indexDocument,
   parseLatex,
@@ -393,5 +394,77 @@ describe("panel summaries", () => {
     expect(references.resolve("fig:proof-diagram-part-x").label).toBe(
       "Part X - Sparse surplus accounting",
     );
+  });
+});
+
+describe("a branch row with nothing to list", () => {
+  it("reads as one line: the label, then the note", () => {
+    // [1] is where the argument starts, so nothing arrives at it.
+    show(ERDOS, "1");
+    const row = document.querySelector(".branch-row.is-empty")!;
+    expect(row).not.toBeNull();
+    expect(row.textContent).toBe("Arrives fromnothing — the argument starts here");
+
+    // Short enough to sit beside its label even in a narrowed column.
+    const note = row.querySelector(".branch-none")!.textContent!;
+    expect(note.length).toBeLessThanOrEqual(34);
+  });
+
+  it("says so at a terminal too", () => {
+    show(ERDOS, "124");
+    const rows = [...document.querySelectorAll(".branch-row.is-empty")];
+    expect(rows).toHaveLength(1);
+    expect(rows[0].textContent).toBe("Leads tonothing — the branch ends here");
+  });
+});
+
+describe("the papers' own tables", () => {
+  it.each([...DOCUMENTS])("index the argument in %s", (_slug, document) => {
+    expect(document.tables.length).toBeGreaterThan(10);
+    for (const table of document.tables) {
+      expect(table.rows.length).toBeGreaterThan(0);
+      expect(table.rows.every((row) => row.length === table.headers.length)).toBe(true);
+    }
+  });
+
+  it("lets a cell's step number lead to that step", async () => {
+    const user = userEvent.setup();
+    const index = indexDocument(NAVIER_STOKES);
+    // The Type I audit numbers its steps from one; the link needs the prefix.
+    const table = NAVIER_STOKES.tables.find(
+      (entry) => entry.chapter === "type-i" && entry.title === "Node-by-node audit table",
+    )!;
+    const followed: string[] = [];
+
+    render(
+      <MathProvider
+        macros={NAVIER_STOKES.macros}
+        onNode={(number) => followed.push(`${index.chapterById.get("type-i")!.prefix}${number}`)}
+      >
+        <TableView table={{ ...table, rows: table.rows.slice(0, 3) }} />
+      </MathProvider>,
+    );
+
+    await user.click(screen.getAllByRole("button", { name: "1" })[0]);
+    expect(followed).toEqual(["I1"]);
+    expect(index.nodeById.has("I1")).toBe(true);
+  });
+
+  it("keeps every table's step numbers pointing at real steps", () => {
+    for (const [, document] of DOCUMENTS) {
+      const index = indexDocument(document);
+      const prefixes = new Map(
+        (document.chapters ?? []).map((chapter) => [chapter.id, chapter.prefix]),
+      );
+      for (const table of document.tables) {
+        const prefix = prefixes.get(table.chapter ?? "") ?? "";
+        for (const row of table.rows) {
+          for (const segment of parseLatex(row.join(" "), { nodes: true })) {
+            if (segment.kind !== "node") continue;
+            expect(index.nodeById.has(`${prefix}${segment.id}`)).toBe(true);
+          }
+        }
+      }
+    }
   });
 });

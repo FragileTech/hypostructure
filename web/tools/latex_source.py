@@ -112,6 +112,15 @@ _HEAD_MARKERS = (
 )
 
 
+def head_end(body: str) -> int:
+    """Where a table's heading ends, or 0 when it has no marked heading."""
+    for pattern, which in _HEAD_MARKERS:
+        found = list(pattern.finditer(body))
+        if found:
+            return (found[-1] if which == "last" else found[0]).end()
+    return 0
+
+
 def clean_table_body(body: str) -> str:
     """Reduce a table body to its data rows.
 
@@ -123,12 +132,7 @@ def clean_table_body(body: str) -> str:
     ``\\relax`` matters too: a row that begins ``[1] &`` would otherwise be read
     as an optional argument, so some papers guard every row with one.
     """
-    for pattern, which in _HEAD_MARKERS:
-        found = list(pattern.finditer(body))
-        if found:
-            body = body[(found[-1] if which == "last" else found[0]).end() :]
-            break
-    return _TABLE_SPAN.sub("", _TABLE_NOISE.sub("", body))
+    return _TABLE_SPAN.sub("", _TABLE_NOISE.sub("", body[head_end(body) :]))
 
 
 def iter_statements(text: str, opener: str) -> Iterator[tuple[str, int]]:

@@ -12966,5 +12966,2634 @@
    ],
    "chapter": "erdos-gyarfas"
   }
+ ],
+ "tables": [
+  {
+   "id": "erdos-gyarfas/1",
+   "title": "Detailed dependency table",
+   "group": "",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1053,
+   "headers": [
+    "Item",
+    "Diagram node(s)",
+    "Node / theorem",
+    "Formal content",
+    "Failure route",
+    "Label"
+   ],
+   "rows": [
+    [
+     "0",
+     "[1]--[3]",
+     "Counterexample setup",
+     "$\\delta(G)\\ge3$ and no $C_{2^j}$",
+     "If false, theorem holds for $G$",
+     "\\cref{def:counterexample}"
+    ],
+    [
+     "1",
+     "[4]",
+     "Minimality",
+     "choose minimal $(|V|,|E|)$ counterexample",
+     "smaller counterexample impossible",
+     "Assumption"
+    ],
+    [
+     "2",
+     "[5]--[7]",
+     "Edge-rooted target equivalence",
+     "no $C_{2^j}$ iff all $R_e(G)\\cap\\Mers=\\varnothing$",
+     "Mersenne return gives target cycle",
+     "\\cref{lem:return-equivalence}"
+    ],
+    [
+     "3",
+     "[8]",
+     "No proper core",
+     "every proper subgraph has $\\delta\\le2$",
+     "proper smaller counterexample",
+     "\\cref{lem:no-proper-core}"
+    ],
+    [
+     "4",
+     "[9], [10], [67]",
+     "High-degree independence",
+     "$V_{\\ge4}$ independent",
+     "high-high edge deletion",
+     "\\cref{lem:deletion-critical}"
+    ],
+    [
+     "5",
+     "[11]",
+     "Boundaried graphs",
+     "atoms are $T$-boundaried supports",
+     "replacement formalism",
+     "\\cref{def:boundaried-gluing}"
+    ],
+    [
+     "6",
+     "[11], [36], [37]",
+     "Boundary degree profiles",
+     "quotients fibrewise over $\\mathbf d_\\partial$",
+     "otherwise target-defective",
+     "\\cref{lem:degree-profile-fibres}"
+    ],
+    [
+     "7",
+     "[12], [36]",
+     "Context universality",
+     "target-complete identities work against every context",
+     "otherwise quotient defect",
+     "\\cref{lem:context-universality}"
+    ],
+    [
+     "8",
+     "[13]",
+     "Replacement",
+     "smaller, at most as obstructing representative gives smaller counterexample",
+     "minimality contradiction",
+     "\\cref{lem:replacement}"
+    ],
+    [
+     "9",
+     "[14], [38], [39]",
+     "Hereditary uncompressibility",
+     "no proper target-complete compression",
+     "replacement contradiction",
+     "\\cref{cor:uncompressible}"
+    ],
+    [
+     "10",
+     "[31]",
+     "Target rank",
+     "independent coordinates realize $2^k$ states",
+     "entropy only counts independent coordinates",
+     "\\cref{def:target-rank}"
+    ],
+    [
+     "11",
+     "---",
+     "Skeleton budget",
+     "labelled edge sets dominate all canonical data",
+     "no extra auxiliary degrees of freedom",
+     "\\cref{lem:skeleton-dominates}"
+    ],
+    [
+     "12",
+     "---",
+     "Near-cubic budget",
+     "$B_{\\mathrm{skel}}=\\frac32 n\\log_2n+o(n\\log n)$",
+     "budget scale",
+     "\\cref{lem:near-cubic-budget}"
+    ],
+    [
+     "13",
+     "[15], [16]",
+     "$P_{13}$-free theorem",
+     "$P_{13}$-free $+\\delta\\ge3$ gives target cycle",
+     "forces induced $P_{13}$",
+     "\\cref{thm:p13free}"
+    ],
+    [
+     "14",
+     "[18]",
+     "$P_{13}$ label algebra",
+     "$399$ labels and relations $C_s$",
+     "finite algebra basis",
+     "\\cref{lem:labels}"
+    ],
+    [
+     "15",
+     "[21]",
+     "Curvature enumeration",
+     "$543958,432672,111286$ and $c_\\Omega$",
+     "verified finite computation",
+     "\\cref{lem:curv-enum}"
+    ],
+    [
+     "16",
+     "[21]",
+     "Multi-scale window package",
+     "$c_{13}=118.108581006\\ldots$ and \\((c_{13}-o(1))p_{13}\\log_2 n\\) independently target-testable window coordinates",
+     "controls $P_{13}$ packing density",
+     "\\cref{lem:p13-window-package}; \\cref{app:curv-code}"
+    ],
+    [
+     "17",
+     "[22]--[24]",
+     "$P_{13}$ density bound",
+     "after surplus-token routing supplies \\cref{def:near-cubic-spine}, $\\theta\\le\\theta_{\\rm win}+o(1)$; high entropy gives $\\theta\\le0.01198542083\\ldots+o(1)$",
+     "window entropy overflow / window-only cap",
+     "\\cref{lem:p13-window-package}, \\cref{prop:p13-density}"
+    ],
+    [
+     "18",
+     "[145]--[157]",
+     "Hot/cold window branch",
+     "if \\(\\theta<1/78\\), route 8 closes; otherwise hot failure forces \\(C\\ge(\\theta-\\theta_{\\rm win})n-o(n)\\), \\(b(\\mathfrak S_{\\rm cold})\\ge13C-o(n)\\), and \\(N_{\\rm germ}\\ge13C/D_{\\rm cold}-o(n)\\); bounded germs route to hit, defect, handoff, route 8, same-interface table, or compression",
+     "no terminal cold residual after the spine estimate",
+     "\\cref{def:cold-window-ledger,def:surviving-cold-branch,lem:hot-failure-cold-mass,def:cold-skeleton-excess,lem:cold-window-stub-excess,lem:cold-short-self-return-filter,def:cold-bounded-germ,def:cold-corridor-first-failure,lem:cold-corridor-first-failure,lem:cold-germ-extraction,lem:cold-bounded-germ-trichotomy,def:cold-same-interface-table,lem:cold-same-interface-table,lem:cold-increment-arithmetic,thm:cold-branch-quantitative-closure}"
+    ],
+    [
+     "19",
+     "[17], [25]--[27]",
+     "Remainder $R$",
+     "componentwise $P_{13}$-free and large",
+     "maximality of packing",
+     "\\cref{sec:remainder}"
+    ],
+    [
+     "20",
+     "[28]",
+     "Positive deficiency",
+     "$\\defp(X)=\\sum_v\\max(0,3-d_X(v))$",
+     "high degree cannot cancel deficient vertices",
+     "\\cref{def:deficiency-surplus}"
+    ],
+    [
+     "21",
+     "[29]",
+     "External-incidence supply",
+     "$\\defp(R)\\le15p_{13}+o(n)$ and hence $\\defp(R)-\\sigma_R\\le15p_{13}+o(n)$",
+     "few windows give small supply",
+     "\\cref{lem:stub-positive}"
+    ],
+    [
+     "22",
+     "[30]",
+     "Wedge lower bound",
+     "componentwise \\(W_2(C)\\ge3|V(C)|-2\\defp(C)\\); with \\(\\defp(R)\\le(\\tau_{\\rm win}+o(1))|R|\\), this gives \\(W_2(R)\\ge\\omega_{\\rm win}|R|-o(|R|)\\); high entropy gives \\(\\omega|R|-o(|R|)\\)",
+     "degree-count proof",
+     "\\cref{lem:wedge-lower}"
+    ],
+    [
+     "23",
+     "[31]",
+     "Curvature target-rank",
+     "$r_\\Omega(R)$ counts independent curvature tests via functional admissible rank quotients of exact response profiles",
+     "raw tests are not charged directly; closed empty-boundary data stay label-injective",
+     "\\cref{def:exact-response-profile,def:admissible-rank-quotient,def:functional-rank-quotient,def:curvature-target-rank}"
+    ],
+    [
+     "24",
+     "[32], [33], [35]--[37]",
+     "Localization of curvature dependence",
+     "rank drop gives a finite functional target-dependence and routes to target defect/admissible compression/support",
+     "dependence cannot be silent locally",
+     "\\cref{lem:target-rank-circuit,lem:curvature-dependence-routing}"
+    ],
+    [
+     "25",
+     "[35]--[37]",
+     "Separated wedge testers",
+     "identical separated wedge balls are context-universal or defective",
+     "supports full-rank forcing",
+     "\\cref{lem:separated-testers}"
+    ],
+    [
+     "26",
+     "[40]--[42]",
+     "Proper delocalization support",
+     "enlarged $Z\\subsetneq G$ gives target defect or target-complete proper-support compression",
+     "context defect or replacement contradiction",
+     "\\cref{lem:proper-smearing}"
+    ],
+    [
+     "27",
+     "[44]",
+     "Repair identity",
+     "$s=p-2+2\\beta_Z-\\sigma_Z$",
+     "global delocalization rank barrier",
+     "\\cref{lem:smearing-support-repair}"
+    ],
+    [
+     "28",
+     "[43], [45]",
+     "No silent global delocalization",
+     "$Z=G$ gives target-defect, smaller closed counterexample, or exact label-injective global data",
+     "no global silent rank reduction",
+     "\\cref{def:exact-response-profile,def:admissible-rank-quotient,lem:no-silent-global-smearing}"
+    ],
+    [
+     "29",
+     "[34], [46], [47]",
+     "Full curvature rank",
+     "$r_\\Omega(R)\\ge W_2(R)-o(W_2)$",
+     "if rank drops, contradiction",
+     "\\cref{lem:full-rank}"
+    ],
+    [
+     "30",
+     "[48]",
+     "Forced curvature cost",
+     "$c_\\Omega W_2(R)\\ge K_{\\rm win}|R|-o(|R|)$; high entropy gives $K|R|-o(|R|)$",
+     "finite-size cost",
+     "\\cref{cor:forced-curvature-cost}"
+    ],
+    [
+     "31",
+     "[49]",
+     "Per-vertex remainder entropy",
+     "$\\eta(R)=\\log_2|\\mathcal G(R)|/|R|$",
+     "separates high-/low-entropy remainder regimes",
+     "\\cref{def:remainder-entropy}"
+    ],
+    [
+     "32",
+     "[49], [50]",
+     "Dominant local type",
+     "low-entropy remainder has dominant rooted type",
+     "otherwise too many labelled remainder states",
+     "\\cref{lem:dominant-type}"
+    ],
+    [
+     "33",
+     "[51], [52]",
+     "Translates independent",
+     "separated dominant wedges are independently target-testable",
+     "otherwise rank-forcing applies",
+     "\\cref{lem:translates-independent}"
+    ],
+    [
+     "34",
+     "[50]--[54]",
+     "Two-budget routing",
+     "high-entropy branch uses window entropy; repetitive low-entropy branch gives positive curvature rank; nonrepetitive low-entropy branch is routed forward",
+     "prevents entropy overcounting",
+     "\\cref{prop:two-budget}"
+    ],
+    [
+     "35",
+     "[53], [54]",
+     "Finite threshold $\\Theta(n)$",
+     "high-$\\theta$ branch closed by entropy cap",
+     "small-budget closure",
+     "\\cref{def:Theta}, \\cref{prop:entropy-high-theta}"
+    ],
+    [
+     "36",
+     "[55]--[57]",
+     "Net-deficiency cap",
+     "large-budget branch has $\\Delta_{\\mathrm{net}}\\le\\tau_{\\rm win}+o(1)<1/4$",
+     "very low net deficiency required",
+     "\\cref{sec:large-budget}"
+    ],
+    [
+     "37",
+     "[58]",
+     "Net charge",
+     "$\\No(X)=\\defp(X)-\\sigma(X)-|X|/4$",
+     "failure localizes to negative support",
+     "\\cref{def:net-charge}"
+    ],
+    [
+     "38",
+     "[59]--[62]",
+     "Net charge localization",
+     "negative global net charge gives connected negative support",
+     "Type A/Type B split",
+     "\\cref{lem:netcharge-superadd}, \\cref{prop:negative-net-charge}"
+    ],
+    [
+     "39",
+     "[63], [86]--[109]",
+     "Type A obstruction",
+     "bounded low-deficiency $P_{13}$-free atom split into closed saturated exits, target-defect peeling, Type B handoff, unsaturated discharging, and the route-8 trace-basin branch",
+     "raw $4/8/12$ thresholds, exits 1--3, 5, and 6 close, exit 4 peels exactly one target-defective routed load, exit 7 hands off to Type B through connector-germ routing, cubic-switch absorption, and high-degree handoff, unsaturated $3/7/11$ discharging, route-8 burden $S_{\\rm sil}^{\\rm exc}(X)\\ge4D_A(X)$, declared $u$-supported response algebra, canonical minimal target-complete carrier core, cut parity, zero/one essential-carrier collapse, private-carrier reduction to a two-carrier entry, carrier-deletion witnesses, and the terminal no-go theorem",
+     "\\cref{def:typeA-receiver-load}, \\cref{def:typeA-continuation-classes}, \\cref{def:typeA-saturated-exits}, \\cref{def:typeA-exit4-peeling}, \\cref{lem:typeA-continuation-routing}, \\cref{lem:typeA-cubic-switch-absorption}, \\cref{lem:typeA-high-degree-handoff}, \\cref{lem:typeA-exit4-peeling-charge}, \\cref{lem:typeA-unpeeled-visible-routing}, \\cref{lem:typeA-unpeeled-silent-routing}, \\cref{lem:typeA-exit4-residual-routing}, \\cref{lem:typeA-exits-discharged}, \\cref{lem:typeA-threshold-algebra}, \\cref{lem:typeA-saturated-handoff}, \\cref{lem:typeA-unsaturated-discharge}, \\cref{lem:typeA-exclusion}, \\cref{def:typeA-silent-core-residual}, \\cref{def:typeA-large-budget-deficit}, \\cref{def:typeA-route8-carriers}, \\cref{lem:typeA-route8-burden}, \\cref{lem:typeA-carrier-cut-parity}, \\cref{lem:typeA-one-terminal-collapse}, \\cref{def:typeA-carrier-deletion-witness}, \\cref{lem:typeA-essential-deletion-witness}, \\cref{lem:typeA-deletion-witness-declared}, \\cref{lem:typeA-two-carrier-deletion-canonical}, \\cref{lem:typeA-carrier-deletion-exit}, \\cref{def:typeA-terminal-two-carrier}, \\cref{thm:typeA-two-carrier-nogo}, \\cref{prop:typeA-route8-closure-from-nogo}"
+    ],
+    [
+     "40",
+     "[64]--[85], [108]",
+     "Type B obstruction",
+     "degree-$4$ fan-safe surplus support, degree-greater-than-four heavy-center side branch, and decorated handoff fan data",
+     "degree-four centers give either a fan-compatible open pair or two triangular ports; heavy centers reduce to a fan-compatible open pair or three triangular ports; in either case two fan-closed ports give a positive-deficit Type B fan; triangular shoulders have only central/cross/outside completion landings; certificate-marked fans have the local cap and local certificate/B1 ledger; fan-certificate residual centers go to fan-mass; B2 failures form minimal overlap obstructions; on the derived spine branch all Type B bridge residual mass is bounded by the global surplus budget",
+     "\\cref{def:decorated-fan-envelope}, \\cref{lem:decorated-fan-admissibility}, \\cref{def:marked-typeB-fan}, \\cref{def:heavy-center-triangular-port}, \\cref{def:triangular-fan-core}, \\cref{lem:heavy-neighbourhood-normal-form}, \\cref{def:fan-compatible-open-ports}, \\cref{lem:same-center-open-port-compatibility}, \\cref{cor:degree-four-local-activation}, \\cref{lem:heavy-center-triangular-alternative}, \\cref{cor:heavy-center-local-dichotomy}, \\cref{lem:triangular-shoulder-completion}, \\cref{lem:triangular-port-return}, \\cref{lem:triangular-first-landing}, \\cref{lem:triangular-cross-shoulder}, \\cref{def:fan-closed-port}, \\cref{lem:compatible-pair-fan-closure}, \\cref{prop:fan-closed-port-typeB-routing}, \\cref{cor:compatible-pair-typeB-routing}, \\cref{prop:triangular-port-typeB-routing}, \\cref{def:typeB-window-incidence-profile}, \\cref{def:typeB-hybrid-incidence}, \\cref{def:closed-fan-window-pair}, \\cref{def:direct-cycle-free-closed-pair}, \\cref{lem:typeB-direct-fan-window-cycles}, \\cref{lem:typeB-two-window-cycles}, \\cref{lem:typeB-multiclosed-budget}, \\cref{lem:typeB-hybrid-incidence-budget}, \\cref{lem:typeB-hybrid-B1}, \\cref{def:typeB-ledger-carriers}, \\cref{def:typeB-candidate-ledger}, \\cref{def:typeB-overlap-obstruction}, \\cref{lem:typeB-bridge-to-overlap}, \\cref{lem:typeB-global-local-reflection}, \\cref{prop:typeB-global-local-bridge}, \\cref{def:typeB-bridge-statements}, \\cref{prop:typeB-bridge-reduction}, \\cref{def:typeB-multiclosed-residual}, \\cref{lem:typeB-exclusion}, \\cref{def:typeB-residual-mass}, \\cref{lem:decorated-envelope-with-route8-core}, \\cref{lem:typeB-bridge-deficit-bound}, \\cref{lem:typeB-bridge-with-route8-core}, \\cref{prop:typeB-bridge-sublinear}"
+    ],
+    [
+     "41",
+     "[76], [85]",
+     "Branch-closure theorem",
+     "After surplus-token routing has supplied the near-cubic spine estimate, pure Type A outside route 8 closes locally and Type B bridge residual centers and B2 failures are sublinear globally",
+     "outside explicit Type A route 8 and Type B bridge residuals, the entropy-admissible branch has no survivor",
+     "\\cref{thm:branch-kill}"
+    ],
+    [
+     "42",
+     "[123]",
+     "Large-budget pressure descent",
+     "The remaining linear Type A deficit is placed in the unified target-defect/route-8 ledger; every target-defect two-carrier entry is canonical exit-(4) peel data, and finite descent removes it",
+     "the terminal large-budget branch can survive only through a two-carrier route-8 entry, which is then routed to node [124]",
+     "\\cref{def:typeA-unified-negative}, \\cref{def:typeA-pressure-ledger}, \\cref{def:typeA-peeling-reduced-ledger}, \\cref{lem:typeA-peeling-reduced-reduction}, \\cref{lem:typeA-pressure-is-exit4-peel}, \\cref{lem:typeA-exit4-finite-descent}, \\cref{thm:large-budget-route8-only}"
+    ],
+    [
+     "43",
+     "[110]--[124]",
+     "Route-8 exit closure",
+     "after target-defect descent, the route-8 burden gives $N_{\\rm basin}\\ge4D_A$; canonical carrier cores close zero/one-essential-core entries; absence of a two-carrier entry forces incompatible private-carrier upper and lower bounds; a two-carrier entry supplies a terminal obstruction with declared deletion witnesses",
+     "node [124] rules out the terminal two-carrier obstruction because the two-carrier condition places each declared deletion quotient in the canonical exit-(4) family, while exit (4) is absent in a true route-8 residual",
+     "\\cref{def:typeA-large-budget-deficit}, \\cref{def:typeA-route8-carriers}, \\cref{def:typeA-true-route8-residual}, \\cref{lem:typeA-route8-burden}, \\cref{lem:typeA-carrier-cut-parity}, \\cref{lem:typeA-one-terminal-collapse}, \\cref{prop:typeA-route8-carrier-reduction}, \\cref{def:typeA-carrier-deletion-witness}, \\cref{lem:typeA-essential-deletion-witness}, \\cref{lem:typeA-deletion-witness-declared}, \\cref{lem:typeA-two-carrier-deletion-canonical}, \\cref{lem:typeA-carrier-deletion-exit}, \\cref{def:typeA-terminal-two-carrier}, \\cref{thm:typeA-two-carrier-nogo}, \\cref{prop:typeA-route8-closure-from-nogo}, \\cref{thm:large-budget-route8-only}"
+    ],
+    [
+     "44",
+     "---",
+     "Enumeration appendix",
+     "reproduces all finite constants including $c_{13}$",
+     "constants are checkable",
+     "\\cref{app:curv-code}"
+    ],
+    [
+     "45",
+     "[19], [20]",
+     "Non-near-cubic surplus branch",
+     "every survivor of the sparse surplus exits has the full active-demand family and, after an \\(O(n)\\)-deficit baseline demand is fixed, satisfies the exact capacity-token budget; the geometric same-token bottleneck lemma gives fixed homogeneous caps unless the load realizes a sparse surplus exit or ordinary Type B fan data, and the caps give \\(\\sigma(G)=O(\\sqrt n)\\)",
+     "derives the near-cubic spine before the normalized entropy budget is used, except for branches that are already routed to sparse exits or to the Type B fan ledger; blocker-free pair responses are charged by the exact cubic-baseline sandwich and the spine lower-bound deficits, while blocked pairs are assigned to capacity tokens; the exact token-fibre budget gives the load forced by any attempted violation, and \\cref{lem:same-token-bottleneck-routing} turns a large homogeneous fibre into a geometric first-separator/fan route",
+     "\\cref{lem:sparse-upper-envelope}, \\cref{lem:sparse-slack-surplus}, \\cref{def:named-surplus-exits}, \\cref{def:active-surplus-demands}, \\cref{lem:surviving-active-family}, \\cref{def:surplus-blockers}, \\cref{def:canonical-blocker-ledger}, \\cref{lem:canonical-blocker-ledger-no-overcount}, \\cref{def:primitive-sparse-blocker-carrier}, \\cref{lem:primitive-carrier-supply}, \\cref{def:capacity-token-ledger}, \\cref{lem:capacity-token-supply}, \\cref{lem:token-ledger-no-overcount}, \\cref{def:same-token-patterns}, \\cref{def:same-token-blocker-roles}, \\cref{def:same-token-routing-germs}, \\cref{lem:same-token-matching-star}, \\cref{lem:same-token-homogeneous-extraction}, \\cref{lem:same-token-bottleneck-routing}, \\cref{thm:homogeneous-overload-geometric-closure}, \\cref{cor:homogeneous-same-token-caps-close}, \\cref{def:baseline-spine-demand}, \\cref{lem:exact-cubic-baseline-budget}, \\cref{lem:incremental-skeleton-room}, \\cref{prop:sparse-entropy-sandwich}, \\cref{prop:sparse-entropy-sandwich-with-blockers}, \\cref{thm:tokenized-surplus-accounting-closure}, \\cref{def:window-remainder-surplus-split}, \\cref{lem:exact-window-join-identity}, \\cref{cor:global-window-join-pressure}, \\cref{prop:nonnear-cubic-sharp-overload-routing}"
+    ],
+    [
+     "46",
+     "[125]--[129]",
+     "Sparse accounting setup",
+     "a sparse-pressure survivor yields the full active surplus family and an \\(O(n)\\)-deficit baseline demand",
+     "[129] fixes the common baseline used by the later sandwich",
+     "\\cref{def:named-surplus-exits}, \\cref{def:active-surplus-demands}, \\cref{lem:surviving-active-family}, \\cref{def:baseline-spine-demand}"
+    ],
+    [
+     "47",
+     "[130]--[132]",
+     "Free/blocked pair split",
+     "pair-response coordinates split into blocker-free and blocked pairs; free pairs are charged by the entropy sandwich",
+     "blocked-pair debt is the only branch passed to the token ledger",
+     "\\cref{def:sparse-pair-response}, \\cref{lem:sparse-pair-dependence-exit}, \\cref{prop:sparse-entropy-sandwich-with-blockers}"
+    ],
+    [
+     "48",
+     "[132]--[136]",
+     "Blocker and token ledger",
+     "canonical blockers, primitive carriers, and capacity tokens count blocked pairs exactly once",
+     "[136] is the exact token-fibre partition and no-overcounting closure",
+     "\\cref{def:surplus-blockers}, \\cref{def:canonical-sparse-blocker-order}, \\cref{def:canonical-blocker-ledger}, \\cref{lem:canonical-blocker-ledger-no-overcount}, \\cref{def:primitive-sparse-blocker-carrier}, \\cref{lem:primitive-carrier-supply}, \\cref{def:capacity-token-ledger}, \\cref{lem:capacity-token-supply}, \\cref{lem:token-ledger-no-overcount}"
+    ],
+    [
+     "49",
+     "[135], [136]",
+     "Window-join pressure",
+     "the exact packed-window join identity supplies \\(15p_{13}+\\sigma_W\\) and the surplus-aware window-stub pressure",
+     "supplies the window/remainder capacity side of the token ledger",
+     "\\cref{def:window-remainder-surplus-split}, \\cref{lem:exact-window-join-identity}, \\cref{cor:global-window-join-pressure}, \\cref{rem:surplus-pair-sharp-frontier}"
+    ],
+    [
+     "50",
+     "[137]--[143]",
+     "Coupled high-load split",
+     "the single-graph high-load test splits the forced homogeneous pattern into window-incidence, remainder-surplus, and primitive-carrier token classes",
+     "[139]--[143] are the three token-class audits",
+     "\\cref{def:same-token-patterns}, \\cref{def:same-token-blocker-roles}, \\cref{def:homogeneous-token-charge}, \\cref{lem:exact-surplus-pair-charge-partition}, \\cref{lem:same-token-matching-star}, \\cref{thm:sharp-classwise-homogeneous-token-budget}, \\cref{thm:tokenized-surplus-accounting-closure}"
+    ],
+    [
+     "51",
+     "[140], [142]--[144]",
+     "Geometric bottleneck discharge",
+     "a large same-token fibre gives a homogeneous matching or star, then realizes a sparse exit, Type B fan data, or fixed homogeneous caps",
+     "[144] sends the branch to a sparse exit, Type B, or [138]",
+     "\\cref{def:same-token-routing-germs}, \\cref{lem:same-token-bottleneck-routing}, \\cref{thm:homogeneous-overload-geometric-closure}, \\cref{cor:homogeneous-same-token-caps-close}"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/2",
+   "title": "External inputs (black boxes)",
+   "group": "The constraint ledger",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1125,
+   "headers": [
+    "Input",
+    "Statement used",
+    "Constraint it imposes on $G$",
+    "Used by"
+   ],
+   "rows": [
+    [
+     "HSS $P_{13}$-free theorem (\\cref{thm:p13free})",
+     "$P_{13}$-free $+\\ \\delta\\ge3\\ \\Rightarrow$ a power-of-two cycle",
+     "$G$ must contain an induced $P_{13}$; after removing a maximal disjoint $P_{13}$ family, every remainder component is $P_{13}$-free and boundary-deficient",
+     "\\cref{cor:p13-exists}, \\cref{lem:stub-positive}, invariants 20--24, entire remainder analysis"
+    ],
+    [
+     "Bondy--Vince / Gao--Ma",
+     "Few sub-cubic vertices force two cycle lengths differing by $1$ or $2$; quiet-block cap $|X|<5b(X)^2$",
+     "Large almost-cubic atoms must export close cycle lengths or pay quadratic boundary",
+     "Appendix resilience bookkeeping"
+    ],
+    [
+     "Kleitman--West max-leaf",
+     "$\\delta\\ge3\\ \\Rightarrow$ spanning tree with $\\ge n/4+2$ leaves",
+     "Cotree fundamental cycles must avoid Mersenne tree distances",
+     "Appendix tree--cotree profile bookkeeping"
+    ],
+    [
+     "Degree-3-critical / $1$--$3$ tree literature",
+     "Extremal graphs with no proper $\\delta\\ge3$ subgraph have $1$--$3$ tree / leaf-path structure",
+     "Guides the repair-network identity",
+     "Appendix marked length-rank bookkeeping"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/3",
+   "title": "Block I: minimality and target algebra (invariants 1--8)",
+   "group": "The constraint ledger",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1140,
+   "headers": [
+    "\\#",
+    "Invariant",
+    "Node (first tracked)",
+    "Constraint on $G$",
+    "Budget",
+    "Lemmas/theorems using it"
+   ],
+   "rows": [
+    [
+     "1",
+     "Mersenne-return target algebra",
+     "Target {[5]}",
+     "No dyadic cycle $\\iff R_e(G)\\cap\\Mers=\\varnothing$ for every directed edge",
+     "--- (defines the target predicate)",
+     "\\cref{lem:return-equivalence} (states it); \\cref{def:dyadic-safe}; consumed by \\emph{every} quotient/atom/profile result: \\cref{lem:degree-profile-fibres}, \\cref{lem:context-universality}, \\cref{lem:replacement}, \\cref{cor:uncompressible}, invariants 30--38"
+    ],
+    [
+     "2",
+     "Minimal proper-subgraph condition",
+     "Core {[8]}",
+     "Every proper subgraph has $\\delta\\le2$",
+     "---",
+     "\\cref{lem:no-proper-core} (states it); underlies \\cref{lem:cycle-rank}, \\cref{lem:replacement}"
+    ],
+    [
+     "3",
+     "Edge-deletion criticality",
+     "Delete {[9]}",
+     "Every edge touches a degree-$3$ vertex",
+     "---",
+     "\\cref{lem:deletion-critical} (states it)"
+    ],
+    [
+     "4",
+     "High-degree independence",
+     "High-degree {[10]}",
+     "$V_{\\ge4}$ is independent",
+     "---",
+     "\\cref{lem:deletion-critical} (corollary); used by \\cref{lem:typeB-exclusion} (fan aggregation), invariant 16"
+    ],
+    [
+     "5",
+     "No passive degree-$2$ storage",
+     "Counterex. {[2]}",
+     "Final $G$ has no degree-$2$ vertex; frontier degree-$2$ must be compensated",
+     "---",
+     "Motivates $1$--$3$ networks; \\cref{lem:stub-positive}, repair-network auxiliaries"
+    ],
+    [
+     "6",
+     "Replacement dominance",
+     "Replace {[13]}",
+     "If $X'$ is smaller with $\\profile(X')\\subseteq\\profile(X)$, replacing $X$ by $X'$ gives a smaller counterexample",
+     "---",
+     "\\cref{lem:replacement} (states it); \\cref{lem:degree-profile-fibres}, \\cref{lem:context-universality} feed it; \\cref{cor:uncompressible} derives from it"
+    ],
+    [
+     "7",
+     "Lumpability defect",
+     "Univ. {[12]}",
+     "A quotient is valid only if it preserves target-hitting under every outside context",
+     "---",
+     "\\cref{lem:context-universality} (states it); used in final spine step~7; \\cref{lem:labels} (defect at path-lengths $1,2,3$)"
+    ],
+    [
+     "8",
+     "Hereditary target-uncompressibility",
+     "Uncomp. {[14]}",
+     "No proper atom admits a nontrivial target-complete compression",
+     "---",
+     "\\cref{cor:uncompressible} (states it); \\textbf{the contradiction lever} in final spine step~7; consumed by \\cref{lem:typeA-exclusion}, \\cref{lem:typeB-exclusion}, invariant 29"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/4",
+   "title": "Block II: degree, rank, sparsity (invariants 9--19)",
+   "group": "The constraint ledger",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1159,
+   "headers": [
+    "\\#",
+    "Invariant",
+    "Node (first tracked)",
+    "Constraint on $G$",
+    "Budget",
+    "Lemmas/theorems using it"
+   ],
+   "rows": [
+    [
+     "9",
+     "Minimum edge count",
+     "Counterex. {[2]}",
+     "$m\\ge\\lceil 3n/2\\rceil$",
+     "---",
+     "\\cref{lem:cycle-rank}; near-cubic specialization \\cref{lem:near-cubic-budget}"
+    ],
+    [
+     "10",
+     "Sparse upper envelope",
+     "Core {[8]}",
+     "$m\\le 2n-2$",
+     "---",
+     "\\cref{lem:sparse-upper-envelope,lem:variable-edge-budget}; Laman identity (invariant 12)"
+    ],
+    [
+     "11",
+     "Cycle-rank pressure",
+     "Minimality {[4]}",
+     "$\\beta=m-n+1\\ge n/2+1$ (up to parity)",
+     "---",
+     "\\cref{lem:cycle-rank} (states it); feeds 12, 13"
+    ],
+    [
+     "12",
+     "Laman slack identity",
+     "Rank ids {[4]}",
+     "$\\beta+\\lambda=n-2$",
+     "---",
+     "\\cref{def:remainder-entropy}, two-budget split; standing notation; \\cref{lem:near-cubic-budget}"
+    ],
+    [
+     "13",
+     "Surplus--rank relation",
+     "Rank ids {[4]}",
+     "$\\sigma=2\\beta-n-2$, $\\lambda=n/2-3-\\sigma/2$",
+     "---",
+     "Near-cubic accounting; \\cref{lem:netcharge-superadd} (via $\\sigma$)"
+    ],
+    [
+     "14",
+     "High-degree surplus bound",
+     "Surplus branch {[125]--[144]} supplies spine estimate",
+     "$\\sigma=O(\\sqrt n)$ for survivors after sparse exits and Type B handoff data are routed, because \\cref{thm:homogeneous-overload-geometric-closure} supplies fixed role-homogeneous same-token caps for all three token classes",
+     "$\\sigma$-budget: $O(\\sqrt n)$",
+     "\\cref{def:near-cubic-spine}, \\cref{def:same-token-patterns}, \\cref{def:same-token-blocker-roles}, \\cref{def:same-token-routing-germs}, \\cref{lem:same-token-matching-star}, \\cref{lem:same-token-homogeneous-extraction}, \\cref{lem:same-token-bottleneck-routing}, \\cref{thm:homogeneous-overload-geometric-closure}, \\cref{cor:homogeneous-same-token-caps-close}, \\cref{prop:nonnear-cubic-sharp-overload-routing}; \\cref{prop:negative-net-charge}"
+    ],
+    [
+     "15",
+     "Near-cubic edge count",
+     "Surplus branch {[125]--[144]} supplies spine estimate",
+     "$m=\\tfrac32 n+O(\\sqrt n)$, $\\bar d=3+O(n^{-1/2})$ for the same survivors",
+     "sets $B_{\\mathrm{skel}}$ coefficient $\\tfrac32$",
+     "\\cref{def:near-cubic-spine}, \\cref{thm:homogeneous-overload-geometric-closure}, \\cref{prop:nonnear-cubic-sharp-overload-routing}, \\cref{lem:near-cubic-budget}, \\cref{lem:skeleton-dominates}, all entropy inequalities"
+    ],
+    [
+     "16",
+     "Certificate-marked fan degree",
+     "High-degree {[67]}",
+     "certificate-marked Type B fans satisfy $d_G(h)\\le8$; fan-certificate residual centers are charged by $\\sum_h(d_G(h)-3)$",
+     "label-packing cap plus $\\sigma$-budget",
+     "\\cref{lem:fan-certificate,lem:typeB-exclusion,prop:typeB-bridge-sublinear}; related to invariant 4"
+    ],
+    [
+     "17",
+     "Spectral feasibility mask",
+     "Spectral {[70]}",
+     "$A(H)\\le M$, $\\delta(H)\\ge3\\ \\Rightarrow\\rho(M)\\ge3$",
+     "---",
+     "Auxiliary (spectral masks, backup)"
+    ],
+    [
+     "18",
+     "Spectral equality branch",
+     "Spectral {[70]}",
+     "$\\rho(M)=3$ closing $\\Rightarrow H$ cubic",
+     "---",
+     "Auxiliary"
+    ],
+    [
+     "19",
+     "Spectral surplus branch",
+     "Spectral {[70]}",
+     "$\\rho(M)>3\\ \\Rightarrow$ surplus used as dense/compensation/critical/entropy",
+     "---",
+     "Auxiliary (organizes repair recursion)"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/5",
+   "title": "Block III: induced $P_{13}$ packing and forced remainder (invariants 20--24)",
+   "group": "The constraint ledger",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1181,
+   "headers": [
+    "\\#",
+    "Invariant",
+    "Node (first tracked)",
+    "Constraint on $G$",
+    "Budget",
+    "Lemmas/theorems using it"
+   ],
+   "rows": [
+    [
+     "20",
+     "Low $P_{13}$ density",
+     "Density {[24]}",
+     "after \\cref{prop:nonnear-cubic-sharp-overload-routing} supplies \\cref{def:near-cubic-spine}, $p_{13}\\le \\theta_{\\rm win} n+o(n)$; high entropy gives $p_{13}\\le0.01198542083\\cdot n+o(n)$",
+     "window-only entropy vs $B_{\\mathrm{skel}}$; sharper high-entropy cap",
+     "\\cref{lem:p13-window-package}, \\cref{prop:p13-density}; \\cref{eq:feasibility}; \\cref{prop:entropy-high-theta}; final spine steps 1--2"
+    ],
+    [
+     "21",
+     "Forced remainder",
+     "Residual A {[25]}",
+     "$|R|\\ge 0.83489768623\\cdot n-o(n)$",
+     "$=(1-13\\theta)n$",
+     "\\cref{lem:stub-positive}, \\cref{lem:wedge-lower}, invariant 28; all atom analysis"
+    ],
+    [
+     "22",
+     "$P_{13}$-free atom condition",
+     "Residual A {[25]}",
+     "Components of $R$ are $P_{13}$-free, boundary-deficient",
+     "---",
+     "Direct from \\cref{thm:p13free}; \\cref{lem:stub-positive}; \\cref{lem:typeA-exclusion}, \\cref{lem:typeB-exclusion}"
+    ],
+    [
+     "23",
+     "Window stub capacity",
+     "Stub accounting {[29]}",
+     "Exact split \\(e(R,W)+2e_\\times(W)=15p_{13}+\\sigma_W\\); on the derived spine branch this gives \\(e(R,W)\\le15p_{13}+o(n)\\)",
+     "\\(15\\) per window plus explicit window surplus",
+     "\\cref{lem:exact-window-join-identity}, \\cref{lem:surplus-aware-window-stub}, \\cref{lem:stub-positive}; invariant 24"
+    ],
+    [
+     "24",
+     "Remainder deficiency density",
+     "Stub accounting {[29]}",
+     "$\\defp(R)\\le 15p_{13}+O(\\sqrt n)$ on the derived spine branch; before that estimate is supplied, \\(\\defp(R)-\\sigma_R\\le15p_{13}+\\sigma_W-\\sigma_R\\) and no-negative-support forces \\(\\sigma_W-\\sigma_R\\ge(n-73p_{13})/4\\)",
+     "\\(15\\theta\\) aggregate plus window-join pressure",
+     "\\cref{lem:stub-positive}, \\cref{lem:surplus-aware-window-stub}, \\cref{cor:global-window-join-pressure}; final spine step~3; \\cref{prop:negative-net-charge}; \\textbf{net-charge collision} (vs Type A/B output)"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/6",
+   "title": "Block IV: curvature constraints (invariants 25--29)",
+   "group": "The constraint ledger",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1197,
+   "headers": [
+    "\\#",
+    "Invariant",
+    "Node (first tracked)",
+    "Constraint on $G$",
+    "Budget",
+    "Lemmas/theorems using it"
+   ],
+   "rows": [
+    [
+     "25",
+     "Legal $P_{13}$ labels",
+     "Label algebra {[18]}",
+     "$399$ legal labels; the zero-defect quotient through path-lengths $1,2,3$ is the identity",
+     "finite ($399$)",
+     "\\cref{lem:labels} (states it); \\cref{lem:curv-enum}; \\cref{rem:fan-finite}; invariant 7; \\cref{lem:typeA-exclusion}, \\cref{lem:typeB-exclusion}"
+    ],
+    [
+     "26",
+     "Two-step curvature density",
+     "Curvature enumeration {[21]}",
+     "$432672/543958=0.795414\\ldots$ of locally safe wedges are curvature-positive",
+     "finite enumeration",
+     "\\cref{lem:curv-enum} (states it); invariant 28; \\cref{app:curv-code}"
+    ],
+    [
+     "27",
+     "Flatness entropy cost",
+     "Cost {[48]}",
+     "$c_\\Omega=2.28922315244\\ldots$ bits per independent curvature coordinate",
+     "bits/coord",
+     "\\cref{cor:forced-curvature-cost}, \\cref{rem:curvature-provenance}, \\cref{prop:two-budget}, \\cref{eq:entropy-cap}"
+    ],
+    [
+     "28",
+     "Raw atom curvature supply",
+     "Wedge lower bound {[30]}",
+     "after surplus-token routing supplies \\cref{def:near-cubic-spine}, $W_2(R)\\ge 2.54365026308\\cdot|R|$; high entropy gives $2.57407357888\\cdot|R|$",
+     "lower bound (demand)",
+     "\\cref{lem:wedge-lower} (states it); \\cref{lem:full-rank}, \\cref{cor:forced-curvature-cost}; final spine step~4"
+    ],
+    [
+     "29",
+     "Curvature compression ratio",
+     "Full-rank squeeze {[47]}",
+     "$r_\\Omega/W_2\\le 0.23758+o(1)$ forces a rank-defect route unless the full-rank squeeze applies",
+     "budget cap $0.611561\\cdot|R|$ independent tests",
+     "\\cref{lem:full-rank}, \\cref{prop:two-budget}, \\cref{thm:branch-kill}; final spine steps 5--7; collides with invariant 8 outside explicit residuals"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/7",
+   "title": "Block V: carrier / cycle-space constraints (invariants 30--38)",
+   "group": "The constraint ledger",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1215,
+   "headers": [
+    "\\#",
+    "Invariant",
+    "Node (first tracked)",
+    "Constraint on $G$",
+    "Used by"
+   ],
+   "rows": [
+    [
+     "30",
+     "Two-path criterion",
+     "Target algebra {[5]}",
+     "Two disjoint paths summing to $2^k\\ \\Rightarrow$ forbidden dyadic cycle",
+     "\\cref{lem:return-equivalence}; \\cref{lem:typeA-exclusion} (return spectrum)"
+    ],
+    [
+     "31",
+     "Theta closure",
+     "Target algebra {[5]}",
+     "All branch-pair sums in a theta avoid powers of two",
+     "Atom hazard profiles; \\cref{lem:replacement}"
+    ],
+    [
+     "32",
+     "Ear closure",
+     "Target algebra {[5]}",
+     "Ear $+$ base-path length avoids powers of two",
+     "Hazard profiles; \\cref{lem:context-universality}"
+    ],
+    [
+     "33",
+     "Symmetric difference",
+     "Context universality {[12]}",
+     "Overlapping cycles: primitive dyadic output kills",
+     "\\cref{lem:context-universality}"
+    ],
+    [
+     "34",
+     "Rank-one dyadic support",
+     "Delocalization support {[40]}",
+     "All dyadic signals must have support rank $\\ge2$",
+     "\\cref{lem:no-silent-global-smearing}, \\cref{lem:proper-smearing}"
+    ],
+    [
+     "35",
+     "Composite cancellation",
+     "Repair identity {[44]}",
+     "Dyadic cancellation must stay nonprimitive, non-realized",
+     "\\cref{lem:smearing-support-repair}"
+    ],
+    [
+     "36",
+     "Odd carrier nonempty",
+     "Target algebra {[5]}",
+     "Every cycle length has an odd prime divisor (empty carrier $=$ power of two)",
+     "Target predicate refinement"
+    ],
+    [
+     "37",
+     "No common carrier",
+     "Carrier transport {[35]}",
+     "No single odd prime divides all cycle lengths",
+     "Carrier-transport analysis"
+    ],
+    [
+     "38",
+     "Polarized carrier transport",
+     "Separated testers {[35]}",
+     "Overlap formula $q_p(E)=q_p(C)+q_p(D)-2t$ flat and non-killing",
+     "\\cref{lem:separated-testers}, delocalization lemmas"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/8",
+   "title": "Block VI: curvature-rank routing and two-budget machinery",
+   "group": "The constraint ledger",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1237,
+   "headers": [
+    "Result",
+    "Role",
+    "Invariants consumed"
+   ],
+   "rows": [
+    [
+     "\\cref{lem:curvature-dependence-routing}",
+     "Localizes where curvature dependence can occur (3 cases)",
+     "26, 28"
+    ],
+    [
+     "\\cref{lem:separated-testers}",
+     "Separated wedges tested by disjoint contexts",
+     "28, 38"
+    ],
+    [
+     "\\cref{lem:proper-smearing}",
+     "Proper delocalization supports forbidden",
+     "34"
+    ],
+    [
+     "\\cref{lem:smearing-support-repair}",
+     "Enlarged delocalization $=$ repair networks",
+     "35"
+    ],
+    [
+     "\\cref{lem:no-silent-global-smearing}",
+     "No silent global delocalization by closed exact profiles",
+     "34, 35; \\cref{def:exact-response-profile,def:admissible-rank-quotient}"
+    ],
+    [
+     "\\cref{lem:full-rank}",
+     "Forces full curvature rank $r_\\Omega\\ge W_2-o(\\cdot)$",
+     "28, 29"
+    ],
+    [
+     "\\cref{cor:forced-curvature-cost}",
+     "Curvature rank $\\to$ entropy tax on the derived spine branch",
+     "27, 28, \\cref{def:near-cubic-spine}"
+    ],
+    [
+     "\\cref{lem:dominant-type}",
+     "Dominant local type in low-entropy branch",
+     "15, 26"
+    ],
+    [
+     "\\cref{lem:translates-independent}",
+     "Dominant type $\\Rightarrow$ independent curvature translates",
+     "26, 29"
+    ],
+    [
+     "\\cref{prop:two-budget}",
+     "Two-budget routing (entropy, repetitive low entropy, nonrepetitive low entropy) on the derived spine branch",
+     "20, 27, 29, \\cref{def:near-cubic-spine}"
+    ],
+    [
+     "\\cref{prop:entropy-high-theta}",
+     "Closes high-$\\theta$ branch via entropy cap on the derived spine branch",
+     "20, 27, \\cref{def:near-cubic-spine}"
+    ],
+    [
+     "\\cref{rem:closure-robust}",
+     "Closure survives at $K=0$ (curvature dispensable)",
+     "8, 24, 29"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/9",
+   "title": "Block VII: large-budget residual and local exclusion (the spine's terminus)",
+   "group": "The constraint ledger",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1260,
+   "headers": [
+    "Result",
+    "Role",
+    "Invariants consumed"
+   ],
+   "rows": [
+    [
+     "\\cref{def:canonical-decomp}",
+     "Canonical support decomposition",
+     "21, 22"
+    ],
+    [
+     "\\cref{def:admissible}",
+     "Admissible support (carries cumulative constraints)",
+     "1, 6, 8, 22, 23, 24"
+    ],
+    [
+     "\\cref{lem:netcharge-superadd}",
+     "Exact net-charge localization over the connected components of $R$",
+     "13, 14, 24"
+    ],
+    [
+     "\\cref{prop:negative-net-charge}",
+     "Large-budget residual is negative net charge",
+     "14, 24, \\cref{lem:netcharge-superadd}"
+    ],
+    [
+     "\\cref{def:typeA-receiver-load}, \\cref{lem:typeA-receiver-loads}",
+     "Define receivers, missing-port counts $q(w)$, and routed load $L(w)$",
+     "23, 24"
+    ],
+    [
+     "\\cref{def:typeA-visible-load}",
+     "Defines anchored returns, receiver-entry returns, visible loads, and silent loads at a completion port",
+     "1, 23, 30"
+    ],
+    [
+     "\\cref{lem:typeA-first-entry}, \\cref{lem:typeA-entry-budget}",
+     "First entries of anchored returns are receivers; degree-two receiver entries satisfy the stated port budget",
+     "23, 24"
+    ],
+    [
+     "\\cref{lem:typeA-port-return}",
+     "Every completion port has an anchored return",
+     "1, 3, 30; \\cref{lem:bridgeless}"
+    ],
+    [
+     "\\cref{def:typeA-channel-spectrum}, \\cref{lem:typeA-spectral-pressure}, \\cref{def:typeA-silent-core-residual}",
+     "Define the reduced route-8 trace-basin data, the declared $u$-supported response algebra, and connector-band constraints",
+     "1, 22, 23, 25, 30, 31"
+    ],
+    [
+     "\\cref{def:typeA-saturated-exits}",
+     "Enumerates the eight saturated receiver exits",
+     "1, 6, 8, 22, 25, 30, 31, 34, 35"
+    ],
+    [
+     "\\cref{def:typeA-exit4-peeling}, \\cref{lem:typeA-exit4-peeling-charge}, \\cref{lem:typeA-exit4-discharge}",
+     "Defines exit-(4) peeling and proves the exact one-load, \\(1/4\\)-charge update",
+     "6, 8; \\cref{def:typeA-saturated-exits}"
+    ],
+    [
+     "\\cref{lem:typeA-unpeeled-visible-routing}",
+     "Routes four visible unpeeled receiver-entry returns to one of exits 1--7",
+     "1, 8, 25, 30, 31; \\cref{def:typeA-exit4-peeling}"
+    ],
+    [
+     "\\cref{lem:typeA-unpeeled-silent-routing}",
+     "Routes the no-four-visible-return case to exits 4--8, with exit 4 carrying an unpeeled excess load",
+     "6, 8, 34, 35; \\cref{def:typeA-exit4-peeling}, \\cref{def:typeA-silent-core-residual}"
+    ],
+    [
+     "\\cref{lem:typeA-exit4-residual-routing}",
+     "Combines the visible and silent residual routing lemmas after prior exit-(4) peeling",
+     "\\cref{lem:typeA-unpeeled-visible-routing}, \\cref{lem:typeA-unpeeled-silent-routing}"
+    ],
+    [
+     "\\cref{def:typeA-continuation-classes}",
+     "Defines connector germs, first separators, and finite continuation classes",
+     "6, 8, 30, 31"
+    ],
+    [
+     "\\cref{lem:typeA-continuation-routing}",
+     "Routes nonabsorbed four-coordinate continuation data to exits 4--6 or a surviving first separator",
+     "6, 8, 30, 31; \\cref{def:typeA-continuation-classes}"
+    ],
+    [
+     "\\cref{lem:typeA-cubic-switch-absorption}, \\cref{lem:typeA-high-degree-handoff}",
+     "Turns surviving first separators into decorated Type B handoff envelopes",
+     "4, 6, 8; \\cref{def:typeA-continuation-classes}"
+    ],
+    [
+     "\\cref{lem:typeA-exits-discharged}",
+     "Closes exits 1--3, 5, and 6, peels exit 4, and transfers exit 7 to Type B",
+     "1, 6, 8, 25, 30, 31, 34, 35; \\cref{lem:typeA-exit4-discharge}, \\cref{lem:typeA-high-degree-handoff}"
+    ],
+    [
+     "\\cref{lem:typeA-threshold-algebra}",
+     "Computes raw receiver thresholds $H_0\\le4$, $H_1\\le8$, $H_2\\le12$",
+     "4, 24"
+    ],
+    [
+     "\\cref{lem:typeA-visible-entry}, \\cref{lem:typeA-silent-excess}, \\cref{lem:typeA-silent-excess-count}, \\cref{lem:typeA-reduced-silent-residual}",
+     "Split the saturated $4/8/12$ receiver branch into routes 1--8 and quantify the reduced silent trace-basin branch",
+     "1, 8, 22, 25, 30, 31, 34, 35"
+    ],
+    [
+     "\\cref{lem:typeA-saturated-handoff}",
+     "Removes closed exits 1--3, 5, and 6 and all exit-4 peeled target-defective loads before Type A discharging, hands exit 7 to Type B, and leaves reduced route 8 as a residual",
+     "\\cref{lem:typeA-visible-entry}, \\cref{lem:typeA-silent-excess}, \\cref{lem:typeA-unpeeled-visible-routing}, \\cref{lem:typeA-unpeeled-silent-routing}, \\cref{lem:typeA-exit4-residual-routing}, \\cref{lem:typeA-exits-discharged}, \\cref{def:typeA-silent-core-residual}"
+    ],
+    [
+     "\\cref{def:typeA-large-budget-deficit}",
+     "Defines the Type A route-8 deficit \\(D_A\\)",
+     "14, 24; \\cref{def:typeA-silent-core-residual}, \\cref{lem:typeA-reduced-silent-residual}"
+    ],
+    [
+     "\\cref{lem:typeA-route8-burden}",
+     "Gives the indexed basin lower bound \\(N_{\\rm basin}\\ge4D_A\\) and the large-budget lower bound for \\(D_A\\)",
+     "14, 24; \\cref{def:typeA-large-budget-deficit}"
+    ],
+    [
+     "\\cref{def:typeA-route8-carriers}, \\cref{def:typeA-true-route8-residual}",
+     "Defines route-8 entries, essential carrier cores, private carriers, and true route-8 residual entries",
+     "8, 23, 30, 31"
+    ],
+    [
+     "\\cref{lem:typeA-carrier-cut-parity}",
+     "Forces mixed target events in a carrier core to cross at least two carriers",
+     "1, 8, 30, 31; \\cref{def:typeA-route8-carriers}"
+    ],
+    [
+     "\\cref{lem:typeA-one-terminal-collapse}",
+     "Uses the cut-parity constraint to close zero/one essential-carrier entries by exits 4--7",
+     "1, 8, 30, 31; \\cref{lem:typeA-carrier-cut-parity}"
+    ],
+    [
+     "\\cref{prop:typeA-route8-carrier-reduction}",
+     "Spends the route-8 basin burden against the boundary-incidence ledger and reduces every surviving large-budget route-8 branch to a two-carrier entry",
+     "14, 23, 24; \\cref{cor:stub-boundary-supply}, \\cref{lem:typeA-route8-burden}, \\cref{lem:typeA-one-terminal-collapse}"
+    ],
+    [
+     "\\cref{def:typeA-carrier-deletion-witness}, \\cref{lem:typeA-essential-deletion-witness}, \\cref{lem:typeA-deletion-witness-declared}",
+     "Records deletion witnesses forced by inclusion-minimality of the essential carrier core and records their declared support and carrier support",
+     "6, 8, 23, 24; \\cref{def:typeA-route8-carriers}"
+    ],
+    [
+     "\\cref{lem:typeA-two-carrier-deletion-canonical}, \\cref{lem:typeA-carrier-deletion-exit}",
+     "Proves that a two-carrier declared deletion quotient is canonical exit (4), and that it realizes exit (4)",
+     "1, 6, 8, 30, 31; \\cref{lem:typeA-deletion-witness-declared}"
+    ],
+    [
+     "\\cref{def:typeA-terminal-two-carrier}, \\cref{thm:typeA-two-carrier-nogo}, \\cref{prop:typeA-route8-closure-from-nogo}",
+     "Packages the terminal two-carrier route-8 obstruction, proves the local no-go theorem, and derives full route-8 closure",
+     "\\cref{prop:typeA-route8-carrier-reduction}, \\cref{lem:typeA-two-carrier-deletion-canonical}, \\cref{lem:typeA-carrier-deletion-exit}"
+    ],
+    [
+     "\\cref{lem:typeA-unsaturated-discharge}",
+     "Unsaturated receivers give the $3/7/11$ charge inequality",
+     "4, 24"
+    ],
+    [
+     "\\cref{lem:typeA-exclusion}",
+     "Dense $\\sigma=0$ supports outside target-defect peeling, route 8, and the Type B handoff satisfy $\\defp\\ge|X|/4$; a negative one has target-defect, route-8, or Type B handoff data",
+     "1, 4, 8, 22, 23, 24, 25, 30, 31; \\cref{lem:typeA-saturated-handoff}, \\cref{lem:typeA-unsaturated-discharge}"
+    ],
+    [
+     "\\cref{def:typeB-window-incidence-profile}, \\cref{def:fan-closed-port}, \\cref{def:typeB-hybrid-incidence}",
+     "Define fan-window incidences, fan-closed ports, and the hybrid window/non-window credit ledger for one Type B fan",
+     "23, 24, 25"
+    ],
+    [
+     "\\cref{def:closed-fan-window-pair}, \\cref{def:direct-cycle-free-closed-pair}, \\cref{lem:typeB-direct-fan-window-cycles}, \\cref{lem:typeB-two-window-cycles}",
+     "Direct fan-window and two-window cycles are eliminated structurally before incidence credit is counted",
+     "1, 23, 30, 31"
+    ],
+    [
+     "\\cref{lem:typeB-multiclosed-budget}, \\cref{lem:typeB-hybrid-incidence-budget}, \\cref{lem:typeB-hybrid-B1}",
+     "Every certificate-marked positive-deficit survivor has deficit $D_B=c-\\frac{11-k}{4}$ paid locally by half-credit on disjoint window and non-window incidences before the global B2 ledger is invoked",
+     "23, 24, 25"
+    ],
+    [
+     "\\cref{prop:fan-closed-port-typeB-routing}, \\cref{cor:compatible-pair-typeB-routing}, \\cref{prop:triangular-port-typeB-routing}",
+     "Compatible-pair, degree-four triangular, and heavy triangular local routes enter the local Type B fan ledger",
+     "4, 8, 25, 30, 31"
+    ],
+    [
+     "\\cref{def:typeB-ledger-carriers}, \\cref{def:typeB-candidate-ledger}, \\cref{def:typeB-overlap-obstruction}, \\cref{lem:typeB-bridge-to-overlap}, \\cref{lem:typeB-global-local-reflection}, \\cref{prop:typeB-global-local-bridge}, \\cref{def:typeB-bridge-statements}, \\cref{prop:typeB-bridge-reduction}",
+     "For supports with no fan-certificate residual center, local Type B closure is reduced to the B2 refined support ledger after local B1 is proved; disjoint-carrier failure is a minimal overlap obstruction inheriting global constraints",
+     "1, 4, 8, 22, 23, 24, 25, 34, 35"
+    ],
+    [
+     "\\cref{def:decorated-fan-envelope}, \\cref{lem:decorated-fan-admissibility}",
+     "Records Type A exit-(7) data as an admissible decorated Type B handoff envelope",
+     "1, 4, 8, 22, 25; \\cref{lem:typeA-high-degree-handoff}"
+    ],
+    [
+     "\\cref{def:marked-typeB-fan}, \\cref{rem:fan-finite}",
+     "Defines certificate-marked Type B fans and records the fan-degree label-packing cap",
+     "16, 25"
+    ],
+    [
+     "\\cref{def:heavy-center-triangular-port}, \\cref{def:triangular-fan-core}, \\cref{lem:heavy-neighbourhood-normal-form}, \\cref{def:fan-compatible-open-ports}, \\cref{lem:same-center-open-port-compatibility}, \\cref{cor:degree-four-local-activation}, \\cref{lem:heavy-center-triangular-alternative}, \\cref{cor:heavy-center-local-dichotomy}",
+     "Splits degree-four and degree-greater-than-four centers into fan-compatible open pairs or triangular-port alternatives",
+     "4, 8, 16, 25"
+    ],
+    [
+     "\\cref{lem:triangular-shoulder-completion}, \\cref{lem:triangular-port-return}",
+     "Shows triangular shoulders have completion edges and that relevant returns enter through shoulders",
+     "1, 4, 8, 25, 30, 31"
+    ],
+    [
+     "\\cref{lem:triangular-first-landing}, \\cref{lem:triangular-cross-shoulder}",
+     "Exhausts first landings for triangular shoulders and supplies the second port in the cross-shoulder case",
+     "1, 4, 8, 25, 30, 31"
+    ],
+    [
+     "\\cref{lem:compatible-pair-fan-closure}",
+     "Routes compatible open pairs into two fan-closed ports",
+     "4, 8, 25; \\cref{def:fan-compatible-open-ports}"
+    ],
+    [
+     "\\cref{def:typeB-multiclosed-residual}, \\cref{lem:typeB-exclusion}",
+     "Excludes certificate-marked high-degree supports with no fan-certificate residual center under B2; positive-deficit fans are paid locally and B2 ledger failures are isolated",
+     "4, 8, 16, 24, 25; \\cref{lem:typeB-hybrid-incidence-budget}, \\cref{lem:typeB-hybrid-B1}"
+    ],
+    [
+     "\\cref{def:typeB-residual-mass}, \\cref{lem:decorated-envelope-with-route8-core}, \\cref{lem:typeB-bridge-deficit-bound}, \\cref{lem:typeB-bridge-with-route8-core}, \\cref{prop:typeB-bridge-sublinear}",
+     "Fan-certificate residual centers, grouped decorated envelopes, and B2 failures are charged to high-degree fan-center surplus units, with any route-8 non-window core extracted into the Type A deficit ledger; on the derived spine branch the remaining bridge mass is $O(\\sigma(G))=o(|R|)$",
+     "4, 14, 16, 24, 35, \\cref{def:near-cubic-spine}, \\cref{lem:typeB-hybrid-B1}, \\cref{def:typeB-bridge-statements}"
+    ],
+    [
+     "\\cref{thm:branch-kill}",
+     "Near-cubic entropy-admissible branch closure outside explicit Type A route 8 and Type B bridge residuals",
+     "20, 27, 28, 29, 35, 39, \\cref{def:near-cubic-spine}"
+    ],
+    [
+     "\\cref{thm:large-budget-route8-only}",
+     "Closes the remaining Type A target-defect/route-8 ledger: target-defect two-carrier entries are peeled by finite exit-\\textup{(4)} descent, and the terminal two-carrier route-8 entry is impossible",
+     "20, 27, 28, 29, 35, 39, \\cref{def:near-cubic-spine}, \\cref{prop:typeB-bridge-sublinear}, \\cref{def:typeA-peeling-reduced-ledger}, \\cref{lem:typeA-peeling-reduced-reduction}, \\cref{lem:typeA-pressure-is-exit4-peel}, \\cref{lem:typeA-exit4-finite-descent}, \\cref{prop:typeA-route8-carrier-reduction}"
+    ],
+    [
+     "\\cref{thm:main}",
+     "Main closure through sparse-surplus routing, the near-cubic entropy spine, and the terminal two-carrier route-8 no-go (using HSS)",
+     "all spine invariants: 1--8, 15, 20--24, 25--29, 35--41, 43--44; \\cref{prop:nonnear-cubic-sharp-overload-routing}, \\cref{def:near-cubic-spine}"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/10",
+   "title": "Setup and target algebra",
+   "group": "Per-lemma invariant requirements",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1353,
+   "headers": [
+    "Result",
+    "Stage",
+    "Diagram node(s)",
+    "Requires",
+    "What it does",
+    "Role"
+   ],
+   "rows": [
+    [
+     "\\cref{lem:return-equivalence}",
+     "R",
+     "[5]--[7] \\texttt{(target/ret/cycle)}",
+     "inv 1",
+     "A graph has a $2^k$ cycle iff some edge has a return path of length $2^k-1$ (a Mersenne number).",
+     "Converts the geometric target into an arithmetic one; the foundation."
+    ],
+    [
+     "\\cref{def:dyadic-safe}",
+     "R",
+     "[5] \\texttt{(target)}",
+     "inv 1",
+     "Defines ``dyadic-safe'' \\emph{contextually} (a cycle may exit and re-enter).",
+     "Makes safety a property of embedding --- the cumulative constraint."
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/11",
+   "title": "Minimality and replacement",
+   "group": "Per-lemma invariant requirements",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1366,
+   "headers": [
+    "Result",
+    "Stage",
+    "Diagram node(s)",
+    "Requires",
+    "What it does",
+    "Role"
+   ],
+   "rows": [
+    [
+     "\\cref{lem:no-proper-core}",
+     "MIN",
+     "[8] \\texttt{(core)}",
+     "inv 2, minimality",
+     "Every proper subgraph has a vertex of degree $\\le2$.",
+     "Forces $2$-degeneracy; no smaller $\\delta\\ge3$ piece."
+    ],
+    [
+     "\\cref{lem:deletion-critical}",
+     "MIN",
+     "[9] \\texttt{(delete)}, [10] \\texttt{(hiind)}",
+     "inv 3, 4",
+     "Every edge touches a degree-$3$ vertex; $V_{\\ge4}$ independent.",
+     "Buffers high-degree surplus through cubic vertices."
+    ],
+    [
+     "\\cref{lem:cycle-rank}",
+     "MIN",
+     "[4] \\texttt{(min)} $\\to$ rank identities",
+     "inv 9, 11",
+     "Cycle rank $\\beta\\ge n/2+1$ from $\\delta\\ge3$.",
+     "Quantifies forced cycle structure."
+    ],
+    [
+     "\\cref{lem:degree-profile-fibres}",
+     "REP",
+     "[11] \\texttt{(bd)}",
+     "inv 1, 6",
+     "Distinct boundary degree profiles cannot be quotient-merged.",
+     "Protects boundary bookkeeping under replacement."
+    ],
+    [
+     "\\cref{lem:context-universality}",
+     "REP",
+     "[12] \\texttt{(univ)}",
+     "inv 1, 7",
+     "A target-complete identification stays valid in every outside context.",
+     "Makes hazard profiles context-independent."
+    ],
+    [
+     "\\cref{lem:replacement}",
+     "REP",
+     "[13] \\texttt{(replace)}",
+     "inv 1, 6, 7; \\cref{lem:degree-profile-fibres}, \\cref{lem:context-universality}",
+     "Swap a sub-atom for a smaller no-more-hazardous one $\\Rightarrow$ smaller graph.",
+     "Engine of minimality."
+    ],
+    [
+     "\\cref{cor:uncompressible}",
+     "REP",
+     "[14] \\texttt{(uncomp)}",
+     "inv 8; \\cref{lem:replacement}",
+     "No proper atom can be target-compressed.",
+     "\\textbf{The contradiction lever.}"
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/12",
+   "title": "Entropy / skeleton budget",
+   "group": "Per-lemma invariant requirements",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1384,
+   "headers": [
+    "Result",
+    "Stage",
+    "Diagram node(s)",
+    "Requires",
+    "What it does",
+    "Role"
+   ],
+   "rows": [
+    [
+     "\\cref{lem:independent-target-entropy}",
+     "ENT",
+     "[18] \\texttt{(p13alg)} $\\to$ [22]",
+     "inv 1",
+     "Independent target-testable coordinates each consume skeleton entropy.",
+     "Sets the bit ``currency.''"
+    ],
+    [
+     "\\cref{lem:skeleton-dominates}",
+     "ENT",
+     "[21] \\texttt{(enum)}",
+     "inv 15",
+     "The labelled skeleton count dominates auxiliary data.",
+     "Justifies one common budget $B_{\\mathrm{skel}}$ once the edge-count branch is fixed."
+    ],
+    [
+     "\\cref{lem:variable-edge-budget}",
+     "ENT",
+     "[21] \\texttt{(enum)}",
+     "inv 10",
+     "Budget valid across the edge-count range.",
+     "Robustness to edge-count variation."
+    ],
+    [
+     "\\cref{lem:near-cubic-budget}",
+     "ENT",
+     "[21] \\texttt{(enum)}",
+     "\\cref{def:near-cubic-spine}",
+     "Near-cubic budget $B_{\\mathrm{skel}}=\\tfrac32 n\\log_2 n+o(n\\log n)$.",
+     "Pins the $\\tfrac32$ constant on the branch where the surplus-token routing has supplied the spine estimate."
+    ],
+    [
+     "\\cref{lem:surviving-active-family}",
+     "ENT\\slash SURP",
+     "[125]--[128] \\texttt{(active setup)}",
+     "inv 10, 14, 15; sparse surplus exits absent",
+     "A sparse-pressure survivor has the full active surplus family.",
+     "Sets up the active-demand side of the surplus branch."
+    ],
+    [
+     "\\cref{def:baseline-spine-demand}",
+     "ENT\\slash SURP",
+     "[129] \\texttt{(baseline)}",
+     "inv 14, 15; \\cref{lem:surviving-active-family}",
+     "Fixes the \\(O(n)\\)-deficit baseline demand used by the surplus accounting branch.",
+     "Supplies the common demand baseline for the later sandwich."
+    ],
+    [
+     "\\cref{lem:exact-cubic-baseline-budget}, \\cref{lem:incremental-skeleton-room}",
+     "ENT\\slash SURP",
+     "[131] \\texttt{(free pairs)}",
+     "inv 10, 14, 15; \\cref{def:baseline-spine-demand}",
+     "Computes the cubic baseline budget and the incremental edge-count room above cubic.",
+     "Supplies the numerical room used by the surplus-pair entropy sandwich."
+    ],
+    [
+     "\\cref{prop:sparse-entropy-sandwich}",
+     "ENT\\slash SURP",
+     "[131] \\texttt{(free pairs)}",
+     "inv 10, 14, 15; \\cref{lem:exact-cubic-baseline-budget}, \\cref{lem:incremental-skeleton-room}",
+     "Charges blocker-free surplus-pair responses to the exact cubic-baseline sandwich.",
+     "Handles the free-pair side."
+    ],
+    [
+     "\\cref{prop:sparse-entropy-sandwich-with-blockers}",
+     "ENT\\slash SURP",
+     "[132] \\texttt{(blocked?)}",
+     "inv 10, 14, 15; \\cref{prop:sparse-entropy-sandwich}",
+     "Extends the entropy sandwich to the blocked case, leaving only canonical blocker debt.",
+     "Sends blocked pairs to the blocker ledger."
+    ],
+    [
+     "\\cref{def:spine-lower-bound-deficits}",
+     "ENT\\slash SURP",
+     "[129] \\texttt{(baseline)}",
+     "inv 14, 15; \\cref{def:baseline-spine-demand}",
+     "Records the lower-bound deficit packages.",
+     "Supplies the deficit side of the surplus estimates."
+    ],
+    [
+     "\\cref{cor:spine-lower-bound-surplus-estimates}",
+     "ENT\\slash SURP",
+     "[138] \\texttt{(nearclose)}",
+     "inv 14, 15; \\cref{def:spine-lower-bound-deficits}",
+     "Converts the lower-bound packages into surplus estimates used when the branch routes to the near-cubic spine.",
+     "Supplies the near-cubic cap side of the surplus sandwich."
+    ],
+    [
+     "\\cref{def:canonical-blocker-ledger}",
+     "ENT\\slash SURP",
+     "[132]--[134] \\texttt{(canonical blockers)}",
+     "inv 10, 14, 15; \\cref{prop:sparse-entropy-sandwich-with-blockers}",
+     "Defines the canonical blocker assigned to each blocked response.",
+     "Makes the blocked-pair assignment single-valued."
+    ],
+    [
+     "\\cref{lem:canonical-blocker-ledger-no-overcount}",
+     "ENT\\slash SURP",
+     "[134] \\texttt{(blocker ledger)}",
+     "inv 10, 14, 15; \\cref{def:canonical-blocker-ledger}",
+     "Proves the canonical blocker ledger counts each blocked response once.",
+     "Prevents overcounting before capacity tokens are introduced."
+    ],
+    [
+     "\\cref{def:primitive-sparse-blocker-carrier}, \\cref{lem:primitive-carrier-supply}",
+     "ENT\\slash SURP",
+     "[134] \\texttt{(primitive carrier)}",
+     "inv 14, 15; \\cref{def:canonical-blocker-ledger}",
+     "Primitive sparse blocker carriers supply the primitive-carrier token class.",
+     "Supplies the primitive-carrier side of the token ledger."
+    ],
+    [
+     "\\cref{def:capacity-token-ledger}",
+     "ENT\\slash SURP",
+     "[134]--[136] \\texttt{(capacity tokens)}",
+     "inv 10, 14, 15; \\cref{lem:canonical-blocker-ledger-no-overcount}",
+     "Defines the capacity-token fibres attached to the blocked-pair ledger.",
+     "Names the token side of the blocked-pair accounting."
+    ],
+    [
+     "\\cref{lem:capacity-token-supply}",
+     "ENT\\slash SURP",
+     "[136] \\texttt{(token supply)}",
+     "inv 10, 14, 15; \\cref{def:capacity-token-ledger}",
+     "Records the window, remainder-surplus, and primitive-carrier token supplies.",
+     "Supplies the three capacity classes for the coupled high-load test."
+    ],
+    [
+     "\\cref{lem:token-ledger-no-overcount}",
+     "ENT\\slash SURP",
+     "[136] \\texttt{(token partition)}",
+     "inv 10, 14, 15; \\cref{def:capacity-token-ledger}",
+     "Proves the token fibres partition the blocked-pair set exactly.",
+     "Prevents double counting on the token side."
+    ],
+    [
+     "\\cref{def:window-remainder-surplus-split}",
+     "ENT\\slash SURP",
+     "[135] \\texttt{(join)}",
+     "inv 14, 23, 24; \\cref{def:capacity-token-ledger}",
+     "Defines the window/remainder surplus split.",
+     "Sets the notation for the packed-window join identity."
+    ],
+    [
+     "\\cref{lem:exact-window-join-identity}, \\cref{lem:surplus-aware-window-stub}",
+     "ENT\\slash SURP",
+     "[135] \\texttt{(join)}",
+     "inv 14, 23, 24; \\cref{def:window-remainder-surplus-split}",
+     "Gives the exact window-incidence supply \\(15p_{13}+\\sigma_W\\) and the surplus-aware stub pressure.",
+     "Supplies the window side of the token capacities."
+    ],
+    [
+     "\\cref{cor:global-window-join-pressure}",
+     "ENT\\slash SURP",
+     "[136] \\texttt{(supply)}",
+     "inv 14, 23, 24; \\cref{lem:exact-window-join-identity}, \\cref{lem:surplus-aware-window-stub}",
+     "Globalizes the join pressure into the coupled token budget.",
+     "Supplies the window/remainder side of the token capacities."
+    ],
+    [
+     "\\cref{def:same-token-patterns}",
+     "ENT\\slash SURP",
+     "[136] \\texttt{(token fibres)}",
+     "inv 14, 15; \\cref{def:capacity-token-ledger}",
+     "Defines same-token fibres.",
+     "Names the fibres used by the high-load split."
+    ],
+    [
+     "\\cref{def:same-token-blocker-roles}",
+     "ENT\\slash SURP",
+     "[139]--[143] \\texttt{(token roles)}",
+     "inv 14, 15; \\cref{def:same-token-patterns}",
+     "Defines the window-incidence, remainder-surplus, and primitive-carrier roles.",
+     "Names the three token classes used in the high-load split."
+    ],
+    [
+     "\\cref{cor:forced-homogeneous-same-token-scale}, \\cref{lem:capacity-token-high-load}",
+     "ENT\\slash SURP",
+     "[137] \\texttt{(high-load test)}",
+     "inv 10, 14, 15; \\cref{lem:capacity-token-supply}, \\cref{lem:token-ledger-no-overcount}",
+     "Gives the coupled single-graph high-load alternative.",
+     "Determines whether the branch routes to [138] or to a role class."
+    ],
+    [
+     "\\cref{thm:tokenized-surplus-accounting-closure}",
+     "ENT\\slash SURP",
+     "[137]--[143] \\texttt{(role split)}",
+     "inv 10, 14, 15; \\cref{cor:forced-homogeneous-same-token-scale}, \\cref{lem:capacity-token-high-load}",
+     "Splits the forced load into the window-incidence, remainder-surplus, and primitive-carrier token classes.",
+     "Records the sharp load alternative before geometric routing."
+    ],
+    [
+     "\\cref{def:same-token-routing-germs}",
+     "ENT\\slash SURP",
+     "[140], [142], [143] \\texttt{(role audits)}",
+     "inv 4, 8, 14, 15; \\cref{def:same-token-blocker-roles}",
+     "Defines the routing germs used in the three role audits.",
+     "Names the geometric data audited by the bottleneck lemma."
+    ],
+    [
+     "\\cref{lem:same-token-matching-star}",
+     "ENT\\slash SURP",
+     "[140], [142], [143] \\texttt{(role audits)}",
+     "inv 4, 8, 14, 15; \\cref{def:same-token-routing-germs}",
+     "A large same-token load contains a matching or star in the active role class.",
+     "Produces the combinatorial pattern audited by homogeneous extraction."
+    ],
+    [
+     "\\cref{lem:same-token-homogeneous-extraction}",
+     "ENT\\slash SURP",
+     "[140], [142], [143] \\texttt{(role audits)}",
+     "inv 4, 8, 14, 15; \\cref{lem:same-token-matching-star}",
+     "The matching or star contains a homogeneous role subpattern.",
+     "Produces the geometric pattern audited by the bottleneck lemma."
+    ],
+    [
+     "\\cref{lem:same-token-bottleneck-routing}, \\cref{thm:homogeneous-overload-geometric-closure}",
+     "ENT\\slash SURP",
+     "[144] \\texttt{(bottleneck)}",
+     "inv 4, 8, 14, 15; sparse surplus exits and Type B routing where applicable",
+     "The homogeneous bottleneck realizes a sparse surplus exit, produces Type B fan data, or falls under fixed homogeneous caps.",
+     "Discharges the geometric audit."
+    ],
+    [
+     "\\cref{cor:homogeneous-same-token-caps-close}",
+     "ENT\\slash SURP",
+     "[138] \\texttt{(nearclose)}",
+     "inv 14, 15; \\cref{thm:homogeneous-overload-geometric-closure}",
+     "Fixed homogeneous caps route the remaining branch to the near-cubic spine.",
+     "Supplies the cap-to-spine route."
+    ],
+    [
+     "\\cref{prop:nonnear-cubic-sharp-overload-routing}",
+     "ENT\\slash SURP",
+     "[144] \\texttt{(bottleneck)}",
+     "inv 14, 15; \\cref{cor:homogeneous-same-token-caps-close}",
+     "Combines the sparse-pressure discharge with the cap-to-spine route.",
+     "Closes the non-near-cubic surplus branch or derives the near-cubic spine."
+    ],
+    [
+     "\\cref{lem:state-count-comparison}",
+     "ENT",
+     "[22] \\texttt{(many)}",
+     "inv 1; \\cref{lem:skeleton-dominates}",
+     "\\#realizable states $\\le$ \\#labelled graphs.",
+     "The counting contradiction step."
+    ],
+    [
+     "\\cref{lem:p13-window-package}",
+     "ENT",
+     "[21] \\texttt{(enum)} $\\to$ [22] \\texttt{(many)}",
+     "inv 1, 25; \\cref{def:near-cubic-spine}; \\cref{app:curv-code}",
+     "Converts the finite \\(91\\)-barrier computation into \\((c_{13}-o(1))p_{13}\\log_2 n\\) independent window coordinates.",
+     "Names the load-bearing window package used by the density cap."
+    ],
+    [
+     "\\cref{def:cold-window-ledger,def:surviving-cold-branch,lem:hot-failure-cold-mass,def:cold-skeleton-excess,lem:cold-window-stub-excess,lem:cold-short-self-return-filter,def:cold-bounded-germ,def:cold-corridor-first-failure,lem:cold-corridor-first-failure,lem:cold-germ-extraction,lem:cold-bounded-germ-trichotomy,def:cold-same-interface-table,lem:cold-same-interface-table,lem:cold-increment-arithmetic,thm:cold-branch-quantitative-closure}",
+     "ENT\\slash EXC",
+     "[145]--[157] \\texttt{(cold)}",
+     "inv 1, 8, 14, 15, 20, 35, 38; \\cref{def:near-cubic-spine}; \\cref{lem:p13-window-package}; \\cref{thm:large-budget-route8-only}",
+     "Quantifies the hot/cold branch: \\(\\theta<1/78\\) is route-8 closed; hot failure gives \\(C\\ge(\\theta-\\theta_{\\rm win})n-o(n)\\), \\(b\\ge13C-o(n)\\), and \\(N_{\\rm germ}\\ge13C/D_{\\rm cold}-o(n)\\); bounded germs route by hit, defect, same-interface table, handoff, or compression.",
+     "Records the terminal cold-window closure used by the downstream large-budget route."
+    ],
+    [
+     "\\cref{prop:p13-density}",
+     "ENT",
+     "[24] \\texttt{(theta)}",
+     "inv 20; \\cref{def:near-cubic-spine}; \\cref{lem:p13-window-package}; \\cref{lem:independent-target-entropy}",
+     "Independent induced-$P_{13}$ density $\\theta\\le\\theta_{\\rm win}$ after the surplus-token branch supplies the spine estimate, with sharper high-entropy cap $\\theta\\le0.011985$.",
+     "Kills the high-$P_{13}$ branch on the derived spine branch; forces a large remainder."
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/13",
+   "title": "$P_{13}$ packing and forced remainder",
+   "group": "Per-lemma invariant requirements",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1429,
+   "headers": [
+    "Result",
+    "Stage",
+    "Diagram node(s)",
+    "Requires",
+    "What it does",
+    "Role"
+   ],
+   "rows": [
+    [
+     "\\cref{cor:p13-exists}",
+     "REM",
+     "[15] \\texttt{(p13free)}",
+     "\\cref{thm:p13free}",
+     "A counterexample contains an induced $P_{13}$.",
+     "Entry to the window/remainder split."
+    ],
+    [
+     "\\cref{lem:labels}",
+     "REM",
+     "[18] \\texttt{(p13alg)}",
+     "inv 7, 25",
+     "$399$ legal $P_{13}$ labels; zero-defect quotient through lengths $1,2,3$ is the identity.",
+     "The finite window-safety algebra."
+    ],
+    [
+     "\\cref{lem:curv-enum}",
+     "REM\\slash CURV",
+     "[21] \\texttt{(enum)}",
+     "inv 25, 26",
+     "$432672/543958$ of safe wedges are curvature-positive.",
+     "Finite count feeding curvature supply."
+    ],
+    [
+     "\\cref{lem:stub-positive}",
+     "REM",
+     "[26] \\texttt{(R)}, [29] \\texttt{(stub)}",
+     "\\cref{thm:p13free}, inv 21, 22, 23, 24",
+     "Remainder ($\\ge83.4\\%$) gets $\\le15$ incidences/window; \\(\\defp(R)\\le15p_{13}+o(n)\\) and \\(\\defp(R)-\\sigma_R\\le15p_{13}+o(n)\\).",
+     "\\textbf{Supply ceiling} of the final collision."
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/14",
+   "title": "Curvature supply, rank, two-budget",
+   "group": "Per-lemma invariant requirements",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1444,
+   "headers": [
+    "Result",
+    "Stage",
+    "Diagram node(s)",
+    "Requires",
+    "What it does",
+    "Role"
+   ],
+   "rows": [
+    [
+     "\\cref{lem:wedge-lower}",
+     "CURV",
+     "[30] \\texttt{(wedge)}",
+     "inv 21, 28; \\cref{cor:stub-boundary-supply}",
+     "Remainder has $\\ge2.543\\cdot|R|$ raw two-step curvature tests on the derived spine branch, with the sharper high-entropy value $\\ge2.574\\cdot|R|$.",
+     "\\textbf{Demand floor} of the final collision."
+    ],
+    [
+     "\\cref{lem:target-rank-circuit}",
+     "CURV",
+     "[31] \\texttt{(rank)}, [32] \\texttt{(drop)}",
+     "\\cref{def:functional-rank-quotient,def:curvature-target-rank}",
+     "Extracts a finite functional target-dependence from a rank drop.",
+     "Makes the rank-drop interface explicit."
+    ],
+    [
+     "\\cref{lem:curvature-dependence-routing}",
+     "CURV",
+     "[32] \\texttt{(drop)}, [33] \\texttt{(depopen)}",
+     "inv 26, 28; \\cref{lem:target-rank-circuit}",
+     "Localizes the three ways curvature dependence arises.",
+     "Organizes the forced-rank case analysis."
+    ],
+    [
+     "\\cref{lem:separated-testers}",
+     "CURV",
+     "[35] \\texttt{(dep)}",
+     "inv 28, 38",
+     "Separated wedges tested by disjoint contexts.",
+     "Ensures curvature tests are independent."
+    ],
+    [
+     "\\cref{lem:proper-smearing}",
+     "CURV",
+     "[40] \\texttt{(Z)}, [41] \\texttt{(properZ)}",
+     "inv 34",
+     "Proper delocalization supports are forbidden.",
+     "Blocks the ``spread it out'' escape."
+    ],
+    [
+     "\\cref{lem:smearing-support-repair}",
+     "CURV",
+     "[44] \\texttt{(rankwall)}",
+     "inv 35",
+     "Enlarged delocalization $=$ repair networks.",
+     "Converts the other escape into killed structure."
+    ],
+    [
+     "\\cref{lem:no-silent-global-smearing}",
+     "CURV",
+     "[43] \\texttt{(global)}",
+     "inv 34, 35; \\cref{def:exact-response-profile,def:admissible-rank-quotient}",
+     "Whole-graph dependence is target-defective, a smaller closed counterexample, or exact on raw curvature labels.",
+     "Closes the delocalization loophole."
+    ],
+    [
+     "\\cref{lem:full-rank}",
+     "CURV",
+     "[47] \\texttt{(fullrank)}",
+     "inv 28, 29; \\cref{lem:no-silent-global-smearing}",
+     "Curvature rank $\\ge W_2-o(|R|)$.",
+     "Forces near-maximal demand."
+    ],
+    [
+     "\\cref{cor:forced-curvature-cost}",
+     "CURV",
+     "[48] \\texttt{(cost)}",
+     "inv 27, 28; \\cref{lem:full-rank}",
+     "Curvature rank $\\to$ entropy tax ($c_\\Omega$ bits each).",
+     "Puts demand into budget currency."
+    ],
+    [
+     "\\cref{lem:dominant-type}",
+     "2BUD",
+     "[49] \\texttt{(eta)}, [50] \\texttt{(expensive)}",
+     "inv 15, 26",
+     "A dominant local vertex-type appears in the low-entropy branch.",
+     "Handles the cheap-entropy regime."
+    ],
+    [
+     "\\cref{lem:translates-independent}",
+     "2BUD",
+     "[51] \\texttt{(expbranch)}",
+     "inv 26, 29; \\cref{lem:dominant-type}",
+     "The dominant type forces a positive linear family of independent curvature translates.",
+     "Supplies a rank input in the repetitive low-entropy branch."
+    ],
+    [
+     "\\cref{prop:two-budget}",
+     "2BUD",
+     "[52] \\texttt{(windowacct)}",
+     "inv 20, 27, 29",
+     "Two-budget routing: high entropy closes by window count; repetitive low entropy gives a rank input; nonrepetitive low entropy routes forward.",
+     "Prevents an invalid entropy overcount and preserves the net-charge route."
+    ],
+    [
+     "\\cref{prop:entropy-high-theta}",
+     "2BUD",
+     "[53] \\texttt{(smallbudget)}",
+     "inv 20, 27",
+     "The high-$\\theta$ branch is closed by the entropy cap.",
+     "Closes one side of the dichotomy."
+    ],
+    [
+     "\\cref{rem:closure-robust}",
+     "2BUD",
+     "[54] \\texttt{(entcap)}",
+     "inv 8, 24, 29",
+     "Closure already holds at $K=0$ (curvature machinery dispensable).",
+     "Over-determination / graceful degradation."
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/15",
+   "title": "Large-budget residual and local exclusion (terminus)",
+   "group": "Per-lemma invariant requirements",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1469,
+   "headers": [
+    "Result",
+    "Stage",
+    "Diagram node(s)",
+    "Requires",
+    "What it does",
+    "Role"
+   ],
+   "rows": [
+    [
+     "\\cref{def:canonical-decomp}",
+     "LB",
+     "[55] \\texttt{(thetaN)}",
+     "inv 21, 22",
+     "Canonical decomposition of a support into atoms.",
+     "Sets up per-cell net-charge bookkeeping."
+    ],
+    [
+     "\\cref{def:admissible}",
+     "LB",
+     "[55] \\texttt{(thetaN)}",
+     "inv 1, 6, 8, 22, 23, 24",
+     "Admissible support carrying all cumulative constraints.",
+     "The object the exclusion lemmas act on."
+    ],
+    [
+     "\\cref{lem:netcharge-superadd}",
+     "LB",
+     "[56] \\texttt{(netcap)}, [58] \\texttt{(Ndef)}",
+     "inv 13, 14, 24",
+     "Net charge localizes exactly over the connected components of $R$.",
+     "Cell-wise $\\No\\ge0$ sums to a global deficiency bound."
+    ],
+    [
+     "\\cref{prop:negative-net-charge}",
+     "LB",
+     "[59] \\texttt{(globalnet)}",
+     "inv 14, 24; \\cref{lem:netcharge-superadd}",
+     "The large-budget residual has negative net charge.",
+     "Selects the supports to kill."
+    ],
+    [
+     "\\cref{def:typeA-receiver-load}, \\cref{lem:typeA-receiver-loads}",
+     "EXC",
+     "[88] \\texttt{(thresholds)}",
+     "inv 23, 24",
+     "Defines receivers, missing-port count $q(w)$, routed load $L(w)$, and canonical load routing.",
+     "Supplies the bookkeeping variables for Type A."
+    ],
+    [
+     "\\cref{def:typeA-visible-load}",
+     "EXC",
+     "[93] \\texttt{(visible)}",
+     "\\cref{def:typeA-receiver-load}",
+     "Defines anchored returns, receiver-entry returns, visible loads, and silent loads for one completion port.",
+     "Supplies the visible/silent split tested at node [93]."
+    ],
+    [
+     "\\cref{lem:typeA-first-entry}, \\cref{lem:typeA-entry-budget}",
+     "EXC",
+     "[93] \\texttt{(visible)}",
+     "inv 23; \\cref{def:typeA-visible-load}",
+     "Proves that the first entry of an anchored return is a receiver and records the degree-two entry budget.",
+     "Keeps receiver-entry returns inside the Type A receiver bookkeeping."
+    ],
+    [
+     "\\cref{lem:typeA-port-return}",
+     "EXC",
+     "[89] \\texttt{(saturated)}, [93] \\texttt{(visible)}, [94] \\texttt{(silent)}, [109] \\texttt{(route8)}",
+     "inv 1, 30; \\cref{lem:bridgeless}",
+     "Every completion port has an anchored return.",
+     "Makes every saturated port test nonvacuous."
+    ],
+    [
+     "\\cref{def:typeA-channel-spectrum}, \\cref{lem:typeA-spectral-pressure}, \\cref{def:typeA-silent-core-residual}",
+     "EXC",
+     "[109] \\texttt{(route8)}",
+     "inv 1, 22, 23, 25, 30, 31",
+     "Defines route-8 residual data, target-complete-minimal trace basins, the declared $u$-supported response algebra, and connector bands forced by all internal channels.",
+     "Records the reduced silent trace-basin branch."
+    ],
+    [
+     "\\cref{def:typeA-saturated-exits}",
+     "EXC",
+     "[95]--[109]",
+     "inv 1, 6, 8, 22, 25, 30, 31, 34, 35",
+     "Enumerates the eight alternatives tested after node [89] is saturated.",
+     "Provides the common exit language for nodes [95]--[109]."
+    ],
+    [
+     "\\cref{def:typeA-exit4-peeling}",
+     "EXC",
+     "[101] \\texttt{(exit4)}",
+     "inv 6, 8; \\cref{def:typeA-saturated-exits}",
+     "Defines the peeling set for exit (4).",
+     "Names the loads that can be removed by the exit-(4) loop."
+    ],
+    [
+     "\\cref{lem:typeA-exit4-peeling-charge}",
+     "EXC",
+     "[102] \\texttt{(peel)}",
+     "inv 6, 8; \\cref{def:typeA-exit4-peeling}",
+     "Proves the exact \\(1/4\\) charge update for one peeled load.",
+     "Supplies the numerical update for the loop."
+    ],
+    [
+     "\\cref{lem:typeA-exit4-discharge}",
+     "EXC",
+     "[102] \\texttt{(peel)}, [89] \\texttt{(loop)}",
+     "inv 6, 8; \\cref{lem:typeA-exit4-peeling-charge}",
+     "Proves that one supported unpeeled load is removed at exit (4).",
+     "Makes the [102] return to [89] a finite strictly decreasing loop in \\(L_4(w)\\)."
+    ],
+    [
+     "\\cref{lem:typeA-unpeeled-visible-routing}",
+     "EXC",
+     "[93] \\texttt{(visible)}, [95]--[108]",
+     "inv 1, 8, 25, 30, 31; \\cref{def:typeA-exit4-peeling}",
+     "Four visible unpeeled receiver-entry returns realize one of exits (1)--(7), with exit (4) supporting an unpeeled load.",
+     "Routes the yes-branch of [93]."
+    ],
+    [
+     "\\cref{lem:typeA-unpeeled-silent-routing}",
+     "EXC",
+     "[94] \\texttt{(silent)}, [101]--[109]",
+     "inv 6, 8, 34, 35; \\cref{def:typeA-exit4-peeling}, \\cref{def:typeA-silent-core-residual}",
+     "If no port has four visible unpeeled returns, the residual excess set realizes one of exits (4)--(8), with exit (4) supporting an unpeeled excess load.",
+     "Routes the no-branch of [93]."
+    ],
+    [
+     "\\cref{lem:typeA-exit4-residual-routing}",
+     "EXC",
+     "[89] \\texttt{(saturated)}, [93] \\texttt{(visible)}, [94] \\texttt{(silent)}, [101] \\texttt{(exit4)}, [102] \\texttt{(peel)}, [109] \\texttt{(route8)}",
+     "\\cref{lem:typeA-unpeeled-visible-routing}, \\cref{lem:typeA-unpeeled-silent-routing}",
+     "Combines the visible and silent residual routing lemmas after any previous peeling.",
+     "Iterates saturated routing until a closed exit, Type B handoff, route 8, or unsaturation occurs."
+    ],
+    [
+     "\\cref{def:typeA-continuation-classes}",
+     "EXC",
+     "[107] \\texttt{(exit7)}",
+     "inv 6, 8, 30, 31",
+     "Defines connector germs, first separators, and the finite continuation classes.",
+     "Supplies the vocabulary for the exit-(7) split."
+    ],
+    [
+     "\\cref{lem:typeA-continuation-routing}",
+     "EXC",
+     "[107] \\texttt{(exit7)}; feeds [101], [103], [105] when absorbed",
+     "inv 6, 8, 30, 31; \\cref{def:typeA-continuation-classes}",
+     "A nonabsorbed four-coordinate family either realizes exits (4)--(6) or has a surviving first separator.",
+     "Routes the absorbed subcases back to the already listed saturated exits."
+    ],
+    [
+     "\\cref{lem:typeA-cubic-switch-absorption}",
+     "EXC",
+     "[107] \\texttt{(exit7)}",
+     "inv 4, 6, 8; \\cref{def:typeA-continuation-classes}",
+     "Cubic switches are absorbed unless a surviving first separator remains.",
+     "Removes the cubic part of exit (7)."
+    ],
+    [
+     "\\cref{lem:typeA-high-degree-handoff}",
+     "EXC",
+     "[108] \\texttt{(decorB)}",
+     "inv 4, 6, 8; \\cref{lem:typeA-cubic-switch-absorption}",
+     "A surviving separator has ambient degree at least four and produces a decorated Type B handoff envelope.",
+     "Converts exit (7) into the Type B input [108]."
+    ],
+    [
+     "\\cref{lem:typeA-exits-discharged}",
+     "EXC",
+     "[95]--[108]",
+     "inv 1, 6, 8, 25, 30, 31, 34, 35; \\cref{lem:typeA-exit4-discharge}, \\cref{lem:typeA-high-degree-handoff}",
+     "Closes exits (1)--(3), (5), and (6), peels one load at exit (4), and transfers exit (7) to Type B.",
+     "Records the outcome of the explicit saturated-exit tests."
+    ],
+    [
+     "\\cref{lem:typeA-threshold-algebra}",
+     "EXC",
+     "[88] \\texttt{(thresholds)}",
+     "inv 4, 24",
+     "Computes $H_0\\le4$, $H_1\\le8$, $H_2\\le12$.",
+     "Identifies the saturated branch-switch values."
+    ],
+    [
+     "\\cref{lem:typeA-visible-entry}",
+     "EXC",
+     "[93] \\texttt{(visible)}",
+     "inv 1, 8, 25, 30, 31",
+     "Four visible receiver-entry returns force target, quotient, delocalization, or decorated handoff fan data.",
+     "Closes the visible saturated branch."
+    ],
+    [
+     "\\cref{lem:typeA-silent-excess}",
+     "EXC",
+     "[94] \\texttt{(silent)}",
+     "inv 6, 8, 34, 35; \\cref{def:decorated-fan-envelope}, \\cref{def:typeA-silent-core-residual}",
+     "Silent/mixed excess forces compression, delocalization, decorated handoff fan data, or indexed target-complete-minimal trace basins.",
+     "Closes the silent branch outside route 8."
+    ],
+    [
+     "\\cref{lem:typeA-silent-excess-count}, \\cref{lem:typeA-reduced-silent-residual}",
+     "EXC",
+     "[109] \\texttt{(route8)}",
+     "inv 6, 8, 34, 35; \\cref{lem:typeA-silent-excess}",
+     "Visible-first excess gives \\(S_{\\rm sil}^{\\rm exc}(X)\\ge4D_A(X)\\) and records the reduced route-8 residual.",
+     "Quantifies the silent route-8 residual."
+    ],
+    [
+     "\\cref{lem:typeA-saturated-handoff}",
+     "EXC",
+     "[89] \\texttt{(saturated)}, [109] \\texttt{(route8)}",
+     "\\cref{lem:typeA-visible-entry}, \\cref{lem:typeA-silent-excess}, \\cref{lem:typeA-unpeeled-visible-routing}, \\cref{lem:typeA-unpeeled-silent-routing}, \\cref{lem:typeA-exit4-residual-routing}, \\cref{lem:typeA-exits-discharged}",
+     "Removes closed exits 1--3, 5, and 6 and exit-4 peeled loads from the $4/8/12$ branch, hands exit 7 to Type B, and leaves reduced route 8 as a residual.",
+     "Leaves unsaturated Type A plus the target-defect exit, the Type B handoff, and the quantified route-8 branch."
+    ],
+    [
+     "\\cref{def:typeA-large-budget-deficit}",
+     "EXC",
+     "[111] \\texttt{(deficit)}",
+     "inv 14, 24; \\cref{def:typeA-silent-core-residual}, \\cref{lem:typeA-reduced-silent-residual}",
+     "Defines the Type A route-8 deficit \\(D_A\\) extracted from the reduced silent residual.",
+     "Names the route-8 part of the final pressure/route-8 closure."
+    ],
+    [
+     "\\cref{lem:typeA-route8-burden}",
+     "EXC",
+     "[112] \\texttt{(basins)}, [113] \\texttt{(burden)}",
+     "inv 14, 24; \\cref{def:typeA-large-budget-deficit}",
+     "Proves the indexed basin lower bound \\(N_{\\rm basin}\\ge4D_A\\) and the large-budget lower bound for \\(D_A\\).",
+     "Gives the lower side of the route-8 carrier count."
+    ],
+    [
+     "\\cref{def:typeA-route8-carriers}",
+     "EXC",
+     "[110] \\texttt{(route8)}",
+     "inv 8, 23, 30, 31; \\cref{def:typeA-silent-core-residual}",
+     "Defines indexed route-8 entries, active boundary carriers, essential carrier cores, and private carriers.",
+     "Supplies the carrier vocabulary."
+    ],
+    [
+     "\\cref{def:typeA-true-route8-residual}",
+     "EXC",
+     "[114] \\texttt{(core)}",
+     "inv 8, 23, 30, 31; \\cref{def:typeA-route8-carriers}",
+     "Defines true route-8 residual entries after exits (1)--(7) are absent.",
+     "States the residual condition used after [114]."
+    ],
+    [
+     "\\cref{lem:typeA-carrier-cut-parity}",
+     "EXC",
+     "[114] \\texttt{(core)}",
+     "inv 1, 8, 30, 31; \\cref{def:typeA-route8-carriers}",
+     "A mixed target event in the carrier core crosses at least two carriers.",
+     "Gives the cut-parity constraint on essential carrier cores."
+    ],
+    [
+     "\\cref{lem:typeA-one-terminal-collapse}",
+     "EXC",
+     "[115] \\texttt{(smallcore)}, [116] \\texttt{(closedexits)}",
+     "inv 1, 8, 30, 31; \\cref{lem:typeA-carrier-cut-parity}",
+     "Zero/one-essential-carrier entries realize exits (4)--(7).",
+     "Removes the small-core branch at [115]."
+    ],
+    [
+     "\\cref{prop:typeA-route8-carrier-reduction}",
+     "EXC",
+     "[117]--[123]",
+     "inv 14, 23, 24; \\cref{cor:stub-boundary-supply}, \\cref{lem:typeA-route8-burden}, \\cref{lem:typeA-one-terminal-collapse}",
+     "If no two-carrier entry exists, three private carriers per basin violate the boundary-incidence budget; hence a two-carrier entry exists.",
+     "Closes route 8 outside the terminal two-carrier entry."
+    ],
+    [
+     "\\cref{def:typeA-carrier-deletion-witness}, \\cref{lem:typeA-essential-deletion-witness}, \\cref{lem:typeA-deletion-witness-declared}",
+     "EXC",
+     "[118] \\texttt{(two-carrier)}",
+     "inv 6, 8, 23, 24; \\cref{def:typeA-route8-carriers}",
+     "Inclusion-minimality of the essential carrier core gives a declared deletion witness for every essential carrier.",
+     "Supplies the witness data used at [124]."
+    ],
+    [
+     "\\cref{lem:typeA-two-carrier-deletion-canonical}",
+     "EXC",
+     "[118] \\texttt{(two-carrier)}",
+     "inv 1, 6, 8, 30, 31; \\cref{lem:typeA-deletion-witness-declared}",
+     "In a two-carrier entry, each declared deletion quotient lies in the canonical exit-(4) family.",
+     "Converts the terminal carrier data into canonical exit-(4) data."
+    ],
+    [
+     "\\cref{lem:typeA-carrier-deletion-exit}",
+     "EXC",
+     "[124] \\texttt{(nogo)}",
+     "inv 1, 6, 8, 30, 31; \\cref{lem:typeA-two-carrier-deletion-canonical}",
+     "Each canonical deletion quotient realizes exit (4).",
+     "Produces the forbidden absent exit in the terminal residual."
+    ],
+    [
+     "\\cref{def:typeA-terminal-two-carrier}, \\cref{thm:typeA-two-carrier-nogo}, \\cref{prop:typeA-route8-closure-from-nogo}",
+     "EXC",
+     "[124] \\texttt{(nogo)}",
+     "\\cref{prop:typeA-route8-carrier-reduction}, \\cref{lem:typeA-two-carrier-deletion-canonical}, \\cref{lem:typeA-carrier-deletion-exit}",
+     "Packages the terminal two-carrier obstruction, proves it empty, and derives route-8 closure.",
+     "Closes the terminal route-8 interface."
+    ],
+    [
+     "\\cref{lem:typeA-unsaturated-discharge}",
+     "EXC",
+     "[90] \\texttt{(unsat)}",
+     "\\cref{lem:typeA-receiver-loads}, \\cref{lem:typeA-threshold-algebra}",
+     "Unsaturated receivers give the $3/7/11$ charge inequality.",
+     "Supplies the Type A charge bound."
+    ],
+    [
+     "\\cref{lem:typeA-exclusion}",
+     "EXC",
+     "[86], [87]--[109]",
+     "inv 1, 4, 8, 22, 23, 24, 25, 30, 31; \\cref{lem:typeA-saturated-handoff}, \\cref{lem:typeA-unsaturated-discharge}",
+     "Dense $\\sigma=0$ supports outside target-defect peeling, route 8, and the Type B handoff satisfy $\\defp(X)\\ge\\tfrac14|V(X)|$; a negative support has target-defect, route-8, or Type B handoff data.",
+     "Kills pure Type A after the split."
+    ],
+    [
+     "\\cref{rem:fan-finite}",
+     "EXC",
+     "[70] \\texttt{(fsafe)}, [71] \\texttt{(certq)}",
+     "inv 25",
+     "Certificate-marked fan-degree cap is a structural label-packing bound ($\\le8$/window); fan-certificate residual centers are routed to Type B residual mass.",
+     "Supplies the Type B constant."
+    ],
+    [
+     "\\cref{def:typeB-window-incidence-profile}, \\cref{def:fan-closed-port}, \\cref{def:typeB-hybrid-incidence}",
+     "EXC",
+     "[72] \\texttt{(typeBfan)}",
+     "inv 23, 24, 25",
+     "Defines fan-window incidences, fan-closed ports, and the hybrid window/non-window credit ledger used by one Type B fan.",
+     "Supplies the accounting objects used at the local B1 node."
+    ],
+    [
+     "\\cref{def:closed-fan-window-pair}, \\cref{def:direct-cycle-free-closed-pair}, \\cref{lem:typeB-direct-fan-window-cycles}, \\cref{lem:typeB-two-window-cycles}",
+     "EXC",
+     "[72] \\texttt{(typeBfan)}",
+     "inv 1, 23, 30, 31; \\cref{def:typeB-window-incidence-profile}",
+     "Constructs the direct cycles forced by same-window and two-window closed incidences.",
+     "Removes direct fan-window and two-window cycle configurations before the incidence payment."
+    ],
+    [
+     "\\cref{lem:typeB-multiclosed-budget}, \\cref{lem:typeB-hybrid-incidence-budget}, \\cref{lem:typeB-hybrid-B1}",
+     "EXC",
+     "[72] \\texttt{(typeBfan)}",
+     "inv 23, 24, 25; \\cref{def:typeB-hybrid-incidence}",
+     "Every certificate-marked positive-deficit residual uses \\(2c\\) distinct non-\\(h\\) incidences, whose half-credit pays \\(D_B\\) with slack.",
+     "Quantifies and closes the local B1 Type B fan branch before the global B2 ledger argument."
+    ],
+    [
+     "\\cref{prop:fan-closed-port-typeB-routing}",
+     "EXC",
+     "[72] \\texttt{(typeBfan)}",
+     "inv 4, 8, 25; \\cref{def:fan-closed-port}, \\cref{lem:typeB-hybrid-B1}",
+     "Two fan-closed ports give \\(D_B\\ge(k-3)/4>0\\) and enter the local Type B fan ledger.",
+     "Closes a fan-closed local Type B center."
+    ],
+    [
+     "\\cref{cor:compatible-pair-typeB-routing}",
+     "EXC",
+     "[69] \\texttt{(localgt)}, [72] \\texttt{(typeBfan)}",
+     "inv 4, 8, 25; \\cref{lem:compatible-pair-fan-closure}, \\cref{prop:fan-closed-port-typeB-routing}",
+     "A compatible open pair produces the two fan-closed ports required by the local Type B fan ledger.",
+     "Routes compatible-pair data to node [72]."
+    ],
+    [
+     "\\cref{prop:triangular-port-typeB-routing}",
+     "EXC",
+     "[78]--[81], [72] \\texttt{(typeBfan)}",
+     "inv 4, 8, 25; \\cref{lem:triangular-first-landing}, \\cref{lem:triangular-cross-shoulder}, \\cref{prop:fan-closed-port-typeB-routing}",
+     "Degree-four triangular and heavy triangular routes produce the fan-closed ports required at node [72]; the heavy triangular route gives \\(D_B\\ge(5k-19)/4>0\\).",
+     "Routes triangular local data to the local Type B fan ledger."
+    ],
+    [
+     "\\cref{def:typeB-ledger-carriers}, \\cref{def:typeB-candidate-ledger}, \\cref{def:typeB-overlap-obstruction}, \\cref{lem:typeB-bridge-to-overlap}, \\cref{lem:typeB-global-local-reflection}, \\cref{prop:typeB-global-local-bridge}, \\cref{def:typeB-bridge-statements}, \\cref{prop:typeB-bridge-reduction}",
+     "EXC",
+     "[73]",
+     "inv 1, 4, 8, 22, 23, 24, 25, 34, 35; \\cref{lem:typeB-hybrid-incidence-budget}",
+     "Defines Type B carrier ledgers for supports with no fan-certificate residual center, proves B2 failures produce minimal overlap obstructions, and records the global-to-local constraints inherited by such obstructions.",
+     "Reduces local Type B closure to the B2 refined support ledger after local B1 is proved; disjoint-carrier failure is a globally admissible overlap obstruction."
+    ],
+    [
+     "\\cref{def:decorated-fan-envelope}",
+     "EXC",
+     "[108] \\texttt{(decorB)}",
+     "inv 1, 4, 8, 22, 25; \\cref{lem:typeA-high-degree-handoff}",
+     "Defines the decorated fan envelope produced by Type A exit (7).",
+     "Records the incoming Type B support from node [108]."
+    ],
+    [
+     "\\cref{lem:decorated-fan-admissibility}",
+     "EXC",
+     "[65] \\texttt{(typeB)}",
+     "inv 1, 4, 8, 22, 25; \\cref{def:decorated-fan-envelope}",
+     "Proves the decorated handoff is admissible Type B fan-envelope data.",
+     "Makes the node [108] handoff usable at Type B node [65]."
+    ],
+    [
+     "\\cref{def:marked-typeB-fan}",
+     "EXC",
+     "[70] \\texttt{(fsafe)}",
+     "inv 16, 25",
+     "Defines certificate-marked Type B fans.",
+     "Supplies the local certificate object for Type B fans."
+    ],
+    [
+     "\\cref{rem:fan-finite}",
+     "EXC",
+     "[71] \\texttt{(certq)}",
+     "inv 16, 25; \\cref{def:marked-typeB-fan}",
+     "Records the fan-degree label-packing cap.",
+     "Supplies the local certificate cap for Type B fans."
+    ],
+    [
+     "\\cref{def:heavy-center-triangular-port}",
+     "EXC",
+     "[78] \\texttt{(degree4)}",
+     "inv 4, 8, 16, 25",
+     "Defines triangular ports at high-degree centers.",
+     "Names the triangular local configuration."
+    ],
+    [
+     "\\cref{def:triangular-fan-core}",
+     "EXC",
+     "[79] \\texttt{(profile)}",
+     "inv 4, 8, 16, 25; \\cref{def:heavy-center-triangular-port}",
+     "Defines triangular fan cores.",
+     "Supplies the profile object for triangular routing."
+    ],
+    [
+     "\\cref{lem:heavy-neighbourhood-normal-form}",
+     "EXC",
+     "[68] \\texttt{(degsplit)}, [69] \\texttt{(localgt)}",
+     "inv 4, 8, 16, 25",
+     "Puts the high-degree neighbourhood into the normal form used by the local split.",
+     "Starts the Type B degree split."
+    ],
+    [
+     "\\cref{def:fan-compatible-open-ports}, \\cref{lem:same-center-open-port-compatibility}",
+     "EXC",
+     "[69] \\texttt{(localgt)}",
+     "inv 4, 8, 16, 25; \\cref{lem:heavy-neighbourhood-normal-form}",
+     "Defines fan-compatible open ports and proves compatibility for same-center open pairs.",
+     "Supplies the fan-compatible branch of the local split."
+    ],
+    [
+     "\\cref{cor:degree-four-local-activation}",
+     "EXC",
+     "[78] \\texttt{(degree4)}",
+     "inv 4, 8, 16, 25; \\cref{lem:heavy-neighbourhood-normal-form}",
+     "Activates the degree-four local branch.",
+     "Separates the degree-four case before triangular routing."
+    ],
+    [
+     "\\cref{lem:heavy-center-triangular-alternative}",
+     "EXC",
+     "[69] \\texttt{(localgt)}",
+     "inv 4, 8, 16, 25; \\cref{def:heavy-center-triangular-port}, \\cref{def:fan-compatible-open-ports}",
+     "Splits heavy centers into a fan-compatible open pair or a triangular-port alternative.",
+     "Supplies the heavy-center local split."
+    ],
+    [
+     "\\cref{cor:heavy-center-local-dichotomy}",
+     "EXC",
+     "[79] \\texttt{(profile)}",
+     "inv 4, 8, 16, 25; \\cref{lem:heavy-center-triangular-alternative}",
+     "Records the local dichotomy in the profile used downstream.",
+     "Supplies the local Type B case split before the incidence ledger."
+    ],
+    [
+     "\\cref{lem:triangular-shoulder-completion}",
+     "EXC",
+     "[78] \\texttt{(degree4)}",
+     "inv 1, 4, 8, 25, 30, 31; \\cref{def:triangular-fan-core}",
+     "Triangular shoulders have completion edges.",
+     "Sets up the triangular first-landing analysis."
+    ],
+    [
+     "\\cref{lem:triangular-port-return}",
+     "EXC",
+     "[79] \\texttt{(profile)}",
+     "inv 1, 4, 8, 25, 30, 31; \\cref{lem:triangular-shoulder-completion}",
+     "Every relevant return enters through a shoulder.",
+     "Routes triangular returns to the landing analysis."
+    ],
+    [
+     "\\cref{lem:triangular-first-landing}",
+     "EXC",
+     "[80] \\texttt{(landing)}",
+     "inv 1, 4, 8, 25, 30, 31; \\cref{lem:triangular-port-return}",
+     "The first landing is central, cross-triangular, or outside.",
+     "Routes triangular ports toward fan-closed data."
+    ],
+    [
+     "\\cref{lem:triangular-cross-shoulder}",
+     "EXC",
+     "[81] \\texttt{(cross)}",
+     "inv 1, 4, 8, 25, 30, 31; \\cref{lem:triangular-first-landing}",
+     "Cross-shoulder multiplicity supplies the required second port.",
+     "Completes the triangular route to fan-closed data."
+    ],
+    [
+     "\\cref{lem:compatible-pair-fan-closure}",
+     "EXC",
+     "[69] \\texttt{(localgt)}, [72] \\texttt{(typeBfan)}",
+     "inv 4, 8, 25; \\cref{def:fan-compatible-open-ports}",
+     "A compatible open pair supplies two fan-closed ports at the same center.",
+     "Routes compatible-pair subcases into the Type B incidence payment."
+    ],
+    [
+     "\\cref{def:typeB-multiclosed-residual}",
+     "EXC",
+     "[71]--[73], [82]--[85]",
+     "inv 4, 8, 16, 24, 25",
+     "Defines the certificate-marked multiclosed Type B residuals, including the B2-failure residual classes.",
+     "Names the Type B residuals that survive the local B1 ledger."
+    ],
+    [
+     "\\cref{lem:typeB-exclusion}",
+     "EXC",
+     "[65] \\texttt{(typeB)}, [71]--[73], [82]--[85]",
+     "inv 4, 8, 16, 24, 25; \\cref{def:typeB-multiclosed-residual}, \\cref{lem:typeB-hybrid-incidence-budget}, \\cref{lem:typeB-hybrid-B1}",
+     "Applies the refined Type B ledger: certificate-closed fans have nonnegative charge, positive-deficit fans are paid by B1, and B2 failures are isolated as residuals.",
+     "Kills Type B outside route 8 and outside the Type B bridge residual."
+    ],
+    [
+     "\\cref{def:typeB-residual-mass}",
+     "EXC",
+     "[75] \\texttt{(fanmass)}",
+     "inv 4, 14, 16, 24, 35; \\cref{def:near-cubic-spine}",
+     "Defines the Type B residual mass for fan-certificate residual centers, grouped decorated envelopes, and B2 failures.",
+     "Names the global bridge-mass quantity."
+    ],
+    [
+     "\\cref{lem:decorated-envelope-with-route8-core}",
+     "EXC",
+     "[75] \\texttt{(fanmass)}",
+     "inv 4, 14, 16, 24, 35; \\cref{def:typeB-residual-mass}",
+     "Extracts a route-8 non-window core from grouped decorated envelopes into \\(D_A\\).",
+     "Keeps decorated-envelope mass separate from Type A route-8 deficit."
+    ],
+    [
+     "\\cref{lem:typeB-bridge-with-route8-core}",
+     "EXC",
+     "[84] \\texttt{(fanmass)}",
+     "inv 4, 14, 16, 24, 35; \\cref{def:typeB-residual-mass}",
+     "Extracts a route-8 non-window core from Type B bridge residual data into \\(D_A\\).",
+     "Keeps Type B bridge mass separate from Type A route-8 deficit."
+    ],
+    [
+     "\\cref{lem:typeB-bridge-deficit-bound}, \\cref{prop:typeB-bridge-sublinear}",
+     "EXC",
+     "[84] \\texttt{(fanmass)}",
+     "inv 4, 14, 16, 24, 35; \\cref{def:near-cubic-spine}; \\cref{lem:typeB-hybrid-B1}, \\cref{def:typeB-bridge-statements}",
+     "Charges residual centers and B2 failures to high-degree fan-center surplus and obtains \\(M_B\\le16\\sigma(G)=o(|R|)\\).",
+     "Prevents Type B bridge residuals from carrying the linear large-budget deficit on the derived spine branch."
+    ],
+    [
+     "\\cref{thm:branch-kill}",
+     "EXC",
+     "[76] \\texttt{(branch)}, [85] \\texttt{(typeB closed)}, [123] \\texttt{(pressure closed)}",
+     "inv 20, 27, 28, 29, 35, 39",
+     "Closes the entropy-admissible branch outside explicit Type A target-defect/route-8 and Type B bridge residuals.",
+     "Combines the local exclusion theorems before the final pressure descent."
+    ],
+    [
+     "\\cref{thm:large-budget-route8-only}",
+     "EXC",
+     "[123] \\texttt{(pressure closed)}",
+     "inv 20, 27, 28, 29, 35, 39; \\cref{prop:typeB-bridge-sublinear}, \\cref{def:typeA-peeling-reduced-ledger}, \\cref{lem:typeA-peeling-reduced-reduction}, \\cref{lem:typeA-pressure-is-exit4-peel}, \\cref{lem:typeA-exit4-finite-descent}, \\cref{prop:typeA-route8-carrier-reduction}",
+     "Closes the unified Type A target-defect/route-8 ledger by finite exit-\\textup{(4)} descent and the terminal two-carrier route-8 no-go.",
+     "Sends only the terminal route-8 survivor to node [124], where it is impossible."
+    ],
+    [
+     "\\cref{thm:main}",
+     "(root goal)",
+     "[2] \\texttt{(bad)} $\\to$ terminal",
+     "\\cref{thm:p13free} $+$ surplus-token routing $+$ all spine invariants",
+     "Every minimal counterexample either closes in the sparse-surplus branch, routes to Type B fan data, or reaches the near-cubic spine and then the terminal two-carrier route-8 no-go, which is empty.",
+     "The main closure theorem."
+    ]
+   ]
+  },
+  {
+   "id": "erdos-gyarfas/16",
+   "title": "Invariant $\\to$ lemmas reverse index (impact analysis)",
+   "group": "Per-lemma invariant requirements",
+   "chapter": "erdos-gyarfas",
+   "sourceLine": 1554,
+   "headers": [
+    "Inv.",
+    "Invariant",
+    "First node",
+    "Affected results",
+    "Impact note"
+   ],
+   "rows": [
+    [
+     "1",
+     "Mersenne-return target algebra",
+     "Target {[5]}",
+     "\\cref{lem:return-equivalence} ([5]--[7]), \\cref{def:dyadic-safe} ([5]), \\cref{lem:degree-profile-fibres} ([11]), \\cref{lem:context-universality} ([12]), \\cref{lem:replacement} ([13]), \\cref{lem:independent-target-entropy} ([18]), \\cref{lem:state-count-comparison} ([22]), \\cref{def:admissible} ([55]), \\cref{lem:typeA-entry-budget}, \\cref{lem:typeA-port-return}, \\cref{lem:typeA-spectral-pressure} ([109]), \\cref{def:typeA-saturated-exits}, \\cref{lem:typeA-exits-discharged}, \\cref{lem:typeA-visible-entry} ([93]), \\cref{lem:typeB-direct-fan-window-cycles} ([72]), \\cref{lem:density-mersenne}, \\cref{lem:typeA-exclusion} ([86]), \\cref{def:typeA-carrier-deletion-witness}, \\cref{thm:typeA-two-carrier-nogo} ([124])",
+     "Pervasive target predicate."
+    ],
+    [
+     "2",
+     "Minimal proper-subgraph condition",
+     "Core {[8]}",
+     "\\cref{lem:no-proper-core} ([8]); downstream use in \\cref{lem:cycle-rank}, \\cref{lem:replacement}, \\cref{lem:proper-smearing}",
+     "Excludes smaller $\\delta\\ge3$ cores."
+    ],
+    [
+     "3",
+     "Edge-deletion criticality",
+     "Delete {[9]}",
+     "\\cref{lem:deletion-critical} ([9]); its high-degree corollary feeds inv~4",
+     "Edge-local minimality."
+    ],
+    [
+     "4",
+     "High-degree independence",
+     "High-degree {[10]}",
+     "\\cref{lem:deletion-critical} ([10]), \\cref{lem:typeA-threshold-algebra} ([88]), \\cref{lem:typeA-unsaturated-discharge} ([90]), \\cref{lem:typeA-exclusion} ([86]), \\cref{lem:typeB-exclusion} ([65]), inv~16",
+     "Controls surplus aggregation."
+    ],
+    [
+     "5",
+     "No passive degree-$2$ storage",
+     "Counterex. {[2]}",
+     "\\cref{lem:stub-positive} ([29]), \\cref{lem:smearing-support-repair} ([44]), \\cref{lem:no-silent-global-smearing} ([43]), auxiliary repair-network closures",
+     "Prevents unrecorded subdivision storage."
+    ],
+    [
+     "6",
+     "Replacement dominance",
+     "Replace {[13]}",
+     "\\cref{lem:degree-profile-fibres} ([11]), \\cref{lem:replacement} ([13]), \\cref{def:admissible} ([55]), \\cref{lem:typeA-silent-excess} ([94]), \\cref{lem:typeA-exits-discharged}, \\cref{def:typeA-carrier-deletion-witness}, \\cref{def:typeA-terminal-two-carrier} ([124])",
+     "Orders boundary profiles."
+    ],
+    [
+     "7",
+     "Lumpability defect",
+     "Univ. {[12]}",
+     "\\cref{lem:context-universality} ([12]), \\cref{lem:replacement} ([13]), \\cref{lem:labels} ([18]); final spine step through inv~8",
+     "Detects invalid quotients."
+    ],
+    [
+     "8",
+     "Hereditary target-uncompressibility",
+     "Uncomp. {[14]}",
+     "\\cref{cor:uncompressible} ([14]), \\cref{def:admissible} ([55]), \\cref{rem:closure-robust} ([54]), \\cref{def:typeA-silent-core-residual} ([109]), \\cref{def:typeA-saturated-exits}, \\cref{lem:typeA-exits-discharged}, \\cref{lem:typeA-visible-entry} ([93]), \\cref{lem:typeA-silent-excess} ([94]), \\cref{lem:typeA-saturated-handoff} ([89]), \\cref{lem:density-mersenne}, \\cref{lem:typeA-exclusion} ([86]), \\cref{lem:typeB-exclusion} ([65]), \\cref{def:typeA-carrier-deletion-witness}, \\cref{def:typeA-terminal-two-carrier}, \\cref{thm:typeA-two-carrier-nogo} ([124]), \\cref{thm:branch-kill} ([76], [123])",
+     "Main contradiction lever."
+    ],
+    [
+     "9",
+     "Minimum edge count",
+     "Counterex. {[2]}",
+     "\\cref{lem:cycle-rank} ([4]), \\cref{lem:near-cubic-budget} ([21])",
+     "Lower edge pressure."
+    ],
+    [
+     "10",
+     "Sparse upper envelope",
+     "Core {[8]}",
+     "\\cref{lem:sparse-upper-envelope}, \\cref{lem:variable-edge-budget} ([21]); feeds the Laman identity inv~12",
+     "Upper edge pressure."
+    ],
+    [
+     "11",
+     "Cycle-rank pressure",
+     "Minimality {[4]}",
+     "\\cref{lem:cycle-rank} ([4]); feeds inv~12 and inv~13",
+     "Cycle-rank lower bound."
+    ],
+    [
+     "12",
+     "Laman slack identity",
+     "Rank ids {[4]}",
+     "\\cref{lem:near-cubic-budget} ([21]), \\cref{def:remainder-entropy}, \\cref{prop:two-budget} ([52])",
+     "Links rank and sparsity."
+    ],
+    [
+     "13",
+     "Surplus--rank relation",
+     "Rank ids {[4]}",
+     "\\cref{lem:netcharge-superadd} ([56], [58]); net-charge notation throughout the large-budget branch",
+     "Translates surplus into charge."
+    ],
+    [
+     "14",
+     "High-degree surplus bound",
+     "Surplus branch {[125]--[144]} supplies spine estimate",
+     "\\cref{def:near-cubic-spine}, \\cref{prop:sparse-entropy-sandwich}, \\cref{prop:sparse-entropy-sandwich-with-blockers}, \\cref{cor:spine-lower-bound-surplus-estimates}, \\cref{lem:surviving-active-family}, \\cref{def:canonical-blocker-ledger}, \\cref{lem:canonical-blocker-ledger-no-overcount}, \\cref{def:primitive-sparse-blocker-carrier}, \\cref{lem:primitive-carrier-supply}, \\cref{def:capacity-token-ledger}, \\cref{lem:capacity-token-supply}, \\cref{lem:token-ledger-no-overcount}, \\cref{def:same-token-patterns}, \\cref{def:same-token-blocker-roles}, \\cref{def:same-token-routing-germs}, \\cref{lem:same-token-matching-star}, \\cref{lem:same-token-homogeneous-extraction}, \\cref{lem:same-token-bottleneck-routing}, \\cref{thm:homogeneous-overload-geometric-closure}, \\cref{cor:homogeneous-same-token-caps-close}, \\cref{cor:forced-homogeneous-same-token-scale}, \\cref{lem:capacity-token-high-load}, \\cref{thm:tokenized-surplus-accounting-closure}, \\cref{def:window-remainder-surplus-split}, \\cref{lem:exact-window-join-identity}, \\cref{cor:global-window-join-pressure}, \\cref{prop:nonnear-cubic-sharp-overload-routing}, \\cref{lem:netcharge-superadd} ([56], [58]), \\cref{prop:negative-net-charge} ([59]), \\cref{prop:typeA-route8-carrier-reduction}, \\cref{def:typeA-terminal-two-carrier} ([124])",
+     "Keeps surplus sublinear on the derived spine branch, or derives the exact high-load alternative from the free-pair entropy sandwich plus the capacity-token ledger; blocked pairs are counted by token fibres, the \\(P_{13}\\) join identity quantifies window concentration, and any large homogeneous same-token fibre is a geometric bottleneck routed to sparse exits or Type B."
+    ],
+    [
+     "15",
+     "Near-cubic edge count",
+     "Surplus branch {[125]--[144]} supplies spine estimate",
+     "\\cref{def:near-cubic-spine}, \\cref{prop:sparse-entropy-sandwich}, \\cref{cor:spine-lower-bound-surplus-estimates}, \\cref{thm:homogeneous-overload-geometric-closure}, \\cref{prop:nonnear-cubic-sharp-overload-routing}, \\cref{lem:near-cubic-budget} ([21]), \\cref{lem:skeleton-dominates} ([21]), \\cref{lem:dominant-type} ([49], [50]); entropy estimates using $B_{\\mathrm{skel}}$",
+     "Fixes the budget coefficient after the near-cubic bound is supplied by the sparse surplus branch."
+    ],
+    [
+     "16",
+     "Certificate-marked fan degree",
+     "High-degree {[67]}",
+     "\\cref{lem:typeB-exclusion} ([65]), \\cref{rem:fan-finite} ([70], [71]), \\cref{lem:fan-certificate}; related to inv~4",
+     "Auxiliary fan-label cap; fan-certificate residual centers are charged through surplus mass."
+    ],
+    [
+     "17",
+     "Spectral feasibility mask",
+     "Spectral {[70]}",
+     "\\cref{lem:typeB-exclusion} ([70]), \\cref{lem:fan-certificate}, \\cref{rem:app-typeB-finite-only}",
+     "Auxiliary spectral mask."
+    ],
+    [
+     "18",
+     "Spectral equality branch",
+     "Spectral {[70]}",
+     "\\cref{lem:typeB-exclusion} ([70]), \\cref{lem:fan-certificate}, \\cref{rem:app-typeB-finite-only}",
+     "Cubic equality subcase."
+    ],
+    [
+     "19",
+     "Spectral surplus branch",
+     "Spectral {[70]}",
+     "\\cref{lem:typeB-exclusion} ([70]), \\cref{lem:fan-certificate}, \\cref{rem:app-typeB-finite-only}",
+     "Surplus spectral subcase."
+    ],
+    [
+     "20",
+     "Low $P_{13}$ density",
+     "Density {[24]}",
+     "\\cref{lem:p13-window-package} ([21]--[22]), \\cref{prop:p13-density} ([24]), \\cref{prop:two-budget} ([52]), \\cref{prop:entropy-high-theta} ([53]), \\cref{thm:branch-kill} ([76], [123]), \\cref{lem:app-dense-window-closure}",
+     "Window-density cap."
+    ],
+    [
+     "21",
+     "Forced remainder",
+     "Residual A {[25]}",
+     "\\cref{lem:stub-positive} ([26], [29]), \\cref{lem:wedge-lower} ([30]), \\cref{def:canonical-decomp} ([55]), \\cref{lem:app-dense-window-closure}; all atom analysis",
+     "Supplies the large remainder."
+    ],
+    [
+     "22",
+     "$P_{13}$-free atom condition",
+     "Residual A {[25]}",
+     "\\cref{cor:p13-exists} ([15]), \\cref{lem:stub-positive} ([29]), \\cref{def:canonical-decomp} ([55]), \\cref{def:admissible} ([55]), \\cref{def:decorated-fan-envelope} ([108]), \\cref{def:typeA-silent-core-residual} ([109]), \\cref{def:typeA-saturated-exits}, \\cref{lem:typeA-visible-entry} ([93]), \\cref{lem:typeA-exclusion} ([86]), \\cref{lem:typeB-global-local-reflection}",
+     "Local $P_{13}$-free structure inherited by overlap supports."
+    ],
+    [
+     "23",
+     "Window stub capacity",
+     "Stub accounting {[29]}",
+     "\\cref{lem:stub-positive} ([29]), \\cref{def:admissible} ([55]), \\cref{def:typeA-receiver-load}, \\cref{def:typeA-visible-load}, \\cref{lem:typeA-entry-budget}, \\cref{def:typeA-channel-spectrum}, \\cref{def:typeA-silent-core-residual} ([109]), \\cref{def:typeA-route8-carriers}, \\cref{def:typeA-terminal-two-carrier} ([124]), \\cref{def:typeB-window-incidence-profile}, \\cref{def:typeB-hybrid-incidence}, \\cref{lem:typeB-multiclosed-budget} ([72]), \\cref{lem:typeB-hybrid-incidence-budget}, \\cref{lem:typeB-hybrid-B1}, \\cref{def:typeB-ledger-carriers}, \\cref{def:typeB-candidate-ledger}, \\cref{lem:typeB-global-local-reflection}, \\cref{def:typeB-bridge-statements}, \\cref{prop:typeB-bridge-reduction}, \\cref{lem:typeA-exclusion} ([86]); feeds inv~24",
+     "Outside-incidence supply; positive-deficit Type B residuals use hybrid half-credit on window and non-window incidences, and B2 is the required disjoint ledger."
+    ],
+    [
+     "24",
+     "Remainder deficiency density",
+     "Stub accounting {[29]}",
+     "\\cref{lem:stub-positive} ([29]), \\cref{def:admissible} ([55]), \\cref{lem:netcharge-superadd} ([56], [58]), \\cref{prop:negative-net-charge} ([59]), \\cref{rem:closure-robust} ([54]), \\cref{lem:typeA-threshold-algebra} ([88]), \\cref{lem:typeA-unsaturated-discharge} ([90]), \\cref{prop:typeA-route8-carrier-reduction}, \\cref{def:typeA-terminal-two-carrier} ([124]), \\cref{lem:typeB-multiclosed-budget} ([72]), \\cref{def:typeB-ledger-carriers}, \\cref{def:typeB-candidate-ledger}, \\cref{def:typeB-overlap-obstruction}, \\cref{def:typeB-bridge-statements}, \\cref{prop:typeB-bridge-reduction}, \\cref{lem:density-mersenne}, \\cref{lem:typeA-exclusion} ([86])",
+     "Supply ceiling; Type B residual deficit is $D_B=c-\\frac{11-k}{4}$ and bridge failure is represented by a minimal overlap obstruction."
+    ],
+    [
+     "25",
+     "Legal $P_{13}$ labels",
+     "Label algebra {[18]}",
+     "\\cref{lem:labels} ([18]), \\cref{lem:curv-enum} ([21]), \\cref{rem:fan-finite} ([70], [71]), \\cref{def:typeA-silent-core-residual} ([109]), \\cref{def:typeA-saturated-exits}, \\cref{lem:typeA-exits-discharged}, \\cref{lem:typeA-visible-entry} ([93]), \\cref{def:closed-fan-window-pair} ([72]), \\cref{def:direct-cycle-free-closed-pair}, \\cref{lem:typeB-direct-fan-window-cycles} ([72]), \\cref{lem:typeB-two-window-cycles}, \\cref{lem:typeB-global-local-reflection}, \\cref{lem:density-mersenne}, \\cref{lem:typeA-exclusion} ([86]), \\cref{lem:typeB-exclusion} ([65]), \\cref{lem:fan-certificate}",
+     "Finite label algebra and structural fan-window endpoint bookkeeping."
+    ],
+    [
+     "26",
+     "Two-step curvature density",
+     "Curvature enumeration {[21]}",
+     "\\cref{lem:curv-enum} ([21]), \\cref{lem:curvature-dependence-routing} ([31], [32]), \\cref{lem:dominant-type} ([49], [50]), \\cref{lem:translates-independent} ([51]), \\cref{app:curv-code}",
+     "Curvature-positive wedge count."
+    ],
+    [
+     "27",
+     "Flatness entropy cost",
+     "Cost {[48]}",
+     "\\cref{cor:forced-curvature-cost} ([48]), \\cref{rem:curvature-provenance}, \\cref{prop:two-budget} ([52]), \\cref{prop:entropy-high-theta} ([53]), \\cref{thm:branch-kill} ([76], [123])",
+     "Bits per independent test."
+    ],
+    [
+     "28",
+     "Raw atom curvature supply",
+     "Wedge lower bound {[30]}",
+     "\\cref{lem:wedge-lower} ([30]), \\cref{lem:curvature-dependence-routing} ([31], [32]), \\cref{lem:separated-testers} ([35]), \\cref{lem:full-rank} ([47]), \\cref{cor:forced-curvature-cost} ([48]), \\cref{thm:branch-kill} ([76], [123])",
+     "Demand floor."
+    ],
+    [
+     "29",
+     "Curvature compression ratio",
+     "Full-rank squeeze {[47]}",
+     "\\cref{lem:full-rank} ([47]), \\cref{lem:translates-independent} ([51]), \\cref{prop:two-budget} ([52]), \\cref{rem:closure-robust} ([54]), \\cref{thm:branch-kill} ([76], [123]); collides with inv~8",
+     "Independent-test cap."
+    ],
+    [
+     "30",
+     "Two-path criterion",
+     "Target algebra {[5]}",
+     "\\cref{lem:return-equivalence} ([5]--[7]), \\cref{lem:typeA-spectral-pressure} ([109]), \\cref{def:typeA-saturated-exits}, \\cref{lem:typeA-exits-discharged}, \\cref{lem:typeA-visible-entry} ([93]), \\cref{def:typeA-carrier-deletion-witness}, \\cref{def:typeA-terminal-two-carrier}, \\cref{thm:typeA-two-carrier-nogo} ([124]), \\cref{lem:density-mersenne}, \\cref{lem:typeA-exclusion} ([86])",
+     "Pair-of-path target test."
+    ],
+    [
+     "31",
+     "Theta closure",
+     "Target algebra {[5]}",
+     "\\cref{lem:context-universality} ([12]), \\cref{lem:replacement} ([13]), \\cref{def:typeA-silent-core-residual} ([109]), \\cref{lem:typeA-visible-entry} ([93]), \\cref{def:typeA-carrier-deletion-witness}, \\cref{def:typeA-terminal-two-carrier} ([124]); atom hazard profiles",
+     "Theta sums avoid targets."
+    ],
+    [
+     "32",
+     "Ear closure",
+     "Target algebra {[5]}",
+     "\\cref{lem:context-universality} ([12]), \\cref{lem:replacement} ([13]); target-response profiles",
+     "Ear completions avoid targets."
+    ],
+    [
+     "33",
+     "Symmetric difference",
+     "Context univ. {[12]}",
+     "\\cref{lem:context-universality} ([12]), \\cref{lem:replacement} ([13]), \\cref{lem:no-silent-global-smearing} ([43])",
+     "Overlap-cycle target test."
+    ],
+    [
+     "34",
+     "Rank-one dyadic support",
+     "Deloc. support {[40]}",
+     "\\cref{lem:proper-smearing} ([40], [41]), \\cref{lem:no-silent-global-smearing} ([43]), \\cref{lem:typeA-visible-entry} ([93]), \\cref{lem:typeA-silent-excess} ([94]), \\cref{lem:typeA-exits-discharged}, \\cref{def:typeA-terminal-two-carrier}, \\cref{thm:typeA-two-carrier-nogo} ([124]), \\cref{lem:full-rank} ([47]), \\cref{lem:app-global-smearing-closure}",
+     "Blocks rank-one smearing."
+    ],
+    [
+     "35",
+     "Composite cancellation",
+     "Repair id. {[44]}",
+     "\\cref{lem:smearing-support-repair} ([44]), \\cref{lem:no-silent-global-smearing} ([43]), \\cref{lem:typeA-silent-excess} ([94]), \\cref{lem:typeA-exits-discharged}, \\cref{def:typeA-terminal-two-carrier}, \\cref{thm:typeA-two-carrier-nogo} ([124]), \\cref{lem:app-global-smearing-closure}",
+     "Controls cancellation repairs."
+    ],
+    [
+     "36",
+     "Odd carrier nonempty",
+     "Target algebra {[5]}",
+     "\\cref{lem:return-equivalence} ([5]--[7]), \\cref{lem:context-universality} ([12]), \\cref{lem:no-silent-global-smearing} ([43])",
+     "Power-of-two carrier test."
+    ],
+    [
+     "37",
+     "No common carrier",
+     "Carrier transport {[35]}",
+     "\\cref{lem:separated-testers} ([35]), \\cref{lem:proper-smearing} ([40], [41]), \\cref{lem:no-silent-global-smearing} ([43])",
+     "Carrier-transport obstruction."
+    ],
+    [
+     "38",
+     "Polarized carrier transport",
+     "Separated testers {[35]}",
+     "\\cref{lem:separated-testers} ([35]), \\cref{lem:curvature-dependence-routing} ([31], [32]), \\cref{lem:proper-smearing} ([40], [41]), \\cref{lem:no-silent-global-smearing} ([43])",
+     "Separates carrier testers."
+    ]
+   ]
+  }
  ]
 }

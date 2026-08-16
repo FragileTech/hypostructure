@@ -203,6 +203,20 @@ export const TEST_DOCUMENT: ProofGraphDocument = {
       usedBy: ["lem:halving"],
     },
   ],
+  tables: [
+    {
+      id: "one/1",
+      title: "Which halves are odd",
+      group: "Reading guide",
+      chapter: "one",
+      sourceLine: 40,
+      headers: ["Step", "Test", "Source"],
+      rows: [
+        ["[2]", "is $n/2$ odd?", "\\cref{lem:halving}"],
+        ["[4]", "continue at [5]", "\\cref{def:even}"],
+      ],
+    },
+  ],
   constants: [
     {
       symbol: "$2$",

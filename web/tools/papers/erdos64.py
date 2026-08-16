@@ -140,6 +140,10 @@ CHAPTER = ChapterSpec(
     ),
     part_titles=PART_TITLES,
     part_summaries=PART_SUMMARIES,
+    reference_region=(
+        "\\section{Introduction and overview of the proof}",
+        "\\section{Target cycles as Mersenne returns}",
+    ),
     # Item | Diagram node(s) | Node / theorem | Formal content | Failure route | Label
     node_tables=(TableSpec(
         start="\\subsection*{Detailed dependency table}",

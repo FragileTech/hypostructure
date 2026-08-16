@@ -126,6 +126,10 @@ SETUP = ChapterSpec(
     diagrams=("\\subsection{Proof-dependency diagram}", "\\subsection{Node-by-node audit table}"),
     part_titles=SETUP_TITLES,
     map_tables=(_map_table(),),
+    reference_region=(
+        "\\section{Architecture and reading guide",
+        "\\section*{Part I.",
+    ),
     node_tables=(
         _node_table("\\subsection{Node-by-node audit table}", "\\subsection{Monotone proof ledger}"),
     ),
@@ -151,6 +155,10 @@ TYPE_I = ChapterSpec(
     diagrams=("\\subsection{Proof-dependency diagram}", "\\subsection{Node-by-node audit table}"),
     part_titles=TYPE_I_TITLES,
     map_tables=(_map_table(),),
+    reference_region=(
+        "\\subsection{Architecture and reading guide}",
+        "\\section{Ordered residual profile decomposition}",
+    ),
     node_tables=(
         _node_table("\\subsection{Node-by-node audit table}", "\\subsection{Monotone retained-fact ledger}"),
     ),
@@ -190,6 +198,10 @@ TYPE_II = ChapterSpec(
     diagrams=("\\subsection{Proof-dependency diagram}", "\\subsection{Node-by-node audit table}"),
     part_titles=TYPE_II_TITLES,
     map_tables=(_map_table(),),
+    reference_region=(
+        "\\section{Architecture and reading guide",
+        "\\section{Local Single-Core Criterion}",
+    ),
     node_tables=(
         _node_table(
             "\\subsection{Node-by-node audit table}",

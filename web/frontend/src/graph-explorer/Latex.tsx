@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import katex from "katex";
 
-import { parseLatex, type Segment } from "./latex";
+import { parseLatex, type ParseOptions, type Segment } from "./latex";
 
 /** How a reference should be shown, and what it leads to. */
 export interface Reference {
@@ -24,6 +24,8 @@ interface MathContextValue {
   onReference?: (key: string) => void;
   /** How to name a reference key, and whether clicking it does anything. */
   resolveReference?: (key: string) => Reference;
+  /** Called when the reader clicks a diagram step named in the text. */
+  onNode?: (number: string) => void;
 }
 
 const MathContext = createContext<MathContextValue>({ macros: {} });
@@ -32,11 +34,12 @@ export function MathProvider({
   macros,
   onReference,
   resolveReference,
+  onNode,
   children,
 }: MathContextValue & { children: React.ReactNode }) {
   const value = useMemo(
-    () => ({ macros, onReference, resolveReference }),
-    [macros, onReference, resolveReference],
+    () => ({ macros, onReference, resolveReference, onNode }),
+    [macros, onNode, onReference, resolveReference],
   );
   return <MathContext.Provider value={value}>{children}</MathContext.Provider>;
 }
@@ -64,9 +67,19 @@ function renderMath(
  * Render a LaTeX fragment: prose as text, mathematics through KaTeX, and
  * `\cref` cross-references as buttons that jump to the referenced result.
  */
-export function Latex({ value, className }: { value: string; className?: string }) {
-  const { macros, onReference, resolveReference } = useContext(MathContext);
-  const segments = useMemo(() => parseLatex(value), [value]);
+export function Latex({
+  value,
+  className,
+  nodes = false,
+}: {
+  value: string;
+  className?: string;
+  /** Read bracketed integers as diagram steps. See `ParseOptions`. */
+  nodes?: boolean;
+}) {
+  const { macros, onReference, resolveReference, onNode } = useContext(MathContext);
+  const options = useMemo<ParseOptions>(() => ({ nodes }), [nodes]);
+  const segments = useMemo(() => parseLatex(value, options), [options, value]);
 
   return (
     <span className={className ? `latex ${className}` : "latex"}>
@@ -77,6 +90,7 @@ export function Latex({ value, className }: { value: string; className?: string 
           macros={macros}
           onReference={onReference}
           resolveReference={resolveReference}
+          onNode={onNode}
         />
       ))}
     </span>
@@ -134,10 +148,11 @@ function SegmentView({
   macros,
   onReference,
   resolveReference,
+  onNode,
 }: {
   segment: Segment;
   macros: Record<string, string>;
-} & Pick<MathContextValue, "onReference" | "resolveReference">) {
+} & Pick<MathContextValue, "onReference" | "resolveReference" | "onNode">) {
   switch (segment.kind) {
     case "text":
       return <>{segment.value}</>;
@@ -145,6 +160,19 @@ function SegmentView({
       return <br />;
     case "item":
       return <span className="latex-item" aria-hidden="true" />;
+    case "node":
+      return onNode ? (
+        <button
+          type="button"
+          className="chip chip-node"
+          onClick={() => onNode(segment.id)}
+          title={`Go to step ${segment.id}`}
+        >
+          {segment.id}
+        </button>
+      ) : (
+        <>[{segment.id}]</>
+      );
     case "ref": {
       const reference = resolveReference?.(segment.key);
       const label = reference?.label ?? segment.key;

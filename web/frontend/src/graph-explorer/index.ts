@@ -8,9 +8,10 @@
 
 export { GraphExplorer, type ExplorerState, type GraphExplorerProps } from "./GraphExplorer";
 export { NodeDetailPanel, type NodeDetailPanelProps } from "./NodeDetailPanel";
+export { TableView, type TableViewProps } from "./TableView";
 export { ProofFlowNode, SHAPE_NAMES, nodeTypes } from "./ProofFlowNode";
 export { Latex, MathProvider, type Reference } from "./Latex";
-export { parseLatex, latexToPlainText, type Segment } from "./latex";
+export { parseLatex, latexToPlainText, type ParseOptions, type Segment } from "./latex";
 export { buildGraph, type BuildOptions, type FlowNodeData, type ProofFlowNode as FlowNode } from "./buildGraph";
 export { indexDocument } from "./index-document";
 export { layoutGraph, type LayoutBox, type LayoutLink, type LayoutOptions } from "./layout";
