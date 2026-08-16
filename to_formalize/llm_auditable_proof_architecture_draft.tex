@@ -29,10 +29,10 @@
   linkcolor=branchblue,
   citecolor=branchblue,
   urlcolor=branchblue,
-  pdftitle={Auditable Branch Closure for Human--AI PDE Proofs},
+  pdftitle={Structural Exhaustion: Auditable Local-to-Global Estimates for Human--AI PDE Proofs},
   pdfauthor={Guillem Duran Ballester},
-  pdfsubject={A branch-complete methodology for AI-assisted PDE proof development},
-  pdfkeywords={artificial intelligence, mathematical reasoning, partial differential equations, proof repair, branch closure, Navier--Stokes equations}
+  pdfsubject={A structural-exhaustion methodology for AI-assisted PDE proof development},
+  pdfkeywords={artificial intelligence, mathematical reasoning, partial differential equations, structural exhaustion, local-to-global estimates, loss of compactness}
 }
 
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
@@ -104,46 +104,48 @@
   routeflow/.style={->,thick,dashed,branchblue}
 }
 
-\title[Auditable Branch Closure for Human--AI PDE Proofs]
-{Auditable Branch Closure for Human--AI PDE Proofs}
+\title[Structural Exhaustion for Human--AI PDE Proofs]
+{Structural Exhaustion: Auditable Local-to-Global Estimates for Human--AI PDE Proofs}
 \author{Guillem Duran Ballester}
 \address{Fragile Technologies}
 \email{guillem@fragile.tech}
 \date{}
 \subjclass[2020]{Primary 68T01; Secondary 35Q30, 35B65, 68V15}
-\keywords{AI-assisted mathematics, proof repair, branch closure, partial differential equations, Stokes equations, Navier--Stokes equations}
+\keywords{AI-assisted mathematics, structural exhaustion, local-to-global estimates, loss of compactness, partial differential equations, Stokes equations}
 
 \begin{document}
 \raggedbottom
 
 \begin{abstract}
-We introduce branch closure, a human--AI methodology for developing long PDE
-proofs as finite, auditable case decompositions.  A branch records its local
-space--time window, analytic hypotheses, gauge and compactness choices, active
-case, goal, and supporting evidence.  Every transition must be both locally
-justified and exhaustive.  This yields a simple soundness theorem and, before
-all branches close, a precise partial result whose only possible counterexamples
-lie in the open branches.
+We introduce \emph{structural exhaustion}, a human--AI methodology for deriving
+global analytic conclusions from exhaustive systems of local branches.  A
+branch records its space--time window, quantitative hypotheses, gauge and
+compactness choices, active defect, target estimate, monotone resources, and
+supporting evidence.  A transition either proves a local estimate or converts
+its first failure into one of finitely many structured defects.  Each defect is
+then closed by a local estimate, a capacity comparison, a decrease of a
+well-founded resource, or a rigidity contradiction.  Exhaustion of all defect
+branches yields the global estimate; it is not assumed as an external input.
 
-The central repair operation differs from dependency-based invalidation.  If a
-step asserting a predicate \(P\) fails, the last verified branch is partitioned
-into \(P\) and \(\neg P\).  All subsequent arguments are retained verbatim on
-the \(P\)-branch; only the complementary branch is new.  For a conjunctive
-claim, ordered first-failure branches identify the first missing hypothesis.
-This makes proof repair monotone and gives an AI system a bounded task without
-weakening mathematical completeness.
+The formalism separates logical coverage, quantitative propagation, and
+termination.  A finite closure theorem transports local bounds to the root.  A
+first-failure compactness theorem shows that if every normalized counterexample
+sequence enters a terminal contradiction branch, then a uniform estimate
+holds.  A resource theorem makes exhaustion finite when every nonclosing route
+decreases a discrete rank or consumes a fixed amount of a bounded quantity.
+Branch-preserving repair remains available: if a step asserting \(P\) fails,
+its descendants survive on the \(P\)-branch while \(\neg P\) becomes a new
+structured route.
 
-We give a complete finite-energy Stokes example in which a compact-source
-pressure split leaves a spatially harmonic tail.  Solenoidal cutoff estimates
-regularize the velocity, a local Caccioppoli contradiction excludes the
-parasitic harmonic branch, and the ecodexquation closes the pressure tail without a
-whole-space pressure or heat-kernel formula.  The protocol is then instantiated
-in three companion developments for the three-dimensional Navier--Stokes equations: a local
-concentration and Seregin-profile reduction for the Type I regime, a Liouville
-closure of the residual Type I profile class, and a local exclusion of the
-complementary Type II regime.  Together, these developments exhaust the local
-Type I/Type II dichotomy and rule out finite-time singular points for
-finite-energy suitable weak solutions on \(\R^3\).
+We give a finite-energy Stokes example in which standard local solenoidal
+estimates are assembled with a pressure decomposition and an explicit audit of
+the only entire divergence--curl kernel.  Finite energy and an expanding-ball
+Caccioppoli estimate exclude that kernel, after which the equation closes the
+harmonic pressure tail.  Three companion Navier--Stokes proof graphs then serve as a
+case study in routing concentration, scale and translation escape, profile
+splitting, weak-to-strong convergence defects, and pressure-gauge defects to
+local remedies or resource-decreasing successors.  They illustrate the
+methodology and do not assert a Navier--Stokes regularity theorem.
 \end{abstract}
 
 \maketitle
@@ -162,6 +164,12 @@ these choices and thereby change the theorem.
 Current AI systems for mathematical reasoning emphasize formal proof search,
 autoformalization, retrieval, and repair of rejected proof scripts
 \cite{WuEtAl2022,JiangEtAl2022,FirstEtAl2023,LuEtAl2024}.
+Recent agentic systems recursively decompose informal arguments into formal
+subgoals or interleave informal exploration with Lean verification
+\cite{VaramballyEtAl2025,OspanovEtAl2025,AchimEtAl2025}.  Structural exhaustion
+addresses an earlier analytic decomposition: before a PDE subgoal can be sent
+to a verifier, its window, topology, gauge, failure mechanism, and quantitative
+resource must be fixed.
 Recent PDE-facing systems instead translate control requests or generate
 numerical solvers \cite{SorocoEtAl2025,LiEtAl2025}.  These are important but
 different problems.  The present paper addresses the intermediate activity in
@@ -169,50 +177,67 @@ which a mathematician and an AI system jointly construct a rigorous analytic
 argument whose decisive estimates may remain in conventional mathematical
 language.
 
-Our proposal is to represent the proof as an exhaustive directed acyclic graph
-of analytic cases.  Nodes are not fragments of prose.  Each node exposes the
-state required to interpret its claim; each edge records one implication or
-one exhaustive split; each terminal records a proof of the target on that
-case.  The representation is especially natural for concentration compactness,
-profile decompositions, local pressure splittings, scale selection, and
-rigidity arguments, where the analysis already advances by alternatives
+Structural exhaustion represents the proof as an exhaustive directed graph of
+local analytic states.  Nodes are not fragments of prose.  Each node exposes
+the window, normalization, topology, quantitative budget, and active defect
+required to interpret its claim.  Each edge either propagates an estimate or
+extracts structured information from its first failure.  A terminal supplies a
+local bound or contradiction.  When every failure route terminates and the
+constants or charges are controlled along the graph, the terminal conclusions
+assemble into a global estimate.  The representation is especially natural for
+concentration compactness, profile decompositions, local pressure splittings,
+scale selection, and rigidity arguments, where the analysis already advances
+by alternatives
 \cite{Lions1984a,Lions1984b,Gerard1998,BahouriGerard1999,Keraani2001}.
 
-The key point is how the graph changes when an intermediate claim is wrong.
-Suppose a node was intended to establish properties \(X\) and \(Y\), and every
-later step uses only the declared interface \(X\wedge Y\).  Discovering that
-the attempted proof does not establish \(Y\) does \emph{not} erase the later
-mathematics.  The preceding case is replaced by the exhaustive alternatives
+The constructive step is to use failure as data.  If compactness in a topology
+\(X\) is needed downstream, its failure is not recorded as a generic gap.  It
+must yield an exhaustive alternative such as concentration, escape of scale or
+center, profile splitting, a nonzero defect measure, or loss of a pressure
+representative.  Each alternative carries its inherited bounds and is routed
+to a local estimate, a new normalized extraction, a finite-capacity account,
+or rigidity.  Thus a missing monolithic estimate can be replaced by local
+inequalities whose failure modes are structurally exhausted.
+
+The same representation gives a stable repair rule.  Suppose a node was
+intended to establish properties \(X\) and \(Y\), and every later step uses only
+the declared interface \(X\wedge Y\).  Discovering that the attempted proof
+does not establish \(Y\) leaves the conditional continuation intact.  The
+preceding case is replaced by the exhaustive alternatives
 \[
   \neg X,\qquad X\wedge\neg Y,\qquad X\wedge Y.
 \]
 The existing continuation is attached unchanged to the third alternative.
-The first two alternatives are new analytic obligations.  The root theorem is
-complete once they close; until then, they describe exactly what remains.  We
-call this operation \emph{branch-preserving repair}.
+The first two alternatives are new analytic routes.  Their closure may use
+precisely the same first-failure and resource mechanisms that produced the
+original estimate.  We call this operation \emph{branch-preserving repair}.
 
 The paper makes four contributions.
 
 \begin{enumerate}
-  \item It defines a PDE-specific branch state and an interface discipline for
-  human--AI proof development.
-  \item It proves soundness, an exact partial-closure statement, and
-  branch-preserving and monotone repair results.
+  \item It defines a PDE-specific structural-exhaustion state carrying local
+  windows, quantitative interfaces, compactness data, and monotone resources.
+  \item It proves semantic soundness, quantitative local-to-global closure, a
+  first-failure compactness principle, resource-controlled termination, their
+  synthesis as an estimate principle, and branch-preserving repair.
   \item It gives an operational division of labor: AI proposes and maintains
   local branches, while the mathematician controls theorem statements,
   admissible imports, and the acceptance of analytic evidence.
-  \item It supplies a complete finite-energy Stokes instantiation that closes
-  a harmonic pressure tail by local estimates and contradiction, and points to
-  three full-scale Navier--Stokes proof graphs using the same reading-guide,
-  source-ledger, monotonicity-ledger, and branch-closure discipline.
+  \item It supplies a finite-energy Stokes instantiation in which standard local
+  velocity estimates, representative control, and harmonic pressure-tail closure
+  are composed in one auditable graph.  Three larger Navier--Stokes graphs
+  show how the same method routes distinct losses of compactness through local
+  remedies and resource-decreasing successors.
 \end{enumerate}
 
-The method is deliberately lighter than formalization.  It does not certify an
-unproved estimate, and graph consistency is not a substitute for analysis.
-Its purpose is to make the analytic obligations explicit, preserve valid work
-under repair, and expose the exact residual theorem at every stage.
+The method is deliberately lighter than formalization.  Every local inequality,
+compactness extraction, and rigidity step still requires mathematical proof.
+Its new role is compositional: it supplies a disciplined way to construct a
+global estimate from those local ingredients when no suitable global theorem is
+available.  Graph consistency alone is not evidence, but exhaustive,
+quantitative closure is a proof.
 
-\section{Branch-complete proof states}
+\section{Structural-exhaustion states}
 \label{sec:method}
 
 \subsection{Semantic setting}
@@ -230,14 +255,18 @@ is the emptiness of \(A\wedge\neg T\).
 \begin{definition}[PDE branch state]\label{def:branch-state}
 A branch state is a record
 \[
-  B=(W,H,\Gamma,\tau,O,E).
+  B=(W,H,\Gamma,\tau,O,Q,M,E).
 \]
 Here \(W\) fixes the local window, scale, and coordinate frame; \(H\) is the
 list of analytic hypotheses already available on that window; \(\Gamma\)
 records gauge, quotient, normalization, and convergence choices; \(\tau\) is
-the active case predicate; \(O\) is the goal on this case; and \(E\) contains
-the mathematical evidence accepted for the preceding implications.  Its
-semantic region is
+the active case predicate; and \(O\) is the qualitative goal on this case.
+The quantitative interface \(Q=(q_B,d_B)\) consists of finite nonnegative
+functions on \(\sem B\), recording a target quantity and its admissible input
+datum.  The resource record \(M\) contains the energy, mass,
+rank, scale count, or other monotone quantity used to control repeated failure.
+Finally, \(E\) contains the mathematical evidence accepted for the preceding
+implications.  The semantic region is
 \[
   \sem B=\{s\in\calU: W(s)\wedge H(s)\wedge\Gamma(s)\wedge\tau(s)\}.
 \]
@@ -245,12 +274,15 @@ The fields are mathematical data.  They may be written in prose, equations,
 or a table; no particular serialization is part of the method.
 \end{definition}
 
-The separation between \(H\), \(\Gamma\), and \(\tau\) matters in PDE.  A
+The separation between \(H\), \(\Gamma\), \(\tau\), \(Q\), and \(M\) matters
+in PDE.  A
 bound can survive rescaling while a gauge choice does not; a sequence can
 converge weakly in the energy space without giving the strong convergence
 needed for a nonlinear term; and a pressure statement can be meaningful only
-modulo functions of time.  Recording these choices prevents a downstream
-argument from consuming a stronger statement than its parent produced.
+modulo functions of time.  A defect extraction may preserve the analytic
+hypotheses but consume critical mass or lower a scale rank.  Recording these
+choices prevents a downstream argument from consuming a stronger statement or
+more quantitative resource than its parent produced.
 
 \begin{definition}[Valid transition]\label{def:transition}
 A transition from a branch \(B\) to children \(B_1,\ldots,B_m\), written
@@ -269,14 +301,38 @@ one-child transition is an implication; a multi-child transition is a case
 split.
 \end{definition}
 
+\begin{definition}[Quantitative transition]\label{def:quantitative-transition}
+Let \(B\Longrightarrow B_1\vee\cdots\vee B_m\) be valid.  It is a
+\emph{routing estimate} if its evidence supplies nonnegative constants
+\(a_B,b_{Bi},\kappa_{Bi}\) such that, for \(s\in\sem B\),
+\begin{equation}\label{eq:routing-estimate}
+ q_B(s)
+ \le a_Bd_B(s)
+ +\max_{i:\,s\in\sem{B_i}} b_{Bi}q_{B_i}(s),
+ \qquad
+ d_{B_i}(s)\le\kappa_{Bi}d_B(s).
+\end{equation}
+It is an \emph{aggregate estimate} if
+\begin{equation}\label{eq:aggregate-estimate}
+ q_B(s)\le a_Bd_B(s)+\sum_{i=1}^m b_{Bi}q_{B_i}(s),
+ \qquad
+ \sum_{i=1}^m d_{B_i}(s)\le\kappa_Bd_B(s).
+\end{equation}
+In an aggregate estimate, \(q_{B_i}\) and \(d_{B_i}\) are extended by zero
+outside \(\sem{B_i}\).
+The second inequality in \eqref{eq:aggregate-estimate} includes the overlap or
+multiplicity bound needed to sum local estimates.  A transition may carry both
+interfaces when it first chooses a case and then decomposes its local pieces.
+\end{definition}
+
 Every transition also declares an \emph{output interface}: the facts that its
 children may use.  A proof below the transition is interface-respecting when
 it uses the transition only through those facts, not through an unstated detail
 of the argument that produced them.  This familiar modularity condition is
 what makes branch-preserving repair possible.
 
-\begin{definition}[Closed proof graph]\label{def:closed-graph}
-A finite rooted directed acyclic graph is branch-complete for
+\begin{definition}[Structurally exhausted proof graph]\label{def:closed-graph}
+A finite rooted directed acyclic graph is structurally exhausted for
 \eqref{eq:target} if:
 \begin{enumerate}
   \item \(\{s:A(s)\}\subseteq\sem{B_0}\) for its root \(B_0\);
@@ -284,14 +340,15 @@ A finite rooted directed acyclic graph is branch-complete for
   \item every terminal \(L\) has accepted evidence for
   \(\sem L\subseteq\{s:T(s)\}\).
 \end{enumerate}
-A terminal may close by a direct estimate, a contradiction, a reduction to an
-earlier theorem, or identification with an explicitly classified exceptional
-case.
+A terminal may close by a direct estimate, a capacity contradiction, a
+rigidity theorem, or identification with an explicitly classified exceptional
+case.  For a quantitative conclusion it also records a bound
+\(q_L\le c_Ld_L\), or proves that \(\sem L\) contains no normalized failure.
 \end{definition}
 
-The graph is a proof presentation, not a second mathematical theory.  Its
-benefit is that coverage, local hypotheses, and sources become reviewable
-separately from the prose surrounding them.
+The graph is both a proof presentation and a composition rule for estimates.
+Logical coverage, local analytic evidence, resource consumption, and constant
+propagation remain separately reviewable.
 
 \subsection{PDE transitions}
 
@@ -302,17 +359,19 @@ The states used in this paper admit five recurring transitions.
   frequency windows and records every cutoff error.
   \item A \emph{decomposition} splits velocity, pressure, profiles, scales, or
   defects into named components and retains the remainder.
-  \item An \emph{estimate} closes the component covered by a theorem whose
-  hypotheses appear in the current branch.
+  \item An \emph{estimate} proves a local inequality and records its constant,
+  data dependence, and overlap multiplicity.
   \item A \emph{compactness or rigidity step} changes the state only in the
   topology actually obtained and records the property transported to the
   limit.
   \item A \emph{decision} introduces exhaustive positive and negative cases
-  for a property not yet known.
+  for a property not yet known; its negative case identifies a defect or a
+  resource-decreasing successor.
 \end{enumerate}
 
-For each node a reader should be able to answer six questions: what case is
-active, what inputs are available, what new fact is proved, which result proves
+For each node a reader should be able to answer eight questions: what case is
+active, what inputs are available, which target quantity is controlled, which
+resource is retained or consumed, what new fact is proved, which result proves
 it, which alternatives leave the node, and where each alternative closes.  In
 the Stokes example these questions are answered by
 \Cref{tab:stokes-node-audit}; the larger Navier--Stokes instances use the same
@@ -320,21 +379,23 @@ format.
 
 \subsection{Human--AI division of labor}
 
-\begin{protocol}[Branch-closure loop]\label{prot:loop}
+\begin{protocol}[Structural-exhaustion loop]\label{prot:loop}
 Starting from \eqref{eq:target}, the collaborators repeat the following steps.
 
 \begin{enumerate}
   \item The mathematician fixes the theorem, admissible solution class, and
   which external results may be cited.
-  \item The AI proposes the next implication or exhaustive split, together
-  with its input and output interfaces and a source-level argument.
+  \item The AI proposes the next local estimate or exhaustive split, together
+  with its input/output interface, constant dependence, resource change, and a
+  source-level argument.
   \item The mathematician accepts, rejects, or weakens that argument.  Simple
   graph checks may verify numbering, acyclicity, coverage declarations, and
   source links, but acceptance of an analytic estimate remains mathematical
   review.
   \item An accepted transition is added.  A rejected assertion \(P\) is
   replaced by the split \(P\vee\neg P\); the existing continuation is retained
-  on \(P\), and work proceeds on \(\neg P\).
+  on \(P\), while \(\neg P\) is converted into a defect state whose local data
+  and resource record determine the next route.
   \item The process stops only when every reachable branch has a terminal
   proof of the target.
 \end{enumerate}
@@ -346,11 +407,11 @@ and maintaining a large graph.  It leaves theorem ownership and analytic
 judgment with the human author.  In particular, a fluent proof sketch is never
 itself evidence that a branch is closed.
 
-\section{Correctness and repair}
+\section{Local-to-global correctness and repair}
 \label{sec:correctness}
 
 \begin{theorem}[Soundness]\label{thm:soundness}
-If a finite graph is branch-complete for \eqref{eq:target}, then
+If a finite graph is structurally exhausted for \eqref{eq:target}, then
 \(A(s)\Rightarrow T(s)\) for every \(s\in\calU\).
 \end{theorem}
 
@@ -362,7 +423,136 @@ acyclicity produce a terminal \(L\) with \(s\in\sem L\).  Terminal closure
 then gives \(T(s)\).
 \end{proof}
 
-The same argument describes an incomplete proof exactly.
+\begin{theorem}[Quantitative local-to-global closure]
+\label{thm:quantitative-closure}
+Let a finite structurally exhausted graph carry quantitative interfaces
+\(Q_B=(q_B,d_B)\).  Suppose every nonterminal transition satisfies either
+\eqref{eq:routing-estimate} or \eqref{eq:aggregate-estimate}, and every terminal
+\(L\) satisfies
+\[
+  q_L(s)\le c_Ld_L(s),\qquad s\in\sem L.
+\]
+Then the root satisfies a uniform estimate
+\begin{equation}\label{eq:root-global-estimate}
+  q_{B_0}(s)\le C_{\mathrm{root}}d_{B_0}(s),\qquad s\in\sem{B_0},
+\end{equation}
+where \(C_{\mathrm{root}}\) is determined by the terminal constants and the recorded
+transition constants.  In particular, the global constant is an output of the
+closed local graph.
+\end{theorem}
+
+\begin{proof}
+Order the vertices backwards from the terminals.  Put \(C_L=c_L\) at a
+terminal.  At a routing transition define
+\[
+ C_B=a_B+\max_i b_{Bi}\kappa_{Bi}C_{B_i},
+\]
+and at an aggregate transition define
+\[
+ C_B=a_B+\kappa_B\max_i b_{Bi}C_{B_i}.
+\]
+The routing formula follows by choosing a child containing \(s\), using its
+bound, and transporting its datum through \eqref{eq:routing-estimate}.  For an
+aggregate transition,
+\[
+ \sum_i b_{Bi}q_{B_i}
+ \le \max_i(b_{Bi}C_{B_i})\sum_i d_{B_i}
+ \le \kappa_B\max_i(b_{Bi}C_{B_i})d_B.
+\]
+Backward induction is valid because the graph is finite and acyclic, and gives
+\eqref{eq:root-global-estimate}.
+\end{proof}
+
+The preceding theorem assembles inequalities already visible on the graph.  A
+compactness argument often creates those inequalities indirectly by excluding
+all normalized failures.
+
+\begin{theorem}[First-failure compactness closure]
+\label{thm:first-failure-compactness}
+Let \(\calU\) be a cone and let \(q,d:\calU\to[0,\infty)\) be positively
+homogeneous of the same degree \(\alpha>0\).  Assume that every sequence satisfying
+\begin{equation}\label{eq:normalized-failure}
+ q(s_n)=1,
+ \qquad d(s_n)\longrightarrow0,
+\end{equation}
+admits a subsequence that enters a finite exhaustive extraction graph.  Each
+edge of this graph must preserve the normalization and the topology, gauge, and
+resource data required by its successor.  If every terminal contradicts
+\eqref{eq:normalized-failure}, then there is a finite constant \(C\) such that
+\begin{equation}\label{eq:compactness-generated-estimate}
+ q(s)\le C d(s),\qquad s\in\calU.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+If \eqref{eq:compactness-generated-estimate} failed, there would be \(u_n\) with
+\(q(u_n)>n d(u_n)\).  Setting
+\(s_n=q(u_n)^{-1/\alpha}u_n\) gives \(q(s_n)=1\) and
+\(d(s_n)<1/n\).  Exhaustiveness routes a subsequence
+to a terminal, while terminal closure says that no such normalized sequence can
+reach that terminal.  This contradiction proves the estimate.
+\end{proof}
+
+\begin{theorem}[Resource-controlled exhaustion]
+\label{thm:resource-termination}
+Consider a finitely branching structural-exhaustion tree.  Suppose every live
+state carries a rank \(r\in\{0,\ldots,R\}\) and a budget
+\(0\le\mu\le M\).  Along every nonclosing edge either \(r\) decreases, or \(r\)
+is unchanged and \(\mu\) decreases by at least \(\delta>0\).  When \(r\)
+decreases, \(\mu\) may be reset to at most \(M\).  Then every path has length at
+most
+\[
+ (R+1)\bigl(1+\lfloor M/\delta\rfloor\bigr),
+\]
+and the tree is finite.  Consequently, if every terminal supplies a local
+estimate or contradiction, structural exhaustion produces an unconditional
+global conclusion.
+\end{theorem}
+
+\begin{proof}
+At each fixed rank, at most \(\lfloor M/\delta\rfloor\) budget-consuming edges
+are possible.  The rank can decrease at most \(R\) times.  The displayed bound
+follows.  A finitely branching tree with uniformly bounded path length has
+finitely many vertices.
+\end{proof}
+
+\begin{theorem}[Structural-exhaustion estimate principle]
+\label{thm:structural-exhaustion-estimate}
+Let \(\calU\) be a cone and let
+\(q,d:\calU\to[0,\infty)\) be positively homogeneous of the same positive
+degree.  Suppose that every normalized failure sequence
+\[
+ q(s_n)=1,\qquad d(s_n)\to0,
+\]
+enters a finitely branching extraction tree whose transitions preserve the
+normalization and every topology, gauge, and quantitative interface consumed
+downstream.  Assume further that:
+\begin{enumerate}
+  \item every nonclosing transition either lowers a rank
+  \(r\in\{0,\ldots,R\}\) or, at fixed rank, consumes at least
+  \(\delta>0\) from a budget bounded by \(M\); and
+  \item every terminal contradicts the normalized failure conditions.
+\end{enumerate}
+Then the extraction tree is finite and there is a constant \(C<\infty\) such
+that
+\[
+ q(s)\le C d(s),\qquad s\in\calU.
+\]
+If this estimate is the terminal interface of a finite quantitative proof
+graph, \Cref{thm:quantitative-closure} propagates it, together with all recorded
+overlap and transport constants, to the root.
+\end{theorem}
+
+\begin{proof}
+The resource hypotheses and finite branching imply finiteness of the extraction
+tree by \Cref{thm:resource-termination}.  It is therefore a finite exhaustive
+extraction graph of the kind required in
+\Cref{thm:first-failure-compactness}.  Terminal exclusion gives the asserted
+estimate.  The last statement is exactly
+\Cref{thm:quantitative-closure}.
+\end{proof}
+
+The same routing argument gives a sharp residual cover for an incomplete proof.
 
 \begin{theorem}[Partial closure]\label{thm:partial}
 Suppose every transition in a finite rooted graph is valid, but a set
@@ -373,8 +563,9 @@ other leaves prove \(T\), then
   \subseteq
   \bigcup_{L\in\calL_{\mathrm{open}}}\sem L.
 \end{equation}
-Thus the open leaves, rather than an informal list of gaps, are the exact
-residual classes in which a counterexample may remain.
+Thus the open leaves, rather than an informal list of gaps, cover every
+residual class in which a counterexample may remain.  Equality holds when the
+root is exactly \(A\) and the branch alternatives form a disjoint partition.
 \end{theorem}
 
 \begin{proof}
@@ -515,6 +706,8 @@ Field & Typical content & Question answered \\
 \(\Gamma\) & Pressure gauge, quotient, normalization, convergence topology & Which representative and limiting meaning are fixed? \\
 \(\tau\) & Profile type, scale relation, active defect, positive/negative case & Which alternative is being analyzed? \\
 \(O\) & Regularity, decay, contradiction, classification, or reduction & What must this branch prove? \\
+\(Q\) & Target seminorm, input norm, constants, and overlap multiplicity & Which quantitative estimate is propagated? \\
+\(M\) & Energy, critical mass, profile count, scale rank, or failure budget & Why must repeated refinement terminate? \\
 \(E\) & Lemma, calculation, citation, and exact input/output interface & Why may the reader traverse the incoming edge? \\
 \bottomrule
 \end{tabularx}
@@ -545,6 +738,29 @@ component as a branch.  If a rigidity lemma requires \(X\wedge Y\), use the
 ordered alternatives in \eqref{eq:first-failure}.  In each case the successful
 continuation remains available while the complementary analytic class becomes
 the next research target.
+
+This is the connection between structural exhaustion and loss of compactness.
+A compactness step declares the limit object, its normalization, the topology
+of convergence, the properties transported to the limit, and the resource
+retained after extraction.  If one part of this interface fails, the first
+failure is converted into positive structure: concentration, escape of scale or
+center, profile splitting, a nonzero defect measure, or loss of a pressure
+representative.  The successful compactness continuation remains available,
+while each defect is routed to a new local estimate, normalization, capacity
+comparison, or rigidity test.
+
+The method therefore replaces a missing global compactness estimate by an
+exhaustive local construction.  A concentration branch consumes a fixed amount
+of critical mass; an escaping branch changes frame or becomes locally
+invisible; a splitting branch produces finitely many active profiles; a
+weak-to-strong defect produces another core; and a gauge defect is separated
+from the velocity limit and closed elliptically.  If these routes exhaust the
+normalized failures, \Cref{thm:first-failure-compactness} yields the estimate.
+If every continuing route also decreases a rank or consumes a bounded resource,
+\Cref{thm:resource-termination} makes the exhaustion finite.  The methodology
+is thus the local-to-global tool: it constructs the global conclusion from
+local analytic mechanisms rather than presupposing a theorem that already
+contains it.
 
 \section{Complete Stokes instantiation}
 \label{sec:stokes}
@@ -580,7 +796,9 @@ pressure and the pressure tail by
  p_{\mathrm{near}}=\partial_i\partial_jN*(\chi F_{ij}),
  \qquad p_{\mathrm{tail}}=p-p_{\mathrm{near}}-c(t),
 \end{equation}
-where \(c(t)\) fixes the spatial mean on \(B_\rho\).  Then
+where the time distribution \(c\) fixes the gauge, for example by requiring
+\(\langle p_{\mathrm{tail}}(\cdot,t),\varphi\rangle_x=0\) for a fixed
+\(\varphi\in C_c^\infty(B_\rho)\) with \(\int\varphi=1\).  Then
 \(\Delta p_{\mathrm{tail}}=0\) on \(B_\rho\).  The tail contains all influence
 not represented by the compactly supported local source; its regularity will
 be proved, not assumed.
@@ -595,6 +813,29 @@ from \Cref{stokes:def:energy-state} unless \(a=0\), because a nonzero spatially
 constant velocity is not in \(L^2(\R^3)\).  Thus a local curl argument alone
 cannot prove the theorem below; the finite-energy branch must be used.
 \end{remark}
+
+For nested cylinders \(Q_r\Subset Q_R\) and an integer \(m\ge0\), set
+\begin{align}
+ q_m(Q_r;u)
+ &:=\sum_{2j+|\alpha|\le m}
+ \|\partial_t^j\partial_x^\alpha u\|_{L^2(Q_r)},
+ \label{stokes:eq:q-interface}\\
+ d_m(Q_R;u,F)
+ &:=\|u\|_{L^2(J_R;L^2(\R^3))}
+   +\mathcal N_{m,R,J_R}(F).
+ \label{stokes:eq:d-interface}
+\end{align}
+Here \(\mathcal N_{m,R,J_R}(F)\) denotes a fixed finite sum of local
+\(L^2\)-norms of the derivatives of \(F\) required up to parabolic order \(m\).
+These are the quantitative interface of the Stokes graph.  Its resource record
+is the finite derivative rank together with the remaining cylinder buffer.
+\Cref{stokes:lem:local-bootstrap} supplies the local transition
+\(q_m(Q_r;u)\le C_m d_m(Q_R;u,F)\), including its buffer and data dependence.
+The whole-space finite-energy hypothesis has a separate role: it excludes every
+entire divergence--curl ambiguity by
+\Cref{stokes:lem:finite-energy-kernel}.  The example therefore does not infer a
+global bound for normalized difference quotients from the energy of \(u\); it
+composes a proved local estimate with a proved global representative exclusion.
 
 \begin{theorem}[Finite-energy Stokes regularity by local pressure-tail closure]
 \label{stokes:thm:main}
@@ -614,28 +855,26 @@ norms of derivatives of \(F\) on a buffered spatial cylinder.  For every split
 
 The proof uses no whole-space pressure formula and no global heat or Oseen
 kernel.  Compactly supported divergence corrections remove pressure from the
-velocity estimates.  The only possible failure is a finite-energy parasitic
-harmonic mode; local Caccioppoli estimates on expanding balls force that mode
-to vanish.  Once the velocity is smooth, the equation closes the harmonic
-pressure tail locally.
+velocity estimates and record their constants on nested cylinders.  The
+finite-energy kernel lemma separately excludes an unrecorded entire harmonic
+representative.  With these two obligations closed, the equation controls the
+harmonic pressure tail on the target cylinder.
 
 \subsection{How to read the proof architecture}
 
 Node [2] records the local near/tail pressure split without assigning any time
 regularity to the harmonic tail.  Curl and local heat estimates give the
 smooth vorticity in [3].  Solenoidal cutoffs and annular Bogovski\u\i{}
-corrections then yield the exhaustive alternative [4]: either the local
-velocity bootstrap closes, or its first failure produces a nonzero entire
-finite-energy field with zero divergence and curl.  The failure branch reaches
-[6], where an expanding-ball Caccioppoli estimate contradicts its
-normalization.  On the surviving branch, [8] uses the original equation to
-prove smoothness of the pressure tail, and [9] gives full regularity of the
-unmodified velocity and pressure gradient.
+corrections give the quantitative local bootstrap in [4], hence smoothness of
+the raw velocity in [5].  Independently, [6] excludes the entire finite-energy
+divergence--curl kernel, so [7] certifies that no global harmonic representative
+was lost.  Node [8] then uses the original equation to prove smoothness of the
+pressure tail, and [9] gives full regularity of the unmodified velocity and
+pressure gradient.
 
 \subsection{Diagram map}
 
-\Cref{tab:stokes-diagram-map} records the single diagram, its node range, and
-the branch closed by the local contradiction.
+\Cref{tab:stokes-diagram-map} records the single diagram and its node range.
 
 \begin{table}[H]
 \caption{Map of the Stokes proof-flow diagram.}
@@ -646,17 +885,17 @@ the branch closed by the local contradiction.
 \toprule
 Diagram & Nodes & Role \\
 \midrule
-\Cref{fig:stokes-proof-flow} & [1]--[9] & Split the pressure locally, close
-the only parasitic velocity branch by finite-energy contradiction, and recover
-the harmonic pressure tail from the equation. \\
+\Cref{fig:stokes-proof-flow} & [1]--[9] & Split the pressure locally, propagate
+the solenoidal velocity estimate, exclude the entire finite-energy harmonic
+kernel, and recover the pressure tail from the equation. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Proof-dependency diagram}
 
-\Cref{fig:stokes-proof-flow} displays the local analytic spine and both outputs
-of the solenoidal-bootstrap decision.
+\Cref{fig:stokes-proof-flow} displays the local analytic spine and the separate
+representative audit used by the final conclusion.
 
 \begin{figure}[H]
 \centering
@@ -665,33 +904,33 @@ of the solenoidal-bootstrap decision.
   \node[box] (n1) {\textbf{[1]} Finite-energy whole-space Stokes state and a buffered local cylinder};
   \node[box,below=of n1] (n2) {\textbf{[2]} Compact-source pressure \(p_{\mathrm{near}}\) and spatially harmonic tail \(p_{\mathrm{tail}}\)};
   \node[box,below=of n2] (n3) {\textbf{[3]} Curl equation and interior heat smoothing of \(\omega=\curl u\)};
-  \node[dec,below=9mm of n3] (n4) {\textbf{[4]} Do the local solenoidal difference-quotient estimates close?};
-  \node[box,below left=12mm and 18mm of n4] (n5) {\textbf{[5]} No: first failure yields a nonzero entire finite-energy field \(H\) with \(\divergence H=\curl H=0\)};
-  \node[term,below=of n5] (n6) {\textbf{[6]} Expanding-ball Caccioppoli estimate forces \(H=0\): contradiction};
-  \node[box,below right=12mm and 18mm of n4] (n7) {\textbf{[7]} Yes: all local velocity estimates close, hence \(u\in C^\infty\)};
+  \node[box,below=of n3] (n4) {\textbf{[4]} Solenoidal cutoffs give \(q_m(Q_r;u)\le C_md_m(Q_R;u,F)\)};
+  \node[box,below=of n4] (n5) {\textbf{[5]} Iteration on nested cylinders gives \(u\in C^\infty\)};
+  \node[box,left=16mm of n5] (n6) {\textbf{[6]} Finite energy and expanding-ball Caccioppoli exclude the entire divergence--curl kernel};
+  \node[box,below=of n5] (n7) {\textbf{[7]} Smooth raw velocity with no unresolved global harmonic representative};
   \node[box,below=of n7] (n8) {\textbf{[8]} The Stokes equation gives \(\nabla p_{\mathrm{tail}}\in C^\infty\)};
   \node[term,below=of n8] (n9) {\textbf{[9]} Full local regularity of raw \(u\) and \(\nabla p\)};
 
   \draw[flow] (n1) -- (n2);
   \draw[flow] (n2) -- (n3);
   \draw[flow] (n3) -- (n4);
-  \draw[flow] (n4) -- node[above left,font=\small]{no} (n5);
+  \draw[flow] (n4) -- (n5);
   \draw[flow] (n5) -- (n6);
-  \draw[flow] (n4) -- node[above right,font=\small]{yes} (n7);
+  \draw[flow] (n6) -- (n7);
   \draw[flow] (n7) -- (n8);
   \draw[flow] (n8) -- (n9);
 \end{tikzpicture}%
 }
-\caption{Local closure of the Stokes pressure tail.  The only negative branch
-is converted into a finite-energy harmonic mode and closed by contradiction;
-the positive branch recovers the unmodified pressure from the equation.}
+\caption{Local closure of the Stokes pressure tail.  Quantitative velocity
+estimates and global representative control are verified separately before the
+original equation recovers the unmodified pressure gradient.}
 \label{fig:stokes-proof-flow}
 \end{figure}
 
 \subsection{Node-by-node audit table}
 
 \Cref{tab:stokes-node-audit} identifies the precise lemma supporting every
-state, decision, and terminal closure.
+state, transition, and terminal closure.
 
 \small
 \begin{longtable}{@{}L{0.06\textwidth}L{0.20\textwidth}L{0.25\textwidth}L{0.40\textwidth}@{}}
@@ -713,15 +952,16 @@ p_{\mathrm{tail}}+c(t)\), with \(\Delta p_{\mathrm{tail}}=0\) locally &
 \Cref{stokes:lem:pressure-split}. \tabularnewline\relax
 [3] & [1] & Smooth local vorticity &
 \Cref{stokes:lem:vorticity}. \tabularnewline\relax
-[4] & [1], [3], nested cylinders & Exhaustive success/failure alternative for
-the local solenoidal bootstrap & \Cref{stokes:lem:local-bootstrap}. \tabularnewline\relax
-[5] & Failure at [4] & A normalized nonzero entire \(L^2\) field with zero
-divergence and curl & Failure alternative in
-\Cref{stokes:lem:local-bootstrap}. \tabularnewline\relax
-[6] & [5] & Contradiction & \Cref{stokes:lem:finite-energy-kernel}.
+[4] & [1], [3], nested cylinders, and \(q_m,d_m\) &
+\(q_m(Q_r;u)\le C_md_m(Q_R;u,F)\), with recorded buffer and data dependence
+& \Cref{stokes:lem:local-bootstrap}. \tabularnewline\relax
+[5] & [4] at every finite derivative rank & Smooth raw velocity on the target
+cylinder & Iteration in \Cref{stokes:lem:local-bootstrap}. \tabularnewline\relax
+[6] & [1], [5], and any entire \(L^2\) field with zero divergence and curl & The field vanishes
+& \Cref{stokes:lem:finite-energy-kernel}. \tabularnewline\relax
+[7] & [5], [6] & Smooth raw velocity with no unresolved entire finite-energy
+harmonic representative & \Cref{stokes:lem:local-bootstrap,stokes:lem:finite-energy-kernel}.
 \tabularnewline\relax
-[7] & Success at [4] & \(u\in C^\infty\) on the target cylinder & Iteration
-in \Cref{stokes:lem:local-bootstrap}. \tabularnewline\relax
 [8] & [2], [7] & Smooth harmonic pressure tail &
 \Cref{stokes:lem:pressure-closure}. \tabularnewline\relax
 [9] & [2], [7], [8] & Smooth raw velocity and pressure gradient & Proof of
@@ -732,8 +972,8 @@ in \Cref{stokes:lem:local-bootstrap}. \tabularnewline\relax
 
 \subsection{Monotone-hypothesis ledger}
 
-\Cref{tab:stokes-monotone} records the data retained while cylinders shrink
-and the failure branch is exhausted over larger balls.
+\Cref{tab:stokes-monotone} records the data retained while cylinders shrink and
+the independent kernel audit is closed over expanding balls.
 
 \begin{table}[H]
 \caption{Hypotheses retained along the Stokes route.}
@@ -747,9 +987,15 @@ Datum & How it is used & Persistence \\
 Nested cylinders & Support cutoffs, annular divergence corrections, and
 interior estimates & Windows only shrink. \\
 Finite-energy bound for \(u\) & Controls every cutoff estimate and excludes
-the parasitic kernel & Retained on every branch and every larger ball. \\
+the entire divergence--curl kernel & Retained on every local window and in the
+whole-space representative audit. \\
 Smooth tensor forcing \(F\) & Supplies the local pressure source and the
 difference-quotient right-hand sides & Differentiated only to finite order. \\
+Quantitative interface \(q_m,d_m\) & Records and propagates the cutoff-estimate
+constant to the target cylinder & Retained at fixed order; the order increases
+only after the previous estimate closes. \\
+Derivative rank and cylinder buffer & Control iteration and prevent an
+unrecorded infinite refinement & Finite at each requested order. \\
 Distributional Stokes equation and incompressibility & Remove pressure from
 solenoidal tests and recover it after velocity closure & Never replaced by a
 projected whole-space equation. \\
@@ -759,45 +1005,53 @@ Pressure modulo functions of time & Makes the conclusion a statement about
 \end{tabularx}
 \end{table}
 
-\subsection{Branch-closure ledger}
+\subsection{Structural-exhaustion ledger}
 
-\Cref{tab:stokes-closure} verifies that the success and failure alternatives
-both reach a proof of the original theorem.
+\Cref{tab:stokes-closure} verifies that every analytic obligation used by the
+final conclusion is discharged.
 
 \begin{table}[H]
-\caption{Exhaustive closure of the local Stokes bootstrap.}
+\caption{Closure of the analytic obligations in the Stokes graph.}
 \label{tab:stokes-closure}
 \centering
 \small
 \begin{tabularx}{\textwidth}{@{}L{0.25\textwidth}L{0.16\textwidth}Y@{}}
 \toprule
-Case from [4] & Terminal & Closure \\
+Obligation & Discharged at & Closure \\
 \midrule
-The local estimates fail & [6] & The normalized first-failure mode is entire,
-finite-energy, divergence-free, and curl-free; expanding-ball Caccioppoli
-forces it to vanish, contradicting normalization. \\
-The local estimates close & [9] & Iteration makes \(u\) smooth; the original
-equation then makes \(\nabla p_{\mathrm{tail}}\), and hence \(\nabla p\),
-smooth on the smaller cylinder. \\
+Local velocity control & [4]--[5] & Solenoidal cutoff testing and Bogovski\u\i{}
+correction give \(q_m\le C_md_m\); iteration on nested cylinders makes the raw
+velocity smooth. \\
+Global representative control & [6]--[7] & Every entire finite-energy
+divergence-free and curl-free ambiguity vanishes by expanding-ball
+Caccioppoli. \\
+Pressure-tail closure & [8]--[9] & The original equation makes
+\(\nabla p_{\mathrm{tail}}\), and hence \(\nabla p\), smooth on the smaller
+cylinder. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \input{stokes_appendix_body.tex}
 
-\section{Full-scale Navier--Stokes instantiations}
+\section{Navier--Stokes compactness case study}
 \label{sec:navier-stokes-instances}
 
-The Stokes graph is small enough to inspect on one page.  The same method is
-used in three companion Navier--Stokes developments whose joint regularity
-consequence is stated below.  Each opens with a proof-first reading guide, an
-acyclic diagram, a node-by-node source ledger, a monotone-hypothesis ledger,
-and an exhaustive branch-closure table.  The counts in
+The Stokes graph is small enough to inspect on one page.  Three companion
+Navier--Stokes developments provide a larger case study of how structural
+exhaustion represents compactness arguments at realistic scale.  The graphs record where compactness
+is available, the mechanisms by which it can fail, the topology obtained at
+each limit, and the localization, profile extraction, normalization, or
+rigidity step proposed to repair each failure.  They document an LLM-assisted
+representation of these analytic mechanisms, not a Navier--Stokes regularity
+theorem or a short substitute for its underlying analytic proofs.  Each opens with a proof-first reading guide, an acyclic diagram, a
+node-by-node source ledger, a monotone-hypothesis ledger, and a structural-exhaustion
+table.  The counts in
 \Cref{tab:full-instances} refer to solid numbered nodes and diagram parts in
 those source files.
 
 \begin{table}[H]
-\caption{Complete large-scale proof-graph instantiations.}
+\caption{Navier--Stokes compactness case-study graphs.}
 \label{tab:full-instances}
 \centering
 \small
@@ -807,75 +1061,122 @@ Development & Nodes & Diagram parts & Source \\
 \midrule
 Navier--Stokes setup and compactness architecture & 39 & 2 &
 \href{\sourcebase/proof_setup.tex}{\texttt{proof\_setup.tex}} \\
-Type I residual-closure argument & 159 & 9 &
+Type I residual-branch argument & 159 & 9 &
 \href{\sourcebase/type_I_residual_closure.tex}{\texttt{type\_I\_residual\_closure.tex}} \\
-Type II regularity argument & 135 & 12 &
+Type II branch argument & 135 & 12 &
 \href{\sourcebase/type_II_regularity.tex}{\texttt{type\_II\_regularity.tex}} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-The first development proves local concentration, the Type I/Type II
-dichotomy, and the Seregin-profile reduction for the Type I branch.  The second
-proves that the residual Type I profile class is empty.  The third excludes
-physical local Type II singular germs.  Their joint conclusion is the
-following assembly theorem.
+The three developments organize, respectively, the compactness setup, a
+residual Type I route, and a Type II route.  Their common unit is not an open
+gap but a first-failure interface.  The interface specifies the topology needed
+by the next nonlinear operation; failure of that topology produces one of the
+structured routes in \Cref{tab:ns-compactness-routes}.  The table is a routing
+index into the companion developments: it does not assert that the short paper
+has independently proved the local lemma named in each route.
 
-\begin{theorem}[Joint Navier--Stokes regularity consequence]
-\label{thm:joint-ns-regularity}
-Let \((u,p)\) be a finite-energy suitable weak solution of the
-three-dimensional incompressible Navier--Stokes equations
-\[
-  \partial_tu-\Delta u+(u\cdot\nabla)u+\nabla p=0,
-  \qquad \nabla\cdot u=0,
-\]
-on \(\R^3\times(0,T)\).  No point \(x_*\in\R^3\) is a singular terminal
-point at time \(T\).  Since \(T>0\) is arbitrary, the combined result rules
-out finite-time singular points.
-\end{theorem}
+\begin{table}[H]
+\caption{Structural exhaustion of compactness defects in the companion graphs.}
+\label{tab:ns-compactness-routes}
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{@{}L{0.17\textwidth}L{0.24\textwidth}L{0.28\textwidth}Y@{}}
+\toprule
+Failure mechanism & Extracted local data & Structural-exhaustion route & Quantitative role \\
+\midrule
+Concentration & Centered core with a positive critical-mass floor & Retain the
+core, normalize its frame, and test compactness or rigidity again & Each new
+active core consumes a fixed amount of finite critical mass. \\
+Translation escape & Center sequence and terminal no-escape data & Recenter the
+active frame or prove that the escaping component is locally invisible & The
+target window retains only mass visible in one of the exhaustive frames. \\
+Scale escape or cascade & Ordered inner, comparable, and outer scales & Group
+comparable scales, pass outer scales to a vanishing route, and promote inner
+scales to a new core & Scale rank decreases or another positive-mass profile is
+created. \\
+Profile splitting & Finite family of active or compound profiles and a
+remainder & Use mass decoupling, group same-frame profiles, and route the
+remainder by perturbative or new-core alternatives & A positive mass threshold
+bounds the number of active profiles. \\
+Weak-to-strong failure & Nonzero compactness defect or residual concentration
+measure & Apply local compactness on a smaller cylinder or extract another
+concentration core & Failure becomes a new charged object rather than an
+unjustified strong-convergence assertion. \\
+Pressure or gauge defect & Near pressure, harmonic tail, normalized gauge, and
+atomic/diffuse alternatives & Close locally by elliptic estimates, activate a
+velocity core, or route the surviving pressure defect to its own exhaustion &
+Pressure nonlocality is separated from velocity compactness and counted once. \\
+Terminal-time escape & Endpoint concentration and no-escape quantity & Derive
+terminal no-escape from a local endpoint estimate or route to the complementary
+blow-up regime & Prevents normalized concentration from disappearing at the
+last time slice. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\begin{proof}
-Suppose that \(z_*=(x_*,T)\) is singular.  The local concentration theorem in
-the setup development produces positive Caffarelli--Kohn--Nirenberg
-concentration and the exhaustive alternative between a local pointwise Type I
-bound
-\[
-  \operatorname*{ess\,sup}_{T-\rho^2<t<T}
-  \sqrt{T-t}\,\|u(t)\|_{L^\infty(B_\rho(x_*))}<\infty
-\]
-for some \(\rho>0\), and its failure, the local Type II alternative.  In the
-Type I case, the setup development reduces \(z_*\) to a bounded centered
-Seregin profile with invariant local \(L^3\)-nonvanishing.  Its explicit
-Liouville classes are closed in the setup development, and its remaining class
-is empty by the residual-closure development.  The Type I final assembly
-therefore makes \(z_*\) regular, a contradiction.  In the complementary case,
-\(z_*\) is a physical local Type II singular germ, which is excluded by the
-Type II development.  Both alternatives are impossible.
-\end{proof}
+Representative locations make the routing index checkable without reproducing
+the companion arguments.  Concentration, terminal no-escape, local compactness,
+and pressure gauges appear at nodes [5]--[10] of
+\texttt{proof\_setup.tex}.  Escaping-window and diffuse-defect compactifications
+appear at nodes [46]--[72] of \texttt{type\_I\_residual\_closure.tex}.  The
+profile, scale, and residual alternatives appear at nodes [47]--[52] of
+\texttt{type\_II\_regularity.tex}, while its pressure and gauge exhaustion is
+recorded at nodes [111]--[126].  These references identify the encoded routes;
+their local analytic evidence remains in the companion source.
 
-The node and diagram counts quantify three complete instantiations of the
-representation.  The graphs expose profile and scale alternatives, pressure
-gauges, compactness topologies, recurrence routes, and terminal closure
-sources.  At this scale, branch-preserving repair retains a large verified
-continuation on the positive arm of a failed intermediate assertion while
-adding its complementary case as a new branch.
+This routing is constructive.  Suppose a global compactness estimate needed by
+the argument is unavailable.  Structural exhaustion assumes a normalized
+failure and applies the rows of \Cref{tab:ns-compactness-routes} exhaustively.
+When the required local lemmas hold, compact branches provide the local estimate.  Noncompact branches either change
+to a frame in which the defect is visible, create a core that consumes critical
+mass, lower the active scale rank, or separate a pressure component governed by
+a local elliptic estimate.  If the cited decoupling estimates supply a uniform
+positive charge and the scale order supplies a finite rank, these quantities
+bound the number of live successors.  Once the local transitions, resource
+inequalities, and terminal contradictions are certified,
+\Cref{thm:structural-exhaustion-estimate} excludes the normalized failure and
+propagates the resulting estimate to the root.  This is the precise conditional
+sense in which the methodology constructs a global estimate through local
+mechanisms and exhaustive loss-of-compactness routes.
 
-The source repository also contains the broader branch-closure development
+The companion developments are not independently validated here as a proof of
+global regularity, and this paper draws no Navier--Stokes regularity conclusion
+from them.  Their role is to expose, at realistic scale, the state interfaces,
+resources, and closure routes that an LLM must maintain.  Branch-preserving
+repair retains a reviewed continuation on the positive arm of a failed
+assertion, while structural exhaustion works on the defect arm using the same
+local-to-global calculus.
+
+The source repository also contains the broader structural-exhaustion development
 from which the present PDE specialization is derived
 \cite{DuranBallester2026}.  The present paper isolates the human--AI protocol,
-the repair theorem, and the PDE state variables needed to apply it.
+the quantitative closure principles, and the PDE state variables needed to
+apply it.
 
 \section{Discussion}
 \label{sec:discussion}
 
 \subsection{What the method guarantees}
 
-If the mathematical evidence on every edge is correct, the graph guarantees
-that no admissible case has been omitted.  If some leaves remain open,
-\Cref{thm:partial} identifies the exact residual theorem.  If an asserted
-property fails, \Cref{thm:repair} preserves the conditional mathematics below
-that property and opens its complement.  These guarantees are semantic and do
-not depend on a particular model or proof assistant.
+Structural exhaustion has three levels of guarantee.  Semantic soundness says
+that an exhaustive terminal graph proves the target on every admissible case.
+Quantitative closure propagates local constants and overlap bounds to a root
+estimate by \Cref{thm:quantitative-closure}.  First-failure compactness turns
+exclusion of every normalized defect into the existence of a uniform constant
+by \Cref{thm:first-failure-compactness}.  When continuing defects consume a
+bounded resource or decrease a rank, \Cref{thm:resource-termination} also
+proves that the construction ends.  \Cref{thm:structural-exhaustion-estimate}
+combines these operations into the local-to-global estimate principle.  These guarantees are mathematical
+consequences of the certified local transitions; the diagram records their
+composition.
+
+If some leaves remain open, \Cref{thm:partial} identifies the residual classes
+in which a counterexample may remain.  If an asserted property fails,
+\Cref{thm:repair} preserves the conditional mathematics below that property and
+routes its complement through the structural-exhaustion loop.  These guarantees
+do not depend on a particular model or proof assistant.
 
 The representation also supports useful automated checks: node identifiers can
 be compared with ledger rows; terminal shapes can be checked for outgoing
@@ -884,43 +1185,70 @@ can be resolved; and state fields can be compared across transitions.  Such
 checks detect structural omissions.  They do not decide whether a cited PDE
 estimate is applicable.
 
+For the Stokes graph included here, the repository audit verifies the contiguous
+range [1]--[9], nine solid nodes, one solid terminal, no closure proxies, the
+permitted number of outgoing edges for every node shape, and an audit-table row
+for every node.  This is structural evidence only; the source ledger and the
+proofs of its cited lemmas provide the mathematical evidence.
+
 \subsection{Limitations}
 
-The method does not ensure that the graph is finite before the mathematics is
-understood, nor that every complementary branch is tractable.  A poor state
-choice can generate unhelpful cases.  Interface-respecting descendants are
-essential: if a later proof relied on an unstated detail of a failed argument,
-that later proof must first be rewritten against an explicit interface.  The
-approach therefore trades some expository overhead for precise repair and
-review boundaries.
+Structural exhaustion requires an exhaustive defect alphabet and a progress
+mechanism.  A problem lies outside a proposed instantiation when a normalized
+failure produces a defect not represented by the state language, when a local
+transition has no proved estimate, or when continuing branches have no
+well-founded rank or bounded resource.  These are precise mathematical design
+obligations.  The method can replace a missing global theorem by composing
+local tools, but it cannot replace the proofs of the local dichotomies,
+compactness statements, capacity bounds, and rigidity results that make the
+composition valid.
 
-The Stokes example is linear and its first-failure contradiction is explicit.
+A poor state choice can also create unnecessary branches or lose uniform
+constants.  Interface-respecting descendants are essential: if a later proof
+uses an unstated feature of an extraction, it must be rewritten against an
+explicit topology, gauge, and quantitative interface.  Aggregate transitions
+must record overlap and multiplicity; otherwise summing valid local estimates
+need not give a valid global estimate.
+
+The Stokes example is linear and its local cutoff estimates and global kernel
+exclusion are explicit.
 The Navier--Stokes instances are substantially larger, but they do not constitute a
 controlled user study.  Measuring whether the protocol improves correctness,
 review time, or AI contribution quality is future work.  A useful evaluation
-would compare ordinary prose development with branch-complete development on
+would compare ordinary prose development with structural-exhaustion development on
 the same PDE problems and record omitted cases, repair cost, and expert review
 time.
 
 \section{Conclusion}
 
-Branch closure gives human and AI collaborators a common unit of work: a local
-analytic case with a declared interface and an exhaustive continuation.  Its
-most important consequence is a different account of failure.  A broken step
-does not destroy its descendants.  It induces a dichotomy at the last verified
-state; the old proof survives on the positive arm, and the negative arm becomes
-the new mathematical problem.  Soundness follows from exhaustive routing, and
-partial progress has an exact semantic meaning.
+Structural exhaustion gives human and AI collaborators a common unit of work:
+a local analytic state with a quantitative interface, a monotone resource, and
+an exhaustive continuation.  Its central operation is constructive.  Failure
+of a proposed global estimate is normalized, localized, and partitioned into
+defect mechanisms.  Each mechanism supplies additional structure that can be
+estimated, charged, rescaled, compactified, or excluded by rigidity.  Closing
+all routes produces the global estimate, while resource consumption makes the
+closure finite.  Branch-preserving repair is a complementary benefit: a broken
+step preserves its conditional continuation and sends only its defect arm back
+through the same calculus.
 
 The Stokes example shows why this matters even in a linear PDE: a local
 pressure split leaves a harmonic tail, while vorticity smoothing leaves a
-parasitic velocity mode.  The finite-energy branch excludes that mode by an
-expanding-ball Caccioppoli contradiction, after which the equation closes the
-pressure tail locally.  The accompanying Navier--Stokes
-developments show that the same discipline scales to proof graphs with more
-than one hundred states.  This provides a concrete basis for AI assistance in
-PDE proof construction without conflating structured collaboration with
-automatic verification.
+possible entire divergence--curl ambiguity.  The local solenoidal estimate
+controls the raw velocity, and finite energy excludes the global ambiguity by
+an expanding-ball Caccioppoli argument.  The equation then closes the pressure
+tail.  The Navier--Stokes case study applies the same design to
+concentration, translation and scale escape, profile splitting,
+weak-to-strong defects, and pressure gauges.  It shows how local analytic
+mechanisms can be assembled into global control without asserting that the
+companion branches constitute a validated regularity proof.
+
+This is the role of structural exhaustion in AI-assisted PDE mathematics: the
+model maintains the large local state space and proposes typed failure routes;
+the proof derives its force from exhaustive local estimates, quantitative
+resource accounting, and terminal analytic contradictions.  The methodology
+thereby occupies the space between an unsupported global guess and a fully
+formal proof script.
 
 \section*{Statement on AI assistance}
 

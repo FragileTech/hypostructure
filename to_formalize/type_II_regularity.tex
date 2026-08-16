@@ -577,29 +577,61 @@ incoming arrow in the later part are the same graph edge.
 \toprule
 Part & Nodes & Branch resolved & Principal internal sources \\
 \midrule
-I & [1]--[16] & Physical entry, C1 admissibility, repaired representation, unique-core selection, and the retained velocity carrier &
+I & [1]--[16] & Turns a suspected Type II singularity into a workable object.
+The concentration is checked against the physical admissibility conditions,
+rewritten in a repaired gauge that removes the gauge freedom, and reduced to a
+single core; what leaves the panel is one retained velocity carrier that the
+rest of the paper argues about. &
 \cref{def:physical-local-typeII-germ,thm:typeII-analytic-data-exhaustive,thm:repaired-gauge-representation,thm:multibubble} \\
-II & [17]--[41] & Compact estimates, rough-core loss, compact-core dissipation, scale collapse, and the canonical cost channel &
+II & [17]--[41] & Tests that carrier against the compactness the argument
+needs from it.  The ways it can fail are enumerated: a rough core with no local
+energy control, a compact core whose dissipation degenerates, a scale that
+collapses, and a cost channel that stops being canonical.  Each failure is
+dispatched to the panel that closes it. &
 \cref{thm:rough-core,lem:compact-core-dissipation-dichotomy,thm:scale-stratification,thm:cost-divergence-exclusion-discharged} \\
-III & [42]--[55] & Terminal orbit sampling, compactness alternatives, profile completeness, residual exhaustion, and retained terminal exclusion &
+III & [42]--[55] & Asks what the carrier looks like in the limit.  Sampling
+its terminal orbit gives a short list of compactness alternatives, and the
+profile list is shown to be complete, so no limit escapes classification.  The
+residual entries are then exhausted and the retained terminal excluded. &
 \cref{thm:representation-gives-terminal-orbit-sampling,thm:terminal-boundedness-alternatives,thm:terminal-windowed-profile-completeness,thm:expanded-terminal-typeII} \\
-IV & [56]--[63] & Classification of the unique first-failure row and dispatch to its closure proof &
+IV & [56]--[63] & The dispatcher.  Whatever survives the earlier panels fails
+in exactly one identifiable way first, and this panel names that row and sends
+the branch to the panel that closes it.  The ordering is what makes the case
+analysis exhaustive rather than merely long. &
 \cref{lem:acyclic-terminal-ledger,def:remaining-named-exits} \\
-V & [64]--[70] & Local regularization and well-founded reselection of a bounded selected window &
+V & [64]--[70] & Handles a bounded window.  Regularizing it locally removes
+the regular part, and what concentration survives is reselected; the reselection
+is well-founded, so the process cannot cycle forever and must terminate in a
+closure. &
 \cref{lem:bounded-window-local-regularization,lem:bounded-window-reselection-well-founded,thm:bounded-selected-window-physical-routing} \\
-VI & [71]--[78] & Unbounded modulation windows and their signed or geometric first-failure rows &
+VI & [71]--[78] & Handles the opposite case, where the modulation parameters
+run away.  An unbounded window fails either with a definite sign or for a
+geometric reason, and both alternatives are closed. &
 \cref{lem:modulation-window-bound-or-exit,thm:autonomous-modulation-failure-closed} \\
-VII & [79]--[87] & Bounded modulation-defect alternatives &
+VII & [79]--[87] & Handles a window whose modulation stays bounded but leaves
+a defect behind.  The possible defects form a short list, and each is routed to
+its exclusion. &
 \cref{lem:bounded-modulation-defect-routing,thm:autonomous-modulation-failure-closed} \\
-VIII & [88]--[95] & Canonical versus first-failed noncanonical cost validation &
+VIII & [88]--[95] & Checks the cost functional itself.  Either the cost stays
+canonical, in which case earlier estimates apply unchanged, or it fails to be
+canonical at an identifiable first point, and that failure is what closes the
+branch. &
 \cref{lem:no-unrecorded-cost-escape,thm:noncanonical-cost-routing-closed} \\
-IX & [96]--[110] & Retained active-core, finite frame reselection, and local critical-mass alternatives &
+IX & [96]--[110] & Follows a core that stays active.  Reselecting the frame
+finitely many times either exhausts the alternatives or forces a local critical
+mass, and the critical-mass alternatives are then closed one by one. &
 \cref{lem:terminal-local-critical-mass-routing,thm:active-core-loss-closed} \\
-X & [111]--[116] & Ordered pressure reconstruction, local-source, and velocity-label alternatives &
+X & [111]--[116] & Reconstructs the pressure when the velocity alone no longer
+decides matters.  Working through the reconstruction in order leaves a local
+source term or a velocity label to account for, and each is excluded. &
 \cref{lem:pressure-only-critical-mass-routing,thm:active-core-loss-closed} \\
-XI & [117]--[127] & Well-founded nested pressure-only and diffuse-pressure alternatives &
+XI & [117]--[127] & Handles data carried by the pressure alone.  Such rows
+nest, and the nesting is well-founded, so it bottoms out; a pressure that
+instead spreads out diffusely is shown not to be terminal. &
 \cref{lem:nested-pressure-only-well-founded,lem:diffuse-pressure-only-not-terminal} \\
-XII & [128]--[135] & Critical-tightness and diffuse critical-tail alternatives &
+XII & [128]--[135] & The last two ways out.  A profile is either critically
+tight, which fails its own tightness test, or its critical tail is diffuse,
+which is closed directly.  With both gone no Type II exit remains. &
 \cref{lem:critical-tightness-failure-row,lem:diffuse-critical-tail-row-closed} \\
 \bottomrule
 \end{longtable}

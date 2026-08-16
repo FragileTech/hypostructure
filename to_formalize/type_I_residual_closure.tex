@@ -1300,40 +1300,59 @@ producers have been established.
 \hline
 \endfoot
 I & \textbf{[1]}--\textbf{[12]} &
-Fixed-point entry, setup lower states, and the exact raw-residual handoff. &
+Receives the profile the setup paper hands over and pins down exactly what is
+still open.  The four classes the setup paper already closed are discharged on
+sight; what survives is the raw residual class, and this part fixes the
+statement of it that the rest of the paper must empty. &
 \Cref{thm:local-typeI-entry-or-exclusion,thm:imported-setup-results,prop:setup-residual-handoff-complete}.\\
 II & \textbf{[13]}--\textbf{[37]} &
-The ten ordered refined states, the complete axis closure, and the internal
-R2 and R3 reductions. &
+Splits the residual class into ten refined states and works through them in
+order.  Axisymmetric profiles are killed outright by the axis closure; the
+rotational and stationary-hull states are reduced to terminal forms that later
+parts dispose of.  Only the affine and generic states leave the panel alive. &
 \Cref{def:refined-decomposition,lem:centered-circulation-equation,lem:one-dimensional-killed-radial-absorption,lem:axis-absorption-liouville,thm:R1-exclusion,lem:R2-coriolis-bernoulli,lem:R2-flux-reduction-dichotomy,lem:R3-hull-is-seregin,prop:R2-reduction-to-terminal,prop:R3S-R3-terminal-reduction,thm:R4-final-closure}.\\
 III & \textbf{[38]}--\textbf{[57]} &
-Covariant tail geometry, affine normalization, pressure atlas, and retained
-recentering alternatives. &
+Asks what a surviving profile can look like far from the origin.  A covariant
+calculus makes the question independent of the observer, affine normalization
+removes the parasitic pressure freedom, and a pressure atlas keeps the gauge
+consistent chart to chart.  What comes out is a short list of tail geometries
+and recentering alternatives. &
 \Cref{thm:covariant-observer-calculus,thm:affine-normalization-dichotomy,prop:tail-dichotomy,lem:retained-recentering-alternatives}.\\
 IV & \textbf{[58]}--\textbf{[63]}, \textbf{[76]},
 \textbf{[141]}--\textbf{[146]},
 \textbf{[149]}--\textbf{[153]} &
-The eight terminal alternatives, chartwise pressure routing, the direct
-critical-tail bridge, event-sensitive retained-chain analysis, and the
-critical-shell and moving-cell reduction to the sparse current-saturation branch. &
+The dispatcher.  Everything the earlier parts leave alive arrives here as one of
+eight terminal alternatives, and each is routed to the panel that closes it:
+pressure-only data goes chartwise, critical tails take the direct bridge, and
+retained chains are followed until a critical shell or a moving cell reduces
+them to the sparse current-saturation branch. &
 \Cref{thm:terminal-exhaustion-main,thm:terminal-stratification,lem:no-pressure-only-retained-profile,lem:escaping-retained-recentering-routing,thm:active-path-space-recurrence,prop:positive-density-active-exclusion,lem:vanishing-event-current-exclusion,lem:weighted-critical-shell-identity,thm:sparse-moving-root-current-exclusion,thm:critical-interscale-flux-exclusion,thm:compact-active-descendant,lem:finite-graph-cycle,thm:no-finite-separated-profile-family}.\\
 V & \textbf{[64]}--\textbf{[75]} &
-Diffuse-defect compactification, recurrence, and its three-way routing. &
+Handles the case where the defect spreads out instead of concentrating.
+Compactifying such a profile makes it recurrent, and recurrence forces one of
+three outcomes, each of which is sent on to a closure. &
 \Cref{thm:diffuse-defect-compactness,thm:diffuse-defect-compactification-construction,thm:diffuse-defect-trichotomy}.\\
 VI & \textbf{[77]}--\textbf{[98]} &
-Critical-tail compactification, virial routing, and defect-coordinate
-classification. &
+Does the same for a profile whose mass sits in a critical tail.  Compactifying
+it and reading off a virial identity classifies the defect coordinate, and the
+classification decides which closure the branch belongs to. &
 \Cref{thm:critical-tail-compactification-compactness,lem:critical-tail-young-log-transport,lem:recurrent-virial-equality-reduction,thm:critical-tail-compactification-extraction}.\\
 VII & \textbf{[99]}--\textbf{[124]} &
-Minimal mesoscopic scale, chartwise pressure compactness, variance rigidity,
-and log/Young closure. &
+Attacks a tail that hides its failure at some intermediate scale.  Choosing the
+smallest scale at which control is lost makes the pressure compact there; the
+variance of the profile is then rigid, and that rigidity closes the log-periodic
+and Young alternatives. &
 \Cref{lem:h2-failure-first-bad-scale,lem:first-bad-pressure-compactness,lem:bounded-variance-liouville,thm:first-bad-mesoscopic-reduction}.\\
 VIII & \textbf{[125]}--\textbf{[140]} &
-Bounded-origin realization and the three coherent critical-tail closures. &
+Deals with tails that stay coherent rather than dispersing.  Such a profile can
+be realized with a bounded origin, and once it is there are exactly three
+coherent critical-tail shapes left, all three of which are excluded. &
 \Cref{thm:bounded-origin-realization-coherent-tails,thm:coherent-critical-tail-classification,cor:coherent-critical-tail-branch-closure}.\\
 IX & \textbf{[147]}--\textbf{[148]}, \textbf{[154]}--\textbf{[159]} &
-The single/atomic route, its retained-tail test, endpoint production, and the
-final atomic contradiction. &
+The last route out.  A profile that is not separated into several pieces must be
+a single atom; testing its retained tail produces an endpoint estimate, and that
+estimate contradicts the atom's own concentration.  With this the residual class
+is empty and the setup paper's argument resumes. &
 \Cref{lem:descendant-to-separated-family,prop:no-multi-implies-atomic,lem:atomic-sequence-L3,thm:mildness-inheritance-main,thm:AB-main,lem:no-atomic-active}.\\
 \end{longtable}
 
