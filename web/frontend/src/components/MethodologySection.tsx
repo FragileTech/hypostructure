@@ -77,7 +77,7 @@ function useCurrentPart(): PartId {
 /**
  * The rail beside the account, hung in the page's left margin so the text keeps
  * its width; on a viewport too narrow for that margin it becomes a row of chips
- * above the text. Buttons rather than `href="#…"` links, because the site's
+ * above the text. Buttons replace `href="#…"` links because the site's
  * hash router would read the fragment as a route.
  */
 function RailButton({ id, title, current }: { id: PartId; title: string; current: PartId }) {
@@ -123,7 +123,7 @@ function MethodologyRail() {
 }
 
 
-/** Where a move is applied: the explorer step ids, as the papers number them. */
+/** The explorer step ids at which a move is applied. */
 interface MoveSide {
   text: string;
   /** Empty when the move is not used on that side; the cell says why. */
@@ -132,14 +132,14 @@ interface MoveSide {
 
 interface ProofMove {
   name: string;
-  /** The classical technique the move is a disciplined form of, if the manual names one. */
+  /** The classical technique from which the move is derived. */
   origin?: string;
   what: string;
   eg: MoveSide;
   ns: MoveSide;
 }
 
-/** The library, in the reference manual's order, then the moves the analytic proofs added. */
+/** The shared move library, followed by moves specific to the analytic proofs. */
 export const PROOF_MOVES: ProofMove[] = [
   {
     name: "Local target tests",
@@ -158,7 +158,7 @@ export const PROOF_MOVES: ProofMove[] = [
     origin: "minimal counterexample; representative / protrusion replacement",
     what: "Take the counterexample minimal under a well-founded order and use it in two disciplined ways: a deletion branch, when removing a piece keeps the hypotheses and shrinks the object, and a replacement branch, where context universality of the substitute is proved before sizes are compared.",
     eg: {
-      text: "A lexicographically minimal counterexample with no proper 3-core; boundaried atoms, the replacement lemma, and hereditary target-uncompressibility — the standing lever that no proper atom admits a target-complete compression.",
+      text: "A lexicographically minimal counterexample with no proper 3-core; boundaried atoms, the replacement lemma, and hereditary target-uncompressibility. In particular, no proper atom admits a target-complete compression.",
       steps: ["4", "8", "13", "14"],
     },
     ns: {
@@ -175,14 +175,14 @@ export const PROOF_MOVES: ProofMove[] = [
       steps: ["11", "12", "36", "38"],
     },
     ns: {
-      text: "Terminal profiles are typed by their local responses on a chart — noncomparable, separated, or comparable up to a perturbative residual — and two profiles are identified only through a recorded transport, never by resemblance.",
+      text: "Terminal profiles are typed by their local responses on a chart: noncomparable, separated, or comparable up to a perturbative residual. Profiles are identified only through a recorded transport, never by resemblance.",
       steps: ["II48", "II52", "I57"],
     },
   },
   {
     name: "Charging schemes",
     origin: "discharging (four-colour architecture)",
-    what: "Name the demands, the eligible payers, a canonical assignment with an explicit tie-break, and each payer's certified capacity — in that order. The global inequality is the sum of those local obligations.",
+    what: "Name the demands, the eligible payers, a canonical assignment with an explicit tie-break, and each payer's certified capacity, in that order. Summing the local obligations gives the global inequality.",
     eg: {
       text: "The surplus-token ledger (blockers, capacity tokens, primitive carriers) and the Type A receiver discharging, in which each receiver's charge is its missing-port count less one quarter.",
       steps: ["134", "136", "91"],
@@ -200,7 +200,7 @@ export const PROOF_MOVES: ProofMove[] = [
       steps: ["29", "30", "52"],
     },
     ns: {
-      text: "Every input is local on compact cylinders — no node assumes a whole-space norm; the terminal assembly is built from local statements together with the retained ledger.",
+      text: "Every input is local on compact cylinders. No node assumes a whole-space norm; the terminal assembly uses local statements and the retained ledger.",
       steps: ["S9", "II19", "II54"],
     },
   },
@@ -220,9 +220,9 @@ export const PROOF_MOVES: ProofMove[] = [
   {
     name: "Exchange trichotomy",
     origin: "exchange / switching arguments",
-    what: "Compare two structures with the same interface over a finite context generator. Either some context realizes the target, some context distinguishes them, or none does — and then the larger is replaced by the smaller.",
+    what: "Compare two structures with the same interface over a finite context generator. A context may realize the target or distinguish the structures. If neither occurs, replace the larger structure with the smaller one.",
     eg: {
-      text: "The cold bounded-germ trichotomy — hit-realized, hit-distinguished, silent — and the switch and theta germs with bounded increment.",
+      text: "The cold bounded-germ trichotomy (hit-realized, hit-distinguished, or silent), together with the switch and theta germs of bounded increment.",
       steps: ["154", "155", "156", "157"],
     },
     ns: {
@@ -246,7 +246,7 @@ export const PROOF_MOVES: ProofMove[] = [
   {
     name: "Overload exhaustion",
     origin: "pigeonhole over finite fibres",
-    what: "When a payer is charged beyond its capacity, extract a homogeneous subfamily from its fibre and route that structure, rather than assuming bounded multiplicity inside the charging lemma.",
+    what: "When a payer is charged beyond its capacity, extract a homogeneous subfamily from its fibre and route the resulting structure. The charging lemma does not assume bounded multiplicity.",
     eg: {
       text: "Same-token matching and star extraction; role-homogeneous overloads discharged by the geometric closure.",
       steps: ["137", "140", "142", "143"],
@@ -260,11 +260,11 @@ export const PROOF_MOVES: ProofMove[] = [
     name: "Default refinement",
     what: "When a residual survives every current invariant but exposes a finite datum that has no name yet, promote that datum to a label, partition the residual by it, and rerun the local classification fibre by fibre.",
     eg: {
-      text: "Label-class refinement whenever a surviving class exposes a missing datum — the finite label algebra is the alphabet being refined.",
+      text: "Label-class refinement whenever a surviving class exposes a missing datum. The finite label algebra supplies the alphabet for this refinement.",
       steps: ["18", "114"],
     },
     ns: {
-      text: "The refined residual decomposition of the Type I remainder into ten named strata — axisymmetric, rotational, stationary-hull, affine, log-diffuse, Young, and the homogeneous, log-periodic and aperiodic critical tails, plus the generic class — each closed on its own.",
+      text: "The Type I remainder is decomposed into ten named strata: axisymmetric, rotational, stationary-hull, affine, log-diffuse, Young, homogeneous critical, log-periodic critical, aperiodic critical, and generic. Each is closed separately.",
       steps: ["I12", "I13", "I17"],
     },
   },
@@ -308,7 +308,7 @@ export const PROOF_MOVES: ProofMove[] = [
   },
   {
     name: "Aggregate closure",
-    what: "A residual class forced to carry a linear deficit is closed by showing its total capacity — member count times per-member capacity, multiplicity included — is sublinear.",
+    what: "A residual class forced to carry a linear deficit closes when its total capacity is sublinear. Total capacity includes the member count, per-member capacity, and multiplicity.",
     eg: {
       text: "Type B bridge residuals are sublinear: they are charged to disjoint surplus units of total size O(√n) and cannot carry the linear deficit; route-8-only aggregate estimates.",
       steps: ["75", "76", "85", "120"],
@@ -326,7 +326,7 @@ export const PROOF_MOVES: ProofMove[] = [
       steps: ["31", "32", "34", "47"],
     },
     ns: {
-      text: "Not used. “Rank” in the Navier–Stokes manuscripts is only the ordinal descent measure of the exit ledger, not a dimensional independence count.",
+      text: "Not used. In the Navier–Stokes proof, “rank” is the ordinal descent measure of the exit ledger, not a dimensional independence count.",
       steps: [],
     },
   },
@@ -338,7 +338,7 @@ export const PROOF_MOVES: ProofMove[] = [
       steps: ["43", "45"],
     },
     ns: {
-      text: "Not needed. Retained frames are compared through ancestry maps rather than a closed type.",
+      text: "Not needed. Retained frames are compared through ancestry maps; no closed type is used.",
       steps: [],
     },
   },
@@ -366,13 +366,13 @@ export const PROOF_MOVES: ProofMove[] = [
       steps: [],
     },
     ns: {
-      text: "Seregin extraction into the raw generated descendant hull; scale reselection giving another limit; descendant recentering and the profile decomposition with its ancestry — each returning to the original state along a recorded map.",
+      text: "Seregin extraction into the raw generated descendant hull; scale reselection giving another limit; descendant recentering and profile decomposition with ancestry. Each construction returns to the original state along a recorded map.",
       steps: ["S10", "S13", "I33", "I53", "II47"],
     },
   },
   {
     name: "Symmetry fixing and gauge repair",
-    what: "Before anything is classified, quotient out the continuous symmetries by fixing a canonical representative — centre, translate, choose the gauge — and prove that every later quantity transports under that chart.",
+    what: "Before classification, quotient out the continuous symmetries by fixing a canonical representative: choose a centre, translation, and gauge. Then prove that every later quantity transports under that chart.",
     eg: {
       text: "Essentially trivial: the lexicographic choice of the minimal counterexample and the canonical tie-breaks inside the ledgers are the only normalisations a finite graph needs.",
       steps: ["4"],
@@ -384,20 +384,20 @@ export const PROOF_MOVES: ProofMove[] = [
   },
   {
     name: "Rigidity closure by a fixed input",
-    what: "Close a named label class outright by one of the theorems fixed at the outset — a classification or Liouville theorem for that class — so the class is empty rather than further refined.",
+    what: "Use a classification or Liouville theorem fixed at the outset to close a named label class. This proves that the class is empty and requires no further refinement.",
     eg: {
       text: "The Hegde–Sandeep–Shashank theorem: a P₁₃-free graph of minimum degree three already has a power-of-two cycle, so the counterexample must contain an induced P₁₃.",
       steps: ["15", "16"],
     },
     ns: {
-      text: "Each Liouville class of the ancient profile is emptied by its own imported theorem — small amplitude, stationary L³, uniformly tight, and the five structure-and-decay subclasses — leaving only the residual family.",
+      text: "A separate imported theorem eliminates each Liouville class of the ancient profile: small amplitude, stationary L³, uniformly tight, and the five structure-and-decay subclasses. Only the residual family remains.",
       steps: ["S21", "S23", "S27", "S30", "I118"],
     },
   },
   {
     name: "Monotone quantity along scale",
     origin: "monotonicity formulas; virial identities",
-    what: "Produce a quantity that is monotone in the scale parameter — under fixed or moving cutoffs — so that a collapsing scale must pay a cost. This is where the analytic proof manufactures the budget the charging moves then spend.",
+    what: "Produce a quantity that remains monotone in the scale parameter under fixed or moving cutoffs. A collapsing scale must then pay a cost, which supplies the budget spent by the charging moves.",
     eg: {
       text: "None: the graph proof's budgets are counting and entropy bounds, not quantities monotone in a parameter.",
       steps: [],
@@ -452,7 +452,7 @@ function MoveRow({ move }: { move: ProofMove }) {
  * How a failed step is repaired: the step's unstated hypothesis becomes a test,
  * the finished argument is kept on the side where it holds, and the other side
  * is a new branch appended after the last existing step. Drawn in the site's
- * node language — rectangles assert, hexagons test, pills close — with the
+ * node language (rectangles assert, hexagons test, pills close) with the
  * theme tokens, so it follows light and dark mode.
  */
 function RepairDiagram() {
@@ -623,15 +623,7 @@ function RepairDiagram() {
   );
 }
 
-/**
- * The landing page's account of how the two proofs were built.
- *
- * A reading of *Structural Exhaustion: An Auditable Method for Long-Form
- * LLM-Assisted Proof Development* (Duran-Ballester, 2026), condensed for a
- * reader who is about to walk one of the diagrams and wants to know why they
- * look the way they do — why every step is a branch test, a residual, or a
- * closure, and why the papers carry ledgers and audit tables at all.
- */
+/** The landing page account of the shared proof architecture. */
 export function MethodologySection() {
   const erdos = findProof("erdos-gyarfas");
   const navier = findProof("navier-stokes");
@@ -642,14 +634,11 @@ export function MethodologySection() {
         <p className="hero-eyebrow">The methodology</p>
         <h2 id="methodology-title">Structural Exhaustion</h2>
         <p className="methodology-lead">
-          The two proofs on this site were written the same way, and it seems
-          worth setting out how, since the way is not the usual one. Rather
-          than a linear narrative that one hopes is convincing as a whole,
-          each proof is maintained as an explicit system of cases, standing
-          hypotheses, quantitative budgets and closure obligations, from the
-          first step to the last. The organising principle can be stated in
-          one sentence: a counterexample cannot avoid the conclusion for free,
-          and the job of the proof is to make it pay until it cannot.
+          Both proofs on this site use the same working method. Each is kept as
+          an explicit system of cases with recorded hypotheses, quantitative
+          budgets and closure obligations. The method treats every way a
+          counterexample avoids the conclusion as a cost and follows those
+          costs until no counterexample remains.
         </p>
       </header>
 
@@ -658,28 +647,25 @@ export function MethodologySection() {
         <div className="methodology-body">
           <Part id="philosophy">
             <p>
-              We are concerned throughout with statements of the form{" "}
+              Consider a statement of the form{" "}
               <em>every object <Latex value="\(X\)" /> with property{" "}
               <Latex value="\(H\)" /> also has property <Latex value="\(T\)" /></em>,
               or in symbols{" "}
               <Latex value="\(\forall X\in\mathcal X,\ H(X)\Rightarrow T(X)\)" />.
-              The strategy is always the same, and it is an old one. Suppose,
-              for contradiction, that a counterexample exists — an object with{" "}
-              <Latex value="\(H(X)\wedge\neg T(X)\)" /> — and, whenever a
-              suitable well-founded order is available, take a minimal one.
-              Then study the structure of this hypothetical object{" "}
+              Suppose for contradiction that there is an object satisfying{" "}
+              <Latex value="\(H(X)\wedge\neg T(X)\)" />. When a suitable
+              well-founded order is available, choose a minimal such object.
+              Study it{" "}
               <em>locally</em>: what its pieces can look like, how they may fit
               together, what each local configuration forces on its
               neighbours. One continues until a contradiction appears.
             </p>
             <p>
-              The point we wish to emphasise is that the contradiction, when it
-              comes, is not a happy accident. It is forced by what one might
-              call the <strong>structural cost</strong> of being a
-              counterexample. Every property the object must have in order to
-              avoid <Latex value="\(T\)" /> constrains what else it can be, and
-              on inspection there are only three ways for the account to be
-              settled:
+              The contradiction comes from the <strong>structural cost</strong>{" "}
+              of being a counterexample. Every condition needed to avoid{" "}
+              <Latex value="\(T\)" /> further restricts the object. The proof
+              settles the resulting account through compression, quantity, or
+              constraint.
             </p>
             <dl className="methodology-costs">
               <div>
@@ -693,10 +679,10 @@ export function MethodologySection() {
               <div>
                 <dt>Quantity</dt>
                 <dd>
-                  The structure carries a numerical price — in demands against
-                  capacities, in deficits, entropy or rank — which is tracked
-                  against every other property of the object until the
-                  combination is no longer affordable.
+                  The structure carries a numerical price measured by demands
+                  and capacities, deficits, entropy, or rank. The proof tracks
+                  that price until the combined requirements exceed the
+                  available budget.
                 </dd>
               </div>
               <div>
@@ -710,28 +696,23 @@ export function MethodologySection() {
               </div>
             </dl>
             <p>
-              Informally, one should think of the minimal counterexample as an
-              adversary who must continually pay, in one of these three
-              currencies, for continuing to avoid the target. Each unsuccessful
-              attempt to force the target is examined for what it reveals about
-              the adversary, and that information is written down as a
-              restriction the adversary must now satisfy. The proof advances by
-              converting ignorance about the counterexample into an
-              ever-lengthening list of what it is still allowed to be, until the
-              list is empty. Whatever the proof imports from the literature is
-              fixed <em>before</em> this study begins; from that point on every
-              step is local, and a branch closes only through what has been
-              established on it together with facts of a textbook character.
-              We take the three currencies in turn.
+              It is useful to view the minimal counterexample as an adversary
+              that pays one of these costs whenever it avoids the target. A
+              failed attempt to force the target still reveals a restriction,
+              which is added to the branch record. Eventually the recorded
+              restrictions leave no admissible object. Global results imported
+              from the literature are fixed <em>before</em> this analysis
+              begins. Afterward, each branch closes from its recorded facts and
+              cited textbook material.
             </p>
 
             <Part id="constraint">
               <p>
                 The first currency is constraint. Suppose one would like to use
                 some invariant <Latex value="\(P\)" /> of the counterexample.
-                We admit <Latex value="\(P\)" /> as a case split only when both{" "}
+                Admit <Latex value="\(P\)" /> as a case split only when both{" "}
                 <Latex value="\(P\)" /> and <Latex value="\(\neg P\)" /> do
-                useful work — call this the <em>both-sides test</em>. The
+                produce useful consequences. This is the <em>both-sides test</em>. The
                 positive side must feed an account, an estimate or a closure
                 mechanism; the negative side must force something definite: a
                 bounded residual, a first-failure witness, a structural
@@ -740,18 +721,15 @@ export function MethodologySection() {
                 proof, however natural it may look.
               </p>
               <p>
-                The same test is what makes the method robust to error, and it
-                is worth dwelling on this. Suppose that, midway through, an
-                argument is found to depend on an assumption that was never
-                actually established. One does not discard the argument.
-                Instead the assumption becomes a new case split: the completed
-                argument survives, verbatim, on the branch where the assumption
-                holds, and its failure defines a complementary branch which
-                receives its own analysis. (In the example that first forced
-                this on us, an entropy argument turned out to need
+                The same test supports repairs. If an argument depends on an
+                unproved assumption, that assumption becomes a new case split.
+                The completed argument remains on the branch where the
+                assumption holds. Its failure defines a complementary branch
+                with a separate analysis. In the first example that required
+                such a repair, an entropy argument needed
                 independently realizable configurations. The finished “hot”
                 branch was kept, and the newly exposed “cold” branch was
-                closed by separate structural and quantitative arguments.)
+                closed by separate structural and quantitative arguments.
               </p>
               <p>
                 Each admitted dichotomy places one more certified restriction on
@@ -795,11 +773,11 @@ export function MethodologySection() {
                 value="\[|D|=\sum_{p\in P}|\pi^{-1}(p)|\ \le\ \sum_{p\in P}c(p).\]"
               />
               <p>
-                This looks trivial, and it is; the content lies in the fact
-                that every symbol carries a local obligation — the demands must
-                be distinct, the assignment total, ties resolved consistently,
-                each capacity valid under the current branch state — and each
-                obligation is proved separately. When demand exceeds capacity
+                The formula is elementary, but every symbol brings a local
+                obligation. The demands must be distinct, the assignment must
+                be total, ties need a consistent resolution, and every capacity
+                bound must hold on the current branch. These obligations are
+                proved separately. When demand exceeds capacity,
                 some payer is overloaded, and an overloaded class typically
                 yields a homogeneous family, a matching, a star or a chain. Thus
                 quantitative pressure is converted back into structure, which
@@ -810,7 +788,7 @@ export function MethodologySection() {
                 rank, boundary mass and concentration are treated as distinct
                 currencies unless a proved interface converts one into another,
                 so that no obstruction is paid for twice with the same
-                resource. Coefficients are outputs rather than guesses: if a
+                resource. Local estimates determine the coefficients. If a
                 family of size <Latex value="\(n\)" /> forces at least{" "}
                 <Latex value="\(an-b\)" /> demands while the payers supply at
                 most <Latex value="\(cn+d\)" />, with <Latex value="\(a>c\)" />,
@@ -820,27 +798,24 @@ export function MethodologySection() {
                 and what lies below is a bounded family that can be checked
                 directly. The mathematical content is the strict gap between
                 the two rates; the algebra merely locates the point at which
-                the gap closes the branch. Finally, every structural move —
-                deletion, replacement, peeling, charge transfer, hand-off — is
-                checked against every account it might touch, and a move that
-                breaks the monotonicity of an account is not a setback but a
-                diagnosis: it names the missing boundary term or surplus
-                correction. The resulting <em>moves × budgets</em> table is one
-                of the audit artifacts the manuscripts carry.
+                the gap closes the branch. Every deletion, replacement,
+                peeling step, charge transfer, or hand-off is also checked
+                against the accounts it touches. If a move breaks monotonicity,
+                the failure identifies a missing boundary term or surplus
+                correction. A <em>moves × budgets</em> table records these checks.
               </p>
             </Part>
 
             <Part id="compression">
               <p>
-                The third currency is compression, and it rests on the
-                observation that long structures repeat, and repetition can be
-                exhausted. One assigns each piece a <em>finite label</em>{" "}
+                Compression uses the repetition found in long structures. Each
+                piece receives a <em>finite label</em>{" "}
                 recording exactly the classification that downstream arguments
                 need and nothing more, so that many pieces with the same label
                 form a homogeneous family on which the standard combinatorial
-                tools operate. For a replacement argument, however, coarse
-                similarity is not enough — two pieces may behave differently
-                once embedded in a larger context — and so pieces are refined
+                tools operate. A replacement argument needs more than coarse
+                similarity because two pieces may behave differently inside a
+                larger context. The labels are therefore refined
                 by their target-relative external type: two pieces{" "}
                 <Latex value="\(K_1,K_2\)" /> with the same boundary have the
                 same type when{" "}
@@ -851,8 +826,7 @@ export function MethodologySection() {
                 contradicts minimality.
               </p>
               <p>
-                Comparing or exchanging two such structures has exactly three
-                outcomes, and this trichotomy is used throughout: a{" "}
+                Comparisons are classified as a{" "}
                 <strong>hit</strong>, in which the comparison directly realizes
                 the target; a <strong>defect</strong>, in which some context
                 distinguishes the two structures, and so supplies new
@@ -879,19 +853,12 @@ export function MethodologySection() {
 
           <Part id="llm">
             <p>
-              We now come to a feature of the method that is not mathematical,
-              or at least not only mathematical. Structural Exhaustion was
-              designed to be carried out with the assistance of language
-              models, and this shows in every working practice. Each practice
-              was chosen so that the step it asks for is one such a model
-              performs reliably — drawing the structural consequences of an
-              assumption, keeping a large number of named quantities straight
-              once they have been written down, recalling standard techniques,
-              attacking a proposed claim — while each of the characteristic
-              ways in which models fail on long arguments is met by a
-              structural check rather than by vigilance. The two subsections
-              that follow take these in turn: first what the method leverages,
-              then what it mitigates.
+              Structural Exhaustion was designed for proof development assisted
+              by language models. Its working practices use tasks that models
+              handle well: deriving structural consequences from an assumption,
+              maintaining explicit quantities, applying standard techniques,
+              and testing proposed claims. Checks built into the proof state
+              address the failure modes that appear in long arguments.
             </p>
 
             <Part id="mechanisms">
@@ -899,13 +866,10 @@ export function MethodologySection() {
                 A research proof built along these lines requires hundreds of
                 mutually dependent local moves, each of which must remain
                 compatible with every earlier exclusion, hypothesis and
-                account. This is precisely the scale at which free-form proof
-                writing becomes unreliable, and — provided the state is kept
-                explicit — it is also the scale at which language models turn
-                out to be unusually useful. The table lists the working
-                practices, each chosen to keep the cost of the counterexample
-                visible, against the capability of the model on which it
-                rests.
+                account. Free-form proof writing becomes unreliable at this
+                scale. Language models can still be useful when the proof state
+                is explicit. The table pairs each working practice with the
+                model capability it uses.
               </p>
               <div className="methodology-table-wrap">
                 <table className="methodology-map">
@@ -928,15 +892,15 @@ export function MethodologySection() {
                       </td>
                       <td>
                         Reasoning about the structural consequences of an
-                        assumption — what a graph, a profile or a decomposition
-                        must look like if a given property holds or fails.
+                        assumption: what a graph, profile, or decomposition
+                        must look like when a given property holds or fails.
                       </td>
                     </tr>
                     <tr>
                       <td>
                         <strong>Fixed inputs, then local steps only.</strong>{" "}
                         Every global theorem imported from the literature is
-                        fixed at the outset — stated exactly, cited, and
+                        fixed at the outset, stated exactly, cited, and
                         recorded in the dependency table as “imported”. From
                         then on the proof admits only local steps, and a branch
                         may close only through the branch state, the fixed
@@ -946,23 +910,22 @@ export function MethodologySection() {
                         obligation.
                       </td>
                       <td>
-                        Working reliably inside a declared, finite interface,
-                        rather than against an open literature whose results
-                        would have to be recalled, and trusted, in the middle
-                        of an argument.
+                        Working inside a declared finite interface without
+                        recalling and assessing new literature in the middle of
+                        an argument.
                       </td>
                     </tr>
                     <tr>
                       <td>
                         <strong>Backward-designed invariants.</strong> One first
-                        takes an inventory of the resources already at hand —
+                        takes an inventory of the resources already at hand:
                         minimality, the algebra of the target, the fixed
                         inputs, charging schemes, finite label sets, exact
-                        types, computational certificates — and each new
+                        types, and computational certificates. Each new
                         hypothesis is then chosen because it allows one of
                         these resources to make progress. The guiding question
-                        is not “what is true here?” but “which hypothesis would
-                        let a tool I already possess apply?”.
+                        asks which hypothesis would make an available tool
+                        applicable.
                       </td>
                       <td>
                         Reading the hypotheses of a tool and producing the
@@ -989,13 +952,12 @@ export function MethodologySection() {
                         is expressed through named demands, payers, capacities,
                         deficits and surpluses, kept as separate currencies with
                         canonical assignments. An overloaded payer or an
-                        unbalanced budget then <em>forces</em> new structure,
-                        rather than merely suggesting it.
+                        unbalanced budget then <em>forces</em> new structure.
                       </td>
                       <td>
                         Maintaining large collections of named quantities,
-                        constraints and cross-references reliably — once they
-                        are written down, rather than held in prose.
+                        constraints and cross-references once they are written
+                        down explicitly.
                       </td>
                     </tr>
                     <tr>
@@ -1014,7 +976,7 @@ export function MethodologySection() {
                     <tr>
                       <td>
                         <strong>Composition of standard moves.</strong> The
-                        primitives are the familiar ones — minimal
+                        primitives are familiar: minimal
                         counterexample, pigeonhole, charging, switching, first
                         failure, compactness, replacement, enumeration. The
                         recurring combinations are named as <em>proof moves</em>{" "}
@@ -1023,9 +985,8 @@ export function MethodologySection() {
                         proved each time it is used.
                       </td>
                       <td>
-                        Broad familiarity with textbook techniques, so that the
-                        genuinely new work can be concentrated in the interfaces
-                        and closure lemmas rather than in the primitives.
+                        Broad familiarity with textbook techniques, leaving the
+                        new work in the interfaces and closure lemmas.
                       </td>
                     </tr>
                     <tr>
@@ -1036,7 +997,7 @@ export function MethodologySection() {
                         counterexample to an intermediate claim exposes an
                         exceptional configuration, a deficient account, or a
                         distinguishing context, and refines the case structure
-                        rather than discarding the work done.
+                        while retaining the valid parts of the earlier work.
                       </td>
                       <td>
                         Attacking a proposed statement and locating the
@@ -1073,16 +1034,9 @@ export function MethodologySection() {
 
             <Part id="controls">
               <p>
-                Long-form development, whether by people or by models, goes
-                wrong in a small number of recurring ways. The reference manual
-                records seven of them, observed while the Erdős–Gyárfás proof
-                was being developed with language models, and treats each as a
-                design assumption: the method converts the risk into a
-                structural check, so that the failure is either impossible to
-                commit or impossible to conceal. We add an eighth, the loss of
-                forward tracking, which is in our experience the one the others
-                most often reduce to. In each entry below we first describe the
-                failure and then the discipline that prevents it.
+                Long proofs fail in recurring ways, whether written by people
+                or models. Explicit checks control eight common failure modes.
+                Loss of forward tracking often underlies the others.
               </p>
               <dl className="methodology-controls methodology-controls-wide">
                 <div>
@@ -1099,13 +1053,12 @@ export function MethodologySection() {
                       time it is used.
                     </p>
                     <p>
-                      <em>The discipline.</em> The method does not ask the model
-                      to track a remainder forward at all. Whenever a tool
+                      <em>The discipline.</em> The model does not carry a
+                      remainder forward informally. Whenever a tool
                       cannot absorb the whole of what it is applied to, the
-                      part it cannot absorb becomes a branch of its own, and
-                      the question posed is not “how does this remainder
-                      propagate?” but “why could the tool in use not account
-                      for it?”. The answer names the property the remainder
+                      part it cannot absorb becomes a branch of its own. The
+                      proof then asks why the current tool could not account for
+                      that part. The answer names the property the remainder
                       has and the tool lacked, and the remainder is then
                       attacked locally, with a tool suited to that property.
                       Nothing is carried; whatever survives a step is restated
@@ -1121,10 +1074,10 @@ export function MethodologySection() {
                       <em>The failure.</em> Generated steps deserve closer
                       scrutiny the moment an argument leaves well-represented
                       material. A branch may then come to rely on a global
-                      result that was never among the proof's inputs — a
+                      result that was never among the proof's inputs: a
                       theorem recalled from memory, a strengthening of a cited
-                      one, or a result the literature does not in fact contain
-                      — presented as an established mechanism, or left standing
+                      one, or a result the literature does not contain. It may
+                      be presented as an established mechanism or left standing
                       as “to be proved”.
                     </p>
                     <p>
@@ -1133,11 +1086,11 @@ export function MethodologySection() {
                       each is stated exactly, cited, and recorded in the
                       dependency table as “imported”. Everything after that is
                       a local step, “proved here”, drawn from a small vocabulary
-                      of standard mechanisms — minimal-counterexample
+                      of standard mechanisms, including minimal-counterexample
                       replacement, charging with bounded multiplicity,
                       pigeonhole and finite-state repetition, matching and star
-                      extraction, exchange, exhaustive finite enumeration — and
-                      a branch may close only through the branch state, the
+                      extraction, exchange, and exhaustive finite enumeration.
+                      A branch may close only through the branch state, the
                       fixed inputs, and textbook facts cited at the point of
                       use. Instance-specific lemmas and any extension of the
                       proof language remain separate, audited obligations. A
@@ -1152,8 +1105,8 @@ export function MethodologySection() {
                   <dd>
                     <p>
                       <em>The failure.</em> A generated draft reads like a proof
-                      while omitting the one step that carries the difficulty
-                      — typically hidden behind a phrase such as “this
+                      while omitting the step that carries the difficulty,
+                      often hidden behind a phrase such as “this
                       structure should be impossible” or “this cannot happen
                       generically”.
                     </p>
@@ -1164,7 +1117,7 @@ export function MethodologySection() {
                       of the kind just quoted are classified as prompts for
                       further stratification, never as closures. Because the
                       terminal states are enumerated, an omitted step shows up
-                      syntactically — as a leaf without a certificate — before
+                      syntactically as a leaf without a certificate, before
                       any mathematical judgement is required.
                     </p>
                   </dd>
@@ -1174,8 +1127,8 @@ export function MethodologySection() {
                   <dd>
                     <p>
                       <em>The failure.</em> An unconstrained draft gravitates
-                      towards a single global inequality — a counting argument,
-                      an entropy bound, a spectral estimate — that appears to
+                      towards a single global inequality, such as a counting
+                      argument, entropy bound, or spectral estimate, that appears to
                       resolve everything at once. Such estimates concentrate the
                       common errors: an unjustified independence assumption, a
                       double count, a boundary term absorbed without comment.
@@ -1186,11 +1139,10 @@ export function MethodologySection() {
                       <Latex value="\(|\mathcal D|\le C\,|\mathcal P|\)" /> from
                       a canonical charging scheme together with a
                       bounded-multiplicity lemma, and in general the weighted,
-                      payer-specific ledger inequality. Each ingredient — the
+                      payer-specific ledger inequality. Every ingredient (the
                       demands, the assignment, the multiplicity bound, each
-                      capacity — is a named local claim, and the global
-                      conclusion is the output of that bookkeeping rather than
-                      its premise.
+                      capacity) is a named local claim. The bookkeeping produces
+                      the global conclusion.
                     </p>
                   </dd>
                 </div>
@@ -1200,22 +1152,21 @@ export function MethodologySection() {
                     <p>
                       <em>The failure.</em> A model that stalls on a step asks
                       for “one more lemma” whose statement turns out to restate
-                      the original problem at another level; the difficulty has
-                      been relocated rather than reduced.
+                      the original problem at another level. The new statement
+                      simply relocates the difficulty.
                     </p>
                     <p>
                       <em>The discipline.</em> A progress invariant: every step
                       outputs either a closed branch or a{" "}
-                      <strong>strictly smaller</strong> named residual — smaller
-                      in size, in the number of live exits, or in an explicitly
+                      <strong>strictly smaller</strong> named residual, measured
+                      by size, the number of live exits, or an explicitly
                       monitored complexity parameter. A proposed lemma counts as
                       progress only when its residual is smaller, finite,
                       charged or routed. A bookkeeping step factors through
                       overload, monochromatic extraction and the exchange
                       trichotomy; an unconditional statement about all large
-                      objects with some property is a new global theorem, which
-                      is not admitted as a step and calls instead for further
-                      branch refinement.
+                      objects with some property is treated as a new global
+                      theorem and requires further branch refinement.
                     </p>
                   </dd>
                 </div>
@@ -1245,8 +1196,7 @@ export function MethodologySection() {
                       <em>The failure.</em> A model in an assistant role accepts
                       a user-supplied step whose hypotheses, quantifiers,
                       branch state or output type do not match the current
-                      obligation. The failure is not one of mathematical
-                      imagination but of interface discipline.
+                      obligation. This is an interface error.
                     </p>
                     <p>
                       <em>The discipline.</em> Agreement has no formal status. A
@@ -1256,7 +1206,7 @@ export function MethodologySection() {
                       once the relevant schema obligation has been discharged.
                       When the row fails, the required response is a typed
                       reject, a named residual, or an alternative routed
-                      payload — never conversational assent.
+                      payload. Conversational assent is not an accepted output.
                     </p>
                   </dd>
                 </div>
@@ -1265,7 +1215,7 @@ export function MethodologySection() {
                   <dd>
                     <p>
                       <em>The failure.</em> A local audit is replaced by an
-                      appeal to the published status of the problem — “this is
+                      appeal to the published status of the problem: “this is
                       a famous open problem, so the step must be wrong”, or,
                       just as unhelpfully, “so it must be right”.
                     </p>
@@ -1285,11 +1235,11 @@ export function MethodologySection() {
                 </div>
               </dl>
               <p>
-                When a proposed lemma does fail, its counterexample is kept as
-                data — it may reveal a missing term, a boundary case, an
+                When a proposed lemma fails, its counterexample is retained as
+                data. It may reveal a missing term, a boundary case, an
                 incorrect interface, an insufficient label, or a new residual
-                pattern — and the repair chosen is the least drastic that
-                fits: <strong>numerical</strong> (recompute constants,
+                pattern. The repair is chosen to match the defect:{" "}
+                <strong>numerical</strong> (recompute constants,
                 enumerations or slack), <strong>structural</strong> (correct a
                 hypothesis, invariant, route, type or account within the
                 existing vocabulary), <strong>pattern-level</strong> (promote a
@@ -1301,11 +1251,10 @@ export function MethodologySection() {
                 theorem, naming the counterexample class that remains.
               </p>
               <p>
-                We should be careful to keep two properties apart.
-                Architectural completeness — an exhaustive branch graph in
-                which every leaf has a consumer — is checked by the structure
-                itself. Mathematical validity — the correctness of every edge
-                lemma — is a matter for review and, where available,
+                Architectural completeness means that the branch graph is
+                exhaustive and every leaf has a consumer; the structure itself
+                checks this property. Mathematical validity concerns the
+                correctness of every edge lemma and requires review and, where available,
                 formalization. The method makes the second question explicit
                 and local; it does not answer it. This is also why the
                 architecture sits comfortably alongside proof assistants: a
@@ -1318,30 +1267,23 @@ export function MethodologySection() {
 
           <Part id="artifacts">
             <p>
-              A proof of several hundred steps cannot be held in working
-              memory, whether by a model or by a reader, and it would be
-              unwise to pretend otherwise. Chapter 1 of each manuscript
-              therefore carries a fixed set of artifacts that record the
-              architecture of the argument before any local machinery is
-              introduced. The body of the paper remains the single source of
-              mathematical truth; the artifacts record its dependency order,
-              its standing constraints, and the manner in which every branch
-              closes. They are what allows a model to work on one step at a
-              time without losing the argument, and what allows a reviewer to
-              check one step at a time without re-reading the whole. This site
-              is a rendering of them: the explorer draws the diagram, and the{" "}
-              <em>Tables</em> section publishes the chapter-1 tables as written.
+              Neither a model nor a reader can keep several hundred proof
+              steps in working memory. The proof state therefore includes
+              artifacts that record dependencies, standing constraints, and
+              branch closures before the local machinery is introduced. A
+              model can work on one step without losing the surrounding
+              argument, while a reviewer can check that step without rereading
+              the whole proof. The explorer renders the dependency diagram,
+              and the <em>Tables</em> section provides the corresponding audits.
             </p>
             <p>
-              Why are these artifacts necessary at all? Because of the shape
-              the method produces. A conventional proof is a line of
-              paragraphs; a proof by structural exhaustion is a graph. Every
+              Structural Exhaustion represents the proof as a graph. Every
               admitted dichotomy opens two branches; each branch accumulates
               its own record of hypotheses, exclusions and spent budgets;
               residuals are routed across panels to consumers defined
               elsewhere; and the terminal closures sit at the ends of many
-              distinct paths — 157 numbered steps in the Erdős–Gyárfás
-              argument, 333 across the three Navier–Stokes manuscripts. On such
+              distinct paths: 157 numbered steps in the Erdős–Gyárfás
+              argument and 333 across the three Navier–Stokes developments. On such
               an object the questions that matter are positional ones: which
               branch am I on, what has been established on it (and nothing
               else), where does this remainder go next, and does every path end
@@ -1371,9 +1313,8 @@ export function MethodologySection() {
                     hypotheses available at that step and its outgoing edges
                     precisely the conclusions it may return, so a step can be
                     drafted, criticised or repaired in isolation. For the
-                    reviewer, coverage is visible at a glance — a test with a
-                    missing side or a leaf without a closure is a gap in the
-                    picture, found before any mathematics is read.
+                    reviewer, the diagram exposes a test with a missing side or
+                    a leaf without a closure before the local mathematics is read.
                   </p>
                 </dd>
               </div>
@@ -1386,7 +1327,7 @@ export function MethodologySection() {
                     it holds and which branch it resolves. The audit table then
                     goes node by node: the statement in the body that supports
                     it, its formal content, its failure route, and its
-                    successor — where a terminal entry means a genuine closure,
+                    successor. A terminal entry means a genuine closure,
                     not merely a named alternative.
                   </p>
                   <p>
@@ -1404,8 +1345,8 @@ export function MethodologySection() {
                 <dd>
                   <p>
                     <em>What it records.</em> The numbered structural
-                    constraints a minimal counterexample must satisfy — the
-                    invariants — together with the budget each one spends, the
+                    constraints a minimal counterexample must satisfy, listed as
+                    invariants, together with the budget each one spends, the
                     results that introduce it and the results that consume it;
                     the standing constants and normalisations; and, in a
                     separate block, the external inputs, each with the exact
@@ -1418,7 +1359,7 @@ export function MethodologySection() {
                   <p>
                     <em>Why it helps.</em> This is the branch state made
                     concrete. The model reads the hypotheses it may use from
-                    the ledger rather than reconstructing them from prose, and a
+                    the ledger instead of reconstructing them from prose. A
                     later estimate can only cite invariants that appear above
                     it. The reviewer sees the same list, and can confirm that no
                     budget is spent twice and no fact is used before it is
@@ -1435,7 +1376,7 @@ export function MethodologySection() {
                     <em>What it records.</em> The reverse index: for every
                     labelled result, the invariants it requires as input, a
                     plain-language description, its role, and its position in
-                    the flow — both a coarse stage label and the exact diagram
+                    the flow, given by a coarse stage label and the exact diagram
                     node.
                   </p>
                   <p>
@@ -1443,10 +1384,8 @@ export function MethodologySection() {
                     by confirming that everything in its “Requires” cell is
                     established at an earlier or equal stage. When an invariant
                     changes, the same table lists every downstream result that
-                    depends on it, so a repair is a finite, enumerated task
-                    rather than a re-reading of the paper — for the model
-                    performing the repair and for the reviewer checking its
-                    extent.
+                    depends on it. This turns a repair into a finite, enumerated
+                    task for both the model and the reviewer.
                   </p>
                 </dd>
               </div>
@@ -1457,7 +1396,7 @@ export function MethodologySection() {
                     <em>What it records.</em> That every non-regular path from
                     the root reaches exactly one of the listed closures, and,
                     for each closure, the statement that produces the class and
-                    the theorem that actually eliminates it — kept apart, since
+                    the theorem that actually eliminates it. These are kept apart because
                     naming a class is not the same thing as excluding it.
                   </p>
                   <p>
@@ -1481,7 +1420,7 @@ export function MethodologySection() {
                   <p>
                     <em>Why they help.</em> They keep the vocabulary fixed
                     across hundreds of pages, so that a symbol means the same
-                    thing at node [120] as at node [3] — for the model
+                    thing at node [120] as at node [3], for the model
                     generating text and for the reader checking it. Constants
                     are outputs of local estimates, and the table shows which
                     estimate produced each one.
@@ -1490,34 +1429,29 @@ export function MethodologySection() {
               </div>
             </dl>
             <p>
-              The common property of these artifacts is that they are
-              structured text — tables, numbered lists and labelled graphs
-              rather than compressed prose. That is the representation in
+              These artifacts use structured text: tables, numbered lists, and
+              labelled graphs. That is the representation in
               which a language model manipulates many relationships reliably,
               and it is also the representation in which a human reviewer can
               check one relationship without holding the rest in mind. The
               diagram exposes an omitted branch, the requirement table an
-              unsupported conclusion, the ledgers a double count — each of
-              them syntactically, before any mathematical judgement is called
-              for. The bookkeeping is rich enough that later deductions can
-              often be read off the state of the ledger itself, which is what
-              makes the additional length of the papers a working tool rather
-              than a cost.
+              unsupported conclusion, and the ledgers a double count. Each
+              defect is visible syntactically before mathematical judgement is
+              needed. Later deductions can often be read directly from the
+              ledger, so the extra length serves as part of the proof process.
             </p>
           </Part>
 
           <Part id="repair">
             <p>
-              Every proposed claim is attacked before it is admitted. Each
-              candidate lemma is asked two questions — can it be proved, and
-              what follows structurally from its failure? — and the second is
-              asked in earnest: the model, or a reviewer, is set the task of
-              finding the configuration in which the claim fails. A successful
-              attack is what we call a <em>defect</em>, and the point to
-              appreciate is that a defect is data. Its counterexample names the
-              hypothesis <Latex value="\(H\)" /> the argument had been silently
-              relying on: an independence assumption, a boundary case, a
-              compactness property the state did not actually carry.
+              Every proposed claim is tested before it is admitted. The review
+              asks whether the lemma can be proved and what its failure would
+              imply structurally. The model or reviewer tries to find a
+              configuration in which the claim fails. Such a configuration is
+              a <em>defect</em>, and it becomes part of the proof data. Its
+              counterexample names the hypothesis <Latex value="\(H\)" /> the
+              argument had silently relied on: an independence assumption, a
+              boundary case, or a compactness property absent from the state.
             </p>
             <p>
               The repair rule is always the same. <Latex value="\(H\)" />{" "}
@@ -1531,9 +1465,9 @@ export function MethodologySection() {
               routes into a row that is already closed. Existing step numbers
               are never reassigned; new steps are appended after the last
               existing one. Downstream, a consumer continues to cite the same
-              interface theorem — its statement is preserved, and only its
-              proof now routes through the new branch — so nothing already
-              proved is invalidated. Until the new branch closes, one has a
+              interface theorem. Its statement is preserved while its proof
+              routes through the new branch, so earlier results remain valid.
+              Until the new branch closes, one has a
               precise weaker theorem: everything holds except on the named
               class where <Latex value="\(\neg H\)" />.
             </p>
@@ -1548,9 +1482,9 @@ export function MethodologySection() {
               </figcaption>
             </figure>
             <p>
-              It may help to see three repairs from the two developments, one
-              for each kind of mistake that red-teaming most often turns up.
-              The chips open the explorer at the steps concerned.
+              The following repairs show how the protocol handles a state that
+              is too small, a missing hypothesis, and a budget used outside its
+              valid regime. The chips open the relevant explorer steps.
             </p>
             <dl className="methodology-controls methodology-controls-wide methodology-repairs">
               <div>
@@ -1560,28 +1494,28 @@ export function MethodologySection() {
                     <em>What red-teaming found.</em> Navier–Stokes, Type I. A
                     lemma asserted that the successor relation between retained
                     concentration profiles was closed, and a chain of
-                    downstream results — recurrence on the path space, a
-                    compact retained core, the exclusion of infinite descendant
-                    chains — rested on it. The diagonal argument in its proof
+                    downstream results, including recurrence on the path space,
+                    a compact retained core, and the exclusion of infinite descendant
+                    chains, rested on it. The diagonal argument in its proof
                     did not go through: a witness for one pair could be centred
                     at a point escaping to infinity, outside every cylinder on
                     which the convergence was known.
                   </p>
                   <p>
                     <em>The hypothesis it exposed.</em> Closedness requires the
-                    observer witnesses — the observer, its pressure chart, its
-                    realization from the original sequence — to stay in a fixed
+                    observer witnesses (the observer, its pressure chart, and
+                    its realization from the original sequence) to stay in a fixed
                     compact cylinder. A state consisting of profiles alone was
-                    too small to carry that; the paper now records the defect
-                    as “no profile-only closedness”, a standing prohibition in
-                    its provenance table.
+                    too small to carry that. The defect is recorded as “no
+                    profile-only closedness”, a standing prohibition in the
+                    provenance table.
                   </p>
                   <p>
                     <em>The repair.</em> The step that used the claim became a
                     three-way test on covariant density and event balance.
                     Positive density and a balanced event law close where the
-                    old argument closed. The third outcome — a zero-density
-                    chain sustained by a persistent root current — is the new
+                    old argument closed. A zero-density chain sustained by a
+                    persistent root current forms the new
                     sparse branch, carrying precisely the failure of the old
                     lemma as its defining fact; it is reduced through
                     critical-shell accounting to an interscale-flux class,
@@ -1592,9 +1526,8 @@ export function MethodologySection() {
                     re-typed within their existing numbers, not renumbered. The
                     interface theorem “no infinite retained concentration
                     chain” kept its statement, so the finite-family branch and
-                    every later closure cite it unchanged; the state grew — a
-                    language extension — and the rest of the ledger was reused
-                    rather than rebuilt.
+                    every later closure cite it unchanged. The state gained new
+                    vocabulary, and the rest of the ledger was reused.
                   </p>
                   <StepLinks steps={["I141", "I142", "I143", "I144", "I145", "I146", "I152"]} />
                 </dd>
@@ -1614,8 +1547,8 @@ export function MethodologySection() {
                   <p>
                     <em>The hypothesis it exposed.</em> The independent-target
                     entropy lemma requires independently realizable
-                    coordinates. Windows carrying a live package — the hot ones
-                    — pay; windows that do not — the cold ones — pay nothing,
+                    coordinates. Windows carrying a live package, called hot
+                    windows, pay. Cold windows do not,
                     and the cap has nothing to say about them.
                   </p>
                   <p>
@@ -1623,7 +1556,7 @@ export function MethodologySection() {
                     “does the live-hot entropy cap close?”. Yes is the old
                     overflow terminal, unchanged. No opens the cold branch,
                     which inherits the spine estimate and every earlier
-                    invariant and adds “the hot cap failed” as a fact — which
+                    invariant and adds “the hot cap failed” as a fact. This
                     forces a linear amount of cold mass, then a stub excess,
                     then a first-failure extraction along cold corridors, and
                     finally the bounded-germ trichotomy of hit, defect or
@@ -1647,9 +1580,9 @@ export function MethodologySection() {
                     budget{" "}
                     <Latex value="\(B_{\mathrm{skel}}=\tfrac32 n\log_2 n+o(n\log n)\)" />{" "}
                     that the entropy arguments spend is valid only on a
-                    near-cubic spine — a graph whose surplus above cubic is
-                    small. The main line had been spending it without saying
-                    so.
+                    near-cubic spine, meaning a graph whose surplus above cubic
+                    is small. The main line had used it without recording that
+                    hypothesis.
                   </p>
                   <p>
                     <em>The hypothesis it exposed.</em> The surplus{" "}
@@ -1681,47 +1614,37 @@ export function MethodologySection() {
               </div>
             </dl>
             <p>
-              The three sit at different levels of the repair hierarchy. The
-              two Erdős–Gyárfás repairs are structural: a hypothesis was made
+              The two Erdős–Gyárfás repairs are structural: a hypothesis was made
               explicit and a case split was added within the existing
               vocabulary. The Navier–Stokes repair is a language extension: the
               branch state had to grow to carry witnesses, and a new class of
-              residual — the sparse branch — entered the vocabulary with a
-              closure of its own. In none of the three was any previously
-              closed branch reopened, and in each case the numbering records
-              what happened: a branch numbered far after the decision it hangs
-              from — [22]→[145], [19]→[125], the re-typed [143]→[146] — was
-              added after the main line had been numbered, whereas contiguous
+              residual, the sparse branch, entered the vocabulary with a
+              closure of its own. None of these repairs reopened a closed
+              branch. Their numbering records the history: [22]→[145],
+              [19]→[125], and the re-typed [143]→[146] were added after the
+              main line had been numbered. Contiguous
               continuations such as [64]→[65] and [109]→[110] belong to the
-              original design. This is also what graceful degradation means in
-              practice. The Erdős–Gyárfás manuscript closes with a resilience
-              appendix listing, for each closing lemma, the residual class its
-              failure would leave behind — a counterexample satisfying every
+              original design. The resilience audit lists the residual class
+              left by the failure of each closing lemma: a counterexample satisfying every
               standing invariant up to that step together with the negation of
-              the lemma's conclusion — so that, in its own words, no leaf
+              the lemma's conclusion. In its own words, no leaf
               degrades to nothing.
             </p>
           </Part>
 
           <Part id="moves">
             <p>
-              The three currencies are spent through a fixed vocabulary of{" "}
+              The method spends these currencies through a fixed vocabulary of{" "}
               <em>proof moves</em>. Each move consumes a recorded branch state
               and returns either a closure certificate or a named residual
-              routed to another move; and each is a familiar technique from
-              the literature — minimal counterexample, replacement,
-              discharging, exchange, pigeonhole, first failure, well-founded
-              recursion — written down as a contract, with declared inputs,
-              obligations and outputs. We stress that the moves are mechanisms
-              only: when to invoke one, and with what parameters, is a
-              separate strategic decision taken on the branch. The reference
-              manual demonstrates the moves on graphs; the Navier–Stokes
-              development instantiates the same contracts with analytic state.
-              The two right-hand columns below give that correspondence as we
-              read it from the manuscripts, and the numbered chips open the
-              explorer at the steps where each move is applied, using the same
-              step numbers as the papers. Where a move is not needed on one
-              side, the table says so rather than forcing an analogy.
+              routed to another move. Familiar techniques from the literature,
+              such as minimal counterexamples, replacement, discharging,
+              exchange, pigeonhole, first failure, and well-founded recursion,
+              are written as contracts with declared inputs and outputs. The
+              choice and parameters of a move remain strategic decisions on
+              the current branch. The same contracts act on graph and analytic
+              states. The numbered chips open the explorer at each application
+              of a move. An absent move is marked directly in the table.
             </p>
             <div className="methodology-table-wrap">
               <table className="methodology-map methodology-moves">
@@ -1741,17 +1664,17 @@ export function MethodologySection() {
               </table>
             </div>
             <p>
-              A remark on what the two right-hand columns show. They differ in
-              every noun and agree in every verb. The graph proof spends its
+              The two right-hand columns use different mathematical objects but
+              share the same operations. The graph proof spends its
               budgets in entropy and surplus, the PDE proof in scale-collapse
               cost and retained mass; one side classifies pieces by 399 window
               labels, the other by ten residual strata and a four-row exit
               ledger; one compresses by replacing an atom, the other by passing
-              to a limit and returning along an ancestry map. But the
-              operations — test the target locally, use minimality, compare by
-              type, charge, take the first failure, pump, extract from an
-              overload, localize, descend on a well-founded measure, refine the
-              labels, route the remainder — are the same contracts, and they
+              to a limit and returning along an ancestry map. In both cases the
+              proof tests the target locally, uses minimality, compares by
+              type, charges, takes the first failure, pumps, extracts from an
+              overload, localizes, descends on a well-founded measure, refines
+              the labels, and routes the remainder. These contracts
               close a combinatorial and an analytic problem in the same way.
               The last four moves entered the vocabulary with the analytic
               proofs; they are the ones a finite object never calls for:
@@ -1768,10 +1691,9 @@ export function MethodologySection() {
           <Part id="iteration">
             <p>
               We can now say precisely what a branch is. A branch is its
-              complete accumulated context — not the phrase “the remaining
-              difficult case”, but everything that has been established on the
-              way to it. The method writes that context as a tuple of eight
-              coordinates, each of which the preceding sections have already
+              complete accumulated context: everything established on the way
+              to the current case. The method writes that context as a tuple of
+              eight coordinates, each of which the preceding sections have already
               used informally:
             </p>
             <Latex className="methodology-display" value="\[B=(H_0,\preceq,E,I,R,V,Q,A)\]" />
@@ -1788,15 +1710,15 @@ export function MethodologySection() {
                 <dt><Latex value="\(\preceq\)" /></dt>
                 <dd>
                   The well-founded order with respect to which the
-                  counterexample is minimal — the measure that minimality,
-                  compression, and every peeling or reselection loop decrease.
+                  counterexample is minimal. This is the measure decreased by
+                  minimality, compression, and every peeling or reselection loop.
                 </dd>
               </div>
               <div>
                 <dt><Latex value="\(E\)" /></dt>
                 <dd>
-                  The exclusions: the local events certified to be absent —
-                  the Mersenne returns no edge has, the Liouville classes the
+                  The exclusions are the local events certified to be absent,
+                  such as the Mersenne returns no edge has and the Liouville classes the
                   profile does not belong to.
                 </dd>
               </div>
@@ -1804,23 +1726,23 @@ export function MethodologySection() {
                 <dt><Latex value="\(I\)" /></dt>
                 <dd>
                   The positive invariants admitted by the both-sides test and
-                  accumulated along the invariant ladder — full curvature rank,
-                  the near-cubic spine estimate, a retained active core.
+                  accumulated along the invariant ladder, including full
+                  curvature rank, the near-cubic spine estimate, and a retained active core.
                 </dd>
               </div>
               <div>
                 <dt><Latex value="\(R\)" /></dt>
                 <dd>
                   The residual data: what is currently known about the
-                  remaining object beyond the invariants — the profile, the
-                  support, the ledger balances it carries.
+                  remaining object beyond the invariants, including the profile,
+                  its support, and its ledger balances.
                 </dd>
               </div>
               <div>
                 <dt><Latex value="\(V\)" /></dt>
                 <dd>
                   The vocabulary in which the residual is expressed: the finite
-                  labels, exact types and residual classes currently in use —
+                  labels, exact types and residual classes currently in use. This is
                   the alphabet that a default refinement or a language
                   extension enlarges.
                 </dd>
@@ -1837,8 +1759,7 @@ export function MethodologySection() {
                 <dt><Latex value="\(A\)" /></dt>
                 <dd>
                   The audit record: the diagram nodes, ledgers and tables of the
-                  artifacts section — which is what lets a step be checked in
-                  isolation.
+                  artifacts section, allowing a step to be checked in isolation.
                 </dd>
               </div>
             </dl>
@@ -1868,7 +1789,7 @@ export function MethodologySection() {
                 either in the current state or can be synthesised from it.
               </li>
               <li>
-                <strong>Execute</strong> — that is, prove, review or compute the
+                <strong>Execute</strong>: prove, review, or compute the
                 local obligations before the proof state is allowed to change.
               </li>
               <li>
@@ -1927,11 +1848,11 @@ export function MethodologySection() {
                       concentration and ancestry data; normalization transports
                       a hypothetical singularity into an ancient solution; a
                       failed Liouville route emits a residual holding both the
-                      failed criterion and the data the closure paper needs.
+                      failed criterion and the data needed for closure.
                       Conclusions about descendant profiles return to the
                       original state through explicit ancestry maps and gauge
                       transports, and the separate first-failure layer of the
-                      Type II paper turns a negative statement about an entire
+                      Type II analysis turns a negative statement about an entire
                       cascade into the scale and witness at which it breaks.
                     </p>
                   </Link>
