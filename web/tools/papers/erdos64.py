@@ -23,7 +23,8 @@ PART_TITLES = {
 # Source: the captions of Parts I-XI.
 CONTINUATIONS = (
     ("20", "125", "surplus-pair accounting branch, expanded in Part X"),
-    ("24", "145", "cold branch, expanded in Part XI"),
+    ("22", "145", "no: cold branch, expanded in Part XI"),
+    ("153", "24", "bounded: density-cap return to Part I"),
     ("25", "26", "Residual A continues in Part II"),
     ("33", "35", "Branch D continues in Part III"),
     ("34", "47", "Residual B continues in Part IV"),

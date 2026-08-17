@@ -12,18 +12,21 @@ coordinate family, so the number of realized target-complete states would
 exceed the number of labelled skeletons, contradicting
 `lem:independent-target-entropy`, `lem:skeleton-dominates`."*
 
-The premise "form one independently target-testable coordinate family" is
-`def:target-rank`'s realization of the joint code by the labelled skeletons of
-the current class — the exact-code equality `def:curvature-target-rank` says is
-retained on the surviving hot residual entering node `[47]`, "its failure
-[being] the complementary cold residual".  The framework asks that exact
-question on the literal `[53]` residual: `jointCodeDichotomy` commits either
-`K .jointCodeRealized` (the joint demand is realized by an assignment of states
-to skeletons) or its exact complement `K .jointCodeUnrealized`.  On the
-realized arm the terminal is a plain contradiction of three ledger facts:
-`K .entropyCapActive` (`budget < demand`), `K .jointCodeRealized`
-(`demand ≤ #realized states`) and `K .skeletonDominates`
-(`#realized states ≤ budget`).  No numeral, threshold or rate is written here.
+The premise "form one independently target-testable coordinate family" is a
+property of the residual, carried by node `[22]`'s hot/cold split
+(`K .hotColdPartition`): the canonical entropy comparison *retains* the hot
+windows' full packages together with the remainder states and the exact
+curvature code of the fixed packing (`WindowFamilyRealized` = `retainedCode`
+realized by the labelled skeletons of the class), which is `def:target-rank`'s
+"independently target-testable … arising canonically from graphs in the
+labelled class" and the exact-code equality `def:curvature-target-rank` says is
+retained on the surviving hot residual entering node `[47]`.  The terminal is
+then a plain contradiction of ledger facts:
+`K .entropyCapActive` (`budget < demand`), `K .hotColdPartition`
+(`demand ≤ retainedCode 𝒫_hot ≤ #realized states`, using
+`K .windowPackageSeparated`'s `rate · scales ≤ bits`), and
+`K .skeletonDominates` (`#realized states ≤ budget`).  No numeral, threshold or
+rate is written here.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -38,50 +41,60 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- **Node `[54]`'s exact question on the `[53]` yes-residual**: is the joint
-code of the entropy comparison realized by the labelled skeletons of the
-current class (`def:target-rank`, `lem:independent-target-entropy`)? -/
-noncomputable def jointCodeDichotomy
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous : ExactLedger
-      (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .entropyCapActive) known]
-    (realizedFresh : K .jointCodeRealized ∉ known)
-    (unrealizedFresh : K .jointCodeUnrealized ∉ known) :
-    Decision (K .jointCodeRealized) (K .jointCodeUnrealized) previous := by
-  classical
-  let _active := (previous.get (K .entropyCapActive)).down
-  exact Decision.run previous (K .jointCodeRealized) (K .jointCodeUnrealized)
-    `Hypostructure.Graph.Strategy.Spine.jointCodeDichotomy
-    (if realized : JointCodeRealized data current.object then
-      .inl ⟨realized⟩
-    else
-      .inr ⟨fun State stateOf => by
-        by_contra le
-        exact realized ⟨State, stateOf, Nat.le_of_not_lt le⟩⟩)
-    realizedFresh unrealizedFresh
+/-- The joint package demand of nodes `[52]`--`[53]` is at most the code the
+comparison retains for the hot family: the registered rate never exceeds the
+package width (`lem:p13-window-package`, read from `K .windowPackageSeparated`). -/
+theorem jointPackageDemand_le_retainedCode (object : Graph.FiniteObject.{u})
+    (rateLe : data.windowRate * data.separatedScaleCount object.vertexCount ≤
+      windowPackageBits data object) :
+    jointPackageDemand data object ≤
+      retainedCode data object (canonicalHotWindows data object) := by
+  unfold jointPackageDemand retainedCode
+  refine Nat.mul_le_mul_right _ (Nat.mul_le_mul_right _ ?_)
+  exact Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_right _ rateLe)
 
-/-- **The terminal `[54]`** (`prop:entropy-high-theta`): on the realized arm the
-joint demand is at most the number of realized states, which
-`lem:skeleton-dominates` bounds by the labelled skeleton budget, which
-`eq:entropy-cap` says is strictly smaller than the joint demand. -/
+/-- **The terminal `[54]`** (`prop:entropy-high-theta`), on the residual whose
+canonical comparison retains the hot family's code: the joint demand is at most
+the retained code, which the labelled skeletons realize, which
+`lem:skeleton-dominates` bounds by the skeleton budget, which `eq:entropy-cap`
+says is strictly smaller than the joint demand. -/
 theorem entropyCap_closes
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger
       (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .jointCodeRealized) known]
     [FactKeys.Has (K .entropyCapActive) known]
-    [FactKeys.Has (K .skeletonDominates) known] : False := by
-  have realized := (history.get (K .jointCodeRealized)).down
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    (retained : WindowFamilyRealized data current.object
+      (canonicalHotWindows data current.object)) : False := by
   have active := (history.get (K .entropyCapActive)).down
   have dominates := (history.get (K .skeletonDominates)).down
-  obtain ⟨State, stateOf, demandLe⟩ := realized
-  have packingSpec := Classical.choose_spec
-    (current.object.exists_windowPacking_card_eq data.windowOrder)
-  have overflow := active (canonicalWindowPacking data current.object) packingSpec.1
+  have package := (history.get (K .windowPackageSeparated)).down
+  obtain ⟨_packing, _valid, _card, _maximal, _packageCard, _disjoint, _familyCard,
+    rateLe, _⟩ := package
+  obtain ⟨State, stateOf, _packageLe, codeLe⟩ := retained
+  have demandLe := jointPackageDemand_le_retainedCode (data := data) current.object rateLe
   have rangeLe := dominates.2 State stateOf
-  exact absurd (le_trans demandLe rangeLe) (Nat.not_le.mpr overflow)
+  exact absurd (le_trans demandLe (le_trans codeLe rangeLe)) (Nat.not_le.mpr active)
+
+/-- The retained-code clause of `K .hotColdPartition` at the residual's own hot
+family: either the hot family's code is realized, or every window is cold
+because not even the empty family's remainder-and-curvature code is realized
+(`def:curvature-target-rank`: "its failure is the complementary cold
+residual"). -/
+theorem hotFamily_retained_or_cold
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .hotColdPartition) known] :
+    WindowFamilyRealized data current.object (canonicalHotWindows data current.object) ∨
+      (canonicalHotWindows data current.object = ∅ ∧
+        ¬ WindowFamilyRealized data current.object ∅) := by
+  have split := (history.get (K .hotColdPartition)).down
+  obtain ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint, _cover⟩ := split
+  exact hotFacts.2.1
 
 end Hypostructure.Graph.Strategy.Spine

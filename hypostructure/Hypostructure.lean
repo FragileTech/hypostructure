@@ -48,13 +48,13 @@ import Hypostructure.Graph.Strategy.SpineContinuationRun
 import Hypostructure.Graph.Strategy.ColdCorridorRows
 import Hypostructure.Graph.Strategy.BranchDClosure
 import Hypostructure.Graph.Strategy.EntropyClosure
+import Hypostructure.Graph.Strategy.TypeBClosure
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
 import Hypostructure.Fixtures.ColdCorridorSignature
 import Hypostructure.Fixtures.ColdCorridorLedger
 import Hypostructure.Fixtures.ColdCorridorConstruction
 import Hypostructure.Fixtures.ColdCorridorShortSelfReturn
-import Hypostructure.Fixtures.TypeAReceiverNode
 import Hypostructure.Fixtures.TypeAExitOne
 import Hypostructure.Fixtures.TypeAExitTwo
 import Hypostructure.Fixtures.TypeAExitThree

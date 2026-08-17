@@ -524,7 +524,7 @@ than repeating the same node number.  Round nodes are closed branches.
 \clearpage
 \begin{figure}[p]
 \centering
-\resizebox{!}{0.82\textheight}{%
+\resizebox{!}{0.81\textheight}{%
 \begin{tikzpicture}[
 node distance=0.52cm and 0.90cm,
 box/.style={rectangle,rounded corners,draw,align=center,inner sep=2pt,minimum width=4.35cm,minimum height=0.55cm},
@@ -557,7 +557,7 @@ every node/.style={font=\scriptsize}
 \node[dec, below=of enum] (many) {\textbf{[22]}~hot/cold split
 $\mathcal P=\mathcal P_{\rm hot}\sqcup\mathcal P_{\rm cold}$:\\live-hot entropy cap closes?};
 \node[term, right=of many] (overflow) {\textbf{[23]}~live-hot $P_{13}$ window\\entropy overflow};
-\node[box, below=of many] (theta) {\textbf{[24]}~cold branch begins; continued at [145]--[157];\\after closure, $\theta\le\theta_{\rm win}+o(1)$; high entropy: $\theta\le0.01198542083\ldots$};
+\node[box, below=of many] (theta) {\textbf{[24]}~bounded cold-mass return from [153]:\\$\theta\le\theta_{\rm win}+o(1)$; high entropy: $\theta\le0.01198542083\ldots$};
 \node[box, below=of theta] (R) {\textbf{[25]}~Residual A: $R=G-\bigcup V(P)$ is large and componentwise $P_{13}$-free};
 \draw[arrow] (G)--(bad);
 \draw[arrow] (bad)--node[above]{no}(notbad);
@@ -581,11 +581,14 @@ $\mathcal P=\mathcal P_{\rm hot}\sqcup\mathcal P_{\rm cold}$:\\live-hot entropy 
 \draw[arrow] (surplusq)--node[right]{no}(enum);
 \draw[arrow] (enum)--(many);
 \draw[arrow] (many)--node[above]{yes}(overflow);
-\draw[arrow] (many)--node[right,align=left]{no: cold branch\\starts here}(theta);
+\coordinate (coldcontinuation) at ($(many.south west)+(-0.70,-0.55)$);
+\draw[arrow] (many.south west)--node[left,align=right]{no: continue\\at [145]}(coldcontinuation);
+\coordinate (densityreturn) at ($(theta.east)+(2.10,0)$);
+\draw[arrow] (densityreturn)--node[above,pos=0.18]{from [153], bounded}(theta.east);
 \draw[arrow] (theta)--(R);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part I]{Proof-dependency diagram, Part I.  Rectangles are assertions or residual states, diamonds are yes/no branch tests, ellipses are terminal outcomes, and edge labels such as yes or no state which branch is followed.  The bracketed numbers are unique diagram-node numbers used by the dependency table.  Nodes [19] and [20] record the non-near-cubic surplus accounting branch used before the normalized spine budget; node [20] is the continuation expanded in \cref{fig:proof-diagram-part-x}.  Node [22] creates the hot/cold dichotomy by splitting $\mathcal P$ into $\mathcal P_{\rm hot}$ and $\mathcal P_{\rm cold}$.  Its no-branch is the start of the cold branch, recorded at [24] and expanded at [145]--[157] in \cref{fig:proof-diagram-part-xi}.  Node [25] continues in \cref{fig:proof-diagram-part-ii}.}
+\caption[Proof-dependency diagram, Part I]{Proof-dependency diagram, Part I.  Rectangles are assertions or residual states, diamonds are exhaustive branch tests, ellipses are terminal outcomes, and edge labels state which branch is followed.  The bracketed numbers are unique diagram-node numbers used by the dependency table.  Nodes [19] and [20] record the non-near-cubic surplus accounting branch used before the normalized spine budget; node [20] is the continuation expanded in \cref{fig:proof-diagram-part-x}.  Node [22] creates the hot/cold dichotomy by splitting $\mathcal P$ into $\mathcal P_{\rm hot}$ and $\mathcal P_{\rm cold}$.  Its no-branch continues at [145] in \cref{fig:proof-diagram-part-xi}.  The bounded arm of [153] returns to [24] with the density cap, and only that live residual continues to [25] and \cref{fig:proof-diagram-part-ii}.}
 \label{fig:proof-diagram-part-i}
 \end{figure}
 
@@ -1020,11 +1023,11 @@ every node/.style={font=\scriptsize}
 \node[wide] (coldmass) at (0.00,0.95) {\textbf{[150]}~hot failure forces cold mass:\\\(C\ge(\theta-\theta_{\rm win})n-o(n)\)};
 \node[wide] (cubic) at (0.00,-1.15) {\textbf{[151]}~all but \(o(n)\) cold windows ambient-cubic};
 \node[wide] (stubs) at (0.00,-3.25) {\textbf{[152]}~stub excess:\\\(b(\mathfrak S_{\rm cold})\ge13C-o(n)\)};
-\node[wide] (germs) at (0.00,-5.35) {\textbf{[153]}~first-failure extraction:\\\(N_{\rm germ}\ge13C/D_{\rm cold}-o(n)\)};
-\node[dec] (germcase) at (0.00,-7.80) {\textbf{[154]}~bounded germ case?};
-\node[term] (hit) at (-6.25,-10.15) {\textbf{[155]}~G1: dyadic\\cycle};
-\node[term] (defect) at (0.00,-10.15) {\textbf{[156]}~G2: target defect,\\exit (4), or handoff};
-\node[term] (compress) at (6.25,-10.15) {\textbf{[157]}~G3 or same-interface\\table: compression};
+\node[dec] (germs) at (0.00,-5.35) {\textbf{[153]}~linear first-failure\\extraction?\\\(N_{\rm germ}\ge13C/D_{\rm cold}-o(n)\)};
+\node[dec] (germcase) at (0.00,-8.40) {\textbf{[154]}~bounded germ case?};
+\node[term] (hit) at (-6.25,-10.80) {\textbf{[155]}~G1: dyadic\\cycle};
+\node[term] (defect) at (0.00,-10.80) {\textbf{[156]}~G2: target defect,\\exit (4), or handoff};
+\node[term] (compress) at (6.25,-10.80) {\textbf{[157]}~G3 or same-interface\\table: compression};
 \draw[arrow] (interface)--(route8);
 \draw[arrow] (route8.east)--node[above]{yes}(route8closed.west);
 \draw[arrow] (route8)--node[right]{no}(hot);
@@ -1033,13 +1036,15 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (coldmass)--(cubic);
 \draw[arrow] (cubic)--(stubs);
 \draw[arrow] (stubs)--(germs);
-\draw[arrow] (germs)--(germcase);
+\draw[arrow] (germs)--node[right]{linear}(germcase);
+\coordinate (densitycapreturn) at ($(germs.east)+(2.25,0)$);
+\draw[arrow] (germs.east)--node[above]{bounded: continue at [24]}(densitycapreturn);
 \draw[arrow] (germcase.south west)--node[above,sloped]{G1}(hit.north);
 \draw[arrow] (germcase)--node[right]{G2}(defect);
 \draw[arrow] (germcase.south east)--node[above,sloped]{G3/finite}(compress.north);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part XI]{Proof-dependency diagram, Part XI.  This panel continues the cold branch that begins on the no-edge of the hot/cold split at node [22] and is recorded at node [24].  Node [22], rather than this panel, creates the dichotomy $\mathcal P=\mathcal P_{\rm hot}\sqcup\mathcal P_{\rm cold}$.  If \(\theta<1/78\), the existing route-8 carrier inequality closes at [147].  Otherwise the live-hot entropy cap either yields the density cap [149], or its failure forces the unpaid cold family to have linear size [150].  On the near-cubic spine, only \(o(n)\) cold windows are non-cubic [151]; each ambient-cubic cold window has \(15\) external stubs, and after two corridor ends are absorbed it contributes \(13\) branch-excess units [152].  The first-failure extraction [153] assigns those selected half-edges to bounded cold germs and then uses the bounded-overlap constant \(D_{\rm cold}\) to obtain a linear disjoint family.  The germ trichotomy [154] has no terminal residual: G1 gives a dyadic cycle [155], G2 routes to target defect, exit \textup{(4)}, or the already existing handoff ledgers [156], and G3 together with the finite same-interface table gives a target-complete compression [157].}
+\caption[Proof-dependency diagram, Part XI]{Proof-dependency diagram, Part XI.  This panel continues the no-edge of the hot/cold split at node [22].  If \(\theta<1/78\), the existing route-8 carrier inequality closes at [147].  Otherwise the live-hot entropy comparison either closes at [149], or its failure forces the unpaid cold family to have linear size [150].  On the near-cubic spine, only \(o(n)\) cold windows are non-cubic [151]; each ambient-cubic cold window has \(15\) external stubs, and after two corridor ends are absorbed it contributes \(13\) branch-excess units [152].  Node [153] makes the exact finite split hidden by the asymptotic notation: its bounded arm supplies the density cap and returns to [24], while its linear arm extracts a positive disjoint germ family and continues to [154].  The germ trichotomy [154] has no terminal residual: G1 gives a dyadic cycle [155], G2 routes to target defect, exit \textup{(4)}, or the already existing handoff ledgers [156], and G3 together with the finite same-interface table gives a target-complete compression [157].}
 \label{fig:proof-diagram-part-xi}
 \end{figure}
 
@@ -1418,7 +1423,7 @@ Ledger-invariant numbers and diagram-node numbers are separate namespaces.  The 
 \cref{prop:nonnear-cubic-sharp-overload-routing} & ENT\slash SURP & [144] \texttt{(bottleneck)} & inv 14, 15; \cref{cor:homogeneous-same-token-caps-close} & Combines the sparse-pressure discharge with the cap-to-spine route. & Closes the non-near-cubic surplus branch or derives the near-cubic spine. \\
 \cref{lem:state-count-comparison} & ENT & [22] \texttt{(many)} & inv 1; \cref{lem:skeleton-dominates} & \#realizable states $\le$ \#labelled graphs. & The counting contradiction step. \\
 \cref{lem:p13-window-package} & ENT & [21] \texttt{(enum)} $\to$ [22] \texttt{(many)} & inv 1, 25; \cref{def:near-cubic-spine}; \cref{app:curv-code} & Converts the finite \(91\)-barrier computation into \((c_{13}-o(1))p_{13}\log_2 n\) independent window coordinates. & Names the load-bearing window package used by the density cap. \\
-\cref{def:cold-window-ledger,def:surviving-cold-branch,lem:hot-failure-cold-mass,def:cold-skeleton-excess,lem:cold-window-stub-excess,lem:cold-short-self-return-filter,def:cold-bounded-germ,def:cold-corridor-first-failure,lem:cold-corridor-first-failure,lem:cold-germ-extraction,lem:cold-bounded-germ-trichotomy,def:cold-same-interface-table,lem:cold-same-interface-table,lem:cold-increment-arithmetic,thm:cold-branch-quantitative-closure} & ENT\slash EXC & [145]--[157] \texttt{(cold)} & inv 1, 8, 14, 15, 20, 35, 38; \cref{def:near-cubic-spine}; \cref{lem:p13-window-package}; \cref{thm:large-budget-route8-only} & Quantifies the hot/cold branch: \(\theta<1/78\) is route-8 closed; hot failure gives \(C\ge(\theta-\theta_{\rm win})n-o(n)\), \(b\ge13C-o(n)\), and \(N_{\rm germ}\ge13C/D_{\rm cold}-o(n)\); bounded germs route by hit, defect, same-interface table, handoff, or compression. & Records the terminal cold-window closure used by the downstream large-budget route. \\
+\cref{def:cold-window-ledger,def:surviving-cold-branch,lem:hot-failure-cold-mass,def:cold-skeleton-excess,lem:cold-window-stub-excess,lem:cold-short-self-return-filter,def:cold-bounded-germ,def:cold-corridor-first-failure,lem:cold-corridor-first-failure,lem:cold-germ-extraction,lem:cold-bounded-germ-trichotomy,def:cold-same-interface-table,lem:cold-same-interface-table,lem:cold-increment-arithmetic,thm:cold-branch-quantitative-closure} & ENT\slash EXC & [145]--[157] \texttt{(cold)} & inv 1, 8, 14, 15, 35, 38; \cref{def:near-cubic-spine}; \cref{lem:p13-window-package}; \cref{thm:large-budget-route8-only} & Quantifies the hot/cold branch: \(\theta<1/78\) is route-8 closed; hot failure gives \(C\ge(\theta-\theta_{\rm win})n-o(n)\), \(b\ge13C-o(n)\), and \(N_{\rm germ}\ge13C/D_{\rm cold}-o(n)\); bounded germs route by hit, defect, same-interface table, handoff, or compression. & Records the terminal cold-window closure used by the downstream large-budget route. \\
 \cref{prop:p13-density} & ENT & [24] \texttt{(theta)} & \cref{def:near-cubic-spine}; \cref{lem:p13-window-package}; \cref{lem:independent-target-entropy} & Independent induced-$P_{13}$ density $\theta\le\theta_{\rm win}$ after the surplus-token branch supplies the spine estimate, with sharper high-entropy cap $\theta\le0.011985$. & Kills the high-$P_{13}$ branch on the derived spine branch; forces a large remainder. \\
 \bottomrule
 \end{longtable}

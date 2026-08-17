@@ -277,8 +277,8 @@ def test_erdos_has_all_157_steps_across_eleven_panels() -> None:
     assert len(ERDOS["groups"]) == 11
     assert "chapters" not in ERDOS
     shapes = [node["shape"] for node in ERDOS["nodes"]]
-    assert shapes.count("assertion") == 92
-    assert shapes.count("decision") == 38
+    assert shapes.count("assertion") == 91
+    assert shapes.count("decision") == 39
     assert shapes.count("terminal") == 27
 
 

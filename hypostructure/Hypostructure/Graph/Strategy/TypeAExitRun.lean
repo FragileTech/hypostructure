@@ -40,6 +40,13 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-- Node `[124]`, `thm:large-budget-route8-only`: the closure fact of
+`largeBudgetRoute8ClosedRow` is `False` on the residual that carries it. -/
+noncomputable instance instImpossibleLargeBudgetRoute8Closed :
+    Impossible (Input BranchState Presentation presentation data)
+      (K (data := data) .largeBudgetRoute8Closed) where
+  contradiction := fun _residual closed => closed.down
+
 noncomputable instance instIncompatibleRoute8TerminalResidualNoGo :
     Incompatible (Input BranchState Presentation presentation data)
       (K (data := data) .route8TerminalResidual)
@@ -277,6 +284,48 @@ noncomputable instance typeAExitThreeCollisionClosed :
       (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
         data.degenerateClosureRejected collision)
 
+/-! ## The closures of exits `(5)` and `(6)`, nodes `[104]` and `[106]`
+
+`lem:typeA-exits-discharged`: exit `(5)` is a target-complete proper-support
+response compression, forbidden by `cor:uncompressible` (`K .uncompressible`);
+exit `(6)` on a proper enlarging support is the proper-smearing replacement
+forbidden by `lem:replacement`/`cor:uncompressible` (`K .replacementExclusion`),
+and on the whole graph it is the strictly smaller closed representative of
+`lem:no-silent-global-smearing`, forbidden by the selection's minimality and
+target avoidance.  Each contradiction is read off two committed facts. -/
+
+/-- **Node `[104]`**: the exit-`(5)` compression against `cor:uncompressible`. -/
+noncomputable instance typeAExitFiveClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .uncompressible)
+      (K (data := data) .typeAExitFive) where
+  contradiction := fun _input uncompressible exit => by
+    obtain ⟨_packing, _valid, _maximal, _component, _present, _charge,
+      _surplus, _receiver, _isReceiver, _peeled, _peeledSubset, _saturated,
+      _noExitFour, support, compressible⟩ := exit.down
+    exact uncompressible.down.1 support compressible
+
+/-- **Node `[106]`, proper scope**: `lem:proper-smearing`'s replacement of the
+enlarging support against `lem:replacement`. -/
+noncomputable instance typeAExitSixProperClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .replacementExclusion)
+      (K (data := data) .typeAExitSixProper) where
+  contradiction := fun _input exclusion exit => by
+    obtain ⟨support, replacement⟩ := exit.down
+    exact exclusion.down support replacement
+
+/-- **Node `[106]`, global scope**: `lem:no-silent-global-smearing`'s strictly
+smaller closed representative against the selection's minimality. -/
+noncomputable instance typeAExitSixGlobalClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .selection)
+      (K (data := data) .typeAExitSixGlobal) where
+  contradiction := fun _input selected exit => by
+    obtain ⟨representative, smaller, representativeBaseline, transfer⟩ := exit.down
+    exact selected.down.1
+      (transfer (selected.down.2 representative smaller representativeBaseline))
+
 /-! ## Ledger indices -/
 
 /-- The key index of node `[99]`'s closed arm: the label collision, closed
@@ -293,35 +342,15 @@ abbrev typeAExitThreeFreeKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitThreeFree :: known
 
-abbrev typeAExitFourKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeAExitFour :: known
-
 abbrev typeAExitFourPeeledKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeAExitFourPeeled :: typeAExitFourKeys known
-
-abbrev typeAExitFourLoopKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeASaturatedExitEntry :: typeAExitFourPeeledKeys known
+  K .typeAExitFourPeeled :: K .typeASaturatedHandoffExitFour :: known
 
 abbrev typeAExitFourFiniteDescentKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeAExitFourFiniteDescent :: known
-
-abbrev typeASaturatedHandoffVisibleKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeASaturatedHandoffVisible :: known
-
-abbrev typeASaturatedHandoffSilentKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeASaturatedHandoffSilent :: known
 
 abbrev typeASaturatedHandoffExitFourKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
@@ -381,69 +410,7 @@ abbrev typeAExitSevenFreeKeys
 abbrev typeAExitFourReceiverDischargedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeAExitFourReceiverDischarged :: typeAExitFourPeeledKeys known
-
-abbrev typeAExitFourFreeKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeAExitFourFree :: known
-
-noncomputable def runTypeAExitSevenDecision
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current (typeAExitSixFreeKeys known))
-    (producedFresh :
-      K (data := data) .typeAExitSevenProduced ∉ typeAExitSixFreeKeys known)
-    (freeFresh :
-      K (data := data) .typeAExitSevenFree ∉ typeAExitSixFreeKeys known) :
-    Decision (K (data := data) .typeAExitSevenProduced)
-      (K (data := data) .typeAExitSevenFree) history := by
-  exact
-    typeAExitSevenDichotomy history
-      (K (data := data) .typeAExitSixFree)
-      (K (data := data) .typeAExitSevenProduced)
-      (K (data := data) .typeAExitSevenFree)
-      (fun free => by
-        obtain ⟨packing, valid, maximal, component, present, negative, zero,
-          receiver, isReceiver, peeled, peeledSubset, saturated, routing,
-          noCompression, noDelocalization⟩ := free.down
-        exact ⟨packing, valid, maximal, component, present, negative, zero,
-          receiver, isReceiver, peeled, peeledSubset, saturated, routing,
-          noCompression, noDelocalization, trivial⟩)
-      (fun produced => ⟨produced⟩)
-      (fun free => ⟨free⟩)
-      producedFresh freeFresh
-
-noncomputable def runTypeAExitSevenHandoff
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    [FactKeys.Has (K (data := data) .selection) known]
-    [FactKeys.Has (K (data := data) .uncompressible) known]
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      current (typeAExitSevenProducedKeys known))
-    (handoffFresh :
-      K (data := data) .typeAExitSevenHandoff ∉
-        typeAExitSevenProducedKeys known) :
-    ExactLedger (Input BranchState Presentation presentation data) current
-      (typeAExitSevenHandoffKeys known) := by
-  classical
-  exact
-    (typeAExitSevenHandoffRow
-      (K (data := data) .selection)
-      (K (data := data) .uncompressible)
-      (K (data := data) .typeAExitSevenProduced)
-      (K (data := data) .typeAExitSevenHandoff)
-      (by simp [K_eq_iff])
-      (fun _input selection => selection.down.1)
-      (fun _input uncompressible => uncompressible.down)
-      (fun _input produced => produced.down)
-      (fun _input handoff => ⟨handoff⟩)).run history (by
-        intro key isNew isOld
-        simp only [List.mem_singleton] at isNew
-        subst isNew
-        revert isOld
-        simp [handoffFresh])
+  K .typeAExitFourReceiverDischarged :: known
 
 /-! ## What the two exits carry -/
 
@@ -483,26 +450,6 @@ theorem exitThreeFree_audit_facts_unique
     (ExactLedger.audit history).facts.Nodup :=
   ExactLedger.audit_facts_unique history
 
-theorem exitFour_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitFourKeys known)) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem exitFourFree_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitFourFreeKeys known)) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
 theorem exitFourPeeled_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -513,41 +460,11 @@ theorem exitFourPeeled_audit_accounts_for_every_fact
         (fun record => record.produced) :=
   ExactLedger.audit_complete history
 
-theorem exitFourLoop_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitFourLoopKeys known)) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
 theorem exitFourFiniteDescent_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected (typeAExitFourFiniteDescentKeys known)) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem saturatedHandoffVisible_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeASaturatedHandoffVisibleKeys known)) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
-
-theorem saturatedHandoffSilent_audit_accounts_for_every_fact
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeASaturatedHandoffSilentKeys known)) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=
@@ -673,22 +590,6 @@ theorem exitSevenFree_audit_accounts_for_every_fact
         (fun record => record.produced) :=
   ExactLedger.audit_complete history
 
-theorem exitFour_audit_facts_unique
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitFourKeys known)) :
-    (ExactLedger.audit history).facts.Nodup :=
-  ExactLedger.audit_facts_unique history
-
-theorem exitFourFree_audit_facts_unique
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitFourFreeKeys known)) :
-    (ExactLedger.audit history).facts.Nodup :=
-  ExactLedger.audit_facts_unique history
-
 theorem exitFourPeeled_audit_facts_unique
     {selected : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -697,35 +598,11 @@ theorem exitFourPeeled_audit_facts_unique
     (ExactLedger.audit history).facts.Nodup :=
   ExactLedger.audit_facts_unique history
 
-theorem exitFourLoop_audit_facts_unique
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeAExitFourLoopKeys known)) :
-    (ExactLedger.audit history).facts.Nodup :=
-  ExactLedger.audit_facts_unique history
-
 theorem exitFourFiniteDescent_audit_facts_unique
     {selected : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
       selected (typeAExitFourFiniteDescentKeys known)) :
-    (ExactLedger.audit history).facts.Nodup :=
-  ExactLedger.audit_facts_unique history
-
-theorem saturatedHandoffVisible_audit_facts_unique
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeASaturatedHandoffVisibleKeys known)) :
-    (ExactLedger.audit history).facts.Nodup :=
-  ExactLedger.audit_facts_unique history
-
-theorem saturatedHandoffSilent_audit_facts_unique
-    {selected : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected (typeASaturatedHandoffSilentKeys known)) :
     (ExactLedger.audit history).facts.Nodup :=
   ExactLedger.audit_facts_unique history
 

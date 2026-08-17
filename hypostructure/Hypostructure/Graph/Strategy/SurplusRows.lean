@@ -318,11 +318,12 @@ noncomputable def pairResponseIndependenceDichotomy
           Finset current.object.Vertex := by
         letI := current.object.vertices.decEq
         exact Graph.DeclaredSignature.Coordinate.support
-      by_cases independent : ∀ attempt : Graph.AttemptedQuotient
+      by_cases independent : ∀ declared : Graph.DeclaredQuotient
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) current.object family
           coordinateSupport,
-          Set.InjOn attempt.label ↑family
+          declared.toRankQuotient.FunctionalOn ↑family →
+            Set.InjOn declared.label ↑family
       · exact ⟨.inl ⟨active, independent⟩⟩
       · push_neg at independent
         exact ⟨.inr ⟨active, independent⟩⟩))
@@ -371,13 +372,7 @@ semantic fact. -/
             change ¬ Set.InjOn attempt.label ↑mixedFamily at reducing
             let quotient : Core.TargetRank.RankQuotient.{u, u + 1}
                 (Sum Coordinate object.PairCoordinate) :=
-              { Label := attempt.Label
-                Value := attempt.Value
-                Realization := Graph.BoundaryPiece
-                  (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                    object attempt.support)
-                label := attempt.label
-                value := attempt.value }
+              attempt.toRankQuotient
             change quotient.FunctionalOn ↑mixedFamily at functional
             let candidates :
                 Finset (Finset (Sum Coordinate object.PairCoordinate)) :=
@@ -484,29 +479,16 @@ semantic fact. -/
                 change candidate ∈ activation.pairFamily pairs at candidateMem
                 rw [Graph.FiniteObject.DemandActivation.pairFamily] at candidateMem
                 exact Finset.mem_image.mp candidateMem
-            rcases attempt.route reducing with profiles | defect | replacement |
+            -- The determination is an admissible rank quotient
+            -- (`lem:target-rank-circuit`), so it is fibrewise and
+            -- context-universal (`lem:degree-profile-fibres`,
+            -- `lem:context-universality`); `def:admissible-rank-quotient`'s
+            -- representative clauses leave the two remaining alternatives:
+            -- a target-complete compression of a proper support (exit (c), and
+            -- for a pair coordinate the blocker of type (e)) or a strictly
+            -- smaller closed representative (exit (d)).
+            rcases attempt.localize reducing with replacement |
                 ⟨representative, smaller, baseline, transfer⟩
-            · cases coordinate with
-              | inl spine =>
-                  obtain ⟨left, right, identifies, different⟩ := profiles
-                  exact Or.inl (.targetDefect attempt left right identifies
-                    (Or.inl different))
-              | inr pairCoordinate =>
-                  obtain ⟨pair, pairMem, pairEq⟩ :=
-                    pair_of_mem pairCoordinate coordinateMember
-                  subst pairCoordinate
-                  exact Or.inr ⟨pair, pairMem, attempt, Or.inl profiles⟩
-            · cases coordinate with
-              | inl spine =>
-                  obtain ⟨left, right, identifies, separated⟩ := defect
-                  exact Or.inl (.targetDefect attempt left right identifies
-                    (Or.inr separated))
-              | inr pairCoordinate =>
-                  obtain ⟨pair, pairMem, pairEq⟩ :=
-                    pair_of_mem pairCoordinate coordinateMember
-                  subst pairCoordinate
-                  exact Or.inr
-                    ⟨pair, pairMem, attempt, Or.inr (Or.inl defect)⟩
             · cases coordinate with
               | inl spine =>
                   exact Or.inl (.compression attempt.support replacement)
@@ -515,7 +497,7 @@ semantic fact. -/
                     pair_of_mem pairCoordinate coordinateMember
                   subst pairCoordinate
                   exact Or.inr
-                    ⟨pair, pairMem, attempt, Or.inr (Or.inr replacement)⟩
+                    ⟨pair, pairMem, attempt.toAttempt, Or.inr (Or.inr replacement)⟩
             · exact Or.inl
                 (.delocalization representative smaller baseline transfer)⟩)
         .nil)
@@ -645,8 +627,8 @@ noncomputable def blockedPairRoutingDichotomy
         (previous.get (K .dependentPairFamily)).down
       let activation := Graph.pairResponseActivation active
       let pairs := current.object.portPairSchedule data.threshold
-      rcases Graph.sparsePairDependence_exit_or_blocker activation pairs attempt
-          reducing with exit | blocker
+      rcases Graph.sparsePairDependence_exit_or_blocker activation pairs
+          attempt.toAttempt reducing.2 with exit | blocker
       · exact ⟨.inl ⟨exit⟩⟩
       · exact ⟨.inr ⟨active, blocker⟩⟩))
     exitFresh blockerFresh

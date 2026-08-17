@@ -60,9 +60,11 @@ inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
   context. -/
   | targetDefect {Coordinate : Type u} {family : Finset Coordinate}
       {coordinateSupport : Coordinate → Finset object.Vertex}
-      (quotient : AttemptedQuotient Baseline Target object family coordinateSupport)
+      (quotient : DeclaredQuotient Baseline Target object family coordinateSupport)
       (left right : BoundaryPiece (SupportAtom.boundary object quotient.support))
-      (identified : quotient.Identifies left right)
+      (identified : ∀ coordinate ∈ family,
+        quotient.value left (quotient.label coordinate) =
+          quotient.value right (quotient.label coordinate))
       (separated : left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
         Response.TargetDefect Target left right)
   /-- (c) a nontrivial target-complete compression of a proper atom.
@@ -91,6 +93,46 @@ conclusions occurs. -/
 def SurvivesSparseExits (Baseline Target : FiniteObject.{u} → Prop)
     (LengthOK : Nat → Prop) (object : FiniteObject.{u}) : Prop :=
   ¬ SparseSurplusExit Baseline Target LengthOK object
+
+/-- **Node `[125]`: a selected minimal counterexample survives the sparse
+surplus exits.**  Each of the five conclusions of `def:named-surplus-exits` is
+refuted where the manuscript refutes it: (a) by the selection's avoidance; (b)
+by `lem:context-universality` (`DeclaredQuotient.targetComplete_of_identified`:
+an admissible quotient never identifies a separated pair); (c) by
+`lem:replacement`/`cor:uncompressible`, the replacement exclusion the branch
+carries; (d) by minimality — a strictly smaller representative meeting the
+baseline has an accepted cycle, and the delocalization coordinate transfers it
+back; (e) by `lem:suppressed-family-critical-cycle` — the expansion of an
+accepted cycle of `G/𝒬` is a cycle of `G` of length `2^j + |𝒮|`, so accepting
+that length is an accepted cycle of `G`. -/
+theorem survivesSparseExits_of_selected
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}}
+    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
+    (minimal : ∀ smaller : FiniteObject.{u},
+      smaller.LexicographicallySmaller object → Baseline smaller →
+        Graph.HasCycleWithLength LengthOK smaller)
+    (exclusion : ∀ support : Finset object.Vertex,
+      ¬ ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK) object support) :
+    SurvivesSparseExits Baseline (Graph.HasCycleWithLength LengthOK) LengthOK object := by
+  intro exit
+  cases exit with
+  | dyadic cycle => exact avoids cycle
+  | targetDefect quotient left right identified separated =>
+      obtain ⟨profiles, universal⟩ :=
+        quotient.targetComplete_of_identified left right identified
+      rcases separated with profileSeparated | defect
+      · exact profileSeparated profiles
+      · obtain ⟨outside, distinguishes⟩ := defect
+        exact distinguishes (universal outside)
+  | compression support replacement => exact exclusion support replacement
+  | delocalization representative smaller baseline transfer =>
+      exact avoids (transfer (minimal representative smaller baseline))
+  | suppressionChord family certificate violates =>
+      let expanded := family.expandCycle certificate
+      refine avoids ⟨⟨_, expanded.walk, expanded.isCycle, ?_⟩⟩
+      rw [expanded.length_eq]
+      exact violates
 
 /-- **`def:active-surplus-demands`.**
 

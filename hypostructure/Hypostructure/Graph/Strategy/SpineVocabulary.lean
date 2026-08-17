@@ -626,6 +626,32 @@ inductive Key where
   /-- Node `[62]`, yes arm — node `[64]`, Type B: the selected negative support
   carries assigned high-degree surplus. -/
   | typeBHighSurplus
+  /-- Node `[65]` at the `[64]` entry: the ordinary Type B assigned support.
+  `def:canonical-decomp` assigns every surplus unit `d_G(h) − 3` of a high
+  centre `h ∈ V_{≥4}(G) ∩ V(R)` to the piece containing `h`, so the Type B
+  support's assigned fan centres are its own high centres, and `σ(X) > 0` says
+  it has one; the fan of a centre is `N_G(h)`. -/
+  | typeBAssignedSupport
+  /-- Node `[68]`, yes arm, at the `[64]` entry: some assigned fan centre of the
+  ordinary Type B support is *heavy* — degree above the high-centre degree
+  `δ + 1` (`d_G(h) > 4` at the manuscript's baseline). -/
+  | typeBFanHeavyCentre
+  /-- Node `[68]`, no arm, at the `[64]` entry — the entry of node `[78]`: every
+  assigned fan centre of the ordinary Type B support has degree exactly
+  `δ + 1` (`d_G(h) = 4` at the manuscript's baseline). -/
+  | typeBFanDegreeFourCentres
+  /-- Node `[69]` at the `[64]` entry: `cor:heavy-center-local-dichotomy` at
+  every heavy fan centre of the ordinary Type B support — a fan-compatible open
+  pair, or at least `d_G(h) − 2` triangular ports, hence three. -/
+  | typeBFanLocalDichotomy
+  /-- Nodes `[78]`--`[79]` at the `[64]` entry: the degree-four fan profile of
+  the ordinary Type B support.  Every assigned fan centre sits at `δ + 1`;
+  `cor:degree-four-local-activation` gives a fan-compatible open pair or
+  `δ − 1` triangular ports (the manuscript's "at least two"); the centre
+  surplus is `1`, the cubic-closed count is at most the degree, and the
+  closed-neighbour deficit is `s·c − s·δ + (δ + 2)` at the registered discharge
+  scale — the manuscript's `D_B = c − 7/4`, never written. -/
+  | typeBFanDegreeFourProfile
   /-- Node `[88]`: the routing and threshold algebra of a Type A support.
   `lem:typeA-receiver-loads` — every vertex spending the whole baseline inside
   the support is routed by the canonical trace to exactly one receiver — and
@@ -668,15 +694,6 @@ inductive Key where
   `S_sil^exc(X) ≥ s·D_A(X)`.  Cleared of the division and the subtraction,
   `|V(X)| ≤ S_sil^exc(X) + s·def⁺(X)`. -/
   | typeAVisibleFirstExcess
-  /-- Node `[93]`, yes arm — clause (Q1) of `def:typeA-exit4-family`.  The
-  visible receiver-entry coordinate identification at the port node `[93]`
-  fixed is a member of the canonical exit-`(4)` family `𝒬₄(w)`: it is generated
-  from the receiver's declared reading, it collapses at least one declared
-  coordinate because the port carries a visible load, and its declared
-  routed-load support contains every visible load of the port.  This is the
-  clause row 16's exit-`(4)` peeling draws a *visible* load from; without it
-  `𝒬₄(w)` is exhibited at none of its five generators. -/
-  | typeAVisibleEntryClause
   /-- Node `[95]`, yes arm — exit `(1)` of `def:typeA-saturated-exits`: *"an
   anchored return through a completion port of `w` has length in `Mers`"*, at a
   saturated receiver `w` of a Type A support.  `Mers` is the shifted accepted
@@ -805,15 +822,26 @@ inductive Key where
   boundary stub of every outside component of the ambient-cubic cold windows
   has its cold return corridor. -/
   | coldReturnCorridors
-  /-- Node `[54]`, `def:curvature-target-rank` / `lem:independent-target-entropy`:
-  the joint code of the entropy comparison — window package, remainder states
-  and forced curvature coordinates at the fixed maximal packing — is realized
-  by the labelled skeletons of the current object's class (the surviving hot
-  residual's exact-code equality). -/
-  | jointCodeRealized
-  /-- Node `[54]`, the complementary residual: no assignment of target-complete
-  states to labelled skeletons realizes the joint code. -/
-  | jointCodeUnrealized
+  /-- Node `[21]`, `lem:p13-window-package` with `def:target-rank` and
+  `prop:p13-density`'s "since all target-complete window states are realized by
+  labelled near-cubic skeletons under `def:near-cubic-spine`": the canonical
+  multi-scale package of the fixed maximal packing is a family of independently
+  target-testable coordinates, i.e. its full package code is realized canonically
+  by the labelled skeletons of the current object's class `𝒢_{n,m}`. -/
+  | windowPackageRealized
+  /-- The complementary arm of the `[21]` realization decision: the fixed
+  maximal packing's full package code is *not* realized canonically by the
+  labelled skeletons of the current object's class — the residual on which the
+  manuscript's `[21]` sentence fails, carried as a branch of its own. -/
+  | windowPackageUnrealized
+  /-- On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact
+  large-budget net-deficiency comparison holds at the fixed maximal packing —
+  the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n`
+  allowance, i.e. the inequality node `[56]` supplies to `[57]`--`[62]`. -/
+  | denseDeficiencyBelow
+  /-- Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact
+  allowance, on which the net-charge collision does not fire. -/
+  | denseDeficiencyAtOrAbove
   /-- Node `[153]`: a positive current-residual bounded-germ family. -/
   | coldGermCandidates
   | coldSelectedBranchExcess
@@ -933,24 +961,14 @@ inductive Key where
   /-- Node `[76]`/`[85]`, surviving arm: the Type B exclusion hypotheses are not
   all discharged on the selected B2 branch. -/
   | typeBExclusionResidual
-  /-- Node `[101]`, yes arm: on the exact selected visible package after exits
-  `(1)`, `(2)`, and `(3)` are absent, some canonical Q1--Q4 exit-`(4)` witness
-  is target-defective and its declared support contains one of that package's
-  selected visible unpeeled loads. -/
-  | typeAExitFour
   /-- Node `[102]`: the exit-`(4)` witness has been charged to the peeling
   ledger by adjoining its routed load to `P₄(w)`, preserving the routed-load
   condition and dropping the residual load by one. -/
   | typeAExitFourPeeled
-  /-- `lem:typeA-saturated-handoff`, finite exit-`(4)` descent from the exact
-  current saturated receiver/peeling state. -/
+  /-- `lem:typeA-exit4-finite-descent` / `lem:typeA-saturated-handoff`: the
+  finite exit-`(4)` descent principle read at the exact current saturated
+  receiver/peeling state; consumed by node `[123]`'s pressure descent. -/
   | typeAExitFourFiniteDescent
-  /-- `lem:typeA-exit4-residual-routing`, visible arm at the exact current
-  saturated receiver/peeling state. -/
-  | typeASaturatedHandoffVisible
-  /-- `lem:typeA-exit4-residual-routing`, silent-excess arm at the exact
-  current saturated receiver/peeling state. -/
-  | typeASaturatedHandoffSilent
   /-- `lem:typeA-exit4-residual-routing`, exit-`(4)` arm at the exact current
   saturated receiver/peeling state. -/
   | typeASaturatedHandoffExitFour
@@ -961,10 +979,6 @@ inductive Key where
   receiver is no longer saturated at the peeled residual, so its remaining
   receiver charge is nonnegative by `lem:typeA-exit4-peeling-charge`. -/
   | typeAExitFourReceiverDischarged
-  /-- Node `[101]`, no arm: the exact selected visible package carries no
-  target-defective Q1--Q4 exit-`(4)` witness supporting one of its selected
-  visible unpeeled loads. -/
-  | typeAExitFourFree
   /-- Node `[103]`, yes arm: the exact selected saturated-handoff residual
   after no exit `(4)` carries exit `(5)`, a target-complete proper-support
   compression. -/
@@ -1137,6 +1151,20 @@ inductive Key where
   `Q_st|𝔗_cap|` slots carries a role-homogeneous same-token matching or star.
   `class(t)` routes to `[140]`, `[142]` or `[143]`. -/
   | sparsePressureOverload
+  /-- Node `[131]`, yes arm: `prop:sparse-entropy-sandwich`'s entropy count at
+  the full pair schedule holds — the mixed spine/pair family's `2^k` code is
+  realized among the labelled skeletons of the current object. -/
+  | freePairEntropySandwich
+  /-- Node `[131]`, complementary arm: the residual on which that count fails
+  (the free-pair code is not realized by the skeleton class), carried as a
+  branch of its own. -/
+  | freePairCodeUnrealized
+  /-- Node `[137]`, yes arm of the entropy count at every declared capacity
+  presentation: `2^{|ℐ_spine| + |Π_free|} ≤ C(N,m)` for the ledger's free side. -/
+  | blockedPairEntropySandwich
+  /-- Node `[137]`, complementary arm: at some declared presentation the free
+  side's code is not realized by the skeleton class; carried as a branch. -/
+  | blockedPairCodeUnrealized
   /-- Node `[139]`, yes arm: the overloading token of node `[137]` lies in
   `𝔗_W`, so the branch enters the window-incidence audit `[140]`. -/
   | windowClassOverload
@@ -1381,20 +1409,6 @@ noncomputable abbrev remainderStates (data : Data.{u})
     (object.positiveDeficiency (object.remainderSupport packing) data.threshold)
     (object.remainderSupport packing).card
 
-/-- **The joint package demand of nodes `[52]`--`[53]`.**  The window
-coordinates of `lem:p13-window-package`, the remainder states of
-`def:remainder-entropy`, and the forced curvature coordinates of
-`cor:forced-curvature-cost`, multiplied: the number of target-complete states
-the branch has to distinguish.  `eq:entropy-cap` compares exactly this against
-the labelled skeleton budget. -/
-noncomputable abbrev jointPackageDemand (data : Data.{u})
-    (object : Graph.FiniteObject.{u})
-    (packing : Finset (Finset object.Vertex)) : Nat :=
-  2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-        packing.card) *
-      remainderStates data object packing *
-    2 ^ (data.curvatureCost *
-      remainderCurvatureTargetRank data object packing)
 
 /-- `lem:curv-enum` at node `[21]`: the three exact certified counts and their
 flatness entropy cost.
@@ -1443,83 +1457,100 @@ noncomputable def canonicalWindowPacking (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Finset (Finset object.Vertex) :=
   Classical.choose (object.exists_windowPacking_card_eq data.windowOrder)
 
-/-- **The joint code of the entropy comparison is realized** (`def:target-rank`,
-`lem:independent-target-entropy`, `def:curvature-target-rank`): at the
-manuscript's fixed maximal packing, the window package, the remainder states and
-the forced curvature coordinates "form one independently target-testable
-coordinate family", whose target-complete states arise canonically from the
-labelled skeletons of the current object's class — an assignment of states to
-skeletons realizing at least the joint demand.  This is the exact-code equality
-retained on the surviving hot residual entering node `[47]`; its failure is the
-complementary residual. -/
-def JointCodeRealized (data : Data.{u}) (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (State : Type u)
-    (stateOf : Graph.PackedWindowRealization.Skeleton
-      object.vertexCount object.edgeCount → State),
-    jointPackageDemand data object (canonicalWindowPacking data object) ≤
-      Nat.card (Set.range stateOf)
+/-- **The code of the canonical entropy comparison retained by a window
+family** (`def:cold-window-ledger`, `def:remainder-entropy`,
+`def:curvature-target-rank`): the full canonical package of every window of the
+family (`windowPackageBits` per window, `lem:p13-window-package`), the
+remainder states of the fixed maximal packing's remainder, and the exact code of
+its raw curvature tests (`c_Ω` bits per test of `r_Ω(R)`), multiplied — the
+number of target-complete states the comparison has to distinguish for that
+family. -/
+noncomputable def retainedCode (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (family : Finset (Finset object.Vertex)) : Nat :=
+  2 ^ (windowPackageBits data object * family.card) *
+      remainderStates data object (canonicalWindowPacking data object) *
+    2 ^ (data.curvatureCost *
+      remainderCurvatureTargetRank data object (canonicalWindowPacking data object))
 
 /-- **`def:cold-window-ledger` / `def:curvature-target-rank`: a window family
-retained in the canonical entropy comparison.**  Its full package code —
-`2 ^ (bits · #family)` target-complete states — is realized canonically by
-the labelled skeletons of the current object's own class `𝒢_{n,m}`
-(exact-code equality with the full target code).  This is precisely the premise
-`lem:independent-target-entropy` consumes, and its failure is what makes a
-window cold. -/
+retained in the canonical entropy comparison.**  The comparison's code for the
+family — its full canonical window packages together with the remainder states
+and the exact curvature code of the fixed packing (`retainedCode`) — is
+realized canonically by the labelled skeletons of the current object's own
+class `𝒢_{n,m}`: an assignment of target-complete states to skeletons whose
+range has at least the family's window package states (`lem:p13-window-package`,
+the live-hot comparison of nodes `[22]`--`[23]`) and at least the retained
+code.  This is `def:target-rank`'s "independently
+target-testable … arising canonically from graphs in the labelled class", the
+exact-code equality `def:curvature-target-rank` says is retained on the surviving
+hot residual, and precisely the premise `lem:independent-target-entropy`
+consumes; its failure is what makes a window cold. -/
 def WindowFamilyRealized (data : Data.{u}) (object : Graph.FiniteObject.{u})
     (family : Finset (Finset object.Vertex)) : Prop :=
   ∃ (State : Type u)
     (stateOf : Graph.PackedWindowRealization.Skeleton
       object.vertexCount object.edgeCount → State),
-    2 ^ (windowPackageBits data object * family.card) ≤
-      Nat.card (Set.range stateOf)
+    2 ^ (windowPackageBits data object * family.card) ≤ Nat.card (Set.range stateOf) ∧
+      retainedCode data object family ≤ Nat.card (Set.range stateOf)
 
-/-- The empty family is retained: its single state is realized by any skeleton
-of the class, which is nonempty because the object itself has `m ≤ C(n,2)`
-edges. -/
-theorem windowFamilyRealized_empty (data : Data.{u})
-    (object : Graph.FiniteObject.{u}) :
-    WindowFamilyRealized data object ∅ := by
-  classical
-  refine ⟨ULift.{u} (Graph.PackedWindowRealization.Skeleton
-      object.vertexCount object.edgeCount), ULift.up, ?_⟩
-  have count : Nat.card (Graph.PackedWindowRealization.Skeleton
-      object.vertexCount object.edgeCount) = Graph.skeletonBudget object := by
-    simpa [Graph.skeletonBudget, Graph.edgeStratumCount] using
-      Graph.PackedWindowRealization.card_skeleton
-        object.vertexCount object.edgeCount
-  have nonempty : Nonempty (Graph.PackedWindowRealization.Skeleton
-      object.vertexCount object.edgeCount) :=
-    (Nat.card_pos_iff.mp (count ▸ Graph.skeletonBudget_pos object)).1
-  obtain ⟨skeleton⟩ := nonempty
-  have positive : 0 < Nat.card (Set.range (ULift.up.{u} :
-      Graph.PackedWindowRealization.Skeleton object.vertexCount object.edgeCount →
-        ULift.{u} _)) :=
-    Nat.card_pos_iff.mpr ⟨⟨⟨ULift.up skeleton, skeleton, rfl⟩⟩, Set.toFinite _⟩
-  simpa using Nat.one_le_iff_ne_zero.mpr (Nat.pos_iff_ne_zero.mp positive)
+/-- Retention is monotone: a subfamily of a retained family is retained (its
+package code and its retained code are both no larger). -/
+theorem WindowFamilyRealized.mono {data : Data.{u}} {object : Graph.FiniteObject.{u}}
+    {smaller larger : Finset (Finset object.Vertex)} (subset : smaller ⊆ larger)
+    (realized : WindowFamilyRealized data object larger) :
+    WindowFamilyRealized data object smaller := by
+  obtain ⟨State, stateOf, packageLe, codeLe⟩ := realized
+  have cardLe := Finset.card_le_card subset
+  refine ⟨State, stateOf, ?_, ?_⟩
+  · exact le_trans (Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_left _ cardLe)) packageLe
+  · refine le_trans ?_ codeLe
+    unfold retainedCode
+    exact Nat.mul_le_mul_right _ (Nat.mul_le_mul_right _
+      (Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_left _ cardLe)))
 
 /-- The manuscript's canonical entropy comparison retains a canonical maximal
 retained subfamily of the fixed maximal packing; the choice function below is
-that lexicographic tie-break. -/
+that lexicographic tie-break.  When the comparison realizes no family's code —
+not even the empty family's remainder-and-curvature code — every packed window is
+cold: `def:curvature-target-rank`'s "its failure is the complementary cold
+residual". -/
 theorem exists_maximal_windowFamilyRealized (data : Data.{u})
     (object : Graph.FiniteObject.{u}) :
     ∃ hot : Finset (Finset object.Vertex),
       hot ⊆ canonicalWindowPacking data object ∧
-        WindowFamilyRealized data object hot ∧
+        (WindowFamilyRealized data object hot ∨
+          (hot = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
         ∀ other : Finset (Finset object.Vertex),
           other ⊆ canonicalWindowPacking data object →
             WindowFamilyRealized data object other → other.card ≤ hot.card := by
   classical
-  obtain ⟨hot, memHot, maximal⟩ := Finset.exists_max_image
-    ((canonicalWindowPacking data object).powerset.filter
-      (WindowFamilyRealized data object)) Finset.card
-    ⟨∅, by
-      simp [Finset.mem_filter, windowFamilyRealized_empty]⟩
-  rw [Finset.mem_filter, Finset.mem_powerset] at memHot
-  refine ⟨hot, memHot.1, memHot.2, fun other subset realized => ?_⟩
-  exact maximal other (by
-    rw [Finset.mem_filter, Finset.mem_powerset]
-    exact ⟨subset, realized⟩)
+  by_cases emptyRealized : WindowFamilyRealized data object ∅
+  · obtain ⟨hot, memHot, maximal⟩ := Finset.exists_max_image
+      ((canonicalWindowPacking data object).powerset.filter
+        (WindowFamilyRealized data object)) Finset.card
+      ⟨∅, by simp [Finset.mem_filter, emptyRealized]⟩
+    rw [Finset.mem_filter, Finset.mem_powerset] at memHot
+    refine ⟨hot, memHot.1, Or.inl memHot.2, fun other subset realized => ?_⟩
+    exact maximal other (by
+      rw [Finset.mem_filter, Finset.mem_powerset]
+      exact ⟨subset, realized⟩)
+  · refine ⟨∅, Finset.empty_subset _, Or.inr ⟨rfl, emptyRealized⟩,
+      fun other _subset realized => ?_⟩
+    -- A realized family's code dominates the empty family's code, so the empty
+    -- family would be realized too.
+    exfalso
+    obtain ⟨State, stateOf, packageLe, codeLe⟩ := realized
+    refine emptyRealized ⟨State, stateOf, ?_, le_trans ?_ codeLe⟩
+    · simp only [Finset.card_empty, Nat.mul_zero, pow_zero]
+      exact le_trans Nat.one_le_two_pow packageLe
+    · simp only [retainedCode, Finset.card_empty, Nat.mul_zero, pow_zero, Nat.one_mul]
+      refine Nat.mul_le_mul_right _ ?_
+      calc remainderStates data object (canonicalWindowPacking data object)
+          = 1 * remainderStates data object (canonicalWindowPacking data object) := by
+            rw [Nat.one_mul]
+        _ ≤ 2 ^ (windowPackageBits data object * other.card) *
+              remainderStates data object (canonicalWindowPacking data object) :=
+            Nat.mul_le_mul_right _ Nat.one_le_two_pow
 
 /-- `𝒫_hot`: the canonical maximal subfamily of the fixed packing retained in
 the canonical entropy comparison. -/
@@ -1533,6 +1564,21 @@ noncomputable def canonicalColdWindows (data : Data.{u})
   classical
   exact canonicalWindowPacking data object \ canonicalHotWindows data object
 
+/-- **The joint package demand of nodes `[52]`--`[53]`.**  The window
+coordinates of `lem:p13-window-package` retained in the comparison — the hot
+windows, at the registered rate — the remainder states of
+`def:remainder-entropy`, and the forced curvature coordinates of
+`cor:forced-curvature-cost`, multiplied, at the fixed maximal packing: the
+number of target-complete states the branch has to distinguish.
+`eq:entropy-cap` compares exactly this against the labelled skeleton budget. -/
+noncomputable def jointPackageDemand (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Nat :=
+  2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+        (canonicalHotWindows data object).card) *
+      remainderStates data object (canonicalWindowPacking data object) *
+    2 ^ (data.curvatureCost *
+      remainderCurvatureTargetRank data object (canonicalWindowPacking data object))
+
 /-- The hot/cold partition created at node `[22]`, `def:cold-window-ledger`:
 `hot` is a maximal retained subfamily of the fixed maximal packing and `cold`
 is its complement.  The equivalences prevent a consumer from substituting an
@@ -1545,7 +1591,9 @@ def IsHotColdWindowPartition (data : Data.{u})
     (∀ support : Finset object.Vertex,
       object.InducesWindow data.windowOrder support →
         ∃ member ∈ packing, ¬ Disjoint support member) ∧
-    (hot ⊆ packing ∧ WindowFamilyRealized data object hot ∧
+    (hot ⊆ packing ∧
+      (WindowFamilyRealized data object hot ∨
+        (hot = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
       ∀ other : Finset (Finset object.Vertex), other ⊆ packing →
         WindowFamilyRealized data object other → other.card ≤ hot.card) ∧
     (∀ window, window ∈ cold ↔ window ∈ packing ∧ window ∉ hot) ∧
@@ -1599,6 +1647,20 @@ def coldSkeletonAllowance (data : Data.{u})
   (Graph.dyadicScaleCount object + 1) *
     (data.threshold * object.vertexCount +
       data.surplusThreshold object.vertexCount)
+
+/-- **`prop:negative-net-charge`'s large-budget net-deficiency comparison, exact,
+at the fixed maximal packing.**  With `p = |𝒫|` and `|R| = n − order·p`, this is
+`discharge·(δ·order·p + T(n)) < discharge·2(order−1)·p + |R|`, the strict cap node
+`[56]` hands to `[57]`--`[62]`; at the manuscript's values it reads
+`4·def⁺(R) < |R|` up to the exact `T(n)` allowance, i.e. `τ(θ) < 1/4`. -/
+def DenseDeficiencyBelowStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  data.dischargeScale *
+      (data.threshold * (data.windowOrder * (canonicalWindowPacking data object).card) +
+        data.spineScale * Core.ceilSqrt object.vertexCount) <
+    data.dischargeScale *
+        (2 * (data.windowOrder - 1) * (canonicalWindowPacking data object).card) +
+      (object.vertexCount - data.windowOrder * (canonicalWindowPacking data object).card)
 
 def ColdRoute8BelowStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
@@ -1819,6 +1881,24 @@ abbrev handoffWindowFree (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
   fun support =>
     ∀ window : Finset object.Vertex, window ⊆ support →
       ¬ object.InducesWindow data.windowOrder window
+
+/-- **The ordinary Type B support of node `[64]`** (`def:admissible` with
+`σ(X) > 0`): a connected piece of the remainder of a maximal packing carrying
+negative net charge and positive assigned surplus, together with a clause `P`
+about the packing and the piece.  A support is data and cannot travel, so each
+`[64]`-entry fact is stated at every such support the object carries. -/
+def TypeBSupportWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (P : Finset (Finset object.Vertex) → Finset object.Vertex → Prop) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+      (∀ window : Finset object.Vertex,
+        object.InducesWindow data.windowOrder window →
+        ∃ member ∈ packing, ¬ Disjoint window member) ∧
+      ∃ component ∈ object.canonicalPieces (object.remainderSupport packing),
+        let piece := object.pieceSupport (object.remainderSupport packing) component
+        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+          0 < object.ambientSurplus piece data.threshold ∧
+          P packing piece
 
 /-- **A decorated handoff fan envelope is produced at a support.**  The test
 node `[107]` splits on: `def:decorated-fan-envelope`'s data, with the Type A
@@ -2118,9 +2198,7 @@ abbrev TypeAExitFourFiniteDescentFact (data : Data.{u})
 /-- Residual C, in the exact schema committed earlier by the spine. -/
 abbrev LargeBudgetResidual (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ((∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        jointPackageDemand data object packing ≤ Graph.skeletonBudget object) ∨
+  (jointPackageDemand data object ≤ Graph.skeletonBudget object ∨
     ∃ packing : Finset (Finset object.Vertex),
       object.IsWindowPacking data.windowOrder packing ∧
         Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
@@ -2313,6 +2391,64 @@ abbrev Route8TerminalNoGo (data : Data.{u})
       Graph.Route8.TerminalTwoCarrierNoGoFacts
         (Graph.HasCycleWithLength data.LengthOK) entry.carriers
         entry.coordinates entry.car entry.car_subset entry.state
+
+/-- **Nodes `[131]`/`[137]`, `prop:sparse-entropy-sandwich-with-blockers`'s
+entropy count, at the full pair schedule** (`prop:sparse-entropy-sandwich`,
+`cor:sparse-pair-entropy-saturation`): the mixed family `ℐ_spine ∪ ℛ_Π` of the
+node-`[129]` baseline spine demand and all `C(σ,2)` pair coordinates realizes
+its full code among the labelled skeletons of the current object,
+`2^{|ℐ_spine| + C(σ,2)} ≤ C(N,m)` (`lem:independent-target-entropy` with
+`lem:skeleton-dominates`).  The spine family is the one `def:baseline-spine-demand`
+names: it survives every functional admissible rank quotient and its deficit
+`E_spine ≤ C_E n` is admissible for the cubic baseline. -/
+def FreePairEntropySandwichStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ (Coordinate : Type u) (family : Finset Coordinate)
+    (coordinateSupport : Coordinate → Finset object.Vertex),
+    (∀ declared : Graph.DeclaredQuotient
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object family
+        coordinateSupport,
+      declared.toRankQuotient.FunctionalOn ↑family →
+        declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+      Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
+        2 ^ (family.card + Graph.spineDeficit object.vertexCount
+          data.threshold family.card) ∧
+      Graph.spineDeficit object.vertexCount data.threshold family.card ≤
+        data.surplusScale * object.vertexCount ∧
+      2 ^ (family.card + (object.degreeSurplus data.threshold).choose 2) ≤
+        Graph.skeletonBudget object
+
+/-- **Node `[137]`, `prop:sparse-entropy-sandwich-with-blockers`'s entropy count
+at every declared capacity presentation**: for each presentation of
+`def:capacity-token-ledger`, the mixed family of the node-`[129]` baseline spine
+demand and the pair coordinates of the ledger's free side `Π_free` realizes its
+full code among the labelled skeletons, `2^{|ℐ_spine| + |Π_free|} ≤ C(N,m)`.  This
+is what the manuscript's `E` in `lem:capacity-token-high-load`'s display
+`C(s,2) ≤ E + L_max |𝔗_cap|` is built from. -/
+def BlockedPairEntropySandwichStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ presentation : Graph.CapacityPresentation.{u} object data.windowOrder,
+    ∃ (Coordinate : Type u) (family : Finset Coordinate)
+      (coordinateSupport : Coordinate → Finset object.Vertex),
+      (∀ declared : Graph.DeclaredQuotient
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object family
+          coordinateSupport,
+        declared.toRankQuotient.FunctionalOn ↑family →
+          declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+        Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
+          2 ^ (family.card + Graph.spineDeficit object.vertexCount
+            data.threshold family.card) ∧
+        Graph.spineDeficit object.vertexCount data.threshold family.card ≤
+          data.surplusScale * object.vertexCount ∧
+        2 ^ (family.card +
+          (Graph.freeSide object.vertexPairDecidableEq
+            (object.portPairSchedule data.threshold)
+            (presentation.tokenOrder data.threshold)
+            (presentation.Eligible data.threshold)
+            (presentation.eligibleDecidable data.threshold)).card) ≤
+          Graph.skeletonBudget object
 
 /-- The value schema of each spine fact, stated of the *object* alone.
 
@@ -3102,6 +3238,27 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `R_e(G) ≠ ∅` for every oriented edge".  `HasReturn` is a simple path
       -- from the tail back to the head after the edge is deleted.
       (∀ contraction : Graph.EdgeContraction object, contraction.HasReturn)
+  | .windowPackageRealized, object =>
+      -- `lem:p13-window-package`: "the canonical multi-scale package attached to
+      -- `𝒫` contains a family `𝓘_win` of independently target-testable
+      -- coordinates … the package is the disjoint union of the packages attached
+      -- to the distinct packed windows"; `def:target-rank`: independently
+      -- target-testable means "its target responses realize `2^k` distinct
+      -- target-complete states"; `prop:p13-density`: "all target-complete window
+      -- states are realized by labelled near-cubic skeletons under
+      -- `def:near-cubic-spine`".  Stated at the fixed maximal packing as the
+      -- retention of its whole package family in the canonical comparison
+      -- (`WindowFamilyRealized`, the same predicate `def:cold-window-ledger`'s
+      -- hot/cold split at node `[22]` uses), so that, by `def:cold-window-ledger`,
+      -- every packed window is hot and `𝒫_cold = ∅`.
+      WindowFamilyRealized data object (canonicalWindowPacking data object)
+  | .windowPackageUnrealized, object =>
+      -- The exact complement of `K .windowPackageRealized` on the same object.
+      ¬ WindowFamilyRealized data object (canonicalWindowPacking data object)
+  | .denseDeficiencyBelow, object =>
+      DenseDeficiencyBelowStatement data object
+  | .denseDeficiencyAtOrAbove, object =>
+      ¬ DenseDeficiencyBelowStatement data object
   | .coldReturnCorridors, object =>
       -- `def:cold-corridor-first-failure`: "each selected branch-excess
       -- half-edge has exactly one corridor" — at every outside component of
@@ -3271,35 +3428,20 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- remainder factor.  What the inequality says is that the window,
       -- remainder and forced-curvature coordinates together realize at least
       -- `2^{rate·p}·n^{|R|/d}·2^{c_Ω·r_Ω(R)}` states.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-              packing.card)) ^ data.entropyDenominator *
-              object.vertexCount ^ (object.remainderSupport packing).card *
-              (2 ^ (data.curvatureCost *
-                remainderCurvatureTargetRank data object packing)) ^
-                data.entropyDenominator ≤
-            jointPackageDemand data object packing ^ data.entropyDenominator)
+      ((2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+              (canonicalHotWindows data object).card)) ^ data.entropyDenominator *
+          object.vertexCount ^
+            (object.remainderSupport (canonicalWindowPacking data object)).card *
+          (2 ^ (data.curvatureCost *
+            remainderCurvatureTargetRank data object
+              (canonicalWindowPacking data object))) ^ data.entropyDenominator ≤
+        jointPackageDemand data object ^ data.entropyDenominator)
   | .entropyCapActive, object =>
       -- Node `[53]`, yes -- the terminal `[54]`.  `eq:entropy-cap`: the
       -- remaining non-curvature budget is strictly smaller than the forced
       -- curvature cost, i.e. the joint package strictly overflows the labelled
       -- skeleton budget of `lem:near-cubic-budget`.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        Graph.skeletonBudget object < jointPackageDemand data object packing)
-  | .jointCodeRealized, object =>
-      -- Node `[54]`: the joint code is realized by the labelled skeletons of
-      -- the current object's class.
-      JointCodeRealized data object
-  | .jointCodeUnrealized, object =>
-      -- Node `[54]`, the exact complement: no assignment of states to labelled
-      -- skeletons realizes the joint demand.
-      (∀ (State : Type u)
-        (stateOf : Graph.PackedWindowRealization.Skeleton
-          object.vertexCount object.edgeCount → State),
-        Nat.card (Set.range stateOf) <
-          jointPackageDemand data object (canonicalWindowPacking data object))
+      Graph.skeletonBudget object < jointPackageDemand data object
   | .largeBudgetResidual, object =>
       -- Residual C.  The high-entropy arm reaches it through the exact
       -- skeleton comparison; the low-entropy arm is routed here unchanged, as `prop:two-budget` prescribes.
@@ -3414,6 +3556,54 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               (object.remainderSupport packing) component
             object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
               0 < object.ambientSurplus piece data.threshold)
+  | .typeBAssignedSupport, object =>
+      -- Node `[65]` at the `[64]` entry: the assigned fan centres of the
+      -- ordinary Type B support are its high centres, and there is one.
+      TypeBSupportWith data object (fun _packing piece =>
+        ∃ centre ∈ piece, Graph.IsHighCentre object data.threshold centre)
+  | .typeBFanHeavyCentre, object =>
+      -- Node `[68]`, yes arm at the `[64]` entry: a heavy fan centre.
+      TypeBSupportWith data object (fun _packing piece =>
+        (∃ centre ∈ piece, Graph.IsHighCentre object data.threshold centre) ∧
+          ∃ centre ∈ piece, data.threshold + 1 < object.degree centre)
+  | .typeBFanDegreeFourCentres, object =>
+      -- Node `[68]`, no arm at the `[64]` entry: every assigned fan centre
+      -- sits exactly at the high-centre degree `δ + 1`.
+      TypeBSupportWith data object (fun _packing piece =>
+        (∃ centre ∈ piece, Graph.IsHighCentre object data.threshold centre) ∧
+          ∀ centre ∈ piece, Graph.IsHighCentre object data.threshold centre →
+            object.degree centre = data.threshold + 1)
+  | .typeBFanLocalDichotomy, object =>
+      -- Node `[69]` at the `[64]` entry: `cor:heavy-center-local-dichotomy` at
+      -- every heavy fan centre of the ordinary Type B support.
+      TypeBSupportWith data object (fun _packing piece =>
+        (∃ centre ∈ piece, data.threshold + 1 < object.degree centre) ∧
+          ∀ centre ∈ piece, data.threshold + 1 < object.degree centre →
+            (∃ left right : object.Vertex,
+              Graph.FanCompatible object centre left right) ∨
+            (object.degree centre - 2 ≤
+                (Graph.triangularEndpoints object centre).card ∧
+              3 ≤ (Graph.triangularEndpoints object centre).card))
+  | .typeBFanDegreeFourProfile, object =>
+      -- Nodes `[78]`--`[79]` at the `[64]` entry, on the ordinary Type B support.
+      TypeBSupportWith data object (fun _packing piece =>
+        (∃ centre ∈ piece, Graph.IsHighCentre object data.threshold centre) ∧
+          ∀ centre ∈ piece, Graph.IsHighCentre object data.threshold centre →
+            object.degree centre = data.threshold + 1 ∧
+            ((∃ left right : object.Vertex,
+                Graph.FanCompatible object centre left right) ∨
+              data.threshold - 1 ≤ (Graph.triangularEndpoints object centre).card) ∧
+            object.degree centre - data.threshold = 1 ∧
+            ∀ fanEnvelope : Finset object.Vertex,
+              Graph.TypeBFanIncidence.closedCount object data.threshold
+                  fanEnvelope centre ≤ data.threshold + 1 ∧
+                Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+                    data.dischargeScale fanEnvelope centre =
+                  (data.dischargeScale : Int) *
+                      (Graph.TypeBFanIncidence.closedCount object data.threshold
+                        fanEnvelope centre : Int) -
+                    (data.dischargeScale : Int) * (data.threshold : Int) +
+                    ((data.threshold : Int) + 2))
   | .typeAReceiverRouting, object =>
       -- Node `[88]`.  Stated at every Type A support the object carries, in
       -- the same way node `[27]` is stated at every subregion of a remainder:
@@ -3708,7 +3898,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                   ∃ peeled : Finset object.Vertex,
                     peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                       Graph.ExitFour.SaturatedAfter piece data.threshold
-                        data.dischargeScale receiver peeled)
+                        data.dischargeScale receiver peeled ∧
+                      Graph.ExitFour.PeeledByWitnesses
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver peeled)
   | .typeAExitSevenProduced, object =>
       -- Node `[107]`, yes: exit `(7)` is produced on the exact selected
       -- no-exit-`(6)` residual.
@@ -3728,47 +3921,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- handoff envelope and therefore enters the route-8 test.
       SelectedNoExitSixWith data object
         (fun packing piece => ¬ HandoffProduced data object packing piece)
-  | .typeAVisibleEntryClause, object =>
-      -- Node `[93]`, yes arm: the exact selected visible package and the
-      -- response/germ prefix derived from it before any semantic quotient.
-    (∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        (∀ window : Finset object.Vertex,
-          object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) ∧
-        ∃ component ∈ object.canonicalPieces
-            (object.remainderSupport packing),
-          let piece := object.pieceSupport
-            (object.remainderSupport packing) component
-          object.NegativeNetCharge piece data.threshold
-              data.dischargeScale ∧
-            object.ambientSurplus piece data.threshold = 0 ∧
-            ∃ receiver : object.Vertex,
-              object.IsReceiver piece data.threshold receiver ∧
-                object.Saturated piece data.threshold
-                  data.dischargeScale receiver ∧
-                ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                    data.threshold data.dischargeScale receiver ∅,
-                  (∀ load : package.SelectedLoad,
-                    ((∀ vertex ∈
-                        (package.selectedReturn load.1 load.2).connector.support,
-                      vertex ≠ (package.selectedResponseCoordinate load).entry.1 →
-                        vertex ∉ piece) ∧
-                      Graph.VisibleEntry.IsChannel object piece
-                        (package.selectedResponseCoordinate load).channel) ∧
-                      (package.selectedPieceChannel load).length =
-                        (package.selectedResponseCoordinate load).channel.length ∧
-                      (package.selectedContextConnector load).length =
-                        (package.selectedResponseCoordinate load).connectorLabel) ∧
-                  (∀ selected : package.SelectedGerm,
-                    selected ∈ package.germSchedule.values) ∧
-                  (∀ pair : package.GermPair,
-                    pair ∈ package.germPairSchedule.values ∧
-                      Graph.DecoratedHandoff.SeparatesAt
-                        pair.left.germ.path pair.right.germ.path
-                          pair.firstSeparator.separator ∧
-                      pair.separatorOrder = pair.firstSeparator.separator ::
-                        pair.firstSeparator.remaining))
   | .highCentreNormalForm, object =>
       -- Node `[68]`: `lem:heavy-neighbourhood-normal-form`, at every high
       -- centre of the object at once.  It is not about one support, so it is
@@ -4249,34 +4401,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     Graph.TypeBRefinedSupport.scaledCoreCharge object
                       data.threshold data.dischargeScale canonicalPiece.vertices
                       vertex
-  | .typeAExitFour, object =>
-      -- Node `[101]`, yes: on the selected visible package after exits `(1)`,
-      -- `(2)`, and `(3)` are absent, a canonical exit-`(4)` witness peels one
-      -- unpeeled routed load.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces
-              (object.remainderSupport packing),
-            let piece := object.pieceSupport
-              (object.remainderSupport packing) component
-            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-              object.ambientSurplus piece data.threshold = 0 ∧
-              ∃ receiver : object.Vertex,
-                object.IsReceiver piece data.threshold receiver ∧
-                  object.Saturated piece data.threshold data.dischargeScale
-                    receiver ∧
-                  ∃ _package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                      data.threshold data.dischargeScale receiver ∅,
-                    ∃ witness : Graph.ExitFour.Witness
-                        (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver ∅,
-                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                          piece data.threshold data.dischargeScale receiver
-                          _package.outside ∅,
-                        witness.load = load)
   | .typeAExitFourPeeled, object =>
       -- Node `[102]`: `lem:typeA-exit4-discharge`, read on the exact witness
       -- committed at node `[101]`.  The next peeling set is obtained by
@@ -4299,6 +4423,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                       Graph.ExitFour.SaturatedAfter piece data.threshold
                         data.dischargeScale receiver peeled ∧
+                      Graph.ExitFour.PeeledByWitnesses
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver peeled ∧
                       ∃ witness : Graph.ExitFour.Witness
                           (Graph.HasCycleWithLength data.LengthOK) piece
                           data.threshold receiver peeled,
@@ -4312,98 +4439,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             Graph.ExitFour.residualLoad piece data.threshold
                               receiver peeled)
   | .typeAExitFourFiniteDescent, object =>
-      -- `lem:typeA-saturated-handoff`: the finite descent principle read at
-      -- the exact selected receiver and current peeling set.  Downstream rows
-      -- instantiate `Terminal` with the paper's closed exits, exit-(7)
-      -- handoff, and route-8 residual alternatives; this fact only records
-      -- the finite exit-(4) descent, so it cannot invent a terminal branch.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces
-              (object.remainderSupport packing),
-            let piece := object.pieceSupport
-              (object.remainderSupport packing) component
-            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-              object.ambientSurplus piece data.threshold = 0 ∧
-              ∃ receiver : object.Vertex,
-                object.IsReceiver piece data.threshold receiver ∧
-                  ∃ startPeeled : Finset object.Vertex,
-                    startPeeled ⊆ object.routedLoads piece data.threshold
-                        receiver ∧
-                      Graph.ExitFour.SaturatedAfter piece data.threshold
-                        data.dischargeScale receiver startPeeled ∧
-                      ∀ Retained Terminal :
-                          Finset object.Vertex → Prop,
-                        Retained startPeeled →
-                        (∀ peeled,
-                          peeled ⊆
-                            object.routedLoads piece data.threshold receiver →
-                          Retained peeled →
-                          Graph.ExitFour.SaturatedAfter piece data.threshold
-                            data.dischargeScale receiver peeled →
-                          Terminal peeled ∨
-                            ∃ load ∈ object.routedLoads piece data.threshold
-                                receiver,
-                              ∃ fresh : load ∉ peeled, Retained (Finset.cons load peeled fresh)) →
-                        (∃ finalPeeled ⊆
-                            object.routedLoads piece data.threshold receiver,
-                          Retained finalPeeled ∧ Terminal finalPeeled) ∨
-                        (∃ finalPeeled ⊆
-                            object.routedLoads piece data.threshold receiver,
-                          Retained finalPeeled ∧
-                            ¬ Graph.ExitFour.SaturatedAfter piece
-                              data.threshold data.dischargeScale receiver
-                              finalPeeled))
-  | .typeASaturatedHandoffVisible, object =>
-      -- `lem:typeA-exit4-residual-routing`, visible case at the current
-      -- peeling set: a completion port carries the registered four unpeeled
-      -- visible returns, packaged canonically for exits `(1)`--`(7)`.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces
-              (object.remainderSupport packing),
-            let piece := object.pieceSupport
-              (object.remainderSupport packing) component
-            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-              object.ambientSurplus piece data.threshold = 0 ∧
-              ∃ receiver : object.Vertex,
-                object.IsReceiver piece data.threshold receiver ∧
-                  ∃ peeled : Finset object.Vertex,
-                    peeled ⊆ object.routedLoads piece data.threshold receiver ∧
-                      Graph.ExitFour.SaturatedAfter piece data.threshold
-                        data.dischargeScale receiver peeled ∧
-                      Nonempty
-                        (Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                          data.threshold data.dischargeScale receiver peeled))
-  | .typeASaturatedHandoffSilent, object =>
-      -- `lem:typeA-exit4-residual-routing`, silent case at the current
-      -- peeling set: no port has four unpeeled visible returns, so the
-      -- canonical residual excess set is nonempty and silent.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces
-              (object.remainderSupport packing),
-            let piece := object.pieceSupport
-              (object.remainderSupport packing) component
-            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-              object.ambientSurplus piece data.threshold = 0 ∧
-              ∃ receiver : object.Vertex,
-                object.IsReceiver piece data.threshold receiver ∧
-                  ∃ peeled : Finset object.Vertex,
-                    peeled ⊆ object.routedLoads piece data.threshold receiver ∧
-                      Graph.ExitFour.SaturatedAfter piece data.threshold
-                        data.dischargeScale receiver peeled ∧
-                      Graph.ExitFour.SilentUnpeeledExcessAt piece
-                        data.threshold data.dischargeScale receiver peeled)
+      -- `lem:typeA-exit4-finite-descent`: the finite descent principle at the
+      -- exact selected receiver and current peeling set (the terminal
+      -- predicates are instantiated by the rows that use it, node `[123]`).
+      TypeAExitFourFiniteDescentFact data object
   | .typeASaturatedHandoffExitFour, object =>
       -- `lem:typeA-exit4-residual-routing`, exit `(4)` at the current peeling
       -- state.  In the visible case the witness supports one of the selected
@@ -4426,6 +4465,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                       Graph.ExitFour.SaturatedAfter piece data.threshold
                         data.dischargeScale receiver peeled ∧
+                      Graph.ExitFour.PeeledByWitnesses
+                        (Graph.HasCycleWithLength data.LengthOK) piece
+                        data.threshold receiver peeled ∧
                       ((∃ package :
                           Graph.ExitFour.VisibleFourUnpeeledPackage piece
                             data.threshold data.dischargeScale receiver peeled,
@@ -4481,9 +4523,13 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             witness.load ∈ Graph.ExitFour.unpeeledExcess piece
                               data.threshold data.dischargeScale receiver peeled)))
   | .typeAExitFourReceiverDischarged, object =>
-      -- Node `[102]`, discharged arm: after the same peel, the selected
-      -- receiver is unsaturated at the peeled residual, equivalently its
-      -- remaining receiver charge is nonnegative in the cleared scale.
+      -- Node `[102]` → `[89]`, the retest after the exit-`(4)` descent
+      -- (`lem:typeA-exit4-finite-descent`, `lem:typeA-exit4-peeling-charge`):
+      -- the peeling set reached by charging exit-`(4)` witnesses leaves the
+      -- selected receiver unsaturated at the peeled residual, i.e. its
+      -- remaining receiver charge `q(w) − ¼ − ¼·L₄(w)` is nonnegative in the
+      -- cleared scale.  The peeled loads are the receiver's target-defect
+      -- entries for the pressure ledger.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
@@ -4497,60 +4543,17 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               object.ambientSurplus piece data.threshold = 0 ∧
               ∃ receiver : object.Vertex,
                 object.IsReceiver piece data.threshold receiver ∧
-                  object.Saturated piece data.threshold data.dischargeScale
-                    receiver ∧
-                  ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                      data.threshold data.dischargeScale receiver ∅,
-                    ∃ witness : Graph.ExitFour.Witness
+                  ∃ peeled : Finset object.Vertex,
+                    peeled ⊆ object.routedLoads piece data.threshold receiver ∧
+                      Graph.ExitFour.PeeledByWitnesses
                         (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver ∅,
-                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                          piece data.threshold data.dischargeScale receiver
-                          package.outside ∅,
-                        witness.load = load ∧
-                          Graph.ExitFour.Witness.nextPeeled witness ⊆
-                            object.routedLoads piece data.threshold receiver ∧
-                          Graph.ExitFour.residualLoad piece data.threshold
-                              receiver
-                              (Graph.ExitFour.Witness.nextPeeled witness) + 1 =
-                            Graph.ExitFour.residualLoad piece data.threshold
-                              receiver ∅ ∧
-                          ¬ Graph.ExitFour.SaturatedAfter piece data.threshold
-                              data.dischargeScale receiver
-                              (Graph.ExitFour.Witness.nextPeeled witness) ∧
-                          1 + Graph.ExitFour.residualLoad piece data.threshold
-                              receiver
-                              (Graph.ExitFour.Witness.nextPeeled witness) ≤
-                            data.dischargeScale *
-                              object.missingPorts piece data.threshold
-                                receiver)
-  | .typeAExitFourFree, object =>
-      -- Node `[101]`, no: the same selected package carries no exit-`(4)`
-      -- witness.  This is not a global route-8 statement.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces
-              (object.remainderSupport packing),
-            let piece := object.pieceSupport
-              (object.remainderSupport packing) component
-            object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-              object.ambientSurplus piece data.threshold = 0 ∧
-              ∃ receiver : object.Vertex,
-                object.IsReceiver piece data.threshold receiver ∧
-                  object.Saturated piece data.threshold data.dischargeScale
-                    receiver ∧
-                  ∃ _package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                      data.threshold data.dischargeScale receiver ∅,
-                    ¬ ∃ witness : Graph.ExitFour.Witness
-                        (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver ∅,
-                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                          piece data.threshold data.dischargeScale receiver
-                          _package.outside ∅,
-                        witness.load = load)
+                        data.threshold receiver peeled ∧
+                      ¬ Graph.ExitFour.SaturatedAfter piece data.threshold
+                          data.dischargeScale receiver peeled ∧
+                      1 + Graph.ExitFour.residualLoad piece data.threshold
+                          receiver peeled ≤
+                        data.dischargeScale *
+                          object.missingPorts piece data.threshold receiver)
   | .typeAExitFive, object =>
       -- Node `[103]`, yes: at the exact current saturated-handoff state after
       -- exit `(4)` is absent, exit `(5)` supplies a target-complete proper
@@ -4885,43 +4888,51 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
               (object.portPairSchedule data.threshold)
   | .dependentPairFamily, object =>
+      -- Node `[130]`, no: `ℛ_Π` does not survive the admissible quotient
+      -- system — some functional admissible rank quotient
+      -- (`def:admissible-rank-quotient`, `def:functional-rank-quotient`) is
+      -- rank-reducing on the pair family.
       ∃ active : Graph.ActiveSurplusDemands
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
           data.threshold,
         let activation := Graph.pairResponseActivation active
         let pairs := object.portPairSchedule data.threshold
-        ∃ attempt :
+        ∃ declared :
             let family := activation.pairFamily pairs
             let coordinateSupport : object.PairCoordinate →
                 Finset object.Vertex := by
               letI := object.vertices.decEq
               exact Graph.DeclaredSignature.Coordinate.support
-            Graph.AttemptedQuotient
+            Graph.DeclaredQuotient
               (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object family
               coordinateSupport,
             let family := activation.pairFamily pairs
-            ¬ Set.InjOn attempt.label ↑family
+            declared.toRankQuotient.FunctionalOn ↑family ∧
+              ¬ Set.InjOn declared.label ↑family
   | .independentPairFamily, object =>
+      -- Node `[130]`, yes: `ℛ_Π` survives every functional admissible rank
+      -- quotient.
       ∃ active : Graph.ActiveSurplusDemands
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
           data.threshold,
         let activation := Graph.pairResponseActivation active
         let pairs := object.portPairSchedule data.threshold
-        ∀ attempt :
+        ∀ declared :
             let family := activation.pairFamily pairs
             let coordinateSupport : object.PairCoordinate →
                 Finset object.Vertex := by
               letI := object.vertices.decEq
               exact Graph.DeclaredSignature.Coordinate.support
-            Graph.AttemptedQuotient
+            Graph.DeclaredQuotient
               (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object family
               coordinateSupport,
           let family := activation.pairFamily pairs
-          Set.InjOn attempt.label ↑family
+          declared.toRankQuotient.FunctionalOn ↑family →
+            Set.InjOn declared.label ↑family
   | .mixedSparseSpineDependence, object => by
       classical
       exact ∃ (active : Graph.ActiveSurplusDemands
@@ -4951,26 +4962,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             Sum.elim coordinateSupport (by
               letI := object.vertices.decEq
               exact Graph.DeclaredSignature.Coordinate.support)
-          let Functional := fun
-              (attempt : Graph.AttemptedQuotient
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) object
-                mixedFamily mixedSupport) =>
-            let quotient : Core.TargetRank.RankQuotient.{u, u + 1}
-                (Sum Coordinate object.PairCoordinate) :=
-              { Label := attempt.Label
-                Value := attempt.Value
-                Realization := Graph.BoundaryPiece
-                  (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                    object attempt.support)
-                label := attempt.label
-                value := attempt.value }
-            quotient.FunctionalOn ↑mixedFamily
-          (¬ ∀ attempt : Graph.AttemptedQuotient
+          -- `lem:mixed-sparse-spine-dependence`: the union does not survive the
+          -- admissible quotient system — some functional admissible rank
+          -- quotient of the mixed family is rank-reducing.
+          (¬ ∀ declared : Graph.DeclaredQuotient
               (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object
               mixedFamily mixedSupport,
-              Functional attempt → Set.InjOn attempt.label ↑mixedFamily) →
+              declared.toRankQuotient.FunctionalOn ↑mixedFamily →
+                Set.InjOn declared.label ↑mixedFamily) →
             Graph.SparseSurplusExit
                 (Graph.MinimumDegreeAtLeast data.threshold)
                 (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∨
@@ -5063,6 +5063,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `prop:single-graph-sparse-pressure-routing` (b) with
       -- `cor:coupled-single-graph-overload-budget`.
       Graph.SparsePressureOverloadStatement object data.threshold data.windowOrder
+  | .freePairEntropySandwich, object =>
+      FreePairEntropySandwichStatement data object
+  | .freePairCodeUnrealized, object =>
+      ¬ FreePairEntropySandwichStatement data object
+  | .blockedPairEntropySandwich, object =>
+      BlockedPairEntropySandwichStatement data object
+  | .blockedPairCodeUnrealized, object =>
+      ¬ BlockedPairEntropySandwichStatement data object
   | .windowClassOverload, object =>
       -- Node `[139]`, yes: the overload occurs at a window-incidence token.
       Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
@@ -5210,6 +5218,11 @@ def label : Key → String
   | .negativeSupport => "negativeSupport"
   | .typeALowSurplus => "typeALowSurplus"
   | .typeBHighSurplus => "typeBHighSurplus"
+  | .typeBAssignedSupport => "typeBAssignedSupport"
+  | .typeBFanHeavyCentre => "typeBFanHeavyCentre"
+  | .typeBFanDegreeFourCentres => "typeBFanDegreeFourCentres"
+  | .typeBFanLocalDichotomy => "typeBFanLocalDichotomy"
+  | .typeBFanDegreeFourProfile => "typeBFanDegreeFourProfile"
   | .typeAReceiverRouting => "typeAReceiverRouting"
   | .typeASaturatedReceiver => "typeASaturatedReceiver"
   | .typeAUnsaturatedReceivers => "typeAUnsaturatedReceivers"
@@ -5217,7 +5230,6 @@ def label : Key → String
   | .typeAPortReturn => "typeAPortReturn"
   | .typeAVisibleEntry => "typeAVisibleEntry"
   | .typeAVisibleFirstExcess => "typeAVisibleFirstExcess"
-  | .typeAVisibleEntryClause => "typeAVisibleEntryClause"
   | .typeAExitOneReturn => "typeAExitOneReturn"
   | .typeAExitOneFree => "typeAExitOneFree"
   | .typeAExitTwoTheta => "typeAExitTwoTheta"
@@ -5246,8 +5258,10 @@ def label : Key → String
   | .coldMassBounded => "coldMassBounded"
   | .bridgeless => "bridgeless"
   | .coldReturnCorridors => "coldReturnCorridors"
-  | .jointCodeRealized => "jointCodeRealized"
-  | .jointCodeUnrealized => "jointCodeUnrealized"
+  | .windowPackageRealized => "windowPackageRealized"
+  | .windowPackageUnrealized => "windowPackageUnrealized"
+  | .denseDeficiencyBelow => "denseDeficiencyBelow"
+  | .denseDeficiencyAtOrAbove => "denseDeficiencyAtOrAbove"
   | .coldGermCandidates => "coldGermCandidates"
   | .coldSelectedBranchExcess => "coldSelectedBranchExcess"
   | .coldAmbientCubicStubExcess => "coldAmbientCubicStubExcess"
@@ -5280,16 +5294,12 @@ def label : Key → String
   | .typeBExclusionCharge => "typeBExclusionCharge"
   | .typeBExcluded => "typeBExcluded"
   | .typeBExclusionResidual => "typeBExclusionResidual"
-  | .typeAExitFour => "typeAExitFour"
   | .typeAExitFourPeeled => "typeAExitFourPeeled"
   | .typeAExitFourFiniteDescent => "typeAExitFourFiniteDescent"
-  | .typeASaturatedHandoffVisible => "typeASaturatedHandoffVisible"
-  | .typeASaturatedHandoffSilent => "typeASaturatedHandoffSilent"
   | .typeASaturatedHandoffExitFour => "typeASaturatedHandoffExitFour"
   | .typeASaturatedHandoffExitFourFree =>
       "typeASaturatedHandoffExitFourFree"
   | .typeAExitFourReceiverDischarged => "typeAExitFourReceiverDischarged"
-  | .typeAExitFourFree => "typeAExitFourFree"
   | .typeAExitFive => "typeAExitFive"
   | .typeAExitFiveFree => "typeAExitFiveFree"
   | .typeAExitSix => "typeAExitSix"
@@ -5325,6 +5335,10 @@ def label : Key → String
   | .spineSurplusEstimate => "spineSurplusEstimate"
   | .sparsePressureNearCubic => "sparsePressureNearCubic"
   | .sparsePressureOverload => "sparsePressureOverload"
+  | .freePairEntropySandwich => "freePairEntropySandwich"
+  | .freePairCodeUnrealized => "freePairCodeUnrealized"
+  | .blockedPairEntropySandwich => "blockedPairEntropySandwich"
+  | .blockedPairCodeUnrealized => "blockedPairCodeUnrealized"
   | .windowClassOverload => "windowClassOverload"
   | .windowClassAbsent => "windowClassAbsent"
   | .remainderClassOverload => "remainderClassOverload"
@@ -5412,6 +5426,11 @@ example : label .netChargeNegative = "netChargeNegative" := rfl
 example : label .negativeSupport = "negativeSupport" := rfl
 example : label .typeALowSurplus = "typeALowSurplus" := rfl
 example : label .typeBHighSurplus = "typeBHighSurplus" := rfl
+example : label .typeBAssignedSupport = "typeBAssignedSupport" := rfl
+example : label .typeBFanHeavyCentre = "typeBFanHeavyCentre" := rfl
+example : label .typeBFanDegreeFourCentres = "typeBFanDegreeFourCentres" := rfl
+example : label .typeBFanLocalDichotomy = "typeBFanLocalDichotomy" := rfl
+example : label .typeBFanDegreeFourProfile = "typeBFanDegreeFourProfile" := rfl
 example : label .typeAReceiverRouting = "typeAReceiverRouting" := rfl
 example : label .typeASaturatedReceiver = "typeASaturatedReceiver" := rfl
 example : label .typeAUnsaturatedReceivers = "typeAUnsaturatedReceivers" := rfl
@@ -5419,7 +5438,6 @@ example : label .typeAUnsaturatedDischarge = "typeAUnsaturatedDischarge" := rfl
 example : label .typeAPortReturn = "typeAPortReturn" := rfl
 example : label .typeAVisibleEntry = "typeAVisibleEntry" := rfl
 example : label .typeAVisibleFirstExcess = "typeAVisibleFirstExcess" := rfl
-example : label .typeAVisibleEntryClause = "typeAVisibleEntryClause" := rfl
 example : label .typeAExitOneReturn = "typeAExitOneReturn" := rfl
 example : label .typeAExitOneFree = "typeAExitOneFree" := rfl
 example : label .typeAExitTwoTheta = "typeAExitTwoTheta" := rfl
@@ -5440,8 +5458,10 @@ example : label .coldMassLinear = "coldMassLinear" := rfl
 example : label .coldMassBounded = "coldMassBounded" := rfl
 example : label .bridgeless = "bridgeless" := rfl
 example : label .coldReturnCorridors = "coldReturnCorridors" := rfl
-example : label .jointCodeRealized = "jointCodeRealized" := rfl
-example : label .jointCodeUnrealized = "jointCodeUnrealized" := rfl
+example : label .windowPackageRealized = "windowPackageRealized" := rfl
+example : label .windowPackageUnrealized = "windowPackageUnrealized" := rfl
+example : label .denseDeficiencyBelow = "denseDeficiencyBelow" := rfl
+example : label .denseDeficiencyAtOrAbove = "denseDeficiencyAtOrAbove" := rfl
 example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
 example : label .coldGermExtraction = "coldGermExtraction" := rfl
 example : label .coldPositiveGerm = "coldPositiveGerm" := rfl
@@ -5472,21 +5492,15 @@ example : label .branchKillClosed = "branchKillClosed" := rfl
 example : label .typeBExclusionCharge = "typeBExclusionCharge" := rfl
 example : label .typeBExcluded = "typeBExcluded" := rfl
 example : label .typeBExclusionResidual = "typeBExclusionResidual" := rfl
-example : label .typeAExitFour = "typeAExitFour" := rfl
 example : label .typeAExitFourPeeled = "typeAExitFourPeeled" := rfl
 example : label .typeAExitFourFiniteDescent =
     "typeAExitFourFiniteDescent" := rfl
-example : label .typeASaturatedHandoffVisible =
-    "typeASaturatedHandoffVisible" := rfl
-example : label .typeASaturatedHandoffSilent =
-    "typeASaturatedHandoffSilent" := rfl
 example : label .typeASaturatedHandoffExitFour =
     "typeASaturatedHandoffExitFour" := rfl
 example : label .typeASaturatedHandoffExitFourFree =
     "typeASaturatedHandoffExitFourFree" := rfl
 example : label .typeAExitFourReceiverDischarged =
     "typeAExitFourReceiverDischarged" := rfl
-example : label .typeAExitFourFree = "typeAExitFourFree" := rfl
 example : label .typeAExitFive = "typeAExitFive" := rfl
 example : label .typeAExitFiveFree = "typeAExitFiveFree" := rfl
 example : label .typeAExitSix = "typeAExitSix" := rfl
@@ -5531,6 +5545,10 @@ example : label .fibrePressure = "fibrePressure" := rfl
 example : label .spineSurplusEstimate = "spineSurplusEstimate" := rfl
 example : label .sparsePressureNearCubic = "sparsePressureNearCubic" := rfl
 example : label .sparsePressureOverload = "sparsePressureOverload" := rfl
+example : label .freePairEntropySandwich = "freePairEntropySandwich" := rfl
+example : label .freePairCodeUnrealized = "freePairCodeUnrealized" := rfl
+example : label .blockedPairEntropySandwich = "blockedPairEntropySandwich" := rfl
+example : label .blockedPairCodeUnrealized = "blockedPairCodeUnrealized" := rfl
 example : label .windowClassOverload = "windowClassOverload" := rfl
 example : label .windowClassAbsent = "windowClassAbsent" := rfl
 example : label .remainderClassOverload = "remainderClassOverload" := rfl
@@ -5582,8 +5600,10 @@ def idx : Key → Nat
   | .coldMassBounded => 225
   | .bridgeless => 226
   | .coldReturnCorridors => 227
-  | .jointCodeRealized => 240
-  | .jointCodeUnrealized => 241
+  | .windowPackageRealized => 228
+  | .windowPackageUnrealized => 229
+  | .denseDeficiencyBelow => 230
+  | .denseDeficiencyAtOrAbove => 231
   | .uncompressible => 5
   | .maximalPacking => 6
   | .localAlgebra => 7
@@ -5631,6 +5651,11 @@ def idx : Key → Nat
   | .negativeSupport => 50
   | .typeALowSurplus => 51
   | .typeBHighSurplus => 52
+  | .typeBAssignedSupport => 250
+  | .typeBFanHeavyCentre => 251
+  | .typeBFanDegreeFourCentres => 252
+  | .typeBFanLocalDichotomy => 253
+  | .typeBFanDegreeFourProfile => 254
   | .typeAReceiverRouting => 53
   | .typeASaturatedReceiver => 54
   | .typeAUnsaturatedReceivers => 55
@@ -5638,7 +5663,6 @@ def idx : Key → Nat
   | .typeAPortReturn => 121
   | .typeAVisibleEntry => 56
   | .typeAVisibleFirstExcess => 57
-  | .typeAVisibleEntryClause => 122
   | .typeAExitOneReturn => 58
   | .typeAExitOneFree => 59
   | .typeAExitTwoTheta => 60
@@ -5695,15 +5719,11 @@ def idx : Key → Nat
   | .typeBExclusionCharge => 164
   | .typeBExcluded => 166
   | .typeBExclusionResidual => 167
-  | .typeAExitFour => 94
   | .typeAExitFourPeeled => 151
   | .typeAExitFourFiniteDescent => 153
-  | .typeASaturatedHandoffVisible => 154
-  | .typeASaturatedHandoffSilent => 155
   | .typeASaturatedHandoffExitFour => 156
   | .typeASaturatedHandoffExitFourFree => 157
   | .typeAExitFourReceiverDischarged => 152
-  | .typeAExitFourFree => 95
   | .typeAExitFive => 96
   | .typeAExitFiveFree => 97
   | .typeAExitSix => 98
@@ -5739,6 +5759,10 @@ def idx : Key → Nat
   | .spineSurplusEstimate => 126
   | .sparsePressureNearCubic => 127
   | .sparsePressureOverload => 128
+  | .freePairEntropySandwich => 240
+  | .freePairCodeUnrealized => 241
+  | .blockedPairEntropySandwich => 242
+  | .blockedPairCodeUnrealized => 243
   | .windowClassOverload => 130
   | .windowClassAbsent => 131
   | .remainderClassOverload => 132
@@ -5780,8 +5804,10 @@ def ofIdx : Nat → Key
   | 225 => .coldMassBounded
   | 226 => .bridgeless
   | 227 => .coldReturnCorridors
-  | 240 => .jointCodeRealized
-  | 241 => .jointCodeUnrealized
+  | 228 => .windowPackageRealized
+  | 229 => .windowPackageUnrealized
+  | 230 => .denseDeficiencyBelow
+  | 231 => .denseDeficiencyAtOrAbove
   | 5 => .uncompressible
   | 6 => .maximalPacking
   | 7 => .localAlgebra
@@ -5828,6 +5854,11 @@ def ofIdx : Nat → Key
   | 50 => .negativeSupport
   | 51 => .typeALowSurplus
   | 52 => .typeBHighSurplus
+  | 250 => .typeBAssignedSupport
+  | 251 => .typeBFanHeavyCentre
+  | 252 => .typeBFanDegreeFourCentres
+  | 253 => .typeBFanLocalDichotomy
+  | 254 => .typeBFanDegreeFourProfile
   | 53 => .typeAReceiverRouting
   | 54 => .typeASaturatedReceiver
   | 55 => .typeAUnsaturatedReceivers
@@ -5886,15 +5917,11 @@ def ofIdx : Nat → Key
   | 164 => .typeBExclusionCharge
   | 166 => .typeBExcluded
   | 167 => .typeBExclusionResidual
-  | 94 => .typeAExitFour
   | 151 => .typeAExitFourPeeled
   | 153 => .typeAExitFourFiniteDescent
-  | 154 => .typeASaturatedHandoffVisible
-  | 155 => .typeASaturatedHandoffSilent
   | 156 => .typeASaturatedHandoffExitFour
   | 157 => .typeASaturatedHandoffExitFourFree
   | 152 => .typeAExitFourReceiverDischarged
-  | 95 => .typeAExitFourFree
   | 96 => .typeAExitFive
   | 97 => .typeAExitFiveFree
   | 98 => .typeAExitSix
@@ -5944,7 +5971,6 @@ def ofIdx : Nat → Key
   | 119 => .sparseSurplusSurvivor
   | 120 => .activeSurplusDemands
   | 121 => .typeAPortReturn
-  | 122 => .typeAVisibleEntryClause
   | 123 => .typeASaturatedExitEntry
   | 124 => .typeAExitSevenHandoff
   | 220 => .typeBDecoratedAssignedSupport
@@ -5952,6 +5978,10 @@ def ofIdx : Nat → Key
   | 126 => .spineSurplusEstimate
   | 127 => .sparsePressureNearCubic
   | 128 => .sparsePressureOverload
+  | 240 => .freePairEntropySandwich
+  | 241 => .freePairCodeUnrealized
+  | 242 => .blockedPairEntropySandwich
+  | 243 => .blockedPairCodeUnrealized
   | 200 => .hotColdPartition
   | 201 => .dependentPairFamily
   | 202 => .independentPairFamily
@@ -5997,10 +6027,14 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "bridgeless") 226
   | .coldReturnCorridors =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldReturnCorridors") 227
-  | .jointCodeRealized =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "jointCodeRealized") 240
-  | .jointCodeUnrealized =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "jointCodeUnrealized") 241
+  | .windowPackageRealized =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowPackageRealized") 228
+  | .windowPackageUnrealized =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowPackageUnrealized") 229
+  | .denseDeficiencyBelow =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "denseDeficiencyBelow") 230
+  | .denseDeficiencyAtOrAbove =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "denseDeficiencyAtOrAbove") 231
   | .uncompressible =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "uncompressible") 5
   | .maximalPacking =>
@@ -6097,6 +6131,16 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeALowSurplus") 51
   | .typeBHighSurplus =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBHighSurplus") 52
+  | .typeBAssignedSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBAssignedSupport") 250
+  | .typeBFanHeavyCentre =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBFanHeavyCentre") 251
+  | .typeBFanDegreeFourCentres =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBFanDegreeFourCentres") 252
+  | .typeBFanLocalDichotomy =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBFanLocalDichotomy") 253
+  | .typeBFanDegreeFourProfile =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBFanDegreeFourProfile") 254
   | .typeAReceiverRouting =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAReceiverRouting") 53
   | .typeASaturatedReceiver =>
@@ -6115,9 +6159,6 @@ def name : Key → Lean.Name
   | .typeAVisibleFirstExcess =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeAVisibleFirstExcess") 57
-  | .typeAVisibleEntryClause =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeAVisibleEntryClause") 122
   | .typeAExitOneReturn =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitOneReturn") 58
   | .typeAExitOneFree =>
@@ -6254,20 +6295,12 @@ def name : Key → Lean.Name
   | .typeBExclusionResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBExclusionResidual") 167
-  | .typeAExitFour =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFour") 94
   | .typeAExitFourPeeled =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeAExitFourPeeled") 151
   | .typeAExitFourFiniteDescent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeAExitFourFiniteDescent") 153
-  | .typeASaturatedHandoffVisible =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeASaturatedHandoffVisible") 154
-  | .typeASaturatedHandoffSilent =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeASaturatedHandoffSilent") 155
   | .typeASaturatedHandoffExitFour =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeASaturatedHandoffExitFour") 156
@@ -6277,8 +6310,6 @@ def name : Key → Lean.Name
   | .typeAExitFourReceiverDischarged =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeAExitFourReceiverDischarged") 152
-  | .typeAExitFourFree =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourFree") 95
   | .typeAExitFive =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFive") 96
   | .typeAExitFiveFree =>
@@ -6362,6 +6393,18 @@ def name : Key → Lean.Name
   | .sparsePressureOverload =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "sparsePressureOverload") 128
+  | .freePairEntropySandwich =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "freePairEntropySandwich") 240
+  | .freePairCodeUnrealized =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "freePairCodeUnrealized") 241
+  | .blockedPairEntropySandwich =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "blockedPairEntropySandwich") 242
+  | .blockedPairCodeUnrealized =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "blockedPairCodeUnrealized") 243
   | .windowClassOverload =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowClassOverload") 130
   | .windowClassAbsent =>

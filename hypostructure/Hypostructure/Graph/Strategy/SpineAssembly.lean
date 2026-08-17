@@ -36,159 +36,17 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- The closure key is not a semantic fact.  Every freshness condition on a
-closure entry is discharged through this. -/
-@[simp] theorem closed_ne_key (k : Key) :
-    (closed : FactKey (Input BranchState Presentation presentation data)) ≠
-      K k := by
-  intro same
-  cases same
 
-/-- Distinct semantic keys are distinct exact keys.  Every freshness and
-distinctness side condition below is discharged through this, so a disequality
-is decided on the vocabulary's own finite `Key` and never on the residual
-domain, which contains free parameters and cannot be evaluated. -/
-@[simp] theorem key_inj {left right : Key} :
-    (K left : FactKey (Input BranchState Presentation presentation data)) =
-        K right ↔ left = right := by
-  constructor
-  · intro same; injection same
-  · intro same; rw [same]
 
-section Rows
-
-variable (T : Core.Target (problem BranchState Presentation presentation data))
-variable (targetPredicate :
-  T.Predicate = Graph.HasCycleWithLength data.LengthOK)
-
-/-- Node `[91]` closes because its nonnegative discharging conclusion is
-incompatible with the retained negative Type A support. -/
-noncomputable instance typeAUnsaturatedDischargeClosed :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K (data := data) .typeALowSurplus)
-      (K (data := data) .typeAUnsaturatedDischarge) where
-  contradiction := fun _input _low discharged => by
-    obtain ⟨_packing, _valid, _maximal, _component, _present, negative,
-      surplus, nonnegative⟩ := discharged.down
-    unfold Graph.FiniteObject.NegativeNetCharge at negative
-    rw [surplus, Nat.mul_zero, Nat.add_zero] at negative
-    omega
-
-/-- Node `[104]`: exit `(5)` closes against `cor:uncompressible`. -/
-noncomputable instance typeAExitFiveClosed :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K (data := data) .uncompressible)
-      (K (data := data) .typeAExitFive) where
-  contradiction := fun _input uncompressible exitFive => by
-    obtain ⟨_packing, _valid, _maximal, _component, _present, _negative,
-      _zero, _receiver, _isReceiver, _peeled, _peeledSubset, _saturated,
-      _noExitFour, support, compressible⟩ := exitFive.down
-    exact (uncompressible.down support) compressible
-
-/-- Node `[52]`. -/
-@[reducible] noncomputable def entropyPackage :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  entropyPackageRow data
-
-/-- Node `[60]`: the ordinary eventual net-charge cap. -/
-@[reducible] noncomputable def netChargeCap :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  netChargeCapRow
-
-/-- Nodes `[57]`--`[58]`. -/
-@[reducible] noncomputable def netChargeLocalization :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  netChargeLocalizationRow data
-
-/-- Node `[61]`. -/
-@[reducible] noncomputable def negativeSupport :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  negativeSupportRow
-
-/-- Node `[68]`, the standing law both arms of the degree split read. -/
-@[reducible] noncomputable def highCentreNormalForm :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  highCentreNormalFormRow
-
-/-- Node `[69]`, on the heavy arm of node `[68]`. -/
-@[reducible] noncomputable def heavyCentreLocalDichotomy :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  heavyCentreLocalDichotomyRow (K .highCentreNormalForm)
-    (K .typeBHeavyCentre) (K .typeBLocalDichotomy) (by simp)
-    (fun _input fact => fact.down) (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
-
-/-- Node `[70]`, on both arms of node `[68]`.  One executor value, run after
-either branch cursor: an `AtomicCT` has no predecessor parameter. -/
-@[reducible] noncomputable def fanCertificateCap :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  fanCertificateCapRow (K .fanCertificateCap) (fun _input value => ⟨value⟩)
-
-/-- Node `[74]`/`[82]`, on the B2 arm of node `[72]`/`[81]`.  One executor value,
-run after either of the two B2 cursors. -/
-@[reducible] noncomputable def hybridEntry :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  hybridEntryRow (K .selection) (K .fanCertificateCap) (K .fanCertificateMarked)
-    (K .typeBHybridEntry) (by simp) (by simp) (by simp)
-    (fun _input fact => fact.down.1) (fun _input fact => fact.down)
-    (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
-
-/-- Nodes `[78]`--`[79]`, on the degree-four arm of node `[68]`. -/
-@[reducible] noncomputable def degreeFourProfile :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  degreeFourProfileRow (K .highCentreNormalForm) (K .typeBDegreeFourCentres)
-    (K .typeBDegreeFourProfile) (by simp)
-    (fun _input fact => fact.down) (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
-
-/-- Node `[76]`/`[85]`, the exact disjoint post-ledger component fact. -/
-@[reducible] noncomputable def disjointPostLedgerComponents :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  disjointPostLedgerComponentsRow (K .typeBB2Choice) (K .selection)
-    (K .uncompressible) (K .remainderNormalized) (K .typeBDisjointLedger)
-    (by simp)
-    (fun _input fact => fact.down)
-    (fun _input fact => fact.down.1)
-    (fun _input fact => fact.down)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
 
 @[reducible] noncomputable def branchKillClosed :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   branchKillClosedRow
 
-@[reducible] noncomputable def largeBudgetRoute8Closed :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  largeBudgetRoute8ClosedRow
 
-noncomputable instance instImpossibleLargeBudgetRoute8Closed :
-    Impossible (Input BranchState Presentation presentation data)
-      (K .largeBudgetRoute8Closed) where
-  contradiction := fun _residual closed => closed.down
-
-/-- Node `[76]`/`[85]`, Step 1 selected fan-entry charge on the B2-success
-cursor. -/
-@[reducible] noncomputable def typeBSelectedFanCharge :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeBSelectedFanChargeRow (K .fanCertificateMarked) (K .typeBHybridEntry)
-    (K .typeBDisjointLedger) (K .typeBSelectedFanCharge) (by simp)
-    (fun _input value => ⟨value⟩)
-
-/-- Node `[76]`/`[85]`, the B-ledger charge implication on the B2-success
-cursor. -/
-@[reducible] noncomputable def typeBExclusionCharge :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  typeBExclusionChargeRow (K .typeBDisjointLedger)
-    (K .typeBSelectedFanCharge) (K .typeBExclusionCharge) (by simp)
-    (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
 
 end Rows
 
-noncomputable instance instImpossibleTypeBExcluded :
-    Impossible (Input BranchState Presentation presentation data)
-      (K .typeBExcluded) where
-  contradiction := fun _residual excluded => excluded.down
 
 /-- The key index at the full-rank residual of node `[34]`, Residual B.  This
 is the index nodes `[47]` onwards extend; it is no longer an exit of the run. -/
@@ -367,7 +225,7 @@ abbrev residualCTypeAPortReturnKeys
 abbrev residualCTypeAVisibleEntryKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeAVisibleEntryClause :: K .typeAVisibleEntry ::
+  K .typeAVisibleEntry ::
     residualCTypeAPortReturnKeys known
 
 abbrev residualCTypeAVisibleFirstExcessKeys

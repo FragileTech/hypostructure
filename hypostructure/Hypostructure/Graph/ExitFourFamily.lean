@@ -270,4 +270,40 @@ theorem residualLoad_nextPeeled
 
 end Witness
 
+/-! ## `def:typeA-exit4-peeling`: the peeling set is witnessed
+
+*"`P₄(w) ⊆ ℒ(w)` … each listed load equipped with one exit-`(4)` witness."*
+Every load of the peeling set was charged by an exit-`(4)` witness taken at an
+earlier peeling state inside `P₄(w)`; the witness's own `fresh` clause records
+that the load was unpeeled at that state.  The empty peeling set is witnessed,
+and charging one more witness (`lem:typeA-exit4-discharge`) keeps the set
+witnessed — which is what carries the property along the finite descent. -/
+def PeeledByWitnesses (Target : FiniteObject.{u} → Prop)
+    {object : FiniteObject.{u}} (support : Finset object.Vertex)
+    (threshold : Nat) (receiver : object.Vertex)
+    (peeled : Finset object.Vertex) : Prop :=
+  ∀ load ∈ peeled, ∃ prior : Finset object.Vertex, prior ⊆ peeled ∧
+    ∃ witness : Witness Target support threshold receiver prior,
+      witness.load = load
+
+theorem peeledByWitnesses_empty (Target : FiniteObject.{u} → Prop)
+    {object : FiniteObject.{u}} (support : Finset object.Vertex)
+    (threshold : Nat) (receiver : object.Vertex) :
+    PeeledByWitnesses Target support threshold receiver ∅ :=
+  fun _load member => absurd member (Finset.notMem_empty _)
+
+theorem peeledByWitnesses_nextPeeled {Target : FiniteObject.{u} → Prop}
+    {object : FiniteObject.{u}} {support : Finset object.Vertex}
+    {threshold : Nat} {receiver : object.Vertex} {peeled : Finset object.Vertex}
+    (witnessed : PeeledByWitnesses Target support threshold receiver peeled)
+    (witness : Witness Target support threshold receiver peeled) :
+    PeeledByWitnesses Target support threshold receiver witness.nextPeeled := by
+  intro load member
+  have member' : load = witness.load ∨ load ∈ peeled := by
+    simpa [Witness.nextPeeled] using member
+  rcases member' with rfl | member'
+  · exact ⟨peeled, Finset.subset_cons _, witness, rfl⟩
+  · obtain ⟨prior, priorSubset, witness', equal⟩ := witnessed load member'
+    exact ⟨prior, priorSubset.trans (Finset.subset_cons _), witness', equal⟩
+
 end Hypostructure.Graph.ExitFour
