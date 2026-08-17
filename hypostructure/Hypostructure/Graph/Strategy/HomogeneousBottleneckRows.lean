@@ -195,7 +195,7 @@ residual.  Both hypotheses are read from the incoming exact ledger. -/
       producesNonempty := by simp }
     (fun inputs =>
       let selection := (inputs.get (K .selection)).down
-      let uncompressible := (inputs.get (K .uncompressible)).down
+      let uncompressible := (inputs.get (K .uncompressible)).down.1
       .cons (key := K .bottleneckRouting)
         (show Value BranchState Presentation presentation data
             .bottleneckRouting inputs.current from

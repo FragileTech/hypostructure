@@ -13,9 +13,9 @@ export const METHODOLOGY_PARTS = [
   { id: "llm", title: "Designed to leverage language models" },
   { id: "mechanisms", title: "Leveraging what language models do best", parent: "llm" },
   { id: "controls", title: "Mitigating the usual failure modes", parent: "llm" },
+  { id: "moves", title: "The proof moves" },
   { id: "artifacts", title: "The artifacts: diagrams and tables" },
   { id: "repair", title: "Red-teaming and repair" },
-  { id: "moves", title: "The proof moves" },
   { id: "iteration", title: "One iteration of the method" },
   { id: "proofs", title: "In the two proofs" },
 ] as const;
@@ -1265,6 +1265,62 @@ export function MethodologySection() {
             </Part>
           </Part>
 
+          <Part id="moves">
+            <p>
+              The method spends these currencies through a fixed vocabulary of{" "}
+              <em>proof moves</em>. Each move consumes a recorded branch state
+              and returns either a closure certificate or a named residual
+              routed to another move. Familiar techniques from the literature,
+              such as minimal counterexamples, replacement, discharging,
+              exchange, pigeonhole, first failure, and well-founded recursion,
+              are written as contracts with declared inputs and outputs. The
+              choice and parameters of a move remain strategic decisions on
+              the current branch. The same contracts act on graph and analytic
+              states. The numbered chips open the explorer at each application
+              of a move. An absent move is marked directly in the table.
+            </p>
+            <div className="methodology-table-wrap">
+              <table className="methodology-map methodology-moves">
+                <thead>
+                  <tr>
+                    <th scope="col">Move</th>
+                    <th scope="col">What it does</th>
+                    <th scope="col">In Erdős–Gyárfás</th>
+                    <th scope="col">In Navier–Stokes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {PROOF_MOVES.map((move) => (
+                    <MoveRow key={move.name} move={move} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p>
+              The two right-hand columns use different mathematical objects but
+              share the same operations. The graph proof spends its
+              budgets in entropy and surplus, the PDE proof in scale-collapse
+              cost and retained mass; one side classifies pieces by 399 window
+              labels, the other by ten residual strata and a four-row exit
+              ledger; one compresses by replacing an atom, the other by passing
+              to a limit and returning along an ancestry map. In both cases the
+              proof tests the target locally, uses minimality, compares by
+              type, charges, takes the first failure, pumps, extracts from an
+              overload, localizes, descends on a well-founded measure, refines
+              the labels, and routes the remainder. These contracts
+              close a combinatorial and an analytic problem in the same way.
+              The last four moves entered the vocabulary with the analytic
+              proofs; they are the ones a finite object never calls for:
+              extracting a limit and transporting facts back along its
+              ancestry, fixing a continuous symmetry before classifying,
+              closing a class by an imported rigidity theorem, and
+              manufacturing a budget from a quantity that is monotone in the
+              scale. Where a move is absent from a column, it is because that
+              problem never produced the obstruction the move handles, not
+              because the move could not have been stated there.
+            </p>
+          </Part>
+
           <Part id="artifacts">
             <p>
               Neither a model nor a reader can keep several hundred proof
@@ -1629,62 +1685,6 @@ export function MethodologySection() {
               standing invariant up to that step together with the negation of
               the lemma's conclusion. In its own words, no leaf
               degrades to nothing.
-            </p>
-          </Part>
-
-          <Part id="moves">
-            <p>
-              The method spends these currencies through a fixed vocabulary of{" "}
-              <em>proof moves</em>. Each move consumes a recorded branch state
-              and returns either a closure certificate or a named residual
-              routed to another move. Familiar techniques from the literature,
-              such as minimal counterexamples, replacement, discharging,
-              exchange, pigeonhole, first failure, and well-founded recursion,
-              are written as contracts with declared inputs and outputs. The
-              choice and parameters of a move remain strategic decisions on
-              the current branch. The same contracts act on graph and analytic
-              states. The numbered chips open the explorer at each application
-              of a move. An absent move is marked directly in the table.
-            </p>
-            <div className="methodology-table-wrap">
-              <table className="methodology-map methodology-moves">
-                <thead>
-                  <tr>
-                    <th scope="col">Move</th>
-                    <th scope="col">What it does</th>
-                    <th scope="col">In Erdős–Gyárfás</th>
-                    <th scope="col">In Navier–Stokes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {PROOF_MOVES.map((move) => (
-                    <MoveRow key={move.name} move={move} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p>
-              The two right-hand columns use different mathematical objects but
-              share the same operations. The graph proof spends its
-              budgets in entropy and surplus, the PDE proof in scale-collapse
-              cost and retained mass; one side classifies pieces by 399 window
-              labels, the other by ten residual strata and a four-row exit
-              ledger; one compresses by replacing an atom, the other by passing
-              to a limit and returning along an ancestry map. In both cases the
-              proof tests the target locally, uses minimality, compares by
-              type, charges, takes the first failure, pumps, extracts from an
-              overload, localizes, descends on a well-founded measure, refines
-              the labels, and routes the remainder. These contracts
-              close a combinatorial and an analytic problem in the same way.
-              The last four moves entered the vocabulary with the analytic
-              proofs; they are the ones a finite object never calls for:
-              extracting a limit and transporting facts back along its
-              ancestry, fixing a continuous symmetry before classifying,
-              closing a class by an imported rigidity theorem, and
-              manufacturing a budget from a quantity that is monotone in the
-              scale. Where a move is absent from a column, it is because that
-              problem never produced the obstruction the move handles, not
-              because the move could not have been stated there.
             </p>
           </Part>
 

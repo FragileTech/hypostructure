@@ -127,7 +127,7 @@ noncomputable def selectedSparseSurplusExitDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision (K .sparsePairExit) (K .sparseSurplusSurvivor) history :=
   sparseSurplusExitDichotomy history
@@ -139,14 +139,14 @@ noncomputable def selectedSparseSurplusActivation
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   let h2 :=
@@ -182,14 +182,14 @@ noncomputable def selectedBaselineSpineDemand
       [K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .baselineSpineDemand, K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor, K .surplusAbove,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (baselineSpineDemandRow (BranchState := BranchState)
@@ -205,7 +205,7 @@ noncomputable def selectedPairResponseIndependenceDichotomy
       [K .baselineSpineDemand, K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision (K .independentPairFamily) (K .dependentPairFamily) history :=
@@ -221,7 +221,7 @@ noncomputable def selectedMixedSparseSpineDependence
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -230,7 +230,7 @@ noncomputable def selectedMixedSparseSpineDependence
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (mixedSparseSpineDependenceRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -247,7 +247,7 @@ noncomputable def selectedExactCubicBaselineBudget
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .exactCubicBaselineBudget, K .mixedSparseSpineDependence,
@@ -255,7 +255,7 @@ noncomputable def selectedExactCubicBaselineBudget
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (exactCubicBaselineBudgetRow (BranchState := BranchState)
@@ -273,7 +273,7 @@ noncomputable def selectedIncrementalSkeletonRoom
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -283,7 +283,7 @@ noncomputable def selectedIncrementalSkeletonRoom
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (incrementalSkeletonRoomRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -301,7 +301,7 @@ noncomputable def selectedSkeletonDominates
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .skeletonDominates, K .incrementalSkeletonRoom,
@@ -310,7 +310,7 @@ noncomputable def selectedSkeletonDominates
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (skeletonDominatesRow (BranchState := BranchState)
@@ -327,7 +327,7 @@ noncomputable def selectedBlockedPairRoutingDichotomy
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -351,7 +351,7 @@ noncomputable def selectedSparsePairExitCloses
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   exact (history.get (K .sparseSurplusSurvivor)).down
@@ -367,7 +367,7 @@ noncomputable def selectedCanonicalPairFacts
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .canonicalPairLedger, K .canonicalBlockerRoute,
@@ -376,7 +376,7 @@ noncomputable def selectedCanonicalPairFacts
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   exact
@@ -394,7 +394,7 @@ noncomputable def selectedExactWindowJoinPressure
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -404,7 +404,7 @@ noncomputable def selectedExactWindowJoinPressure
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (exactWindowJoinPressureRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -421,7 +421,7 @@ noncomputable def selectedCapacityTokenFacts
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .capacityTokenLedger, K .sparseUpperEnvelope,
@@ -430,7 +430,7 @@ noncomputable def selectedCapacityTokenFacts
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (capacityTokenLedgerRow (BranchState := BranchState)
@@ -449,7 +449,7 @@ noncomputable def selectedPressureSpineSurplusEstimate
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -461,7 +461,7 @@ noncomputable def selectedPressureSpineSurplusEstimate
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (pressureSpineSurplusEstimateRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -479,7 +479,7 @@ noncomputable def selectedPressureNearCubicCloses
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   let afterEstimate := selectedPressureSpineSurplusEstimate history
@@ -510,7 +510,7 @@ noncomputable def selectedWindowClassDichotomy
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision (K .windowClassOverload) (K .windowClassAbsent) history :=
@@ -529,7 +529,7 @@ noncomputable def selectedWindowIncidenceAudit
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .windowIncidenceAudit, K .windowClassOverload,
@@ -539,7 +539,7 @@ noncomputable def selectedWindowIncidenceAudit
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (windowIncidenceAuditRow (BranchState := BranchState)
@@ -559,7 +559,7 @@ noncomputable def selectedRemainderSurplusAudit
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -571,7 +571,7 @@ noncomputable def selectedRemainderSurplusAudit
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (remainderSurplusAuditRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -590,7 +590,7 @@ noncomputable def selectedPrimitiveCarrierAudit
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   let classified :=
@@ -616,7 +616,7 @@ noncomputable def selectedWindowHomogeneousCapsDichotomy
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision (K .homogeneousCapsHold) (K .homogeneousBottleneckPattern)
@@ -651,7 +651,7 @@ noncomputable def selectedRemainderHomogeneousCapsDichotomy
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision (K .homogeneousCapsHold) (K .homogeneousBottleneckPattern)
       history :=
@@ -685,7 +685,7 @@ noncomputable def selectedPrimitiveHomogeneousCapsDichotomy
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision (K .homogeneousCapsHold) (K .homogeneousBottleneckPattern)
@@ -720,7 +720,7 @@ noncomputable def selectedWindowHomogeneousCapsEstimate
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -733,7 +733,7 @@ noncomputable def selectedWindowHomogeneousCapsEstimate
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (homogeneousCapsCloseRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -753,7 +753,7 @@ noncomputable def selectedRemainderHomogeneousCapsEstimate
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .homogeneousBottleneck, K .homogeneousCapsHold,
@@ -765,7 +765,7 @@ noncomputable def selectedRemainderHomogeneousCapsEstimate
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (homogeneousCapsCloseRow (BranchState := BranchState)
@@ -787,7 +787,7 @@ noncomputable def selectedPrimitiveHomogeneousCapsEstimate
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -801,7 +801,7 @@ noncomputable def selectedPrimitiveHomogeneousCapsEstimate
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (homogeneousCapsCloseRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -820,7 +820,7 @@ noncomputable def selectedWindowOverloadCapsDichotomy
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -846,7 +846,7 @@ noncomputable def selectedRemainderOverloadCapsDichotomy
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -874,7 +874,7 @@ noncomputable def selectedPrimitiveOverloadCapsDichotomy
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -903,7 +903,7 @@ noncomputable def selectedWindowOverloadBottleneckRouting
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBHandoff, K .bottleneckRouting,
@@ -916,7 +916,7 @@ noncomputable def selectedWindowOverloadBottleneckRouting
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   let routed :=
     (bottleneckRoutingRow (BranchState := BranchState)
@@ -942,7 +942,7 @@ noncomputable def selectedWindowOverloadBridgeMassHistory
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) := by
   let routed := selectedWindowOverloadBottleneckRouting history
   exact
@@ -966,7 +966,7 @@ noncomputable def selectedWindowOverloadBridgeSublinearHistory
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) := by
   let afterBridgeMass := selectedWindowOverloadBridgeMassHistory history
   exact
@@ -991,7 +991,7 @@ noncomputable def selectedRemainderOverloadBottleneckRouting
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1005,7 +1005,7 @@ noncomputable def selectedRemainderOverloadBottleneckRouting
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   let routed :=
@@ -1032,7 +1032,7 @@ noncomputable def selectedRemainderOverloadBridgeMassHistory
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) := by
   let routed := selectedRemainderOverloadBottleneckRouting history
@@ -1057,7 +1057,7 @@ noncomputable def selectedRemainderOverloadBridgeSublinearHistory
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) := by
   let afterBridgeMass := selectedRemainderOverloadBridgeMassHistory history
@@ -1083,7 +1083,7 @@ noncomputable def selectedPrimitiveOverloadBottleneckRouting
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1099,7 +1099,7 @@ noncomputable def selectedPrimitiveOverloadBottleneckRouting
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   let routed :=
     (bottleneckRoutingRow (BranchState := BranchState)
@@ -1125,7 +1125,7 @@ noncomputable def selectedPrimitiveOverloadBridgeMassHistory
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) := by
   let routed := selectedPrimitiveOverloadBottleneckRouting history
@@ -1150,7 +1150,7 @@ noncomputable def selectedPrimitiveOverloadBridgeSublinearHistory
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) := by
   let afterBridgeMass := selectedPrimitiveOverloadBridgeMassHistory history
@@ -1170,9 +1170,10 @@ literal no-arm residual forwarded toward `[24]` and the cold continuation. -/
 noncomputable def selectedBarrierDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+      [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking,
-        K .uncompressible, K .tightEndpoint,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   let partitioned :=
@@ -1208,16 +1209,18 @@ noncomputable def selectedBarrierDichotomy
 noncomputable def selectedDensityBudget
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible,
-        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
+      [K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (densityBudgetRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -1228,19 +1231,19 @@ noncomputable def selectedDensityBudget
 noncomputable def selectedCompletedSpinePrefix
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+      [K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .targetRankCircuit, K .curvatureTargetRank, K .functionalRankQuotient,
         K .admissibleRankQuotient, K .exactResponseProfile, K .wedgeSupply,
         K .stubSupply, K .boundaryDemand, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   let h1 := selectedDensityBudget history
   let h2 :=
@@ -1315,8 +1318,9 @@ noncomputable def selectedCompletedSpinePrefix
 noncomputable def selectedCurvatureRankDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+      [K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     Decision
@@ -1338,8 +1342,9 @@ noncomputable def selectedCurvatureRankDichotomy
 noncomputable def selectedBarrierCapCurvatureRankDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+      [K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     Decision
@@ -1361,8 +1366,9 @@ noncomputable def selectedRankDropCloses
       [K .curvatureRankDrop, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   let afterDependence :=
@@ -1431,16 +1437,18 @@ the cold sibling is passed unchanged to its next atomic rows. -/
 noncomputable def selectedSeparatedFullRank
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+      [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   match selectedBarrierDichotomy history with
@@ -1460,17 +1468,19 @@ noncomputable def selectedForcedCurvatureCost
       [K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (forcedCurvatureCostRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -1484,8 +1494,9 @@ noncomputable def selectedRemainderEntropyDichotomy
       [K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -1513,8 +1524,9 @@ noncomputable def selectedFullRankEntropyDichotomy
       [K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -1533,8 +1545,9 @@ noncomputable def selectedFullRankEntropyDichotomy
 noncomputable def selectedSeparatedEntropyDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+      [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -1557,8 +1570,9 @@ noncomputable def selectedEntropyPackage
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1566,9 +1580,10 @@ noncomputable def selectedEntropyPackage
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (entropyPackage (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -1583,8 +1598,9 @@ noncomputable def selectedEntropyCapDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -1610,8 +1626,9 @@ noncomputable def selectedHighEntropyCapDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -1634,8 +1651,9 @@ noncomputable def selectedHighEntropyLargeBudget
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1644,8 +1662,9 @@ noncomputable def selectedHighEntropyLargeBudget
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   match selectedHighEntropyCapDichotomy history with
@@ -1662,8 +1681,9 @@ noncomputable def selectedHighEntropyNetDeficiencyCap
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1672,9 +1692,9 @@ noncomputable def selectedHighEntropyNetDeficiencyCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (netDeficiencyCapRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -1690,8 +1710,9 @@ noncomputable def selectedLowEntropyLargeBudget
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1699,9 +1720,10 @@ noncomputable def selectedLowEntropyLargeBudget
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (lowEntropyLargeBudgetRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -1716,8 +1738,9 @@ noncomputable def selectedLowEntropyNetDeficiencyCap
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1726,8 +1749,9 @@ noncomputable def selectedLowEntropyNetDeficiencyCap
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (netDeficiencyCapRow (BranchState := BranchState)
@@ -1744,8 +1768,9 @@ noncomputable def selectedLowEntropyNetChargeOrderDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -1777,8 +1802,9 @@ noncomputable def selectedLowEntropyNetChargeCap
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1788,8 +1814,9 @@ noncomputable def selectedLowEntropyNetChargeCap
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (netChargeCap (BranchState := BranchState)
@@ -1806,8 +1833,9 @@ noncomputable def selectedLowEntropyNetChargeLocalization
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1816,9 +1844,10 @@ noncomputable def selectedLowEntropyNetChargeLocalization
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   let afterCap := selectedLowEntropyNetChargeCap history
   exact
@@ -1838,8 +1867,9 @@ noncomputable def selectedLowEntropyNetChargeDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -1869,8 +1899,9 @@ noncomputable def selectedLowEntropyNetChargeNonNegativeCloses
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   obtain ⟨_positive, packing, valid, cardinality, maximal⟩ :=
@@ -1893,8 +1924,9 @@ noncomputable def selectedLowEntropyNegativeSupport
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1904,9 +1936,10 @@ noncomputable def selectedLowEntropyNegativeSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (negativeSupport (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -1923,8 +1956,9 @@ noncomputable def selectedLowEntropyTypeSplitDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -1955,8 +1989,9 @@ noncomputable def selectedLowEntropyNegativeSupportAfterNetChargeDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1966,9 +2001,10 @@ noncomputable def selectedLowEntropyNegativeSupportAfterNetChargeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyNetChargeDichotomy history with
   | .left nonNegativeHistory =>
@@ -1986,8 +2022,9 @@ noncomputable def selectedLowEntropyTypeSplitAfterNetChargeDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -2028,8 +2065,9 @@ noncomputable def selectedHighEntropyNetChargeOrderDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -2057,8 +2095,9 @@ noncomputable def selectedHighEntropyNetChargeOrderAfterCapDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -2083,9 +2122,10 @@ noncomputable def selectedHighEntropyNetChargeCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap,
@@ -2094,9 +2134,10 @@ noncomputable def selectedHighEntropyNetChargeCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (netChargeCap (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -2112,9 +2153,10 @@ noncomputable def selectedHighEntropyNetChargeLocalization
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
@@ -2123,8 +2165,9 @@ noncomputable def selectedHighEntropyNetChargeLocalization
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   let afterCap := selectedHighEntropyNetChargeCap history
@@ -2145,9 +2188,10 @@ noncomputable def selectedHighEntropyNetChargeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2176,9 +2220,10 @@ noncomputable def selectedHighEntropyNetChargeNonNegativeCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   obtain ⟨_positive, packing, valid, cardinality, maximal⟩ :=
     (history.get (K .maximalPacking)).down
@@ -2200,9 +2245,10 @@ noncomputable def selectedHighEntropyNegativeSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .negativeSupport, K .netChargeNegative,
@@ -2212,8 +2258,9 @@ noncomputable def selectedHighEntropyNegativeSupport
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (negativeSupport (BranchState := BranchState)
@@ -2231,9 +2278,10 @@ noncomputable def selectedHighEntropyTypeSplitDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2263,9 +2311,10 @@ noncomputable def selectedHighEntropyNegativeSupportAfterNetChargeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .negativeSupport, K .netChargeNegative,
@@ -2275,8 +2324,9 @@ noncomputable def selectedHighEntropyNegativeSupportAfterNetChargeDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   match selectedHighEntropyNetChargeDichotomy history with
@@ -2295,9 +2345,10 @@ noncomputable def selectedHighEntropyTypeSplitAfterNetChargeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2339,8 +2390,9 @@ noncomputable def selectedLowEntropyTypeAReceiverRouting
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -2351,8 +2403,9 @@ noncomputable def selectedLowEntropyTypeAReceiverRouting
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (typeAReceiverRoutingRow (BranchState := BranchState)
@@ -2370,9 +2423,10 @@ noncomputable def selectedLowEntropyTypeASaturationDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2405,8 +2459,9 @@ noncomputable def selectedLowEntropyTypeAPortReturn
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -2418,8 +2473,9 @@ noncomputable def selectedLowEntropyTypeAPortReturn
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (typeAPortReturnRow (BranchState := BranchState)
@@ -2438,9 +2494,10 @@ noncomputable def selectedLowEntropyTypeAVisibleEntryDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2474,8 +2531,9 @@ noncomputable def selectedHighEntropyTypeAReceiverRouting
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -2486,8 +2544,9 @@ noncomputable def selectedHighEntropyTypeAReceiverRouting
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (typeAReceiverRoutingRow (BranchState := BranchState)
@@ -2506,8 +2565,9 @@ noncomputable def selectedHighEntropyTypeASaturationDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -2541,8 +2601,9 @@ noncomputable def selectedHighEntropyTypeAPortReturn
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -2554,8 +2615,9 @@ noncomputable def selectedHighEntropyTypeAPortReturn
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (typeAPortReturnRow (BranchState := BranchState)
@@ -2575,8 +2637,9 @@ noncomputable def selectedHighEntropyTypeAVisibleEntryDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -2613,9 +2676,10 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFourDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2667,9 +2731,10 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFourDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2721,9 +2786,10 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2758,9 +2824,10 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
@@ -2773,9 +2840,10 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyTypeAFirstExcessExitFiveDichotomy history with
   | .left exitHistory =>
@@ -2805,9 +2873,10 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2842,9 +2911,10 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2886,9 +2956,10 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSixFree, K .typeAExitFiveFree,
@@ -2902,9 +2973,10 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyTypeAFirstExcessExitSixDichotomy history with
   | .left exitHistory =>
@@ -2944,9 +3016,10 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -2996,8 +3069,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSevenHandoff
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3014,8 +3088,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSevenHandoff
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (typeAExitSevenHandoffRow (data := spineData)).run history
@@ -3038,8 +3113,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffNormalForm
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3056,8 +3132,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffNormalForm
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (highCentreNormalFormRow (data := spineData)).run history
@@ -3080,8 +3157,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffDegreeDichotomy
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision (K .typeBHeavyCentre) (K .typeBDegreeFourCentres)
@@ -3113,8 +3191,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHeavyLocalDichotomy
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3131,8 +3210,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHeavyLocalDichotomy
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (heavyCentreLocalDichotomyRow (data := spineData)).run history
@@ -3157,8 +3237,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessDegreeFourProfile
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3175,8 +3256,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessDegreeFourProfile
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (degreeFourProfileRow (data := spineData)).run history
@@ -3199,8 +3281,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffAssignedSupport
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3217,8 +3300,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffAssignedSupport
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (typeBDecoratedAssignedSupportRow (data := spineData)).run history
@@ -3240,8 +3324,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8ResidualProfile
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3258,8 +3343,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8ResidualProfile
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (route8ResidualProfileRow (data := spineData)).run history
@@ -3282,8 +3368,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8GlobalSqueeze
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3300,8 +3387,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8GlobalSqueeze
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (route8GlobalSqueezeRow (data := spineData)).run history
@@ -3324,8 +3412,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8BasinBurden
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3343,8 +3432,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8BasinBurden
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (route8BasinBurdenRow (data := spineData)).run history
@@ -3368,8 +3458,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8LargeBudgetDeficit
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3387,8 +3478,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8LargeBudgetDeficit
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (route8LargeBudgetDeficitRow (data := spineData)).run history
@@ -3412,8 +3504,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8CarrierCore
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3432,8 +3525,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8CarrierCore
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (route8CarrierCoreRow (data := spineData)).run history
@@ -3458,8 +3552,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8SmallCoreCollapse
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3478,8 +3573,9 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8SmallCoreCollapse
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (route8SmallCoreCollapseRow (data := spineData)).run history
@@ -3500,9 +3596,10 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -3538,9 +3635,10 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
@@ -3554,9 +3652,10 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedHighEntropyTypeAFirstExcessExitFiveDichotomy history with
   | .left exitHistory =>
@@ -3587,9 +3686,10 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -3625,9 +3725,10 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -3670,9 +3771,10 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSixFree, K .typeAExitFiveFree,
@@ -3687,9 +3789,10 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedHighEntropyTypeAFirstExcessExitSixDichotomy history with
   | .left exitHistory =>
@@ -3730,9 +3833,10 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -3782,8 +3886,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSevenHandoff
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3800,8 +3905,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSevenHandoff
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (typeAExitSevenHandoffRow (data := spineData)).run history
@@ -3824,8 +3930,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffNormalForm
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3842,8 +3949,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffNormalForm
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (highCentreNormalFormRow (data := spineData)).run history
@@ -3866,8 +3974,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffDegreeDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     Decision (K .typeBHeavyCentre) (K .typeBDegreeFourCentres)
@@ -3899,8 +4008,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHeavyLocalDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3917,8 +4027,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHeavyLocalDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (heavyCentreLocalDichotomyRow (data := spineData)).run history
@@ -3943,8 +4054,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessDegreeFourProfile
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -3961,8 +4073,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessDegreeFourProfile
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (degreeFourProfileRow (data := spineData)).run history
@@ -3985,8 +4098,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffAssignedSupport
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -4003,8 +4117,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffAssignedSupport
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (typeBDecoratedAssignedSupportRow (data := spineData)).run history
@@ -4026,8 +4141,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8ResidualProfile
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -4044,8 +4160,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8ResidualProfile
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (route8ResidualProfileRow (data := spineData)).run history
@@ -4068,8 +4185,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8GlobalSqueeze
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -4086,8 +4204,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8GlobalSqueeze
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (route8GlobalSqueezeRow (data := spineData)).run history
@@ -4110,8 +4229,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8BasinBurden
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -4129,8 +4249,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8BasinBurden
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (route8BasinBurdenRow (data := spineData)).run history
@@ -4154,8 +4275,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8LargeBudgetDeficit
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -4173,8 +4295,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8LargeBudgetDeficit
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (route8LargeBudgetDeficitRow (data := spineData)).run history
@@ -4198,8 +4321,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8CarrierCore
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -4218,8 +4342,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8CarrierCore
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (route8CarrierCoreRow (data := spineData)).run history
@@ -4244,8 +4369,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8SmallCoreCollapse
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -4264,8 +4390,9 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8SmallCoreCollapse
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (route8SmallCoreCollapseRow (data := spineData)).run history
@@ -4285,8 +4412,9 @@ noncomputable def selectedLowEntropyTypeAExitFourFiniteDescent
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   let entered :=
@@ -4315,8 +4443,9 @@ noncomputable def selectedHighEntropyTypeAExitFourFiniteDescent
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   let entered :=
@@ -4342,9 +4471,10 @@ noncomputable def selectedLowEntropyTypeASaturatedHandoffSplitDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -4417,9 +4547,10 @@ noncomputable def selectedHighEntropyTypeASaturatedHandoffSplitDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -4493,9 +4624,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFourDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -4550,9 +4682,10 @@ noncomputable def selectedLowEntropyTypeASilentExitFourDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -4605,8 +4738,9 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFourDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -4663,8 +4797,9 @@ noncomputable def selectedHighEntropyTypeASilentExitFourDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -4756,9 +4891,10 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -4794,9 +4930,10 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let selection := (ExactLedger.get history (K .selection)).down
   obtain ⟨support, replacement⟩ :=
@@ -4829,9 +4966,10 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
@@ -4845,9 +4983,10 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyTypeASilentExitFiveDichotomy history with
   | .left exitHistory =>
@@ -4871,9 +5010,10 @@ noncomputable def selectedLowEntropyTypeASilentExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -4909,9 +5049,10 @@ noncomputable def selectedLowEntropyTypeASilentExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -4955,9 +5096,10 @@ noncomputable def selectedLowEntropyTypeASilentExitSixProperCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   obtain ⟨support, replacement⟩ :=
     (ExactLedger.get history (K .typeAExitSixProper)).down
@@ -4980,9 +5122,10 @@ noncomputable def selectedLowEntropyTypeASilentExitSixGlobalCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let selection := (ExactLedger.get history (K .selection)).down
   obtain ⟨representative, smaller, representativeBaseline, transfer⟩ :=
@@ -5005,9 +5148,10 @@ noncomputable def selectedLowEntropyTypeASilentExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSixFree, K .typeAExitFiveFree,
@@ -5022,9 +5166,10 @@ noncomputable def selectedLowEntropyTypeASilentExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyTypeASilentExitSixDichotomy history with
   | .left exitHistory =>
@@ -5054,9 +5199,10 @@ noncomputable def selectedLowEntropyTypeASilentExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -5106,9 +5252,10 @@ noncomputable def selectedLowEntropyTypeASilentExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5124,9 +5271,10 @@ noncomputable def selectedLowEntropyTypeASilentExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeAExitSevenHandoffRow (data := spineData)).run history
     (by simp [typeAExitSevenHandoffRow, K_eq_iff])
@@ -5148,9 +5296,10 @@ noncomputable def selectedLowEntropyTypeASilentHandoffNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5166,9 +5315,10 @@ noncomputable def selectedLowEntropyTypeASilentHandoffNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (highCentreNormalFormRow (data := spineData)).run history
     (by simp [highCentreNormalFormRow, K_eq_iff])
@@ -5190,9 +5340,10 @@ noncomputable def selectedLowEntropyTypeASilentHandoffDegreeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision (K .typeBHeavyCentre) (K .typeBDegreeFourCentres)
       ((cubicBaselineRow (BranchState := BranchState)
@@ -5223,9 +5374,10 @@ noncomputable def selectedLowEntropyTypeASilentHeavyLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBLocalDichotomy, K .typeBHeavyCentre, K .cubicBaseline, K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5241,9 +5393,10 @@ noncomputable def selectedLowEntropyTypeASilentHeavyLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (heavyCentreLocalDichotomyRow (data := spineData)).run history
     (by simp [heavyCentreLocalDichotomyRow, K_eq_iff])
@@ -5267,9 +5420,10 @@ noncomputable def selectedLowEntropyTypeASilentDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDegreeFourProfile, K .typeBDegreeFourCentres, K .cubicBaseline, K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5285,9 +5439,10 @@ noncomputable def selectedLowEntropyTypeASilentDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (degreeFourProfileRow (data := spineData)).run history
     (by simp [degreeFourProfileRow, K_eq_iff])
@@ -5309,9 +5464,10 @@ noncomputable def selectedLowEntropyTypeASilentHandoffAssignedSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5327,9 +5483,10 @@ noncomputable def selectedLowEntropyTypeASilentHandoffAssignedSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeBDecoratedAssignedSupportRow (data := spineData)).run history
     (by simp [typeBDecoratedAssignedSupportRow, K_eq_iff])
@@ -5351,9 +5508,10 @@ noncomputable def selectedLowEntropyTypeASilentRoute8GlobalSqueeze
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .route8GlobalSqueeze, K .route8ResidualProfile,
@@ -5370,9 +5528,10 @@ noncomputable def selectedLowEntropyTypeASilentRoute8GlobalSqueeze
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (route8GlobalSqueezeRow (data := spineData)).run history
     (by simp [K_eq_iff])
@@ -5392,9 +5551,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -5430,9 +5590,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
@@ -5446,9 +5607,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyTypeAVisibleExitFiveDichotomy history with
   | .left exitHistory =>
@@ -5479,9 +5641,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -5517,9 +5680,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -5562,9 +5726,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSixFree, K .typeAExitFiveFree,
@@ -5579,9 +5744,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyTypeAVisibleExitSixDichotomy history with
   | .left exitHistory =>
@@ -5622,9 +5788,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -5674,9 +5841,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5692,9 +5860,10 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeAExitSevenHandoffRow (data := spineData)).run history
     (by simp [typeAExitSevenHandoffRow, K_eq_iff])
@@ -5716,9 +5885,10 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5734,9 +5904,10 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (highCentreNormalFormRow (data := spineData)).run history
     (by simp [highCentreNormalFormRow, K_eq_iff])
@@ -5758,9 +5929,10 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffDegreeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision (K .typeBHeavyCentre) (K .typeBDegreeFourCentres)
       ((cubicBaselineRow (BranchState := BranchState)
@@ -5791,9 +5963,10 @@ noncomputable def selectedLowEntropyTypeAVisibleHeavyLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBLocalDichotomy, K .typeBHeavyCentre, K .cubicBaseline, K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5809,9 +5982,10 @@ noncomputable def selectedLowEntropyTypeAVisibleHeavyLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (heavyCentreLocalDichotomyRow (data := spineData)).run history
     (by simp [heavyCentreLocalDichotomyRow, K_eq_iff])
@@ -5835,9 +6009,10 @@ noncomputable def selectedLowEntropyTypeAVisibleDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDegreeFourProfile, K .typeBDegreeFourCentres, K .cubicBaseline, K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5853,9 +6028,10 @@ noncomputable def selectedLowEntropyTypeAVisibleDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (degreeFourProfileRow (data := spineData)).run history
     (by simp [degreeFourProfileRow, K_eq_iff])
@@ -5877,9 +6053,10 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffAssignedSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -5895,9 +6072,10 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffAssignedSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeBDecoratedAssignedSupportRow (data := spineData)).run history
     (by simp [typeBDecoratedAssignedSupportRow, K_eq_iff])
@@ -5917,9 +6095,10 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -5956,9 +6135,10 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let selection := (ExactLedger.get history (K .selection)).down
   obtain ⟨support, replacement⟩ :=
@@ -5992,9 +6172,10 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
@@ -6009,9 +6190,10 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedHighEntropyTypeASilentExitFiveDichotomy history with
   | .left exitHistory =>
@@ -6036,9 +6218,10 @@ noncomputable def selectedHighEntropyTypeASilentExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -6075,9 +6258,10 @@ noncomputable def selectedHighEntropyTypeASilentExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -6122,9 +6306,10 @@ noncomputable def selectedHighEntropyTypeASilentExitSixProperCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   obtain ⟨support, replacement⟩ :=
     (ExactLedger.get history (K .typeAExitSixProper)).down
@@ -6148,9 +6333,10 @@ noncomputable def selectedHighEntropyTypeASilentExitSixGlobalCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let selection := (ExactLedger.get history (K .selection)).down
   obtain ⟨representative, smaller, representativeBaseline, transfer⟩ :=
@@ -6174,9 +6360,10 @@ noncomputable def selectedHighEntropyTypeASilentExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSixFree, K .typeAExitFiveFree,
@@ -6192,9 +6379,10 @@ noncomputable def selectedHighEntropyTypeASilentExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedHighEntropyTypeASilentExitSixDichotomy history with
   | .left exitHistory =>
@@ -6225,9 +6413,10 @@ noncomputable def selectedHighEntropyTypeASilentExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -6278,9 +6467,10 @@ noncomputable def selectedHighEntropyTypeASilentExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -6297,9 +6487,10 @@ noncomputable def selectedHighEntropyTypeASilentExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeAExitSevenHandoffRow (data := spineData)).run history
     (by simp [typeAExitSevenHandoffRow, K_eq_iff])
@@ -6322,9 +6513,10 @@ noncomputable def selectedHighEntropyTypeASilentHandoffNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -6341,9 +6533,10 @@ noncomputable def selectedHighEntropyTypeASilentHandoffNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (highCentreNormalFormRow (data := spineData)).run history
     (by simp [highCentreNormalFormRow, K_eq_iff])
@@ -6366,9 +6559,10 @@ noncomputable def selectedHighEntropyTypeASilentHandoffDegreeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision (K .typeBHeavyCentre) (K .typeBDegreeFourCentres)
       ((cubicBaselineRow (BranchState := BranchState)
@@ -6400,9 +6594,10 @@ noncomputable def selectedHighEntropyTypeASilentHeavyLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBLocalDichotomy, K .typeBHeavyCentre, K .cubicBaseline, K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -6419,9 +6614,10 @@ noncomputable def selectedHighEntropyTypeASilentHeavyLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (heavyCentreLocalDichotomyRow (data := spineData)).run history
     (by simp [heavyCentreLocalDichotomyRow, K_eq_iff])
@@ -6446,9 +6642,10 @@ noncomputable def selectedHighEntropyTypeASilentDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDegreeFourProfile, K .typeBDegreeFourCentres, K .cubicBaseline, K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -6465,9 +6662,10 @@ noncomputable def selectedHighEntropyTypeASilentDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (degreeFourProfileRow (data := spineData)).run history
     (by simp [degreeFourProfileRow, K_eq_iff])
@@ -6490,9 +6688,10 @@ noncomputable def selectedHighEntropyTypeASilentHandoffAssignedSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -6509,9 +6708,10 @@ noncomputable def selectedHighEntropyTypeASilentHandoffAssignedSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeBDecoratedAssignedSupportRow (data := spineData)).run history
     (by simp [typeBDecoratedAssignedSupportRow, K_eq_iff])
@@ -6534,9 +6734,10 @@ noncomputable def selectedHighEntropyTypeASilentRoute8GlobalSqueeze
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .route8GlobalSqueeze, K .route8ResidualProfile,
@@ -6554,9 +6755,10 @@ noncomputable def selectedHighEntropyTypeASilentRoute8GlobalSqueeze
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (route8GlobalSqueezeRow (data := spineData)).run history
     (by simp [K_eq_iff])
@@ -6577,9 +6779,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFiveDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -6616,9 +6819,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitFiveFree, K .typeASaturatedHandoffExitFourFree,
@@ -6633,9 +6837,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFiveFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedHighEntropyTypeAVisibleExitFiveDichotomy history with
   | .left exitHistory =>
@@ -6667,9 +6872,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -6706,9 +6912,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixScopeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -6752,9 +6959,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSixFree, K .typeAExitFiveFree,
@@ -6770,9 +6978,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedHighEntropyTypeAVisibleExitSixDichotomy history with
   | .left exitHistory =>
@@ -6814,9 +7023,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSevenDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -6867,9 +7077,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -6886,9 +7097,10 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSevenHandoff
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeAExitSevenHandoffRow (data := spineData)).run history
     (by simp [typeAExitSevenHandoffRow, K_eq_iff])
@@ -6911,9 +7123,10 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -6930,9 +7143,10 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (highCentreNormalFormRow (data := spineData)).run history
     (by simp [highCentreNormalFormRow, K_eq_iff])
@@ -6955,9 +7169,10 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffDegreeDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision (K .typeBHeavyCentre) (K .typeBDegreeFourCentres)
       ((cubicBaselineRow (BranchState := BranchState)
@@ -6989,9 +7204,10 @@ noncomputable def selectedHighEntropyTypeAVisibleHeavyLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBLocalDichotomy, K .typeBHeavyCentre, K .cubicBaseline, K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -7008,9 +7224,10 @@ noncomputable def selectedHighEntropyTypeAVisibleHeavyLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (heavyCentreLocalDichotomyRow (data := spineData)).run history
     (by simp [heavyCentreLocalDichotomyRow, K_eq_iff])
@@ -7035,9 +7252,10 @@ noncomputable def selectedHighEntropyTypeAVisibleDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDegreeFourProfile, K .typeBDegreeFourCentres, K .cubicBaseline, K .highCentreNormalForm, K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -7054,9 +7272,10 @@ noncomputable def selectedHighEntropyTypeAVisibleDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (degreeFourProfileRow (data := spineData)).run history
     (by simp [degreeFourProfileRow, K_eq_iff])
@@ -7079,9 +7298,10 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffAssignedSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDecoratedAssignedSupport, K .typeAExitSevenHandoff, K .typeAExitSevenProduced,
@@ -7098,9 +7318,10 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffAssignedSupport
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeBDecoratedAssignedSupportRow (data := spineData)).run history
     (by simp [typeBDecoratedAssignedSupportRow, K_eq_iff])
@@ -7116,9 +7337,10 @@ noncomputable def selectedLowEntropyTypeBNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .highCentreNormalForm, K .typeBHighSurplus,
@@ -7128,8 +7350,9 @@ noncomputable def selectedLowEntropyTypeBNormalForm
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (highCentreNormalForm (BranchState := BranchState)
@@ -7150,8 +7373,9 @@ noncomputable def selectedHighEntropyTypeBNormalForm
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -7162,9 +7386,10 @@ noncomputable def selectedHighEntropyTypeBNormalForm
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (highCentreNormalForm (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -7184,9 +7409,10 @@ noncomputable def selectedLowEntropyTypeBLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBLocalDichotomy, K .typeBHeavyCentre,
@@ -7197,8 +7423,9 @@ noncomputable def selectedLowEntropyTypeBLocalDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (heavyCentreLocalDichotomy (BranchState := BranchState)
@@ -7217,9 +7444,10 @@ noncomputable def selectedLowEntropyTypeBHeavyFanCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .fanCertificateCap, K .typeBLocalDichotomy,
@@ -7230,9 +7458,10 @@ noncomputable def selectedLowEntropyTypeBHeavyFanCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   let afterLocal := selectedLowEntropyTypeBLocalDichotomy history
   exact
@@ -7254,9 +7483,10 @@ noncomputable def selectedLowEntropyTypeBDegreeFourFanCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .fanCertificateCap, K .typeBDegreeFourCentres,
@@ -7267,8 +7497,9 @@ noncomputable def selectedLowEntropyTypeBDegreeFourFanCap
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (fanCertificateCap (BranchState := BranchState)
@@ -7287,9 +7518,10 @@ noncomputable def selectedLowEntropyTypeBDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDegreeFourProfile, K .fanCertificateCap,
@@ -7300,9 +7532,10 @@ noncomputable def selectedLowEntropyTypeBDegreeFourProfile
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   let afterCap := selectedLowEntropyTypeBDegreeFourFanCap history
   exact
@@ -7325,8 +7558,9 @@ noncomputable def selectedHighEntropyTypeBLocalDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -7338,9 +7572,10 @@ noncomputable def selectedHighEntropyTypeBLocalDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (heavyCentreLocalDichotomy (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -7359,8 +7594,9 @@ noncomputable def selectedHighEntropyTypeBHeavyFanCap
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -7373,8 +7609,9 @@ noncomputable def selectedHighEntropyTypeBHeavyFanCap
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   let afterLocal := selectedHighEntropyTypeBLocalDichotomy history
@@ -7398,8 +7635,9 @@ noncomputable def selectedHighEntropyTypeBDegreeFourFanCap
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -7411,9 +7649,10 @@ noncomputable def selectedHighEntropyTypeBDegreeFourFanCap
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (fanCertificateCap (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -7432,8 +7671,9 @@ noncomputable def selectedHighEntropyTypeBDegreeFourProfile
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -7446,8 +7686,9 @@ noncomputable def selectedHighEntropyTypeBDegreeFourProfile
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   let afterCap := selectedHighEntropyTypeBDegreeFourFanCap history
@@ -7471,9 +7712,10 @@ noncomputable def selectedLowEntropyTypeBFanCertificateDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -7505,9 +7747,10 @@ noncomputable def selectedLowEntropyTypeBHeavyFanCertificateDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -7535,8 +7778,9 @@ noncomputable def selectedLowEntropyTypeBCertificateResidualMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -7549,9 +7793,10 @@ noncomputable def selectedLowEntropyTypeBCertificateResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (bridgeFanMass (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -7572,8 +7817,9 @@ noncomputable def selectedLowEntropyTypeBDirectCycleDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -7608,9 +7854,10 @@ noncomputable def selectedLowEntropyTypeBDirectCycleCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let selectedFact := ExactLedger.get history (K .selection)
   let cycleFact := ExactLedger.get history (K .typeBDirectCycle)
@@ -7633,8 +7880,9 @@ noncomputable def selectedLowEntropyTypeBDirectCycleFree
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -7647,9 +7895,10 @@ noncomputable def selectedLowEntropyTypeBDirectCycleFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyTypeBDirectCycleDichotomy history with
   | .left cycleHistory =>
@@ -7670,9 +7919,10 @@ noncomputable def selectedLowEntropyTypeBB2AssignmentDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -7706,8 +7956,9 @@ noncomputable def selectedLowEntropyTypeBB2AssignmentAfterDirectCycleDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -7737,8 +7988,9 @@ noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -7752,9 +8004,10 @@ noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (bridgeFanMass (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -7775,8 +8028,9 @@ noncomputable def selectedHighEntropyTypeBFanCertificateDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -7810,8 +8064,9 @@ noncomputable def selectedHighEntropyTypeBHeavyFanCertificateDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -7840,9 +8095,10 @@ noncomputable def selectedHighEntropyTypeBCertificateResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBBridgeMass, K .fanCertificateResidual,
@@ -7855,8 +8111,9 @@ noncomputable def selectedHighEntropyTypeBCertificateResidualMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (bridgeFanMass (BranchState := BranchState)
@@ -7878,9 +8135,10 @@ noncomputable def selectedHighEntropyTypeBDirectCycleDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -7915,8 +8173,9 @@ noncomputable def selectedHighEntropyTypeBDirectCycleCloses
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   let selectedFact := ExactLedger.get history (K .selection)
@@ -7940,9 +8199,10 @@ noncomputable def selectedHighEntropyTypeBDirectCycleFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDirectCycleFree, K .fanCertificateMarked,
@@ -7955,8 +8215,9 @@ noncomputable def selectedHighEntropyTypeBDirectCycleFree
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   match selectedHighEntropyTypeBDirectCycleDichotomy history with
@@ -7979,8 +8240,9 @@ noncomputable def selectedHighEntropyTypeBB2AssignmentDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -8015,9 +8277,10 @@ noncomputable def selectedHighEntropyTypeBB2AssignmentAfterDirectCycleDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -8046,9 +8309,10 @@ noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBBridgeMass, K .typeBOverlapObstruction,
@@ -8062,8 +8326,9 @@ noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (bridgeFanMass (BranchState := BranchState)
@@ -8084,9 +8349,10 @@ noncomputable def selectedLowEntropyDegreeFourFanCertificateDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -8118,9 +8384,10 @@ noncomputable def selectedLowEntropyDegreeFourProfileFanCertificateDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -8148,8 +8415,9 @@ noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -8162,9 +8430,10 @@ noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (bridgeFanMass (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -8185,8 +8454,9 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -8221,9 +8491,10 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let selectedFact := ExactLedger.get history (K .selection)
   let cycleFact := ExactLedger.get history (K .typeBDirectCycle)
@@ -8246,8 +8517,9 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleFree
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -8260,9 +8532,10 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyDegreeFourDirectCycleDichotomy history with
   | .left cycleHistory =>
@@ -8283,9 +8556,10 @@ noncomputable def selectedLowEntropyDegreeFourB2AssignmentDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -8319,8 +8593,9 @@ noncomputable def selectedLowEntropyDegreeFourB2AssignmentAfterDirectCycleDichot
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -8350,8 +8625,9 @@ noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -8365,9 +8641,10 @@ noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (bridgeFanMass (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -8388,8 +8665,9 @@ noncomputable def selectedHighEntropyDegreeFourFanCertificateDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -8423,8 +8701,9 @@ noncomputable def selectedHighEntropyDegreeFourProfileFanCertificateDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -8453,9 +8732,10 @@ noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBBridgeMass, K .fanCertificateResidual,
@@ -8468,8 +8748,9 @@ noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (bridgeFanMass (BranchState := BranchState)
@@ -8491,9 +8772,10 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -8528,8 +8810,9 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleCloses
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   let selectedFact := ExactLedger.get history (K .selection)
@@ -8553,9 +8836,10 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleFree
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBDirectCycleFree, K .fanCertificateMarked,
@@ -8568,8 +8852,9 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleFree
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   match selectedHighEntropyDegreeFourDirectCycleDichotomy history with
@@ -8592,8 +8877,9 @@ noncomputable def selectedHighEntropyDegreeFourB2AssignmentDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -8628,9 +8914,10 @@ noncomputable def selectedHighEntropyDegreeFourB2AssignmentAfterDirectCycleDicho
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -8659,9 +8946,10 @@ noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBBridgeMass, K .typeBOverlapObstruction,
@@ -8675,8 +8963,9 @@ noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (bridgeFanMass (BranchState := BranchState)
@@ -8699,8 +8988,9 @@ noncomputable def selectedLowEntropyTypeBB2ExclusionCharge
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -8716,8 +9006,9 @@ noncomputable def selectedLowEntropyTypeBB2ExclusionCharge
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   let h1 :=
@@ -8759,8 +9050,9 @@ noncomputable def selectedLowEntropyTypeBExclusionDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -8810,9 +9102,10 @@ noncomputable def selectedLowEntropyTypeBExcludedCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let closedHistory :=
     closeImpossible history (K .typeBExcluded)
@@ -8833,8 +9126,9 @@ noncomputable def selectedLowEntropyTypeBExclusionResidual
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -8850,9 +9144,10 @@ noncomputable def selectedLowEntropyTypeBExclusionResidual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyTypeBExclusionDichotomy history with
   | .left nonnegativeHistory =>
@@ -8874,9 +9169,10 @@ noncomputable def selectedHighEntropyTypeBB2ExclusionCharge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBExclusionCharge, K .typeBSelectedFanCharge,
@@ -8891,9 +9187,10 @@ noncomputable def selectedHighEntropyTypeBB2ExclusionCharge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   let h1 :=
     (hybridEntry (BranchState := BranchState)
@@ -8934,9 +9231,10 @@ noncomputable def selectedHighEntropyTypeBExclusionDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -8986,8 +9284,9 @@ noncomputable def selectedHighEntropyTypeBExcludedCloses
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   let closedHistory :=
@@ -9009,9 +9308,10 @@ noncomputable def selectedHighEntropyTypeBExclusionResidual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBExclusionResidual, K .typeBExclusionCharge,
@@ -9027,8 +9327,9 @@ noncomputable def selectedHighEntropyTypeBExclusionResidual
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   match selectedHighEntropyTypeBExclusionDichotomy history with
@@ -9051,8 +9352,9 @@ noncomputable def selectedLowEntropyDegreeFourB2ExclusionCharge
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -9068,8 +9370,9 @@ noncomputable def selectedLowEntropyDegreeFourB2ExclusionCharge
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   let h1 :=
@@ -9111,8 +9414,9 @@ noncomputable def selectedLowEntropyDegreeFourExclusionDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -9162,9 +9466,10 @@ noncomputable def selectedLowEntropyDegreeFourExcludedCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let closedHistory :=
     closeImpossible history (K .typeBExcluded)
@@ -9185,8 +9490,9 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidual
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -9202,9 +9508,10 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   match selectedLowEntropyDegreeFourExclusionDichotomy history with
   | .left nonnegativeHistory =>
@@ -9227,9 +9534,10 @@ noncomputable def selectedHighEntropyDegreeFourB2ExclusionCharge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBExclusionCharge, K .typeBSelectedFanCharge,
@@ -9244,9 +9552,10 @@ noncomputable def selectedHighEntropyDegreeFourB2ExclusionCharge
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   let h1 :=
     (hybridEntry (BranchState := BranchState)
@@ -9287,9 +9596,10 @@ noncomputable def selectedHighEntropyDegreeFourExclusionDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -9339,8 +9649,9 @@ noncomputable def selectedHighEntropyDegreeFourExcludedCloses
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   let closedHistory :=
@@ -9362,9 +9673,10 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidual
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBExclusionResidual, K .typeBExclusionCharge,
@@ -9380,8 +9692,9 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidual
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   match selectedHighEntropyDegreeFourExclusionDichotomy history with
@@ -9407,9 +9720,10 @@ noncomputable def selectedLowEntropyTypeBExclusionResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
@@ -9425,8 +9739,9 @@ noncomputable def selectedLowEntropyTypeBExclusionResidualMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (typeBExclusionResidualMassRow (BranchState := BranchState)
@@ -9451,8 +9766,9 @@ noncomputable def selectedHighEntropyTypeBExclusionResidualMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -9469,9 +9785,10 @@ noncomputable def selectedHighEntropyTypeBExclusionResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeBExclusionResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -9494,9 +9811,10 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
@@ -9512,8 +9830,9 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidualMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (typeBExclusionResidualMassRow (BranchState := BranchState)
@@ -9538,8 +9857,9 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidualMass
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -9556,9 +9876,10 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidualMass
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (typeBExclusionResidualMassRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -9579,8 +9900,9 @@ noncomputable def selectedLowEntropyTypeBExclusionMassAfterDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -9597,8 +9919,9 @@ noncomputable def selectedLowEntropyTypeBExclusionMassAfterDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   selectedLowEntropyTypeBExclusionResidualMass
@@ -9618,9 +9941,10 @@ noncomputable def selectedHighEntropyTypeBExclusionMassAfterDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
@@ -9636,9 +9960,10 @@ noncomputable def selectedHighEntropyTypeBExclusionMassAfterDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   selectedHighEntropyTypeBExclusionResidualMass
     (selectedHighEntropyTypeBExclusionResidual history)
@@ -9657,8 +9982,9 @@ noncomputable def selectedLowEntropyDegreeFourExclusionMassAfterDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -9675,8 +10001,9 @@ noncomputable def selectedLowEntropyDegreeFourExclusionMassAfterDichotomy
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   selectedLowEntropyDegreeFourExclusionResidualMass
@@ -9696,9 +10023,10 @@ noncomputable def selectedHighEntropyDegreeFourExclusionMassAfterDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .typeBExclusionResidualMass, K .typeBExclusionResidual,
@@ -9714,9 +10042,10 @@ noncomputable def selectedHighEntropyDegreeFourExclusionMassAfterDichotomy
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   selectedHighEntropyDegreeFourExclusionResidualMass
     (selectedHighEntropyDegreeFourExclusionResidual history)
@@ -9733,9 +10062,10 @@ noncomputable def selectedLowEntropyTypeAUnsaturatedCloses
         K .forcedCurvatureCost, K .curvatureFullRank,
         K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
         K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let discharged := selectedLowEntropyTypeAUnsaturatedDischarge history
   rcases (discharged.get (K .typeAUnsaturatedDischarge)).down with
@@ -9758,8 +10088,9 @@ noncomputable def selectedHighEntropyTypeAUnsaturatedCloses
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
         K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   let discharged := selectedHighEntropyTypeAUnsaturatedDischarge history
@@ -9777,16 +10108,17 @@ noncomputable def selectedColdWindowLedgerSplit
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .barrierCap, K .hotColdPartition,
-        K .windowPackageSeparated, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldWindowLedgerSplitRow (data := spineData)).run history
     (by simp [K_eq_iff])
@@ -9798,9 +10130,9 @@ noncomputable def selectedColdRoute8Dichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   coldRoute8Dichotomy (data := spineData) history
@@ -9812,9 +10144,9 @@ noncomputable def selectedColdHotEntropyDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   coldHotEntropyDichotomy (data := spineData) history
@@ -9827,9 +10159,9 @@ noncomputable def selectedColdHotEntropyDensityCap
     (history : ExactLedger EGInput.{u} selected
       [K .coldHotEntropyOverflow, K .coldRoute8AtOrAbove,
         K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   (coldHotEntropyDensityCapRow (data := spineData)).run history
@@ -9842,9 +10174,9 @@ noncomputable def selectedColdMass
     (history : ExactLedger EGInput.{u} selected
       [K .coldHotEntropyCap, K .coldRoute8AtOrAbove,
         K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   (coldMassRow (data := spineData)).run history (by simp [K_eq_iff])
@@ -9856,9 +10188,9 @@ noncomputable def selectedColdAmbientCubic
     (history : ExactLedger EGInput.{u} selected
       [K .coldMass, K .coldHotEntropyCap, K .coldRoute8AtOrAbove,
         K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   (coldAmbientCubicRow (data := spineData)).run history (by simp [K_eq_iff])
@@ -9870,9 +10202,9 @@ noncomputable def selectedColdStubExcess
     (history : ExactLedger EGInput.{u} selected
       [K .coldAmbientCubic, K .coldMass, K .coldHotEntropyCap,
         K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageSeparated,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .tightEndpoint,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   (coldStubExcessRow (data := spineData)).run history (by simp [K_eq_iff])
@@ -9943,22 +10275,22 @@ noncomputable def selectedNearCubicNode21
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   let enumerated :=
     (barrierEnumerationRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) spineData).run
-      history (by simp [K_eq_iff])
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [barrierEnumerationRow, K_eq_iff])
   let separated :=
     (windowPackageRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) spineData).run
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       enumerated (by simp [windowPackageRow, K_eq_iff])
   (skeletonDominatesRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -9973,7 +10305,7 @@ noncomputable def selectedStrictSurplusBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   match selectedStrictSeparatedWindowClassDichotomy history with
   | .left windowHistory =>
@@ -10001,7 +10333,7 @@ noncomputable def selectedNearCubicBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .wedgeSupply, K .stubSupply, K .boundaryDemand,
@@ -10010,7 +10342,7 @@ noncomputable def selectedNearCubicBranch
         K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking,
-        K .uncompressible, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] := by
   let enumerated := selectedNearCubicNode21 history
   match selectedBarrierDichotomy enumerated with

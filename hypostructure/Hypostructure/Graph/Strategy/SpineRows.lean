@@ -479,38 +479,56 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
 /-! ## Node `[21]`: the finite barrier enumeration
 
 `lem:curv-enum` is already computed by the registered certified presentation.
-This source-free row publishes its safe, curvature-positive, and flat counts
-and their exact logarithmic entropy ratio.  It performs no second enumeration,
-copies no numerical answer, and constructs no label carrier.
+This row reads no predecessor fact (`Requires := []`, exactly as `lem:labels`
+at node `[18]`) and publishes the safe, curvature-positive, and flat counts
+and their exact logarithmic entropy ratio on the literal incoming ledger.  It
+performs no second enumeration, copies no numerical answer, and constructs no
+label carrier.  `lem:curv-enum` is projected directly from the registered
+presentation.
 -/
-
-/-- `lem:curv-enum`, projected directly from the registered presentation. -/
-@[reducible] noncomputable def barrierEnumerationRow
-    (data : Data.{u}) :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.barrierEnumeration
-    (sourceFreeManifest (K .barrierEnumeration))
-    (fun _inputs =>
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def barrierEnumerationRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.barrierEnumeration
+    { Requires := []
+      Produces := [K .barrierEnumeration]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
       .cons (key := K .barrierEnumeration)
-        ⟨by
-          change BarrierEnumerationStatement data
-          let barrier := data.windowBarrier
-          letI := barrier.indexFintype
-          let row := data.curvatureBarrierRow
-          let left := barrier.table.counts.leftLength row
-          let right := barrier.table.counts.rightLength row
-          let safe := barrier.table.counts.storedSafe row
-          let flat := barrier.table.counts.storedFlat row
-          let curvaturePositive := safe - flat
-          refine ⟨safe, curvaturePositive, flat, rfl, rfl, rfl,
-            barrier.table.storedSafe_eq row, ?_,
-            barrier.table.storedFlat_eq row, rfl⟩
-          change barrier.table.counts.storedSafe row -
-              barrier.table.counts.storedFlat row =
-            barrier.profile.obstructedCount left right
-          rw [barrier.table.storedSafe_eq, barrier.table.storedFlat_eq]
-          rfl⟩
+        (show Value BranchState Presentation presentation data
+            .barrierEnumeration inputs.current from
+          ⟨by
+            change BarrierEnumerationStatement data
+            let barrier := data.windowBarrier
+            letI := barrier.indexFintype
+            let row := data.curvatureBarrierRow
+            let left := barrier.table.counts.leftLength row
+            let right := barrier.table.counts.rightLength row
+            let safe := barrier.table.counts.storedSafe row
+            let flat := barrier.table.counts.storedFlat row
+            let curvaturePositive := safe - flat
+            refine ⟨safe, curvaturePositive, flat, rfl, rfl, rfl,
+              barrier.table.storedSafe_eq row, ?_,
+              barrier.table.storedFlat_eq row, rfl⟩
+            change barrier.table.counts.storedSafe row -
+                barrier.table.counts.storedFlat row =
+              barrier.profile.obstructedCount left right
+            rw [barrier.table.storedSafe_eq, barrier.table.storedFlat_eq]
+            rfl⟩)
         .nil)
+    0 0
 
 /-! ## Node `[21]`: the separated window package
 
@@ -530,15 +548,27 @@ retained is stable when the edge count is only known to lie in an admissible
 family, because the exact stratum is one of the family's and the family's own
 union bound dominates it (`sum_edgeStratumCount_le_variableEdgeBudget` is the
 summed form of the same count).  That is what makes the retained cap survive
-`rem:budget-robustness` rather than depending on the exact `m`. -/
+`rem:budget-robustness` rather than depending on the exact `m`.
 
-/-- `lem:p13-window-package`, on the literal near-cubic residual. -/
-@[reducible] noncomputable def windowPackageRow
-    (data : Data.{u}) :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.windowPackage
-    { Requires := [K .maximalPacking, K .uncompressible,
-        K .selection, K .surplusAtOrBelow]
+`lem:p13-window-package` is proved on the literal near-cubic residual.  The
+label-injectivity clauses are refuted through the ledger's `lem:replacement`
+fact (`K .replacementExclusion`) and the selection's minimality, exactly as
+`DeclaredQuotient.localize` splits them. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def windowPackageRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.windowPackage
+    { Requires := [K .maximalPacking, K .replacementExclusion, K .selection]
       Produces := [K .windowPackageSeparated]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -550,8 +580,7 @@ summed form of the same count).  That is what makes the retained cap survive
           ⟨by
             classical
             simp only [Holds]
-            have _nearCubic := (inputs.get (K .surplusAtOrBelow)).down
-            let noReplacement := (inputs.get (K .uncompressible)).down
+            let noReplacement := (inputs.get (K .replacementExclusion)).down
             let selected := (inputs.get (K .selection)).down
             obtain ⟨_positive, packing, valid, maximum, maximal⟩ :=
               (inputs.get (K .maximalPacking)).down
@@ -621,6 +650,7 @@ summed form of the same count).  That is what makes the retained cap survive
               · exact selected.1
                   (transfer (selected.2 representative smaller baselineObject))⟩)
         .nil)
+    0 0
 
 /-! ## Node `[22]`: the canonical hot/cold partition
 
@@ -5312,7 +5342,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 (handoffWindowFree data inputs.current.object) envelope :=
             Graph.DecoratedHandoff.admissible_of_envelope
               (inputs.get (K .selection)).down.1 windowFree
-              (inputs.get (K .uncompressible)).down
+              (inputs.get (K .uncompressible)).down.1
           exact
             ⟨packing, valid, maximal, component, present, negative, zero,
               receiver, isReceiver, peeled, peeledSubset, saturated,
